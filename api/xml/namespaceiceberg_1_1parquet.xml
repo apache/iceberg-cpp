@@ -1,0 +1,61 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="namespaceiceberg_1_1parquet" kind="namespace" language="C++">
+    <compoundname>iceberg::parquet</compoundname>
+    <innerclass refid="classiceberg_1_1parquet_1_1ParquetReader" prot="public">iceberg::parquet::ParquetReader</innerclass>
+    <innerclass refid="classiceberg_1_1parquet_1_1ParquetWriter" prot="public">iceberg::parquet::ParquetWriter</innerclass>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="namespaceiceberg_1_1parquet_1ab1a466bcebadc1dfc5cef755c190da24" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>ICEBERG_BUNDLE_EXPORT void</type>
+        <definition>ICEBERG_BUNDLE_EXPORT void iceberg::parquet::RegisterReader</definition>
+        <argsstring>()</argsstring>
+        <name>RegisterReader</name>
+        <qualifiedname>iceberg::parquet::RegisterReader</qualifiedname>
+        <briefdescription>
+<para>Register Parquet reader implementation. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/parquet/parquet_register.h" line="30" column="28" declfile="iceberg/parquet/parquet_register.h" declline="30" declcolumn="28"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceiceberg_1_1parquet_1a5f56ee06fe4772dfca4907f542e4bc7d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>ICEBERG_BUNDLE_EXPORT void</type>
+        <definition>ICEBERG_BUNDLE_EXPORT void iceberg::parquet::RegisterWriter</definition>
+        <argsstring>()</argsstring>
+        <name>RegisterWriter</name>
+        <qualifiedname>iceberg::parquet::RegisterWriter</qualifiedname>
+        <briefdescription>
+<para>Register Parquet writer implementation. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/parquet/parquet_register.h" line="33" column="28" declfile="iceberg/parquet/parquet_register.h" declline="33" declcolumn="28"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceiceberg_1_1parquet_1a8f241303247c8ab833f9e99ffe9fea88" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>ICEBERG_BUNDLE_EXPORT void</type>
+        <definition>ICEBERG_BUNDLE_EXPORT void iceberg::parquet::RegisterAll</definition>
+        <argsstring>()</argsstring>
+        <name>RegisterAll</name>
+        <qualifiedname>iceberg::parquet::RegisterAll</qualifiedname>
+        <briefdescription>
+<para>Register Parquet reader and writer implementations. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/parquet/parquet_register.h" line="36" column="28" declfile="iceberg/parquet/parquet_register.h" declline="36" declcolumn="28"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Parquet reader, writer, and registration APIs. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/parquet/parquet_reader.h" line="28" column="1"/>
+  </compounddef>
+</doxygen>

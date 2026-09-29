@@ -1,0 +1,68 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1SnapshotSelection" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::SnapshotSelection</compoundname>
+    <includes refid="metadata__table_8h" local="no">metadata_table.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1SnapshotSelection_1a917199af9047910e7ef2d45ff163c92b" prot="public" static="no" mutable="no">
+        <type>std::variant&lt; std::monostate, int64_t, <ref refid="namespaceiceberg_1a26b5236cc1bac2db397a235e5159efbc" kindref="member">TimePointMs</ref> &gt;</type>
+        <definition>std::variant&lt;std::monostate, int64_t, TimePointMs&gt; iceberg::SnapshotSelection::snapshot</definition>
+        <argsstring></argsstring>
+        <name>snapshot</name>
+        <qualifiedname>iceberg::SnapshotSelection::snapshot</qualifiedname>
+        <briefdescription>
+<para>Select the current snapshot, a snapshot ID, or an as-of timestamp. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>std::monostate selects the current snapshot. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/inspect/metadata_table.h" line="94" column="16" bodyfile="iceberg/inspect/metadata_table.h" bodystart="94" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1SnapshotSelection_1a26695ae2612197e44875a902ee3a7c04" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::SnapshotSelection::ref_name</definition>
+        <argsstring></argsstring>
+        <name>ref_name</name>
+        <qualifiedname>iceberg::SnapshotSelection::ref_name</qualifiedname>
+        <briefdescription>
+<para>Resolve the snapshot relative to this branch or tag. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>An empty string uses the main branch. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/inspect/metadata_table.h" line="99" column="15" bodyfile="iceberg/inspect/metadata_table.h" bodystart="99" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para><ref refid="structiceberg_1_1Snapshot" kindref="compound">Snapshot</ref> selection parameters for a time-travel scan. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::SnapshotSelection</label>
+        <link refid="structiceberg_1_1SnapshotSelection"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>ref_name</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/inspect/metadata_table.h" line="90" column="1" bodyfile="iceberg/inspect/metadata_table.h" bodystart="90" bodyend="100"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1SnapshotSelection_1a26695ae2612197e44875a902ee3a7c04" prot="public" virt="non-virtual"><scope>iceberg::SnapshotSelection</scope><name>ref_name</name></member>
+      <member refid="structiceberg_1_1SnapshotSelection_1a917199af9047910e7ef2d45ff163c92b" prot="public" virt="non-virtual"><scope>iceberg::SnapshotSelection</scope><name>snapshot</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

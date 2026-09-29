@@ -1,0 +1,67 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1ManifestGroup_1_1StatsProjection" kind="struct" language="C++" prot="private">
+    <compoundname>iceberg::ManifestGroup::StatsProjection</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1ManifestGroup_1_1StatsProjection_1a1f140136ad1dded4aaf2a6a9071b3f3e" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; std::string &gt;</type>
+        <definition>std::vector&lt;std::string&gt; iceberg::ManifestGroup::StatsProjection::columns</definition>
+        <argsstring></argsstring>
+        <name>columns</name>
+        <qualifiedname>iceberg::ManifestGroup::StatsProjection::columns</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_group.h" line="184" column="17" bodyfile="iceberg/manifest/manifest_group.h" bodystart="184" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1ManifestGroup_1_1StatsProjection_1a142a784ef4729327f610690dc63d728b" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool iceberg::ManifestGroup::StatsProjection::drop_stats</definition>
+        <argsstring></argsstring>
+        <name>drop_stats</name>
+        <qualifiedname>iceberg::ManifestGroup::StatsProjection::drop_stats</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_group.h" line="185" column="10" bodyfile="iceberg/manifest/manifest_group.h" bodystart="185" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::ManifestGroup::StatsProjection</label>
+        <childnode refid="2" relation="usage">
+          <edgelabel>columns</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::string</label>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>std::vector&lt; std::string &gt;</label>
+        <childnode refid="3" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/manifest/manifest_group.h" line="183" column="3" bodyfile="iceberg/manifest/manifest_group.h" bodystart="183" bodyend="186"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1ManifestGroup_1_1StatsProjection_1a1f140136ad1dded4aaf2a6a9071b3f3e" prot="public" virt="non-virtual"><scope>iceberg::ManifestGroup::StatsProjection</scope><name>columns</name></member>
+      <member refid="structiceberg_1_1ManifestGroup_1_1StatsProjection_1a142a784ef4729327f610690dc63d728b" prot="public" virt="non-virtual"><scope>iceberg::ManifestGroup::StatsProjection</scope><name>drop_stats</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

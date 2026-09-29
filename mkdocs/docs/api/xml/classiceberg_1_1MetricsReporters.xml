@@ -1,0 +1,140 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1MetricsReporters" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::MetricsReporters</compoundname>
+    <includes refid="metrics__reporters_8h" local="no">metrics_reporters.h</includes>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1MetricsReporters_1ad30a5c4a9a58a083a3d2d7c96f46bc34" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result</ref>&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1MetricsReporter" kindref="compound">MetricsReporter</ref> &gt; &gt;</type>
+        <definition>static Result&lt; std::unique_ptr&lt; MetricsReporter &gt; &gt; iceberg::MetricsReporters::Load</definition>
+        <argsstring>(const std::unordered_map&lt; std::string, std::string &gt; &amp;properties)</argsstring>
+        <name>Load</name>
+        <qualifiedname>iceberg::MetricsReporters::Load</qualifiedname>
+        <param>
+          <type>const std::unordered_map&lt; std::string, std::string &gt; &amp;</type>
+          <declname>properties</declname>
+        </param>
+        <briefdescription>
+<para>Load a metrics reporter based on properties. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This method looks up the &quot;metrics-reporter-impl&quot; property to determine which reporter implementation to create. If not specified, returns a NoopMetricsReporter.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>properties</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Configuration properties containing reporter type. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A new <ref refid="classiceberg_1_1MetricsReporter" kindref="compound">MetricsReporter</ref> instance or an error. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/metrics_reporters.h" line="94" column="17"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1MetricsReporters_1a7796f039b97c35ca6671a773b048ae73" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>static Status iceberg::MetricsReporters::Register</definition>
+        <argsstring>(std::string_view reporter_type, MetricsReporterFactory factory)</argsstring>
+        <name>Register</name>
+        <qualifiedname>iceberg::MetricsReporters::Register</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>reporter_type</declname>
+        </param>
+        <param>
+          <type><ref refid="namespaceiceberg_1a8f3a945ceed2309518ab9280d312f494" kindref="member">MetricsReporterFactory</ref></type>
+          <declname>factory</declname>
+        </param>
+        <briefdescription>
+<para>Register a factory for a metrics reporter type. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Thread-safe. Registrations can be performed at any time, including concurrently with <ref refid="classiceberg_1_1MetricsReporters_1ad30a5c4a9a58a083a3d2d7c96f46bc34" kindref="member">Load()</ref>.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>reporter_type</parametername>
+</parameternamelist>
+<parameterdescription>
+<para><ref refid="classiceberg_1_1Type" kindref="compound">Type</ref> identifier matched case-sensitively against the value of &quot;metrics-reporter-impl&quot; in catalog properties, mirroring Java&apos;s fully-qualified class-name lookup (e.g., &quot;noop&quot;). </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>factory</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Factory function that produces the reporter. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>OK if the registration succeeded, or an error if the factory is invalid. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/metrics_reporters.h" line="107" column="17"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1MetricsReporters_1a208634a42c0e0d3ec983fe2d9ce6db6d" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1MetricsReporter" kindref="compound">MetricsReporter</ref> &gt;</type>
+        <definition>static std::shared_ptr&lt; MetricsReporter &gt; iceberg::MetricsReporters::Combine</definition>
+        <argsstring>(std::shared_ptr&lt; MetricsReporter &gt; first, std::shared_ptr&lt; MetricsReporter &gt; second)</argsstring>
+        <name>Combine</name>
+        <qualifiedname>iceberg::MetricsReporters::Combine</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1MetricsReporter" kindref="compound">MetricsReporter</ref> &gt;</type>
+          <declname>first</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1MetricsReporter" kindref="compound">MetricsReporter</ref> &gt;</type>
+          <declname>second</declname>
+        </param>
+        <briefdescription>
+<para>Combine two reporters into one. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>first</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>First reporter, may be nullptr. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>second</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Second reporter, may be nullptr. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Combined reporter, or nullptr if both inputs are nullptr. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/metrics_reporters.h" line="114" column="26"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Factory class for creating and managing <ref refid="classiceberg_1_1MetricsReporter" kindref="compound">MetricsReporter</ref> instances. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>This class provides a registry-based factory for creating <ref refid="classiceberg_1_1MetricsReporter" kindref="compound">MetricsReporter</ref> implementations. Custom reporter implementations can be registered using the <ref refid="classiceberg_1_1MetricsReporters_1a7796f039b97c35ca6671a773b048ae73" kindref="member">Register()</ref> method. </para>
+    </detaileddescription>
+    <location file="iceberg/metrics/metrics_reporters.h" line="84" column="1" bodyfile="iceberg/metrics/metrics_reporters.h" bodystart="84" bodyend="116"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1MetricsReporters_1a208634a42c0e0d3ec983fe2d9ce6db6d" prot="public" virt="non-virtual"><scope>iceberg::MetricsReporters</scope><name>Combine</name></member>
+      <member refid="classiceberg_1_1MetricsReporters_1ad30a5c4a9a58a083a3d2d7c96f46bc34" prot="public" virt="non-virtual"><scope>iceberg::MetricsReporters</scope><name>Load</name></member>
+      <member refid="classiceberg_1_1MetricsReporters_1a7796f039b97c35ca6671a773b048ae73" prot="public" virt="non-virtual"><scope>iceberg::MetricsReporters</scope><name>Register</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,226 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1Stream" kind="class" language="C++" prot="public" abstract="yes">
+    <compoundname>iceberg::Stream</compoundname>
+    <includes refid="stream_8h" local="no">stream.h</includes>
+    <templateparamlist>
+      <param>
+        <type>typename T</type>
+      </param>
+    </templateparamlist>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1Stream_1a34f783bdd7eba747fdc8d0b517ff0928" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool iceberg::Stream&lt; T &gt;::finished_</definition>
+        <argsstring></argsstring>
+        <name>finished_</name>
+        <qualifiedname>iceberg::Stream::finished_</qualifiedname>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/stream.h" line="135" column="8" bodyfile="iceberg/util/stream.h" bodystart="135" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1Stream_1acb3eb99d81f9c8a961e2df0d02eaeb57" prot="private" static="no" mutable="no">
+        <type>std::optional&lt; <ref refid="structiceberg_1_1Error" kindref="compound">Error</ref> &gt;</type>
+        <definition>std::optional&lt;Error&gt; iceberg::Stream&lt; T &gt;::error_</definition>
+        <argsstring></argsstring>
+        <name>error_</name>
+        <qualifiedname>iceberg::Stream::error_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/stream.h" line="136" column="17" bodyfile="iceberg/util/stream.h" bodystart="136" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1Stream_1a5ebc2dc5afb4c6bb8952f22a2f69fef2" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type></type>
+        <definition>virtual iceberg::Stream&lt; T &gt;::~Stream</definition>
+        <argsstring>()=default</argsstring>
+        <name>~Stream</name>
+        <qualifiedname>iceberg::Stream::~Stream</qualifiedname>
+        <briefdescription>
+<para>Destroy this stream and release its producer resources. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/stream.h" line="48" column="11"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Stream_1a1b7a014f2369dad74e5c1521c914f7f3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::Stream&lt; T &gt;::Stream</definition>
+        <argsstring>()=default</argsstring>
+        <name>Stream</name>
+        <qualifiedname>iceberg::Stream::Stream</qualifiedname>
+        <briefdescription>
+<para>Construct a stream in its initial state. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/stream.h" line="51" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Stream_1a7fb77edf13be8b43e0a3de05558f6f60" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::Stream&lt; T &gt;::Stream</definition>
+        <argsstring>(const Stream &amp;)=delete</argsstring>
+        <name>Stream</name>
+        <qualifiedname>iceberg::Stream::Stream</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Stream" kindref="compound">Stream</ref> &amp;</type>
+        </param>
+        <briefdescription>
+<para>Streams cannot be copied. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/stream.h" line="54" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Stream_1ac9dccb15e93c62948e6347f059abb469" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1Stream" kindref="compound">Stream</ref> &amp;</type>
+        <definition>Stream &amp; iceberg::Stream&lt; T &gt;::operator=</definition>
+        <argsstring>(const Stream &amp;)=delete</argsstring>
+        <name>operator=</name>
+        <qualifiedname>iceberg::Stream::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Stream" kindref="compound">Stream</ref> &amp;</type>
+        </param>
+        <briefdescription>
+<para>Streams cannot be copy-assigned. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/stream.h" line="57" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Stream_1aa74afc8e6e044dce56f192f9de162c9c" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::Stream&lt; T &gt;::Stream</definition>
+        <argsstring>(Stream &amp;&amp;) noexcept=default</argsstring>
+        <name>Stream</name>
+        <qualifiedname>iceberg::Stream::Stream</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1Stream" kindref="compound">Stream</ref> &amp;&amp;</type>
+        </param>
+        <briefdescription>
+<para>Move a stream and its terminal state. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/stream.h" line="60" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Stream_1a7c2b4f889e8f0bf97a33be08f0b2fbe3" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1Stream" kindref="compound">Stream</ref> &amp;</type>
+        <definition>Stream &amp; iceberg::Stream&lt; T &gt;::operator=</definition>
+        <argsstring>(Stream &amp;&amp;) noexcept=default</argsstring>
+        <name>operator=</name>
+        <qualifiedname>iceberg::Stream::operator=</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1Stream" kindref="compound">Stream</ref> &amp;&amp;</type>
+        </param>
+        <briefdescription>
+<para>Move-assign a stream and its terminal state. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/stream.h" line="63" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Stream_1afeb4619594df4cee9df2c4236f017e04" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result</ref>&lt; std::optional&lt; T &gt; &gt;</type>
+        <definition>Result&lt; std::optional&lt; T &gt; &gt; iceberg::Stream&lt; T &gt;::Next</definition>
+        <argsstring>()</argsstring>
+        <name>Next</name>
+        <qualifiedname>iceberg::Stream::Next</qualifiedname>
+        <briefdescription>
+<para>Return the next value, or std::nullopt when the stream is exhausted. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>After this method returns an error or std::nullopt, subsequent calls return the same terminal result without invoking <ref refid="classiceberg_1_1Stream_1a10dbd5b08f3b7ae990369f8c70014f95" kindref="member">NextImpl()</ref>. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/stream.h" line="69" column="10" bodyfile="iceberg/util/stream.h" bodystart="69" bodyend="84"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Stream_1ace5930d83645481fbcf247886571326a" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result</ref>&lt; std::vector&lt; T &gt; &gt;</type>
+        <definition>Result&lt; std::vector&lt; T &gt; &gt; iceberg::Stream&lt; T &gt;::ToVector</definition>
+        <argsstring>()</argsstring>
+        <name>ToVector</name>
+        <qualifiedname>iceberg::Stream::ToVector</qualifiedname>
+        <briefdescription>
+<para>Consume the remaining values into a vector. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/stream.h" line="87" column="10" bodyfile="iceberg/util/stream.h" bodystart="87" bodyend="125"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-func">
+      <memberdef kind="function" id="classiceberg_1_1Stream_1a10dbd5b08f3b7ae990369f8c70014f95" prot="protected" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result</ref>&lt; std::optional&lt; T &gt; &gt;</type>
+        <definition>virtual Result&lt; std::optional&lt; T &gt; &gt; iceberg::Stream&lt; T &gt;::NextImpl</definition>
+        <argsstring>()=0</argsstring>
+        <name>NextImpl</name>
+        <qualifiedname>iceberg::Stream::NextImpl</qualifiedname>
+        <briefdescription>
+<para>Produce the next value for <ref refid="classiceberg_1_1Stream_1afeb4619594df4cee9df2c4236f017e04" kindref="member">Next()</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Implementations must return std::nullopt when exhausted. <ref refid="classiceberg_1_1Stream_1afeb4619594df4cee9df2c4236f017e04" kindref="member">Next()</ref> makes the terminal state sticky, so implementations are not called after exhaustion or error. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/stream.h" line="132" column="18"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>A pull-based stream whose reads may fail. </para>
+    </briefdescription>
+    <detaileddescription>
+<para><ref refid="classiceberg_1_1Stream" kindref="compound">Stream</ref> implementations own any resources needed to produce values. Destroying a stream releases those resources, including when consumption stops before reaching the end. Streams are not thread-safe unless an implementation explicitly says otherwise. Once <ref refid="classiceberg_1_1Stream_1afeb4619594df4cee9df2c4236f017e04" kindref="member">Next()</ref> returns an error or std::nullopt, the stream is terminal. Subsequent calls return the same terminal result without invoking the implementation again.</para>
+<para><parameterlist kind="templateparam"><parameteritem>
+<parameternamelist>
+<parametername>T</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Value returned by the stream. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+    </detaileddescription>
+    <location file="iceberg/util/stream.h" line="45" column="1" bodyfile="iceberg/util/stream.h" bodystart="45" bodyend="137"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1Stream_1acb3eb99d81f9c8a961e2df0d02eaeb57" prot="private" virt="non-virtual"><scope>iceberg::Stream</scope><name>error_</name></member>
+      <member refid="classiceberg_1_1Stream_1a34f783bdd7eba747fdc8d0b517ff0928" prot="private" virt="non-virtual"><scope>iceberg::Stream</scope><name>finished_</name></member>
+      <member refid="classiceberg_1_1Stream_1afeb4619594df4cee9df2c4236f017e04" prot="public" virt="non-virtual"><scope>iceberg::Stream</scope><name>Next</name></member>
+      <member refid="classiceberg_1_1Stream_1a10dbd5b08f3b7ae990369f8c70014f95" prot="protected" virt="pure-virtual"><scope>iceberg::Stream</scope><name>NextImpl</name></member>
+      <member refid="classiceberg_1_1Stream_1ac9dccb15e93c62948e6347f059abb469" prot="public" virt="non-virtual"><scope>iceberg::Stream</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1Stream_1a7c2b4f889e8f0bf97a33be08f0b2fbe3" prot="public" virt="non-virtual"><scope>iceberg::Stream</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1Stream_1a1b7a014f2369dad74e5c1521c914f7f3" prot="public" virt="non-virtual"><scope>iceberg::Stream</scope><name>Stream</name></member>
+      <member refid="classiceberg_1_1Stream_1a7fb77edf13be8b43e0a3de05558f6f60" prot="public" virt="non-virtual"><scope>iceberg::Stream</scope><name>Stream</name></member>
+      <member refid="classiceberg_1_1Stream_1aa74afc8e6e044dce56f192f9de162c9c" prot="public" virt="non-virtual"><scope>iceberg::Stream</scope><name>Stream</name></member>
+      <member refid="classiceberg_1_1Stream_1ace5930d83645481fbcf247886571326a" prot="public" virt="non-virtual"><scope>iceberg::Stream</scope><name>ToVector</name></member>
+      <member refid="classiceberg_1_1Stream_1a5ebc2dc5afb4c6bb8952f22a2f69fef2" prot="public" virt="virtual"><scope>iceberg::Stream</scope><name>~Stream</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

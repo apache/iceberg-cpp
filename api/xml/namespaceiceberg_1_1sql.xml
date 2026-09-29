@@ -1,0 +1,133 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="namespaceiceberg_1_1sql" kind="namespace" language="C++">
+    <compoundname>iceberg::sql</compoundname>
+    <innerclass refid="classiceberg_1_1sql_1_1CatalogStore" prot="public">iceberg::sql::CatalogStore</innerclass>
+    <innerclass refid="structiceberg_1_1sql_1_1CatalogStoreOptions" prot="public">iceberg::sql::CatalogStoreOptions</innerclass>
+    <innerclass refid="structiceberg_1_1sql_1_1NamespaceProperty" prot="public">iceberg::sql::NamespaceProperty</innerclass>
+    <innerclass refid="classiceberg_1_1sql_1_1SqlCatalog" prot="public">iceberg::sql::SqlCatalog</innerclass>
+    <innerclass refid="structiceberg_1_1sql_1_1SqlCatalogConfig" prot="public">iceberg::sql::SqlCatalogConfig</innerclass>
+    <sectiondef kind="var">
+      <memberdef kind="variable" id="namespaceiceberg_1_1sql_1aaee7ebe40dfa60fa3c14fdb7e65c0f75" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr int32_t</type>
+        <definition>constexpr int32_t iceberg::sql::kMaxConnections</definition>
+        <argsstring></argsstring>
+        <name>kMaxConnections</name>
+        <qualifiedname>iceberg::sql::kMaxConnections</qualifiedname>
+        <initializer>= 10</initializer>
+        <briefdescription>
+<para>Default maximum number of database connections for built-in SQL stores. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/sql_catalog.h" line="46" column="26" bodyfile="iceberg/catalog/sql/sql_catalog.h" bodystart="46" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="namespaceiceberg_1_1sql_1adf05d65d0b4ba42b506ec295efa0f43e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>ICEBERG_SQL_CATALOG_EXPORT <ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result</ref>&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1sql_1_1CatalogStore" kindref="compound">CatalogStore</ref> &gt; &gt;</type>
+        <definition>ICEBERG_SQL_CATALOG_EXPORT Result&lt; std::shared_ptr&lt; CatalogStore &gt; &gt; iceberg::sql::MakeSqliteCatalogStore</definition>
+        <argsstring>(const CatalogStoreOptions &amp;options)</argsstring>
+        <name>MakeSqliteCatalogStore</name>
+        <qualifiedname>iceberg::sql::MakeSqliteCatalogStore</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1sql_1_1CatalogStoreOptions" kindref="compound">CatalogStoreOptions</ref> &amp;</type>
+          <declname>options</declname>
+        </param>
+        <briefdescription>
+<para>Build the built-in SQLite catalog store (sqlpp23 + SQLite3). </para>
+        </briefdescription>
+        <detaileddescription>
+<para><computeroutput>options.uri</computeroutput> is the SQLite database file path, or &quot;:memory:&quot;.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>options</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Store connection options. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A catalog store instance, or ErrorKind::kNotSupported if the SQLite connector was not built. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/catalog_store.h" line="208" column="35" declfile="iceberg/catalog/sql/catalog_store.h" declline="208" declcolumn="35"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceiceberg_1_1sql_1af2c675c64474ef7068ab0b5ade651743" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>ICEBERG_SQL_CATALOG_EXPORT <ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result</ref>&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1sql_1_1CatalogStore" kindref="compound">CatalogStore</ref> &gt; &gt;</type>
+        <definition>ICEBERG_SQL_CATALOG_EXPORT Result&lt; std::shared_ptr&lt; CatalogStore &gt; &gt; iceberg::sql::MakePostgreSqlCatalogStore</definition>
+        <argsstring>(const CatalogStoreOptions &amp;options)</argsstring>
+        <name>MakePostgreSqlCatalogStore</name>
+        <qualifiedname>iceberg::sql::MakePostgreSqlCatalogStore</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1sql_1_1CatalogStoreOptions" kindref="compound">CatalogStoreOptions</ref> &amp;</type>
+          <declname>options</declname>
+        </param>
+        <briefdescription>
+<para>Build the built-in PostgreSQL catalog store (sqlpp23 + libpq). </para>
+        </briefdescription>
+        <detaileddescription>
+<para><computeroutput>options.uri</computeroutput> is parsed as <computeroutput>[scheme://][user[:password]@]host[:port][/database]</computeroutput>.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>options</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Store connection options. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A catalog store instance, or ErrorKind::kNotSupported if the PostgreSQL connector was not built. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/catalog_store.h" line="220" column="1" declfile="iceberg/catalog/sql/catalog_store.h" declline="220" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceiceberg_1_1sql_1abfc2441c2dbabf47d15ed25df775f7d4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>ICEBERG_SQL_CATALOG_EXPORT <ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result</ref>&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1sql_1_1CatalogStore" kindref="compound">CatalogStore</ref> &gt; &gt;</type>
+        <definition>ICEBERG_SQL_CATALOG_EXPORT Result&lt; std::shared_ptr&lt; CatalogStore &gt; &gt; iceberg::sql::MakeMySqlCatalogStore</definition>
+        <argsstring>(const CatalogStoreOptions &amp;options)</argsstring>
+        <name>MakeMySqlCatalogStore</name>
+        <qualifiedname>iceberg::sql::MakeMySqlCatalogStore</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1sql_1_1CatalogStoreOptions" kindref="compound">CatalogStoreOptions</ref> &amp;</type>
+          <declname>options</declname>
+        </param>
+        <briefdescription>
+<para>Build the built-in MySQL catalog store (sqlpp23 + libmysqlclient). </para>
+        </briefdescription>
+        <detaileddescription>
+<para><computeroutput>options.uri</computeroutput> is parsed as <computeroutput>[scheme://][user[:password]@]host[:port][/database]</computeroutput>.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>options</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Store connection options. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A catalog store instance, or ErrorKind::kNotSupported if the MySQL connector was not built. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/catalog_store.h" line="230" column="35" declfile="iceberg/catalog/sql/catalog_store.h" declline="230" declcolumn="35"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>SQL catalog APIs. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/sql/catalog_store.h" line="41" column="1"/>
+  </compounddef>
+</doxygen>

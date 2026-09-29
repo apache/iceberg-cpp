@@ -1,0 +1,388 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1ScanMetrics" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::ScanMetrics</compoundname>
+    <includes refid="scan__report_8h" local="no">scan_report.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1ScanMetrics_1a349d138fa463399344ad79f4de9a8f53" prot="public" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Timer" kindref="compound">Timer</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Timer&gt; iceberg::ScanMetrics::total_planning_duration</definition>
+        <argsstring></argsstring>
+        <name>total_planning_duration</name>
+        <qualifiedname>iceberg::ScanMetrics::total_planning_duration</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/scan_report.h" line="105" column="19" bodyfile="iceberg/metrics/scan_report.h" bodystart="105" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ScanMetrics_1a6cb8206b2248f562a28355b64640eef0" prot="public" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Counter" kindref="compound">Counter</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Counter&gt; iceberg::ScanMetrics::result_data_files</definition>
+        <argsstring></argsstring>
+        <name>result_data_files</name>
+        <qualifiedname>iceberg::ScanMetrics::result_data_files</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/scan_report.h" line="106" column="19" bodyfile="iceberg/metrics/scan_report.h" bodystart="106" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ScanMetrics_1af1bb321ae53e248031a4a8e41d924e8b" prot="public" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Counter" kindref="compound">Counter</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Counter&gt; iceberg::ScanMetrics::result_delete_files</definition>
+        <argsstring></argsstring>
+        <name>result_delete_files</name>
+        <qualifiedname>iceberg::ScanMetrics::result_delete_files</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/scan_report.h" line="107" column="19" bodyfile="iceberg/metrics/scan_report.h" bodystart="107" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ScanMetrics_1a189a38a3c747d2062d8acc105c86f6cb" prot="public" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Counter" kindref="compound">Counter</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Counter&gt; iceberg::ScanMetrics::scanned_data_manifests</definition>
+        <argsstring></argsstring>
+        <name>scanned_data_manifests</name>
+        <qualifiedname>iceberg::ScanMetrics::scanned_data_manifests</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/scan_report.h" line="108" column="19" bodyfile="iceberg/metrics/scan_report.h" bodystart="108" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ScanMetrics_1a085dbc212ce08be4cc649da6e463196e" prot="public" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Counter" kindref="compound">Counter</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Counter&gt; iceberg::ScanMetrics::scanned_delete_manifests</definition>
+        <argsstring></argsstring>
+        <name>scanned_delete_manifests</name>
+        <qualifiedname>iceberg::ScanMetrics::scanned_delete_manifests</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/scan_report.h" line="109" column="19" bodyfile="iceberg/metrics/scan_report.h" bodystart="109" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ScanMetrics_1ae2dfe4f87d3c13520f36f60baf7bc34a" prot="public" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Counter" kindref="compound">Counter</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Counter&gt; iceberg::ScanMetrics::total_data_manifests</definition>
+        <argsstring></argsstring>
+        <name>total_data_manifests</name>
+        <qualifiedname>iceberg::ScanMetrics::total_data_manifests</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/scan_report.h" line="110" column="19" bodyfile="iceberg/metrics/scan_report.h" bodystart="110" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ScanMetrics_1a76a4dff888b27f8c98b84afbce23f533" prot="public" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Counter" kindref="compound">Counter</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Counter&gt; iceberg::ScanMetrics::total_delete_manifests</definition>
+        <argsstring></argsstring>
+        <name>total_delete_manifests</name>
+        <qualifiedname>iceberg::ScanMetrics::total_delete_manifests</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/scan_report.h" line="111" column="19" bodyfile="iceberg/metrics/scan_report.h" bodystart="111" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ScanMetrics_1a9d8a17039c92fcac8742dbf47483ddf9" prot="public" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Counter" kindref="compound">Counter</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Counter&gt; iceberg::ScanMetrics::total_file_size_in_bytes</definition>
+        <argsstring></argsstring>
+        <name>total_file_size_in_bytes</name>
+        <qualifiedname>iceberg::ScanMetrics::total_file_size_in_bytes</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/scan_report.h" line="112" column="19" bodyfile="iceberg/metrics/scan_report.h" bodystart="112" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ScanMetrics_1a5a8fc8607bc300d709ed83858def8977" prot="public" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Counter" kindref="compound">Counter</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Counter&gt; iceberg::ScanMetrics::total_delete_file_size_in_bytes</definition>
+        <argsstring></argsstring>
+        <name>total_delete_file_size_in_bytes</name>
+        <qualifiedname>iceberg::ScanMetrics::total_delete_file_size_in_bytes</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/scan_report.h" line="113" column="19" bodyfile="iceberg/metrics/scan_report.h" bodystart="113" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ScanMetrics_1aae9ac2df74cf0005f59a64cc103a335c" prot="public" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Counter" kindref="compound">Counter</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Counter&gt; iceberg::ScanMetrics::skipped_data_manifests</definition>
+        <argsstring></argsstring>
+        <name>skipped_data_manifests</name>
+        <qualifiedname>iceberg::ScanMetrics::skipped_data_manifests</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/scan_report.h" line="114" column="19" bodyfile="iceberg/metrics/scan_report.h" bodystart="114" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ScanMetrics_1a1f6dd4b152f312c8b77048126fee4cf6" prot="public" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Counter" kindref="compound">Counter</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Counter&gt; iceberg::ScanMetrics::skipped_delete_manifests</definition>
+        <argsstring></argsstring>
+        <name>skipped_delete_manifests</name>
+        <qualifiedname>iceberg::ScanMetrics::skipped_delete_manifests</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/scan_report.h" line="115" column="19" bodyfile="iceberg/metrics/scan_report.h" bodystart="115" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ScanMetrics_1a9343e25f37b1f344abc88a71cab90ba9" prot="public" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Counter" kindref="compound">Counter</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Counter&gt; iceberg::ScanMetrics::skipped_data_files</definition>
+        <argsstring></argsstring>
+        <name>skipped_data_files</name>
+        <qualifiedname>iceberg::ScanMetrics::skipped_data_files</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/scan_report.h" line="116" column="19" bodyfile="iceberg/metrics/scan_report.h" bodystart="116" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ScanMetrics_1afa9d90662c873505ac49b6031bcdee45" prot="public" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Counter" kindref="compound">Counter</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Counter&gt; iceberg::ScanMetrics::skipped_delete_files</definition>
+        <argsstring></argsstring>
+        <name>skipped_delete_files</name>
+        <qualifiedname>iceberg::ScanMetrics::skipped_delete_files</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/scan_report.h" line="117" column="19" bodyfile="iceberg/metrics/scan_report.h" bodystart="117" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ScanMetrics_1a6bc0a5073aa9efa1094de6d5d81780b3" prot="public" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Counter" kindref="compound">Counter</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Counter&gt; iceberg::ScanMetrics::indexed_delete_files</definition>
+        <argsstring></argsstring>
+        <name>indexed_delete_files</name>
+        <qualifiedname>iceberg::ScanMetrics::indexed_delete_files</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/scan_report.h" line="118" column="19" bodyfile="iceberg/metrics/scan_report.h" bodystart="118" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ScanMetrics_1afa99d91a0ed8ba8b9dc2e301de5f2f92" prot="public" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Counter" kindref="compound">Counter</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Counter&gt; iceberg::ScanMetrics::equality_delete_files</definition>
+        <argsstring></argsstring>
+        <name>equality_delete_files</name>
+        <qualifiedname>iceberg::ScanMetrics::equality_delete_files</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/scan_report.h" line="119" column="19" bodyfile="iceberg/metrics/scan_report.h" bodystart="119" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ScanMetrics_1a0701811e546d446f9f0021a3583c7a54" prot="public" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Counter" kindref="compound">Counter</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Counter&gt; iceberg::ScanMetrics::positional_delete_files</definition>
+        <argsstring></argsstring>
+        <name>positional_delete_files</name>
+        <qualifiedname>iceberg::ScanMetrics::positional_delete_files</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/scan_report.h" line="120" column="19" bodyfile="iceberg/metrics/scan_report.h" bodystart="120" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ScanMetrics_1aaaa80945b444e57690a382e75bd51a8c" prot="public" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Counter" kindref="compound">Counter</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Counter&gt; iceberg::ScanMetrics::dvs</definition>
+        <argsstring></argsstring>
+        <name>dvs</name>
+        <qualifiedname>iceberg::ScanMetrics::dvs</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/scan_report.h" line="121" column="19" bodyfile="iceberg/metrics/scan_report.h" bodystart="121" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1ScanMetrics_1af019ee08f851f148bc5ed91db9a31b66" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1ScanMetrics" kindref="compound">ScanMetrics</ref> &gt;</type>
+        <definition>static std::unique_ptr&lt; ScanMetrics &gt; iceberg::ScanMetrics::Make</definition>
+        <argsstring>(MetricsContext &amp;context)</argsstring>
+        <name>Make</name>
+        <qualifiedname>iceberg::ScanMetrics::Make</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1MetricsContext" kindref="compound">MetricsContext</ref> &amp;</type>
+          <declname>context</declname>
+        </param>
+        <briefdescription>
+<para>Create a <ref refid="classiceberg_1_1ScanMetrics" kindref="compound">ScanMetrics</ref> instance backed by the given <ref refid="classiceberg_1_1MetricsContext" kindref="compound">MetricsContext</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/scan_report.h" line="97" column="26"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ScanMetrics_1a7d06baa3ce0e3ca52aff17570dcf510e" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1ScanMetrics" kindref="compound">ScanMetrics</ref> &gt;</type>
+        <definition>static std::unique_ptr&lt; ScanMetrics &gt; iceberg::ScanMetrics::Noop</definition>
+        <argsstring>()</argsstring>
+        <name>Noop</name>
+        <qualifiedname>iceberg::ScanMetrics::Noop</qualifiedname>
+        <briefdescription>
+<para>Create a <ref refid="classiceberg_1_1ScanMetrics" kindref="compound">ScanMetrics</ref> instance with all-noop counters and timer. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/scan_report.h" line="100" column="26"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1ScanMetrics_1aceaf909e93eb63ad83fa613ac4daa588" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="structiceberg_1_1ScanMetricsResult" kindref="compound">ScanMetricsResult</ref></type>
+        <definition>ScanMetricsResult iceberg::ScanMetrics::ToResult</definition>
+        <argsstring>() const</argsstring>
+        <name>ToResult</name>
+        <qualifiedname>iceberg::ScanMetrics::ToResult</qualifiedname>
+        <briefdescription>
+<para><ref refid="structiceberg_1_1Snapshot" kindref="compound">Snapshot</ref> current counter/timer values into a <ref refid="structiceberg_1_1ScanMetricsResult" kindref="compound">ScanMetricsResult</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/scan_report.h" line="103" column="21"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classiceberg_1_1ScanMetrics_1ae8fabd6a704912f61a439265d2a76de3" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::ScanMetrics::ScanMetrics</definition>
+        <argsstring>()=default</argsstring>
+        <name>ScanMetrics</name>
+        <qualifiedname>iceberg::ScanMetrics::ScanMetrics</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/scan_report.h" line="124" column="3"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Live scan metrics collected during a table scan operation. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>Holds named <ref refid="classiceberg_1_1Counter" kindref="compound">Counter</ref> and <ref refid="classiceberg_1_1Timer" kindref="compound">Timer</ref> instances obtained from a <ref refid="classiceberg_1_1MetricsContext" kindref="compound">MetricsContext</ref>. Call <ref refid="classiceberg_1_1ScanMetrics_1af019ee08f851f148bc5ed91db9a31b66" kindref="member">Make()</ref> at the start of a scan to obtain an instrumented instance, then increment counters and start/stop the planning timer as the scan proceeds. Call <ref refid="classiceberg_1_1ScanMetrics_1aceaf909e93eb63ad83fa613ac4daa588" kindref="member">ToResult()</ref> at the end to obtain the serialisable <ref refid="structiceberg_1_1ScanMetricsResult" kindref="compound">ScanMetricsResult</ref>. </para>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="5">
+        <label>iceberg::Counter</label>
+        <link refid="classiceberg_1_1Counter"/>
+      </node>
+      <node id="1">
+        <label>iceberg::ScanMetrics</label>
+        <link refid="classiceberg_1_1ScanMetrics"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>total_planning_duration</edgelabel>
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>dvs</edgelabel>
+          <edgelabel>equality_delete_files</edgelabel>
+          <edgelabel>indexed_delete_files</edgelabel>
+          <edgelabel>positional_delete_files</edgelabel>
+          <edgelabel>result_data_files</edgelabel>
+          <edgelabel>result_delete_files</edgelabel>
+          <edgelabel>scanned_data_manifests</edgelabel>
+          <edgelabel>scanned_delete_manifests</edgelabel>
+          <edgelabel>skipped_data_files</edgelabel>
+          <edgelabel>skipped_data_manifests</edgelabel>
+          <edgelabel>...</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>iceberg::Timer</label>
+        <link refid="classiceberg_1_1Timer"/>
+      </node>
+      <node id="4">
+        <label>std::shared_ptr&lt; iceberg::Counter &gt;</label>
+        <childnode refid="5" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>std::shared_ptr&lt; iceberg::Timer &gt;</label>
+        <childnode refid="3" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/metrics/scan_report.h" line="94" column="1" bodyfile="iceberg/metrics/scan_report.h" bodystart="94" bodyend="125"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1ScanMetrics_1aaaa80945b444e57690a382e75bd51a8c" prot="public" virt="non-virtual"><scope>iceberg::ScanMetrics</scope><name>dvs</name></member>
+      <member refid="classiceberg_1_1ScanMetrics_1afa99d91a0ed8ba8b9dc2e301de5f2f92" prot="public" virt="non-virtual"><scope>iceberg::ScanMetrics</scope><name>equality_delete_files</name></member>
+      <member refid="classiceberg_1_1ScanMetrics_1a6bc0a5073aa9efa1094de6d5d81780b3" prot="public" virt="non-virtual"><scope>iceberg::ScanMetrics</scope><name>indexed_delete_files</name></member>
+      <member refid="classiceberg_1_1ScanMetrics_1af019ee08f851f148bc5ed91db9a31b66" prot="public" virt="non-virtual"><scope>iceberg::ScanMetrics</scope><name>Make</name></member>
+      <member refid="classiceberg_1_1ScanMetrics_1a7d06baa3ce0e3ca52aff17570dcf510e" prot="public" virt="non-virtual"><scope>iceberg::ScanMetrics</scope><name>Noop</name></member>
+      <member refid="classiceberg_1_1ScanMetrics_1a0701811e546d446f9f0021a3583c7a54" prot="public" virt="non-virtual"><scope>iceberg::ScanMetrics</scope><name>positional_delete_files</name></member>
+      <member refid="classiceberg_1_1ScanMetrics_1a6cb8206b2248f562a28355b64640eef0" prot="public" virt="non-virtual"><scope>iceberg::ScanMetrics</scope><name>result_data_files</name></member>
+      <member refid="classiceberg_1_1ScanMetrics_1af1bb321ae53e248031a4a8e41d924e8b" prot="public" virt="non-virtual"><scope>iceberg::ScanMetrics</scope><name>result_delete_files</name></member>
+      <member refid="classiceberg_1_1ScanMetrics_1ae8fabd6a704912f61a439265d2a76de3" prot="private" virt="non-virtual"><scope>iceberg::ScanMetrics</scope><name>ScanMetrics</name></member>
+      <member refid="classiceberg_1_1ScanMetrics_1a189a38a3c747d2062d8acc105c86f6cb" prot="public" virt="non-virtual"><scope>iceberg::ScanMetrics</scope><name>scanned_data_manifests</name></member>
+      <member refid="classiceberg_1_1ScanMetrics_1a085dbc212ce08be4cc649da6e463196e" prot="public" virt="non-virtual"><scope>iceberg::ScanMetrics</scope><name>scanned_delete_manifests</name></member>
+      <member refid="classiceberg_1_1ScanMetrics_1a9343e25f37b1f344abc88a71cab90ba9" prot="public" virt="non-virtual"><scope>iceberg::ScanMetrics</scope><name>skipped_data_files</name></member>
+      <member refid="classiceberg_1_1ScanMetrics_1aae9ac2df74cf0005f59a64cc103a335c" prot="public" virt="non-virtual"><scope>iceberg::ScanMetrics</scope><name>skipped_data_manifests</name></member>
+      <member refid="classiceberg_1_1ScanMetrics_1afa9d90662c873505ac49b6031bcdee45" prot="public" virt="non-virtual"><scope>iceberg::ScanMetrics</scope><name>skipped_delete_files</name></member>
+      <member refid="classiceberg_1_1ScanMetrics_1a1f6dd4b152f312c8b77048126fee4cf6" prot="public" virt="non-virtual"><scope>iceberg::ScanMetrics</scope><name>skipped_delete_manifests</name></member>
+      <member refid="classiceberg_1_1ScanMetrics_1aceaf909e93eb63ad83fa613ac4daa588" prot="public" virt="non-virtual"><scope>iceberg::ScanMetrics</scope><name>ToResult</name></member>
+      <member refid="classiceberg_1_1ScanMetrics_1ae2dfe4f87d3c13520f36f60baf7bc34a" prot="public" virt="non-virtual"><scope>iceberg::ScanMetrics</scope><name>total_data_manifests</name></member>
+      <member refid="classiceberg_1_1ScanMetrics_1a5a8fc8607bc300d709ed83858def8977" prot="public" virt="non-virtual"><scope>iceberg::ScanMetrics</scope><name>total_delete_file_size_in_bytes</name></member>
+      <member refid="classiceberg_1_1ScanMetrics_1a76a4dff888b27f8c98b84afbce23f533" prot="public" virt="non-virtual"><scope>iceberg::ScanMetrics</scope><name>total_delete_manifests</name></member>
+      <member refid="classiceberg_1_1ScanMetrics_1a9d8a17039c92fcac8742dbf47483ddf9" prot="public" virt="non-virtual"><scope>iceberg::ScanMetrics</scope><name>total_file_size_in_bytes</name></member>
+      <member refid="classiceberg_1_1ScanMetrics_1a349d138fa463399344ad79f4de9a8f53" prot="public" virt="non-virtual"><scope>iceberg::ScanMetrics</scope><name>total_planning_duration</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

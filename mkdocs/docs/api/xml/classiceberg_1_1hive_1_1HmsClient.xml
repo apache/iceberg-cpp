@@ -1,0 +1,166 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1hive_1_1HmsClient" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::hive::HmsClient</compoundname>
+    <includes refid="hms__client_8h" local="no">hms_client.h</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1hive_1_1HmsClient_1a7fb6b1d5ec96d438cd310f43625297b0" prot="private" static="no" mutable="no">
+        <type>std::unique_ptr&lt; Impl &gt;</type>
+        <definition>std::unique_ptr&lt;Impl&gt; iceberg::hive::HmsClient::impl_</definition>
+        <argsstring></argsstring>
+        <name>impl_</name>
+        <qualifiedname>iceberg::hive::HmsClient::impl_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/hms_client.h" line="86" column="19" bodyfile="iceberg/catalog/hive/hms_client.h" bodystart="86" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1hive_1_1HmsClient_1af7561948f6dafc498ca2244d3f8fe778" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::hive::HmsClient::~HmsClient</definition>
+        <argsstring>()</argsstring>
+        <name>~HmsClient</name>
+        <qualifiedname>iceberg::hive::HmsClient::~HmsClient</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/hms_client.h" line="70" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1hive_1_1HmsClient_1a4c9998ca936a973e4babc294be06ffe1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::hive::HmsClient::HmsClient</definition>
+        <argsstring>(const HmsClient &amp;)=delete</argsstring>
+        <name>HmsClient</name>
+        <qualifiedname>iceberg::hive::HmsClient::HmsClient</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1hive_1_1HmsClient" kindref="compound">HmsClient</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/hms_client.h" line="72" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1hive_1_1HmsClient_1af620355fefa2acc4977a122823e4f1ca" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1hive_1_1HmsClient" kindref="compound">HmsClient</ref> &amp;</type>
+        <definition>HmsClient &amp; iceberg::hive::HmsClient::operator=</definition>
+        <argsstring>(const HmsClient &amp;)=delete</argsstring>
+        <name>operator=</name>
+        <qualifiedname>iceberg::hive::HmsClient::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1hive_1_1HmsClient" kindref="compound">HmsClient</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/hms_client.h" line="73" column="13"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1hive_1_1HmsClient_1a78098d1666917615aaf074a001160730" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::hive::HmsClient::HmsClient</definition>
+        <argsstring>(HmsClient &amp;&amp;)=delete</argsstring>
+        <name>HmsClient</name>
+        <qualifiedname>iceberg::hive::HmsClient::HmsClient</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1hive_1_1HmsClient" kindref="compound">HmsClient</ref> &amp;&amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/hms_client.h" line="74" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1hive_1_1HmsClient_1a012be5c2ad3fbeaeacf69fdefe70e9eb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1hive_1_1HmsClient" kindref="compound">HmsClient</ref> &amp;</type>
+        <definition>HmsClient &amp; iceberg::hive::HmsClient::operator=</definition>
+        <argsstring>(HmsClient &amp;&amp;)=delete</argsstring>
+        <name>operator=</name>
+        <qualifiedname>iceberg::hive::HmsClient::operator=</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1hive_1_1HmsClient" kindref="compound">HmsClient</ref> &amp;&amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/hms_client.h" line="75" column="13"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1hive_1_1HmsClient_1a7e4ec8a08726af68b7ec81a6882732d6" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result</ref>&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1hive_1_1HmsClient" kindref="compound">HmsClient</ref> &gt; &gt;</type>
+        <definition>static Result&lt; std::unique_ptr&lt; HmsClient &gt; &gt; iceberg::hive::HmsClient::Connect</definition>
+        <argsstring>(const HiveCatalogProperties &amp;config)</argsstring>
+        <name>Connect</name>
+        <qualifiedname>iceberg::hive::HmsClient::Connect</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1hive_1_1HiveCatalogProperties" kindref="compound">HiveCatalogProperties</ref> &amp;</type>
+          <declname>config</declname>
+        </param>
+        <briefdescription>
+<para>Connect to the Hive Metastore described by <computeroutput>config</computeroutput>. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Exactly one endpoint is supported: a multi-endpoint <computeroutput>config.Uri()</computeroutput> returns InvalidArgument until HA failover is implemented in a future commit. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/hms_client.h" line="82" column="17"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classiceberg_1_1hive_1_1HmsClient_1adaa0ae9a4bf72537b0fb1161feb1cfee" prot="private" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::hive::HmsClient::HmsClient</definition>
+        <argsstring>(std::unique_ptr&lt; Impl &gt; impl)</argsstring>
+        <name>HmsClient</name>
+        <qualifiedname>iceberg::hive::HmsClient::HmsClient</qualifiedname>
+        <param>
+          <type>std::unique_ptr&lt; Impl &gt;</type>
+          <declname>impl</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/hms_client.h" line="88" column="12"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>A live connection to a Hive Metastore over Thrift. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>Construction goes through <computeroutput>Connect</computeroutput>, which parses the URI, selects the transport and opens it so that configuration errors surface as <computeroutput><ref refid="structiceberg_1_1Error" kindref="compound">iceberg::Error</ref></computeroutput> rather than C++ exceptions. </para>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/hms_client.h" line="68" column="1" bodyfile="iceberg/catalog/hive/hms_client.h" bodystart="68" bodyend="89"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1hive_1_1HmsClient_1a7e4ec8a08726af68b7ec81a6882732d6" prot="public" virt="non-virtual"><scope>iceberg::hive::HmsClient</scope><name>Connect</name></member>
+      <member refid="classiceberg_1_1hive_1_1HmsClient_1a4c9998ca936a973e4babc294be06ffe1" prot="public" virt="non-virtual"><scope>iceberg::hive::HmsClient</scope><name>HmsClient</name></member>
+      <member refid="classiceberg_1_1hive_1_1HmsClient_1a78098d1666917615aaf074a001160730" prot="public" virt="non-virtual"><scope>iceberg::hive::HmsClient</scope><name>HmsClient</name></member>
+      <member refid="classiceberg_1_1hive_1_1HmsClient_1adaa0ae9a4bf72537b0fb1161feb1cfee" prot="private" virt="non-virtual"><scope>iceberg::hive::HmsClient</scope><name>HmsClient</name></member>
+      <member refid="classiceberg_1_1hive_1_1HmsClient_1a7fb6b1d5ec96d438cd310f43625297b0" prot="private" virt="non-virtual"><scope>iceberg::hive::HmsClient</scope><name>impl_</name></member>
+      <member refid="classiceberg_1_1hive_1_1HmsClient_1af620355fefa2acc4977a122823e4f1ca" prot="public" virt="non-virtual"><scope>iceberg::hive::HmsClient</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1hive_1_1HmsClient_1a012be5c2ad3fbeaeacf69fdefe70e9eb" prot="public" virt="non-virtual"><scope>iceberg::hive::HmsClient</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1hive_1_1HmsClient_1af7561948f6dafc498ca2244d3f8fe778" prot="public" virt="non-virtual"><scope>iceberg::hive::HmsClient</scope><name>~HmsClient</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

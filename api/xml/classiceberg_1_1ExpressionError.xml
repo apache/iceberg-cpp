@@ -1,0 +1,82 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1ExpressionError" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::ExpressionError</compoundname>
+    <basecompoundref refid="classiceberg_1_1IcebergError" prot="public" virt="non-virtual">iceberg::IcebergError</basecompoundref>
+    <includes refid="exception_8h" local="no">exception.h</includes>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1ExpressionError_1af8790cc006996fb7b76b20e89afcd2ad" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::ExpressionError::ExpressionError</definition>
+        <argsstring>(const std::string &amp;what)</argsstring>
+        <name>ExpressionError</name>
+        <qualifiedname>iceberg::ExpressionError::ExpressionError</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>what</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/exception.h" line="44" column="12" bodyfile="iceberg/exception.h" bodystart="44" bodyend="44"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Exception thrown when expression construction fails. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::ExpressionError</label>
+        <link refid="classiceberg_1_1ExpressionError"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::IcebergError</label>
+        <link refid="classiceberg_1_1IcebergError"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>std::exception</label>
+      </node>
+      <node id="3">
+        <label>std::runtime_error</label>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::ExpressionError</label>
+        <link refid="classiceberg_1_1ExpressionError"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::IcebergError</label>
+        <link refid="classiceberg_1_1IcebergError"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>std::exception</label>
+      </node>
+      <node id="3">
+        <label>std::runtime_error</label>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/exception.h" line="42" column="1" bodyfile="iceberg/exception.h" bodystart="42" bodyend="45"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1ExpressionError_1af8790cc006996fb7b76b20e89afcd2ad" prot="public" virt="non-virtual"><scope>iceberg::ExpressionError</scope><name>ExpressionError</name></member>
+      <member refid="classiceberg_1_1IcebergError_1a05a348ecf19d473ba1f5ce211ffe069a" prot="public" virt="non-virtual"><scope>iceberg::ExpressionError</scope><name>IcebergError</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

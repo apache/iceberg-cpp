@@ -1,0 +1,54 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1Executor" kind="class" language="C++" prot="public" abstract="yes">
+    <compoundname>iceberg::Executor</compoundname>
+    <includes refid="executor_8h" local="no">executor.h</includes>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1Executor_1a0ef7ed8b68254f54ea766670958150bf" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type></type>
+        <definition>virtual iceberg::Executor::~Executor</definition>
+        <argsstring>()=default</argsstring>
+        <name>~Executor</name>
+        <qualifiedname>iceberg::Executor::~Executor</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/executor.h" line="48" column="11"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Executor_1a2a0779bcdb4943cda5cbdf20a9c5117f" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>Status</type>
+        <definition>virtual Status iceberg::Executor::Submit</definition>
+        <argsstring>(ExecutorTask task)=0</argsstring>
+        <name>Submit</name>
+        <qualifiedname>iceberg::Executor::Submit</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1FnOnce" kindref="compound">ExecutorTask</ref></type>
+          <declname>task</declname>
+        </param>
+        <briefdescription>
+<para>Schedule a task for execution. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/executor.h" line="51" column="18"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Schedules iceberg-cpp internal planning tasks. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>Public APIs that accept an executor remain synchronous: the calling thread may block while waiting for submitted tasks to finish. Callers must ensure the executor can continue making progress while the caller is blocked. Calling those APIs from one of the same bounded executor&apos;s worker threads can deadlock unless the executor supports nested blocking work.</para>
+<para>When an executor is configured, planning callbacks may be called concurrently. Any shared mutable state captured by those callbacks must be synchronized by the caller. </para>
+    </detaileddescription>
+    <location file="iceberg/util/executor.h" line="46" column="1" bodyfile="iceberg/util/executor.h" bodystart="46" bodyend="52"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1Executor_1a2a0779bcdb4943cda5cbdf20a9c5117f" prot="public" virt="pure-virtual"><scope>iceberg::Executor</scope><name>Submit</name></member>
+      <member refid="classiceberg_1_1Executor_1a0ef7ed8b68254f54ea766670958150bf" prot="public" virt="virtual"><scope>iceberg::Executor</scope><name>~Executor</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

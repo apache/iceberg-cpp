@@ -1,0 +1,151 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1FileScanTaskReader" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::FileScanTaskReader</compoundname>
+    <includes refid="file__scan__task__reader_8h" local="no">file_scan_task_reader.h</includes>
+    <innerclass refid="structiceberg_1_1FileScanTaskReader_1_1Options" prot="public">iceberg::FileScanTaskReader::Options</innerclass>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1FileScanTaskReader_1ac7007c0f6af9f57898226553dec2822b" prot="private" static="no" mutable="no">
+        <type>std::unique_ptr&lt; Impl &gt;</type>
+        <definition>std::unique_ptr&lt;Impl&gt; iceberg::FileScanTaskReader::impl_</definition>
+        <argsstring></argsstring>
+        <name>impl_</name>
+        <qualifiedname>iceberg::FileScanTaskReader::impl_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/file_scan_task_reader.h" line="78" column="19" bodyfile="iceberg/data/file_scan_task_reader.h" bodystart="78" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1FileScanTaskReader_1aa83cd9553f2346bced071066c4eb987e" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result</ref>&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1FileScanTaskReader" kindref="compound">FileScanTaskReader</ref> &gt; &gt;</type>
+        <definition>static Result&lt; std::unique_ptr&lt; FileScanTaskReader &gt; &gt; iceberg::FileScanTaskReader::Make</definition>
+        <argsstring>(Options options)</argsstring>
+        <name>Make</name>
+        <qualifiedname>iceberg::FileScanTaskReader::Make</qualifiedname>
+        <param>
+          <type><ref refid="structiceberg_1_1FileScanTaskReader_1_1Options" kindref="compound">Options</ref></type>
+          <declname>options</declname>
+        </param>
+        <briefdescription>
+<para>Create a reusable task reader from shared read context. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/file_scan_task_reader.h" line="65" column="17"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1FileScanTaskReader_1a4e5f9f4f7b6e5fdeccbdb770b2971f34" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::FileScanTaskReader::~FileScanTaskReader</definition>
+        <argsstring>()</argsstring>
+        <name>~FileScanTaskReader</name>
+        <qualifiedname>iceberg::FileScanTaskReader::~FileScanTaskReader</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/file_scan_task_reader.h" line="67" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1FileScanTaskReader_1a5bc4ec48bcb4b53c1f74ad25ac32ffd7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result</ref>&lt; <ref refid="structArrowArrayStream" kindref="compound">ArrowArrayStream</ref> &gt;</type>
+        <definition>Result&lt; ArrowArrayStream &gt; iceberg::FileScanTaskReader::Open</definition>
+        <argsstring>(const FileScanTask &amp;task)</argsstring>
+        <name>Open</name>
+        <qualifiedname>iceberg::FileScanTaskReader::Open</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1FileScanTask" kindref="compound">FileScanTask</ref> &amp;</type>
+          <declname>task</declname>
+        </param>
+        <briefdescription>
+<para>Open a task and return an Arrow C stream for its projected live rows. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/file_scan_task_reader.h" line="70" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1FileScanTaskReader_1a2900a1c544b33194266b5f75311bfd3d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::FileScanTaskReader::FileScanTaskReader</definition>
+        <argsstring>(const FileScanTaskReader &amp;)=delete</argsstring>
+        <name>FileScanTaskReader</name>
+        <qualifiedname>iceberg::FileScanTaskReader::FileScanTaskReader</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1FileScanTaskReader" kindref="compound">FileScanTaskReader</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/file_scan_task_reader.h" line="72" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1FileScanTaskReader_1a192f037b901767fbfa11f1e129747965" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1FileScanTaskReader" kindref="compound">FileScanTaskReader</ref> &amp;</type>
+        <definition>FileScanTaskReader &amp; iceberg::FileScanTaskReader::operator=</definition>
+        <argsstring>(const FileScanTaskReader &amp;)=delete</argsstring>
+        <name>operator=</name>
+        <qualifiedname>iceberg::FileScanTaskReader::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1FileScanTaskReader" kindref="compound">FileScanTaskReader</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/file_scan_task_reader.h" line="73" column="22"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classiceberg_1_1FileScanTaskReader_1a33d9461a6e97aa69d9983b163df41e14" prot="private" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::FileScanTaskReader::FileScanTaskReader</definition>
+        <argsstring>(std::unique_ptr&lt; Impl &gt; impl)</argsstring>
+        <name>FileScanTaskReader</name>
+        <qualifiedname>iceberg::FileScanTaskReader::FileScanTaskReader</qualifiedname>
+        <param>
+          <type>std::unique_ptr&lt; Impl &gt;</type>
+          <declname>impl</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/file_scan_task_reader.h" line="77" column="12"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Opens a <ref refid="classiceberg_1_1FileScanTask" kindref="compound">FileScanTask</ref> as an <ref refid="structArrowArrayStream" kindref="compound">ArrowArrayStream</ref>. </para>
+    </briefdescription>
+    <detaileddescription>
+<para><ref refid="classiceberg_1_1FileScanTaskReader" kindref="compound">FileScanTaskReader</ref> chooses the copy-on-write path for tasks without deletes and the merge-on-read path for tasks with v2 position or equality deletes. The returned stream always exposes <computeroutput>projected_schema</computeroutput>.</para>
+<para>TODO(gangwu): Add a mode that emits a <computeroutput>_deleted</computeroutput> column instead of filtering rows. TODO(gangwu): Use evaluator to apply residual expression filters. </para>
+    </detaileddescription>
+    <location file="iceberg/data/file_scan_task_reader.h" line="45" column="1" bodyfile="iceberg/data/file_scan_task_reader.h" bodystart="45" bodyend="79"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1FileScanTaskReader_1a2900a1c544b33194266b5f75311bfd3d" prot="public" virt="non-virtual"><scope>iceberg::FileScanTaskReader</scope><name>FileScanTaskReader</name></member>
+      <member refid="classiceberg_1_1FileScanTaskReader_1a33d9461a6e97aa69d9983b163df41e14" prot="private" virt="non-virtual"><scope>iceberg::FileScanTaskReader</scope><name>FileScanTaskReader</name></member>
+      <member refid="classiceberg_1_1FileScanTaskReader_1ac7007c0f6af9f57898226553dec2822b" prot="private" virt="non-virtual"><scope>iceberg::FileScanTaskReader</scope><name>impl_</name></member>
+      <member refid="classiceberg_1_1FileScanTaskReader_1aa83cd9553f2346bced071066c4eb987e" prot="public" virt="non-virtual"><scope>iceberg::FileScanTaskReader</scope><name>Make</name></member>
+      <member refid="classiceberg_1_1FileScanTaskReader_1a5bc4ec48bcb4b53c1f74ad25ac32ffd7" prot="public" virt="non-virtual"><scope>iceberg::FileScanTaskReader</scope><name>Open</name></member>
+      <member refid="classiceberg_1_1FileScanTaskReader_1a192f037b901767fbfa11f1e129747965" prot="public" virt="non-virtual"><scope>iceberg::FileScanTaskReader</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1FileScanTaskReader_1a4e5f9f4f7b6e5fdeccbdb770b2971f34" prot="public" virt="non-virtual"><scope>iceberg::FileScanTaskReader</scope><name>~FileScanTaskReader</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

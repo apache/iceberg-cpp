@@ -1,0 +1,240 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1detail_1_1RetryRunnerBase" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::detail::RetryRunnerBase</compoundname>
+    <derivedcompoundref refid="classiceberg_1_1RetryRunner" prot="private" virt="non-virtual">iceberg::RetryRunner&lt; RetryPolicy &gt;</derivedcompoundref>
+    <sectiondef kind="protected-type">
+      <memberdef kind="typedef" id="classiceberg_1_1detail_1_1RetryRunnerBase_1a94d44cd0a25a6125f409a5a6aba778c7" prot="protected" static="no">
+        <type>std::chrono::steady_clock</type>
+        <definition>using iceberg::detail::RetryRunnerBase::Clock =  std::chrono::steady_clock</definition>
+        <argsstring></argsstring>
+        <name>Clock</name>
+        <qualifiedname>iceberg::detail::RetryRunnerBase::Clock</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/retry_util.h" line="65" column="3" bodyfile="iceberg/util/retry_util.h" bodystart="65" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="classiceberg_1_1detail_1_1RetryRunnerBase_1aede9f5165b6f67fd30e5a2ebf0f6c40a" prot="protected" static="no">
+        <type>std::chrono::milliseconds</type>
+        <definition>using iceberg::detail::RetryRunnerBase::Duration =  std::chrono::milliseconds</definition>
+        <argsstring></argsstring>
+        <name>Duration</name>
+        <qualifiedname>iceberg::detail::RetryRunnerBase::Duration</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/retry_util.h" line="66" column="3" bodyfile="iceberg/util/retry_util.h" bodystart="66" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="classiceberg_1_1detail_1_1RetryRunnerBase_1ae8ded43f6a08fa2d460bc3d9c76b6cf1" prot="protected" static="no">
+        <type>Clock::time_point</type>
+        <definition>using iceberg::detail::RetryRunnerBase::TimePoint =  Clock::time_point</definition>
+        <argsstring></argsstring>
+        <name>TimePoint</name>
+        <qualifiedname>iceberg::detail::RetryRunnerBase::TimePoint</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/retry_util.h" line="67" column="3" bodyfile="iceberg/util/retry_util.h" bodystart="67" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1detail_1_1RetryRunnerBase_1a03cf727a256ff34e312540e766ba7a42" prot="protected" static="no" mutable="no">
+        <type><ref refid="structiceberg_1_1RetryConfig" kindref="compound">RetryConfig</ref></type>
+        <definition>RetryConfig iceberg::detail::RetryRunnerBase::config_</definition>
+        <argsstring></argsstring>
+        <name>config_</name>
+        <qualifiedname>iceberg::detail::RetryRunnerBase::config_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/retry_util.h" line="80" column="15" bodyfile="iceberg/util/retry_util.h" bodystart="80" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-func">
+      <memberdef kind="function" id="classiceberg_1_1detail_1_1RetryRunnerBase_1a07af48f7ec4530e25e27d65f084c30c6" prot="protected" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::detail::RetryRunnerBase::RetryRunnerBase</definition>
+        <argsstring>(RetryConfig config)</argsstring>
+        <name>RetryRunnerBase</name>
+        <qualifiedname>iceberg::detail::RetryRunnerBase::RetryRunnerBase</qualifiedname>
+        <param>
+          <type><ref refid="structiceberg_1_1RetryConfig" kindref="compound">RetryConfig</ref></type>
+          <declname>config</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/retry_util.h" line="63" column="12" bodyfile="iceberg/util/retry_util.h" bodystart="63" bodyend="63"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1detail_1_1RetryRunnerBase_1a1f30c3527a3d9ca1942c247976ec9dae" prot="protected" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::detail::RetryRunnerBase::ValidateConfig</definition>
+        <argsstring>() const</argsstring>
+        <name>ValidateConfig</name>
+        <qualifiedname>iceberg::detail::RetryRunnerBase::ValidateConfig</qualifiedname>
+        <briefdescription>
+<para>Validate retry counts and timing bounds. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/retry_util.h" line="70" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1detail_1_1RetryRunnerBase_1a541e1f8512e12f001a0e11a29aad8cfe" prot="protected" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>std::optional&lt; TimePoint &gt;</type>
+        <definition>std::optional&lt; TimePoint &gt; iceberg::detail::RetryRunnerBase::ComputeDeadline</definition>
+        <argsstring>() const</argsstring>
+        <name>ComputeDeadline</name>
+        <qualifiedname>iceberg::detail::RetryRunnerBase::ComputeDeadline</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/retry_util.h" line="71" column="17"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1detail_1_1RetryRunnerBase_1abbd8a86aeffb9a8f4140066d2a5585a2" prot="protected" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::detail::RetryRunnerBase::HasTimedOut</definition>
+        <argsstring>(const std::optional&lt; TimePoint &gt; &amp;deadline) const</argsstring>
+        <name>HasTimedOut</name>
+        <qualifiedname>iceberg::detail::RetryRunnerBase::HasTimedOut</qualifiedname>
+        <param>
+          <type>const std::optional&lt; TimePoint &gt; &amp;</type>
+          <declname>deadline</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/retry_util.h" line="72" column="8"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1detail_1_1RetryRunnerBase_1a7853384d02b0457827b13186fd9a85ae" prot="protected" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>std::optional&lt; Duration &gt;</type>
+        <definition>std::optional&lt; Duration &gt; iceberg::detail::RetryRunnerBase::RetryDelayWithinBudget</definition>
+        <argsstring>(int32_t attempt, const std::optional&lt; TimePoint &gt; &amp;deadline) const</argsstring>
+        <name>RetryDelayWithinBudget</name>
+        <qualifiedname>iceberg::detail::RetryRunnerBase::RetryDelayWithinBudget</qualifiedname>
+        <param>
+          <type>int32_t</type>
+          <declname>attempt</declname>
+        </param>
+        <param>
+          <type>const std::optional&lt; TimePoint &gt; &amp;</type>
+          <declname>deadline</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/retry_util.h" line="73" column="17"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1detail_1_1RetryRunnerBase_1a08936f316a55ef0c9dbeb7b93ff4bf0f" prot="protected" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::detail::RetryRunnerBase::WaitForNextAttempt</definition>
+        <argsstring>(int32_t attempt, const std::optional&lt; TimePoint &gt; &amp;deadline) const</argsstring>
+        <name>WaitForNextAttempt</name>
+        <qualifiedname>iceberg::detail::RetryRunnerBase::WaitForNextAttempt</qualifiedname>
+        <param>
+          <type>int32_t</type>
+          <declname>attempt</declname>
+        </param>
+        <param>
+          <type>const std::optional&lt; TimePoint &gt; &amp;</type>
+          <declname>deadline</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/retry_util.h" line="75" column="8"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1detail_1_1RetryRunnerBase_1ae12f8a06d8732da3241618b0106349f2" prot="protected" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::detail::RetryRunnerBase::CalculateDelay</definition>
+        <argsstring>(int32_t attempt) const</argsstring>
+        <name>CalculateDelay</name>
+        <qualifiedname>iceberg::detail::RetryRunnerBase::CalculateDelay</qualifiedname>
+        <param>
+          <type>int32_t</type>
+          <declname>attempt</declname>
+        </param>
+        <briefdescription>
+<para>Calculate delay with exponential backoff and jitter. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/retry_util.h" line="78" column="11"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>iceberg::RetryRunner&lt; RetryPolicy &gt;</label>
+        <link refid="classiceberg_1_1RetryRunner"/>
+        <childnode refid="1" relation="private-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::detail::RetryRunnerBase</label>
+        <link refid="classiceberg_1_1detail_1_1RetryRunnerBase"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>iceberg::RetryConfig</label>
+        <link refid="structiceberg_1_1RetryConfig"/>
+      </node>
+      <node id="1">
+        <label>iceberg::detail::RetryRunnerBase</label>
+        <link refid="classiceberg_1_1detail_1_1RetryRunnerBase"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>config_</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/util/retry_util.h" line="61" column="1" bodyfile="iceberg/util/retry_util.h" bodystart="61" bodyend="81"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1detail_1_1RetryRunnerBase_1ae12f8a06d8732da3241618b0106349f2" prot="protected" virt="non-virtual"><scope>iceberg::detail::RetryRunnerBase</scope><name>CalculateDelay</name></member>
+      <member refid="classiceberg_1_1detail_1_1RetryRunnerBase_1a94d44cd0a25a6125f409a5a6aba778c7" prot="protected" virt="non-virtual"><scope>iceberg::detail::RetryRunnerBase</scope><name>Clock</name></member>
+      <member refid="classiceberg_1_1detail_1_1RetryRunnerBase_1a541e1f8512e12f001a0e11a29aad8cfe" prot="protected" virt="non-virtual"><scope>iceberg::detail::RetryRunnerBase</scope><name>ComputeDeadline</name></member>
+      <member refid="classiceberg_1_1detail_1_1RetryRunnerBase_1a03cf727a256ff34e312540e766ba7a42" prot="protected" virt="non-virtual"><scope>iceberg::detail::RetryRunnerBase</scope><name>config_</name></member>
+      <member refid="classiceberg_1_1detail_1_1RetryRunnerBase_1aede9f5165b6f67fd30e5a2ebf0f6c40a" prot="protected" virt="non-virtual"><scope>iceberg::detail::RetryRunnerBase</scope><name>Duration</name></member>
+      <member refid="classiceberg_1_1detail_1_1RetryRunnerBase_1abbd8a86aeffb9a8f4140066d2a5585a2" prot="protected" virt="non-virtual"><scope>iceberg::detail::RetryRunnerBase</scope><name>HasTimedOut</name></member>
+      <member refid="classiceberg_1_1detail_1_1RetryRunnerBase_1a7853384d02b0457827b13186fd9a85ae" prot="protected" virt="non-virtual"><scope>iceberg::detail::RetryRunnerBase</scope><name>RetryDelayWithinBudget</name></member>
+      <member refid="classiceberg_1_1detail_1_1RetryRunnerBase_1a07af48f7ec4530e25e27d65f084c30c6" prot="protected" virt="non-virtual"><scope>iceberg::detail::RetryRunnerBase</scope><name>RetryRunnerBase</name></member>
+      <member refid="classiceberg_1_1detail_1_1RetryRunnerBase_1ae8ded43f6a08fa2d460bc3d9c76b6cf1" prot="protected" virt="non-virtual"><scope>iceberg::detail::RetryRunnerBase</scope><name>TimePoint</name></member>
+      <member refid="classiceberg_1_1detail_1_1RetryRunnerBase_1a1f30c3527a3d9ca1942c247976ec9dae" prot="protected" virt="non-virtual"><scope>iceberg::detail::RetryRunnerBase</scope><name>ValidateConfig</name></member>
+      <member refid="classiceberg_1_1detail_1_1RetryRunnerBase_1a08936f316a55ef0c9dbeb7b93ff4bf0f" prot="protected" virt="non-virtual"><scope>iceberg::detail::RetryRunnerBase</scope><name>WaitForNextAttempt</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

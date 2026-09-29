@@ -1,0 +1,81 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1FileIORegistry_1_1Factory" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::FileIORegistry::Factory</compoundname>
+    <includes refid="file__io__registry_8h" local="no">file_io_registry.h</includes>
+    <sectiondef kind="public-type">
+      <memberdef kind="typedef" id="structiceberg_1_1FileIORegistry_1_1Factory_1acfea8c3114dbb1890c2c84eb9b0ada80" prot="public" static="no">
+        <type>std::function&lt; <ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result</ref>&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> &gt; &gt;(const Properties &amp;properties)&gt;</type>
+        <definition>using iceberg::FileIORegistry::Factory::CreateFunction =  std::function&lt;Result&lt;std::unique_ptr&lt;FileIO&gt; &gt;(const Properties&amp; properties)&gt;</definition>
+        <argsstring></argsstring>
+        <name>CreateFunction</name>
+        <qualifiedname>iceberg::FileIORegistry::Factory::CreateFunction</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/file_io_registry.h" line="52" column="5" bodyfile="iceberg/file_io_registry.h" bodystart="53" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="structiceberg_1_1FileIORegistry_1_1Factory_1ab3fc90281530ad742b2d3ce56191744c" prot="public" static="no">
+        <type>std::function&lt; bool(std::string_view scheme)&gt;</type>
+        <definition>using iceberg::FileIORegistry::Factory::AcceptsFunction =  std::function&lt;bool(std::string_view scheme)&gt;</definition>
+        <argsstring></argsstring>
+        <name>AcceptsFunction</name>
+        <qualifiedname>iceberg::FileIORegistry::Factory::AcceptsFunction</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/file_io_registry.h" line="54" column="5" bodyfile="iceberg/file_io_registry.h" bodystart="54" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1FileIORegistry_1_1Factory_1aedf237a126937b2233f978c202021efc" prot="public" static="no" mutable="no">
+        <type>CreateFunction</type>
+        <definition>CreateFunction iceberg::FileIORegistry::Factory::create</definition>
+        <argsstring></argsstring>
+        <name>create</name>
+        <qualifiedname>iceberg::FileIORegistry::Factory::create</qualifiedname>
+        <briefdescription>
+<para>Required for explicit loading. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/file_io_registry.h" line="57" column="20" bodyfile="iceberg/file_io_registry.h" bodystart="57" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1FileIORegistry_1_1Factory_1af99e9c5888b1bbee101f6599df86740b" prot="public" static="no" mutable="no">
+        <type>AcceptsFunction</type>
+        <definition>AcceptsFunction iceberg::FileIORegistry::Factory::accepts</definition>
+        <argsstring></argsstring>
+        <name>accepts</name>
+        <qualifiedname>iceberg::FileIORegistry::Factory::accepts</qualifiedname>
+        <briefdescription>
+<para>Receives a lower-case scheme. Empty means explicit-only. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/file_io_registry.h" line="59" column="21" bodyfile="iceberg/file_io_registry.h" bodystart="59" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para><ref refid="structiceberg_1_1FileIORegistry_1_1Factory" kindref="compound">Factory</ref> for explicit loading and optional scheme-based routing. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/file_io_registry.h" line="51" column="3" bodyfile="iceberg/file_io_registry.h" bodystart="51" bodyend="60"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1FileIORegistry_1_1Factory_1af99e9c5888b1bbee101f6599df86740b" prot="public" virt="non-virtual"><scope>iceberg::FileIORegistry::Factory</scope><name>accepts</name></member>
+      <member refid="structiceberg_1_1FileIORegistry_1_1Factory_1ab3fc90281530ad742b2d3ce56191744c" prot="public" virt="non-virtual"><scope>iceberg::FileIORegistry::Factory</scope><name>AcceptsFunction</name></member>
+      <member refid="structiceberg_1_1FileIORegistry_1_1Factory_1aedf237a126937b2233f978c202021efc" prot="public" virt="non-virtual"><scope>iceberg::FileIORegistry::Factory</scope><name>create</name></member>
+      <member refid="structiceberg_1_1FileIORegistry_1_1Factory_1acfea8c3114dbb1890c2c84eb9b0ada80" prot="public" virt="non-virtual"><scope>iceberg::FileIORegistry::Factory</scope><name>CreateFunction</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

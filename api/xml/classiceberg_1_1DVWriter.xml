@@ -1,0 +1,188 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1DVWriter" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::DVWriter</compoundname>
+    <includes refid="dv__writer_8h" local="no">dv_writer.h</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1DVWriter_1a844e5f3fe5fedd376a0ec4e63435e79d" prot="private" static="no" mutable="no">
+        <type>std::unique_ptr&lt; Impl &gt;</type>
+        <definition>std::unique_ptr&lt;Impl&gt; iceberg::DVWriter::impl_</definition>
+        <argsstring></argsstring>
+        <name>impl_</name>
+        <qualifiedname>iceberg::DVWriter::impl_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/deletes/dv_writer.h" line="87" column="19" bodyfile="iceberg/deletes/dv_writer.h" bodystart="87" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1DVWriter_1acb75de00ef8ce36848963ea16b29b1b3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::DVWriter::~DVWriter</definition>
+        <argsstring>()</argsstring>
+        <name>~DVWriter</name>
+        <qualifiedname>iceberg::DVWriter::~DVWriter</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/deletes/dv_writer.h" line="63" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DVWriter_1ab7b684203a718277301567792edaa73e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::DVWriter::Delete</definition>
+        <argsstring>(std::string_view referenced_data_file, int64_t pos, const std::shared_ptr&lt; PartitionSpec &gt; &amp;spec, const PartitionValues &amp;partition)</argsstring>
+        <name>Delete</name>
+        <qualifiedname>iceberg::DVWriter::Delete</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>referenced_data_file</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>pos</declname>
+        </param>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1PartitionSpec" kindref="compound">PartitionSpec</ref> &gt; &amp;</type>
+          <declname>spec</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1PartitionValues" kindref="compound">PartitionValues</ref> &amp;</type>
+          <declname>partition</declname>
+        </param>
+        <briefdescription>
+<para>Mark a row position as deleted for the given data file. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/deletes/dv_writer.h" line="69" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DVWriter_1a402b414dda0c2e7f9cf2204a7143af9d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::DVWriter::Delete</definition>
+        <argsstring>(std::string_view referenced_data_file, const PositionDeleteIndex &amp;positions, const std::shared_ptr&lt; PartitionSpec &gt; &amp;spec, const PartitionValues &amp;partition)</argsstring>
+        <name>Delete</name>
+        <qualifiedname>iceberg::DVWriter::Delete</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>referenced_data_file</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1PositionDeleteIndex" kindref="compound">PositionDeleteIndex</ref> &amp;</type>
+          <declname>positions</declname>
+        </param>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1PartitionSpec" kindref="compound">PartitionSpec</ref> &gt; &amp;</type>
+          <declname>spec</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1PartitionValues" kindref="compound">PartitionValues</ref> &amp;</type>
+          <declname>partition</declname>
+        </param>
+        <briefdescription>
+<para>Mark all positions in the given index as deleted for a data file. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/deletes/dv_writer.h" line="74" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DVWriter_1aa4781afb358f98ac2709bc9e055bcf19" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::DVWriter::Close</definition>
+        <argsstring>()</argsstring>
+        <name>Close</name>
+        <qualifiedname>iceberg::DVWriter::Close</qualifiedname>
+        <briefdescription>
+<para>Write all accumulated deletion vectors to the Puffin file and close. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/deletes/dv_writer.h" line="80" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DVWriter_1a255b4d35acdf38028e714d3c0ae00e3b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result</ref>&lt; <ref refid="structiceberg_1_1DeleteWriteResult" kindref="compound">DeleteWriteResult</ref> &gt;</type>
+        <definition>Result&lt; DeleteWriteResult &gt; iceberg::DVWriter::Metadata</definition>
+        <argsstring>()</argsstring>
+        <name>Metadata</name>
+        <qualifiedname>iceberg::DVWriter::Metadata</qualifiedname>
+        <briefdescription>
+<para>The result of writing; valid only after <ref refid="classiceberg_1_1DVWriter_1aa4781afb358f98ac2709bc9e055bcf19" kindref="member">Close()</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/deletes/dv_writer.h" line="83" column="10"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1DVWriter_1a724fca0df9e577b6cf5c17421292793e" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result</ref>&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1DVWriter" kindref="compound">DVWriter</ref> &gt; &gt;</type>
+        <definition>static Result&lt; std::unique_ptr&lt; DVWriter &gt; &gt; iceberg::DVWriter::Make</definition>
+        <argsstring>(DVWriterOptions options)</argsstring>
+        <name>Make</name>
+        <qualifiedname>iceberg::DVWriter::Make</qualifiedname>
+        <param>
+          <type><ref refid="structiceberg_1_1DVWriterOptions" kindref="compound">DVWriterOptions</ref></type>
+          <declname>options</declname>
+        </param>
+        <briefdescription>
+<para>Create a new <ref refid="classiceberg_1_1DVWriter" kindref="compound">DVWriter</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/deletes/dv_writer.h" line="66" column="17"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classiceberg_1_1DVWriter_1a4c974e1863a6a18a86eaf541e508bb8c" prot="private" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::DVWriter::DVWriter</definition>
+        <argsstring>(std::unique_ptr&lt; Impl &gt; impl)</argsstring>
+        <name>DVWriter</name>
+        <qualifiedname>iceberg::DVWriter::DVWriter</qualifiedname>
+        <param>
+          <type>std::unique_ptr&lt; Impl &gt;</type>
+          <declname>impl</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/deletes/dv_writer.h" line="89" column="12"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>A deletion vector file writer. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/deletes/dv_writer.h" line="61" column="1" bodyfile="iceberg/deletes/dv_writer.h" bodystart="61" bodyend="90"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1DVWriter_1aa4781afb358f98ac2709bc9e055bcf19" prot="public" virt="non-virtual"><scope>iceberg::DVWriter</scope><name>Close</name></member>
+      <member refid="classiceberg_1_1DVWriter_1ab7b684203a718277301567792edaa73e" prot="public" virt="non-virtual"><scope>iceberg::DVWriter</scope><name>Delete</name></member>
+      <member refid="classiceberg_1_1DVWriter_1a402b414dda0c2e7f9cf2204a7143af9d" prot="public" virt="non-virtual"><scope>iceberg::DVWriter</scope><name>Delete</name></member>
+      <member refid="classiceberg_1_1DVWriter_1a4c974e1863a6a18a86eaf541e508bb8c" prot="private" virt="non-virtual"><scope>iceberg::DVWriter</scope><name>DVWriter</name></member>
+      <member refid="classiceberg_1_1DVWriter_1a844e5f3fe5fedd376a0ec4e63435e79d" prot="private" virt="non-virtual"><scope>iceberg::DVWriter</scope><name>impl_</name></member>
+      <member refid="classiceberg_1_1DVWriter_1a724fca0df9e577b6cf5c17421292793e" prot="public" virt="non-virtual"><scope>iceberg::DVWriter</scope><name>Make</name></member>
+      <member refid="classiceberg_1_1DVWriter_1a255b4d35acdf38028e714d3c0ae00e3b" prot="public" virt="non-virtual"><scope>iceberg::DVWriter</scope><name>Metadata</name></member>
+      <member refid="classiceberg_1_1DVWriter_1acb75de00ef8ce36848963ea16b29b1b3" prot="public" virt="non-virtual"><scope>iceberg::DVWriter</scope><name>~DVWriter</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

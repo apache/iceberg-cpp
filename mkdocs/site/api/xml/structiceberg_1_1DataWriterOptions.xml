@@ -1,0 +1,290 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1DataWriterOptions" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::DataWriterOptions</compoundname>
+    <includes refid="data__writer_8h" local="no">data_writer.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1DataWriterOptions_1a03b505f0e753781e8b8bf4d6e347a9e0" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::DataWriterOptions::path</definition>
+        <argsstring></argsstring>
+        <name>path</name>
+        <qualifiedname>iceberg::DataWriterOptions::path</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/data_writer.h" line="43" column="15" bodyfile="iceberg/data/data_writer.h" bodystart="43" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1DataWriterOptions_1a6cd70eaa02cb08bd1fe951c998a954a4" prot="public" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Schema&gt; iceberg::DataWriterOptions::schema</definition>
+        <argsstring></argsstring>
+        <name>schema</name>
+        <qualifiedname>iceberg::DataWriterOptions::schema</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/data_writer.h" line="44" column="19" bodyfile="iceberg/data/data_writer.h" bodystart="44" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1DataWriterOptions_1a3c7c64b952522ed16eeaeec95084adc1" prot="public" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1PartitionSpec" kindref="compound">PartitionSpec</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;PartitionSpec&gt; iceberg::DataWriterOptions::spec</definition>
+        <argsstring></argsstring>
+        <name>spec</name>
+        <qualifiedname>iceberg::DataWriterOptions::spec</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/data_writer.h" line="45" column="19" bodyfile="iceberg/data/data_writer.h" bodystart="45" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1DataWriterOptions_1a987d060d7227e7975f7f4d8261a319cb" prot="public" static="no" mutable="no">
+        <type><ref refid="classiceberg_1_1PartitionValues" kindref="compound">PartitionValues</ref></type>
+        <definition>PartitionValues iceberg::DataWriterOptions::partition</definition>
+        <argsstring></argsstring>
+        <name>partition</name>
+        <qualifiedname>iceberg::DataWriterOptions::partition</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/data_writer.h" line="46" column="19" bodyfile="iceberg/data/data_writer.h" bodystart="46" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1DataWriterOptions_1a64ce51231538f7b0702ac3efb9dce63c" prot="public" static="no" mutable="no">
+        <type>FileFormatType</type>
+        <definition>FileFormatType iceberg::DataWriterOptions::format</definition>
+        <argsstring></argsstring>
+        <name>format</name>
+        <qualifiedname>iceberg::DataWriterOptions::format</qualifiedname>
+        <initializer>= FileFormatType::kParquet</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/data_writer.h" line="47" column="18" bodyfile="iceberg/data/data_writer.h" bodystart="47" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1DataWriterOptions_1aa13c1a87412487e2ee519ac9a41a7e32" prot="public" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;FileIO&gt; iceberg::DataWriterOptions::io</definition>
+        <argsstring></argsstring>
+        <name>io</name>
+        <qualifiedname>iceberg::DataWriterOptions::io</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/data_writer.h" line="48" column="19" bodyfile="iceberg/data/data_writer.h" bodystart="48" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1DataWriterOptions_1afa7e37390cab33d4708041a165d9ceb1" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; int32_t &gt;</type>
+        <definition>std::optional&lt;int32_t&gt; iceberg::DataWriterOptions::sort_order_id</definition>
+        <argsstring></argsstring>
+        <name>sort_order_id</name>
+        <qualifiedname>iceberg::DataWriterOptions::sort_order_id</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/data_writer.h" line="49" column="17" bodyfile="iceberg/data/data_writer.h" bodystart="49" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1DataWriterOptions_1abce540c4e3ad7785c669aba6bc2e7b0a" prot="public" static="no" mutable="no">
+        <type>std::unordered_map&lt; std::string, std::string &gt;</type>
+        <definition>std::unordered_map&lt;std::string, std::string&gt; iceberg::DataWriterOptions::properties</definition>
+        <argsstring></argsstring>
+        <name>properties</name>
+        <qualifiedname>iceberg::DataWriterOptions::properties</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/data_writer.h" line="50" column="22" bodyfile="iceberg/data/data_writer.h" bodystart="50" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Options for creating a <ref refid="classiceberg_1_1DataWriter" kindref="compound">DataWriter</ref>. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="12">
+        <label>iceberg::Lazy&lt; InitFieldById &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="14">
+        <label>iceberg::Lazy&lt; InitFieldByLowerCaseName &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="13">
+        <label>iceberg::Lazy&lt; InitFieldByName &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="1">
+        <label>iceberg::DataWriterOptions</label>
+        <link refid="structiceberg_1_1DataWriterOptions"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>path</edgelabel>
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>schema</edgelabel>
+        </childnode>
+        <childnode refid="17" relation="usage">
+          <edgelabel>spec</edgelabel>
+        </childnode>
+        <childnode refid="19" relation="usage">
+          <edgelabel>partition</edgelabel>
+        </childnode>
+        <childnode refid="21" relation="usage">
+          <edgelabel>io</edgelabel>
+        </childnode>
+        <childnode refid="23" relation="usage">
+          <edgelabel>properties</edgelabel>
+        </childnode>
+      </node>
+      <node id="22">
+        <label>iceberg::FileIO</label>
+        <link refid="classiceberg_1_1FileIO"/>
+      </node>
+      <node id="7">
+        <label>iceberg::NestedType</label>
+        <link refid="classiceberg_1_1NestedType"/>
+        <childnode refid="8" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="18">
+        <label>iceberg::PartitionSpec</label>
+        <link refid="classiceberg_1_1PartitionSpec"/>
+        <childnode refid="9" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="19">
+        <label>iceberg::PartitionValues</label>
+        <link refid="classiceberg_1_1PartitionValues"/>
+        <childnode refid="20" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>iceberg::Schema</label>
+        <link refid="classiceberg_1_1Schema"/>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+        <childnode refid="15" relation="usage">
+          <edgelabel>kAllColumns</edgelabel>
+        </childnode>
+      </node>
+      <node id="11">
+        <label>iceberg::SchemaField</label>
+        <link refid="classiceberg_1_1SchemaField"/>
+        <childnode refid="9" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="20">
+        <label>iceberg::StructLike</label>
+        <link refid="classiceberg_1_1StructLike"/>
+      </node>
+      <node id="6">
+        <label>iceberg::StructType</label>
+        <link refid="classiceberg_1_1StructType"/>
+        <childnode refid="7" relation="public-inheritance">
+        </childnode>
+        <childnode refid="10" relation="usage">
+          <edgelabel>fields_</edgelabel>
+        </childnode>
+        <childnode refid="12" relation="usage">
+          <edgelabel>field_by_id_</edgelabel>
+        </childnode>
+        <childnode refid="13" relation="usage">
+          <edgelabel>field_by_name_</edgelabel>
+        </childnode>
+        <childnode refid="14" relation="usage">
+          <edgelabel>field_by_lowercase_name_</edgelabel>
+        </childnode>
+      </node>
+      <node id="8">
+        <label>iceberg::Type</label>
+        <link refid="classiceberg_1_1Type"/>
+        <childnode refid="9" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+      <node id="21">
+        <label>std::shared_ptr&lt; iceberg::FileIO &gt;</label>
+        <childnode refid="22" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="17">
+        <label>std::shared_ptr&lt; iceberg::PartitionSpec &gt;</label>
+        <childnode refid="18" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>std::shared_ptr&lt; iceberg::Schema &gt;</label>
+        <childnode refid="5" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="16">
+        <label>std::basic_string_view&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="15">
+        <label>std::string_view</label>
+        <childnode refid="16" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="23">
+        <label>std::unordered_map&lt; std::string, std::string &gt;</label>
+        <childnode refid="2" relation="usage">
+          <edgelabel>elements</edgelabel>
+          <edgelabel>keys</edgelabel>
+        </childnode>
+      </node>
+      <node id="10">
+        <label>std::vector&lt; iceberg::SchemaField &gt;</label>
+        <childnode refid="11" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/data/data_writer.h" line="42" column="1" bodyfile="iceberg/data/data_writer.h" bodystart="42" bodyend="51"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1DataWriterOptions_1a64ce51231538f7b0702ac3efb9dce63c" prot="public" virt="non-virtual"><scope>iceberg::DataWriterOptions</scope><name>format</name></member>
+      <member refid="structiceberg_1_1DataWriterOptions_1aa13c1a87412487e2ee519ac9a41a7e32" prot="public" virt="non-virtual"><scope>iceberg::DataWriterOptions</scope><name>io</name></member>
+      <member refid="structiceberg_1_1DataWriterOptions_1a987d060d7227e7975f7f4d8261a319cb" prot="public" virt="non-virtual"><scope>iceberg::DataWriterOptions</scope><name>partition</name></member>
+      <member refid="structiceberg_1_1DataWriterOptions_1a03b505f0e753781e8b8bf4d6e347a9e0" prot="public" virt="non-virtual"><scope>iceberg::DataWriterOptions</scope><name>path</name></member>
+      <member refid="structiceberg_1_1DataWriterOptions_1abce540c4e3ad7785c669aba6bc2e7b0a" prot="public" virt="non-virtual"><scope>iceberg::DataWriterOptions</scope><name>properties</name></member>
+      <member refid="structiceberg_1_1DataWriterOptions_1a6cd70eaa02cb08bd1fe951c998a954a4" prot="public" virt="non-virtual"><scope>iceberg::DataWriterOptions</scope><name>schema</name></member>
+      <member refid="structiceberg_1_1DataWriterOptions_1afa7e37390cab33d4708041a165d9ceb1" prot="public" virt="non-virtual"><scope>iceberg::DataWriterOptions</scope><name>sort_order_id</name></member>
+      <member refid="structiceberg_1_1DataWriterOptions_1a3c7c64b952522ed16eeaeec95084adc1" prot="public" virt="non-virtual"><scope>iceberg::DataWriterOptions</scope><name>spec</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

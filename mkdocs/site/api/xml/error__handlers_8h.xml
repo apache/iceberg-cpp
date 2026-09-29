@@ -1,0 +1,429 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="error__handlers_8h" kind="file" language="C++">
+    <compoundname>error_handlers.h</compoundname>
+    <includes local="no">cstdint</includes>
+    <includes local="no">memory</includes>
+    <includes local="no">string</includes>
+    <includes refid="iceberg__rest__export_8h" local="yes">iceberg/catalog/rest/iceberg_rest_export.h</includes>
+    <includes refid="types_8h" local="yes">iceberg/catalog/rest/types.h</includes>
+    <includes refid="result_8h" local="yes">iceberg/result.h</includes>
+    <incdepgraph>
+      <node id="11">
+        <label>iceberg/catalog/rest/endpoint.h</label>
+        <link refid="endpoint_8h"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg/catalog/rest/error_handlers.h</label>
+        <link refid="error__handlers_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+      </node>
+      <node id="12">
+        <label>iceberg/catalog/rest/http_request.h</label>
+        <link refid="http__request_8h"/>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>iceberg/catalog/rest/iceberg_rest_export.h</label>
+        <link refid="iceberg__rest__export_8h"/>
+      </node>
+      <node id="6">
+        <label>iceberg/catalog/rest/types.h</label>
+        <link refid="types_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+        <childnode refid="28" relation="include">
+        </childnode>
+      </node>
+      <node id="30">
+        <label>iceberg/exception.h</label>
+        <link refid="exception_8h"/>
+        <childnode refid="31" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+      </node>
+      <node id="22">
+        <label>iceberg/iceberg_export.h</label>
+        <link refid="iceberg__export_8h"/>
+      </node>
+      <node id="17">
+        <label>iceberg/result.h</label>
+        <link refid="result_8h"/>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+      </node>
+      <node id="23">
+        <label>iceberg/storage_credential.h</label>
+        <link refid="storage__credential_8h"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+      </node>
+      <node id="24">
+        <label>iceberg/table_identifier.h</label>
+        <link refid="table__identifier_8h"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+      </node>
+      <node id="27">
+        <label>iceberg/type_fwd.h</label>
+        <link refid="type__fwd_8h"/>
+      </node>
+      <node id="26">
+        <label>iceberg/util/formattable.h</label>
+        <link refid="formattable_8h"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+      </node>
+      <node id="25">
+        <label>iceberg/util/formatter.h</label>
+        <link refid="formatter_8h"/>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+      </node>
+      <node id="28">
+        <label>iceberg/util/macros.h</label>
+        <link refid="macros_8h"/>
+        <childnode refid="29" relation="include">
+        </childnode>
+        <childnode refid="30" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+      </node>
+      <node id="13">
+        <label>algorithm</label>
+      </node>
+      <node id="29">
+        <label>cassert</label>
+      </node>
+      <node id="14">
+        <label>cctype</label>
+      </node>
+      <node id="18">
+        <label>concepts</label>
+      </node>
+      <node id="15">
+        <label>cstddef</label>
+      </node>
+      <node id="2">
+        <label>cstdint</label>
+      </node>
+      <node id="19">
+        <label>expected</label>
+      </node>
+      <node id="20">
+        <label>format</label>
+      </node>
+      <node id="16">
+        <label>map</label>
+      </node>
+      <node id="3">
+        <label>memory</label>
+      </node>
+      <node id="7">
+        <label>optional</label>
+      </node>
+      <node id="31">
+        <label>stdexcept</label>
+      </node>
+      <node id="4">
+        <label>string</label>
+      </node>
+      <node id="8">
+        <label>string_view</label>
+      </node>
+      <node id="21">
+        <label>type_traits</label>
+      </node>
+      <node id="9">
+        <label>unordered_map</label>
+      </node>
+      <node id="10">
+        <label>vector</label>
+      </node>
+    </incdepgraph>
+    <innerclass refid="classiceberg_1_1rest_1_1ErrorHandler" prot="public">iceberg::rest::ErrorHandler</innerclass>
+    <innerclass refid="classiceberg_1_1rest_1_1DefaultErrorHandler" prot="public">iceberg::rest::DefaultErrorHandler</innerclass>
+    <innerclass refid="classiceberg_1_1rest_1_1NamespaceErrorHandler" prot="public">iceberg::rest::NamespaceErrorHandler</innerclass>
+    <innerclass refid="classiceberg_1_1rest_1_1DropNamespaceErrorHandler" prot="public">iceberg::rest::DropNamespaceErrorHandler</innerclass>
+    <innerclass refid="classiceberg_1_1rest_1_1ConfigErrorHandler" prot="public">iceberg::rest::ConfigErrorHandler</innerclass>
+    <innerclass refid="classiceberg_1_1rest_1_1TableErrorHandler" prot="public">iceberg::rest::TableErrorHandler</innerclass>
+    <innerclass refid="classiceberg_1_1rest_1_1TableCommitErrorHandler" prot="public">iceberg::rest::TableCommitErrorHandler</innerclass>
+    <innerclass refid="classiceberg_1_1rest_1_1CreateTableErrorHandler" prot="public">iceberg::rest::CreateTableErrorHandler</innerclass>
+    <innerclass refid="classiceberg_1_1rest_1_1ViewErrorHandler" prot="public">iceberg::rest::ViewErrorHandler</innerclass>
+    <innerclass refid="classiceberg_1_1rest_1_1ViewCommitErrorHandler" prot="public">iceberg::rest::ViewCommitErrorHandler</innerclass>
+    <innerclass refid="classiceberg_1_1rest_1_1PlanErrorHandler" prot="public">iceberg::rest::PlanErrorHandler</innerclass>
+    <innerclass refid="classiceberg_1_1rest_1_1PlanTaskErrorHandler" prot="public">iceberg::rest::PlanTaskErrorHandler</innerclass>
+    <innerclass refid="classiceberg_1_1rest_1_1OAuthErrorHandler" prot="public">iceberg::rest::OAuthErrorHandler</innerclass>
+    <innernamespace refid="namespaceiceberg">iceberg</innernamespace>
+    <innernamespace refid="namespaceiceberg_1_1rest">iceberg::rest</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>Error handlers for different HTTP error types in Iceberg REST API. </para>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">/*</highlight></codeline>
+<codeline lineno="2"><highlight class="comment"><sp/>*<sp/>Licensed<sp/>to<sp/>the<sp/>Apache<sp/>Software<sp/>Foundation<sp/>(ASF)<sp/>under<sp/>one</highlight></codeline>
+<codeline lineno="3"><highlight class="comment"><sp/>*<sp/>or<sp/>more<sp/>contributor<sp/>license<sp/>agreements.<sp/><sp/>See<sp/>the<sp/>NOTICE<sp/>file</highlight></codeline>
+<codeline lineno="4"><highlight class="comment"><sp/>*<sp/>distributed<sp/>with<sp/>this<sp/>work<sp/>for<sp/>additional<sp/>information</highlight></codeline>
+<codeline lineno="5"><highlight class="comment"><sp/>*<sp/>regarding<sp/>copyright<sp/>ownership.<sp/><sp/>The<sp/>ASF<sp/>licenses<sp/>this<sp/>file</highlight></codeline>
+<codeline lineno="6"><highlight class="comment"><sp/>*<sp/>to<sp/>you<sp/>under<sp/>the<sp/>Apache<sp/>License,<sp/>Version<sp/>2.0<sp/>(the</highlight></codeline>
+<codeline lineno="7"><highlight class="comment"><sp/>*<sp/>&quot;License&quot;);<sp/>you<sp/>may<sp/>not<sp/>use<sp/>this<sp/>file<sp/>except<sp/>in<sp/>compliance</highlight></codeline>
+<codeline lineno="8"><highlight class="comment"><sp/>*<sp/>with<sp/>the<sp/>License.<sp/><sp/>You<sp/>may<sp/>obtain<sp/>a<sp/>copy<sp/>of<sp/>the<sp/>License<sp/>at</highlight></codeline>
+<codeline lineno="9"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="10"><highlight class="comment"><sp/>*<sp/><sp/><sp/>http://www.apache.org/licenses/LICENSE-2.0</highlight></codeline>
+<codeline lineno="11"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="12"><highlight class="comment"><sp/>*<sp/>Unless<sp/>required<sp/>by<sp/>applicable<sp/>law<sp/>or<sp/>agreed<sp/>to<sp/>in<sp/>writing,</highlight></codeline>
+<codeline lineno="13"><highlight class="comment"><sp/>*<sp/>software<sp/>distributed<sp/>under<sp/>the<sp/>License<sp/>is<sp/>distributed<sp/>on<sp/>an</highlight></codeline>
+<codeline lineno="14"><highlight class="comment"><sp/>*<sp/>&quot;AS<sp/>IS&quot;<sp/>BASIS,<sp/>WITHOUT<sp/>WARRANTIES<sp/>OR<sp/>CONDITIONS<sp/>OF<sp/>ANY</highlight></codeline>
+<codeline lineno="15"><highlight class="comment"><sp/>*<sp/>KIND,<sp/>either<sp/>express<sp/>or<sp/>implied.<sp/><sp/>See<sp/>the<sp/>License<sp/>for<sp/>the</highlight></codeline>
+<codeline lineno="16"><highlight class="comment"><sp/>*<sp/>specific<sp/>language<sp/>governing<sp/>permissions<sp/>and<sp/>limitations</highlight></codeline>
+<codeline lineno="17"><highlight class="comment"><sp/>*<sp/>under<sp/>the<sp/>License.</highlight></codeline>
+<codeline lineno="18"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight></codeline>
+<codeline lineno="22"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;cstdint&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="23"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;memory&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="24"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;string&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="iceberg__rest__export_8h" kindref="compound">iceberg/catalog/rest/iceberg_rest_export.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="types_8h" kindref="compound">iceberg/catalog/rest/types.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="result_8h" kindref="compound">iceberg/result.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight></codeline>
+<codeline lineno="32"><highlight class="normal"></highlight></codeline>
+<codeline lineno="33"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceiceberg_1_1rest" kindref="compound">iceberg::rest</ref><sp/>{</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"></highlight></codeline>
+<codeline lineno="37" refid="classiceberg_1_1rest_1_1ErrorHandler" refkind="compound"><highlight class="keyword">class<sp/></highlight><highlight class="normal">ICEBERG_REST_EXPORT<sp/><ref refid="classiceberg_1_1rest_1_1ErrorHandler" kindref="compound">ErrorHandler</ref><sp/>{</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1rest_1_1ErrorHandler" kindref="compound">~ErrorHandler</ref>()<sp/>=<sp/></highlight><highlight class="keywordflow">default</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"></highlight></codeline>
+<codeline lineno="45" refid="classiceberg_1_1rest_1_1ErrorHandler_1a067914297e11fab05071d5bef97950e6" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>Status<sp/><ref refid="classiceberg_1_1rest_1_1ErrorHandler_1a067914297e11fab05071d5bef97950e6" kindref="member">Accept</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1rest_1_1ErrorResponse" kindref="compound">ErrorResponse</ref>&amp;<sp/>error)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"></highlight></codeline>
+<codeline lineno="52" refid="classiceberg_1_1rest_1_1ErrorHandler_1a4413c2bee37710c4edd4ecf40c7e4235" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result&lt;ErrorResponse&gt;</ref><sp/><ref refid="classiceberg_1_1rest_1_1ErrorHandler_1a4413c2bee37710c4edd4ecf40c7e4235" kindref="member">ParseResponse</ref>(uint32_t<sp/>code,</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string&amp;<sp/>text)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="54"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"></highlight></codeline>
+<codeline lineno="57" refid="classiceberg_1_1rest_1_1DefaultErrorHandler" refkind="compound"><highlight class="keyword">class<sp/></highlight><highlight class="normal">ICEBERG_REST_EXPORT<sp/><ref refid="classiceberg_1_1rest_1_1DefaultErrorHandler" kindref="compound">DefaultErrorHandler</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1rest_1_1ErrorHandler" kindref="compound">ErrorHandler</ref><sp/>{</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="60" refid="classiceberg_1_1rest_1_1DefaultErrorHandler_1adea1a11cfa90985651b104b70876bf12" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::shared_ptr&lt;DefaultErrorHandler&gt;&amp;<sp/><ref refid="classiceberg_1_1rest_1_1DefaultErrorHandler_1adea1a11cfa90985651b104b70876bf12" kindref="member">Instance</ref>();</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"></highlight></codeline>
+<codeline lineno="62" refid="classiceberg_1_1rest_1_1DefaultErrorHandler_1a11588f49fa4cbc28fae0ae196e1affb1" refkind="member"><highlight class="normal"><sp/><sp/>Status<sp/><ref refid="classiceberg_1_1rest_1_1DefaultErrorHandler_1a11588f49fa4cbc28fae0ae196e1affb1" kindref="member">Accept</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1rest_1_1ErrorResponse" kindref="compound">ErrorResponse</ref>&amp;<sp/>error)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="63" refid="classiceberg_1_1rest_1_1DefaultErrorHandler_1a9a53f7c6a5f373563678aeaea1e37049" refkind="member"><highlight class="normal"><sp/><sp/><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result&lt;ErrorResponse&gt;</ref><sp/><ref refid="classiceberg_1_1rest_1_1DefaultErrorHandler_1a9a53f7c6a5f373563678aeaea1e37049" kindref="member">ParseResponse</ref>(uint32_t<sp/>code,</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string&amp;<sp/>text)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"></highlight></codeline>
+<codeline lineno="66"><highlight class="normal"><sp/></highlight><highlight class="keyword">protected</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1rest_1_1DefaultErrorHandler" kindref="compound">DefaultErrorHandler</ref>()<sp/>=<sp/></highlight><highlight class="keywordflow">default</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="68"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="69"><highlight class="normal"></highlight></codeline>
+<codeline lineno="71" refid="classiceberg_1_1rest_1_1NamespaceErrorHandler" refkind="compound"><highlight class="keyword">class<sp/></highlight><highlight class="normal">ICEBERG_REST_EXPORT<sp/><ref refid="classiceberg_1_1rest_1_1NamespaceErrorHandler" kindref="compound">NamespaceErrorHandler</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1rest_1_1DefaultErrorHandler" kindref="compound">DefaultErrorHandler</ref><sp/>{</highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="74" refid="classiceberg_1_1rest_1_1NamespaceErrorHandler_1aaa7b277317b48d72184b6cef45e65347" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::shared_ptr&lt;NamespaceErrorHandler&gt;&amp;<sp/><ref refid="classiceberg_1_1rest_1_1NamespaceErrorHandler_1aaa7b277317b48d72184b6cef45e65347" kindref="member">Instance</ref>();</highlight></codeline>
+<codeline lineno="75"><highlight class="normal"></highlight></codeline>
+<codeline lineno="76" refid="classiceberg_1_1rest_1_1NamespaceErrorHandler_1a4652e5ec8907445075657509b9152224" refkind="member"><highlight class="normal"><sp/><sp/>Status<sp/><ref refid="classiceberg_1_1rest_1_1NamespaceErrorHandler_1a4652e5ec8907445075657509b9152224" kindref="member">Accept</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1rest_1_1ErrorResponse" kindref="compound">ErrorResponse</ref>&amp;<sp/>error)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="77"><highlight class="normal"></highlight></codeline>
+<codeline lineno="78"><highlight class="normal"><sp/></highlight><highlight class="keyword">protected</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1rest_1_1NamespaceErrorHandler" kindref="compound">NamespaceErrorHandler</ref>()<sp/>=<sp/></highlight><highlight class="keywordflow">default</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="80"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"></highlight></codeline>
+<codeline lineno="83" refid="classiceberg_1_1rest_1_1DropNamespaceErrorHandler" refkind="compound"><highlight class="keyword">class<sp/></highlight><highlight class="normal">ICEBERG_REST_EXPORT<sp/><ref refid="classiceberg_1_1rest_1_1DropNamespaceErrorHandler" kindref="compound">DropNamespaceErrorHandler</ref><sp/>final<sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1rest_1_1NamespaceErrorHandler" kindref="compound">NamespaceErrorHandler</ref><sp/>{</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="86" refid="classiceberg_1_1rest_1_1DropNamespaceErrorHandler_1a2d9146b91adffa07fee5de3fb01f016a" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::shared_ptr&lt;DropNamespaceErrorHandler&gt;&amp;<sp/><ref refid="classiceberg_1_1rest_1_1DropNamespaceErrorHandler_1a2d9146b91adffa07fee5de3fb01f016a" kindref="member">Instance</ref>();</highlight></codeline>
+<codeline lineno="87"><highlight class="normal"></highlight></codeline>
+<codeline lineno="88" refid="classiceberg_1_1rest_1_1DropNamespaceErrorHandler_1ac87a8f97ceddfd1a7f7637803628624e" refkind="member"><highlight class="normal"><sp/><sp/>Status<sp/><ref refid="classiceberg_1_1rest_1_1DropNamespaceErrorHandler_1ac87a8f97ceddfd1a7f7637803628624e" kindref="member">Accept</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1rest_1_1ErrorResponse" kindref="compound">ErrorResponse</ref>&amp;<sp/>error)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="89"><highlight class="normal"></highlight></codeline>
+<codeline lineno="90"><highlight class="normal"><sp/></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="91"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1rest_1_1DropNamespaceErrorHandler" kindref="compound">DropNamespaceErrorHandler</ref>()<sp/>=<sp/></highlight><highlight class="keywordflow">default</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="92"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="93"><highlight class="normal"></highlight></codeline>
+<codeline lineno="95" refid="classiceberg_1_1rest_1_1ConfigErrorHandler" refkind="compound"><highlight class="keyword">class<sp/></highlight><highlight class="normal">ICEBERG_REST_EXPORT<sp/><ref refid="classiceberg_1_1rest_1_1ConfigErrorHandler" kindref="compound">ConfigErrorHandler</ref><sp/>final<sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1rest_1_1DefaultErrorHandler" kindref="compound">DefaultErrorHandler</ref><sp/>{</highlight></codeline>
+<codeline lineno="96"><highlight class="normal"><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="98" refid="classiceberg_1_1rest_1_1ConfigErrorHandler_1acfba1b70d3ee2f727f8d490b9433c5d8" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::shared_ptr&lt;ConfigErrorHandler&gt;&amp;<sp/><ref refid="classiceberg_1_1rest_1_1ConfigErrorHandler_1acfba1b70d3ee2f727f8d490b9433c5d8" kindref="member">Instance</ref>();</highlight></codeline>
+<codeline lineno="99"><highlight class="normal"></highlight></codeline>
+<codeline lineno="100" refid="classiceberg_1_1rest_1_1ConfigErrorHandler_1a18a6e0e38e5d0afcd31848e5f905f044" refkind="member"><highlight class="normal"><sp/><sp/>Status<sp/><ref refid="classiceberg_1_1rest_1_1ConfigErrorHandler_1a18a6e0e38e5d0afcd31848e5f905f044" kindref="member">Accept</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1rest_1_1ErrorResponse" kindref="compound">ErrorResponse</ref>&amp;<sp/>error)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="101"><highlight class="normal"></highlight></codeline>
+<codeline lineno="102"><highlight class="normal"><sp/></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="103"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1rest_1_1ConfigErrorHandler" kindref="compound">ConfigErrorHandler</ref>()<sp/>=<sp/></highlight><highlight class="keywordflow">default</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="104"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="105"><highlight class="normal"></highlight></codeline>
+<codeline lineno="107" refid="classiceberg_1_1rest_1_1TableErrorHandler" refkind="compound"><highlight class="keyword">class<sp/></highlight><highlight class="normal">ICEBERG_REST_EXPORT<sp/><ref refid="classiceberg_1_1rest_1_1TableErrorHandler" kindref="compound">TableErrorHandler</ref><sp/>final<sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1rest_1_1DefaultErrorHandler" kindref="compound">DefaultErrorHandler</ref><sp/>{</highlight></codeline>
+<codeline lineno="108"><highlight class="normal"><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="110" refid="classiceberg_1_1rest_1_1TableErrorHandler_1aa6aff317611da107b5a3921cb233a32b" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::shared_ptr&lt;TableErrorHandler&gt;&amp;<sp/><ref refid="classiceberg_1_1rest_1_1TableErrorHandler_1aa6aff317611da107b5a3921cb233a32b" kindref="member">Instance</ref>();</highlight></codeline>
+<codeline lineno="111"><highlight class="normal"></highlight></codeline>
+<codeline lineno="112" refid="classiceberg_1_1rest_1_1TableErrorHandler_1aaea77b29df551d626aac415321f21a4c" refkind="member"><highlight class="normal"><sp/><sp/>Status<sp/><ref refid="classiceberg_1_1rest_1_1TableErrorHandler_1aaea77b29df551d626aac415321f21a4c" kindref="member">Accept</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1rest_1_1ErrorResponse" kindref="compound">ErrorResponse</ref>&amp;<sp/>error)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="113"><highlight class="normal"></highlight></codeline>
+<codeline lineno="114"><highlight class="normal"><sp/></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="115"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1rest_1_1TableErrorHandler" kindref="compound">TableErrorHandler</ref>()<sp/>=<sp/></highlight><highlight class="keywordflow">default</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="116"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="117"><highlight class="normal"></highlight></codeline>
+<codeline lineno="119" refid="classiceberg_1_1rest_1_1TableCommitErrorHandler" refkind="compound"><highlight class="keyword">class<sp/></highlight><highlight class="normal">ICEBERG_REST_EXPORT<sp/><ref refid="classiceberg_1_1rest_1_1TableCommitErrorHandler" kindref="compound">TableCommitErrorHandler</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1rest_1_1DefaultErrorHandler" kindref="compound">DefaultErrorHandler</ref><sp/>{</highlight></codeline>
+<codeline lineno="120"><highlight class="normal"><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="122" refid="classiceberg_1_1rest_1_1TableCommitErrorHandler_1a5a0d3c2444a7e246ac688c682ef417c3" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::shared_ptr&lt;TableCommitErrorHandler&gt;&amp;<sp/><ref refid="classiceberg_1_1rest_1_1TableCommitErrorHandler_1a5a0d3c2444a7e246ac688c682ef417c3" kindref="member">Instance</ref>();</highlight></codeline>
+<codeline lineno="123"><highlight class="normal"></highlight></codeline>
+<codeline lineno="124" refid="classiceberg_1_1rest_1_1TableCommitErrorHandler_1a36b1b39b12b4a92027679e795a182b4f" refkind="member"><highlight class="normal"><sp/><sp/>Status<sp/><ref refid="classiceberg_1_1rest_1_1TableCommitErrorHandler_1a36b1b39b12b4a92027679e795a182b4f" kindref="member">Accept</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1rest_1_1ErrorResponse" kindref="compound">ErrorResponse</ref>&amp;<sp/>error)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="125"><highlight class="normal"></highlight></codeline>
+<codeline lineno="126"><highlight class="normal"><sp/></highlight><highlight class="keyword">protected</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="127"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1rest_1_1TableCommitErrorHandler" kindref="compound">TableCommitErrorHandler</ref>()<sp/>=<sp/></highlight><highlight class="keywordflow">default</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="128"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="129"><highlight class="normal"></highlight></codeline>
+<codeline lineno="131" refid="classiceberg_1_1rest_1_1CreateTableErrorHandler" refkind="compound"><highlight class="keyword">class<sp/></highlight><highlight class="normal">ICEBERG_REST_EXPORT<sp/><ref refid="classiceberg_1_1rest_1_1CreateTableErrorHandler" kindref="compound">CreateTableErrorHandler</ref><sp/>final<sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1rest_1_1TableCommitErrorHandler" kindref="compound">TableCommitErrorHandler</ref><sp/>{</highlight></codeline>
+<codeline lineno="132"><highlight class="normal"><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="134" refid="classiceberg_1_1rest_1_1CreateTableErrorHandler_1a9e4324044ef9e0ba25f6694606965468" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::shared_ptr&lt;CreateTableErrorHandler&gt;&amp;<sp/><ref refid="classiceberg_1_1rest_1_1CreateTableErrorHandler_1a9e4324044ef9e0ba25f6694606965468" kindref="member">Instance</ref>();</highlight></codeline>
+<codeline lineno="135"><highlight class="normal"></highlight></codeline>
+<codeline lineno="136" refid="classiceberg_1_1rest_1_1CreateTableErrorHandler_1ad990bd05dfed60c51fb0374985284963" refkind="member"><highlight class="normal"><sp/><sp/>Status<sp/><ref refid="classiceberg_1_1rest_1_1CreateTableErrorHandler_1ad990bd05dfed60c51fb0374985284963" kindref="member">Accept</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1rest_1_1ErrorResponse" kindref="compound">ErrorResponse</ref>&amp;<sp/>error)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="137"><highlight class="normal"></highlight></codeline>
+<codeline lineno="138"><highlight class="normal"><sp/></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="139"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1rest_1_1CreateTableErrorHandler" kindref="compound">CreateTableErrorHandler</ref>()<sp/>=<sp/></highlight><highlight class="keywordflow">default</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="140"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="141"><highlight class="normal"></highlight></codeline>
+<codeline lineno="143" refid="classiceberg_1_1rest_1_1ViewErrorHandler" refkind="compound"><highlight class="keyword">class<sp/></highlight><highlight class="normal">ICEBERG_REST_EXPORT<sp/><ref refid="classiceberg_1_1rest_1_1ViewErrorHandler" kindref="compound">ViewErrorHandler</ref><sp/>final<sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1rest_1_1DefaultErrorHandler" kindref="compound">DefaultErrorHandler</ref><sp/>{</highlight></codeline>
+<codeline lineno="144"><highlight class="normal"><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="146" refid="classiceberg_1_1rest_1_1ViewErrorHandler_1a1219d4b6e6dccc589836005204767d0a" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::shared_ptr&lt;ViewErrorHandler&gt;&amp;<sp/><ref refid="classiceberg_1_1rest_1_1ViewErrorHandler_1a1219d4b6e6dccc589836005204767d0a" kindref="member">Instance</ref>();</highlight></codeline>
+<codeline lineno="147"><highlight class="normal"></highlight></codeline>
+<codeline lineno="148" refid="classiceberg_1_1rest_1_1ViewErrorHandler_1a6d1a6bf74d35a94407b3e5200964ac9a" refkind="member"><highlight class="normal"><sp/><sp/>Status<sp/><ref refid="classiceberg_1_1rest_1_1ViewErrorHandler_1a6d1a6bf74d35a94407b3e5200964ac9a" kindref="member">Accept</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1rest_1_1ErrorResponse" kindref="compound">ErrorResponse</ref>&amp;<sp/>error)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="149"><highlight class="normal"></highlight></codeline>
+<codeline lineno="150"><highlight class="normal"><sp/></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="151"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1rest_1_1ViewErrorHandler" kindref="compound">ViewErrorHandler</ref>()<sp/>=<sp/></highlight><highlight class="keywordflow">default</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="152"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="153"><highlight class="normal"></highlight></codeline>
+<codeline lineno="155" refid="classiceberg_1_1rest_1_1ViewCommitErrorHandler" refkind="compound"><highlight class="keyword">class<sp/></highlight><highlight class="normal">ICEBERG_REST_EXPORT<sp/><ref refid="classiceberg_1_1rest_1_1ViewCommitErrorHandler" kindref="compound">ViewCommitErrorHandler</ref><sp/>final<sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1rest_1_1DefaultErrorHandler" kindref="compound">DefaultErrorHandler</ref><sp/>{</highlight></codeline>
+<codeline lineno="156"><highlight class="normal"><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="158" refid="classiceberg_1_1rest_1_1ViewCommitErrorHandler_1af08775fcb09cbf8ac26597d49f214252" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::shared_ptr&lt;ViewCommitErrorHandler&gt;&amp;<sp/><ref refid="classiceberg_1_1rest_1_1ViewCommitErrorHandler_1af08775fcb09cbf8ac26597d49f214252" kindref="member">Instance</ref>();</highlight></codeline>
+<codeline lineno="159"><highlight class="normal"></highlight></codeline>
+<codeline lineno="160" refid="classiceberg_1_1rest_1_1ViewCommitErrorHandler_1a8433e24a4b020a9d6afa7353fd6f5d90" refkind="member"><highlight class="normal"><sp/><sp/>Status<sp/><ref refid="classiceberg_1_1rest_1_1ViewCommitErrorHandler_1a8433e24a4b020a9d6afa7353fd6f5d90" kindref="member">Accept</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1rest_1_1ErrorResponse" kindref="compound">ErrorResponse</ref>&amp;<sp/>error)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="161"><highlight class="normal"></highlight></codeline>
+<codeline lineno="162"><highlight class="normal"><sp/></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="163"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1rest_1_1ViewCommitErrorHandler" kindref="compound">ViewCommitErrorHandler</ref>()<sp/>=<sp/></highlight><highlight class="keywordflow">default</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="164"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="165"><highlight class="normal"></highlight></codeline>
+<codeline lineno="167" refid="classiceberg_1_1rest_1_1PlanErrorHandler" refkind="compound"><highlight class="keyword">class<sp/></highlight><highlight class="normal">ICEBERG_REST_EXPORT<sp/><ref refid="classiceberg_1_1rest_1_1PlanErrorHandler" kindref="compound">PlanErrorHandler</ref><sp/>final<sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1rest_1_1DefaultErrorHandler" kindref="compound">DefaultErrorHandler</ref><sp/>{</highlight></codeline>
+<codeline lineno="168"><highlight class="normal"><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="169"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::shared_ptr&lt;PlanErrorHandler&gt;&amp;<sp/>Instance();</highlight></codeline>
+<codeline lineno="170"><highlight class="normal"></highlight></codeline>
+<codeline lineno="171" refid="classiceberg_1_1rest_1_1PlanErrorHandler_1abcac18d2cfcc9cbf95066082a34b66d3" refkind="member"><highlight class="normal"><sp/><sp/>Status<sp/><ref refid="classiceberg_1_1rest_1_1PlanErrorHandler_1abcac18d2cfcc9cbf95066082a34b66d3" kindref="member">Accept</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1rest_1_1ErrorResponse" kindref="compound">ErrorResponse</ref>&amp;<sp/>error)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="172"><highlight class="normal"></highlight></codeline>
+<codeline lineno="173"><highlight class="normal"><sp/></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="174"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1rest_1_1PlanErrorHandler" kindref="compound">PlanErrorHandler</ref>()<sp/>=<sp/></highlight><highlight class="keywordflow">default</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="175"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="176"><highlight class="normal"></highlight></codeline>
+<codeline lineno="178" refid="classiceberg_1_1rest_1_1PlanTaskErrorHandler" refkind="compound"><highlight class="keyword">class<sp/></highlight><highlight class="normal">ICEBERG_REST_EXPORT<sp/><ref refid="classiceberg_1_1rest_1_1PlanTaskErrorHandler" kindref="compound">PlanTaskErrorHandler</ref><sp/>final<sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1rest_1_1DefaultErrorHandler" kindref="compound">DefaultErrorHandler</ref><sp/>{</highlight></codeline>
+<codeline lineno="179"><highlight class="normal"><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="180"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::shared_ptr&lt;PlanTaskErrorHandler&gt;&amp;<sp/>Instance();</highlight></codeline>
+<codeline lineno="181"><highlight class="normal"></highlight></codeline>
+<codeline lineno="182" refid="classiceberg_1_1rest_1_1PlanTaskErrorHandler_1aa3d16d810813b761fc07de70a24b40c7" refkind="member"><highlight class="normal"><sp/><sp/>Status<sp/><ref refid="classiceberg_1_1rest_1_1PlanTaskErrorHandler_1aa3d16d810813b761fc07de70a24b40c7" kindref="member">Accept</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1rest_1_1ErrorResponse" kindref="compound">ErrorResponse</ref>&amp;<sp/>error)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="183"><highlight class="normal"></highlight></codeline>
+<codeline lineno="184"><highlight class="normal"><sp/></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="185"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1rest_1_1PlanTaskErrorHandler" kindref="compound">PlanTaskErrorHandler</ref>()<sp/>=<sp/></highlight><highlight class="keywordflow">default</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="186"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="187"><highlight class="normal"></highlight></codeline>
+<codeline lineno="189" refid="classiceberg_1_1rest_1_1OAuthErrorHandler" refkind="compound"><highlight class="keyword">class<sp/></highlight><highlight class="normal">ICEBERG_REST_EXPORT<sp/><ref refid="classiceberg_1_1rest_1_1OAuthErrorHandler" kindref="compound">OAuthErrorHandler</ref><sp/>final<sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1rest_1_1ErrorHandler" kindref="compound">ErrorHandler</ref><sp/>{</highlight></codeline>
+<codeline lineno="190"><highlight class="normal"><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="191"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::shared_ptr&lt;OAuthErrorHandler&gt;&amp;<sp/>Instance();</highlight></codeline>
+<codeline lineno="192"><highlight class="normal"></highlight></codeline>
+<codeline lineno="193" refid="classiceberg_1_1rest_1_1OAuthErrorHandler_1a04347f9f3771ddfbde85a6407a78e96e" refkind="member"><highlight class="normal"><sp/><sp/>Status<sp/><ref refid="classiceberg_1_1rest_1_1OAuthErrorHandler_1a04347f9f3771ddfbde85a6407a78e96e" kindref="member">Accept</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1rest_1_1ErrorResponse" kindref="compound">ErrorResponse</ref>&amp;<sp/>error)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="194" refid="classiceberg_1_1rest_1_1OAuthErrorHandler_1a046fcb98b5cfd0c8552d81fd0af81529" refkind="member"><highlight class="normal"><sp/><sp/><ref refid="namespaceiceberg_1a9d5594e371beb516b0120e07e69d3af6" kindref="member">Result&lt;ErrorResponse&gt;</ref><sp/><ref refid="classiceberg_1_1rest_1_1OAuthErrorHandler_1a046fcb98b5cfd0c8552d81fd0af81529" kindref="member">ParseResponse</ref>(uint32_t<sp/>code,</highlight></codeline>
+<codeline lineno="195"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string&amp;<sp/>text)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="196"><highlight class="normal"></highlight></codeline>
+<codeline lineno="197"><highlight class="normal"><sp/></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="198"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1rest_1_1OAuthErrorHandler" kindref="compound">OAuthErrorHandler</ref>()<sp/>=<sp/></highlight><highlight class="keywordflow">default</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="199"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="200"><highlight class="normal"></highlight></codeline>
+<codeline lineno="201"><highlight class="normal">}<sp/><sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>iceberg::rest</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="iceberg/catalog/rest/error_handlers.h"/>
+  </compounddef>
+</doxygen>
