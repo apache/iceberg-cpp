@@ -400,6 +400,7 @@ Result<std::unique_ptr<DataTableScan>> RestTableScan::Make(
 }
 
 Result<FileScanTaskStreamPtr> RestTableScan::PlanFilesStream() const {
+  *scan_io_slot_ = nullptr;  // reset so stale credentials from a prior plan are not reused
   TableMetadataCache metadata_cache(metadata_.get());
   ICEBERG_ASSIGN_OR_RAISE(auto specs, metadata_cache.GetPartitionSpecsById());
 
@@ -481,6 +482,7 @@ Result<std::unique_ptr<IncrementalAppendScan>> RestIncrementalAppendScan::Make(
 
 Result<std::vector<std::shared_ptr<FileScanTask>>> RestIncrementalAppendScan::PlanFiles()
     const {
+  scan_io_ = nullptr;  // reset so stale credentials from a prior plan are not reused
   TableMetadataCache metadata_cache(metadata_.get());
   ICEBERG_ASSIGN_OR_RAISE(auto specs, metadata_cache.GetPartitionSpecsById());
 
