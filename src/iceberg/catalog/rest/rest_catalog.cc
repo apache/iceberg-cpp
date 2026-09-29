@@ -461,9 +461,8 @@ Result<std::shared_ptr<RestCatalog>> RestCatalog::MakeForTesting(
     std::shared_ptr<HttpClient> client, std::shared_ptr<ResourcePaths> paths,
     std::unordered_set<Endpoint> endpoints) {
   std::string catalog_name = config.Get(RestCatalogProperties::kName);
-  ICEBERG_ASSIGN_OR_RAISE(
-      auto auth_manager,
-      auth::MakeNoopAuthManager(catalog_name, config.configs()));
+  ICEBERG_ASSIGN_OR_RAISE(auto auth_manager,
+                          auth::MakeNoopAuthManager(catalog_name, config.configs()));
   auto session = auth::AuthSession::MakeDefault({});
   ICEBERG_ASSIGN_OR_RAISE(auto snapshot_mode, config.SnapshotLoadingMode());
   return std::shared_ptr<RestCatalog>(

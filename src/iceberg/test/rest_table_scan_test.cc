@@ -62,8 +62,8 @@ MATCHER_P2(JsonBodyHas, key, expected_value, "") {
     }
     nlohmann::json expected = expected_value;
     if (json.at(key) != expected) {
-      *result_listener << "JSON[\"" << key << "\"] = " << json.at(key)
-                       << ", expected " << expected;
+      *result_listener << "JSON[\"" << key << "\"] = " << json.at(key) << ", expected "
+                       << expected;
       return false;
     }
     return true;
@@ -407,8 +407,9 @@ TEST_F(RestTableScanTest, UseSnapshotPropagatesUseSnapshotSchemaInContext) {
   constexpr std::string_view kResponseBody = R"({"status":"completed"})";
 
   EXPECT_CALL(*mock_client_,
-              Post(_, testing::AllOf(JsonBodyHas("snapshot-id", kSnapshotId),
-                                     JsonBodyHas("use-snapshot-schema", true)),
+              Post(_,
+                   testing::AllOf(JsonBodyHas("snapshot-id", kSnapshotId),
+                                  JsonBodyHas("use-snapshot-schema", true)),
                    _, _, _))
       .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kResponseBody))));
 
@@ -428,8 +429,9 @@ TEST_F(RestTableScanTest, DefaultScanDoesNotSetUseSnapshotSchema) {
   constexpr std::string_view kResponseBody = R"({"status":"completed"})";
 
   EXPECT_CALL(*mock_client_,
-              Post(_, testing::AllOf(JsonBodyHas("use-snapshot-schema", false),
-                                     JsonBodyLacks("snapshot-id")),
+              Post(_,
+                   testing::AllOf(JsonBodyHas("use-snapshot-schema", false),
+                                  JsonBodyLacks("snapshot-id")),
                    _, _, _))
       .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kResponseBody))));
 
@@ -812,8 +814,7 @@ class RestIncrementalAppendScanTest : public RestTableScanTest {
   // snapshot range.
   Result<std::unique_ptr<IncrementalAppendScan>> MakeIncrementalScan(
       RestScanContext ctx, std::optional<int64_t> from_snapshot_id = std::nullopt,
-      bool from_inclusive = false,
-      std::optional<int64_t> to_snapshot_id = std::nullopt) {
+      bool from_inclusive = false, std::optional<int64_t> to_snapshot_id = std::nullopt) {
     RestIncrementalAppendScanBuilder builder(metadata_, file_io_, "test.my_table",
                                              nullptr, std::move(ctx));
     if (from_snapshot_id.has_value()) {
@@ -892,8 +893,8 @@ TEST_F(RestIncrementalAppendScanTest, PlanFilesFailed) {
 // PlanFiles: PlanTableScan endpoint missing → NotSupported.
 // --------------------------------------------------------------------------
 TEST_F(RestIncrementalAppendScanTest, PlanFilesEndpointNotSupported) {
-  ICEBERG_UNWRAP_OR_FAIL(auto scan,
-                         MakeIncrementalScan(MakeContext(std::unordered_set<Endpoint>{})));
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto scan, MakeIncrementalScan(MakeContext(std::unordered_set<Endpoint>{})));
   auto result = scan->PlanFiles();
   EXPECT_THAT(result, IsError(ErrorKind::kNotSupported));
 }
@@ -922,10 +923,9 @@ TEST_F(RestIncrementalAppendScanTest, PlanFilesEmptyWhenNoCurrentSnapshot) {
   EXPECT_CALL(*mock_client_, Post(_, _, _, _, _)).Times(0);
 
   // Use Make() directly to bypass builder validation that requires a snapshot.
-  ICEBERG_UNWRAP_OR_FAIL(
-      auto scan, RestIncrementalAppendScan::Make(empty_metadata, schema_, file_io_,
-                                                 internal::TableScanContext{},
-                                                 MakeContext()));
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, RestIncrementalAppendScan::Make(
+                                        empty_metadata, schema_, file_io_,
+                                        internal::TableScanContext{}, MakeContext()));
   ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
   EXPECT_TRUE(tasks.empty());
 }
@@ -937,7 +937,8 @@ TEST_F(RestIncrementalAppendScanTest, PlanFilesEmptyWhenNoCurrentSnapshot) {
 TEST_F(RestIncrementalAppendScanTest, PlanFilesWithExplicitToSnapshotId) {
   constexpr int64_t kToSnapshotId = 1000L;
   constexpr std::string_view kResponseBody = R"({"status":"completed"})";
-  EXPECT_CALL(*mock_client_, Post(_, JsonBodyHas("end-snapshot-id", kToSnapshotId), _, _, _))
+  EXPECT_CALL(*mock_client_,
+              Post(_, JsonBodyHas("end-snapshot-id", kToSnapshotId), _, _, _))
       .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kResponseBody))));
 
   ICEBERG_UNWRAP_OR_FAIL(
@@ -955,13 +956,14 @@ TEST_F(RestIncrementalAppendScanTest, PlanFilesWithFromSnapshotIdExclusive) {
   constexpr int64_t kCurrentSnapshotId = 1000L;
   constexpr std::string_view kResponseBody = R"({"status":"completed"})";
   EXPECT_CALL(*mock_client_,
-              Post(_, testing::AllOf(JsonBodyHas("start-snapshot-id", kFromSnapshotId),
-                                     JsonBodyHas("end-snapshot-id", kCurrentSnapshotId)),
+              Post(_,
+                   testing::AllOf(JsonBodyHas("start-snapshot-id", kFromSnapshotId),
+                                  JsonBodyHas("end-snapshot-id", kCurrentSnapshotId)),
                    _, _, _))
       .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kResponseBody))));
 
-  ICEBERG_UNWRAP_OR_FAIL(
-      auto scan, MakeIncrementalScan(MakeContext(), kFromSnapshotId, /*inclusive=*/false));
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeIncrementalScan(MakeContext(), kFromSnapshotId,
+                                                        /*inclusive=*/false));
   ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
   EXPECT_TRUE(tasks.empty());
 }
@@ -975,8 +977,9 @@ TEST_F(RestIncrementalAppendScanTest, PlanFilesWithFromSnapshotIdInclusiveNoPare
   constexpr int64_t kFromSnapshotId = 1000L;
   constexpr std::string_view kResponseBody = R"({"status":"completed"})";
   EXPECT_CALL(*mock_client_,
-              Post(_, testing::AllOf(JsonBodyLacks("start-snapshot-id"),
-                                     JsonBodyHas("end-snapshot-id", kFromSnapshotId)),
+              Post(_,
+                   testing::AllOf(JsonBodyLacks("start-snapshot-id"),
+                                  JsonBodyHas("end-snapshot-id", kFromSnapshotId)),
                    _, _, _))
       .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kResponseBody))));
 
@@ -1054,8 +1057,9 @@ TEST_F(RestIncrementalAppendScanTest, PlanFilesWithFromSnapshotIdInclusiveWithPa
 
   constexpr std::string_view kResponseBody = R"({"status":"completed"})";
   EXPECT_CALL(*mock_client_,
-              Post(_, testing::AllOf(JsonBodyHas("start-snapshot-id", kParentSnapshotId),
-                                     JsonBodyHas("end-snapshot-id", kCurrentSnapshotId)),
+              Post(_,
+                   testing::AllOf(JsonBodyHas("start-snapshot-id", kParentSnapshotId),
+                                  JsonBodyHas("end-snapshot-id", kCurrentSnapshotId)),
                    _, _, _))
       .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kResponseBody))));
 
