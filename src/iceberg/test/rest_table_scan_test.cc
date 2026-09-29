@@ -35,7 +35,9 @@
 #include "iceberg/catalog/rest/http_client.h"
 #include "iceberg/catalog/rest/resource_paths.h"
 #include "iceberg/catalog/rest/rest_table.h"
+#include "iceberg/constants.h"
 #include "iceberg/file_io.h"
+#include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/schema.h"
 #include "iceberg/snapshot.h"
@@ -914,6 +916,7 @@ TEST_F(RestIncrementalAppendScanTest, PlanFilesEmptyWhenNoCurrentSnapshot) {
       .partition_specs = {spec},
       .default_spec_id = spec->spec_id(),
       .last_partition_id = 999,
+      .current_snapshot_id = kInvalidSnapshotId,
   });
 
   EXPECT_CALL(*mock_client_, Post(_, _, _, _, _)).Times(0);

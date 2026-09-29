@@ -58,6 +58,13 @@ class ICEBERG_REST_EXPORT RestCatalog final
   static Result<std::shared_ptr<RestCatalog>> Make(const RestCatalogProperties& config,
                                                    Executor* metrics_executor = nullptr);
 
+  /// \brief Test-only factory that constructs a RestCatalog with pre-built dependencies,
+  /// bypassing the FetchServerConfig HTTP exchange performed by Make().
+  static Result<std::shared_ptr<RestCatalog>> MakeForTesting(
+      RestCatalogProperties config, std::shared_ptr<FileIO> file_io,
+      std::shared_ptr<HttpClient> client, std::shared_ptr<ResourcePaths> paths,
+      std::unordered_set<Endpoint> endpoints);
+
   std::string_view name() const override;
 
   Result<std::shared_ptr<Catalog>> AsCatalog() override;

@@ -31,6 +31,7 @@
 #include "iceberg/catalog/rest/resource_paths.h"
 #include "iceberg/catalog/rest/rest_file_io.h"
 #include "iceberg/catalog/rest/types.h"
+#include "iceberg/constants.h"
 #include "iceberg/json_serde_internal.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/result.h"
@@ -297,7 +298,8 @@ Result<FileScanTaskStreamPtr> ExecuteScanPlanStream(const RestScanContext& ctx,
     ICEBERG_ASSIGN_OR_RAISE(
         auto tasks, FetchPlanningResult(ctx, schema, mutable_plan_id, specs, *scan_io_slot));
     return std::make_unique<RestFileScanTaskStream>(ctx, schema_ptr, mutable_plan_id,
-                                                   std::move(tasks), {}, specs, scan_io_slot);
+                                                   std::move(tasks), std::vector<std::string>{},
+                                                   specs, scan_io_slot);
   }
 
   if (result.plan_status == PlanStatus::kFailed) {
@@ -496,6 +498,7 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> RestIncrementalAppendScan::Pl
   if (context_.to_snapshot_id.has_value()) {
     request.end_snapshot_id = context_.to_snapshot_id;
   } else {
+    if (metadata_->current_snapshot_id == kInvalidSnapshotId) return {};
     ICEBERG_ASSIGN_OR_RAISE(auto snapshot, metadata_->Snapshot());
     if (!snapshot) return {};
     request.end_snapshot_id = snapshot->snapshot_id;
