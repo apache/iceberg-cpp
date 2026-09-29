@@ -21,6 +21,7 @@
 
 #include <string>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 #include "iceberg/catalog/rest/types.h"
@@ -57,7 +58,8 @@ Result<std::unique_ptr<FileIO>> MakeCatalogFileIO(const RestCatalogProperties& c
 Result<std::unique_ptr<FileIO>> MakeTableFileIO(
     const std::unordered_map<std::string, std::string>& catalog_config,
     const std::unordered_map<std::string, std::string>& table_config,
-    const std::vector<StorageCredential>& storage_credentials) {
+    const std::vector<StorageCredential>& storage_credentials,
+    StorageCredentialRefresher refresher) {
   const auto default_properties = MergeFileIOProperties(catalog_config, table_config);
   ICEBERG_ASSIGN_OR_RAISE(
       auto io, MakeCatalogFileIO(RestCatalogProperties::FromMap(default_properties)));
@@ -65,6 +67,10 @@ Result<std::unique_ptr<FileIO>> MakeTableFileIO(
   if (storage_credentials.empty()) {
     return io;
   } else if (auto* credentialed = io->AsSupportsStorageCredentials()) {
+    // First, so the FileIO never briefly holds credentials it cannot replace.
+    if (refresher) {
+      credentialed->SetCredentialRefresher(std::move(refresher));
+    }
     ICEBERG_RETURN_UNEXPECTED(credentialed->SetStorageCredentials(storage_credentials));
   } else {
     return NotSupported("Configured FileIO does not support vended storage credentials");
