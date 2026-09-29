@@ -902,7 +902,7 @@ Result<std::shared_ptr<Table>> RestCatalog::MakeTableFromLoadResult(
   return Table::Make(identifier, std::move(result.metadata),
                      std::move(result.metadata_location), std::move(table_io),
                      std::move(table_catalog), RestTableName(name_, identifier),
-                     std::move(reporter));
+                     std::move(reporter), std::move(result.labels));
 }
 
 Result<std::shared_ptr<Table>> RestCatalog::MakeTableFromCommitResponse(
