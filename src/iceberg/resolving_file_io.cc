@@ -74,8 +74,10 @@ Result<std::shared_ptr<FileIO>> ResolvingFileIO::FileIOForPath(
     if (generation != credential_generation_) {
       continue;  // Credentials were replaced mid-load; load again with them.
     }
+    if (const auto cached = io_by_name_.find(name); cached != io_by_name_.end()) {
+      return cached->second;
+    }
     ICEBERG_RETURN_UNEXPECTED(loaded);
-    // A concurrent first access may have cached one already; that one wins.
     return io_by_name_.try_emplace(name, *loaded).first->second;
   }
 }

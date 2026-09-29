@@ -156,9 +156,9 @@ TEST(ResolvingFileIOTest, RoutesPathsAndCachesResolvedImplementations) {
   ResolvingFileIO io({{"k", "v"}});
 
   // Errors come from the recording mock; routing is what is under test.
-  (void)io.NewInputFile("s3a://bucket/db/table/data/file.parquet");
-  (void)io.NewInputFile("s3://bucket/db/table/data/file.parquet");
-  (void)io.NewInputFile("/tmp/local/file.parquet");
+  std::ignore = io.NewInputFile("s3a://bucket/db/table/data/file.parquet");
+  std::ignore = io.NewInputFile("s3://bucket/db/table/data/file.parquet");
+  std::ignore = io.NewInputFile("/tmp/local/file.parquet");
 
   ASSERT_NE(last_s3_io, nullptr);
   ASSERT_NE(last_local_io, nullptr);
@@ -241,7 +241,7 @@ TEST(ResolvingFileIOTest, ForwardsAllCredentialsToResolvedImplementations) {
   EXPECT_THAT(io.SetStorageCredentials(credentials), IsOk());
   EXPECT_EQ(io.credentials(), credentials);
 
-  (void)io.NewInputFile("s3://bucket/db/table/data/file.parquet");
+  std::ignore = io.NewInputFile("s3://bucket/db/table/data/file.parquet");
   ASSERT_NE(last_s3_io, nullptr);
   EXPECT_EQ(last_s3_io->credentials(), credentials);
   EXPECT_EQ(s3_factory_calls, 1);
@@ -249,13 +249,13 @@ TEST(ResolvingFileIOTest, ForwardsAllCredentialsToResolvedImplementations) {
   // Delegates are rebuilt with the new credentials, not mutated in place.
   std::vector<StorageCredential> refreshed = {{.prefix = "s3", .config = {{"k3", "v3"}}}};
   EXPECT_THAT(io.SetStorageCredentials(refreshed), IsOk());
-  (void)io.NewInputFile("s3://bucket/db/table/data/other.parquet");
+  std::ignore = io.NewInputFile("s3://bucket/db/table/data/other.parquet");
   ASSERT_NE(last_s3_io, nullptr);
   EXPECT_EQ(last_s3_io->credentials(), refreshed);
   EXPECT_EQ(s3_factory_calls, 2);
 
   // The local FileIO does not support credentials; resolving it still works.
-  (void)io.NewInputFile("/tmp/local/file.parquet");
+  std::ignore = io.NewInputFile("/tmp/local/file.parquet");
   ASSERT_NE(last_local_io, nullptr);
 }
 
@@ -296,7 +296,7 @@ TEST(ResolvingFileIOTest, LoadsWithoutTheLockAndDropsStaleDelegates) {
       {.prefix = "slow", .config = {{"k", "2"}}}};
   ASSERT_THAT(io.SetStorageCredentials(stale), IsOk());
 
-  std::thread reader([&] { (void)io.NewInputFile("slow://bucket/file"); });
+  std::thread reader([&] { std::ignore = io.NewInputFile("slow://bucket/file"); });
   {
     std::unique_lock lock(gate);
     cv.wait(lock, [] { return parked; });
