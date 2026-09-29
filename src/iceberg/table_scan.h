@@ -442,7 +442,7 @@ class ICEBERG_EXPORT TableScan {
   const internal::TableScanContext& context() const;
 
   /// \brief Returns the file I/O instance used for reading files.
-  const std::shared_ptr<FileIO>& io() const;
+  virtual const std::shared_ptr<FileIO>& io() const;
 
   /// \brief Returns this scan's filter expression.
   const std::shared_ptr<Expression>& filter() const;

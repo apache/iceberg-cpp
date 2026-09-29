@@ -59,4 +59,10 @@ Result<std::unique_ptr<DataTableScanBuilder>> RestTable::NewScan() const {
                                                 rest_context_);
 }
 
+Result<std::unique_ptr<IncrementalAppendScanBuilder>>
+RestTable::NewIncrementalAppendScan() const {
+  return std::make_unique<RestIncrementalAppendScanBuilder>(metadata_, io_, full_name_,
+                                                            reporter_, rest_context_);
+}
+
 }  // namespace iceberg::rest
