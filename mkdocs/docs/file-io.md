@@ -66,6 +66,7 @@ each file location's scheme.
 | `client.region` | `us-east-1` | Region to sign requests for |
 | `s3.endpoint` | `https://127.0.0.1:9000` | Endpoint to use instead of the AWS one. When absent, the `AWS_ENDPOINT_URL_S3` / `AWS_ENDPOINT_URL` environment variables are consulted |
 | `s3.path-style-access` | `true` | Address buckets as a path (`endpoint/bucket`) instead of a virtual host (`bucket.endpoint`). Only takes effect together with a custom endpoint |
+| `s3.delete.num-threads` | `8` | Number of threads `DeleteFiles` deletes with. Defaults to the number of hardware threads |
 
 The following keys are specific to iceberg-cpp; they are not part of the Java
 Iceberg or REST specification property set:
