@@ -17,8 +17,6 @@
  * under the License.
  */
 
-#include "iceberg/catalog/rest/rest_catalog.h"
-
 #include <memory>
 #include <string>
 #include <unordered_map>
@@ -32,6 +30,7 @@
 #include "iceberg/catalog/rest/error_handlers.h"
 #include "iceberg/catalog/rest/http_client.h"
 #include "iceberg/catalog/rest/resource_paths.h"
+#include "iceberg/catalog/rest/rest_catalog.h"
 #include "iceberg/catalog/rest/rest_table.h"
 #include "iceberg/file_io.h"
 #include "iceberg/table_identifier.h"
@@ -115,7 +114,7 @@ class RestCatalogLoadTableTest : public ::testing::Test {
 
     identifier_ = TableIdentifier{.ns = Namespace{{"default"}}, .name = "my_table"};
 
-    all_plan_endpoints_ = {Endpoint::LoadTable(),         Endpoint::PlanTableScan(),
+    all_plan_endpoints_ = {Endpoint::LoadTable(), Endpoint::PlanTableScan(),
                            Endpoint::FetchPlanningResult(), Endpoint::CancelPlanning(),
                            Endpoint::FetchScanTasks()};
 
@@ -151,8 +150,7 @@ class RestCatalogLoadTableTest : public ::testing::Test {
 // --------------------------------------------------------------------------
 TEST_F(RestCatalogLoadTableTest, TableConfigServerScanReturnsRestTable) {
   EXPECT_CALL(*mock_client_, Get(_, _, _, _, _))
-      .WillOnce(
-          Return(HttpResponse::MakeForTesting(200, kLoadTableServerScanResponse)));
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, kLoadTableServerScanResponse)));
 
   ICEBERG_UNWRAP_OR_FAIL(auto catalog, MakeCatalog(all_plan_endpoints_));
   ICEBERG_UNWRAP_OR_FAIL(auto as_catalog, catalog->AsCatalog());
@@ -185,8 +183,7 @@ TEST_F(RestCatalogLoadTableTest, ClientConfigServerScanReturnsRestTable) {
 // --------------------------------------------------------------------------
 TEST_F(RestCatalogLoadTableTest, ServerScanWithMissingEndpointReturnsNotSupported) {
   EXPECT_CALL(*mock_client_, Get(_, _, _, _, _))
-      .WillOnce(
-          Return(HttpResponse::MakeForTesting(200, kLoadTableServerScanResponse)));
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, kLoadTableServerScanResponse)));
 
   ICEBERG_UNWRAP_OR_FAIL(auto catalog, MakeCatalog(no_plan_endpoint_set_));
   ICEBERG_UNWRAP_OR_FAIL(auto as_catalog, catalog->AsCatalog());

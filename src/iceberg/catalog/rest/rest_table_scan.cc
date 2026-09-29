@@ -104,7 +104,8 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> ResolveScanTasks(
 
   if (plan_tasks.has_value()) {
     for (const auto& token : *plan_tasks) {
-      ICEBERG_ASSIGN_OR_RAISE(auto tasks, FetchScanTasks(ctx, schema, token, specs, scan_io));
+      ICEBERG_ASSIGN_OR_RAISE(auto tasks,
+                              FetchScanTasks(ctx, schema, token, specs, scan_io));
       result.insert(result.end(), tasks.begin(), tasks.end());
     }
   }
@@ -125,9 +126,11 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> FetchScanTasks(
       ctx.client->Post(path, json_request, /*headers=*/{},
                        *PlanTaskErrorHandler::Instance(), *ctx.session));
   ICEBERG_ASSIGN_OR_RAISE(auto json, FromJsonString(response.body()));
-  ICEBERG_ASSIGN_OR_RAISE(auto result, FetchScanTasksResponseFromJson(json, specs, schema));
+  ICEBERG_ASSIGN_OR_RAISE(auto result,
+                          FetchScanTasksResponseFromJson(json, specs, schema));
   ICEBERG_RETURN_UNEXPECTED(result.Validate());
-  ICEBERG_RETURN_UNEXPECTED(ApplyStorageCredentials(ctx, result.storage_credentials, scan_io));
+  ICEBERG_RETURN_UNEXPECTED(
+      ApplyStorageCredentials(ctx, result.storage_credentials, scan_io));
 
   return ResolveScanTasks(ctx, schema, result.plan_tasks, result.file_scan_tasks, specs,
                           scan_io);
@@ -172,13 +175,13 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> FetchPlanningResult(
 
     switch (result.plan_status) {
       case PlanStatus::kCompleted: {
-        if (auto s = ApplyStorageCredentials(ctx, result.storage_credentials, scan_io); !s) {
+        if (auto s = ApplyStorageCredentials(ctx, result.storage_credentials, scan_io);
+            !s) {
           CancelPlanning(ctx, plan_id);
           return std::unexpected<Error>(s.error());
         }
-        auto tasks =
-            ResolveScanTasks(ctx, schema, result.plan_tasks, result.file_scan_tasks, specs,
-                             scan_io);
+        auto tasks = ResolveScanTasks(ctx, schema, result.plan_tasks,
+                                      result.file_scan_tasks, specs, scan_io);
         if (!tasks) CancelPlanning(ctx, plan_id);
         return tasks;
       }
@@ -271,23 +274,20 @@ class RestFileScanTaskStream final : public FileScanTaskStream {
 ///
 /// scan_io_slot is shared with the caller (RestTableScan) so that credentials
 /// vended by FetchScanTasks responses update RestTableScan::io() in place.
-Result<FileScanTaskStreamPtr> ExecuteScanPlanStream(const RestScanContext& ctx,
-                                                    const Schema& schema,
-                                                    std::shared_ptr<Schema> schema_ptr,
-                                                    PlanTableScanRequest request,
-                                                    const SpecsById& specs,
-                                                    ScanIoSlot scan_io_slot) {
+Result<FileScanTaskStreamPtr> ExecuteScanPlanStream(
+    const RestScanContext& ctx, const Schema& schema, std::shared_ptr<Schema> schema_ptr,
+    PlanTableScanRequest request, const SpecsById& specs, ScanIoSlot scan_io_slot) {
   ICEBERG_ENDPOINT_CHECK(ctx.supported_endpoints, Endpoint::PlanTableScan());
 
   ICEBERG_ASSIGN_OR_RAISE(auto path, ctx.paths->Plan(ctx.identifier));
   ICEBERG_ASSIGN_OR_RAISE(auto request_json, ToJson(request));
   ICEBERG_ASSIGN_OR_RAISE(auto json_request, ToJsonString(request_json));
-  ICEBERG_ASSIGN_OR_RAISE(
-      const auto response,
-      ctx.client->Post(path, json_request, /*headers=*/{}, *PlanErrorHandler::Instance(),
-                       *ctx.session));
+  ICEBERG_ASSIGN_OR_RAISE(const auto response,
+                          ctx.client->Post(path, json_request, /*headers=*/{},
+                                           *PlanErrorHandler::Instance(), *ctx.session));
   ICEBERG_ASSIGN_OR_RAISE(auto json, FromJsonString(response.body()));
-  ICEBERG_ASSIGN_OR_RAISE(auto result, PlanTableScanResponseFromJson(json, specs, schema));
+  ICEBERG_ASSIGN_OR_RAISE(auto result,
+                          PlanTableScanResponseFromJson(json, specs, schema));
   ICEBERG_RETURN_UNEXPECTED(result.Validate());
 
   const std::string plan_id = result.plan_id;
@@ -295,11 +295,11 @@ Result<FileScanTaskStreamPtr> ExecuteScanPlanStream(const RestScanContext& ctx,
   if (result.plan_status == PlanStatus::kSubmitted) {
     // Poll until COMPLETED, eagerly collecting all tasks into the buffer.
     std::string mutable_plan_id = plan_id;
-    ICEBERG_ASSIGN_OR_RAISE(
-        auto tasks, FetchPlanningResult(ctx, schema, mutable_plan_id, specs, *scan_io_slot));
-    return std::make_unique<RestFileScanTaskStream>(ctx, schema_ptr, mutable_plan_id,
-                                                   std::move(tasks), std::vector<std::string>{},
-                                                   specs, scan_io_slot);
+    ICEBERG_ASSIGN_OR_RAISE(auto tasks, FetchPlanningResult(ctx, schema, mutable_plan_id,
+                                                            specs, *scan_io_slot));
+    return std::make_unique<RestFileScanTaskStream>(
+        ctx, schema_ptr, mutable_plan_id, std::move(tasks), std::vector<std::string>{},
+        specs, scan_io_slot);
   }
 
   if (result.plan_status == PlanStatus::kFailed) {
@@ -312,7 +312,8 @@ Result<FileScanTaskStreamPtr> ExecuteScanPlanStream(const RestScanContext& ctx,
   }
 
   // kCompleted: apply credentials from the initial response, then build the lazy stream.
-  if (auto s = ApplyStorageCredentials(ctx, result.storage_credentials, *scan_io_slot); !s) {
+  if (auto s = ApplyStorageCredentials(ctx, result.storage_credentials, *scan_io_slot);
+      !s) {
     CancelPlanning(ctx, plan_id);
     return std::unexpected<Error>(s.error());
   }
@@ -340,25 +341,25 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> ExecuteScanPlan(
   ICEBERG_ASSIGN_OR_RAISE(auto path, ctx.paths->Plan(ctx.identifier));
   ICEBERG_ASSIGN_OR_RAISE(auto request_json, ToJson(request));
   ICEBERG_ASSIGN_OR_RAISE(auto json_request, ToJsonString(request_json));
-  ICEBERG_ASSIGN_OR_RAISE(
-      const auto response,
-      ctx.client->Post(path, json_request, /*headers=*/{}, *PlanErrorHandler::Instance(),
-                       *ctx.session));
+  ICEBERG_ASSIGN_OR_RAISE(const auto response,
+                          ctx.client->Post(path, json_request, /*headers=*/{},
+                                           *PlanErrorHandler::Instance(), *ctx.session));
   ICEBERG_ASSIGN_OR_RAISE(auto json, FromJsonString(response.body()));
-  ICEBERG_ASSIGN_OR_RAISE(auto result, PlanTableScanResponseFromJson(json, specs, schema));
+  ICEBERG_ASSIGN_OR_RAISE(auto result,
+                          PlanTableScanResponseFromJson(json, specs, schema));
   ICEBERG_RETURN_UNEXPECTED(result.Validate());
 
   const std::string plan_id = result.plan_id;
 
   switch (result.plan_status) {
     case PlanStatus::kCompleted: {
-      if (auto s = ApplyStorageCredentials(ctx, result.storage_credentials, scan_io); !s) {
+      if (auto s = ApplyStorageCredentials(ctx, result.storage_credentials, scan_io);
+          !s) {
         CancelPlanning(ctx, plan_id);
         return std::unexpected<Error>(s.error());
       }
-      auto tasks =
-          ResolveScanTasks(ctx, schema, result.plan_tasks, result.file_scan_tasks, specs,
-                           scan_io);
+      auto tasks = ResolveScanTasks(ctx, schema, result.plan_tasks,
+                                    result.file_scan_tasks, specs, scan_io);
       if (!tasks) CancelPlanning(ctx, plan_id);
       return tasks;
     }
@@ -402,7 +403,8 @@ Result<std::unique_ptr<DataTableScan>> RestTableScan::Make(
 }
 
 Result<FileScanTaskStreamPtr> RestTableScan::PlanFilesStream() const {
-  *scan_io_slot_ = nullptr;  // reset so stale credentials from a prior plan are not reused
+  *scan_io_slot_ =
+      nullptr;  // reset so stale credentials from a prior plan are not reused
   TableMetadataCache metadata_cache(metadata_.get());
   ICEBERG_ASSIGN_OR_RAISE(auto specs, metadata_cache.GetPartitionSpecsById());
 
@@ -430,8 +432,8 @@ Result<FileScanTaskStreamPtr> RestTableScan::PlanFilesStream() const {
     }
   }
 
-  return ExecuteScanPlanStream(rest_context_, *schema_, schema_, std::move(request), specs,
-                               scan_io_slot_);
+  return ExecuteScanPlanStream(rest_context_, *schema_, schema_, std::move(request),
+                               specs, scan_io_slot_);
 }
 
 const std::shared_ptr<FileIO>& RestTableScan::io() const {
@@ -477,9 +479,9 @@ Result<std::unique_ptr<IncrementalAppendScan>> RestIncrementalAppendScan::Make(
   ICEBERG_PRECHECK(metadata != nullptr, "Table metadata cannot be null");
   ICEBERG_PRECHECK(schema != nullptr, "Schema cannot be null");
   ICEBERG_PRECHECK(io != nullptr, "FileIO cannot be null");
-  return std::unique_ptr<IncrementalAppendScan>(new RestIncrementalAppendScan(
-      std::move(metadata), std::move(schema), std::move(io), std::move(context),
-      std::move(rest_context)));
+  return std::unique_ptr<IncrementalAppendScan>(
+      new RestIncrementalAppendScan(std::move(metadata), std::move(schema), std::move(io),
+                                    std::move(context), std::move(rest_context)));
 }
 
 Result<std::vector<std::shared_ptr<FileScanTask>>> RestIncrementalAppendScan::PlanFiles()
@@ -543,8 +545,8 @@ Result<std::unique_ptr<IncrementalAppendScan>> RestIncrementalAppendScanBuilder:
   ICEBERG_RETURN_UNEXPECTED(CheckErrors());
   ICEBERG_RETURN_UNEXPECTED(context_.Validate());
   ICEBERG_ASSIGN_OR_RAISE(auto schema, ResolveSnapshotSchema());
-  return RestIncrementalAppendScan::Make(metadata_, schema.get(), io_, std::move(context_),
-                                         rest_context_);
+  return RestIncrementalAppendScan::Make(metadata_, schema.get(), io_,
+                                         std::move(context_), rest_context_);
 }
 
 }  // namespace iceberg::rest
