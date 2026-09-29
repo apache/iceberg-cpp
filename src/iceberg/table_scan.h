@@ -480,7 +480,7 @@ class ICEBERG_EXPORT DataTableScan : public TableScan {
   ///
   /// Collects PlanFilesStream() into a vector.
   /// \return A Result containing scan tasks or an error.
-  virtual Result<std::vector<std::shared_ptr<FileScanTask>>> PlanFiles() const;
+  Result<std::vector<std::shared_ptr<FileScanTask>>> PlanFiles() const;
 
   /// \brief Lazily plans scan tasks by resolving manifests and data files on demand.
   ///
