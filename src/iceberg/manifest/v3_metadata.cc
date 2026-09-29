@@ -194,13 +194,20 @@ Status ManifestFileAdapterV3::Init() {
 }
 
 Status ManifestFileAdapterV3::Append(const ManifestFile& file) {
-  ICEBERG_RETURN_UNEXPECTED(AppendInternal(file));
   if (WrapFirstRowId(file)) {
     if (!next_row_id_.has_value()) {
       return InvalidManifestList("Missing next-row-id for file: {}", file.manifest_path);
     }
-    next_row_id_ = next_row_id_.value() + file.existing_rows_count.value_or(0) +
-                   file.added_rows_count.value_or(0);
+    if (!file.existing_rows_count.has_value() || !file.added_rows_count.has_value()) {
+      return InvalidManifestList("Missing row counts for file: {}", file.manifest_path);
+    }
+  }
+
+  ICEBERG_RETURN_UNEXPECTED(AppendInternal(file));
+
+  if (WrapFirstRowId(file)) {
+    next_row_id_ = next_row_id_.value() + file.existing_rows_count.value() +
+                   file.added_rows_count.value();
   }
   return {};
 }
