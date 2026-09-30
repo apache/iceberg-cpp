@@ -2305,6 +2305,58 @@ TEST(FileScanTasksFromJsonTest, AcceptsWholeFileStartAndLength) {
               IsOk());
 }
 
+TEST(FileScanTasksFromJsonTest, NullStartAndLengthUseWholeFileDefaults) {
+  auto json = R"([{
+    "data-file": {
+      "content": "data",
+      "file-path": "s3://bucket/data/file.parquet",
+      "file-format": "PARQUET",
+      "spec-id": 0,
+      "partition": [],
+      "file-size-in-bytes": 12345,
+      "record-count": 100
+    },
+    "start": null,
+    "length": null
+  }])"_json;
+
+  EXPECT_THAT(FileScanTasksFromJson(json, {}, UnpartitionedSpecs(), Schema({}, 0)),
+              IsOk());
+}
+
+TEST(FileScanTasksFromJsonTest, RejectsInvalidRangeIntegers) {
+  auto valid_json = R"([{
+    "data-file": {
+      "content": "data",
+      "file-path": "s3://bucket/data/file.parquet",
+      "file-format": "PARQUET",
+      "spec-id": 0,
+      "partition": [],
+      "file-size-in-bytes": 12345,
+      "record-count": 100
+    },
+    "start": 0,
+    "length": 12345
+  }])"_json;
+
+  for (std::string_view field : {"start", "length"}) {
+    for (const auto& [invalid_value, expected_error] :
+         {std::pair<nlohmann::json, std::string_view>{0.5, "must be an integer"},
+          {true, "must be an integer"},
+          {"0", "must be an integer"},
+          {18446744073709551615ULL, "out of range"}}) {
+      SCOPED_TRACE(testing::Message() << field << "=" << invalid_value.dump());
+      auto json = valid_json;
+      json[0][field] = invalid_value;
+
+      auto result = FileScanTasksFromJson(json, {}, UnpartitionedSpecs(), Schema({}, 0));
+      EXPECT_THAT(result, IsError(ErrorKind::kJsonParseError));
+      EXPECT_THAT(result, HasErrorMessage(field));
+      EXPECT_THAT(result, HasErrorMessage(expected_error));
+    }
+  }
+}
+
 TEST(FileScanTasksFromJsonTest, RejectsSplitTaskWhenEitherRangeFieldDiffers) {
   auto json = R"([{
     "data-file": {

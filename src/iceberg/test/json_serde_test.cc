@@ -18,6 +18,7 @@
  */
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <unordered_map>
@@ -1615,6 +1616,34 @@ TEST_F(FileScanTaskJsonTest, RoundTripsHistoricalSpecWithDroppedSourceField) {
   EXPECT_EQ(serialized, json);
 }
 
+TEST_F(FileScanTaskJsonTest, RejectsNonNullPartitionForDroppedSourceField) {
+  auto json = JavaGolden();
+  json["schema"]["fields"] = nlohmann::json::array();
+  json["data-file"]["partition"] = {7};
+
+  // The embedded schema no longer contains the source type, so neither Java nor
+  // C++ can decode a non-null value for this historical partition field.
+  auto result = FileScanTaskFromJson(json);
+  EXPECT_THAT(result, IsError(ErrorKind::kNotSupported));
+  EXPECT_THAT(result, HasErrorMessage("Unsupported type for literal JSON parsing"));
+}
+
+TEST_F(FileScanTaskJsonTest, RejectsFilesWithMismatchedEmbeddedSpecId) {
+  for (bool mismatch_delete_file : {false, true}) {
+    SCOPED_TRACE(mismatch_delete_file ? "delete-file" : "data-file");
+    auto json = JavaGolden();
+    if (mismatch_delete_file) {
+      json["delete-files"][0]["spec-id"] = 1;
+    } else {
+      json["data-file"]["spec-id"] = 1;
+    }
+
+    auto result = FileScanTaskFromJson(json);
+    EXPECT_THAT(result, IsError(ErrorKind::kJsonParseError));
+    EXPECT_THAT(result, HasErrorMessage("Invalid partition spec id"));
+  }
+}
+
 TEST_F(FileScanTaskJsonTest, AcceptsMissingPartitionLikeJava) {
   auto json = JavaGolden();
   json["data-file"].erase("partition");
@@ -1685,6 +1714,21 @@ TEST_F(FileScanTaskJsonTest, RejectsInvalidContentRolesWhenSerializing) {
   auto delete_result = ToJson(delete_task, specs_, schema_);
   EXPECT_THAT(delete_result, IsError(ErrorKind::kValidationFailed));
   EXPECT_THAT(delete_result, HasErrorMessage("delete-file"));
+}
+
+TEST_F(FileScanTaskJsonTest, RejectsDeleteFilesWithDifferentSpecIdWhenSerializing) {
+  for (const auto& spec_id : {std::optional<int32_t>(1), std::optional<int32_t>()}) {
+    SCOPED_TRACE(spec_id.value_or(-1));
+    auto delete_file = DeleteFileForTask();
+    delete_file.partition_spec_id = spec_id;
+    FileScanTask task(std::make_shared<DataFile>(DataFileForTask()),
+                      {std::make_shared<DataFile>(std::move(delete_file))});
+
+    auto result = ToJson(task, specs_, schema_);
+    EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
+    EXPECT_THAT(result, HasErrorMessage("Invalid partition spec id"));
+    EXPECT_THAT(result, HasErrorMessage(spec_id ? "actual = 1" : "actual = null"));
+  }
 }
 
 TEST_F(FileScanTaskJsonTest, RejectsInvalidPartitionValueTypeWhenSerializing) {
