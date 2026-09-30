@@ -28,6 +28,7 @@
 
 #include <nlohmann/json.hpp>
 
+#include "iceberg/catalog/rest/auth/auth_manager_internal.h"
 #include "iceberg/catalog/rest/auth/auth_managers.h"
 #include "iceberg/catalog/rest/auth/auth_session.h"
 #include "iceberg/catalog/rest/catalog_properties.h"
@@ -39,9 +40,12 @@
 #include "iceberg/catalog/rest/resource_paths.h"
 #include "iceberg/catalog/rest/rest_file_io.h"
 #include "iceberg/catalog/rest/rest_metrics_reporter_internal.h"
+#include "iceberg/catalog/rest/rest_table.h"
 #include "iceberg/catalog/rest/rest_util.h"
 #include "iceberg/catalog/rest/types.h"
 #include "iceberg/json_serde_internal.h"
+#include "iceberg/logging/log_level.h"
+#include "iceberg/logging/logger.h"
 #include "iceberg/metrics/metrics_reporters.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/result.h"
@@ -452,9 +456,25 @@ Result<std::shared_ptr<RestCatalog>> RestCatalog::Make(
       snapshot_mode, std::move(default_context), std::move(reporter), metrics_executor));
 }
 
+Result<std::shared_ptr<RestCatalog>> RestCatalog::MakeForTesting(
+    RestCatalogProperties config, std::shared_ptr<FileIO> file_io,
+    std::shared_ptr<HttpClient> client, std::shared_ptr<ResourcePaths> paths,
+    std::unordered_set<Endpoint> endpoints) {
+  std::string catalog_name = config.Get(RestCatalogProperties::kName);
+  ICEBERG_ASSIGN_OR_RAISE(auto auth_manager,
+                          auth::MakeNoopAuthManager(catalog_name, config.configs()));
+  auto session = auth::AuthSession::MakeDefault({});
+  ICEBERG_ASSIGN_OR_RAISE(auto snapshot_mode, config.SnapshotLoadingMode());
+  return std::shared_ptr<RestCatalog>(
+      new RestCatalog(std::move(config), std::move(file_io), std::move(client),
+                      std::move(paths), std::move(endpoints), std::move(auth_manager),
+                      std::move(session), snapshot_mode, SessionContext::Empty(),
+                      /*reporter=*/nullptr, /*metrics_executor=*/nullptr));
+}
+
 RestCatalog::RestCatalog(RestCatalogProperties config, std::shared_ptr<FileIO> file_io,
                          std::shared_ptr<HttpClient> client,
-                         std::unique_ptr<ResourcePaths> paths,
+                         std::shared_ptr<ResourcePaths> paths,
                          std::unordered_set<Endpoint> endpoints,
                          std::unique_ptr<auth::AuthManager> auth_manager,
                          std::shared_ptr<auth::AuthSession> catalog_session,
@@ -898,6 +918,47 @@ Result<std::shared_ptr<Table>> RestCatalog::MakeTableFromLoadResult(
   ICEBERG_ASSIGN_OR_RAISE(auto reporter, MakeTableReporter(identifier, table_session));
   auto table_catalog = std::make_shared<TableScopedCatalog>(
       shared_from_this(), context, identifier, table_config, table_session, table_io);
+
+  // Determine effective scan planning mode: table config overrides client config.
+  ICEBERG_ASSIGN_OR_RAISE(auto client_mode,
+                          RestCatalogProperties::ScanPlanningModeFrom(config_.configs()));
+  ICEBERG_ASSIGN_OR_RAISE(auto server_mode,
+                          RestCatalogProperties::ScanPlanningModeFrom(table_config));
+
+  if (client_mode.has_value() && server_mode.has_value() &&
+      *client_mode != *server_mode) {
+    Log(LogLevel::kWarn,
+        "Scan planning mode mismatch for table {}: client config={}, server config={}. "
+        "Server config will take precedence.",
+        identifier.ToString(),
+        *client_mode == ScanPlanningMode::kClient ? "client" : "server",
+        *server_mode == ScanPlanningMode::kClient ? "client" : "server");
+  }
+
+  ScanPlanningMode effective_mode =
+      server_mode.value_or(client_mode.value_or(ScanPlanningMode::kClient));
+
+  if (effective_mode == ScanPlanningMode::kServer) {
+    if (!supported_endpoints_.contains(Endpoint::PlanTableScan())) {
+      return NotSupported(
+          "Server requires server-side scan planning for table {} but does not support "
+          "the PlanTableScan endpoint.",
+          identifier.ToString());
+    }
+    RestScanContext rest_ctx{
+        .client = client_,
+        .paths = paths_,
+        .session = table_session,
+        .supported_endpoints = supported_endpoints_,
+        .identifier = identifier,
+        .catalog_config = config_.configs(),
+        .table_config = table_config,
+    };
+    return RestTable::Make(identifier, std::move(result.metadata),
+                           std::move(result.metadata_location), std::move(table_io),
+                           std::move(table_catalog), RestTableName(name_, identifier),
+                           reporter, std::move(rest_ctx));
+  }
 
   return Table::Make(identifier, std::move(result.metadata),
                      std::move(result.metadata_location), std::move(table_io),
