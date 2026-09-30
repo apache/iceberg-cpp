@@ -1081,4 +1081,112 @@ TEST(DataFileJsonTest, RoundTripRequiredFields) {
   EXPECT_EQ(parsed.partition_spec_id, data_file.partition_spec_id);
 }
 
+class DataFileJavaJsonTest : public ::testing::Test {
+ protected:
+  void SetUp() override {
+    ICEBERG_UNWRAP_OR_FAIL(
+        auto spec,
+        PartitionSpec::Make(schema_, /*spec_id=*/0,
+                            {PartitionField(1, 1000, "id", Transform::Identity())},
+                            /*allow_missing_fields=*/false));
+    spec_ = std::shared_ptr<PartitionSpec>(std::move(spec));
+    specs_.emplace(spec_->spec_id(), spec_);
+  }
+
+  DataFile DataFileForTest() const {
+    DataFile data_file;
+    data_file.content = DataFile::Content::kData;
+    data_file.file_path = "/path/to/data.parquet";
+    data_file.file_format = FileFormatType::kParquet;
+    data_file.partition_spec_id = 0;
+    data_file.partition = PartitionValues({Literal::Int(7)});
+    data_file.record_count = 1;
+    data_file.file_size_in_bytes = 10;
+    data_file.lower_bounds = {{1, {0x01, 0x00, 0x00, 0x00}}};
+    data_file.upper_bounds = {{1, {0x05, 0x00, 0x00, 0x00}}};
+    data_file.key_metadata = {0x0A, 0x0B};
+    data_file.sort_order_id = 0;
+    return data_file;
+  }
+
+  nlohmann::json JavaGolden() const {
+    return R"({
+      "spec-id": 0,
+      "content": "data",
+      "file-path": "/path/to/data.parquet",
+      "file-format": "parquet",
+      "partition": [7],
+      "file-size-in-bytes": 10,
+      "record-count": 1,
+      "lower-bounds": {"keys": [1], "values": ["01000000"]},
+      "upper-bounds": {"keys": [1], "values": ["05000000"]},
+      "key-metadata": "0A0B",
+      "sort-order-id": 0
+    })"_json;
+  }
+
+  Schema schema_{{SchemaField::MakeRequired(1, "id", int32())}, 0};
+  std::shared_ptr<PartitionSpec> spec_;
+  std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>> specs_;
+};
+
+TEST_F(DataFileJavaJsonTest, SerializesAndParsesJavaEncoding) {
+  ICEBERG_UNWRAP_OR_FAIL(auto json, ToJson(DataFileForTest(), specs_, schema_));
+  EXPECT_EQ(json, JavaGolden());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto parsed, DataFileFromJson(json, specs_, schema_));
+  EXPECT_EQ(parsed, DataFileForTest());
+}
+
+TEST_F(DataFileJavaJsonTest, ParsesPartitionObjectAndLegacyContentName) {
+  auto json = JavaGolden();
+  json["content"] = "DATA";
+  json["partition"] = {{"1000", 7}};
+
+  ICEBERG_UNWRAP_OR_FAIL(auto parsed, DataFileFromJson(json, specs_, schema_));
+  EXPECT_EQ(parsed.content, DataFile::Content::kData);
+  ASSERT_EQ(parsed.partition.num_fields(), 1U);
+  EXPECT_EQ(parsed.partition.values()[0], Literal::Int(7));
+}
+
+TEST_F(DataFileJavaJsonTest, RejectsInvalidIntegersAndDuplicateMetricKeys) {
+  for (std::string_view field :
+       {"spec-id", "file-size-in-bytes", "record-count", "sort-order-id"}) {
+    SCOPED_TRACE(field);
+    auto json = JavaGolden();
+    json[field] = 0.5;
+    EXPECT_THAT(DataFileFromJson(json, specs_, schema_),
+                IsError(ErrorKind::kJsonParseError));
+  }
+
+  auto duplicate_keys = JavaGolden();
+  duplicate_keys["column-sizes"] = {{"keys", {1, 1}}, {"values", {10, 20}}};
+  auto result = DataFileFromJson(duplicate_keys, specs_, schema_);
+  EXPECT_THAT(result, IsError(ErrorKind::kJsonParseError));
+  EXPECT_THAT(result, HasErrorMessage("duplicate key"));
+}
+
+TEST_F(DataFileJavaJsonTest, AcceptsMissingPartitionAndNullMetricMaps) {
+  auto json = JavaGolden();
+  json.erase("partition");
+  for (std::string_view field : {"column-sizes", "value-counts", "null-value-counts",
+                                 "nan-value-counts", "lower-bounds", "upper-bounds"}) {
+    json[field] = nullptr;
+  }
+
+  ICEBERG_UNWRAP_OR_FAIL(auto parsed, DataFileFromJson(json, specs_, schema_));
+  EXPECT_EQ(parsed.partition.num_fields(), 0U);
+  EXPECT_TRUE(parsed.column_sizes.empty());
+  EXPECT_TRUE(parsed.lower_bounds.empty());
+}
+
+TEST_F(DataFileJavaJsonTest, RejectsInvalidPartitionTypeWhenSerializing) {
+  auto data_file = DataFileForTest();
+  data_file.partition = PartitionValues({Literal::String("not-an-int")});
+
+  auto result = ToJson(data_file, specs_, schema_);
+  EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
+  EXPECT_THAT(result, HasErrorMessage("partition value type"));
+}
+
 }  // namespace iceberg
