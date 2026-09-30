@@ -18,6 +18,8 @@
  */
 
 #include <memory>
+#include <string>
+#include <string_view>
 #include <unordered_map>
 
 #include <gmock/gmock.h>
@@ -1138,32 +1140,158 @@ TEST_F(DataFileJavaJsonTest, SerializesAndParsesJavaEncoding) {
   EXPECT_EQ(parsed, DataFileForTest());
 }
 
-TEST_F(DataFileJavaJsonTest, ParsesPartitionObjectAndLegacyContentName) {
+TEST_F(DataFileJavaJsonTest, ParsesPartitionObject) {
   auto json = JavaGolden();
-  json["content"] = "DATA";
   json["partition"] = {{"1000", 7}};
 
   ICEBERG_UNWRAP_OR_FAIL(auto parsed, DataFileFromJson(json, specs_, schema_));
-  EXPECT_EQ(parsed.content, DataFile::Content::kData);
   ASSERT_EQ(parsed.partition.num_fields(), 1U);
   EXPECT_EQ(parsed.partition.values()[0], Literal::Int(7));
 }
 
-TEST_F(DataFileJavaJsonTest, RejectsInvalidIntegersAndDuplicateMetricKeys) {
-  for (std::string_view field :
-       {"spec-id", "file-size-in-bytes", "record-count", "sort-order-id"}) {
-    SCOPED_TRACE(field);
+TEST_F(DataFileJavaJsonTest, ParsesAllLegacyContentNames) {
+  struct Case {
+    std::string_view legacy;
+    DataFile::Content content;
+    std::string_view canonical;
+  };
+  for (const auto& test_case :
+       {Case{"DATA", DataFile::Content::kData, "data"},
+        Case{"POSITION_DELETES", DataFile::Content::kPositionDeletes, "position-deletes"},
+        Case{"EQUALITY_DELETES", DataFile::Content::kEqualityDeletes,
+             "equality-deletes"}}) {
+    SCOPED_TRACE(test_case.legacy);
     auto json = JavaGolden();
-    json[field] = 0.5;
+    json["content"] = std::string(test_case.legacy);
+
+    ICEBERG_UNWRAP_OR_FAIL(auto parsed, DataFileFromJson(json, specs_, schema_));
+    EXPECT_EQ(parsed.content, test_case.content);
+    ICEBERG_UNWRAP_OR_FAIL(auto serialized, ToJson(parsed, specs_, schema_));
+    EXPECT_EQ(serialized["content"], std::string(test_case.canonical));
+  }
+}
+
+TEST_F(DataFileJavaJsonTest, ParsesFieldIdPartitionsInSpecOrderAndTypedNulls) {
+  Schema schema{{SchemaField::MakeRequired(1, "id", int32()),
+                 SchemaField::MakeOptional(2, "region", string())},
+                0};
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto spec,
+      PartitionSpec::Make(schema, /*spec_id=*/0,
+                          {PartitionField(2, 1001, "region", Transform::Identity()),
+                           PartitionField(1, 1000, "id", Transform::Identity())},
+                          /*allow_missing_fields=*/false));
+  std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>> specs{
+      {0, std::shared_ptr<PartitionSpec>(std::move(spec))}};
+
+  auto json = JavaGolden();
+  json["partition"] = {{"1000", 7}, {"1001", "north"}};
+  ICEBERG_UNWRAP_OR_FAIL(auto parsed, DataFileFromJson(json, specs, schema));
+  ASSERT_EQ(parsed.partition.num_fields(), 2U);
+  EXPECT_EQ(parsed.partition.values()[0], Literal::String("north"));
+  EXPECT_EQ(parsed.partition.values()[1], Literal::Int(7));
+
+  json["partition"] = {{"1000", 7}};
+  ICEBERG_UNWRAP_OR_FAIL(auto sparse, DataFileFromJson(json, specs, schema));
+  ASSERT_EQ(sparse.partition.num_fields(), 2U);
+  EXPECT_TRUE(sparse.partition.values()[0].IsNull());
+  ASSERT_NE(sparse.partition.values()[0].type(), nullptr);
+  EXPECT_EQ(sparse.partition.values()[0].type()->type_id(), TypeId::kString);
+  EXPECT_EQ(sparse.partition.values()[1], Literal::Int(7));
+
+  json["partition"] = nlohmann::json::array({nullptr, 7});
+  ICEBERG_UNWRAP_OR_FAIL(auto positional, DataFileFromJson(json, specs, schema));
+  ASSERT_EQ(positional.partition.num_fields(), 2U);
+  EXPECT_TRUE(positional.partition.values()[0].IsNull());
+  ASSERT_NE(positional.partition.values()[0].type(), nullptr);
+  EXPECT_EQ(positional.partition.values()[0].type()->type_id(), TypeId::kString);
+  EXPECT_EQ(positional.partition.values()[1], Literal::Int(7));
+}
+
+TEST_F(DataFileJavaJsonTest, RejectsMalformedPartitionShapes) {
+  for (const auto& partition :
+       {nlohmann::json::array(), nlohmann::json::object({{"1000", 7}, {"9999", 8}}),
+        nlohmann::json("invalid")}) {
+    SCOPED_TRACE(partition.dump());
+    auto json = JavaGolden();
+    json["partition"] = partition;
     EXPECT_THAT(DataFileFromJson(json, specs_, schema_),
                 IsError(ErrorKind::kJsonParseError));
   }
+}
+
+TEST_F(DataFileJavaJsonTest, RejectsInvalidIntegersAndDuplicateMetricKeys) {
+  for (std::string_view field :
+       {"spec-id", "file-size-in-bytes", "record-count", "sort-order-id", "first-row-id",
+        "content-offset", "content-size-in-bytes"}) {
+    SCOPED_TRACE(field);
+    auto json = JavaGolden();
+    json[field] = 0.5;
+    auto result = DataFileFromJson(json, specs_, schema_);
+    EXPECT_THAT(result, IsError(ErrorKind::kJsonParseError));
+    EXPECT_THAT(result, HasErrorMessage(field));
+  }
+
+  auto expect_invalid = [&](nlohmann::json json, std::string_view field) {
+    auto result = DataFileFromJson(json, specs_, schema_);
+    EXPECT_THAT(result, IsError(ErrorKind::kJsonParseError));
+    EXPECT_THAT(result, HasErrorMessage(field));
+  };
+
+  auto fractional_key = JavaGolden();
+  fractional_key["column-sizes"] = {{"keys", {0.5}}, {"values", {10}}};
+  expect_invalid(fractional_key, "column-sizes");
+
+  auto fractional_value = JavaGolden();
+  fractional_value["column-sizes"] = {{"keys", {1}}, {"values", {0.5}}};
+  expect_invalid(fractional_value, "column-sizes");
+
+  auto fractional_bound_key = JavaGolden();
+  fractional_bound_key["lower-bounds"]["keys"] = {0.5};
+  expect_invalid(fractional_bound_key, "lower-bounds");
+
+  for (std::string_view field : {"split-offsets", "equality-ids"}) {
+    auto json = JavaGolden();
+    json[field] = {0.5};
+    expect_invalid(std::move(json), field);
+  }
+
+  auto oversized_spec_id = JavaGolden();
+  oversized_spec_id["spec-id"] = 2147483648ULL;
+  expect_invalid(oversized_spec_id, "spec-id");
+
+  auto oversized_record_count = JavaGolden();
+  oversized_record_count["record-count"] = 18446744073709551615ULL;
+  expect_invalid(oversized_record_count, "record-count");
 
   auto duplicate_keys = JavaGolden();
   duplicate_keys["column-sizes"] = {{"keys", {1, 1}}, {"values", {10, 20}}};
   auto result = DataFileFromJson(duplicate_keys, specs_, schema_);
   EXPECT_THAT(result, IsError(ErrorKind::kJsonParseError));
   EXPECT_THAT(result, HasErrorMessage("duplicate key"));
+
+  auto duplicate_bounds = JavaGolden();
+  duplicate_bounds["lower-bounds"] = {{"keys", {1, 1}}, {"values", {"01", "02"}}};
+  auto bounds_result = DataFileFromJson(duplicate_bounds, specs_, schema_);
+  EXPECT_THAT(bounds_result, IsError(ErrorKind::kJsonParseError));
+  EXPECT_THAT(bounds_result, HasErrorMessage("duplicate key"));
+}
+
+TEST_F(DataFileJavaJsonTest, RejectsMalformedHexMetadata) {
+  auto bad_bound = JavaGolden();
+  bad_bound["lower-bounds"]["values"] = {"0G"};
+  EXPECT_THAT(DataFileFromJson(bad_bound, specs_, schema_),
+              IsError(ErrorKind::kInvalidArgument));
+
+  auto non_string_bound = JavaGolden();
+  non_string_bound["lower-bounds"]["values"] = {7};
+  EXPECT_THAT(DataFileFromJson(non_string_bound, specs_, schema_),
+              IsError(ErrorKind::kJsonParseError));
+
+  auto bad_key_metadata = JavaGolden();
+  bad_key_metadata["key-metadata"] = "0G";
+  EXPECT_THAT(DataFileFromJson(bad_key_metadata, specs_, schema_),
+              IsError(ErrorKind::kInvalidArgument));
 }
 
 TEST_F(DataFileJavaJsonTest, AcceptsMissingPartitionAndNullMetricMaps) {
