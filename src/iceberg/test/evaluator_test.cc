@@ -330,7 +330,7 @@ TEST_F(EvaluatorTest, NotEqual) {
 
 TEST_F(EvaluatorTest, StartsWith) {
   auto string_schema = std::make_unique<Schema>(
-      std::vector<SchemaField>{SchemaField::MakeRequired(24, "s", string())});
+      std::vector<SchemaField>{SchemaField::MakeOptional(24, "s", string())});
   ICEBERG_UNWRAP_OR_FAIL(
       auto evaluator,
       Evaluator::Make(*string_schema, Expressions::StartsWith("s", "abc")));
