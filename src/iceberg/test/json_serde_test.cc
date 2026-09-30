@@ -244,9 +244,11 @@ TEST(JsonInternalTest, SchemaIdsRejectInvalidJsonIntegers) {
       {.pointer = nlohmann::json::json_pointer("/fields/1/type/element/value-id"),
        .key = "value-id"},
   }};
-  const std::array<std::pair<nlohmann::json, std::string_view>, 3> invalid_ids = {{
+  const std::array<std::pair<nlohmann::json, std::string_view>, 5> invalid_ids = {{
       {nlohmann::json(1.5), "must be an integer"},
       {nlohmann::json(true), "must be an integer"},
+      {nlohmann::json(-2147483649LL), "out of range"},
+      {nlohmann::json(2147483648LL), "out of range"},
       {nlohmann::json(2147483648ULL), "out of range"},
   }};
 
@@ -401,9 +403,11 @@ TEST(JsonInternalTest, PartitionIdsRejectInvalidJsonIntegers) {
        .key = "source-id"},
       {.pointer = nlohmann::json::json_pointer("/fields/0/field-id"), .key = "field-id"},
   }};
-  const std::array<std::pair<nlohmann::json, std::string_view>, 3> invalid_ids = {{
+  const std::array<std::pair<nlohmann::json, std::string_view>, 5> invalid_ids = {{
       {nlohmann::json(1.5), "must be an integer"},
       {nlohmann::json(true), "must be an integer"},
+      {nlohmann::json(-2147483649LL), "out of range"},
+      {nlohmann::json(2147483648LL), "out of range"},
       {nlohmann::json(2147483648ULL), "out of range"},
   }};
 
