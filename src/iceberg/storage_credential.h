@@ -22,8 +22,10 @@
 /// \file iceberg/storage_credential.h
 /// \brief Define storage credential metadata.
 
+#include <functional>
 #include <string>
 #include <unordered_map>
+#include <vector>
 
 #include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
@@ -47,5 +49,10 @@ struct ICEBERG_EXPORT StorageCredential {
 
   bool operator==(const StorageCredential& other) const = default;
 };
+
+/// \brief Re-fetches the currently valid vended credentials, without the
+/// FileIO knowing how they are delivered. Returns the whole vended list.
+using StorageCredentialRefresher =
+    std::function<Result<std::vector<StorageCredential>>()>;
 
 }  // namespace iceberg
