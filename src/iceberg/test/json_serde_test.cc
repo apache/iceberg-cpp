@@ -1073,7 +1073,8 @@ TEST(DataFileJsonTest, RoundTripRequiredFields) {
   EXPECT_EQ(json["file-path"], "s3://bucket/data/file.parquet");
   EXPECT_EQ(json["spec-id"], 0);
 
-  ICEBERG_UNWRAP_OR_FAIL(auto parsed, DataFileFromJson(json, UnpartitionedSpecs(), schema));
+  ICEBERG_UNWRAP_OR_FAIL(auto parsed,
+                         DataFileFromJson(json, UnpartitionedSpecs(), schema));
   EXPECT_EQ(parsed.file_path, data_file.file_path);
   EXPECT_EQ(parsed.record_count, data_file.record_count);
   EXPECT_EQ(parsed.file_size_in_bytes, data_file.file_size_in_bytes);
