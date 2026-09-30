@@ -18,15 +18,19 @@
  */
 
 #include <memory>
+#include <unordered_map>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 #include <nlohmann/json.hpp>
 
 #include "iceberg/expression/literal.h"
+#include "iceberg/file_format.h"
 #include "iceberg/json_serde_internal.h"
+#include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/name_mapping.h"
 #include "iceberg/partition_spec.h"
+#include "iceberg/row/partition_values.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_field.h"
 #include "iceberg/snapshot.h"
@@ -1042,6 +1046,38 @@ TEST(TableRequirementJsonTest, TableRequirementUnknownType) {
   auto result = TableRequirementFromJson(json);
   EXPECT_THAT(result, IsError(ErrorKind::kJsonParseError));
   EXPECT_THAT(result, HasErrorMessage("Unknown table requirement type"));
+}
+
+std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>> UnpartitionedSpecs() {
+  return {{PartitionSpec::kInitialSpecId, PartitionSpec::Unpartitioned()}};
+}
+
+DataFile MakeUnpartitionedDataFile(std::string path, int64_t record_count = 100,
+                                   int64_t file_size = 12345) {
+  DataFile data_file;
+  data_file.content = DataFile::Content::kData;
+  data_file.file_path = std::move(path);
+  data_file.file_format = FileFormatType::kParquet;
+  data_file.partition_spec_id = PartitionSpec::kInitialSpecId;
+  data_file.partition = PartitionValues{};
+  data_file.record_count = record_count;
+  data_file.file_size_in_bytes = file_size;
+  return data_file;
+}
+
+TEST(DataFileJsonTest, RoundTripRequiredFields) {
+  auto data_file = MakeUnpartitionedDataFile("s3://bucket/data/file.parquet");
+  Schema schema({}, 0);
+  ICEBERG_UNWRAP_OR_FAIL(auto json, ToJson(data_file, UnpartitionedSpecs(), schema));
+  EXPECT_EQ(json["content"], "data");
+  EXPECT_EQ(json["file-path"], "s3://bucket/data/file.parquet");
+  EXPECT_EQ(json["spec-id"], 0);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto parsed, DataFileFromJson(json, UnpartitionedSpecs(), schema));
+  EXPECT_EQ(parsed.file_path, data_file.file_path);
+  EXPECT_EQ(parsed.record_count, data_file.record_count);
+  EXPECT_EQ(parsed.file_size_in_bytes, data_file.file_size_in_bytes);
+  EXPECT_EQ(parsed.partition_spec_id, data_file.partition_spec_id);
 }
 
 }  // namespace iceberg
