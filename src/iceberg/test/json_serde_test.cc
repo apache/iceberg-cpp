@@ -1156,10 +1156,13 @@ TEST_F(DataFileJavaJsonTest, ParsesAllLegacyContentNames) {
     std::string_view canonical;
   };
   for (const auto& test_case :
-       {Case{"DATA", DataFile::Content::kData, "data"},
-        Case{"POSITION_DELETES", DataFile::Content::kPositionDeletes, "position-deletes"},
-        Case{"EQUALITY_DELETES", DataFile::Content::kEqualityDeletes,
-             "equality-deletes"}}) {
+       {Case{.legacy = "DATA", .content = DataFile::Content::kData, .canonical = "data"},
+        Case{.legacy = "POSITION_DELETES",
+             .content = DataFile::Content::kPositionDeletes,
+             .canonical = "position-deletes"},
+        Case{.legacy = "EQUALITY_DELETES",
+             .content = DataFile::Content::kEqualityDeletes,
+             .canonical = "equality-deletes"}}) {
     SCOPED_TRACE(test_case.legacy);
     auto json = JavaGolden();
     json["content"] = std::string(test_case.legacy);
