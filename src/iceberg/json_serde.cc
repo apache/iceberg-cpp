@@ -2142,7 +2142,8 @@ Result<DataFile> DataFileFromJson(
     return JsonParseError("Unknown data file content: {}", content_str);
   }
 
-  ICEBERG_ASSIGN_OR_RAISE(data_file.file_path, GetJsonValue<std::string>(json, kFilePath));
+  ICEBERG_ASSIGN_OR_RAISE(data_file.file_path,
+                          GetJsonValue<std::string>(json, kFilePath));
   ICEBERG_ASSIGN_OR_RAISE(auto format_str, GetJsonValue<std::string>(json, kFileFormat));
   ICEBERG_ASSIGN_OR_RAISE(data_file.file_format, FileFormatTypeFromString(format_str));
 
