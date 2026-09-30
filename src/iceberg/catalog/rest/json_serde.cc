@@ -156,7 +156,8 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> FileScanTasksFromJson(
     ICEBERG_ASSIGN_OR_RAISE(auto data_file_json,
                             GetJsonValue<nlohmann::json>(task_json, kDataFile));
     ICEBERG_ASSIGN_OR_RAISE(
-        auto data_file, DataFileFromJson(data_file_json, partition_spec_by_id, schema));
+        auto data_file,
+        iceberg::rest::DataFileFromJson(data_file_json, partition_spec_by_id, schema));
     // FIXME: REST scan-task DataFile JSON currently carries first-row-id,
     // but not the manifest-entry data sequence number. Until the REST API exposes
     // it, REST-planned tasks cannot inherit _last_updated_sequence_number.
@@ -244,7 +245,7 @@ Result<nlohmann::json> ScanTaskFieldsToJson(
       if (task->data_file()) {
         ICEBERG_ASSIGN_OR_RAISE(
             auto data_file_json,
-            ToJson(*task->data_file(), partition_specs_by_id, schema));
+            iceberg::rest::ToJson(*task->data_file(), partition_specs_by_id, schema));
         task_json[kDataFile] = std::move(data_file_json);
       }
       if (!task->delete_files().empty()) {
@@ -270,7 +271,8 @@ Result<nlohmann::json> ScanTaskFieldsToJson(
   }
   nlohmann::json delete_files_json = nlohmann::json::array();
   for (const auto& file : delete_files) {
-    ICEBERG_ASSIGN_OR_RAISE(auto df_json, ToJson(*file, partition_specs_by_id, schema));
+    ICEBERG_ASSIGN_OR_RAISE(auto df_json,
+                            iceberg::rest::ToJson(*file, partition_specs_by_id, schema));
     delete_files_json.push_back(std::move(df_json));
   }
   if (!delete_files_json.empty()) {
@@ -306,8 +308,9 @@ Status ScanTaskFieldsFromJson(
                           SafeDumpJson(delete_files_json));
   }
   for (const auto& entry_json : delete_files_json) {
-    ICEBERG_ASSIGN_OR_RAISE(auto delete_file,
-                            DataFileFromJson(entry_json, partition_specs_by_id, schema));
+    ICEBERG_ASSIGN_OR_RAISE(
+        auto delete_file,
+        iceberg::rest::DataFileFromJson(entry_json, partition_specs_by_id, schema));
     response.delete_files.push_back(std::make_shared<DataFile>(std::move(delete_file)));
   }
 
