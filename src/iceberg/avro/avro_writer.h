@@ -40,6 +40,8 @@ class ICEBERG_BUNDLE_EXPORT AvroWriter : public Writer {
 
   Status Write(ArrowArray* data) final;
 
+  Status Write(ArrowArray* data, const Schema& input_schema) final;
+
   Result<Metrics> metrics() final;
 
   Result<int64_t> length() final;

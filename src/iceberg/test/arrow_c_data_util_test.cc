@@ -27,18 +27,22 @@
 
 #include <arrow/c/bridge.h>
 #include <arrow/json/from_string.h>
+#include <arrow/memory_pool.h>
 #include <arrow/record_batch.h>
 #include <arrow/type.h>
 #include <gtest/gtest.h>
 
 #include "iceberg/arrow/arrow_register.h"
+#include "iceberg/arrow/arrow_status_internal.h"
 #include "iceberg/arrow_c_data_guard_internal.h"
 #include "iceberg/arrow_c_data_util_internal.h"
+#include "iceberg/expression/literal.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_field.h"
 #include "iceberg/schema_internal.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/type.h"
+#include "iceberg/util/macros.h"
 
 namespace iceberg::internal {
 
@@ -119,6 +123,32 @@ std::shared_ptr<Schema> MakeFullSchema() {
                                SchemaField::MakeOptional(3, "score", float64())});
 }
 
+Result<std::shared_ptr<::arrow::RecordBatch>> AlignForWrite(const Schema& input_schema,
+                                                            const Schema& write_schema,
+                                                            std::string_view input_json) {
+  auto input = MakeBatch(input_schema, input_json);
+  ArrowArray c_array;
+  ICEBERG_ARROW_RETURN_NOT_OK(::arrow::ExportRecordBatch(*input, &c_array));
+  ICEBERG_ASSIGN_OR_RAISE(auto aligned,
+                          arrow::AlignBatchForWrite(&c_array, input_schema, write_schema,
+                                                    ::arrow::default_memory_pool()));
+
+  ArrowSchema c_schema;
+  ICEBERG_RETURN_UNEXPECTED(ToArrowSchema(write_schema, &c_schema));
+  ICEBERG_ARROW_ASSIGN_OR_RETURN(auto arrow_schema, ::arrow::ImportSchema(&c_schema));
+  ICEBERG_ARROW_ASSIGN_OR_RETURN(auto result,
+                                 ::arrow::ImportRecordBatch(&aligned, arrow_schema));
+  return result;
+}
+
+SchemaField DefaultedField(int32_t id, std::string name, std::shared_ptr<Type> type,
+                           bool optional, Literal initial_default,
+                           Literal write_default) {
+  return SchemaField(id, std::move(name), std::move(type), optional, {},
+                     std::make_shared<const Literal>(std::move(initial_default)),
+                     std::make_shared<const Literal>(std::move(write_default)));
+}
+
 }  // namespace
 
 TEST(ProjectBatchTest, ProjectSelectedRowsWithoutColumnProjection) {
@@ -189,6 +219,72 @@ TEST(ProjectBatchTest, ProjectionRejectsNestedPruning) {
   auto projection = ProjectionContext::Make(input_schema, output_schema, nullptr);
 
   EXPECT_THAT(projection, IsError(ErrorKind::kInvalidArgument));
+}
+
+TEST(AlignBatchForWriteTest, ReordersAndMaterializesWriteDefaultsAndNulls) {
+  Schema input_schema({SchemaField::MakeOptional(2, "name", string()),
+                       SchemaField::MakeRequired(1, "id", int32())});
+  Schema write_schema({
+      SchemaField::MakeRequired(1, "id", int32()),
+      SchemaField::MakeOptional(2, "name", string()),
+      DefaultedField(3, "score", int32(), /*optional=*/false, Literal::Int(42),
+                     Literal::Int(7)),
+      SchemaField::MakeOptional(4, "comment", string()),
+  });
+
+  ICEBERG_UNWRAP_OR_FAIL(auto actual, AlignForWrite(input_schema, write_schema,
+                                                    R"([["alice",1],[null,2]])"));
+  auto expected = MakeBatch(write_schema, R"([[1,"alice",7,null],[2,null,7,null]])");
+  EXPECT_TRUE(actual->Equals(*expected)) << "actual:\n" << actual->ToString();
+}
+
+TEST(AlignBatchForWriteTest, RejectsMissingRequiredFieldWithoutWriteDefault) {
+  Schema input_schema({SchemaField::MakeRequired(1, "id", int32())});
+  Schema write_schema({SchemaField::MakeRequired(1, "id", int32()),
+                       SchemaField::MakeRequired(2, "required", string())});
+
+  auto result = AlignForWrite(input_schema, write_schema, R"([[1]])");
+
+  EXPECT_THAT(result, IsError(ErrorKind::kInvalidSchema));
+  EXPECT_THAT(result, HasErrorMessage("without a write-default"));
+}
+
+TEST(AlignBatchForWriteTest, RecursivelyAlignsNestedStructs) {
+  auto input_person = std::make_shared<StructType>(
+      std::vector<SchemaField>{SchemaField::MakeRequired(2, "name", string())});
+  auto write_person = std::make_shared<StructType>(std::vector<SchemaField>{
+      SchemaField::MakeRequired(2, "name", string()),
+      DefaultedField(3, "age", int32(), /*optional=*/false, Literal::Int(10),
+                     Literal::Int(18)),
+  });
+  Schema input_schema({SchemaField::MakeOptional(1, "person", std::move(input_person))});
+  Schema write_schema({SchemaField::MakeOptional(1, "person", std::move(write_person))});
+
+  ICEBERG_UNWRAP_OR_FAIL(auto actual, AlignForWrite(input_schema, write_schema,
+                                                    R"([[{"name":"alice"}],[null]])"));
+  auto expected = MakeBatch(write_schema, R"([[{"name":"alice","age":18}],[null]])");
+  EXPECT_TRUE(actual->Equals(*expected)) << "actual:\n" << actual->ToString();
+}
+
+TEST(AlignBatchForWriteTest, RejectsIncompatibleTypes) {
+  Schema input_schema({SchemaField::MakeRequired(1, "id", int32())});
+  Schema write_schema({SchemaField::MakeRequired(1, "id", int64())});
+
+  auto result = AlignForWrite(input_schema, write_schema, R"([[1]])");
+
+  EXPECT_THAT(result, IsError(ErrorKind::kNotSupported));
+  EXPECT_THAT(result, HasErrorMessage("type promotion is not allowed"));
+}
+
+TEST(AlignBatchForWriteTest, RejectsInputFieldsOutsideWriteSchema) {
+  Schema input_schema({SchemaField::MakeRequired(1, "id", int32()),
+                       SchemaField::MakeOptional(2, "extra", string())});
+  Schema write_schema({SchemaField::MakeRequired(1, "id", int32())});
+
+  auto result = AlignForWrite(input_schema, write_schema, R"([[1,"extra"]])");
+
+  EXPECT_THAT(result, IsError(ErrorKind::kInvalidSchema));
+  EXPECT_THAT(result, HasErrorMessage("Input field id 2"));
 }
 
 }  // namespace iceberg::internal

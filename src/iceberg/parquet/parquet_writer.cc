@@ -39,6 +39,7 @@
 
 #include "iceberg/arrow/arrow_io_internal.h"
 #include "iceberg/arrow/arrow_status_internal.h"
+#include "iceberg/arrow_c_data_util_internal.h"
 #include "iceberg/parquet/parquet_metrics_internal.h"
 #include "iceberg/parquet/parquet_schema_util_internal.h"
 #include "iceberg/schema_internal.h"
@@ -295,6 +296,13 @@ class ParquetWriter::Impl {
     return {};
   }
 
+  Status Write(ArrowArray* array, const Schema& input_schema) {
+    ICEBERG_ASSIGN_OR_RAISE(
+        auto aligned_array,
+        arrow::AlignBatchForWrite(array, input_schema, *schema_, pool_));
+    return Write(&aligned_array);
+  }
+
   // Close the writer and release resources
   Status Close() {
     if (writer_ == nullptr) {
@@ -370,6 +378,10 @@ Status ParquetWriter::Open(const WriterOptions& options) {
 }
 
 Status ParquetWriter::Write(ArrowArray* array) { return impl_->Write(array); }
+
+Status ParquetWriter::Write(ArrowArray* array, const Schema& input_schema) {
+  return impl_->Write(array, input_schema);
+}
 
 Status ParquetWriter::Close() { return impl_->Close(); }
 
