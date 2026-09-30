@@ -91,7 +91,7 @@ constexpr std::string_view kBaseMetadataJson =
 
 // LoadTable response where server config requests server-side scan planning.
 const std::string kLoadTableServerScanResponse =
-    std::string("{\"config\":{\"scan-planning-mode\":\"server\"},") +
+    std::string(R"({"config":{"scan-planning-mode":"server"},)") +
     std::string(kBaseMetadataJson) + "}";
 
 // LoadTable response with no scan-planning-mode set (defaults to client).
