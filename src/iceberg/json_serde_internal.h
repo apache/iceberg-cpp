@@ -29,6 +29,7 @@
 #include <nlohmann/json_fwd.hpp>
 
 #include "iceberg/encryption/encrypted_key.h"
+#include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/result.h"
 #include "iceberg/statistics_file.h"
 #include "iceberg/table_metadata.h"
@@ -425,5 +426,23 @@ ICEBERG_EXPORT nlohmann::json ToJson(const TableRequirement& requirement);
 /// \return A `TableRequirement` object or an error if the conversion fails.
 ICEBERG_EXPORT Result<std::unique_ptr<TableRequirement>> TableRequirementFromJson(
     const nlohmann::json& json);
+
+/// \brief Serializes a `DataFile` (content file) to JSON.
+///
+/// The JSON object uses the Iceberg REST ContentFile field names (`spec-id`,
+/// `file-path`, `file-format`, maps as `{keys, values}`, and so on). `spec-id` is
+/// required. Partition values are encoded with the given partition spec and schema.
+ICEBERG_EXPORT Result<nlohmann::json> ToJson(
+    const DataFile& data_file,
+    const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>&
+        partition_specs_by_id,
+    const Schema& schema);
+
+/// \brief Deserializes a JSON object into a `DataFile`.
+ICEBERG_EXPORT Result<DataFile> DataFileFromJson(
+    const nlohmann::json& json,
+    const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>&
+        partition_spec_by_id,
+    const Schema& schema);
 
 }  // namespace iceberg
