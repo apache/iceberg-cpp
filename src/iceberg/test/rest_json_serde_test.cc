@@ -2286,6 +2286,53 @@ TEST(FileScanTasksFromJsonTest, SingleTaskNoDeleteFiles) {
   EXPECT_EQ(task->residual_filter(), nullptr);
 }
 
+TEST(FileScanTasksFromJsonTest, AcceptsWholeFileStartAndLength) {
+  auto json = R"([{
+    "data-file": {
+      "content": "data",
+      "file-path": "s3://bucket/data/file.parquet",
+      "file-format": "PARQUET",
+      "spec-id": 0,
+      "partition": [],
+      "file-size-in-bytes": 12345,
+      "record-count": 100
+    },
+    "start": 0,
+    "length": 12345
+  }])"_json;
+
+  EXPECT_THAT(FileScanTasksFromJson(json, {}, UnpartitionedSpecs(), Schema({}, 0)),
+              IsOk());
+}
+
+TEST(FileScanTasksFromJsonTest, RejectsSplitTaskWhenEitherRangeFieldDiffers) {
+  auto json = R"([{
+    "data-file": {
+      "content": "data",
+      "file-path": "s3://bucket/data/file.parquet",
+      "file-format": "PARQUET",
+      "spec-id": 0,
+      "partition": [],
+      "file-size-in-bytes": 12345,
+      "record-count": 100
+    },
+    "start": 0,
+    "length": 12345
+  }])"_json;
+
+  for (const auto& [field, value] :
+       {std::pair<std::string_view, int64_t>{"start", 100},
+        std::pair<std::string_view, int64_t>{"length", 200}}) {
+    SCOPED_TRACE(field);
+    auto split_json = json;
+    split_json[0][field] = value;
+    auto result =
+        FileScanTasksFromJson(split_json, {}, UnpartitionedSpecs(), Schema({}, 0));
+    EXPECT_THAT(result, IsError(ErrorKind::kNotSupported));
+    EXPECT_THAT(result, HasErrorMessage("Split FileScanTask is not supported"));
+  }
+}
+
 TEST(FileScanTasksFromJsonTest, RowLineageSequence) {
   GTEST_SKIP() << "REST scan-task JSON does not expose data-sequence-number yet: "
                << "https://github.com/apache/iceberg-cpp/issues/834";

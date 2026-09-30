@@ -31,6 +31,7 @@
 #include <nlohmann/json.hpp>
 
 #include "iceberg/constants.h"
+#include "iceberg/expression/expressions.h"
 #include "iceberg/expression/json_serde_internal.h"
 #include "iceberg/expression/literal.h"
 #include "iceberg/file_format.h"
@@ -50,6 +51,7 @@
 #include "iceberg/table_metadata.h"
 #include "iceberg/table_properties.h"
 #include "iceberg/table_requirement.h"
+#include "iceberg/table_scan.h"
 #include "iceberg/table_update.h"
 #include "iceberg/transform.h"
 #include "iceberg/type.h"
@@ -248,7 +250,7 @@ constexpr std::string_view kRequirementAssertDefaultSortOrderID =
 constexpr std::string_view kLastAssignedFieldId = "last-assigned-field-id";
 constexpr std::string_view kLastAssignedPartitionId = "last-assigned-partition-id";
 
-// DataFile JSON (Iceberg REST ContentFile field names)
+// DataFile / FileScanTask JSON (Iceberg REST ContentFile field names)
 constexpr std::string_view kContent = "content";
 constexpr std::string_view kContentData = "data";
 constexpr std::string_view kContentPositionDeletes = "position-deletes";
@@ -269,6 +271,14 @@ constexpr std::string_view kEqualityIds = "equality-ids";
 constexpr std::string_view kReferencedDataFile = "referenced-data-file";
 constexpr std::string_view kContentOffset = "content-offset";
 constexpr std::string_view kContentSizeInBytes = "content-size-in-bytes";
+constexpr std::string_view kDataFile = "data-file";
+constexpr std::string_view kDeleteFiles = "delete-files";
+constexpr std::string_view kDeleteFileReferences = "delete-file-references";
+constexpr std::string_view kResidualFilter = "residual-filter";
+constexpr std::string_view kTaskType = "task-type";
+constexpr std::string_view kFileScanTaskType = "file-scan-task";
+constexpr std::string_view kStart = "start";
+constexpr std::string_view kLength = "length";
 constexpr std::string_view kMapKeys = "keys";
 constexpr std::string_view kMapValues = "values";
 
@@ -2430,6 +2440,145 @@ Result<nlohmann::json> ToJson(
     }
   }
   return DataFileToJsonUnchecked(data_file);
+}
+
+Result<nlohmann::json> ToJson(
+    const FileScanTask& task,
+    const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>&
+        partition_specs_by_id,
+    const Schema& schema) {
+  if (!task.data_file()) {
+    return ValidationFailed("Cannot serialize FileScanTask without data-file");
+  }
+  if (task.data_file()->content != DataFile::Content::kData) {
+    return ValidationFailed("FileScanTask data-file must have data content");
+  }
+
+  nlohmann::json json;
+  json[kTaskType] = kFileScanTaskType;
+  ICEBERG_ASSIGN_OR_RAISE(auto schema_json, ToJson(schema));
+  json[kSchema] = std::move(schema_json);
+
+  ICEBERG_ASSIGN_OR_RAISE(auto data_file_json,
+                          ToJson(*task.data_file(), partition_specs_by_id, schema));
+  const auto spec_id = task.data_file()->partition_spec_id.value();
+  json[kSpec] = ToJson(*partition_specs_by_id.at(spec_id));
+  json[kDataFile] = std::move(data_file_json);
+  json[kStart] = 0;
+  json[kLength] = task.data_file()->file_size_in_bytes;
+
+  nlohmann::json delete_files_json = nlohmann::json::array();
+  for (const auto& delete_file : task.delete_files()) {
+    if (!delete_file) {
+      return ValidationFailed("FileScanTask delete-files must not contain null");
+    }
+    if (delete_file->content == DataFile::Content::kData) {
+      return ValidationFailed("FileScanTask delete-file must have delete content");
+    }
+    if (delete_file->partition_spec_id != task.data_file()->partition_spec_id) {
+      return ValidationFailed(
+          "Invalid partition spec id from content file: expected = {}, actual = {}",
+          spec_id,
+          delete_file->partition_spec_id.has_value()
+              ? std::to_string(delete_file->partition_spec_id.value())
+              : "null");
+    }
+    ICEBERG_ASSIGN_OR_RAISE(auto delete_file_json,
+                            ToJson(*delete_file, partition_specs_by_id, schema));
+    delete_files_json.push_back(std::move(delete_file_json));
+  }
+  json[kDeleteFiles] = std::move(delete_files_json);
+
+  if (task.residual_filter()) {
+    ICEBERG_ASSIGN_OR_RAISE(auto residual_json, ToJson(*task.residual_filter()));
+    json[kResidualFilter] = std::move(residual_json);
+  }
+  return json;
+}
+
+Status CheckFileScanTaskNotSplit(int64_t start, int64_t length,
+                                 int64_t file_size_in_bytes) {
+  if (start != 0 || length != file_size_in_bytes) {
+    return NotSupported(
+        "Split FileScanTask is not supported: start={}, length={}, "
+        "file-size-in-bytes={}",
+        start, length, file_size_in_bytes);
+  }
+  return {};
+}
+
+Result<std::shared_ptr<FileScanTask>> FileScanTaskFromJson(const nlohmann::json& json) {
+  if (!json.is_object()) {
+    return JsonParseError("Cannot parse file scan task from a non-object: {}",
+                          SafeDumpJson(json));
+  }
+  ICEBERG_ASSIGN_OR_RAISE(auto task_type,
+                          GetJsonValueOptional<std::string>(json, kTaskType));
+  if (task_type.has_value() &&
+      !StringUtils::EqualsIgnoreCase(*task_type, kFileScanTaskType)) {
+    return JsonParseError("Unsupported scan task type: {}", *task_type);
+  }
+  if (json.contains(kDeleteFileReferences) && !json.at(kDeleteFileReferences).is_null()) {
+    return JsonParseError(
+        "Cannot parse FileScanTask with 'delete-file-references'; use "
+        "rest::FileScanTasksFromJson for REST scan responses");
+  }
+
+  ICEBERG_ASSIGN_OR_RAISE(auto schema_json, GetJsonValue<nlohmann::json>(json, kSchema));
+  ICEBERG_ASSIGN_OR_RAISE(auto schema, SchemaFromJson(schema_json));
+  auto shared_schema = std::shared_ptr<Schema>(std::move(schema));
+
+  ICEBERG_ASSIGN_OR_RAISE(auto spec_json, GetJsonValue<nlohmann::json>(json, kSpec));
+  ICEBERG_ASSIGN_OR_RAISE(auto spec_id, GetJsonInteger<int32_t>(spec_json, kSpecId));
+  ICEBERG_ASSIGN_OR_RAISE(auto spec,
+                          PartitionSpecFromJson(shared_schema, spec_json, spec_id));
+  auto shared_spec = std::shared_ptr<PartitionSpec>(std::move(spec));
+  const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>> partition_spec_by_id{
+      {shared_spec->spec_id(), shared_spec}};
+
+  ICEBERG_ASSIGN_OR_RAISE(auto data_file_json,
+                          GetJsonValue<nlohmann::json>(json, kDataFile));
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto data_file,
+      DataFileFromJson(data_file_json, partition_spec_by_id, *shared_schema));
+  if (data_file.content != DataFile::Content::kData) {
+    return JsonParseError("FileScanTask data-file must have data content");
+  }
+
+  ICEBERG_ASSIGN_OR_RAISE(auto start, GetJsonInteger<int64_t>(json, kStart));
+  ICEBERG_ASSIGN_OR_RAISE(auto length, GetJsonInteger<int64_t>(json, kLength));
+  ICEBERG_RETURN_UNEXPECTED(
+      CheckFileScanTaskNotSplit(start, length, data_file.file_size_in_bytes));
+
+  std::vector<std::shared_ptr<DataFile>> delete_files;
+  if (json.contains(kDeleteFiles)) {
+    ICEBERG_ASSIGN_OR_RAISE(auto delete_files_json,
+                            GetJsonValue<nlohmann::json>(json, kDeleteFiles));
+    if (!delete_files_json.is_array()) {
+      return JsonParseError("Cannot parse delete files from non-array: {}",
+                            SafeDumpJson(delete_files_json));
+    }
+    for (const auto& delete_file_json : delete_files_json) {
+      ICEBERG_ASSIGN_OR_RAISE(
+          auto delete_file,
+          DataFileFromJson(delete_file_json, partition_spec_by_id, *shared_schema));
+      if (delete_file.content == DataFile::Content::kData) {
+        return JsonParseError("FileScanTask delete-file must have delete content");
+      }
+      delete_files.push_back(std::make_shared<DataFile>(std::move(delete_file)));
+    }
+  }
+
+  std::shared_ptr<Expression> residual_filter = Expressions::AlwaysTrue();
+  if (json.contains(kResidualFilter)) {
+    ICEBERG_ASSIGN_OR_RAISE(auto filter_json,
+                            GetJsonValue<nlohmann::json>(json, kResidualFilter));
+    ICEBERG_ASSIGN_OR_RAISE(residual_filter, ExpressionFromJson(filter_json));
+  }
+
+  return std::make_shared<FileScanTask>(std::make_shared<DataFile>(std::move(data_file)),
+                                        std::move(delete_files),
+                                        std::move(residual_filter));
 }
 
 }  // namespace iceberg
