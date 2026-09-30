@@ -1095,10 +1095,11 @@ Result<std::unique_ptr<PartitionField>> PartitionFieldFromJson(
                                           std::move(transform));
 }
 
-Result<std::unique_ptr<PartitionSpec>> PartitionSpecFromJson(
-    const std::shared_ptr<Schema>& schema, const nlohmann::json& json,
-    int32_t default_spec_id) {
-  ICEBERG_ASSIGN_OR_RAISE(auto spec_id, GetJsonValue<int32_t>(json, kSpecId));
+namespace {
+
+Result<std::unique_ptr<PartitionSpec>> ParseBoundPartitionSpec(
+    const Schema& schema, const nlohmann::json& json, int32_t spec_id,
+    bool allow_missing_fields) {
   ICEBERG_ASSIGN_OR_RAISE(auto fields, GetJsonValue<nlohmann::json>(json, kFields));
 
   std::vector<PartitionField> partition_fields;
@@ -1107,17 +1108,18 @@ Result<std::unique_ptr<PartitionSpec>> PartitionSpecFromJson(
     partition_fields.push_back(std::move(*partition_field));
   }
 
-  std::unique_ptr<PartitionSpec> spec;
-  if (default_spec_id == spec_id) {
-    ICEBERG_ASSIGN_OR_RAISE(
-        spec, PartitionSpec::Make(*schema, spec_id, std::move(partition_fields),
-                                  /*allow_missing_fields=*/false));
-  } else {
-    ICEBERG_ASSIGN_OR_RAISE(
-        spec, PartitionSpec::Make(*schema, spec_id, std::move(partition_fields),
-                                  /*allow_missing_fields=*/true));
-  }
-  return spec;
+  return PartitionSpec::Make(schema, spec_id, std::move(partition_fields),
+                             allow_missing_fields);
+}
+
+}  // namespace
+
+Result<std::unique_ptr<PartitionSpec>> PartitionSpecFromJson(
+    const std::shared_ptr<Schema>& schema, const nlohmann::json& json,
+    int32_t default_spec_id) {
+  ICEBERG_ASSIGN_OR_RAISE(auto spec_id, GetJsonValue<int32_t>(json, kSpecId));
+  return ParseBoundPartitionSpec(*schema, json, spec_id,
+                                 /*allow_missing_fields=*/spec_id != default_spec_id);
 }
 
 Result<std::unique_ptr<PartitionSpec>> PartitionSpecFromJson(const nlohmann::json& json) {
@@ -2530,8 +2532,10 @@ Result<std::shared_ptr<FileScanTask>> FileScanTaskFromJson(const nlohmann::json&
 
   ICEBERG_ASSIGN_OR_RAISE(auto spec_json, GetJsonValue<nlohmann::json>(json, kSpec));
   ICEBERG_ASSIGN_OR_RAISE(auto spec_id, GetJsonInteger<int32_t>(spec_json, kSpecId));
+  // An embedded task spec may reference columns dropped from its embedded schema.
   ICEBERG_ASSIGN_OR_RAISE(auto spec,
-                          PartitionSpecFromJson(shared_schema, spec_json, spec_id));
+                          ParseBoundPartitionSpec(*shared_schema, spec_json, spec_id,
+                                                  /*allow_missing_fields=*/true));
   auto shared_spec = std::shared_ptr<PartitionSpec>(std::move(spec));
   const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>> partition_spec_by_id{
       {shared_spec->spec_id(), shared_spec}};

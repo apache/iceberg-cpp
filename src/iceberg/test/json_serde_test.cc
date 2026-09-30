@@ -1445,6 +1445,14 @@ TEST_F(FileScanTaskJsonTest, SerializesEmptyDeleteFilesArray) {
   EXPECT_EQ(json["length"], 10);
 }
 
+TEST_F(FileScanTaskJsonTest, AcceptsMissingDeleteFiles) {
+  auto json = JavaGolden();
+  json.erase("delete-files");
+
+  ICEBERG_UNWRAP_OR_FAIL(auto task, FileScanTaskFromJson(json));
+  EXPECT_TRUE(task->delete_files().empty());
+}
+
 TEST_F(FileScanTaskJsonTest, RequiresJavaCoreFields) {
   for (std::string_view field : {"schema", "spec", "start", "length"}) {
     for (bool use_null : {false, true}) {
@@ -1469,10 +1477,9 @@ TEST_F(FileScanTaskJsonTest, RejectsSplitTasksUsingExactOrCondition) {
     int64_t length;
     bool supported;
   };
-  for (const auto& test_case :
-       {Case{.start = 0, .length = 10, .supported = true},
-        Case{.start = 1, .length = 10, .supported = false},
-        Case{.start = 0, .length = 9, .supported = false}}) {
+  for (const auto& test_case : {Case{.start = 0, .length = 10, .supported = true},
+                                Case{.start = 1, .length = 10, .supported = false},
+                                Case{.start = 0, .length = 9, .supported = false}}) {
     SCOPED_TRACE(testing::Message()
                  << "start=" << test_case.start << ", length=" << test_case.length);
     auto json = JavaGolden();
@@ -1576,6 +1583,36 @@ TEST_F(FileScanTaskJsonTest, ParsesNullPartitionValues) {
     ASSERT_NE(value.type(), nullptr);
     EXPECT_EQ(value.type()->type_id(), TypeId::kInt);
   }
+}
+
+TEST_F(FileScanTaskJsonTest, RoundTripsHistoricalSpecWithDroppedSourceField) {
+  auto json = JavaGolden();
+  json["schema"]["schema-id"] = 1;
+  json["schema"]["fields"] = nlohmann::json::array();
+  json["data-file"]["partition"] = nlohmann::json::array({nullptr});
+  json["delete-files"][0]["partition"] = nlohmann::json::array({nullptr});
+
+  auto historical_schema =
+      std::make_shared<Schema>(std::vector<SchemaField>{}, /*schema_id=*/1);
+  // Parsing a table's default spec remains strict.
+  auto default_spec_result = PartitionSpecFromJson(historical_schema, json["spec"], 0);
+  EXPECT_THAT(default_spec_result, IsError(ErrorKind::kInvalidArgument));
+  EXPECT_THAT(default_spec_result,
+              HasErrorMessage("Cannot find source column for partition field"));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto task, FileScanTaskFromJson(json));
+  ASSERT_NE(task->data_file(), nullptr);
+  ASSERT_EQ(task->delete_files().size(), 1U);
+  for (const auto& file : {task->data_file(), task->delete_files()[0]}) {
+    ASSERT_EQ(file->partition.num_fields(), 1U);
+    const auto& value = file->partition.values()[0];
+    EXPECT_TRUE(value.IsNull());
+    ASSERT_NE(value.type(), nullptr);
+    EXPECT_EQ(value.type()->type_id(), TypeId::kUnknown);
+  }
+
+  ICEBERG_UNWRAP_OR_FAIL(auto serialized, ToJson(*task, specs_, *historical_schema));
+  EXPECT_EQ(serialized, json);
 }
 
 TEST_F(FileScanTaskJsonTest, AcceptsMissingPartitionLikeJava) {

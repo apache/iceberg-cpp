@@ -457,7 +457,7 @@ ICEBERG_EXPORT Result<DataFile> DataFileFromJson(
 /// - `data-file` (required): ContentFile JSON
 /// - `start` (required): always 0 because split tasks are unsupported
 /// - `length` (required): always the data file size
-/// - `delete-files` (required): array of ContentFile JSON
+/// - `delete-files` (optional on input; always emitted): array of ContentFile JSON
 /// - `residual-filter` (optional): Expression JSON
 ICEBERG_EXPORT Result<nlohmann::json> ToJson(
     const FileScanTask& task,
