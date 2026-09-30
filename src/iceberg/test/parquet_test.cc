@@ -848,8 +848,13 @@ TEST_F(ParquetReaderTest, ReadSplit) {
       {.offset = split_offsets[1] + 1, .length = std::numeric_limits<size_t>::max()},
       {.offset = 0, .length = split_offsets[0]},
   };
-  std::vector<std::string> expected_json = {
-      R"([[1, 0], [2, 1], [3, 2]])", R"([[1, 0], [2, 1]])", R"([[3, 2]])", "", "",
+  // Each batch stays within one row group, including a split covering the whole file.
+  std::vector<std::vector<std::string>> expected_json = {
+      {R"([[1, 0], [2, 1]])", R"([[3, 2]])"},
+      {R"([[1, 0], [2, 1]])"},
+      {R"([[3, 2]])"},
+      {},
+      {},
   };
 
   ReaderProperties reader_properties;
@@ -866,8 +871,8 @@ TEST_F(ParquetReaderTest, ReadSplit) {
                                                      });
     ASSERT_THAT(reader_result, IsOk());
     auto reader = std::move(reader_result.value());
-    if (!expected_json[i].empty()) {
-      ASSERT_NO_FATAL_FAILURE(VerifyNextBatch(*reader, expected_json[i]));
+    for (const auto& batch_json : expected_json[i]) {
+      ASSERT_NO_FATAL_FAILURE(VerifyNextBatch(*reader, batch_json));
     }
     ASSERT_NO_FATAL_FAILURE(VerifyExhausted(*reader));
   }

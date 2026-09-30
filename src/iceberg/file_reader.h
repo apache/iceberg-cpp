@@ -80,6 +80,11 @@ class ICEBERG_EXPORT ReaderProperties : public ConfigBase<ReaderProperties> {
   /// Only the Parquet reader honors this option; other readers ignore it.
   /// Default: false (use 32-bit offset list).
   inline static Entry<bool> kArrowUseLargeList{"read.arrow.use-large-list", false};
+  /// \brief Use footer statistics to prune Parquet row groups.
+  inline static Entry<bool> kParquetRowGroupFilter{
+      "read.parquet.row-group-filter.enabled", true};
+  /// \brief Case sensitivity when binding unbound filter references.
+  inline static Entry<bool> kFilterCaseSensitive{"read.filter.case-sensitive", true};
   /// \brief Skip GenericDatum in Avro reader for better performance.
   /// When true, decode directly from Avro to Arrow without GenericDatum intermediate.
   /// Default: true (skip GenericDatum for better performance).

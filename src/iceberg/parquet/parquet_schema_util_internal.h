@@ -38,6 +38,13 @@ struct ParquetExtraAttributes : public FieldProjection::ExtraAttributes {
   std::optional<int32_t> column_id;
 };
 
+/// \brief Validate a Parquet field's Arrow type against the expected Iceberg type.
+/// Checks supported type promotions, time units, and decimal precision/scale.
+/// Nested fields require separate validation of their children; geospatial types
+/// require additional checks against the Parquet column descriptor.
+Status ValidateParquetTypeCompatibility(
+    const Type& expected_type, const ::parquet::arrow::SchemaField& parquet_field);
+
 /// \brief Project an Iceberg Schema onto a Parquet Schema.
 ///
 /// This function creates a projection from an Iceberg Schema to a Parquet schema.
