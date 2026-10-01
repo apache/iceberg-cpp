@@ -19,6 +19,7 @@
 
 #include <memory>
 #include <optional>
+#include <ranges>
 #include <string>
 #include <vector>
 
@@ -26,6 +27,7 @@
 #include <gtest/gtest.h>
 
 #include "iceberg/expression/expressions.h"
+#include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/snapshot.h"
 #include "iceberg/table_scan.h"
 #include "iceberg/test/scan_test_base.h"
@@ -41,9 +43,17 @@ const std::string& TaskFilePath(const std::shared_ptr<ChangelogScanTask>& task) 
   if (auto deleted = std::dynamic_pointer_cast<DeletedDataFileScanTask>(task)) {
     return deleted->data_file()->file_path;
   }
+  if (auto deleted_rows = std::dynamic_pointer_cast<DeletedRowsScanTask>(task)) {
+    return deleted_rows->data_file()->file_path;
+  }
 
   static const std::string empty_path;
   return empty_path;
+}
+
+std::vector<std::string> FilePaths(const std::vector<std::shared_ptr<DataFile>>& files) {
+  return files | std::views::transform([](const auto& file) { return file->file_path; }) |
+         std::ranges::to<std::vector<std::string>>();
 }
 
 /// \brief Sort changelog scan tasks for deterministic ordering.
@@ -65,7 +75,100 @@ void SortTasks(std::vector<std::shared_ptr<TaskType>>& tasks) {
 
 }  // namespace
 
-class IncrementalChangelogScanTest : public ScanTestBase {};
+class IncrementalChangelogScanTest : public ScanTestBase {
+ protected:
+  std::shared_ptr<DataFile> MakeDeleteFile(
+      DataFile::Content content, FileFormatType format, const std::string& path,
+      std::optional<std::string> referenced_data_file = std::nullopt,
+      PartitionValues partition = PartitionValues(std::vector<Literal>{}),
+      std::shared_ptr<PartitionSpec> spec = nullptr) {
+    auto effective_spec = spec ? spec : unpartitioned_spec_;
+    DataFile file{
+        .content = content,
+        .file_path = path,
+        .file_format = format,
+        .partition = std::move(partition),
+        .record_count = 1,
+        .file_size_in_bytes = 10,
+        .partition_spec_id = effective_spec->spec_id(),
+    };
+    if (content == DataFile::Content::kEqualityDeletes) {
+      file.equality_ids = {1};
+    }
+    if (format == FileFormatType::kPuffin) {
+      file.referenced_data_file = std::move(referenced_data_file);
+      file.content_offset = 4L;
+      file.content_size_in_bytes = 6L;
+    }
+    return std::make_shared<DataFile>(std::move(file));
+  }
+
+  std::shared_ptr<DataFile> MakeDV(
+      const std::string& path, const std::string& referenced_data_file,
+      PartitionValues partition = PartitionValues(std::vector<Literal>{}),
+      std::shared_ptr<PartitionSpec> spec = nullptr) {
+    return MakeDeleteFile(DataFile::Content::kPositionDeletes, FileFormatType::kPuffin,
+                          path, referenced_data_file, std::move(partition),
+                          std::move(spec));
+  }
+
+  std::vector<ManifestFile> ManifestsOf(const Snapshot& snapshot) {
+    SnapshotReader reader(&snapshot);
+    auto manifests = reader.Manifests(file_io_);
+    EXPECT_THAT(manifests, IsOk());
+    if (!manifests.has_value()) {
+      return {};
+    }
+    return {manifests->begin(), manifests->end()};
+  }
+
+  std::shared_ptr<Snapshot> MakeSnapshot(int8_t format_version, int64_t snapshot_id,
+                                         int64_t parent_snapshot_id,
+                                         int64_t sequence_number,
+                                         const std::vector<ManifestFile>& manifests,
+                                         const std::string& operation) {
+    auto manifest_list = WriteManifestList(
+        format_version, snapshot_id, parent_snapshot_id, sequence_number, manifests);
+    return std::make_shared<Snapshot>(Snapshot{
+        .snapshot_id = snapshot_id,
+        .parent_snapshot_id = parent_snapshot_id,
+        .sequence_number = sequence_number,
+        .timestamp_ms = TimePointMsFromUnixMs(1609459200000L + sequence_number * 1000),
+        .manifest_list = manifest_list,
+        .summary = {{"operation", operation}},
+        .schema_id = schema_->schema_id(),
+    });
+  }
+
+  std::shared_ptr<TableMetadata> MakeMetadata(
+      const std::vector<std::shared_ptr<Snapshot>>& snapshots,
+      std::shared_ptr<PartitionSpec> default_spec = nullptr) {
+    int64_t current_snapshot_id = snapshots.back()->snapshot_id;
+    return MakeTableMetadata(snapshots, current_snapshot_id,
+                             {{"main", std::make_shared<SnapshotRef>(SnapshotRef{
+                                           .snapshot_id = current_snapshot_id,
+                                           .retention = SnapshotRef::Branch{}})}},
+                             std::move(default_spec));
+  }
+
+  Result<std::vector<std::shared_ptr<ChangelogScanTask>>> PlanChangelog(
+      std::shared_ptr<TableMetadata> metadata, std::optional<int64_t> from_snapshot_id,
+      int64_t to_snapshot_id, std::shared_ptr<Expression> filter = nullptr) {
+    ICEBERG_ASSIGN_OR_RAISE(
+        auto builder, MakeScanBuilder<IncrementalChangelogScan>(std::move(metadata)));
+    if (from_snapshot_id.has_value()) {
+      builder->FromSnapshot(from_snapshot_id.value());
+    }
+    builder->ToSnapshot(to_snapshot_id);
+    if (filter != nullptr) {
+      builder->Filter(std::move(filter));
+    }
+    ICEBERG_ASSIGN_OR_RAISE(auto scan, builder->Build());
+    ICEBERG_ASSIGN_OR_RAISE(auto tasks, scan->PlanFiles());
+    SortTasks(tasks);
+    return tasks;
+  }
+};
 
 TEST_P(IncrementalChangelogScanTest, DataFilters) {
   auto version = GetParam();
@@ -552,68 +655,452 @@ TEST_P(IncrementalChangelogScanTest, PlanDeletedRowLineage) {
   EXPECT_EQ(deleted->commit_snapshot_id(), 2000L);
 }
 
-TEST_P(IncrementalChangelogScanTest, DeleteFilesAreNotSupported) {
+TEST_P(IncrementalChangelogScanTest, DeletionVectorOnExistingFile) {
   auto version = GetParam();
-  if (version < 2) {
-    GTEST_SKIP() << "Delete files only exist in format version 2+";
+  if (version < 3) {
+    GTEST_SKIP() << "Deletion vectors require format version 3";
   }
 
   auto snapshot_a =
       MakeAppendSnapshot(version, 1000L, std::nullopt, 1L,
                          {"/path/to/file_a.parquet", "/path/to/file_b.parquet"});
 
-  // Create a snapshot with delete files (positional deletes)
-  // This simulates table.newRowDelta().addDeletes(FILE_A_DELETES).commit()
-  std::vector<ManifestEntry> data_entries;
-  auto file_a = MakeDataFile("/path/to/file_a.parquet");
-  data_entries.push_back(MakeEntry(ManifestStatus::kExisting, 1000L, 1L, file_a));
-  auto file_b = MakeDataFile("/path/to/file_b.parquet");
-  data_entries.push_back(MakeEntry(ManifestStatus::kExisting, 1000L, 1L, file_b));
-  auto data_manifest = WriteDataManifest(version, 2000L, std::move(data_entries));
+  auto dv_a = MakeDV("/path/to/dv_a.puffin", "/path/to/file_a.parquet");
+  auto manifests_b = ManifestsOf(*snapshot_a);
+  manifests_b.push_back(WriteDeleteManifest(
+      version, 2000L, {MakeEntry(ManifestStatus::kAdded, 2000L, 2L, dv_a)},
+      unpartitioned_spec_));
+  auto snapshot_b = MakeSnapshot(version, 2000L, 1000L, 2L, manifests_b, "delete");
 
-  // Create a delete file entry
-  auto delete_file = std::make_shared<DataFile>(DataFile{
-      .content = DataFile::Content::kPositionDeletes,
-      .file_path = "/path/to/file_a_deletes.parquet",
-      .file_format = FileFormatType::kParquet,
-      .partition = PartitionValues(std::vector<Literal>{}),
-      .record_count = 1,
-      .file_size_in_bytes = 10,
-      .sort_order_id = 0,
-      .partition_spec_id = unpartitioned_spec_->spec_id(),
-  });
-  std::vector<ManifestEntry> delete_entries;
-  delete_entries.push_back(MakeEntry(ManifestStatus::kAdded, 2000L, 2L, delete_file));
-  auto delete_manifest =
-      WriteDeleteManifest(version, 2000L, std::move(delete_entries), unpartitioned_spec_);
+  auto metadata = MakeMetadata({snapshot_a, snapshot_b});
 
-  auto manifest_list =
-      WriteManifestList(version, 2000L, 1000L, 2L, {data_manifest, delete_manifest});
-  TimePointMs timestamp_ms = TimePointMsFromUnixMs(1609459200000L + 2000);
-  auto snapshot_b = std::make_shared<Snapshot>(Snapshot{
-      .snapshot_id = 2000L,
-      .parent_snapshot_id = 1000L,
-      .sequence_number = 2L,
-      .timestamp_ms = timestamp_ms,
-      .manifest_list = manifest_list,
-      .summary = {{"operation", "delete"}},
-      .schema_id = schema_->schema_id(),
-  });
+  ICEBERG_UNWRAP_OR_FAIL(auto tasks, PlanChangelog(metadata, 1000L, 2000L));
+  ASSERT_EQ(tasks.size(), 1);
+  auto task = std::dynamic_pointer_cast<DeletedRowsScanTask>(tasks[0]);
+  ASSERT_NE(task, nullptr);
+  EXPECT_EQ(task->change_ordinal(), 0);
+  EXPECT_EQ(task->commit_snapshot_id(), 2000L);
+  EXPECT_EQ(task->operation(), ChangelogOperation::kDelete);
+  EXPECT_EQ(task->data_file()->file_path, "/path/to/file_a.parquet");
+  EXPECT_THAT(FilePaths(task->added_deletes()),
+              ::testing::ElementsAre("/path/to/dv_a.puffin"));
+  EXPECT_TRUE(task->existing_deletes().empty());
+  EXPECT_EQ(task->files_count(), 2);
+  EXPECT_EQ(task->size_bytes(), 16);
+  EXPECT_EQ(task->estimated_row_count(), 1);
 
-  auto metadata = MakeTableMetadata(
-      {snapshot_a, snapshot_b}, 2000L,
-      {{"main", std::make_shared<SnapshotRef>(SnapshotRef{
-                    .snapshot_id = 2000L, .retention = SnapshotRef::Branch{}})}});
+  ICEBERG_UNWRAP_OR_FAIL(auto all_tasks, PlanChangelog(metadata, std::nullopt, 2000L));
+  ASSERT_EQ(all_tasks.size(), 3);
+  EXPECT_EQ(all_tasks[0]->change_ordinal(), 0);
+  EXPECT_EQ(all_tasks[0]->operation(), ChangelogOperation::kInsert);
+  EXPECT_EQ(all_tasks[1]->change_ordinal(), 0);
+  EXPECT_EQ(all_tasks[1]->operation(), ChangelogOperation::kInsert);
+  EXPECT_EQ(all_tasks[2]->change_ordinal(), 1);
+  EXPECT_NE(std::dynamic_pointer_cast<DeletedRowsScanTask>(all_tasks[2]), nullptr);
+}
 
-  ICEBERG_UNWRAP_OR_FAIL(auto builder,
-                         MakeScanBuilder<IncrementalChangelogScan>(metadata));
-  builder->ToSnapshot(2000L);
-  ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
-  EXPECT_THAT(scan->PlanFiles(),
-              ::testing::AllOf(
-                  IsError(ErrorKind::kNotSupported),
-                  HasErrorMessage(
-                      "Delete files are currently not supported in changelog scans")));
+TEST_P(IncrementalChangelogScanTest, ReplacedDeletionVector) {
+  auto version = GetParam();
+  if (version < 3) {
+    GTEST_SKIP() << "Deletion vectors require format version 3";
+  }
+
+  auto snapshot_a =
+      MakeAppendSnapshot(version, 1000L, std::nullopt, 1L, {"/path/to/file_a.parquet"});
+
+  auto dv_a1 = MakeDV("/path/to/dv_a1.puffin", "/path/to/file_a.parquet");
+  auto manifests_b = ManifestsOf(*snapshot_a);
+  manifests_b.push_back(WriteDeleteManifest(
+      version, 2000L, {MakeEntry(ManifestStatus::kAdded, 2000L, 2L, dv_a1)},
+      unpartitioned_spec_));
+  auto snapshot_b = MakeSnapshot(version, 2000L, 1000L, 2L, manifests_b, "delete");
+
+  auto dv_a2 = MakeDV("/path/to/dv_a2.puffin", "/path/to/file_a.parquet");
+  auto manifests_c = ManifestsOf(*snapshot_a);
+  manifests_c.push_back(
+      WriteDeleteManifest(version, 3000L,
+                          {MakeEntry(ManifestStatus::kAdded, 3000L, 3L, dv_a2),
+                           MakeEntry(ManifestStatus::kDeleted, 3000L, 2L, dv_a1)},
+                          unpartitioned_spec_));
+  auto snapshot_c = MakeSnapshot(version, 3000L, 2000L, 3L, manifests_c, "delete");
+
+  auto metadata = MakeMetadata({snapshot_a, snapshot_b, snapshot_c});
+
+  ICEBERG_UNWRAP_OR_FAIL(auto tasks, PlanChangelog(metadata, 2000L, 3000L));
+  ASSERT_EQ(tasks.size(), 1);
+  auto task = std::dynamic_pointer_cast<DeletedRowsScanTask>(tasks[0]);
+  ASSERT_NE(task, nullptr);
+  EXPECT_EQ(task->change_ordinal(), 0);
+  EXPECT_EQ(task->commit_snapshot_id(), 3000L);
+  EXPECT_EQ(task->data_file()->file_path, "/path/to/file_a.parquet");
+  EXPECT_THAT(FilePaths(task->added_deletes()),
+              ::testing::ElementsAre("/path/to/dv_a2.puffin"));
+  EXPECT_THAT(FilePaths(task->existing_deletes()),
+              ::testing::ElementsAre("/path/to/dv_a1.puffin"));
+  EXPECT_EQ(task->files_count(), 3);
+  EXPECT_EQ(task->size_bytes(), 22);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto all_tasks, PlanChangelog(metadata, 1000L, 3000L));
+  ASSERT_EQ(all_tasks.size(), 2);
+  auto first = std::dynamic_pointer_cast<DeletedRowsScanTask>(all_tasks[0]);
+  ASSERT_NE(first, nullptr);
+  EXPECT_EQ(first->change_ordinal(), 0);
+  EXPECT_EQ(first->commit_snapshot_id(), 2000L);
+  EXPECT_THAT(FilePaths(first->added_deletes()),
+              ::testing::ElementsAre("/path/to/dv_a1.puffin"));
+  EXPECT_TRUE(first->existing_deletes().empty());
+  auto second = std::dynamic_pointer_cast<DeletedRowsScanTask>(all_tasks[1]);
+  ASSERT_NE(second, nullptr);
+  EXPECT_EQ(second->change_ordinal(), 1);
+  EXPECT_EQ(second->commit_snapshot_id(), 3000L);
+  EXPECT_THAT(FilePaths(second->added_deletes()),
+              ::testing::ElementsAre("/path/to/dv_a2.puffin"));
+  EXPECT_THAT(FilePaths(second->existing_deletes()),
+              ::testing::ElementsAre("/path/to/dv_a1.puffin"));
+}
+
+TEST_P(IncrementalChangelogScanTest, DeletionVectorForAddedFile) {
+  auto version = GetParam();
+  if (version < 3) {
+    GTEST_SKIP() << "Deletion vectors require format version 3";
+  }
+
+  auto snapshot_a =
+      MakeAppendSnapshot(version, 1000L, std::nullopt, 1L, {"/path/to/file_a.parquet"});
+
+  auto file_c = MakeDataFile("/path/to/file_c.parquet");
+  auto dv_c = MakeDV("/path/to/dv_c.puffin", "/path/to/file_c.parquet");
+  auto manifests_b = ManifestsOf(*snapshot_a);
+  manifests_b.push_back(WriteDataManifest(
+      version, 2000L, {MakeEntry(ManifestStatus::kAdded, 2000L, 2L, file_c)}));
+  manifests_b.push_back(WriteDeleteManifest(
+      version, 2000L, {MakeEntry(ManifestStatus::kAdded, 2000L, 2L, dv_c)},
+      unpartitioned_spec_));
+  auto snapshot_b = MakeSnapshot(version, 2000L, 1000L, 2L, manifests_b, "overwrite");
+
+  auto metadata = MakeMetadata({snapshot_a, snapshot_b});
+
+  ICEBERG_UNWRAP_OR_FAIL(auto tasks, PlanChangelog(metadata, 1000L, 2000L));
+  ASSERT_EQ(tasks.size(), 1);
+  auto task = std::dynamic_pointer_cast<AddedRowsScanTask>(tasks[0]);
+  ASSERT_NE(task, nullptr);
+  EXPECT_EQ(task->change_ordinal(), 0);
+  EXPECT_EQ(task->commit_snapshot_id(), 2000L);
+  EXPECT_EQ(task->operation(), ChangelogOperation::kInsert);
+  EXPECT_EQ(task->data_file()->file_path, "/path/to/file_c.parquet");
+  EXPECT_THAT(FilePaths(task->delete_files()),
+              ::testing::ElementsAre("/path/to/dv_c.puffin"));
+  EXPECT_EQ(task->files_count(), 2);
+}
+
+TEST_P(IncrementalChangelogScanTest, DeletedFileWithDeletionVector) {
+  auto version = GetParam();
+  if (version < 3) {
+    GTEST_SKIP() << "Deletion vectors require format version 3";
+  }
+
+  auto snapshot_a =
+      MakeAppendSnapshot(version, 1000L, std::nullopt, 1L,
+                         {"/path/to/file_a.parquet", "/path/to/file_b.parquet"});
+
+  auto dv_a = MakeDV("/path/to/dv_a.puffin", "/path/to/file_a.parquet");
+  auto manifests_b = ManifestsOf(*snapshot_a);
+  manifests_b.push_back(WriteDeleteManifest(
+      version, 2000L, {MakeEntry(ManifestStatus::kAdded, 2000L, 2L, dv_a)},
+      unpartitioned_spec_));
+  auto snapshot_b = MakeSnapshot(version, 2000L, 1000L, 2L, manifests_b, "delete");
+
+  std::vector<ManifestFile> manifests_c;
+  manifests_c.push_back(
+      WriteDataManifest(version, 3000L,
+                        {MakeEntry(ManifestStatus::kDeleted, 3000L, 1L,
+                                   MakeDataFile("/path/to/file_a.parquet")),
+                         MakeEntry(ManifestStatus::kExisting, 1000L, 1L,
+                                   MakeDataFile("/path/to/file_b.parquet"))}));
+  manifests_c.push_back(WriteDeleteManifest(
+      version, 3000L, {MakeEntry(ManifestStatus::kDeleted, 3000L, 2L, dv_a)},
+      unpartitioned_spec_));
+  auto snapshot_c = MakeSnapshot(version, 3000L, 2000L, 3L, manifests_c, "delete");
+
+  auto metadata = MakeMetadata({snapshot_a, snapshot_b, snapshot_c});
+
+  ICEBERG_UNWRAP_OR_FAIL(auto tasks, PlanChangelog(metadata, 2000L, 3000L));
+  ASSERT_EQ(tasks.size(), 1);
+  auto task = std::dynamic_pointer_cast<DeletedDataFileScanTask>(tasks[0]);
+  ASSERT_NE(task, nullptr);
+  EXPECT_EQ(task->change_ordinal(), 0);
+  EXPECT_EQ(task->commit_snapshot_id(), 3000L);
+  EXPECT_EQ(task->operation(), ChangelogOperation::kDelete);
+  EXPECT_EQ(task->data_file()->file_path, "/path/to/file_a.parquet");
+  EXPECT_THAT(FilePaths(task->existing_deletes()),
+              ::testing::ElementsAre("/path/to/dv_a.puffin"));
+}
+
+TEST_P(IncrementalChangelogScanTest, DeletionVectorsRespectDataFilter) {
+  auto version = GetParam();
+  if (version < 3) {
+    GTEST_SKIP() << "Deletion vectors require format version 3";
+  }
+
+  auto partition_a = PartitionValues({Literal::Int(8)});
+  auto partition_b = PartitionValues({Literal::Int(1)});
+  auto snapshot_a =
+      MakeAppendSnapshotWithPartitionValues(version, 1000L, std::nullopt, 1L,
+                                            {{"/path/to/file_a.parquet", partition_a},
+                                             {"/path/to/file_b.parquet", partition_b}},
+                                            partitioned_spec_);
+
+  auto dv_a = MakeDV("/path/to/dv_a.puffin", "/path/to/file_a.parquet", partition_a,
+                     partitioned_spec_);
+  auto dv_b = MakeDV("/path/to/dv_b.puffin", "/path/to/file_b.parquet", partition_b,
+                     partitioned_spec_);
+  auto manifests_b = ManifestsOf(*snapshot_a);
+  manifests_b.push_back(
+      WriteDeleteManifest(version, 2000L,
+                          {MakeEntry(ManifestStatus::kAdded, 2000L, 2L, dv_a),
+                           MakeEntry(ManifestStatus::kAdded, 2000L, 2L, dv_b)},
+                          partitioned_spec_));
+  auto snapshot_b = MakeSnapshot(version, 2000L, 1000L, 2L, manifests_b, "delete");
+
+  auto metadata = MakeMetadata({snapshot_a, snapshot_b}, partitioned_spec_);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto tasks,
+                         PlanChangelog(metadata, 1000L, 2000L,
+                                       Expressions::Equal("data", Literal::String("k"))));
+  ASSERT_EQ(tasks.size(), 1);
+  auto task = std::dynamic_pointer_cast<DeletedRowsScanTask>(tasks[0]);
+  ASSERT_NE(task, nullptr);
+  EXPECT_EQ(task->data_file()->file_path, "/path/to/file_b.parquet");
+  EXPECT_THAT(FilePaths(task->added_deletes()),
+              ::testing::ElementsAre("/path/to/dv_b.puffin"));
+}
+
+TEST_P(IncrementalChangelogScanTest, DeletionVectorsOutsideRangeAreIgnored) {
+  auto version = GetParam();
+  if (version < 3) {
+    GTEST_SKIP() << "Deletion vectors require format version 3";
+  }
+
+  auto snapshot_a =
+      MakeAppendSnapshot(version, 1000L, std::nullopt, 1L, {"/path/to/file_a.parquet"});
+
+  auto dv_a = MakeDV("/path/to/dv_a.puffin", "/path/to/file_a.parquet");
+  auto manifests_b = ManifestsOf(*snapshot_a);
+  manifests_b.push_back(WriteDeleteManifest(
+      version, 2000L, {MakeEntry(ManifestStatus::kAdded, 2000L, 2L, dv_a)},
+      unpartitioned_spec_));
+  auto snapshot_b = MakeSnapshot(version, 2000L, 1000L, 2L, manifests_b, "delete");
+
+  auto manifests_c = ManifestsOf(*snapshot_b);
+  manifests_c.push_back(
+      WriteDataManifest(version, 3000L,
+                        {MakeEntry(ManifestStatus::kAdded, 3000L, 3L,
+                                   MakeDataFile("/path/to/file_b.parquet"))}));
+  auto snapshot_c = MakeSnapshot(version, 3000L, 2000L, 3L, manifests_c, "append");
+
+  auto metadata = MakeMetadata({snapshot_a, snapshot_b, snapshot_c});
+
+  ICEBERG_UNWRAP_OR_FAIL(auto tasks, PlanChangelog(metadata, 2000L, 3000L));
+  ASSERT_EQ(tasks.size(), 1);
+  auto task = std::dynamic_pointer_cast<AddedRowsScanTask>(tasks[0]);
+  ASSERT_NE(task, nullptr);
+  EXPECT_EQ(task->commit_snapshot_id(), 3000L);
+  EXPECT_EQ(task->data_file()->file_path, "/path/to/file_b.parquet");
+  EXPECT_TRUE(task->delete_files().empty());
+}
+
+TEST_P(IncrementalChangelogScanTest, DeleteFilesRequireFormatVersion3) {
+  auto version = GetParam();
+  if (version != 2) {
+    GTEST_SKIP() << "Delete files exist in format version 2+ and are supported in 3+";
+  }
+
+  auto snapshot_a =
+      MakeAppendSnapshot(version, 1000L, std::nullopt, 1L, {"/path/to/file_a.parquet"});
+
+  auto delete_file =
+      MakeDeleteFile(DataFile::Content::kPositionDeletes, FileFormatType::kParquet,
+                     "/path/to/file_a_deletes.parquet");
+  auto manifests_b = ManifestsOf(*snapshot_a);
+  manifests_b.push_back(WriteDeleteManifest(
+      version, 2000L, {MakeEntry(ManifestStatus::kAdded, 2000L, 2L, delete_file)},
+      unpartitioned_spec_));
+  auto snapshot_b = MakeSnapshot(version, 2000L, 1000L, 2L, manifests_b, "delete");
+
+  auto metadata = MakeMetadata({snapshot_a, snapshot_b});
+
+  EXPECT_THAT(PlanChangelog(metadata, std::nullopt, 2000L),
+              ::testing::AllOf(IsError(ErrorKind::kNotSupported),
+                               HasErrorMessage("Delete files are only supported in "
+                                               "changelog scans of format version 3")));
+}
+
+TEST_P(IncrementalChangelogScanTest, PositionDeleteFilesAreNotSupported) {
+  auto version = GetParam();
+  if (version < 3) {
+    GTEST_SKIP() << "Delete files are rejected before format version 3";
+  }
+
+  auto snapshot_a =
+      MakeAppendSnapshot(version, 1000L, std::nullopt, 1L, {"/path/to/file_a.parquet"});
+
+  auto delete_file =
+      MakeDeleteFile(DataFile::Content::kPositionDeletes, FileFormatType::kParquet,
+                     "/path/to/file_a_deletes.parquet");
+  auto manifests_b = ManifestsOf(*snapshot_a);
+  manifests_b.push_back(WriteDeleteManifest(
+      version, 2000L, {MakeEntry(ManifestStatus::kAdded, 2000L, 2L, delete_file)},
+      unpartitioned_spec_));
+  auto snapshot_b = MakeSnapshot(version, 2000L, 1000L, 2L, manifests_b, "delete");
+
+  auto metadata = MakeMetadata({snapshot_a, snapshot_b});
+
+  EXPECT_THAT(PlanChangelog(metadata, std::nullopt, 2000L),
+              ::testing::AllOf(IsError(ErrorKind::kNotSupported),
+                               HasErrorMessage("Position delete files are not supported "
+                                               "in changelog scans")));
+}
+
+TEST_P(IncrementalChangelogScanTest, EqualityDeleteFilesAreNotSupported) {
+  auto version = GetParam();
+  if (version < 3) {
+    GTEST_SKIP() << "Delete files are rejected before format version 3";
+  }
+
+  auto snapshot_a =
+      MakeAppendSnapshot(version, 1000L, std::nullopt, 1L, {"/path/to/file_a.parquet"});
+
+  auto delete_file =
+      MakeDeleteFile(DataFile::Content::kEqualityDeletes, FileFormatType::kParquet,
+                     "/path/to/eq_deletes.parquet");
+  auto manifests_b = ManifestsOf(*snapshot_a);
+  manifests_b.push_back(WriteDeleteManifest(
+      version, 2000L, {MakeEntry(ManifestStatus::kAdded, 2000L, 2L, delete_file)},
+      unpartitioned_spec_));
+  auto snapshot_b = MakeSnapshot(version, 2000L, 1000L, 2L, manifests_b, "delete");
+
+  auto metadata = MakeMetadata({snapshot_a, snapshot_b});
+
+  EXPECT_THAT(PlanChangelog(metadata, std::nullopt, 2000L),
+              ::testing::AllOf(IsError(ErrorKind::kNotSupported),
+                               HasErrorMessage("Equality delete files are not supported "
+                                               "in changelog scans")));
+}
+
+TEST_P(IncrementalChangelogScanTest, PositionDeleteFilesOutsideRangeAreRejected) {
+  auto version = GetParam();
+  if (version < 3) {
+    GTEST_SKIP() << "Delete files are rejected before format version 3";
+  }
+
+  auto snapshot_a =
+      MakeAppendSnapshot(version, 1000L, std::nullopt, 1L, {"/path/to/file_a.parquet"});
+
+  auto delete_file =
+      MakeDeleteFile(DataFile::Content::kPositionDeletes, FileFormatType::kParquet,
+                     "/path/to/file_a_deletes.parquet");
+  auto manifests_b = ManifestsOf(*snapshot_a);
+  manifests_b.push_back(WriteDeleteManifest(
+      version, 2000L, {MakeEntry(ManifestStatus::kAdded, 2000L, 2L, delete_file)},
+      unpartitioned_spec_));
+  auto snapshot_b = MakeSnapshot(version, 2000L, 1000L, 2L, manifests_b, "delete");
+
+  auto manifests_c = ManifestsOf(*snapshot_b);
+  manifests_c.push_back(
+      WriteDataManifest(version, 3000L,
+                        {MakeEntry(ManifestStatus::kAdded, 3000L, 3L,
+                                   MakeDataFile("/path/to/file_b.parquet"))}));
+  auto snapshot_c = MakeSnapshot(version, 3000L, 2000L, 3L, manifests_c, "append");
+
+  auto metadata = MakeMetadata({snapshot_a, snapshot_b, snapshot_c});
+
+  EXPECT_THAT(PlanChangelog(metadata, 2000L, 3000L),
+              ::testing::AllOf(IsError(ErrorKind::kNotSupported),
+                               HasErrorMessage("Position delete files are not supported "
+                                               "in changelog scans")));
+}
+
+TEST_P(IncrementalChangelogScanTest, EqualityDeleteFilesOutsideRangeAreRejected) {
+  auto version = GetParam();
+  if (version < 3) {
+    GTEST_SKIP() << "Delete files are rejected before format version 3";
+  }
+
+  auto snapshot_a =
+      MakeAppendSnapshot(version, 1000L, std::nullopt, 1L, {"/path/to/file_a.parquet"});
+
+  auto delete_file =
+      MakeDeleteFile(DataFile::Content::kEqualityDeletes, FileFormatType::kParquet,
+                     "/path/to/eq_deletes.parquet");
+  auto manifests_b = ManifestsOf(*snapshot_a);
+  manifests_b.push_back(WriteDeleteManifest(
+      version, 2000L, {MakeEntry(ManifestStatus::kAdded, 2000L, 2L, delete_file)},
+      unpartitioned_spec_));
+  auto snapshot_b = MakeSnapshot(version, 2000L, 1000L, 2L, manifests_b, "delete");
+
+  auto manifests_c = ManifestsOf(*snapshot_b);
+  manifests_c.push_back(
+      WriteDataManifest(version, 3000L,
+                        {MakeEntry(ManifestStatus::kAdded, 3000L, 3L,
+                                   MakeDataFile("/path/to/file_b.parquet"))}));
+  auto snapshot_c = MakeSnapshot(version, 3000L, 2000L, 3L, manifests_c, "append");
+
+  auto metadata = MakeMetadata({snapshot_a, snapshot_b, snapshot_c});
+
+  EXPECT_THAT(PlanChangelog(metadata, 2000L, 3000L),
+              ::testing::AllOf(IsError(ErrorKind::kNotSupported),
+                               HasErrorMessage("Equality delete files are not supported "
+                                               "in changelog scans")));
+}
+
+TEST_P(IncrementalChangelogScanTest, DeleteFilesRemovedBeforeRangeAreIgnored) {
+  auto version = GetParam();
+  if (version < 3) {
+    GTEST_SKIP() << "Delete files are rejected before format version 3";
+  }
+
+  auto snapshot_a =
+      MakeAppendSnapshot(version, 1000L, std::nullopt, 1L, {"/path/to/file_a.parquet"});
+
+  auto delete_file =
+      MakeDeleteFile(DataFile::Content::kPositionDeletes, FileFormatType::kParquet,
+                     "/path/to/file_a_deletes.parquet");
+  auto manifests_b = ManifestsOf(*snapshot_a);
+  manifests_b.push_back(WriteDeleteManifest(
+      version, 2000L, {MakeEntry(ManifestStatus::kAdded, 2000L, 2L, delete_file)},
+      unpartitioned_spec_));
+  auto snapshot_b = MakeSnapshot(version, 2000L, 1000L, 2L, manifests_b, "delete");
+
+  auto dv_a = MakeDV("/path/to/dv_a.puffin", "/path/to/file_a.parquet");
+  auto manifests_c = ManifestsOf(*snapshot_a);
+  manifests_c.push_back(
+      WriteDeleteManifest(version, 3000L,
+                          {MakeEntry(ManifestStatus::kAdded, 3000L, 3L, dv_a),
+                           MakeEntry(ManifestStatus::kDeleted, 3000L, 2L, delete_file)},
+                          unpartitioned_spec_));
+  auto snapshot_c = MakeSnapshot(version, 3000L, 2000L, 3L, manifests_c, "delete");
+
+  auto manifests_d = ManifestsOf(*snapshot_c);
+  manifests_d.push_back(
+      WriteDataManifest(version, 4000L,
+                        {MakeEntry(ManifestStatus::kAdded, 4000L, 4L,
+                                   MakeDataFile("/path/to/file_b.parquet"))}));
+  auto snapshot_d = MakeSnapshot(version, 4000L, 3000L, 4L, manifests_d, "append");
+
+  auto metadata = MakeMetadata({snapshot_a, snapshot_b, snapshot_c, snapshot_d});
+
+  ICEBERG_UNWRAP_OR_FAIL(auto tasks, PlanChangelog(metadata, 3000L, 4000L));
+  ASSERT_EQ(tasks.size(), 1);
+  auto task = std::dynamic_pointer_cast<AddedRowsScanTask>(tasks[0]);
+  ASSERT_NE(task, nullptr);
+  EXPECT_EQ(task->commit_snapshot_id(), 4000L);
+  EXPECT_EQ(task->data_file()->file_path, "/path/to/file_b.parquet");
+  EXPECT_TRUE(task->delete_files().empty());
+
+  EXPECT_THAT(PlanChangelog(metadata, 2000L, 4000L),
+              ::testing::AllOf(IsError(ErrorKind::kNotSupported),
+                               HasErrorMessage("Position delete files are not supported "
+                                               "in changelog scans")));
 }
 
 INSTANTIATE_TEST_SUITE_P(IncrementalChangelogScanVersions, IncrementalChangelogScanTest,
