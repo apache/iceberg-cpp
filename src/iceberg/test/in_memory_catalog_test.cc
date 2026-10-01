@@ -158,6 +158,49 @@ TEST_F(InMemoryCatalogTest, RegisterTable) {
   ASSERT_EQ(table.value()->location(), "s3://bucket/test/location");
 }
 
+TEST_F(InMemoryCatalogTest, CreateTableNonexistentNamespace) {
+  TableIdentifier table_ident{.ns = Namespace{.levels = {"missing"}}, .name = "t1"};
+  auto schema = std::make_shared<Schema>(
+      std::vector<SchemaField>{SchemaField::MakeRequired(1, "id", int64())},
+      /*schema_id=*/1);
+  auto spec = PartitionSpec::Unpartitioned();
+  auto sort_order = SortOrder::Unsorted();
+
+  // Use an explicit location whose metadata directory already exists (the local
+  // FileIO does not create parent dirs). A write-before-validate bug would land a
+  // detectable orphan there. GenerateTestTableLocation is unique per test and
+  // auto-cleaned via created_temp_paths_.
+  auto table_location = GenerateTestTableLocation(table_ident.name);
+
+  auto table =
+      catalog_->CreateTable(table_ident, schema, spec, sort_order, table_location, {});
+  EXPECT_THAT(table, IsError(ErrorKind::kNoSuchNamespace));
+
+  // The namespace check must run before any metadata file is written, so a
+  // failed create must leave no orphaned metadata file behind.
+  std::error_code ec;
+  size_t metadata_files = 0;
+  for (auto it = std::filesystem::recursive_directory_iterator(table_location, ec);
+       it != std::filesystem::recursive_directory_iterator(); it.increment(ec)) {
+    if (it->path().extension() == ".json") {
+      ++metadata_files;
+    }
+  }
+  EXPECT_EQ(metadata_files, 0);
+}
+
+TEST_F(InMemoryCatalogTest, RegisterTableNonexistentNamespace) {
+  TableIdentifier table_ident{.ns = Namespace{.levels = {"missing"}}, .name = "t1"};
+
+  // The namespace is validated before the metadata is read, so registering into a
+  // missing namespace reports NoSuchNamespace rather than a read error, even when the
+  // metadata location is unreadable. (NamespaceExists returns a Result<bool> carrying
+  // false, not an error, so the Result must be unwrapped before it is tested.)
+  auto table =
+      catalog_->RegisterTable(table_ident, "/nonexistent/iceberg/v1.metadata.json");
+  EXPECT_THAT(table, IsError(ErrorKind::kNoSuchNamespace));
+}
+
 TEST_F(InMemoryCatalogTest, RefreshTable) {
   TableIdentifier table_ident{.ns = {}, .name = "t1"};
   auto schema = std::make_shared<Schema>(
