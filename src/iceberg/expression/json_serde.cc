@@ -86,7 +86,7 @@ nlohmann::json MakeTransformJson(std::string_view transform_str,
 
 /// Helper to check if a JSON term represents a transform
 bool IsTransformTerm(const nlohmann::json& json) {
-  return json.is_object() && json.contains(kType) &&
+  return json.is_object() && json.contains(kType) && json[kType].is_string() &&
          json[kType].get<std::string>() == kTransform && json.contains(kTerm);
 }
 
@@ -228,8 +228,9 @@ nlohmann::json ToJson(const BoundTransform& transform) {
 
 Result<std::unique_ptr<NamedReference>> NamedReferenceFromJson(
     const nlohmann::json& json) {
-  if (json.is_object() && json.contains(kType) &&
-      json[kType].get<std::string>() == kReference && json.contains(kTerm)) {
+  if (json.is_object() && json.contains(kType) && json[kType].is_string() &&
+      json[kType].get<std::string>() == kReference && json.contains(kTerm) &&
+      json[kTerm].is_string()) {
     return NamedReference::Make(json[kTerm].get<std::string>());
   }
   if (!json.is_string()) [[unlikely]] {
@@ -331,7 +332,7 @@ Result<int64_t> GetInt64Checked(const nlohmann::json& json) {
 
 Result<Literal> LiteralFromJson(const nlohmann::json& json, const Type* type) {
   // If {"type": "literal", "value": <actual>} wrapper is present, unwrap it first.
-  if (json.is_object() && json.contains(kType) &&
+  if (json.is_object() && json.contains(kType) && json[kType].is_string() &&
       json[kType].get<std::string>() == kLiteral && json.contains(kValue)) {
     return LiteralFromJson(json[kValue], type);
   }
@@ -499,7 +500,7 @@ Result<Literal> LiteralFromJson(const nlohmann::json& json, const Type* type) {
 
 Result<Literal> LiteralFromJson(const nlohmann::json& json) {
   // Unwrap {"type": "literal", "value": <actual>} wrapper
-  if (json.is_object() && json.contains(kType) &&
+  if (json.is_object() && json.contains(kType) && json[kType].is_string() &&
       json[kType].get<std::string>() == kLiteral && json.contains(kValue)) {
     return LiteralFromJson(json[kValue]);
   }
@@ -619,7 +620,7 @@ Result<std::shared_ptr<Expression>> ExpressionFromJson(const nlohmann::json& jso
                           SafeDumpJson(json));
   }
 
-  if (json[kType].get<std::string>() == kLiteral) {
+  if (json[kType].is_string() && json[kType].get<std::string>() == kLiteral) {
     if (!json.contains(kValue) || !json[kValue].is_boolean()) [[unlikely]] {
       return JsonParseError(
           "Expression of type 'literal' must have a boolean 'value' field: {}",
