@@ -22,6 +22,7 @@
 /// \file iceberg/table_scan.h
 /// \brief Define table scan APIs and scan task types.
 
+#include <cstdint>
 #include <functional>
 #include <memory>
 #include <optional>
@@ -71,9 +72,31 @@ class ICEBERG_EXPORT FileScanTask : public ScanTask {
   /// \param data_file The data file to read.
   /// \param delete_files Delete files that apply to this data file.
   /// \param filter Optional residual filter to apply after reading.
+  /// \note The data file, delete files, and residual filter must not be mutated while
+  /// a planning or reading stream uses this task.
   explicit FileScanTask(std::shared_ptr<DataFile> data_file,
                         std::vector<std::shared_ptr<DataFile>> delete_files = {},
                         std::shared_ptr<Expression> filter = nullptr);
+
+  /// \brief Make a task for a validated half-open byte range [start, start + length).
+  ///
+  /// A range covering the entire file is represented as a whole-file task. An empty
+  /// range is valid only for an empty whole file. The data file, delete files, and
+  /// residual filter are shared with the resulting task and must not be mutated
+  /// while a planning or reading stream uses it.
+  static Result<std::shared_ptr<FileScanTask>> MakeSplit(
+      std::shared_ptr<DataFile> data_file, int64_t start, int64_t length,
+      std::vector<std::shared_ptr<DataFile>> delete_files = {},
+      std::shared_ptr<Expression> filter = nullptr);
+
+  /// \brief The inclusive byte offset where this task starts, or zero for a whole file.
+  int64_t start() const { return range_ ? range_->start : 0; }
+
+  /// \brief The byte length of this task, or the current size of a whole file.
+  int64_t length() const;
+
+  /// \brief Whether this task reads a proper subset of its data file.
+  bool is_split() const { return range_.has_value(); }
 
   /// \brief The data file that should be read by this scan task.
   const std::shared_ptr<DataFile>& data_file() const { return data_file_; }
@@ -92,9 +115,20 @@ class ICEBERG_EXPORT FileScanTask : public ScanTask {
   int64_t estimated_row_count() const override;
 
  private:
+  struct Range {
+    int64_t start;
+    int64_t length;
+    int64_t file_size;
+  };
+
+  FileScanTask(std::shared_ptr<DataFile> data_file,
+               std::vector<std::shared_ptr<DataFile>> delete_files,
+               std::shared_ptr<Expression> filter, Range range);
+
   std::shared_ptr<DataFile> data_file_;
   std::vector<std::shared_ptr<DataFile>> delete_files_;
   std::shared_ptr<Expression> residual_filter_;
+  std::optional<Range> range_;
 };
 
 /// \brief Stream of file scan tasks.

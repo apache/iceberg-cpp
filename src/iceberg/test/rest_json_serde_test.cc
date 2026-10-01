@@ -17,9 +17,12 @@
  * under the License.
  */
 
+#include <limits>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 #include <gmock/gmock.h>
@@ -2280,8 +2283,195 @@ TEST(FileScanTasksFromJsonTest, SingleTaskNoDeleteFiles) {
   const auto& task = result.value()[0];
   ASSERT_NE(task->data_file(), nullptr);
   EXPECT_EQ(task->data_file()->file_path, "s3://bucket/data/file.parquet");
+  EXPECT_EQ(task->start(), 0);
+  EXPECT_EQ(task->length(), 12345);
+  EXPECT_FALSE(task->is_split());
   EXPECT_TRUE(task->delete_files().empty());
   EXPECT_EQ(task->residual_filter(), nullptr);
+}
+
+TEST(FileScanTasksFromJsonTest, AcceptsWholeFileStartAndLength) {
+  auto json = R"([{
+    "data-file": {
+      "content": "data",
+      "file-path": "s3://bucket/data/file.parquet",
+      "file-format": "PARQUET",
+      "spec-id": 0,
+      "partition": [],
+      "file-size-in-bytes": 12345,
+      "record-count": 100
+    },
+    "start": 0,
+    "length": 12345
+  }])"_json;
+
+  auto result = FileScanTasksFromJson(json, {}, UnpartitionedSpecs(), Schema({}, 0));
+  ASSERT_THAT(result, IsOk());
+  ASSERT_EQ(result.value().size(), 1U);
+  EXPECT_EQ(result.value()[0]->start(), 0);
+  EXPECT_EQ(result.value()[0]->length(), 12345);
+  EXPECT_FALSE(result.value()[0]->is_split());
+}
+
+TEST(FileScanTasksFromJsonTest, RejectsNullOrMissingRangeEndpoint) {
+  auto json = R"([{
+    "data-file": {
+      "content": "data",
+      "file-path": "s3://bucket/data/file.parquet",
+      "file-format": "PARQUET",
+      "spec-id": 0,
+      "partition": [],
+      "file-size-in-bytes": 12345,
+      "record-count": 100
+    },
+    "start": 0,
+    "length": 12345
+  }])"_json;
+
+  for (std::string_view missing_field : {"start", "length"}) {
+    SCOPED_TRACE(missing_field);
+    auto incomplete_json = json;
+    incomplete_json[0].erase(std::string(missing_field));
+    auto result =
+        FileScanTasksFromJson(incomplete_json, {}, UnpartitionedSpecs(), Schema({}, 0));
+    EXPECT_THAT(result, IsError(ErrorKind::kJsonParseError));
+    EXPECT_THAT(result, HasErrorMessage("must be provided together"));
+  }
+
+  json[0]["start"] = nullptr;
+  json[0]["length"] = nullptr;
+  auto null_result = FileScanTasksFromJson(json, {}, UnpartitionedSpecs(), Schema({}, 0));
+  EXPECT_THAT(null_result, IsError(ErrorKind::kJsonParseError));
+  EXPECT_THAT(null_result, HasErrorMessage("'start' must be an integer"));
+}
+
+TEST(FileScanTasksFromJsonTest, RejectsInvalidRangeIntegers) {
+  auto valid_json = R"([{
+    "data-file": {
+      "content": "data",
+      "file-path": "s3://bucket/data/file.parquet",
+      "file-format": "PARQUET",
+      "spec-id": 0,
+      "partition": [],
+      "file-size-in-bytes": 12345,
+      "record-count": 100
+    },
+    "start": 0,
+    "length": 12345
+  }])"_json;
+
+  for (std::string_view field : {"start", "length"}) {
+    for (const auto& [invalid_value, expected_error] :
+         {std::pair<nlohmann::json, std::string_view>{0.5, "must be an integer"},
+          {true, "must be an integer"},
+          {"0", "must be an integer"},
+          {18446744073709551615ULL, "out of range"}}) {
+      SCOPED_TRACE(testing::Message() << field << "=" << invalid_value.dump());
+      auto json = valid_json;
+      json[0][field] = invalid_value;
+
+      auto result = FileScanTasksFromJson(json, {}, UnpartitionedSpecs(), Schema({}, 0));
+      EXPECT_THAT(result, IsError(ErrorKind::kJsonParseError));
+      EXPECT_THAT(result, HasErrorMessage(field));
+      EXPECT_THAT(result, HasErrorMessage(expected_error));
+    }
+  }
+}
+
+TEST(FileScanTasksFromJsonTest, AcceptsValidPartialRanges) {
+  auto json = R"([{
+    "data-file": {
+      "content": "data",
+      "file-path": "s3://bucket/data/file.parquet",
+      "file-format": "PARQUET",
+      "spec-id": 0,
+      "partition": [],
+      "file-size-in-bytes": 12345,
+      "record-count": 100
+    },
+    "start": 0,
+    "length": 12345
+  }])"_json;
+
+  for (const auto& [start, length] :
+       {std::pair<int64_t, int64_t>{0, 200}, {100, 200}, {12245, 100}}) {
+    SCOPED_TRACE(testing::Message() << "start=" << start << ", length=" << length);
+    auto split_json = json;
+    split_json[0]["start"] = start;
+    split_json[0]["length"] = length;
+    auto result =
+        FileScanTasksFromJson(split_json, {}, UnpartitionedSpecs(), Schema({}, 0));
+    ASSERT_THAT(result, IsOk());
+    ASSERT_EQ(result.value().size(), 1U);
+    EXPECT_EQ(result.value()[0]->start(), start);
+    EXPECT_EQ(result.value()[0]->length(), length);
+    EXPECT_TRUE(result.value()[0]->is_split());
+  }
+}
+
+TEST(FileScanTasksFromJsonTest, RejectsInvalidRanges) {
+  auto json = R"([{
+    "data-file": {
+      "content": "data",
+      "file-path": "s3://bucket/data/file.parquet",
+      "file-format": "PARQUET",
+      "spec-id": 0,
+      "partition": [],
+      "file-size-in-bytes": 12345,
+      "record-count": 100
+    },
+    "start": 0,
+    "length": 12345
+  }])"_json;
+
+  for (const auto& [start, length] : {std::pair<int64_t, int64_t>{-1, 100},
+                                      {0, -1},
+                                      {0, 0},
+                                      {12345, 0},
+                                      {12345, 1},
+                                      {12000, 500}}) {
+    SCOPED_TRACE(testing::Message() << "start=" << start << ", length=" << length);
+    auto invalid_json = json;
+    invalid_json[0]["start"] = start;
+    invalid_json[0]["length"] = length;
+    auto result =
+        FileScanTasksFromJson(invalid_json, {}, UnpartitionedSpecs(), Schema({}, 0));
+    EXPECT_THAT(result, IsError(ErrorKind::kJsonParseError));
+    EXPECT_THAT(result, HasErrorMessage("Invalid FileScanTask range"));
+  }
+
+  auto overflow_json = json;
+  overflow_json[0]["data-file"]["file-size-in-bytes"] =
+      std::numeric_limits<int64_t>::max();
+  overflow_json[0]["start"] = std::numeric_limits<int64_t>::max() - 1;
+  overflow_json[0]["length"] = 2;
+  auto overflow_result =
+      FileScanTasksFromJson(overflow_json, {}, UnpartitionedSpecs(), Schema({}, 0));
+  EXPECT_THAT(overflow_result, IsError(ErrorKind::kJsonParseError));
+  EXPECT_THAT(overflow_result, HasErrorMessage("Invalid FileScanTask range"));
+}
+
+TEST(FileScanTasksFromJsonTest, AcceptsEmptyWholeFile) {
+  auto json = R"([{
+    "data-file": {
+      "content": "data",
+      "file-path": "s3://bucket/data/empty.parquet",
+      "file-format": "PARQUET",
+      "spec-id": 0,
+      "partition": [],
+      "file-size-in-bytes": 0,
+      "record-count": 0
+    },
+    "start": 0,
+    "length": 0
+  }])"_json;
+
+  auto result = FileScanTasksFromJson(json, {}, UnpartitionedSpecs(), Schema({}, 0));
+  ASSERT_THAT(result, IsOk());
+  ASSERT_EQ(result.value().size(), 1U);
+  EXPECT_EQ(result.value()[0]->start(), 0);
+  EXPECT_EQ(result.value()[0]->length(), 0);
+  EXPECT_FALSE(result.value()[0]->is_split());
 }
 
 TEST(FileScanTasksFromJsonTest, RowLineageSequence) {
@@ -2450,6 +2640,80 @@ TEST(FetchScanTasksResponseRoundtripTest, WithFileScanTasksAndDeleteFiles) {
       FetchScanTasksResponseFromJson(roundtrip_json, UnpartitionedSpecs(), EmptySchema());
   ASSERT_THAT(result2, IsOk());
   EXPECT_EQ(*result, *result2);
+}
+
+TEST(FetchScanTasksResponseRoundtripTest, PreservesDistinctSplitRanges) {
+  auto json = nlohmann::json::parse(R"({
+    "file-scan-tasks": [
+      {
+        "data-file": {
+          "content": "data",
+          "file-path": "s3://bucket/data/file.parquet",
+          "file-format": "PARQUET",
+          "spec-id": 0,
+          "partition": [],
+          "file-size-in-bytes": 12345,
+          "record-count": 100
+        },
+        "start": 0,
+        "length": 5000
+      },
+      {
+        "data-file": {
+          "content": "data",
+          "file-path": "s3://bucket/data/file.parquet",
+          "file-format": "PARQUET",
+          "spec-id": 0,
+          "partition": [],
+          "file-size-in-bytes": 12345,
+          "record-count": 100
+        },
+        "start": 5000,
+        "length": 7345
+      }
+    ]
+  })");
+
+  auto result = FetchScanTasksResponseFromJson(json, UnpartitionedSpecs(), EmptySchema());
+  ASSERT_THAT(result, IsOk());
+  ASSERT_TRUE(result.value().file_scan_tasks.has_value());
+  ASSERT_EQ(result.value().file_scan_tasks->size(), 2U);
+  EXPECT_EQ(result.value().file_scan_tasks->at(0)->start(), 0);
+  EXPECT_EQ(result.value().file_scan_tasks->at(0)->length(), 5000);
+  EXPECT_EQ(result.value().file_scan_tasks->at(1)->start(), 5000);
+  EXPECT_EQ(result.value().file_scan_tasks->at(1)->length(), 7345);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto roundtrip_json,
+                         ToJson(result.value(), UnpartitionedSpecs(), EmptySchema()));
+  EXPECT_EQ(roundtrip_json["file-scan-tasks"][0]["start"], 0);
+  EXPECT_EQ(roundtrip_json["file-scan-tasks"][0]["length"], 5000);
+  EXPECT_EQ(roundtrip_json["file-scan-tasks"][1]["start"], 5000);
+  EXPECT_EQ(roundtrip_json["file-scan-tasks"][1]["length"], 7345);
+
+  auto result2 =
+      FetchScanTasksResponseFromJson(roundtrip_json, UnpartitionedSpecs(), EmptySchema());
+  ASSERT_THAT(result2, IsOk());
+  EXPECT_EQ(result.value(), result2.value());
+}
+
+TEST(FetchScanTasksResponseRoundtripTest, RejectsSplitOutsideChangedDataFile) {
+  auto data_file = std::make_shared<DataFile>();
+  data_file->content = DataFile::Content::kData;
+  data_file->file_path = "s3://bucket/data/file.parquet";
+  data_file->file_format = FileFormatType::kParquet;
+  data_file->partition_spec_id = PartitionSpec::kInitialSpecId;
+  data_file->partition = PartitionValues{};
+  data_file->file_size_in_bytes = 12345;
+  data_file->record_count = 100;
+  ICEBERG_UNWRAP_OR_FAIL(auto split, FileScanTask::MakeSplit(data_file, 5000, 7345));
+
+  FetchScanTasksResponse response;
+  response.file_scan_tasks = std::vector<std::shared_ptr<FileScanTask>>{split};
+  data_file->file_size_in_bytes = 12000;
+
+  auto result = ToJson(response, UnpartitionedSpecs(), EmptySchema());
+  EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
+  EXPECT_THAT(result, HasErrorMessage("Invalid FileScanTask range"));
 }
 
 TEST(FetchScanTasksResponseRoundtripTest, PreservesResidualFilter) {
