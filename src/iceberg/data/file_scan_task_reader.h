@@ -67,6 +67,9 @@ class ICEBERG_DATA_EXPORT FileScanTaskReader {
   ~FileScanTaskReader();
 
   /// \brief Open a task and return an Arrow C stream for its projected live rows.
+  ///
+  /// Partial tasks are rejected until range-aware reading is implemented. The task and
+  /// its shared data/delete-file metadata must not be mutated while the stream uses them.
   Result<ArrowArrayStream> Open(const FileScanTask& task);
 
   FileScanTaskReader(const FileScanTaskReader&) = delete;

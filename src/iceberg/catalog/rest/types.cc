@@ -192,6 +192,7 @@ bool FileScanTaskEqual(const std::shared_ptr<FileScanTask>& lhs,
     return false;
   }
   return SharedPtrEqual(lhs->data_file(), rhs->data_file()) &&
+         lhs->start() == rhs->start() && lhs->length() == rhs->length() &&
          SharedPtrVectorEqual(lhs->delete_files(), rhs->delete_files()) &&
          ExpressionPtrEqual(lhs->residual_filter(), rhs->residual_filter());
 }

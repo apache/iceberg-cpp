@@ -163,6 +163,12 @@ class FileScanTaskReader::Impl {
     ICEBERG_PRECHECK(data_file->file_size_in_bytes >= 0,
                      "Data file size must not be negative: {}",
                      data_file->file_size_in_bytes);
+    if (task.is_split()) {
+      return NotSupported(
+          "Reading a partial FileScanTask is not supported yet: {} "
+          "(start={}, length={})",
+          data_file->file_path, task.start(), task.length());
+    }
 
     if (task.delete_files().empty()) {
       auto options = MakeReaderOptions(
