@@ -204,6 +204,10 @@ class ArrowS3FileIO final : public FileIO, public SupportsStorageCredentials {
     return storage_credentials_;
   }
 
+  const std::unordered_map<std::string, std::string>& properties() const override {
+    return default_properties_;
+  }
+
   SupportsStorageCredentials* AsSupportsStorageCredentials() override { return this; }
 
  private:
