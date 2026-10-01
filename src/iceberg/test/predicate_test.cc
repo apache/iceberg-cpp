@@ -39,7 +39,8 @@ class PredicateTest : public ::testing::Test {
                                  SchemaField::MakeRequired(3, "age", int32()),
                                  SchemaField::MakeOptional(4, "salary", float64()),
                                  SchemaField::MakeRequired(5, "active", boolean()),
-                                 SchemaField::MakeRequired(6, "age2", int32())},
+                                 SchemaField::MakeRequired(6, "age2", int32()),
+                                 SchemaField::MakeOptional(7, "always_null", unknown())},
         /*schema_id=*/0);
   }
 
@@ -363,6 +364,24 @@ TEST_F(PredicateTest, UnboundPredicateBindUnary) {
 
   auto bound_is_null = bound_is_null_result.value();
   EXPECT_EQ(bound_is_null->op(), Expression::Operation::kFalse);
+}
+
+TEST_F(PredicateTest, UnboundPredicateBindUnaryWithUnknownType) {
+  // Test IS NULL on unknown type field - should return AlwaysTrue
+  auto is_null_unknown = Expressions::IsNull("always_null");  // always_null is unknown
+  auto bound_is_null_result = is_null_unknown->Bind(*schema_, /*case_sensitive=*/true);
+  ASSERT_THAT(bound_is_null_result, IsOk());
+
+  auto bound_is_null = bound_is_null_result.value();
+  EXPECT_EQ(bound_is_null->op(), Expression::Operation::kTrue);
+
+  // Test NOT NULL on unknown type field - should return AlwaysFalse
+  auto not_null_unknown = Expressions::NotNull("always_null");
+  auto bound_not_null_result = not_null_unknown->Bind(*schema_, /*case_sensitive=*/true);
+  ASSERT_THAT(bound_not_null_result, IsOk());
+
+  auto bound_not_null = bound_not_null_result.value();
+  EXPECT_EQ(bound_not_null->op(), Expression::Operation::kFalse);
 }
 
 TEST_F(PredicateTest, UnboundPredicateBindLiteral) {
