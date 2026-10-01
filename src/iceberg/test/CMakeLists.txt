@@ -265,6 +265,7 @@ if(ICEBERG_BUILD_BUNDLE)
                    delete_loader_test.cc
                    dv_writer_test.cc
                    file_scan_task_reader_test.cc
+                   position_delete_update_test.cc
                    literal_util_test.cc)
 
 endif()
