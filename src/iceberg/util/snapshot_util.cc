@@ -66,9 +66,22 @@ Result<bool> SnapshotUtil::IsAncestorOf(const Table& table,
 
 Result<bool> SnapshotUtil::IsAncestorOf(const TableMetadata& metadata,
                                         int64_t ancestor_snapshot_id) {
-  ICEBERG_ASSIGN_OR_RAISE(auto current, metadata.Snapshot());
-  ICEBERG_CHECK(current != nullptr, "Current snapshot is null");
-  return IsAncestorOf(metadata, current->snapshot_id, ancestor_snapshot_id);
+  // No current snapshot means an empty ancestor history, so nothing can be an
+  // ancestor of it; matches Java's SnapshotUtil.ancestorsOf(null, ...), which
+  // returns an empty iterable instead of raising.
+  if (metadata.current_snapshot_id == kInvalidSnapshotId) {
+    return false;
+  }
+  return IsAncestorOf(metadata, metadata.current_snapshot_id, ancestor_snapshot_id);
+}
+
+bool SnapshotUtil::CanFastForward(const TableMetadata& metadata,
+                                  const Snapshot& snapshot) {
+  if (metadata.current_snapshot_id == kInvalidSnapshotId) {
+    return !snapshot.parent_snapshot_id.has_value();
+  }
+  return snapshot.parent_snapshot_id.has_value() &&
+         snapshot.parent_snapshot_id.value() == metadata.current_snapshot_id;
 }
 
 Result<bool> SnapshotUtil::IsAncestorOf(const Table& table, int64_t snapshot_id,
