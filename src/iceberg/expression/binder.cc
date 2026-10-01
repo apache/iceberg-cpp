@@ -161,7 +161,10 @@ Result<FieldIdsSetRef> ReferenceVisitor::Predicate(
 
 Result<FieldIdsSetRef> ReferenceVisitor::Aggregate(
     const std::shared_ptr<BoundAggregate>& aggregate) {
-  referenced_field_ids_.insert(aggregate->reference()->field_id());
+  // Aggregates without a term (e.g. COUNT(*)) reference no field ids.
+  if (const auto& reference = aggregate->reference()) {
+    referenced_field_ids_.insert(reference->field_id());
+  }
   return referenced_field_ids_;
 }
 
