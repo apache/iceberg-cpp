@@ -17,9 +17,12 @@
  * under the License.
  */
 
+#include <limits>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 #include <gmock/gmock.h>
@@ -2119,7 +2122,7 @@ TEST(DataFileFromJsonTest, MissingSpecId) {
   EXPECT_THAT(result, HasErrorMessage("Missing 'spec-id'"));
 }
 
-TEST(DataFileFromJsonTest, MissingPartition) {
+TEST(DataFileFromJsonTest, MissingPartitionIsAccepted) {
   auto json = R"({
     "content": "data",
     "file-path": "s3://bucket/data/file.parquet",
@@ -2129,9 +2132,9 @@ TEST(DataFileFromJsonTest, MissingPartition) {
     "record-count": 10
   })"_json;
 
-  auto result = DataFileFromJson(json, UnpartitionedSpecs(), Schema({}, 0));
-  EXPECT_THAT(result, IsError(ErrorKind::kJsonParseError));
-  EXPECT_THAT(result, HasErrorMessage("Missing 'partition'"));
+  ICEBERG_UNWRAP_OR_FAIL(auto data_file,
+                         DataFileFromJson(json, UnpartitionedSpecs(), Schema({}, 0)));
+  EXPECT_EQ(data_file.partition.num_fields(), 0U);
 }
 
 TEST(DataFileFromJsonTest, NotAnObject) {
@@ -2280,8 +2283,223 @@ TEST(FileScanTasksFromJsonTest, SingleTaskNoDeleteFiles) {
   const auto& task = result.value()[0];
   ASSERT_NE(task->data_file(), nullptr);
   EXPECT_EQ(task->data_file()->file_path, "s3://bucket/data/file.parquet");
+  EXPECT_EQ(task->start(), 0);
+  EXPECT_EQ(task->length(), 12345);
+  EXPECT_FALSE(task->is_split());
   EXPECT_TRUE(task->delete_files().empty());
   EXPECT_EQ(task->residual_filter(), nullptr);
+}
+
+TEST(FileScanTasksFromJsonTest, AcceptsWholeFileStartAndLength) {
+  auto json = R"([{
+    "data-file": {
+      "content": "data",
+      "file-path": "s3://bucket/data/file.parquet",
+      "file-format": "PARQUET",
+      "spec-id": 0,
+      "partition": [],
+      "file-size-in-bytes": 12345,
+      "record-count": 100
+    },
+    "start": 0,
+    "length": 12345
+  }])"_json;
+
+  auto result = FileScanTasksFromJson(json, {}, UnpartitionedSpecs(), Schema({}, 0));
+  ASSERT_THAT(result, IsOk());
+  ASSERT_EQ(result->size(), 1U);
+  EXPECT_EQ(result->at(0)->start(), 0);
+  EXPECT_EQ(result->at(0)->length(), 12345);
+  EXPECT_FALSE(result->at(0)->is_split());
+}
+
+TEST(FileScanTasksFromJsonTest, RejectsNullStartAndLength) {
+  auto json = R"([{
+    "data-file": {
+      "content": "data",
+      "file-path": "s3://bucket/data/file.parquet",
+      "file-format": "PARQUET",
+      "spec-id": 0,
+      "partition": [],
+      "file-size-in-bytes": 12345,
+      "record-count": 100
+    },
+    "start": null,
+    "length": null
+  }])"_json;
+
+  auto result = FileScanTasksFromJson(json, {}, UnpartitionedSpecs(), Schema({}, 0));
+  EXPECT_THAT(result, IsError(ErrorKind::kJsonParseError));
+  EXPECT_THAT(result, HasErrorMessage("'start' must be an integer"));
+}
+
+TEST(FileScanTasksFromJsonTest, RejectsMissingRangeEndpoint) {
+  auto json = R"([{
+    "data-file": {
+      "content": "data",
+      "file-path": "s3://bucket/data/file.parquet",
+      "file-format": "PARQUET",
+      "spec-id": 0,
+      "partition": [],
+      "file-size-in-bytes": 12345,
+      "record-count": 100
+    },
+    "start": 0,
+    "length": 12345
+  }])"_json;
+
+  for (std::string_view missing_field : {"start", "length"}) {
+    SCOPED_TRACE(missing_field);
+    auto incomplete_json = json;
+    incomplete_json[0].erase(std::string(missing_field));
+    auto result =
+        FileScanTasksFromJson(incomplete_json, {}, UnpartitionedSpecs(), Schema({}, 0));
+    EXPECT_THAT(result, IsError(ErrorKind::kJsonParseError));
+    EXPECT_THAT(result, HasErrorMessage("must be provided together"));
+  }
+}
+
+TEST(FileScanTasksFromJsonTest, RejectsInvalidRangeIntegers) {
+  auto valid_json = R"([{
+    "data-file": {
+      "content": "data",
+      "file-path": "s3://bucket/data/file.parquet",
+      "file-format": "PARQUET",
+      "spec-id": 0,
+      "partition": [],
+      "file-size-in-bytes": 12345,
+      "record-count": 100
+    },
+    "start": 0,
+    "length": 12345
+  }])"_json;
+
+  for (std::string_view field : {"start", "length"}) {
+    for (const auto& [invalid_value, expected_error] :
+         {std::pair<nlohmann::json, std::string_view>{0.5, "must be an integer"},
+          {true, "must be an integer"},
+          {"0", "must be an integer"},
+          {18446744073709551615ULL, "out of range"}}) {
+      SCOPED_TRACE(testing::Message() << field << "=" << invalid_value.dump());
+      auto json = valid_json;
+      json[0][field] = invalid_value;
+
+      auto result = FileScanTasksFromJson(json, {}, UnpartitionedSpecs(), Schema({}, 0));
+      EXPECT_THAT(result, IsError(ErrorKind::kJsonParseError));
+      EXPECT_THAT(result, HasErrorMessage(field));
+      EXPECT_THAT(result, HasErrorMessage(expected_error));
+    }
+  }
+}
+
+TEST(FileScanTasksFromJsonTest, AcceptsValidPartialRanges) {
+  auto json = R"([{
+    "data-file": {
+      "content": "data",
+      "file-path": "s3://bucket/data/file.parquet",
+      "file-format": "PARQUET",
+      "spec-id": 0,
+      "partition": [],
+      "file-size-in-bytes": 12345,
+      "record-count": 100
+    },
+    "start": 0,
+    "length": 12345
+  }])"_json;
+
+  for (const auto& [start, length] :
+       {std::pair<int64_t, int64_t>{0, 200}, {100, 200}, {12245, 100}}) {
+    SCOPED_TRACE(testing::Message() << "start=" << start << ", length=" << length);
+    auto split_json = json;
+    split_json[0]["start"] = start;
+    split_json[0]["length"] = length;
+    auto result =
+        FileScanTasksFromJson(split_json, {}, UnpartitionedSpecs(), Schema({}, 0));
+    ASSERT_THAT(result, IsOk());
+    ASSERT_EQ(result->size(), 1U);
+    EXPECT_EQ(result->at(0)->start(), start);
+    EXPECT_EQ(result->at(0)->length(), length);
+    EXPECT_TRUE(result->at(0)->is_split());
+  }
+}
+
+TEST(FileScanTasksFromJsonTest, RejectsInvalidRanges) {
+  auto json = R"([{
+    "data-file": {
+      "content": "data",
+      "file-path": "s3://bucket/data/file.parquet",
+      "file-format": "PARQUET",
+      "spec-id": 0,
+      "partition": [],
+      "file-size-in-bytes": 12345,
+      "record-count": 100
+    },
+    "start": 0,
+    "length": 12345
+  }])"_json;
+
+  for (const auto& [start, length] : {std::pair<int64_t, int64_t>{-1, 100},
+                                      {0, -1},
+                                      {0, 0},
+                                      {12345, 0},
+                                      {12345, 1},
+                                      {12000, 500}}) {
+    SCOPED_TRACE(testing::Message() << "start=" << start << ", length=" << length);
+    auto invalid_json = json;
+    invalid_json[0]["start"] = start;
+    invalid_json[0]["length"] = length;
+    auto result =
+        FileScanTasksFromJson(invalid_json, {}, UnpartitionedSpecs(), Schema({}, 0));
+    EXPECT_THAT(result, IsError(ErrorKind::kJsonParseError));
+    EXPECT_THAT(result, HasErrorMessage("Invalid FileScanTask range"));
+  }
+
+  auto overflow_json = json;
+  overflow_json[0]["data-file"]["file-size-in-bytes"] =
+      std::numeric_limits<int64_t>::max();
+  overflow_json[0]["start"] = std::numeric_limits<int64_t>::max() - 1;
+  overflow_json[0]["length"] = 2;
+  auto overflow_result =
+      FileScanTasksFromJson(overflow_json, {}, UnpartitionedSpecs(), Schema({}, 0));
+  EXPECT_THAT(overflow_result, IsError(ErrorKind::kJsonParseError));
+  EXPECT_THAT(overflow_result, HasErrorMessage("Invalid FileScanTask range"));
+
+  auto negative_size_json = json;
+  negative_size_json[0]["data-file"]["file-size-in-bytes"] = -1;
+  negative_size_json[0]["start"] = 0;
+  negative_size_json[0]["length"] = 0;
+  EXPECT_THAT(
+      FileScanTasksFromJson(negative_size_json, {}, UnpartitionedSpecs(), Schema({}, 0)),
+      IsError(ErrorKind::kJsonParseError));
+
+  negative_size_json[0].erase("start");
+  negative_size_json[0].erase("length");
+  EXPECT_THAT(
+      FileScanTasksFromJson(negative_size_json, {}, UnpartitionedSpecs(), Schema({}, 0)),
+      IsError(ErrorKind::kJsonParseError));
+}
+
+TEST(FileScanTasksFromJsonTest, AcceptsEmptyWholeFile) {
+  auto json = R"([{
+    "data-file": {
+      "content": "data",
+      "file-path": "s3://bucket/data/empty.parquet",
+      "file-format": "PARQUET",
+      "spec-id": 0,
+      "partition": [],
+      "file-size-in-bytes": 0,
+      "record-count": 0
+    },
+    "start": 0,
+    "length": 0
+  }])"_json;
+
+  auto result = FileScanTasksFromJson(json, {}, UnpartitionedSpecs(), Schema({}, 0));
+  ASSERT_THAT(result, IsOk());
+  ASSERT_EQ(result->size(), 1U);
+  EXPECT_EQ(result->at(0)->start(), 0);
+  EXPECT_EQ(result->at(0)->length(), 0);
+  EXPECT_FALSE(result->at(0)->is_split());
 }
 
 TEST(FileScanTasksFromJsonTest, RowLineageSequence) {
@@ -2452,6 +2670,118 @@ TEST(FetchScanTasksResponseRoundtripTest, WithFileScanTasksAndDeleteFiles) {
   EXPECT_EQ(*result, *result2);
 }
 
+TEST(FetchScanTasksResponseRoundtripTest, PreservesDistinctSplitRanges) {
+  auto json = nlohmann::json::parse(R"({
+    "delete-files": [
+      {
+        "content": "position-deletes",
+        "file-path": "s3://bucket/deletes/delete.parquet",
+        "file-format": "PARQUET",
+        "spec-id": 0,
+        "partition": [],
+        "file-size-in-bytes": 512,
+        "record-count": 5
+      }
+    ],
+    "file-scan-tasks": [
+      {
+        "data-file": {
+          "content": "data",
+          "file-path": "s3://bucket/data/file.parquet",
+          "file-format": "PARQUET",
+          "spec-id": 0,
+          "partition": [],
+          "file-size-in-bytes": 12345,
+          "record-count": 100,
+          "first-row-id": 1000
+        },
+        "start": 0,
+        "length": 5000,
+        "delete-file-references": [0]
+      },
+      {
+        "data-file": {
+          "content": "data",
+          "file-path": "s3://bucket/data/file.parquet",
+          "file-format": "PARQUET",
+          "spec-id": 0,
+          "partition": [],
+          "file-size-in-bytes": 12345,
+          "record-count": 100,
+          "first-row-id": 1000
+        },
+        "start": 5000,
+        "length": 7345,
+        "delete-file-references": [0]
+      }
+    ]
+  })");
+
+  auto result = FetchScanTasksResponseFromJson(json, UnpartitionedSpecs(), EmptySchema());
+  ASSERT_THAT(result, IsOk());
+  ASSERT_TRUE(result->file_scan_tasks.has_value());
+  ASSERT_EQ(result->file_scan_tasks->size(), 2U);
+  EXPECT_EQ(result->file_scan_tasks->at(0)->start(), 0);
+  EXPECT_EQ(result->file_scan_tasks->at(0)->length(), 5000);
+  EXPECT_EQ(result->file_scan_tasks->at(1)->start(), 5000);
+  EXPECT_EQ(result->file_scan_tasks->at(1)->length(), 7345);
+  for (const auto& task : *result->file_scan_tasks) {
+    ASSERT_NE(task->data_file(), nullptr);
+    EXPECT_EQ(task->data_file()->first_row_id, 1000);
+    ASSERT_EQ(task->delete_files().size(), 1U);
+    EXPECT_EQ(task->delete_files()[0]->file_path, "s3://bucket/deletes/delete.parquet");
+  }
+
+  ICEBERG_UNWRAP_OR_FAIL(auto roundtrip_json,
+                         ToJson(*result, UnpartitionedSpecs(), EmptySchema()));
+  ASSERT_EQ(roundtrip_json["file-scan-tasks"].size(), 2U);
+  EXPECT_EQ(roundtrip_json["file-scan-tasks"][0]["start"], 0);
+  EXPECT_EQ(roundtrip_json["file-scan-tasks"][0]["length"], 5000);
+  EXPECT_EQ(roundtrip_json["file-scan-tasks"][1]["start"], 5000);
+  EXPECT_EQ(roundtrip_json["file-scan-tasks"][1]["length"], 7345);
+  EXPECT_EQ(roundtrip_json["file-scan-tasks"][0]["data-file"]["first-row-id"], 1000);
+  EXPECT_EQ(roundtrip_json["file-scan-tasks"][1]["data-file"]["first-row-id"], 1000);
+  EXPECT_EQ(roundtrip_json["file-scan-tasks"][0]["delete-file-references"],
+            nlohmann::json::array({0}));
+  EXPECT_EQ(roundtrip_json["file-scan-tasks"][1]["delete-file-references"],
+            nlohmann::json::array({0}));
+
+  auto result2 =
+      FetchScanTasksResponseFromJson(roundtrip_json, UnpartitionedSpecs(), EmptySchema());
+  ASSERT_THAT(result2, IsOk());
+  ASSERT_TRUE(result2->file_scan_tasks.has_value());
+  ASSERT_EQ(result2->file_scan_tasks->size(), 2U);
+  for (const auto& task : *result2->file_scan_tasks) {
+    ASSERT_NE(task->data_file(), nullptr);
+    EXPECT_EQ(task->data_file()->first_row_id, 1000);
+  }
+  EXPECT_EQ(*result, *result2);
+
+  auto reversed = *result;
+  std::swap(reversed.file_scan_tasks->at(0), reversed.file_scan_tasks->at(1));
+  EXPECT_NE(*result, reversed);
+}
+
+TEST(FetchScanTasksResponseRoundtripTest, RejectsSplitOutsideChangedDataFile) {
+  auto data_file = std::make_shared<DataFile>();
+  data_file->content = DataFile::Content::kData;
+  data_file->file_path = "s3://bucket/data/file.parquet";
+  data_file->file_format = FileFormatType::kParquet;
+  data_file->partition_spec_id = PartitionSpec::kInitialSpecId;
+  data_file->partition = PartitionValues{};
+  data_file->file_size_in_bytes = 12345;
+  data_file->record_count = 100;
+  ICEBERG_UNWRAP_OR_FAIL(auto split, FileScanTask::MakeSplit(data_file, 5000, 7345));
+
+  FetchScanTasksResponse response;
+  response.file_scan_tasks = std::vector<std::shared_ptr<FileScanTask>>{split};
+  data_file->file_size_in_bytes = 12000;
+
+  auto result = ToJson(response, UnpartitionedSpecs(), EmptySchema());
+  EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
+  EXPECT_THAT(result, HasErrorMessage("Invalid FileScanTask range"));
+}
+
 TEST(FetchScanTasksResponseRoundtripTest, PreservesResidualFilter) {
   auto json = nlohmann::json::parse(R"({
     "file-scan-tasks": [
@@ -2520,6 +2850,8 @@ TEST(FetchScanTasksResponseRoundtripTest, ToJsonDerivesDeleteFilesFromTasks) {
   ASSERT_EQ(json["delete-files"].size(), 1);
   EXPECT_EQ(json["delete-files"][0]["file-path"], delete_file->file_path);
   ASSERT_EQ(json["file-scan-tasks"].size(), 1);
+  EXPECT_EQ(json["file-scan-tasks"][0]["start"], 0);
+  EXPECT_EQ(json["file-scan-tasks"][0]["length"], 12345);
   ASSERT_TRUE(json["file-scan-tasks"][0].contains("delete-file-references"));
   EXPECT_EQ(json["file-scan-tasks"][0]["delete-file-references"],
             nlohmann::json::array({0}));

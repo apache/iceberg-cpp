@@ -327,6 +327,24 @@ TEST(MetadataSerdeTest, DeserializeV2ValidMinimal) {
   ASSERT_FALSE(metadata->Snapshot().has_value());
 }
 
+TEST(MetadataSerdeTest, RejectsFractionalSchemaAndDefaultSpecIds) {
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto metadata, ReadTableMetadataFromResource("TableMetadataV2ValidMinimal.json"));
+  ICEBERG_UNWRAP_OR_FAIL(auto valid_json, ToJson(*metadata));
+  ASSERT_THAT(TableMetadataFromJson(valid_json), IsOk());
+
+  for (const auto* key : {"current-schema-id", "default-spec-id"}) {
+    SCOPED_TRACE(key);
+    auto invalid_json = valid_json;
+    invalid_json[key] = 0.5;
+
+    auto result = TableMetadataFromJson(invalid_json);
+    EXPECT_THAT(result, IsError(ErrorKind::kJsonParseError));
+    EXPECT_THAT(result, HasErrorMessage(key));
+    EXPECT_THAT(result, HasErrorMessage("must be an integer"));
+  }
+}
+
 TEST(MetadataSerdeTest, DeserializeStatisticsFiles) {
   ICEBERG_UNWRAP_OR_FAIL(
       auto metadata, ReadTableMetadataFromResource("TableMetadataStatisticsFiles.json"));

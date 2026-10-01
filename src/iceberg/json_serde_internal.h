@@ -29,6 +29,7 @@
 #include <nlohmann/json_fwd.hpp>
 
 #include "iceberg/encryption/encrypted_key.h"
+#include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/result.h"
 #include "iceberg/statistics_file.h"
 #include "iceberg/table_metadata.h"
@@ -424,6 +425,53 @@ ICEBERG_EXPORT nlohmann::json ToJson(const TableRequirement& requirement);
 /// \param json The JSON object representing a `TableRequirement`.
 /// \return A `TableRequirement` object or an error if the conversion fails.
 ICEBERG_EXPORT Result<std::unique_ptr<TableRequirement>> TableRequirementFromJson(
+    const nlohmann::json& json);
+
+/// \brief Serializes a `DataFile` (content file) to JSON.
+///
+/// The JSON object uses the Iceberg REST ContentFile field names (`spec-id`,
+/// `file-path`, `file-format`, maps as `{keys, values}`, and so on). `spec-id` is
+/// required. Partition values are encoded with the given partition spec and schema.
+ICEBERG_EXPORT Result<nlohmann::json> ToJson(
+    const DataFile& data_file,
+    const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>&
+        partition_specs_by_id,
+    const Schema& schema);
+
+/// \brief Deserializes a JSON object into a `DataFile`.
+ICEBERG_EXPORT Result<DataFile> DataFileFromJson(
+    const nlohmann::json& json,
+    const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>&
+        partition_spec_by_id,
+    const Schema& schema);
+
+/// \brief Serializes a `FileScanTask` to a self-contained JSON object.
+///
+/// Unlike REST scan responses, delete files are inlined under `delete-files` rather
+/// than encoded as `delete-file-references` into a sibling array.
+///
+/// JSON fields:
+/// - `task-type`: `file-scan-task`
+/// - `schema` (required): schema used by this task
+/// - `spec` (required): partition spec used by this task
+/// - `data-file` (required): ContentFile JSON
+/// - `start` (required): start of the task's byte range (0 for a whole file)
+/// - `length` (required): length of the task's byte range (file size for a whole file)
+/// - `delete-files` (optional on input; always emitted): array of ContentFile JSON
+/// - `residual-filter` (optional): Expression JSON
+ICEBERG_EXPORT Result<nlohmann::json> ToJson(
+    const FileScanTask& task,
+    const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>&
+        partition_specs_by_id,
+    const Schema& schema);
+
+/// \brief Deserializes a self-contained FileScanTask JSON object.
+///
+/// Reads the embedded schema and partition spec. Rejects REST
+/// `delete-file-references`. Both range fields are required, matching Java core;
+/// the range must be within the data file, and an empty range is valid only for
+/// an empty whole file.
+ICEBERG_EXPORT Result<std::shared_ptr<FileScanTask>> FileScanTaskFromJson(
     const nlohmann::json& json);
 
 }  // namespace iceberg
