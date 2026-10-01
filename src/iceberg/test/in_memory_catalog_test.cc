@@ -192,12 +192,16 @@ TEST_F(InMemoryCatalogTest, CreateTableNonexistentNamespace) {
 TEST_F(InMemoryCatalogTest, RegisterTableNonexistentNamespace) {
   TableIdentifier table_ident{.ns = Namespace{.levels = {"missing"}}, .name = "t1"};
 
-  // The namespace is validated before the metadata is read, so registering into a
-  // missing namespace reports NoSuchNamespace rather than a read error, even when the
-  // metadata location is unreadable. (NamespaceExists returns a Result<bool> carrying
-  // false, not an error, so the Result must be unwrapped before it is tested.)
-  auto table =
-      catalog_->RegisterTable(table_ident, "/nonexistent/iceberg/v1.metadata.json");
+  ICEBERG_UNWRAP_OR_FAIL(auto metadata,
+                         ReadTableMetadataFromResource("TableMetadataV2Valid.json"));
+  auto table_location = GenerateTestTableLocation(table_ident.name);
+  auto metadata_location = std::format("{}v1.metadata.json", table_location);
+  ASSERT_THAT(TableMetadataUtil::Write(*file_io_, metadata_location, *metadata), IsOk());
+
+  // Registering into a nonexistent namespace reports NoSuchNamespace. The dead
+  // if (!NamespaceExists(...)) check tested the Result<bool>'s has_value() rather
+  // than the contained bool, so this previously fell through to kUnknownError.
+  auto table = catalog_->RegisterTable(table_ident, metadata_location);
   EXPECT_THAT(table, IsError(ErrorKind::kNoSuchNamespace));
 }
 

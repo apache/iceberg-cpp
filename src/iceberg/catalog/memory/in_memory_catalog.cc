@@ -610,22 +610,15 @@ Result<std::shared_ptr<Table>> InMemoryCatalog::RegisterTable(
     return InvalidArgument("file_io is not set for catalog {}", catalog_name_);
   }
 
-  // Validate the namespace up front so a register into a missing namespace fails
-  // fast, before any metadata read. The read then runs outside the lock, so the
-  // catalog mutex is not held during (possibly remote) metadata I/O.
-  {
-    std::unique_lock lock(mutex_);
-    ICEBERG_ASSIGN_OR_RAISE(auto namespace_exists,
-                            root_namespace_->NamespaceExists(identifier.ns));
-    if (!namespace_exists) {
-      return NoSuchNamespace("Table namespace does not exist: {}", identifier.ns);
-    }
-  }
-
   ICEBERG_ASSIGN_OR_RAISE(auto metadata,
                           TableMetadataUtil::Read(*file_io_, metadata_file_location));
 
   std::unique_lock lock(mutex_);
+  ICEBERG_ASSIGN_OR_RAISE(auto namespace_exists,
+                          root_namespace_->NamespaceExists(identifier.ns));
+  if (!namespace_exists) {
+    return NoSuchNamespace("Table namespace does not exist: {}", identifier.ns);
+  }
   if (!root_namespace_->RegisterTable(identifier, metadata_file_location)) {
     return UnknownError("The registry failed.");
   }
