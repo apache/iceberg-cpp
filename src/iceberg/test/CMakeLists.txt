@@ -163,6 +163,8 @@ add_iceberg_test(puffin_test
                  puffin_json_test.cc
                  puffin_reader_writer_test.cc)
 
+add_iceberg_test(compaction_planner_test SOURCES compaction_planner_test.cc)
+
 if(ICEBERG_BUILD_BUNDLE)
   add_iceberg_test(avro_test
                    USE_BUNDLE
@@ -259,6 +261,7 @@ if(ICEBERG_BUILD_BUNDLE)
                    SOURCES
                    arrow_c_data_util_test.cc
                    arrow_row_builder_test.cc
+                   compaction_executor_test.cc
                    data_writer_test.cc
                    default_value_test.cc
                    delete_filter_test.cc
