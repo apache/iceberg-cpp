@@ -19,8 +19,10 @@
 
 #include "iceberg/util/bucket_util.h"
 
+#include <limits>
 #include <utility>
 
+#include "iceberg/exception.h"
 #include "iceberg/expression/literal.h"
 #include "iceberg/util/endian.h"
 #include "iceberg/util/murmurhash3_internal.h"
@@ -110,8 +112,18 @@ int32_t HashLiteral<TypeId::kFixed>(const Literal& literal) {
 }  // namespace
 
 int32_t BucketUtils::HashBytes(std::span<const uint8_t> bytes) {
+  // MurmurHash3_x86_32 takes a signed 32-bit length. Passing a larger size_t
+  // would wrap it negative and make the hash loop read far outside `bytes`
+  // (and silently hash the wrong prefix for even larger inputs). Iceberg's
+  // bucket transform is defined on byte sequences of at most 2^31 - 1 bytes
+  // (Java arrays), so reject anything longer before narrowing.
+  ICEBERG_CHECK_OR_DIE(
+      bytes.size() <= static_cast<size_t>(std::numeric_limits<int32_t>::max()),
+      "BucketUtils::HashBytes: input length {} exceeds the maximum supported "
+      "length {}",
+      bytes.size(), std::numeric_limits<int32_t>::max());
   int32_t hash_value = 0;
-  MurmurHash3_x86_32(bytes.data(), bytes.size(), 0, &hash_value);
+  MurmurHash3_x86_32(bytes.data(), static_cast<int>(bytes.size()), 0, &hash_value);
   return hash_value;
 }
 
