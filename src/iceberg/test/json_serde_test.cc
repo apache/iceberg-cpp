@@ -18,6 +18,7 @@
  */
 
 #include <array>
+#include <limits>
 #include <memory>
 #include <optional>
 #include <string>
@@ -1567,6 +1568,9 @@ TEST_F(FileScanTaskJsonTest, SerializesJavaGolden) {
 TEST_F(FileScanTaskJsonTest, ParsesJavaGoldenWithoutExternalSchemaOrSpec) {
   ICEBERG_UNWRAP_OR_FAIL(auto task, FileScanTaskFromJson(JavaGolden()));
 
+  EXPECT_EQ(task->start(), 0);
+  EXPECT_EQ(task->length(), 10);
+  EXPECT_FALSE(task->is_split());
   ASSERT_NE(task->data_file(), nullptr);
   EXPECT_EQ(*task->data_file(), DataFileForTask());
   ASSERT_EQ(task->delete_files().size(), 1U);
@@ -1612,29 +1616,104 @@ TEST_F(FileScanTaskJsonTest, RequiresJavaCoreFields) {
   }
 }
 
-TEST_F(FileScanTaskJsonTest, RejectsSplitTasksUsingExactOrCondition) {
-  struct Case {
+TEST_F(FileScanTaskJsonTest, RoundTripsTwoDistinctSplitsOfOneFile) {
+  auto data_file = std::make_shared<DataFile>(DataFileForTask());
+  data_file->first_row_id = 100;
+  auto delete_file = std::make_shared<DataFile>(DeleteFileForTask());
+  struct Range {
     int64_t start;
     int64_t length;
-    bool supported;
   };
-  for (const auto& test_case : {Case{.start = 0, .length = 10, .supported = true},
-                                Case{.start = 1, .length = 10, .supported = false},
-                                Case{.start = 0, .length = 9, .supported = false}}) {
+  for (const auto& range : {Range{0, 4}, Range{4, 6}}) {
     SCOPED_TRACE(testing::Message()
-                 << "start=" << test_case.start << ", length=" << test_case.length);
+                 << "start=" << range.start << ", length=" << range.length);
+    ICEBERG_UNWRAP_OR_FAIL(
+        auto split, FileScanTask::MakeSplit(data_file, range.start, range.length,
+                                            {delete_file}, Expressions::AlwaysTrue()));
+    EXPECT_TRUE(split->is_split());
+    EXPECT_EQ(split->data_file(), data_file);
+    ASSERT_EQ(split->delete_files().size(), 1U);
+    EXPECT_EQ(split->delete_files()[0], delete_file);
+
+    auto expected = JavaGolden();
+    expected["data-file"]["first-row-id"] = 100;
+    expected["start"] = range.start;
+    expected["length"] = range.length;
+    ICEBERG_UNWRAP_OR_FAIL(auto json, ToJson(*split, specs_, schema_));
+    EXPECT_EQ(json, expected);
+
+    ICEBERG_UNWRAP_OR_FAIL(auto parsed, FileScanTaskFromJson(json));
+    EXPECT_TRUE(parsed->is_split());
+    EXPECT_EQ(parsed->start(), range.start);
+    EXPECT_EQ(parsed->length(), range.length);
+    EXPECT_EQ(*parsed->data_file(), *data_file);
+    EXPECT_EQ(parsed->data_file()->first_row_id, 100);
+    ASSERT_EQ(parsed->delete_files().size(), 1U);
+    EXPECT_EQ(*parsed->delete_files()[0], *delete_file);
+    ASSERT_NE(parsed->residual_filter(), nullptr);
+    ICEBERG_UNWRAP_OR_FAIL(auto residual, ToJson(*parsed->residual_filter()));
+    EXPECT_EQ(residual, true);
+    ICEBERG_UNWRAP_OR_FAIL(auto round_trip_json, ToJson(*parsed, specs_, schema_));
+    EXPECT_EQ(round_trip_json, expected);
+  }
+}
+
+TEST_F(FileScanTaskJsonTest, RejectsInvalidRangesAsParseErrors) {
+  struct Range {
+    int64_t file_size;
+    int64_t start;
+    int64_t length;
+  };
+  constexpr int64_t kMax = std::numeric_limits<int64_t>::max();
+  for (const auto& range :
+       {Range{10, -1, 1}, Range{10, 0, -1}, Range{10, 0, 0}, Range{10, 1, 0},
+        Range{10, 9, 2}, Range{10, 10, 1}, Range{10, 11, 1}, Range{kMax, kMax - 1, 2},
+        Range{-1, 0, 0}}) {
+    SCOPED_TRACE(testing::Message() << "file_size=" << range.file_size << ", start="
+                                    << range.start << ", length=" << range.length);
     auto json = JavaGolden();
-    json["start"] = test_case.start;
-    json["length"] = test_case.length;
+    json["data-file"]["file-size-in-bytes"] = range.file_size;
+    json["start"] = range.start;
+    json["length"] = range.length;
 
     auto result = FileScanTaskFromJson(json);
-    if (test_case.supported) {
-      EXPECT_THAT(result, IsOk());
-    } else {
-      EXPECT_THAT(result, IsError(ErrorKind::kNotSupported));
-      EXPECT_THAT(result, HasErrorMessage("Split FileScanTask is not supported"));
-    }
+    EXPECT_THAT(result, IsError(ErrorKind::kJsonParseError));
+    EXPECT_THAT(result, HasErrorMessage("FileScanTask range"));
   }
+
+  auto too_large = JavaGolden();
+  too_large["start"] = std::numeric_limits<uint64_t>::max();
+  auto result = FileScanTaskFromJson(too_large);
+  EXPECT_THAT(result, IsError(ErrorKind::kJsonParseError));
+  EXPECT_THAT(result, HasErrorMessage("start"));
+}
+
+TEST_F(FileScanTaskJsonTest, RoundTripsEmptyWholeFile) {
+  auto data_file = DataFileForTask();
+  data_file.file_size_in_bytes = 0;
+  data_file.record_count = 0;
+  FileScanTask task(std::make_shared<DataFile>(std::move(data_file)), {},
+                    Expressions::AlwaysTrue());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto json, ToJson(task, specs_, schema_));
+  EXPECT_EQ(json["start"], 0);
+  EXPECT_EQ(json["length"], 0);
+  ICEBERG_UNWRAP_OR_FAIL(auto parsed, FileScanTaskFromJson(json));
+  EXPECT_FALSE(parsed->is_split());
+  EXPECT_EQ(parsed->start(), 0);
+  EXPECT_EQ(parsed->length(), 0);
+  ICEBERG_UNWRAP_OR_FAIL(auto round_trip_json, ToJson(*parsed, specs_, schema_));
+  EXPECT_EQ(round_trip_json, json);
+}
+
+TEST_F(FileScanTaskJsonTest, RejectsSplitOutsideChangedDataFileWhenSerializing) {
+  auto data_file = std::make_shared<DataFile>(DataFileForTask());
+  ICEBERG_UNWRAP_OR_FAIL(auto split, FileScanTask::MakeSplit(data_file, 4, 6));
+  data_file->file_size_in_bytes = 9;
+
+  auto result = ToJson(*split, specs_, schema_);
+  EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
+  EXPECT_THAT(result, HasErrorMessage("FileScanTask range"));
 }
 
 TEST_F(FileScanTaskJsonTest, RejectsFractionalIntegerFields) {

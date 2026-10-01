@@ -17,6 +17,10 @@
  * under the License.
  */
 
+#include <cstdint>
+#include <limits>
+#include <memory>
+
 #include <arrow/array.h>
 #include <arrow/c/bridge.h>
 #include <arrow/json/from_string.h>
@@ -29,6 +33,7 @@
 
 #include "iceberg/arrow/arrow_io_internal.h"
 #include "iceberg/data/file_scan_task_reader.h"
+#include "iceberg/expression/expressions.h"
 #include "iceberg/file_format.h"
 #include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/parquet/parquet_register.h"
@@ -39,6 +44,116 @@
 #include "iceberg/type.h"
 
 namespace iceberg {
+
+TEST(FileScanTaskRangeTest, WholeFileAndEmptyFile) {
+  auto data_file = std::make_shared<DataFile>();
+  data_file->file_path = "test.parquet";
+  data_file->file_size_in_bytes = 100;
+  data_file->record_count = 7;
+
+  FileScanTask whole(data_file);
+  EXPECT_FALSE(whole.is_split());
+  EXPECT_EQ(whole.start(), 0);
+  EXPECT_EQ(whole.length(), 100);
+  EXPECT_EQ(whole.size_bytes(), 100);
+  EXPECT_EQ(whole.estimated_row_count(), 7);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto explicit_whole, FileScanTask::MakeSplit(data_file, 0, 100));
+  EXPECT_FALSE(explicit_whole->is_split());
+  EXPECT_EQ(explicit_whole->start(), 0);
+  EXPECT_EQ(explicit_whole->length(), 100);
+  EXPECT_EQ(explicit_whole->estimated_row_count(), 7);
+
+  data_file->file_size_in_bytes = 0;
+  data_file->record_count = 0;
+  ICEBERG_UNWRAP_OR_FAIL(auto empty, FileScanTask::MakeSplit(data_file, 0, 0));
+  EXPECT_FALSE(empty->is_split());
+  EXPECT_EQ(empty->start(), 0);
+  EXPECT_EQ(empty->length(), 0);
+  EXPECT_EQ(empty->size_bytes(), 0);
+  EXPECT_EQ(empty->estimated_row_count(), 0);
+}
+
+TEST(FileScanTaskRangeTest, DistinctSplitsShareMetadataAndEstimateRowsOnce) {
+  auto data_file = std::make_shared<DataFile>();
+  data_file->file_path = "test.parquet";
+  data_file->file_size_in_bytes = 100;
+  data_file->record_count = 7;
+  data_file->first_row_id = 1000;
+  data_file->data_sequence_number = 22;
+  auto delete_file = std::make_shared<DataFile>();
+  auto residual = Expressions::AlwaysTrue();
+
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto first, FileScanTask::MakeSplit(data_file, 0, 40, {delete_file}, residual));
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto second, FileScanTask::MakeSplit(data_file, 40, 60, {delete_file}, residual));
+
+  EXPECT_TRUE(first->is_split());
+  EXPECT_TRUE(second->is_split());
+  EXPECT_EQ(first->start(), 0);
+  EXPECT_EQ(first->length(), 40);
+  EXPECT_EQ(second->start(), 40);
+  EXPECT_EQ(second->length(), 60);
+  EXPECT_EQ(first->size_bytes() + second->size_bytes(), 100);
+  EXPECT_EQ(first->estimated_row_count(), 2);
+  EXPECT_EQ(second->estimated_row_count(), 5);
+  EXPECT_EQ(first->estimated_row_count() + second->estimated_row_count(), 7);
+  EXPECT_EQ(first->data_file(), data_file);
+  EXPECT_EQ(second->data_file(), data_file);
+  ASSERT_EQ(first->delete_files().size(), 1);
+  ASSERT_EQ(second->delete_files().size(), 1);
+  EXPECT_EQ(first->delete_files()[0], delete_file);
+  EXPECT_EQ(second->delete_files()[0], delete_file);
+  EXPECT_EQ(first->residual_filter(), residual);
+  EXPECT_EQ(second->residual_filter(), residual);
+  EXPECT_EQ(first->data_file()->first_row_id, 1000);
+  EXPECT_EQ(first->data_file()->data_sequence_number, 22);
+  EXPECT_EQ(second->data_file()->first_row_id, 1000);
+  EXPECT_EQ(second->data_file()->data_sequence_number, 22);
+}
+
+TEST(FileScanTaskRangeTest, RejectsInvalidRanges) {
+  auto data_file = std::make_shared<DataFile>();
+  data_file->file_path = "test.parquet";
+  data_file->file_size_in_bytes = 100;
+
+  const auto expect_invalid = [&](int64_t start, int64_t length) {
+    auto result = FileScanTask::MakeSplit(data_file, start, length);
+    ASSERT_FALSE(result.has_value());
+    EXPECT_EQ(result.error().kind, ErrorKind::kInvalidArgument);
+  };
+  expect_invalid(-1, 1);
+  expect_invalid(0, -1);
+  expect_invalid(0, 0);
+  expect_invalid(100, 0);
+  expect_invalid(101, 1);
+  expect_invalid(99, 2);
+
+  auto null_file = FileScanTask::MakeSplit(nullptr, 0, 1);
+  ASSERT_FALSE(null_file.has_value());
+  EXPECT_EQ(null_file.error().kind, ErrorKind::kInvalidArgument);
+
+  data_file->file_size_in_bytes = -1;
+  expect_invalid(0, 1);
+
+  data_file->file_size_in_bytes = std::numeric_limits<int64_t>::max();
+  expect_invalid(std::numeric_limits<int64_t>::max() - 1, 2);
+}
+
+TEST(FileScanTaskRangeTest, RowEstimateDoesNotOverflow) {
+  auto data_file = std::make_shared<DataFile>();
+  data_file->file_size_in_bytes = std::numeric_limits<int64_t>::max();
+  data_file->record_count = std::numeric_limits<int64_t>::max();
+
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto first,
+      FileScanTask::MakeSplit(data_file, 0, data_file->file_size_in_bytes - 1));
+  ICEBERG_UNWRAP_OR_FAIL(auto last, FileScanTask::MakeSplit(
+                                        data_file, data_file->file_size_in_bytes - 1, 1));
+  EXPECT_EQ(first->estimated_row_count(), data_file->record_count - 1);
+  EXPECT_EQ(last->estimated_row_count(), 1);
+}
 
 class FileScanTaskTest : public TempFileTestBase {
  protected:
