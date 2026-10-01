@@ -42,6 +42,8 @@ class ICEBERG_BUNDLE_EXPORT ParquetReader : public Reader {
 
   Result<ArrowSchema> Schema() final;
 
+  Result<bool> HasTopLevelField(int32_t field_id) final;
+
   Result<std::unordered_map<std::string, std::string>> Metadata() final;
 
  private:

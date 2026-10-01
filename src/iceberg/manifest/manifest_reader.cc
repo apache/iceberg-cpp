@@ -45,6 +45,7 @@
 #include "iceberg/type.h"
 #include "iceberg/util/checked_cast.h"
 #include "iceberg/util/content_file_util.h"
+#include "iceberg/util/decimal.h"
 #include "iceberg/util/macros.h"
 #include "nanoarrow/common/inline_types.h"
 
@@ -416,6 +417,17 @@ Status ParsePartitionValues(ArrowArrayView* view, int64_t row_idx,
     case ArrowType::NANOARROW_TYPE_DOUBLE:
       partition.AddValue(Literal::Double(ArrowArrayViewGetDoubleUnsafe(view, row_idx)));
       break;
+    case ArrowType::NANOARROW_TYPE_DECIMAL128: {
+      const auto& type = internal::checked_cast<const DecimalType&>(*field_type);
+      ArrowDecimal value;
+      ArrowDecimalInit(&value, 128, type.precision(), type.scale());
+      ArrowArrayViewGetDecimalUnsafe(view, row_idx, &value);
+      Decimal unscaled(static_cast<int64_t>(value.words[value.high_word_index]),
+                       value.words[value.low_word_index]);
+      partition.AddValue(
+          Literal::Decimal(unscaled.value(), type.precision(), type.scale()));
+      break;
+    }
     case ArrowType::NANOARROW_TYPE_STRING: {
       auto str_value = ArrowArrayViewGetStringUnsafe(view, row_idx);
       partition.AddValue(

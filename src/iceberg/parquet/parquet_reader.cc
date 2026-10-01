@@ -365,6 +365,15 @@ class ParquetReader::Impl {
     return arrow_schema;
   }
 
+  Result<bool> HasTopLevelField(int32_t field_id) {
+    if (!reader_) return Invalid("Reader is not opened");
+    const auto* root = reader_->parquet_reader()->metadata()->schema()->group_node();
+    for (int i = 0; i < root->field_count(); ++i) {
+      if (root->field(i)->field_id() == field_id) return true;
+    }
+    return false;
+  }
+
   Result<std::unordered_map<std::string, std::string>> Metadata() {
     if (reader_ == nullptr) {
       return Invalid("Reader is not opened");
@@ -471,6 +480,10 @@ ParquetReader::~ParquetReader() = default;
 Result<std::optional<ArrowArray>> ParquetReader::Next() { return impl_->Next(); }
 
 Result<ArrowSchema> ParquetReader::Schema() { return impl_->Schema(); }
+
+Result<bool> ParquetReader::HasTopLevelField(int32_t field_id) {
+  return impl_->HasTopLevelField(field_id);
+}
 
 Result<std::unordered_map<std::string, std::string>> ParquetReader::Metadata() {
   return impl_->Metadata();
