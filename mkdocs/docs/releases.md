@@ -21,7 +21,7 @@
 
 | Version | Date | Links |
 |---------|------|-------|
-| 0.4.0 | September 26, 2026 | [Release Notes](https://github.com/apache/iceberg-cpp/releases/tag/v0.4.0) · [Source](https://dist.apache.org/repos/dist/release/iceberg/apache-iceberg-cpp-0.4.0/) |
+| 0.4.0 | September 26, 2026 | [Release Notes](https://github.com/apache/iceberg-cpp/releases/tag/v0.4.0) · [Source](https://dist.apache.org/repos/dist/release/iceberg/apache-iceberg-cpp-0.4.0/) · [Blog Post](https://iceberg.apache.org/blog/apache-iceberg-cpp-0.4.0-release/) |
 | 0.3.0 | June 14, 2026 | [Release Notes](https://github.com/apache/iceberg-cpp/releases/tag/v0.3.0) · [Source](https://archive.apache.org/dist/iceberg/apache-iceberg-cpp-0.3.0/) · [Blog Post](https://iceberg.apache.org/blog/apache-iceberg-cpp-0.3.0-release/) |
 | 0.2.0 | January 26, 2026 | [Release Notes](https://github.com/apache/iceberg-cpp/releases/tag/v0.2.0) · [Source](https://archive.apache.org/dist/iceberg/apache-iceberg-cpp-0.2.0/) · [Blog Post](https://iceberg.apache.org/blog/apache-iceberg-cpp-0.2.0-release/) |
 | 0.1.0 | September 10, 2025 | [Release Notes](https://github.com/apache/iceberg-cpp/releases/tag/v0.1.0) · [Source](https://archive.apache.org/dist/iceberg/apache-iceberg-cpp-0.1.0/) |
