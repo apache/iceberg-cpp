@@ -1081,4 +1081,185 @@ TEST(DataFileJsonTest, RoundTripRequiredFields) {
   EXPECT_EQ(parsed.partition_spec_id, data_file.partition_spec_id);
 }
 
+TEST(DataFileFromJsonTest, RequiredFieldsOnly) {
+  auto json = R"({
+    "content": "data",
+    "file-path": "s3://bucket/data/file.parquet",
+    "file-format": "PARQUET",
+    "spec-id": 0,
+    "partition": [],
+    "file-size-in-bytes": 12345,
+    "record-count": 100
+  })"_json;
+
+  auto result = DataFileFromJson(json, UnpartitionedSpecs(), Schema({}, 0));
+  ASSERT_THAT(result, IsOk());
+  const auto& df = result.value();
+  EXPECT_EQ(df.content, DataFile::Content::kData);
+  EXPECT_EQ(df.file_path, "s3://bucket/data/file.parquet");
+  EXPECT_EQ(df.file_format, FileFormatType::kParquet);
+  EXPECT_EQ(df.file_size_in_bytes, 12345);
+  EXPECT_EQ(df.record_count, 100);
+  EXPECT_TRUE(df.column_sizes.empty());
+  EXPECT_FALSE(df.sort_order_id.has_value());
+  EXPECT_EQ(df.partition_spec_id, PartitionSpec::kInitialSpecId);
+  EXPECT_EQ(df.partition.num_fields(), 0);
+}
+
+TEST(DataFileFromJsonTest, LowercaseFormat) {
+  auto json = R"({
+    "content": "data",
+    "file-path": "s3://bucket/data/file.avro",
+    "file-format": "avro",
+    "spec-id": 0,
+    "partition": [],
+    "file-size-in-bytes": 500,
+    "record-count": 10
+  })"_json;
+
+  auto result = DataFileFromJson(json, UnpartitionedSpecs(), Schema({}, 0));
+  ASSERT_THAT(result, IsOk());
+  EXPECT_EQ(result.value().content, DataFile::Content::kData);
+  EXPECT_EQ(result.value().file_format, FileFormatType::kAvro);
+}
+
+TEST(DataFileFromJsonTest, WithOptionalFields) {
+  auto json = R"({
+    "content": "data",
+    "file-path": "s3://bucket/data/file.parquet",
+    "file-format": "PARQUET",
+    "spec-id": 0,
+    "partition": [],
+    "file-size-in-bytes": 12345,
+    "record-count": 100,
+    "column-sizes": {"keys": [1, 2], "values": [1000, 2000]},
+    "value-counts": {"keys": [1, 2], "values": [100, 100]},
+    "null-value-counts": {"keys": [1], "values": [0]},
+    "nan-value-counts": {"keys": [2], "values": [5]},
+    "split-offsets": [0, 4096],
+    "sort-order-id": 0
+  })"_json;
+
+  auto result = DataFileFromJson(json, UnpartitionedSpecs(), Schema({}, 0));
+  ASSERT_THAT(result, IsOk());
+  const auto& df = result.value();
+  EXPECT_EQ(df.partition_spec_id, PartitionSpec::kInitialSpecId);
+  ASSERT_EQ(df.column_sizes.size(), 2U);
+  EXPECT_EQ(df.column_sizes.at(1), 1000);
+  EXPECT_EQ(df.column_sizes.at(2), 2000);
+  ASSERT_EQ(df.value_counts.size(), 2U);
+  EXPECT_EQ(df.value_counts.at(1), 100);
+  ASSERT_EQ(df.null_value_counts.size(), 1U);
+  EXPECT_EQ(df.null_value_counts.at(1), 0);
+  ASSERT_EQ(df.nan_value_counts.size(), 1U);
+  EXPECT_EQ(df.nan_value_counts.at(2), 5);
+  ASSERT_EQ(df.split_offsets.size(), 2U);
+  EXPECT_EQ(df.split_offsets[0], 0);
+  EXPECT_EQ(df.split_offsets[1], 4096);
+  EXPECT_EQ(df.sort_order_id, 0);
+}
+
+TEST(DataFileFromJsonTest, EqualityDeleteFile) {
+  auto json = R"({
+    "content": "equality-deletes",
+    "file-path": "s3://bucket/deletes/eq_delete.parquet",
+    "file-format": "PARQUET",
+    "spec-id": 0,
+    "partition": [],
+    "file-size-in-bytes": 5000,
+    "record-count": 50,
+    "equality-ids": [1, 2]
+  })"_json;
+
+  auto result = DataFileFromJson(json, UnpartitionedSpecs(), Schema({}, 0));
+  ASSERT_THAT(result, IsOk());
+  const auto& df = result.value();
+  EXPECT_EQ(df.content, DataFile::Content::kEqualityDeletes);
+  ASSERT_EQ(df.equality_ids.size(), 2U);
+  EXPECT_EQ(df.equality_ids[0], 1);
+  EXPECT_EQ(df.equality_ids[1], 2);
+}
+
+TEST(DataFileFromJsonTest, PositionDeleteFileWithReferencedDataFile) {
+  auto json = R"({
+    "content": "position-deletes",
+    "file-path": "s3://bucket/deletes/pos_delete.parquet",
+    "file-format": "PARQUET",
+    "spec-id": 0,
+    "partition": [],
+    "file-size-in-bytes": 3000,
+    "record-count": 20,
+    "referenced-data-file": "s3://bucket/data/file.parquet"
+  })"_json;
+
+  auto result = DataFileFromJson(json, UnpartitionedSpecs(), Schema({}, 0));
+  ASSERT_THAT(result, IsOk());
+  const auto& df = result.value();
+  EXPECT_EQ(df.content, DataFile::Content::kPositionDeletes);
+  ASSERT_TRUE(df.referenced_data_file.has_value());
+  EXPECT_EQ(df.referenced_data_file.value(), "s3://bucket/data/file.parquet");
+}
+
+TEST(DataFileFromJsonTest, InvalidContentType) {
+  auto json = R"({
+    "content": "UNKNOWN",
+    "file-path": "s3://bucket/file.parquet",
+    "file-format": "PARQUET",
+    "file-size-in-bytes": 100,
+    "record-count": 10
+  })"_json;
+
+  auto result = DataFileFromJson(json, {}, Schema({}, 0));
+  EXPECT_THAT(result, IsError(ErrorKind::kJsonParseError));
+  EXPECT_THAT(result, HasErrorMessage("Unknown data file content"));
+}
+
+TEST(DataFileFromJsonTest, MissingRequiredField) {
+  auto json = R"({
+    "content": "data",
+    "file-format": "PARQUET",
+    "file-size-in-bytes": 100,
+    "record-count": 10
+  })"_json;
+
+  auto result = DataFileFromJson(json, {}, Schema({}, 0));
+  EXPECT_THAT(result, IsError(ErrorKind::kJsonParseError));
+}
+
+TEST(DataFileFromJsonTest, MissingSpecId) {
+  auto json = R"({
+    "content": "data",
+    "file-path": "s3://bucket/data/file.parquet",
+    "file-format": "PARQUET",
+    "partition": [],
+    "file-size-in-bytes": 100,
+    "record-count": 10
+  })"_json;
+
+  auto result = DataFileFromJson(json, UnpartitionedSpecs(), Schema({}, 0));
+  EXPECT_THAT(result, IsError(ErrorKind::kJsonParseError));
+  EXPECT_THAT(result, HasErrorMessage("Missing 'spec-id'"));
+}
+
+TEST(DataFileFromJsonTest, MissingPartition) {
+  auto json = R"({
+    "content": "data",
+    "file-path": "s3://bucket/data/file.parquet",
+    "file-format": "PARQUET",
+    "spec-id": 0,
+    "file-size-in-bytes": 100,
+    "record-count": 10
+  })"_json;
+
+  auto result = DataFileFromJson(json, UnpartitionedSpecs(), Schema({}, 0));
+  EXPECT_THAT(result, IsError(ErrorKind::kJsonParseError));
+  EXPECT_THAT(result, HasErrorMessage("Missing 'partition'"));
+}
+
+TEST(DataFileFromJsonTest, NotAnObject) {
+  auto result = DataFileFromJson(nlohmann::json::array(), {}, Schema({}, 0));
+  EXPECT_THAT(result, IsError(ErrorKind::kJsonParseError));
+  EXPECT_THAT(result, HasErrorMessage("DataFile must be a JSON object"));
+}
+
 }  // namespace iceberg
