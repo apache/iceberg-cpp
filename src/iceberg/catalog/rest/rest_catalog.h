@@ -58,6 +58,13 @@ class ICEBERG_REST_EXPORT RestCatalog final
   static Result<std::shared_ptr<RestCatalog>> Make(const RestCatalogProperties& config,
                                                    Executor* metrics_executor = nullptr);
 
+  /// \brief Test-only factory that constructs a RestCatalog with pre-built dependencies,
+  /// bypassing the FetchServerConfig HTTP exchange performed by Make().
+  static Result<std::shared_ptr<RestCatalog>> MakeForTesting(
+      RestCatalogProperties config, std::shared_ptr<FileIO> file_io,
+      std::shared_ptr<HttpClient> client, std::shared_ptr<ResourcePaths> paths,
+      std::unordered_set<Endpoint> endpoints);
+
   std::string_view name() const override;
 
   Result<std::shared_ptr<Catalog>> AsCatalog() override;
@@ -69,7 +76,7 @@ class ICEBERG_REST_EXPORT RestCatalog final
   class TableScopedCatalog;
 
   RestCatalog(RestCatalogProperties config, std::shared_ptr<FileIO> file_io,
-              std::shared_ptr<HttpClient> client, std::unique_ptr<ResourcePaths> paths,
+              std::shared_ptr<HttpClient> client, std::shared_ptr<ResourcePaths> paths,
               std::unordered_set<Endpoint> endpoints,
               std::unique_ptr<auth::AuthManager> auth_manager,
               std::shared_ptr<auth::AuthSession> catalog_session,
@@ -193,7 +200,7 @@ class ICEBERG_REST_EXPORT RestCatalog final
   RestCatalogProperties config_;
   std::shared_ptr<FileIO> file_io_;
   std::shared_ptr<HttpClient> client_;
-  std::unique_ptr<ResourcePaths> paths_;
+  std::shared_ptr<ResourcePaths> paths_;
   std::string name_;
   std::unordered_set<Endpoint> supported_endpoints_;
   std::unique_ptr<auth::AuthManager> auth_manager_;

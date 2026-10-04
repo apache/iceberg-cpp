@@ -210,6 +210,7 @@ bool OptionalSharedPtrVectorEqual(
 template <typename Response>
 bool ScanTaskFieldsEqual(const Response& lhs, const Response& rhs) {
   return lhs.plan_tasks == rhs.plan_tasks &&
+         lhs.storage_credentials == rhs.storage_credentials &&
          SharedPtrVectorEqual(lhs.delete_files, rhs.delete_files) &&
          OptionalSharedPtrVectorEqual(lhs.file_scan_tasks, rhs.file_scan_tasks,
                                       FileScanTaskEqual);
@@ -297,10 +298,10 @@ Status PlanTableScanResponse::Validate() const {
         "Invalid response: tasks can only be defined when status is 'completed'");
   }
   if (!plan_id.empty() && plan_status != PlanStatus::kSubmitted &&
-      plan_status != PlanStatus::kCompleted) {
+      plan_status != PlanStatus::kCompleted && plan_status != PlanStatus::kFailed) {
     return ValidationFailed(
-        "Invalid response: plan id can only be defined when status is 'submitted' or "
-        "'completed'");
+        "Invalid response: plan id can only be defined when status is 'submitted', "
+        "'completed', or 'failed'");
   }
   if (!HasNonEmptyFileScanTasks(*this) && !delete_files.empty()) {
     return ValidationFailed(
