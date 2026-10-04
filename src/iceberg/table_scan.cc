@@ -313,7 +313,7 @@ Result<std::shared_ptr<FileScanTask>> FileScanTask::MakeSplit(
 
   return std::shared_ptr<FileScanTask>(
       new FileScanTask(std::move(data_file), std::move(delete_files), std::move(filter),
-                       Range{start, length, file_size}));
+                       Range{.start = start, .length = length, .file_size = file_size}));
 }
 
 int64_t FileScanTask::length() const {
