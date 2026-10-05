@@ -19,7 +19,9 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 #include <gmock/gmock.h>
@@ -2119,7 +2121,7 @@ TEST(DataFileFromJsonTest, MissingSpecId) {
   EXPECT_THAT(result, HasErrorMessage("Missing 'spec-id'"));
 }
 
-TEST(DataFileFromJsonTest, MissingPartition) {
+TEST(DataFileFromJsonTest, MissingPartitionIsAccepted) {
   auto json = R"({
     "content": "data",
     "file-path": "s3://bucket/data/file.parquet",
@@ -2129,9 +2131,9 @@ TEST(DataFileFromJsonTest, MissingPartition) {
     "record-count": 10
   })"_json;
 
-  auto result = DataFileFromJson(json, UnpartitionedSpecs(), Schema({}, 0));
-  EXPECT_THAT(result, IsError(ErrorKind::kJsonParseError));
-  EXPECT_THAT(result, HasErrorMessage("Missing 'partition'"));
+  ICEBERG_UNWRAP_OR_FAIL(auto data_file,
+                         DataFileFromJson(json, UnpartitionedSpecs(), Schema({}, 0)));
+  EXPECT_EQ(data_file.partition.num_fields(), 0U);
 }
 
 TEST(DataFileFromJsonTest, NotAnObject) {
