@@ -102,10 +102,39 @@ class OAuth2Session final : public AuthSession,
         .scope = config_.scope,
         .oauth2_server_uri = config_.token_endpoint,
         .optional_oauth_params = config_.optional_oauth_params,
+        .headers = headers_,
     };
   }
 
   Status Close() override { return CloseImpl(); }
+
+  /// \brief Stop scheduling token refreshes without waiting.
+  ///
+  /// Unlike Close(), this does not wait for an in-flight refresh to finish, so it
+  /// is safe to call from any thread, including refresh executor workers. The
+  /// session keeps its current token and remains usable; an in-flight refresh may
+  /// still update the token but will not schedule further refreshes.
+  void StopRefreshing() {
+    {
+      std::lock_guard lock(refresh_mutex_);
+      closed_ = true;
+    }
+    if (scheduler_) {
+      scheduler_->Shutdown();
+    }
+  }
+
+  /// \brief Expiration time of the current token, or std::nullopt if unknown.
+  std::optional<std::chrono::steady_clock::time_point> ExpiresAt() const {
+    std::shared_lock lock(mutex_);
+    if (expires_at_ == std::chrono::steady_clock::time_point{}) {
+      return std::nullopt;
+    }
+    return expires_at_;
+  }
+
+  /// \brief Whether this session can refresh its token automatically.
+  bool IsRefreshable() const { return scheduler_.has_value(); }
 
   ~OAuth2Session() override { std::ignore = CloseImpl(); }
 
