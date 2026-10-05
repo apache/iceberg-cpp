@@ -64,6 +64,10 @@ class ICEBERG_EXPORT ResolvingFileIO final : public FileIO,
 
   std::vector<StorageCredential> credentials() const override;
 
+  const std::unordered_map<std::string, std::string>& properties() const override {
+    return properties_;
+  }
+
   SupportsStorageCredentials* AsSupportsStorageCredentials() override { return this; }
 
  private:
