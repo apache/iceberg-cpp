@@ -943,6 +943,7 @@ Status ManifestReaderImpl::OpenReader(std::shared_ptr<Schema> projection) {
   ReaderOptions options;
   options.path = manifest_path_;
   options.io = file_io_;
+  options.cache_content = true;
   options.projection = file_schema_;
   if (manifest_length_.has_value()) {
     options.length = manifest_length_;
@@ -1115,6 +1116,7 @@ Result<std::unique_ptr<ManifestListReader>> ManifestListReader::Make(
                                   {
                                       .path = std::string(manifest_list_location),
                                       .io = std::move(file_io),
+                                      .cache_content = true,
                                       .projection = schema,
                                   }));
   return std::make_unique<ManifestListReaderImpl>(std::move(reader), std::move(schema));

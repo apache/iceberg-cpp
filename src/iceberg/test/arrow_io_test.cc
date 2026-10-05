@@ -32,6 +32,7 @@
 #include "iceberg/arrow/arrow_io_internal.h"
 #include "iceberg/arrow/arrow_register.h"
 #include "iceberg/file_io_registry.h"
+#include "iceberg/metadata_cache.h"
 #include "iceberg/resolving_file_io.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/test/std_io.h"
@@ -444,6 +445,24 @@ TEST(ArrowFileIOTest, OutputStoredLengthAfterClose) {
   ASSERT_FALSE(position.has_value());
   EXPECT_THAT(position.error().message, ::testing::HasSubstr("closed"));
   EXPECT_THAT(output->StoredLength(), HasValue(::testing::Eq(3)));
+}
+
+TEST(ArrowFileIOTest, OversizedCachedInputRetainsNativeArrowStream) {
+  std::shared_ptr<FileIO> file_io = arrow::ArrowFileSystemFileIO::MakeMockFileIO();
+  ASSERT_THAT(file_io->WriteFile("input", "manifest"), IsOk());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto uncached,
+                         arrow::OpenArrowInputStream(file_io, "input", std::nullopt,
+                                                     /*cache_content=*/true));
+  ASSERT_THAT(file_io->ConfigureMetadataCache(
+                  {{std::string(MetadataCacheOptions::kEnabled), "true"},
+                   {std::string(MetadataCacheOptions::kMaxContentLength), "4"}}),
+              IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto oversized,
+                         arrow::OpenArrowInputStream(file_io, "input", std::nullopt,
+                                                     /*cache_content=*/true));
+
+  EXPECT_TRUE(typeid(*oversized) == typeid(*uncached));
 }
 
 TEST_F(LocalFileIOTest, ResolvesForeignSchemeToUnderlyingPath) {

@@ -28,6 +28,7 @@
 
 #include "iceberg/catalog/rest/types.h"
 #include "iceberg/file_io_registry.h"
+#include "iceberg/metadata_cache.h"
 #include "iceberg/resolving_file_io.h"
 #include "iceberg/test/matchers.h"
 
@@ -81,6 +82,17 @@ TEST(RestFileIOTest, MakeCatalogFileIODefaultsToResolvingFileIO) {
     ASSERT_THAT(result, IsOk());
     EXPECT_NE(dynamic_cast<ResolvingFileIO*>(result.value().get()), nullptr);
   }
+}
+
+TEST(RestFileIOTest, DefaultResolverOwnsConfiguredMetadataCache) {
+  auto config = RestCatalogProperties::FromMap(
+      {{std::string(MetadataCacheOptions::kEnabled), "true"}});
+
+  auto result = MakeCatalogFileIO(config);
+
+  ASSERT_THAT(result, IsOk());
+  EXPECT_NE(dynamic_cast<ResolvingFileIO*>(result.value().get()), nullptr);
+  EXPECT_TRUE(result.value()->MetadataCacheEnabled());
 }
 
 TEST(RestFileIOTest, DefaultResolverDelegatesThroughRegistry) {

@@ -26,6 +26,7 @@
 #include "iceberg/catalog/catalog_util.h"
 #include "iceberg/catalog/sql/config.h"
 #include "iceberg/file_io.h"
+#include "iceberg/metadata_cache.h"
 #include "iceberg/metrics/metrics_reporters.h"
 #include "iceberg/table.h"
 #include "iceberg/table_identifier.h"
@@ -147,6 +148,9 @@ Result<std::shared_ptr<SqlCatalog>> SqlCatalog::Make(
   }
   if (file_io == nullptr) {
     return InvalidArgument("SqlCatalog requires a non-null FileIO");
+  }
+  if (config.props.contains(std::string(MetadataCacheOptions::kEnabled))) {
+    ICEBERG_RETURN_UNEXPECTED(file_io->ConfigureMetadataCache(config.props));
   }
   ICEBERG_RETURN_UNEXPECTED(store->Initialize());
 

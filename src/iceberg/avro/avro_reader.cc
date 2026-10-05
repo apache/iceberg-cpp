@@ -54,7 +54,8 @@ namespace {
 Result<std::unique_ptr<AvroInputStream>> CreateInputStream(const ReaderOptions& options,
                                                            int64_t buffer_size) {
   ICEBERG_ASSIGN_OR_RAISE(
-      auto file, arrow::OpenArrowInputStream(options.io, options.path, options.length));
+      auto file, arrow::OpenArrowInputStream(options.io, options.path, options.length,
+                                             options.cache_content));
   return std::make_unique<AvroInputStream>(file, buffer_size);
 }
 

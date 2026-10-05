@@ -22,6 +22,7 @@
 #include <limits>
 #include <mutex>
 #include <optional>
+#include <utility>
 #include <vector>
 
 #include <arrow/buffer.h>
@@ -423,29 +424,46 @@ class ArrowInputFile : public InputFile {
   std::string_view location() const override { return location_; }
 
   Result<int64_t> Size() const override {
+    std::lock_guard lock(mutex_);
     if (file_size_.has_value()) {
       return *file_size_;
     }
     ::arrow::fs::FileInfo file_info(path_, ::arrow::fs::FileType::File);
     ICEBERG_ARROW_ASSIGN_OR_RETURN(auto input, fs_->OpenInputFile(file_info));
     ICEBERG_ARROW_ASSIGN_OR_RETURN(auto size, input->GetSize());
+    file_size_ = size;
+    pending_input_ = std::move(input);
     return size;
   }
 
   Result<std::unique_ptr<SeekableInputStream>> Open() override {
+    ICEBERG_ASSIGN_OR_RAISE(auto input, OpenArrowFile());
+    return std::make_unique<ArrowSeekableInputStream>(std::move(input));
+  }
+
+  Result<std::shared_ptr<::arrow::io::RandomAccessFile>> OpenArrowFile() {
+    std::lock_guard lock(mutex_);
+    if (pending_input_ != nullptr) {
+      auto input = std::move(pending_input_);
+      pending_input_.reset();
+      return input;
+    }
+
     ::arrow::fs::FileInfo file_info(path_, ::arrow::fs::FileType::File);
     if (file_size_.has_value()) {
       file_info.set_size(*file_size_);
     }
     ICEBERG_ARROW_ASSIGN_OR_RETURN(auto input, fs_->OpenInputFile(file_info));
-    return std::make_unique<ArrowSeekableInputStream>(std::move(input));
+    return input;
   }
 
  private:
   std::shared_ptr<::arrow::fs::FileSystem> fs_;
   std::string location_;
   std::string path_;
-  std::optional<int64_t> file_size_;
+  mutable std::optional<int64_t> file_size_;
+  mutable std::shared_ptr<::arrow::io::RandomAccessFile> pending_input_;
+  mutable std::mutex mutex_;
 };
 
 class ArrowOutputFile : public OutputFile {
@@ -508,27 +526,34 @@ Result<std::string> ArrowFileSystemFileIO::ResolvePath(const std::string& file_l
 
 Result<std::shared_ptr<::arrow::io::RandomAccessFile>> OpenArrowInputStream(
     const std::shared_ptr<FileIO>& io, const std::string& path,
-    std::optional<size_t> length) {
+    std::optional<size_t> length, bool cache_content) {
   ICEBERG_PRECHECK(io != nullptr, "FileIO cannot be null");
 
-  if (auto arrow_io = std::dynamic_pointer_cast<ArrowFileSystemFileIO>(io)) {
-    ICEBERG_ASSIGN_OR_RAISE(auto resolved_path, arrow_io->ResolvePath(path));
-    ::arrow::fs::FileInfo file_info(resolved_path, ::arrow::fs::FileType::File);
-    if (length.has_value()) {
-      ICEBERG_ASSIGN_OR_RAISE(auto size, ToInt64Length(*length));
-      file_info.set_size(size);
+  if (!cache_content || !io->MetadataCacheEnabled()) {
+    if (auto arrow_io = std::dynamic_pointer_cast<ArrowFileSystemFileIO>(io)) {
+      ICEBERG_ASSIGN_OR_RAISE(auto resolved_path, arrow_io->ResolvePath(path));
+      ::arrow::fs::FileInfo file_info(resolved_path, ::arrow::fs::FileType::File);
+      if (length.has_value()) {
+        ICEBERG_ASSIGN_OR_RAISE(auto size, ToInt64Length(*length));
+        file_info.set_size(size);
+      }
+      ICEBERG_ARROW_ASSIGN_OR_RETURN(auto input,
+                                     arrow_io->arrow_fs_->OpenInputFile(file_info));
+      return input;
     }
-    ICEBERG_ARROW_ASSIGN_OR_RETURN(auto input,
-                                   arrow_io->arrow_fs_->OpenInputFile(file_info));
-    return input;
   }
 
   int64_t size;
   std::unique_ptr<InputFile> input_file;
-  if (length.has_value()) {
+  if (cache_content) {
+    ICEBERG_ASSIGN_OR_RAISE(input_file, io->NewCachedInputFile(path, length));
+  } else if (length.has_value()) {
     ICEBERG_ASSIGN_OR_RAISE(input_file, io->NewInputFile(path, *length));
   } else {
     ICEBERG_ASSIGN_OR_RAISE(input_file, io->NewInputFile(path));
+  }
+  if (auto* arrow_input = dynamic_cast<ArrowInputFile*>(input_file.get())) {
+    return arrow_input->OpenArrowFile();
   }
   ICEBERG_ASSIGN_OR_RAISE(size, input_file->Size());
   if (size < 0) {
