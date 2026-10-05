@@ -95,7 +95,7 @@ TEST(MemoizeLruTest, Threads) {
   group.SetExecutor(std::ref(executor));
 
   for (int32_t thread_id = 0; thread_id < 4; ++thread_id) {
-    group.Submit([&] -> Status {
+    group.Submit([&]() -> Status {
       for (int32_t i = 0; i < 100; ++i) {
         const int32_t key = i % 8;
         if (memoized(key) != key * 2) {

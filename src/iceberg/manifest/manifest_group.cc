@@ -49,6 +49,16 @@ namespace iceberg {
 
 namespace {
 
+// Selected with if/else rather than a conditional operator because older MSVC versions
+// (e.g. 14.42) try to copy the move-only Result operands of the conditional operator.
+Result<ManifestEntryStreamPtr> OpenEntriesStream(ManifestReader& reader,
+                                                 bool ignore_deleted) {
+  if (ignore_deleted) {
+    return reader.LiveEntriesStream();
+  }
+  return reader.EntriesStream();
+}
+
 std::shared_ptr<Schema> DataFileFilterSchema() {
   auto empty_partition_type = std::make_shared<StructType>(std::vector<SchemaField>{});
   return std::make_shared<Schema>(std::vector<SchemaField>{
@@ -341,9 +351,8 @@ class ManifestGroup::FilePlanningStream final : public FileScanTaskStream {
       }
 
       ICEBERG_ASSIGN_OR_RAISE(auto reader, group_->MakeReader(manifest, columns_));
-      ICEBERG_ASSIGN_OR_RAISE(entry_stream_, group_->ignore_deleted_
-                                                 ? reader->LiveEntriesStream()
-                                                 : reader->EntriesStream());
+      ICEBERG_ASSIGN_OR_RAISE(entry_stream_,
+                              OpenEntriesStream(*reader, group_->ignore_deleted_));
       current_spec_id_ = manifest.partition_spec_id;
       return true;
     }
@@ -376,9 +385,8 @@ class ManifestGroup::FilePlanningStream final : public FileScanTaskStream {
             [this](const ManifestFile* manifest) -> Result<std::vector<TaggedStream>> {
               ICEBERG_ASSIGN_OR_RAISE(auto reader,
                                       group_->MakeReader(*manifest, columns_));
-              ICEBERG_ASSIGN_OR_RAISE(auto stream, group_->ignore_deleted_
-                                                       ? reader->LiveEntriesStream()
-                                                       : reader->EntriesStream());
+              ICEBERG_ASSIGN_OR_RAISE(
+                  auto stream, OpenEntriesStream(*reader, group_->ignore_deleted_));
 
               std::vector<TaggedStream> tagged_streams;
               tagged_streams.emplace_back(manifest->partition_spec_id, std::move(stream));
