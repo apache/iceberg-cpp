@@ -55,6 +55,7 @@ set(ICEBERG_SOURCES
     geospatial.cc
     inspect/history_table.cc
     inspect/metadata_table.cc
+    inspect/position_deletes_table.cc
     inspect/snapshots_table.cc
     inheritable_metadata.cc
     json_serde.cc

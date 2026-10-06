@@ -1132,20 +1132,19 @@ const std::vector<ExtractDatumParam> kExtractDatumTestCases = {
     {
         .name = "Decimal",
         .iceberg_type = decimal(10, 2),
-        .arrow_json = R"([{"a": "0.00"}, {"a": "10.01"}, {"a": "20.02"}])",
+        .arrow_json = R"([{"a": "-10.01"}, {"a": "0.00"}, {"a": "10.01"}])",
         .value_verifier =
             [](const ::avro::GenericDatum& datum, int i) {
               const auto& record = datum.value<::avro::GenericRecord>();
               const auto& fixed = record.fieldAt(0).value<::avro::GenericFixed>();
 
               const auto& bytes = fixed.value();
+              ASSERT_EQ(bytes.size(), 5);
               auto decimal =
                   ::arrow::Decimal128::FromBigEndian(
                       reinterpret_cast<const uint8_t*>(bytes.data()), bytes.size())
                       .ValueOrDie();
-              int64_t expected_unscaled = i * 1000 + i;
-              EXPECT_EQ(decimal.low_bits(), static_cast<uint64_t>(expected_unscaled));
-              EXPECT_EQ(decimal.high_bits(), 0);
+              EXPECT_EQ(decimal, ::arrow::Decimal128((i - 1) * 1001));
             },
     },
     {

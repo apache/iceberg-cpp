@@ -194,7 +194,9 @@ Status EncodeArrowToAvro(const ::avro::NodePtr& avro_node, ::avro::Encoder& enco
       if (avro_node->logicalType().type() == ::avro::LogicalType::DECIMAL) {
         const auto& decimal_array =
             internal::checked_cast<const ::arrow::Decimal128Array&>(array);
-        std::string_view decimal_value = decimal_array.GetView(row_index);
+        // Avro fixed uses the schema's precision-dependent width, not all 16 Arrow bytes.
+        std::string_view decimal_value =
+            decimal_array.GetView(row_index).substr(0, avro_node->fixedSize());
         ctx.bytes_scratch.assign(decimal_value.begin(), decimal_value.end());
         // Arrow Decimal128 bytes are in little-endian order, Avro requires big-endian
         std::ranges::reverse(ctx.bytes_scratch);
