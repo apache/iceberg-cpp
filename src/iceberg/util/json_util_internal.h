@@ -19,6 +19,8 @@
 
 #pragma once
 
+#include <cstdint>
+#include <limits>
 #include <optional>
 
 #include <nlohmann/json.hpp>
@@ -103,6 +105,27 @@ Result<T> GetJsonValueOrDefault(const nlohmann::json& json, std::string_view key
     return default_value;
   }
   return GetJsonValueImpl<T>(json, key);
+}
+
+/// \brief Parse a required int32 value, rejecting floats, booleans and values outside
+/// the int32 range, all of which GetJsonValue<int32_t> would silently coerce.
+inline Result<int32_t> GetJsonInt32Strict(const nlohmann::json& json,
+                                          std::string_view key) {
+  if (!json.contains(key) || json.at(key).is_null()) {
+    return JsonParseError("Missing '{}' in {}", key, SafeDumpJson(json));
+  }
+  const auto& value = json.at(key);
+  constexpr auto kMin = std::numeric_limits<int32_t>::min();
+  constexpr auto kMax = std::numeric_limits<int32_t>::max();
+  bool in_range = value.is_number_unsigned()
+                      ? value.get<uint64_t>() <= static_cast<uint64_t>(kMax)
+                      : value.is_number_integer() && value.get<int64_t>() >= kMin &&
+                            value.get<int64_t>() <= kMax;
+  if (!in_range) {
+    return JsonParseError("Cannot parse '{}' to an int32 value: {}", key,
+                          SafeDumpJson(value));
+  }
+  return value.get<int32_t>();
 }
 
 /// \brief Convert a list of items to a json array.

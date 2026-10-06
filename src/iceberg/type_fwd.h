@@ -240,6 +240,8 @@ class CommitMetrics;
 /// \brief Table.
 class Table;
 class TableProperties;
+struct FieldLabel;
+struct Labels;
 
 /// \brief Table update.
 class TableMetadataBuilder;
