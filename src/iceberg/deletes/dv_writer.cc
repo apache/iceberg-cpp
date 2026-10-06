@@ -31,7 +31,6 @@
 
 #include "iceberg/deletes/dv_util_internal.h"
 #include "iceberg/deletes/position_delete_index.h"
-#include "iceberg/deletes/roaring_position_bitmap.h"
 #include "iceberg/file_format.h"
 #include "iceberg/file_io.h"  // IWYU pragma: keep
 #include "iceberg/manifest/manifest_entry.h"
@@ -79,9 +78,7 @@ class DVWriter::Impl {
     ICEBERG_PRECHECK(!referenced_data_file.empty(),
                      "Deletion vector requires a non-empty referenced data file");
     ICEBERG_PRECHECK(spec != nullptr, "Deletion vector requires a partition spec");
-    ICEBERG_PRECHECK(pos >= 0 && pos <= RoaringPositionBitmap::kMaxPosition,
-                     "Deletion vector position out of range [0, {}]: {}",
-                     RoaringPositionBitmap::kMaxPosition, pos);
+    ICEBERG_PRECHECK(pos >= 0, "Deletion vector position must be non-negative: {}", pos);
     DeletesFor(referenced_data_file, spec, partition).positions.Delete(pos);
     return {};
   }
@@ -110,6 +107,10 @@ class DVWriter::Impl {
 
     for (auto& [path, deletes] : deletes_by_path_) {
       ICEBERG_RETURN_UNEXPECTED(LoadPreviousDeletes(path, deletes));
+    }
+
+    for (auto& [_, deletes] : deletes_by_path_) {
+      ICEBERG_RETURN_UNEXPECTED(deletes.positions.PrepareForSerialization());
     }
 
     ICEBERG_ASSIGN_OR_RAISE(auto output_file, options_.io->NewOutputFile(options_.path));

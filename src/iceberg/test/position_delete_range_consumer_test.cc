@@ -28,7 +28,6 @@
 #include <gtest/gtest.h>
 
 #include "iceberg/deletes/position_delete_index.h"
-#include "iceberg/deletes/roaring_position_bitmap.h"
 
 namespace iceberg {
 
@@ -38,7 +37,7 @@ namespace {
 std::set<int64_t> ExpectedValidSet(const std::vector<int64_t>& positions) {
   std::set<int64_t> expected;
   for (int64_t pos : positions) {
-    if (pos >= 0 && pos <= RoaringPositionBitmap::kMaxPosition) {
+    if (pos >= 0) {
       expected.insert(pos);
     }
   }
@@ -95,12 +94,9 @@ TEST(PositionDeleteRangeConsumerTest, DuplicatesAreIdempotent) {
 
 TEST(PositionDeleteRangeConsumerTest, InvalidPositionsSilentlySkipped) {
   // Invalids at the edges, mid-run, and mixed with valid contiguous runs
-  // must all be dropped without breaking coalescing around them. We stay
-  // well below `kMaxPosition` to avoid forcing the bitmap to resize its
-  // backing vector to ~2^31 empty containers.
+  // must all be dropped without breaking coalescing around them.
   AssertMatchesBaseline({std::numeric_limits<int64_t>::min(), -5, -4, 10, 11, -999, 12,
-                         13, RoaringPositionBitmap::kMaxPosition + 1,
-                         std::numeric_limits<int64_t>::max()});
+                         13, std::numeric_limits<int64_t>::max()});
 }
 
 TEST(PositionDeleteRangeConsumerTest, ContiguousRunAcrossKeyBoundary) {
@@ -112,6 +108,11 @@ TEST(PositionDeleteRangeConsumerTest, ContiguousRunAcrossKeyBoundary) {
     positions.push_back(i);
   }
   AssertMatchesBaseline(positions);
+}
+
+TEST(PositionDeleteRangeConsumerTest, ContiguousRunEndingAtMaximumPosition) {
+  const int64_t max = std::numeric_limits<int64_t>::max();
+  AssertMatchesBaseline({max - 2, max - 1, max});
 }
 
 TEST(PositionDeleteRangeConsumerTest, DispatcherAgreesAtBothDensities) {

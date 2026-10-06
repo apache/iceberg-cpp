@@ -20,10 +20,11 @@
 #pragma once
 
 /// \file iceberg/deletes/roaring_position_bitmap.h
-/// A 64-bit position bitmap using an array of 32-bit Roaring bitmaps.
+/// A 64-bit position bitmap using sparse 32-bit Roaring bitmaps.
 
 #include <cstdint>
 #include <functional>
+#include <limits>
 #include <memory>
 #include <span>
 #include <string>
@@ -37,7 +38,7 @@ namespace iceberg {
 
 class PositionDeleteIndex;
 
-/// \brief A bitmap that supports positive 64-bit positions, optimized
+/// \brief A bitmap that supports non-negative 64-bit positions, optimized
 /// for cases where most positions fit in 32 bits.
 ///
 /// Incoming 64-bit positions are divided into a 32-bit "key" using the
@@ -51,8 +52,8 @@ class PositionDeleteIndex;
 /// for `deletion-vector-v1` persistence.
 class ICEBERG_EXPORT RoaringPositionBitmap {
  public:
-  /// \brief Maximum supported position (aligned with the Java implementation).
-  static constexpr int64_t kMaxPosition = 0x7FFFFFFE80000000LL;
+  /// \brief Maximum supported position.
+  static constexpr int64_t kMaxPosition = std::numeric_limits<int64_t>::max();
 
   RoaringPositionBitmap();
   ~RoaringPositionBitmap();
@@ -64,21 +65,21 @@ class ICEBERG_EXPORT RoaringPositionBitmap {
   RoaringPositionBitmap& operator=(const RoaringPositionBitmap& other);
 
   /// \brief Sets a position in the bitmap.
-  /// \param pos the position (must be >= 0 and <= kMaxPosition)
-  /// \note Invalid positions are silently ignored
+  /// \param pos the position (must be non-negative)
+  /// \note Negative positions are silently ignored.
   void Add(int64_t pos);
 
   /// \brief Sets a range of positions [pos_start, pos_end).
   /// \param pos_start the start of the range (inclusive), clamped to 0
-  /// \param pos_end the end of the range (exclusive), clamped to kMaxPosition + 1
-  /// \note If pos_start > pos_end, the call is silently ignored.
-  ///       If pos_start == pos_end, this method does nothing.
-  ///       Positions outside [0, kMaxPosition] are silently ignored.
+  /// \param pos_end the end of the range (exclusive)
+  /// \note Empty and reversed ranges are silently ignored.
+  /// \note Because pos_end is an int64_t exclusive endpoint, this method cannot
+  ///       include kMaxPosition. Call Add(kMaxPosition) separately.
   void AddRange(int64_t pos_start, int64_t pos_end);
 
   /// \brief Checks if a position is set in the bitmap.
   /// \param pos the position to check
-  /// \return true if the position is set, false otherwise (including invalid positions)
+  /// \return true if the position is set, false otherwise (including negative positions)
   bool Contains(int64_t pos) const;
 
   /// \brief Returns true if the bitmap has no positions set.
