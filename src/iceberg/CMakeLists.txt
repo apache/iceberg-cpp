@@ -26,6 +26,7 @@ set(ICEBERG_SOURCES
     catalog/memory/in_memory_catalog.cc
     catalog/session_catalog.cc
     catalog/session_context.cc
+    compaction_planner.cc
     delete_file_index.cc
     deletes/dv_util.cc
     deletes/dv_writer.cc
@@ -237,11 +238,13 @@ if(MSVC_TOOLCHAIN)
 endif()
 
 set(ICEBERG_DATA_SOURCES
+    data/compaction_executor.cc
     data/data_writer.cc
     data/delete_filter.cc
     data/delete_loader.cc
     data/equality_delete_writer.cc
     data/file_scan_task_reader.cc
+    data/position_delete_update.cc
     data/position_delete_writer.cc
     data/writer.cc)
 

@@ -1113,6 +1113,81 @@ TEST_P(DeleteFileIndexTest, TestMultipleDVs) {
   EXPECT_THAT(index_result, HasErrorMessage(file_a_->file_path));
 }
 
+TEST_P(DeleteFileIndexTest, TestDVApplicability) {
+  auto version = GetParam();
+  if (version < 3) {
+    GTEST_SKIP() << "DVs only supported in V3+";
+  }
+
+  const auto null_partition = PartitionValues({Literal::Null(int32())});
+  auto null_partition_file = MakeDataFile("/path/to/data-null.parquet", null_partition,
+                                          partitioned_spec_->spec_id());
+
+  struct TestCase {
+    std::string name;
+    PartitionValues dv_partition;
+    std::shared_ptr<PartitionSpec> dv_spec;
+    std::shared_ptr<DataFile> data_file;
+    bool applies;
+  };
+  const std::vector<TestCase> cases = {
+      {
+          .name = "equal-partition",
+          .dv_partition = file_a_->partition,
+          .dv_spec = partitioned_spec_,
+          .data_file = file_a_,
+          .applies = true,
+      },
+      {
+          .name = "different-spec",
+          .dv_partition = PartitionValues{},
+          .dv_spec = unpartitioned_spec_,
+          .data_file = file_a_,
+          .applies = false,
+      },
+      {
+          .name = "different-partition-value",
+          .dv_partition = file_b_->partition,
+          .dv_spec = partitioned_spec_,
+          .data_file = file_a_,
+          .applies = false,
+      },
+      {
+          .name = "equal-null-partition",
+          .dv_partition = null_partition,
+          .dv_spec = partitioned_spec_,
+          .data_file = null_partition_file,
+          .applies = true,
+      },
+      {
+          .name = "null-partition-mismatch",
+          .dv_partition = file_a_->partition,
+          .dv_spec = partitioned_spec_,
+          .data_file = null_partition_file,
+          .applies = false,
+      },
+  };
+
+  for (const auto& test_case : cases) {
+    SCOPED_TRACE(test_case.name);
+    auto dv = MakeDV("/path/to/" + test_case.name + ".puffin", test_case.dv_partition,
+                     test_case.dv_spec->spec_id(), test_case.data_file->file_path);
+    std::vector<ManifestEntry> entries;
+    entries.push_back(MakeDeleteEntry(/*snapshot_id=*/1000L, /*sequence_number=*/2, dv));
+    auto manifest = WriteDeleteManifest(version, /*snapshot_id=*/1000L,
+                                        std::move(entries), test_case.dv_spec);
+    ICEBERG_UNWRAP_OR_FAIL(auto index, BuildIndex({manifest}));
+    auto result = index->ForDataFile(1, *test_case.data_file);
+    if (test_case.applies) {
+      ICEBERG_UNWRAP_OR_FAIL(auto deletes, std::move(result));
+      ASSERT_EQ(deletes.size(), 1);
+      EXPECT_EQ(deletes[0]->file_path, dv->file_path);
+    } else {
+      EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
+    }
+  }
+}
+
 TEST_P(DeleteFileIndexTest, TestInvalidDVSequenceNumber) {
   auto version = GetParam();
   if (version < 3) {
