@@ -163,13 +163,11 @@ class ManifestGroup::PlanningContext {
       }
       ICEBERG_ASSIGN_OR_RAISE(auto column_name,
                               data_file_schema->FindColumnNameById(field_id));
-      if (!column_name.has_value()) {
-        continue;
-      }
-
-      std::string column_name_str(column_name.value());
-      if (selected_columns.insert(column_name_str).second) {
-        columns.push_back(std::move(column_name_str));
+      if (column_name.has_value()) {
+        std::string column_name_str(column_name.value());
+        if (selected_columns.insert(column_name_str).second) {
+          columns.push_back(std::move(column_name_str));
+        }
       }
     }
     return PlanningContext(group, std::move(file_evaluator), std::move(columns));
@@ -338,6 +336,9 @@ class ManifestGroup::FilePlanningStream final : public FileScanTaskStream {
   using TaggedEntry = std::pair<int32_t, ManifestEntry>;
   using TaggedStream = std::pair<int32_t, ManifestEntryStreamPtr>;
 
+  // FIXME: Perhaps refactor this stream state machine into a
+  // generic reusable ParallelStream<T> utility, similar to Iceberg Java's
+  // ParallelIterable.
   Result<std::optional<TaggedEntry>> NextEntry() {
     while (true) {
       if (next_batch_stream_ == batch_streams_.size()) {
