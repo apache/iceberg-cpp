@@ -23,12 +23,10 @@
 #include <memory>
 #include <optional>
 #include <utility>
-#include <vector>
 
 #include "iceberg/arrow_c_data_guard_internal.h"
 #include "iceberg/arrow_c_data_util_internal.h"
 #include "iceberg/data/delete_filter.h"
-#include "iceberg/expression/binder.h"
 #include "iceberg/file_reader.h"
 #include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/schema.h"
@@ -43,6 +41,7 @@ namespace {
 ReaderOptions MakeReaderOptions(const DataFile& data_file, std::shared_ptr<FileIO> io,
                                 std::shared_ptr<Schema> projection,
                                 std::shared_ptr<Expression> filter,
+                                bool filter_case_sensitive,
                                 std::shared_ptr<NameMapping> name_mapping,
                                 ReaderProperties properties,
                                 std::optional<int64_t> first_row_id,
@@ -53,6 +52,7 @@ ReaderOptions MakeReaderOptions(const DataFile& data_file, std::shared_ptr<FileI
       .io = std::move(io),
       .projection = std::move(projection),
       .filter = std::move(filter),
+      .filter_case_sensitive = filter_case_sensitive,
       .name_mapping = std::move(name_mapping),
       .first_row_id = first_row_id,
       .data_sequence_number = data_sequence_number,
@@ -166,20 +166,12 @@ class FileScanTaskReader::Impl {
                      data_file->file_size_in_bytes);
 
     auto filter = task.residual_filter();
-    if (filter) {
-      ICEBERG_ASSIGN_OR_RAISE(auto is_bound, IsBoundVisitor::IsBound(filter));
-      if (!is_bound) {
-        ICEBERG_ASSIGN_OR_RAISE(
-            filter,
-            Binder::Bind(*table_schema_, filter,
-                         properties_.Get(ReaderProperties::kFilterCaseSensitive)));
-      }
-    }
 
     if (task.delete_files().empty()) {
-      auto options = MakeReaderOptions(
-          *data_file, io_, projected_schema_, filter, name_mapping_, properties_,
-          data_file->first_row_id, data_file->data_sequence_number);
+      auto options =
+          MakeReaderOptions(*data_file, io_, projected_schema_, filter,
+                            filter_case_sensitive_, name_mapping_, properties_,
+                            data_file->first_row_id, data_file->data_sequence_number);
       ICEBERG_ASSIGN_OR_RAISE(
           auto reader, ReaderFactoryRegistry::Open(data_file->file_format, options));
       return MakeArrowArrayStream(std::move(reader));
@@ -203,9 +195,9 @@ class FileScanTaskReader::Impl {
                             ProjectionContext::Make(*required_schema, *projected_schema_,
                                                     project_batch_function));
 
-    auto options = MakeReaderOptions(*data_file, io_, required_schema, filter,
-                                     name_mapping_, properties_, data_file->first_row_id,
-                                     data_file->data_sequence_number);
+    auto options = MakeReaderOptions(
+        *data_file, io_, required_schema, filter, filter_case_sensitive_, name_mapping_,
+        properties_, data_file->first_row_id, data_file->data_sequence_number);
     ICEBERG_ASSIGN_OR_RAISE(auto reader,
                             ReaderFactoryRegistry::Open(data_file->file_format, options));
 
@@ -219,18 +211,16 @@ class FileScanTaskReader::Impl {
   Impl(Options options, DeleteFilter::FieldLookup field_lookup,
        std::shared_ptr<DeleteCounter> delete_counter)
       : io_(std::move(options.io)),
-        table_schema_(std::move(options.table_schema)),
-        schemas_(std::move(options.schemas)),
         projected_schema_(std::move(options.projected_schema)),
+        filter_case_sensitive_(options.filter_case_sensitive),
         name_mapping_(std::move(options.name_mapping)),
         properties_(ReaderProperties::FromMap(options.properties)),
         field_lookup_(std::move(field_lookup)),
         delete_counter_(std::move(delete_counter)) {}
 
   std::shared_ptr<FileIO> io_;
-  std::shared_ptr<Schema> table_schema_;
-  std::vector<std::shared_ptr<Schema>> schemas_;
   std::shared_ptr<Schema> projected_schema_;
+  bool filter_case_sensitive_;
   std::shared_ptr<NameMapping> name_mapping_;
   ReaderProperties properties_;
   DeleteFilter::FieldLookup field_lookup_;

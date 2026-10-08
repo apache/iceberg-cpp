@@ -25,6 +25,7 @@
 #include <parquet/arrow/writer.h>
 #include <parquet/file_reader.h>
 #include <parquet/metadata.h>
+#include <parquet/statistics.h>
 
 #include "iceberg/arrow/arrow_io_internal.h"
 #include "iceberg/arrow/arrow_status_internal.h"
@@ -106,7 +107,7 @@ class ParquetRowGroupFilterTest : public ::testing::Test {
                           .projection = projection_,
                           .filter = std::move(filter),
                           .first_row_id = 100};
-    options.properties.Set(ReaderProperties::kFilterCaseSensitive, case_sensitive);
+    options.filter_case_sensitive = case_sensitive;
     options.properties.Set(ReaderProperties::kBatchSize, int64_t{3});
     return options;
   }
@@ -251,7 +252,7 @@ TEST_F(ParquetRowGroupFilterTest, OpenBindsUnboundProjectedReferences) {
   options.filter = Expressions::GreaterThanOrEqual("VALUE", Literal::Long(4));
   EXPECT_THAT(ReaderFactoryRegistry::Open(FileFormatType::kParquet, options),
               HasErrorMessage("Cannot find field 'VALUE'"));
-  options.properties.Set(ReaderProperties::kFilterCaseSensitive, false);
+  options.filter_case_sensitive = false;
   Check(options, {4, 5});
 }
 
@@ -378,8 +379,10 @@ TEST_F(ParquetRowGroupFilterTest, FileAndFilterTypeCompatibility) {
     ASSERT_THAT(Write(true, test.json), IsOk());
     SetKeyType(test.filter_type);
     Check(Options(Expressions::Equal("key", test.value)),
-          test.compatible ? std::vector<int64_t>{2, 3}
-                          : std::vector<int64_t>{0, 1, 2, 3, 4, 5});
+          test.filter_type->type_id() != TypeId::kFloat &&
+                  test.filter_type->type_id() != TypeId::kDouble && test.compatible
+              ? std::vector<int64_t>{2, 3}
+              : std::vector<int64_t>{0, 1, 2, 3, 4, 5});
   }
 }
 
@@ -538,8 +541,8 @@ TEST_F(ParquetRowGroupFilterTest, PrimitiveComparisonTypes) {
 TEST_F(ParquetRowGroupFilterTest, FloatingPointStatistics) {
   SetKeyType(float64());
   ASSERT_THAT(Write(), IsOk());
-  Check(Options(Expressions::Equal("key", Literal::Double(100))), {});
-  Check(Options(Expressions::Equal("key", Literal::Double(10))), {2, 3});
+  Check(Options(Expressions::Equal("key", Literal::Double(100))), {0, 1, 2, 3, 4, 5});
+  Check(Options(Expressions::Equal("key", Literal::Double(10))), {0, 1, 2, 3, 4, 5});
   Check(Options(Expressions::IsNaN("key")), {0, 1, 2, 3, 4, 5});
 }
 
@@ -614,8 +617,8 @@ TEST_F(ParquetRowGroupFilterTest, FloatingPointNullAndSignedZero) {
   SetKeyType(float64());
   ASSERT_THAT(Write(true, "[[-0.0,0],[0.0,1],[null,2],[null,3],[10.0,4],[11.0,5]]"),
               IsOk());
-  Check(Options(Expressions::Equal("key", Literal::Double(-0.0))), {0, 1});
-  Check(Options(Expressions::Equal("key", Literal::Double(0.0))), {0, 1});
+  Check(Options(Expressions::Equal("key", Literal::Double(-0.0))), {0, 1, 4, 5});
+  Check(Options(Expressions::Equal("key", Literal::Double(0.0))), {0, 1, 4, 5});
   Check(Options(Expressions::IsNull("key")), {2, 3});
   Check(Options(Expressions::NotNull("key")), {0, 1, 4, 5});
   // Like Java, IS NAN excludes all-null groups; NOT NAN retains them.
@@ -623,17 +626,17 @@ TEST_F(ParquetRowGroupFilterTest, FloatingPointNullAndSignedZero) {
   Check(Options(Expressions::NotNaN("key")), {0, 1, 2, 3, 4, 5});
   Check(Options(Expressions::Not(Expressions::IsNaN("key"))), {0, 1, 2, 3, 4, 5});
   Check(Options(Expressions::Not(Expressions::NotNaN("key"))), {0, 1, 4, 5});
-  Check(Options(Expressions::LessThan("key", Literal::Double(-100))), {});
+  Check(Options(Expressions::LessThan("key", Literal::Double(-100))), {0, 1, 4, 5});
 }
 
 TEST_F(ParquetRowGroupFilterTest, AllNaNGroupRetainedWithoutComparableBounds) {
   SetKeyType(float64());
   ASSERT_THAT(Write(true, "[[NaN,0],[-NaN,1],[10.0,2],[11.0,3],[null,4],[null,5]]"),
               IsOk());
-  Check(Options(Expressions::Equal("key", Literal::Double(100))), {0, 1});
+  Check(Options(Expressions::Equal("key", Literal::Double(100))), {0, 1, 2, 3});
   Check(Options(Expressions::IsNaN("key")), {0, 1, 2, 3});
   Check(Options(Expressions::NotNaN("key")), {0, 1, 2, 3, 4, 5});
-  Check(Options(Expressions::LessThan("key", Literal::Double(-100))), {0, 1});
+  Check(Options(Expressions::LessThan("key", Literal::Double(-100))), {0, 1, 2, 3});
 }
 
 TEST_F(ParquetRowGroupFilterTest, InvalidFilterFailsDuringOpen) {
@@ -650,6 +653,43 @@ TEST_F(ParquetRowGroupFilterTest, InvalidFilterFailsDuringOpen) {
 
   options.properties.Set(ReaderProperties::kParquetRowGroupFilter, false);
   Check(options, {0, 1, 2, 3, 4, 5});
+}
+
+TEST_F(ParquetRowGroupFilterTest, FloatBoundsMustNotHideNaNs) {
+  SetKeyType(float32());
+  ASSERT_THAT(Write(true, "[[NaN,0],[2.0,1],[-NaN,2],[2.0,3]]"), IsOk());
+  ASSERT_EQ(metadata_->num_row_groups(), 2);
+
+  // Both groups contain NaN, but Parquet records min = max = 2.
+  for (int group : {0, 1}) {
+    auto stats = std::static_pointer_cast<::parquet::FloatStatistics>(
+        metadata_->RowGroup(group)->ColumnChunk(0)->statistics());
+    ASSERT_NE(stats, nullptr);
+    ASSERT_TRUE(stats->HasMinMax());
+    EXPECT_EQ(stats->min(), 2.0F);
+    EXPECT_EQ(stats->max(), 2.0F);
+  }
+
+  Check(Options(Expressions::GreaterThan("key", Literal::Float(3))), {0, 1, 2, 3});
+  Check(Options(Expressions::LessThan("key", Literal::Float(-3))), {0, 1, 2, 3});
+}
+
+TEST_F(ParquetRowGroupFilterTest, DoubleBoundsMustNotHideNaNs) {
+  SetKeyType(float64());
+  ASSERT_THAT(Write(true, "[[NaN,0],[2.0,1],[-NaN,2],[2.0,3]]"), IsOk());
+  ASSERT_EQ(metadata_->num_row_groups(), 2);
+
+  for (int group : {0, 1}) {
+    auto stats = std::static_pointer_cast<::parquet::DoubleStatistics>(
+        metadata_->RowGroup(group)->ColumnChunk(0)->statistics());
+    ASSERT_NE(stats, nullptr);
+    ASSERT_TRUE(stats->HasMinMax());
+    EXPECT_EQ(stats->min(), 2.0);
+    EXPECT_EQ(stats->max(), 2.0);
+  }
+
+  Check(Options(Expressions::GreaterThan("key", Literal::Double(3))), {0, 1, 2, 3});
+  Check(Options(Expressions::LessThan("key", Literal::Double(-3))), {0, 1, 2, 3});
 }
 
 }  // namespace

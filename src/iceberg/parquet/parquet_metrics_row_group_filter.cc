@@ -249,19 +249,17 @@ class MetricsVisitor : public BoundVisitor<bool> {
       return std::nullopt;
     }
     const auto& type = static_cast<const PrimitiveType&>(*ref->type());
+    // Parquet floating-point bounds can exclude NaNs.
+    // Treat both bounds as undefined, preserving null-count pruning.
+    if (type.type_id() == TypeId::kFloat || type.type_id() == TypeId::kDouble) {
+      return std::nullopt;
+    }
     auto result =
         ParquetMetrics::StatsValueToLiteral(*stats->descr(), type, *stats, is_min);
     if (!result || result->IsNaN()) {
       return std::nullopt;
     }
-    auto bound = std::move(*result);
-    if (type.type_id() == TypeId::kFloat && std::get<float>(bound.value()) == 0) {
-      return Literal::Float(is_min ? -0.0F : 0.0F);
-    }
-    if (type.type_id() == TypeId::kDouble && std::get<double>(bound.value()) == 0) {
-      return Literal::Double(is_min ? -0.0 : 0.0);
-    }
-    return bound;
+    return std::move(*result);
   }
 
   template <typename Comparator>

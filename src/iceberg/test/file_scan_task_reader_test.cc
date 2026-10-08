@@ -679,6 +679,11 @@ TEST_F(FileScanTaskReaderTest, OpenWithMixedDeletesSkipsFullyDeletedBatches) {
 }
 
 TEST_F(FileScanTaskReaderTest, RowGroupPruningPreservesDeletesAndLineage) {
+  auto lineage_schema = RowLineageProjection();
+  std::vector<SchemaField> read_fields(lineage_schema->fields().begin(),
+                                       lineage_schema->fields().end());
+  read_fields.push_back(table_schema_->fields()[2]);
+  auto read_schema = std::make_shared<Schema>(std::move(read_fields));
   ICEBERG_UNWRAP_OR_FAIL(
       auto data_file,
       MakeDataFile(table_schema_,
@@ -704,7 +709,7 @@ TEST_F(FileScanTaskReaderTest, RowGroupPruningPreservesDeletesAndLineage) {
         .io = file_io_,
         .table_schema = table_schema_,
         .schemas = {table_schema_},
-        .projected_schema = RowLineageProjection(),
+        .projected_schema = read_schema,
     };
     ICEBERG_UNWRAP_OR_FAIL(auto reader, FileScanTaskReader::Make(std::move(options)));
     ICEBERG_UNWRAP_OR_FAIL(auto stream, reader->Open(task));
@@ -726,7 +731,7 @@ TEST_F(FileScanTaskReaderTest, RowGroupPruningPreservesDeletesAndLineage) {
   }
 }
 
-TEST_F(FileScanTaskReaderTest, RowGroupPruningUsesUnprojectedFilterWithoutDeletes) {
+TEST_F(FileScanTaskReaderTest, RowGroupPruningUsesCallerReadSchema) {
   ICEBERG_UNWRAP_OR_FAIL(
       auto data_file,
       MakeDataFile(table_schema_,
@@ -741,12 +746,127 @@ TEST_F(FileScanTaskReaderTest, RowGroupPruningUsesUnprojectedFilterWithoutDelete
     FileScanTaskReader::Options options{
         .io = file_io_,
         .table_schema = table_schema_,
-        .projected_schema = projected_schema_,
+        .projected_schema = table_schema_,
     };
-    options.properties["read.filter.case-sensitive"] = "false";
+    options.filter_case_sensitive = false;
     ICEBERG_UNWRAP_OR_FAIL(auto reader, FileScanTaskReader::Make(std::move(options)));
     ICEBERG_UNWRAP_OR_FAIL(auto stream, reader->Open(task));
-    VerifyStream(&stream, R"([[2,"c"],[3,"d"]])");
+    VerifyStream(&stream, R"([[2,"c","keep"],[3,"d","keep"]])");
+  }
+}
+
+TEST_F(FileScanTaskReaderTest, ConstantResidualsAndNestedConstants) {
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto data_file, MakeDataFile(table_schema_, R"([[0,"a","keep"],[1,"b","keep"]])"));
+  auto predicate = Expressions::Equal("name", Literal::String("a"));
+  ICEBERG_UNWRAP_OR_FAIL(std::shared_ptr<Expression> conjunction,
+                         And::Make(Expressions::AlwaysTrue(), predicate));
+  ICEBERG_UNWRAP_OR_FAIL(std::shared_ptr<Expression> disjunction,
+                         Or::Make(Expressions::AlwaysFalse(), predicate));
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto reader, FileScanTaskReader::Make({.io = file_io_,
+                                             .table_schema = table_schema_,
+                                             .projected_schema = projected_schema_}));
+  for (const auto& filter : std::vector<std::shared_ptr<Expression>>{
+           Expressions::AlwaysTrue(), conjunction, disjunction}) {
+    SCOPED_TRACE(filter->ToString());
+    FileScanTask task(data_file, {}, filter);
+    ICEBERG_UNWRAP_OR_FAIL(auto stream, reader->Open(task));
+    VerifyStream(&stream, R"([[0,"a"],[1,"b"]])");
+  }
+  FileScanTask empty_task(data_file, {}, Expressions::AlwaysFalse());
+  ICEBERG_UNWRAP_OR_FAIL(auto stream, reader->Open(empty_task));
+  auto batches = ::arrow::ImportRecordBatchReader(&stream).ValueOrDie();
+  EXPECT_EQ(batches->schema()->num_fields(), 2);
+  EXPECT_EQ(batches->Next().ValueOrDie(), nullptr);
+}
+
+TEST_F(FileScanTaskReaderTest, ScanCaseSensitivityAndProjection) {
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto data_file, MakeDataFile(table_schema_, R"([[0,"a","keep"],[1,"b","keep"]])"));
+  auto filter = Expressions::Equal("CATEGORY", Literal::String("keep"));
+  for (bool select_columns : {false, true}) {
+    internal::TableScanContext context;
+    context.filter = filter;
+    context.case_sensitive = false;
+    if (select_columns) {
+      context.selected_columns = std::vector<std::string>{"id", "name"};
+    } else {
+      // Explicit projections are prepared by the caller, including filter columns.
+      context.projected_schema = table_schema_;
+    }
+    auto metadata = std::make_shared<TableMetadata>();
+    metadata->schemas = {table_schema_};
+    metadata->current_schema_id = table_schema_->schema_id();
+    ICEBERG_UNWRAP_OR_FAIL(
+        auto scan, DataTableScan::Make(metadata, table_schema_, file_io_, context));
+    ICEBERG_UNWRAP_OR_FAIL(auto projection, scan->schema());
+    FileScanTaskReader::Options options{
+        .io = scan->io(),
+        .table_schema = table_schema_,
+        .projected_schema = projection,
+        .filter_case_sensitive = scan->is_case_sensitive(),
+    };
+    FileScanTask task(data_file, {}, scan->filter());
+    ICEBERG_UNWRAP_OR_FAIL(auto reader, FileScanTaskReader::Make(options));
+    ICEBERG_UNWRAP_OR_FAIL(auto stream, reader->Open(task));
+    VerifyStream(&stream, R"([[0,"a","keep"],[1,"b","keep"]])");
+    options.filter_case_sensitive = true;
+    ICEBERG_UNWRAP_OR_FAIL(auto case_sensitive_reader, FileScanTaskReader::Make(options));
+    EXPECT_THAT(case_sensitive_reader->Open(task),
+                IsError(ErrorKind::kInvalidExpression));
+  }
+}
+
+TEST_F(FileScanTaskReaderTest, UnboundFilterRequiresProjectedField) {
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto data_file, MakeDataFile(table_schema_, R"([[0,"a","keep"],[1,"b","keep"]])"));
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto reader, FileScanTaskReader::Make({.io = file_io_,
+                                             .table_schema = table_schema_,
+                                             .projected_schema = projected_schema_}));
+  FileScanTask task(data_file, {},
+                    Expressions::Equal("category", Literal::String("keep")));
+  EXPECT_THAT(reader->Open(task), IsError(ErrorKind::kInvalidExpression));
+}
+
+TEST_F(FileScanTaskReaderTest, NestedFilterFieldsComeFromScanSchema) {
+  table_schema_ = std::make_shared<Schema>(std::vector<SchemaField>{
+      SchemaField::MakeRequired(1, "id", int32()),
+      SchemaField::MakeOptional(2, "record",
+                                std::make_shared<StructType>(std::vector<SchemaField>{
+                                    SchemaField::MakeOptional(3, "value", string()),
+                                    SchemaField::MakeOptional(4, "key", int32())}))});
+  internal::TableScanContext context;
+  context.selected_columns = std::vector<std::string>{"id", "record.value"};
+  context.filter = Expressions::GreaterThan("record.key", Literal::Int(5));
+  auto metadata = std::make_shared<TableMetadata>();
+  metadata->schemas = {table_schema_};
+  metadata->current_schema_id = table_schema_->schema_id();
+  ICEBERG_UNWRAP_OR_FAIL(auto scan,
+                         DataTableScan::Make(metadata, table_schema_, file_io_, context));
+  ICEBERG_UNWRAP_OR_FAIL(projected_schema_, scan->schema());
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto data_file,
+      MakeDataFile(table_schema_,
+                   std::vector<std::string>{R"([[0,["a",0]],[1,["b",1]]])",
+                                            R"([[2,["c",10]],[3,["d",11]]])"},
+                   4, 2));
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto pos_delete, MakePositionDeleteFile(CreateNewTempFilePathWithSuffix(".parquet"),
+                                              {2}, data_file->file_path));
+  for (bool with_deletes : {false, true}) {
+    FileScanTask task(
+        data_file,
+        with_deletes ? std::vector{pos_delete} : std::vector<std::shared_ptr<DataFile>>{},
+        scan->filter());
+    ICEBERG_UNWRAP_OR_FAIL(
+        auto reader, FileScanTaskReader::Make({.io = file_io_,
+                                               .table_schema = table_schema_,
+                                               .projected_schema = projected_schema_}));
+    ICEBERG_UNWRAP_OR_FAIL(auto stream, reader->Open(task));
+    VerifyStream(&stream,
+                 with_deletes ? R"([[3,["d",11]]])" : R"([[2,["c",10]],[3,["d",11]]])");
   }
 }
 

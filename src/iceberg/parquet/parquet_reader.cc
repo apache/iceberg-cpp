@@ -313,15 +313,10 @@ class ParquetReader::Impl {
     if (options.filter &&
         options.properties.Get(ReaderProperties::kParquetRowGroupFilter)) {
       auto filter = options.filter;
-      if (filter->op() != Expression::Operation::kTrue &&
-          filter->op() != Expression::Operation::kFalse) {
-        ICEBERG_ASSIGN_OR_RAISE(auto is_bound, IsBoundVisitor::IsBound(filter));
-        if (!is_bound) {
-          ICEBERG_ASSIGN_OR_RAISE(
-              filter, Binder::Bind(*options.projection, filter,
-                                   options.properties.Get(
-                                       ReaderProperties::kFilterCaseSensitive)));
-        }
+      ICEBERG_ASSIGN_OR_RAISE(auto is_bound, IsBoundVisitor::IsBound(filter));
+      if (!is_bound) {
+        ICEBERG_ASSIGN_OR_RAISE(filter, Binder::Bind(*options.projection, filter,
+                                                     options.filter_case_sensitive));
       }
       ICEBERG_ASSIGN_OR_RAISE(stats_filter_, ParquetMetricsRowGroupFilter::Make(
                                                  filter, *reader_->manifest().descr));
