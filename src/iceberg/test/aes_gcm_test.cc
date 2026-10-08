@@ -30,6 +30,7 @@
 #include "iceberg/arrow/arrow_io_util.h"
 #include "iceberg/encryption/aes_gcm_internal.h"
 #include "iceberg/encryption/aes_gcm_stream.h"
+#include "iceberg/encryption/in_memory_kms.h"
 #include "iceberg/encryption/standard_key_metadata.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/test/temp_file_test_base.h"
@@ -279,6 +280,41 @@ TEST_F(AesGcmStreamTest, DetectsTampering) {
   EXPECT_THAT(Open(path, key, aad, 36)->Open(), IsError(ErrorKind::kInvalid));
   // Shorter than an empty stream
   EXPECT_THAT(Open(path, key, aad, 35)->Open(), IsError(ErrorKind::kInvalid));
+}
+
+// The key encryption key of the Java fixture table, wrapped by Java's UnitestKMS under
+// its keyA master key.
+const std::vector<uint8_t> kJavaKekWrappedByKeyA = {
+    0x04, 0x0d, 0xdf, 0x90, 0xe8, 0x41, 0xa3, 0xff, 0xf7, 0xec, 0x77,
+    0xf1, 0x04, 0x0d, 0x65, 0x50, 0x46, 0xd2, 0xae, 0x0a, 0xef, 0xde,
+    0x4d, 0x3a, 0xa2, 0xf5, 0x06, 0xca, 0x2e, 0xf4, 0x00, 0x83, 0x4b,
+    0xbe, 0xf0, 0x94, 0xf6, 0x20, 0x94, 0x76, 0x1c, 0x11, 0xf6, 0x53};
+
+// Java's UnitestKMS.MASTER_KEY1, the master key it registers under "keyA".
+constexpr std::string_view kJavaMasterKeyA = "0123456789012345";
+
+TEST(InMemoryKmsTest, UnwrapsJavaWrappedKey) {
+  auto master_key = AsBytes(kJavaMasterKeyA);
+  InMemoryKms kms({{"keyA", std::vector<uint8_t>(master_key.begin(), master_key.end())}});
+  ICEBERG_UNWRAP_OR_FAIL(auto kek, kms.UnwrapKey(kJavaKekWrappedByKeyA, "keyA"));
+  EXPECT_EQ(kek.size(), 16);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto wrapped, kms.WrapKey(kek, "keyA"));
+  ICEBERG_UNWRAP_OR_FAIL(auto unwrapped, kms.UnwrapKey(wrapped, "keyA"));
+  EXPECT_EQ(unwrapped, kek);
+  EXPECT_THAT(kms.UnwrapKey(wrapped, "keyB"), IsError(ErrorKind::kNotFound));
+}
+
+TEST(InMemoryKmsTest, RegistryAndProperties) {
+  InMemoryKms::Register();
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto kms, KmsRegistry::FromCatalogProperties(
+                    {{"encryption.kms-impl", "in-memory"},
+                     // Base64 of "0123456789012345", UnitestKMS's keyA
+                     {"encryption.in-memory-kms.key.keyA", "MDEyMzQ1Njc4OTAxMjM0NQ=="}}));
+  ASSERT_NE(kms, nullptr);
+  ICEBERG_UNWRAP_OR_FAIL(auto kek, kms->UnwrapKey(kJavaKekWrappedByKeyA, "keyA"));
+  EXPECT_EQ(kek.size(), 16);
 }
 
 }  // namespace iceberg

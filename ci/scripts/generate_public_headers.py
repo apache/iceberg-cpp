@@ -56,6 +56,7 @@ OPTIONAL_COMPONENTS = [
 # part of core, and the crypto implementation, which needs ICEBERG_ENCRYPTION.
 OPTIONAL_HEADERS = {
     "iceberg/encryption/aes_gcm_stream.h": "ICEBERG_PUBLIC_HEADERS_ENCRYPTION",
+    "iceberg/encryption/in_memory_kms.h": "ICEBERG_PUBLIC_HEADERS_ENCRYPTION",
 }
 
 INSTALL_CALL = re.compile(r"iceberg_install_all_headers\(\s*([^\s)]+)")
