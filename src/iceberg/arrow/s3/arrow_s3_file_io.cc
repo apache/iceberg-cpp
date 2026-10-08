@@ -20,7 +20,7 @@
 #include <algorithm>
 #include <atomic>
 #include <cstdlib>
-#include <future>
+#include <functional>
 #include <memory>
 #include <mutex>
 #include <optional>
@@ -35,6 +35,7 @@
 #include <arrow/filesystem/filesystem.h>
 #if ICEBERG_S3_ENABLED
 #  include <arrow/filesystem/s3fs.h>
+#  include <arrow/util/thread_pool.h>
 #endif
 
 #include "iceberg/arrow/arrow_io_internal.h"
@@ -46,6 +47,7 @@
 #include "iceberg/util/macros.h"
 #include "iceberg/util/property_util.h"
 #include "iceberg/util/string_util.h"
+#include "iceberg/util/task_group.h"
 
 namespace iceberg::arrow {
 
@@ -182,14 +184,29 @@ std::string CanonicalizeS3Scheme(std::string_view location) {
   return std::string(location);
 }
 
+/// \brief Runs TaskGroup tasks on an Arrow thread pool.
+class ThreadPoolExecutor final : public Executor {
+ public:
+  explicit ThreadPoolExecutor(std::shared_ptr<::arrow::internal::ThreadPool> pool)
+      : pool_(std::move(pool)) {}
+
+  Status Submit(ExecutorTask task) override {
+    ICEBERG_ARROW_RETURN_NOT_OK(pool_->Spawn(std::move(task)));
+    return {};
+  }
+
+ private:
+  std::shared_ptr<::arrow::internal::ThreadPool> pool_;
+};
+
 class ArrowS3FileIO final : public FileIO, public SupportsStorageCredentials {
  public:
   ArrowS3FileIO(std::shared_ptr<::arrow::fs::FileSystem> arrow_fs,
                 std::unordered_map<std::string, std::string> default_properties,
-                size_t delete_threads)
+                std::shared_ptr<::arrow::internal::ThreadPool> delete_pool)
       : default_file_io_(std::make_shared<ArrowFileSystemFileIO>(std::move(arrow_fs))),
         default_properties_(std::move(default_properties)),
-        delete_threads_(delete_threads) {}
+        delete_executor_(std::move(delete_pool)) {}
 
   Result<std::unique_ptr<InputFile>> NewInputFile(std::string file_location) override;
 
@@ -243,7 +260,9 @@ class ArrowS3FileIO final : public FileIO, public SupportsStorageCredentials {
 
   std::shared_ptr<ArrowFileSystemFileIO> default_file_io_;
   std::unordered_map<std::string, std::string> default_properties_;
-  size_t delete_threads_;
+  // Bounds the deletes of every DeleteFiles call on this FileIO, like the
+  // executor of Java's S3FileIO.
+  ThreadPoolExecutor delete_executor_;
   // Guards everything below; shared because reads happen per file operation.
   mutable std::shared_mutex mutex_;
   std::vector<StorageCredential> storage_credentials_;
@@ -345,9 +364,9 @@ Status ArrowS3FileIO::DeleteFile(const std::string& file_location) {
 }
 
 Status ArrowS3FileIO::DeleteFiles(const std::vector<std::string>& file_locations) {
-  // Like Java's S3FileIO: delete concurrently, keep going after a failure and
-  // report the count. Arrow has no batch delete for S3. One snapshot so the
-  // whole batch matches the same delegate generation.
+  // Like Java's S3FileIO: delete on the FileIO's bounded pool, keep going after
+  // a failure and report the count. Arrow has no batch delete for S3. One
+  // snapshot so the whole batch matches the same delegate generation.
   std::shared_ptr<ArrowFileSystemFileIO> fallback;
   DelegatesByPrefix by_prefix;
   {
@@ -355,33 +374,25 @@ Status ArrowS3FileIO::DeleteFiles(const std::vector<std::string>& file_locations
     fallback = default_file_io_;
     by_prefix = file_io_by_prefix_;
   }
-  std::atomic<size_t> next = 0;
+  // Each failure is logged where the caller logs and only counted, so the
+  // returned error stays one line however large the batch.
+  auto logger = GetCurrentLogger();
   std::atomic<size_t> failed = 0;
-  auto delete_remaining = [&] {
-    for (size_t i = next++; i < file_locations.size(); i = next++) {
-      const auto& file_location = file_locations[i];
-      if (auto status = MatchDelegate(fallback, by_prefix, file_location)
-                            ->DeleteFile(file_location);
-          !status.has_value()) {
+  TaskGroup group;
+  group.SetExecutor(std::ref(delete_executor_));
+  for (const auto& file_location : file_locations) {
+    group.Submit([file_io = MatchDelegate(fallback, by_prefix, file_location),
+                  &file_location, &logger, &failed]() -> Status {
+      ScopedLogger bind(logger);
+      if (auto status = file_io->DeleteFile(file_location); !status.has_value()) {
         ICEBERG_LOG_WARN("Failed to delete {}: {}", file_location,
                          status.error().message);
         ++failed;
       }
-    }
-  };
-  // Plus the calling thread. Helpers log where the caller does.
-  auto logger = GetCurrentLogger();
-  std::vector<std::future<void>> helpers;
-  for (size_t i = 1; i < std::min(delete_threads_, file_locations.size()); ++i) {
-    helpers.push_back(std::async(std::launch::async, [&] {
-      ScopedLogger bind(logger);
-      delete_remaining();
-    }));
+      return {};
+    });
   }
-  delete_remaining();
-  for (auto& helper : helpers) {
-    helper.get();  // Rethrows what a helper threw.
-  }
+  ICEBERG_RETURN_UNEXPECTED(std::move(group).Run());
   if (failed > 0) {
     return IOError("Failed to delete {} of {} files", failed.load(),
                    file_locations.size());
@@ -396,15 +407,21 @@ Result<std::unique_ptr<FileIO>> MakeS3FileIO(
   // Uses default credentials if properties are empty.
   ICEBERG_ASSIGN_OR_RAISE(auto fs, BuildArrowS3FileSystem(properties));
   // Java defaults to one delete thread per processor.
-  size_t delete_threads = std::max(1u, std::thread::hardware_concurrency());
+  int num_delete_threads =
+      std::max(1, static_cast<int>(std::thread::hardware_concurrency()));
   if (const auto* value = FindProperty(properties, S3Properties::kDeleteNumThreads);
       value != nullptr) {
-    ICEBERG_ASSIGN_OR_RAISE(delete_threads, StringUtils::ParseNumber<size_t>(*value));
-    if (delete_threads == 0) {
+    ICEBERG_ASSIGN_OR_RAISE(num_delete_threads, StringUtils::ParseNumber<int>(*value));
+    if (num_delete_threads <= 0) {
       return InvalidArgument(R"("{}" must be positive)", S3Properties::kDeleteNumThreads);
     }
   }
-  return std::make_unique<ArrowS3FileIO>(std::move(fs), properties, delete_threads);
+  // The pool starts its workers on the first delete, so a FileIO that never
+  // deletes costs no threads.
+  ICEBERG_ARROW_ASSIGN_OR_RETURN(auto delete_pool,
+                                 ::arrow::internal::ThreadPool::Make(num_delete_threads));
+  return std::make_unique<ArrowS3FileIO>(std::move(fs), properties,
+                                         std::move(delete_pool));
 }
 
 Status FinalizeS3() {
