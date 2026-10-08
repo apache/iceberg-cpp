@@ -220,6 +220,9 @@ if(ICEBERG_BUILD_BUNDLE)
                    parquet_metrics_test.cc
                    parquet_schema_test.cc
                    parquet_test.cc)
+  if(ICEBERG_ENCRYPTION)
+    target_sources(parquet_test PRIVATE parquet_encryption_test.cc)
+  endif()
 
   add_iceberg_test(scan_test
                    USE_BUNDLE

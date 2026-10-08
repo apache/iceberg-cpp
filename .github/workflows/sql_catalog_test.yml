@@ -96,7 +96,7 @@ jobs:
         if: ${{ startsWith(matrix.runs-on, 'windows') && steps.vcpkg-cache.outputs.cache-hit != 'true' }}
         shell: pwsh
         run: |
-          vcpkg install zlib:x64-windows nlohmann-json:x64-windows nanoarrow:x64-windows roaring:x64-windows sqlite3:x64-windows
+          vcpkg install zlib:x64-windows nlohmann-json:x64-windows nanoarrow:x64-windows roaring:x64-windows sqlite3:x64-windows openssl:x64-windows
       - name: Set up sccache
         uses: ./.github/actions/setup-sccache
         with:

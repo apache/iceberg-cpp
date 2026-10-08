@@ -78,6 +78,11 @@ macro(iceberg_find_components components)
   endforeach()
 endmacro()
 
+# OpenSSL used at build time (table encryption), e.g. Homebrew's keg-only OpenSSL.
+if(NOT DEFINED OPENSSL_ROOT_DIR AND NOT "@ICEBERG_OPENSSL_ROOT_DIR@" STREQUAL "")
+  set(OPENSSL_ROOT_DIR "@ICEBERG_OPENSSL_ROOT_DIR@")
+endif()
+
 # Find system dependencies
 iceberg_find_dependencies("${ICEBERG_SYSTEM_DEPENDENCIES}")
 

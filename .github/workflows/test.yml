@@ -61,7 +61,7 @@ jobs:
           persist-credentials: false
       - name: Install dependencies
         shell: bash
-        run: sudo apt-get update && sudo apt-get install -y libcurl4-openssl-dev
+        run: sudo apt-get update && sudo apt-get install -y libcurl4-openssl-dev libssl-dev
       - name: Set up sccache
         uses: ./.github/actions/setup-sccache
         with:
@@ -102,7 +102,7 @@ jobs:
           persist-credentials: false
       - name: Install dependencies
         shell: bash
-        run: sudo apt-get update && sudo apt-get install -y libcurl4-openssl-dev
+        run: sudo apt-get update && sudo apt-get install -y libcurl4-openssl-dev libssl-dev
       - name: Restore sccache cache
         uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
@@ -182,7 +182,7 @@ jobs:
         if: ${{ steps.vcpkg-cache.outputs.cache-hit != 'true' }}
         shell: pwsh
         run: |
-          vcpkg install zlib:x64-windows nlohmann-json:x64-windows nanoarrow:x64-windows roaring:x64-windows cpr:x64-windows
+          vcpkg install zlib:x64-windows nlohmann-json:x64-windows nanoarrow:x64-windows roaring:x64-windows cpr:x64-windows openssl:x64-windows
       - name: Set up sccache
         uses: ./.github/actions/setup-sccache
         with:

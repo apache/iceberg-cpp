@@ -355,6 +355,16 @@ if(ICEBERG_BUILD_BUNDLE)
        "$<IF:$<BOOL:${AVRO_VENDORED}>,iceberg::avrocpp_s,$<IF:$<TARGET_EXISTS:avro-cpp::avrocpp_shared>,avro-cpp::avrocpp_shared,avro-cpp::avrocpp_static>>"
   )
 
+  if(ICEBERG_ENCRYPTION)
+    foreach(libs
+            ICEBERG_BUNDLE_STATIC_BUILD_INTERFACE_LIBS
+            ICEBERG_BUNDLE_SHARED_BUILD_INTERFACE_LIBS
+            ICEBERG_BUNDLE_STATIC_INSTALL_INTERFACE_LIBS
+            ICEBERG_BUNDLE_SHARED_INSTALL_INTERFACE_LIBS)
+      list(APPEND ${libs} OpenSSL::Crypto)
+    endforeach()
+  endif()
+
   add_iceberg_lib(iceberg_bundle
                   SOURCES
                   ${ICEBERG_BUNDLE_SOURCES}

@@ -163,7 +163,30 @@ endmacro()
 # ----------------------------------------------------------------------
 # Apache Arrow
 
+# Find OpenSSL for table encryption. Called before Arrow is configured, so that the
+# imported OpenSSL targets are visible to the vendored Arrow subdirectories.
+macro(resolve_openssl_for_encryption)
+  if(APPLE
+     AND NOT DEFINED OPENSSL_ROOT_DIR
+     AND NOT DEFINED ENV{OPENSSL_ROOT_DIR})
+    # Homebrew's OpenSSL is keg-only and not on the default search path.
+    execute_process(COMMAND brew --prefix openssl@3
+                    OUTPUT_VARIABLE ICEBERG_BREW_OPENSSL_PREFIX
+                    OUTPUT_STRIP_TRAILING_WHITESPACE ERROR_QUIET)
+    if(ICEBERG_BREW_OPENSSL_PREFIX AND EXISTS "${ICEBERG_BREW_OPENSSL_PREFIX}")
+      set(OPENSSL_ROOT_DIR "${ICEBERG_BREW_OPENSSL_PREFIX}")
+    endif()
+  endif()
+  find_package(OpenSSL REQUIRED)
+  # Remembered for iceberg-config.cmake, so consumers find the same OpenSSL.
+  get_filename_component(ICEBERG_OPENSSL_ROOT_DIR "${OPENSSL_INCLUDE_DIR}" DIRECTORY)
+endmacro()
+
 function(resolve_arrow_dependency)
+  if(ICEBERG_ENCRYPTION)
+    resolve_openssl_for_encryption()
+  endif()
+
   prepare_fetchcontent()
 
   # Prevent Arrow from injecting -Werror into CMAKE_CXX_FLAGS_DEBUG via
@@ -178,12 +201,18 @@ function(resolve_arrow_dependency)
   set(ARROW_S3 ${ICEBERG_S3})
   set(ARROW_JSON ON)
   set(ARROW_PARQUET ON)
+  if(ICEBERG_ENCRYPTION)
+    # Parquet modular encryption, used for encrypted Iceberg data and delete files.
+    set(PARQUET_REQUIRE_ENCRYPTION ON)
+  endif()
   set(ARROW_ENABLE_THREADING ON)
   set(ARROW_SIMD_LEVEL "NONE")
   set(ARROW_RUNTIME_SIMD_LEVEL "NONE")
   set(ARROW_POSITION_INDEPENDENT_CODE ON)
   set(ARROW_DEPENDENCY_SOURCE "BUNDLED")
   set(ARROW_WITH_ZLIB ON)
+  # zstd is the default Parquet codec of Iceberg (Java and C++).
+  set(ARROW_WITH_ZSTD ON)
   if(ICEBERG_S3 AND NOT ICEBERG_AWSSDK_BUNDLED)
     set(AWSSDK_SOURCE "SYSTEM")
   endif()
@@ -215,6 +244,12 @@ function(resolve_arrow_dependency)
                        CONFIG)
 
   fetchcontent_makeavailable(VendoredArrow)
+
+  # Arrow's Parquet object library does not inherit the OpenSSL include directory
+  # when Arrow is vendored; add it for the Parquet encryption sources.
+  if(ICEBERG_ENCRYPTION AND TARGET parquet_objlib)
+    target_link_libraries(parquet_objlib PRIVATE OpenSSL::Crypto)
+  endif()
 
   if(vendoredarrow_SOURCE_DIR)
     if(NOT TARGET Arrow::arrow_static)
@@ -258,6 +293,9 @@ function(resolve_arrow_dependency)
     # Arrow's exported static target interface may reference system libraries
     # (e.g. Threads, OpenSSL, CURL, ZLIB) that consumers need to find.
     list(APPEND ICEBERG_SYSTEM_DEPENDENCIES Threads ZLIB)
+    if(ICEBERG_ENCRYPTION)
+      list(APPEND ICEBERG_SYSTEM_DEPENDENCIES OpenSSL)
+    endif()
     if(ARROW_S3)
       list(APPEND ICEBERG_SYSTEM_DEPENDENCIES OpenSSL CURL)
     endif()
@@ -273,6 +311,9 @@ function(resolve_arrow_dependency)
       PARENT_SCOPE)
   set(ARROW_VENDORED
       ${ARROW_VENDORED}
+      PARENT_SCOPE)
+  set(ICEBERG_OPENSSL_ROOT_DIR
+      "${ICEBERG_OPENSSL_ROOT_DIR}"
       PARENT_SCOPE)
 endfunction()
 
