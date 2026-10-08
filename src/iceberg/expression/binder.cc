@@ -24,6 +24,21 @@
 
 namespace iceberg {
 
+namespace {
+
+Result<std::optional<bool>> CombineResults(const std::optional<bool>& left_result,
+                                           const std::optional<bool>& right_result) {
+  if (!left_result.has_value()) {
+    return right_result;
+  }
+  if (right_result.has_value() && left_result != right_result) {
+    return InvalidExpression("Found partially bound expression");
+  }
+  return left_result;
+}
+
+}  // namespace
+
 Binder::Binder(const Schema& schema, bool case_sensitive)
     : schema_(schema), case_sensitive_(case_sensitive) {}
 
@@ -96,18 +111,12 @@ Result<std::optional<bool>> IsBoundVisitor::Not(const std::optional<bool>& child
 
 Result<std::optional<bool>> IsBoundVisitor::And(const std::optional<bool>& left_result,
                                                 const std::optional<bool>& right_result) {
-  if (!left_result.has_value()) {
-    return right_result;
-  }
-  if (right_result.has_value() && left_result != right_result) {
-    return InvalidExpression("Found partially bound expression");
-  }
-  return left_result;
+  return CombineResults(left_result, right_result);
 }
 
 Result<std::optional<bool>> IsBoundVisitor::Or(const std::optional<bool>& left_result,
                                                const std::optional<bool>& right_result) {
-  return And(left_result, right_result);
+  return CombineResults(left_result, right_result);
 }
 
 Result<std::optional<bool>> IsBoundVisitor::Predicate(
