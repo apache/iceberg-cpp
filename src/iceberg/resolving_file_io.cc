@@ -24,6 +24,7 @@
 #include <utility>
 
 #include "iceberg/file_io_registry.h"
+#include "iceberg/logging/log_macros.h"
 #include "iceberg/util/location_util.h"
 #include "iceberg/util/macros.h"
 #include "iceberg/util/string_util.h"
@@ -45,17 +46,18 @@ Result<std::shared_ptr<FileIO>> ResolvingFileIO::FileIOForPath(
   // stall every other operation. Forwards all credentials; each implementation
   // applies the prefixes it understands.
   auto load = [&](const std::vector<StorageCredential>& credentials,
-                  const StorageCredentialRefresher& refresher)
+                  const std::shared_ptr<StorageCredentialProvider>& provider)
       -> Result<std::shared_ptr<FileIO>> {
     ICEBERG_ASSIGN_OR_RAISE(std::shared_ptr<FileIO> io,
                             FileIORegistry::Load(name, properties_));
     if (auto* credentialed = io->AsSupportsStorageCredentials()) {
-      // Before the credentials, so the delegate can always replace them.
-      if (refresher) {
-        credentialed->SetCredentialRefresher(refresher);
+      auto status = credentialed->InitializeStorageCredentials(credentials, provider);
+      if (!status && provider && status.error().kind == ErrorKind::kNotSupported) {
+        ICEBERG_LOG_WARN("FileIO '{}' cannot refresh vended storage credentials", name);
+        status = credentialed->SetStorageCredentials(credentials);
       }
-      if (!credentials.empty()) {
-        ICEBERG_RETURN_UNEXPECTED(credentialed->SetStorageCredentials(credentials));
+      if (!status) {
+        return std::unexpected(status.error());
       }
     }
     return io;
@@ -64,7 +66,7 @@ Result<std::shared_ptr<FileIO>> ResolvingFileIO::FileIOForPath(
   while (true) {
     uint64_t generation = 0;
     std::vector<StorageCredential> credentials;
-    StorageCredentialRefresher refresher;
+    std::shared_ptr<StorageCredentialProvider> provider;
     {
       std::shared_lock lock(mutex_);
       if (const auto cached = io_by_name_.find(name); cached != io_by_name_.end()) {
@@ -72,11 +74,11 @@ Result<std::shared_ptr<FileIO>> ResolvingFileIO::FileIOForPath(
       }
       generation = credential_generation_;
       credentials = storage_credentials_;
-      refresher = refresher_;
+      provider = provider_;
     }
     // Declared before the lock, so a delegate that is not cached is torn down
     // only after the lock is released.
-    auto loaded = load(credentials, refresher);
+    auto loaded = load(credentials, provider);
     std::unique_lock lock(mutex_);
     if (generation != credential_generation_) {
       continue;  // Replaced mid-load; load again with what is installed now.
@@ -144,21 +146,17 @@ std::vector<StorageCredential> ResolvingFileIO::credentials() const {
   return storage_credentials_;
 }
 
-void ResolvingFileIO::SetCredentialRefresher(StorageCredentialRefresher refresher) {
-  // Drop the cached delegates so they are rebuilt with the refresher. Retired
-  // outside the lock: teardown can block, and the outgoing callback's captures
-  // must not destruct under `mutex_`.
-  decltype(io_by_name_) retired;
-  // Holds the incoming callback going in and the outgoing one coming out; a
-  // pure swap never destroys a target under the lock, which std::exchange's
-  // move is permitted to do.
-  StorageCredentialRefresher handoff = std::move(refresher);
-  {
-    std::unique_lock lock(mutex_);
-    refresher_.swap(handoff);
-    ++credential_generation_;
-    retired.swap(io_by_name_);
+Status ResolvingFileIO::InitializeStorageCredentials(
+    const std::vector<StorageCredential>& storage_credentials,
+    std::shared_ptr<StorageCredentialProvider> provider) {
+  std::unique_lock lock(mutex_);
+  if (!io_by_name_.empty()) {
+    return InvalidArgument("Storage credentials must be initialized before first use");
   }
+  storage_credentials_ = storage_credentials;
+  provider_ = std::move(provider);
+  ++credential_generation_;
+  return {};
 }
 
 }  // namespace iceberg

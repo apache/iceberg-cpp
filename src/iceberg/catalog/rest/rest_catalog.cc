@@ -20,6 +20,8 @@
 #include "iceberg/catalog/rest/rest_catalog.h"
 
 #include <memory>
+#include <mutex>
+#include <string>
 #include <string_view>
 #include <tuple>
 #include <unordered_map>
@@ -60,6 +62,41 @@
 namespace iceberg::rest {
 
 namespace {
+
+class RestStorageCredentialProvider final : public StorageCredentialProvider {
+ public:
+  RestStorageCredentialProvider(std::shared_ptr<HttpClient> client,
+                                std::shared_ptr<auth::AuthSession> session,
+                                std::string path)
+      : client_(std::move(client)),
+        session_(std::move(session)),
+        path_(std::move(path)) {}
+
+  Result<std::vector<StorageCredential>> Load() override {
+    // The provider can be shared by several FileIOs; keep fetches serialized.
+    std::lock_guard lock(mutex_);
+    ICEBERG_ASSIGN_OR_RAISE(const auto response,
+                            client_->Get(path_, /*params=*/{}, /*headers=*/{},
+                                         *TableErrorHandler::Instance(), *session_));
+    // Parse errors can contain credential data; return a fixed message.
+    auto json = FromJsonString(response.body());
+    if (!json.has_value()) {
+      return JsonParseError("Malformed LoadCredentials response");
+    }
+    auto result = LoadCredentialsResponseFromJson(*json);
+    if (!result.has_value()) {
+      return std::unexpected<Error>(
+          {.kind = result.error().kind, .message = "Malformed LoadCredentials response"});
+    }
+    return std::move(result->storage_credentials);
+  }
+
+ private:
+  std::shared_ptr<HttpClient> client_;
+  std::shared_ptr<auth::AuthSession> session_;
+  std::string path_;
+  std::mutex mutex_;
+};
 
 /// \brief Get the default set of endpoints for backwards compatibility according to the
 /// iceberg rest spec.
@@ -509,7 +546,7 @@ Result<std::shared_ptr<auth::AuthSession>> RestCatalog::TableAuthSession(
                                      std::move(contextual_session));
 }
 
-StorageCredentialRefresher RestCatalog::MakeCredentialRefresher(
+std::shared_ptr<StorageCredentialProvider> RestCatalog::MakeStorageCredentialProvider(
     const TableIdentifier& identifier,
     std::shared_ptr<auth::AuthSession> table_session) const {
   if (!supported_endpoints_.contains(Endpoint::TableCredentials())) {
@@ -531,28 +568,8 @@ StorageCredentialRefresher RestCatalog::MakeCredentialRefresher(
   auto client = client_;
   auto credentials_path = std::move(path.value());
   auto session = std::move(table_session);
-  // The catalog's destructor closes the session, and a table's FileIO can
-  // outlive the table keeping the catalog alive. No cycle: the catalog's own
-  // FileIO never gets a refresher.
-  auto catalog = shared_from_this();
-  return [catalog, client, credentials_path,
-          session]() -> Result<std::vector<StorageCredential>> {
-    ICEBERG_ASSIGN_OR_RAISE(const auto response,
-                            client->Get(credentials_path, /*params=*/{}, /*headers=*/{},
-                                        *TableErrorHandler::Instance(), *session));
-    // Parse errors embed the offending input, and this body carries
-    // credentials; strip the message so it can never reach a log.
-    auto json = FromJsonString(response.body());
-    if (!json.has_value()) {
-      return JsonParseError("Malformed LoadCredentials response");
-    }
-    auto result = LoadCredentialsResponseFromJson(*json);
-    if (!result.has_value()) {
-      return std::unexpected<Error>(
-          {.kind = result.error().kind, .message = "Malformed LoadCredentials response"});
-    }
-    return std::move(result->storage_credentials);
-  };
+  return std::make_shared<RestStorageCredentialProvider>(
+      std::move(client), std::move(session), std::move(credentials_path));
 }
 
 Result<std::shared_ptr<FileIO>> RestCatalog::TableFileIO(
@@ -561,13 +578,13 @@ Result<std::shared_ptr<FileIO>> RestCatalog::TableFileIO(
     const std::vector<StorageCredential>& storage_credentials,
     std::shared_ptr<auth::AuthSession> table_session) const {
   if (!table_config.empty() || !storage_credentials.empty()) {
-    // Only vended credentials expire, so only they need a refresher.
-    StorageCredentialRefresher refresher;
+    // Only vended credentials expire, so only they need a provider.
+    std::shared_ptr<StorageCredentialProvider> provider;
     if (!storage_credentials.empty()) {
-      refresher = MakeCredentialRefresher(identifier, std::move(table_session));
+      provider = MakeStorageCredentialProvider(identifier, std::move(table_session));
     }
     return MakeTableFileIO(config_.configs(), table_config, storage_credentials,
-                           std::move(refresher));
+                           std::move(provider));
   }
 
   return file_io_;

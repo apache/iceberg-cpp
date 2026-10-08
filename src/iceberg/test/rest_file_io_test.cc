@@ -50,12 +50,31 @@ class MockFileIO : public FileIO {
   Status DeleteFile(const std::string& /*file_location*/) override { return {}; }
 };
 
+class StaticStorageCredentialProvider : public StorageCredentialProvider {
+ public:
+  explicit StaticStorageCredentialProvider(std::vector<StorageCredential> credentials)
+      : credentials_(std::move(credentials)) {}
+
+  Result<std::vector<StorageCredential>> Load() override { return credentials_; }
+
+ private:
+  std::vector<StorageCredential> credentials_;
+};
+
 std::vector<StorageCredential> captured_storage_credentials;
 std::unordered_map<std::string, std::string> captured_file_io_properties;
-StorageCredentialRefresher captured_refresher;
+std::shared_ptr<StorageCredentialProvider> captured_provider;
 
 class MockCredentialedFileIO : public MockFileIO, public SupportsStorageCredentials {
  public:
+  Status InitializeStorageCredentials(
+      const std::vector<StorageCredential>& credentials,
+      std::shared_ptr<StorageCredentialProvider> provider) override {
+    captured_storage_credentials = credentials;
+    captured_provider = std::move(provider);
+    return {};
+  }
+
   Status SetStorageCredentials(
       const std::vector<StorageCredential>& credentials) override {
     captured_storage_credentials = credentials;
@@ -64,10 +83,6 @@ class MockCredentialedFileIO : public MockFileIO, public SupportsStorageCredenti
 
   std::vector<StorageCredential> credentials() const override {
     return captured_storage_credentials;
-  }
-
-  void SetCredentialRefresher(StorageCredentialRefresher refresher) override {
-    captured_refresher = std::move(refresher);
   }
 
   SupportsStorageCredentials* AsSupportsStorageCredentials() override { return this; }
@@ -160,8 +175,8 @@ TEST(RestFileIOTest, TableFileIOMergesConfigAndCredentials) {
   EXPECT_EQ(credentialed->credentials(), captured_storage_credentials);
 }
 
-TEST(RestFileIOTest, InstallsCredentialRefresherOnlyForVendedCredentials) {
-  const std::string custom_impl = "rest-file-io-test-refresher";
+TEST(RestFileIOTest, InstallsCredentialProviderOnlyForVendedCredentials) {
+  const std::string custom_impl = "rest-file-io-test-provider";
   FileIORegistry::Register(
       custom_impl,
       {.create = [](const std::unordered_map<std::string, std::string>& /*properties*/)
@@ -171,22 +186,21 @@ TEST(RestFileIOTest, InstallsCredentialRefresherOnlyForVendedCredentials) {
   const std::unordered_map<std::string, std::string> table_config{
       {"io-impl", custom_impl}};
 
-  captured_refresher = nullptr;
+  captured_provider = nullptr;
   std::vector<StorageCredential> refreshed = {{.prefix = "s3", .config = {{"k", "v2"}}}};
-  auto result = MakeTableFileIO(
-      {}, table_config, {{.prefix = "s3", .config = {{"k", "v1"}}}},
-      [&]() -> Result<std::vector<StorageCredential>> { return refreshed; });
+  auto provider = std::make_shared<StaticStorageCredentialProvider>(refreshed);
+  auto result = MakeTableFileIO({}, table_config,
+                                {{.prefix = "s3", .config = {{"k", "v1"}}}}, provider);
   ASSERT_THAT(result, IsOk());
-  ASSERT_TRUE(captured_refresher);
-  EXPECT_THAT(captured_refresher(), IsOk());
-  EXPECT_EQ(captured_refresher().value(), refreshed);
+  ASSERT_TRUE(captured_provider);
+  EXPECT_EQ(captured_provider, provider);
+  EXPECT_THAT(captured_provider->Load(), IsOk());
+  EXPECT_EQ(captured_provider->Load().value(), refreshed);
 
-  captured_refresher = nullptr;
-  result = MakeTableFileIO(
-      {}, table_config, /*storage_credentials=*/{},
-      [&]() -> Result<std::vector<StorageCredential>> { return refreshed; });
+  captured_provider = nullptr;
+  result = MakeTableFileIO({}, table_config, /*storage_credentials=*/{}, provider);
   ASSERT_THAT(result, IsOk());
-  EXPECT_FALSE(captured_refresher);
+  EXPECT_FALSE(captured_provider);
 }
 
 TEST(RestFileIOTest, TableImplOverridesWarehouseScheme) {

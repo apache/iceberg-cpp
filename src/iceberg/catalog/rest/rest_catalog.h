@@ -90,12 +90,10 @@ class ICEBERG_REST_EXPORT RestCatalog final
       const std::vector<StorageCredential>& storage_credentials,
       std::shared_ptr<auth::AuthSession> table_session) const;
 
-  /// \brief Callback that reloads this table's vended credentials, or nullptr
-  /// when the catalog does not serve the LoadCredentials endpoint.
+  /// \brief Build a provider for this table's vended credentials.
   ///
-  /// Captures the catalog, so anything documented to outlive it -- the metrics
-  /// executor included -- must also outlive every FileIO holding a refresher.
-  StorageCredentialRefresher MakeCredentialRefresher(
+  /// Returns nullptr when the catalog does not serve LoadCredentials.
+  std::shared_ptr<StorageCredentialProvider> MakeStorageCredentialProvider(
       const TableIdentifier& identifier,
       std::shared_ptr<auth::AuthSession> table_session) const;
 
