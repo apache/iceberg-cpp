@@ -56,9 +56,28 @@ class RecordingFileIO : public FileIO {
   std::vector<std::vector<std::string>> deleted_batches;
 };
 
+class StaticStorageCredentialProvider : public StorageCredentialProvider {
+ public:
+  explicit StaticStorageCredentialProvider(std::vector<StorageCredential> credentials)
+      : credentials_(std::move(credentials)) {}
+
+  Result<std::vector<StorageCredential>> Load() override { return credentials_; }
+
+ private:
+  std::vector<StorageCredential> credentials_;
+};
+
 class RecordingCredentialedFileIO : public RecordingFileIO,
                                     public SupportsStorageCredentials {
  public:
+  Status InitializeStorageCredentials(
+      const std::vector<StorageCredential>& storage_credentials,
+      std::shared_ptr<StorageCredentialProvider> provider) override {
+    credentials_ = storage_credentials;
+    provider_ = std::move(provider);
+    return {};
+  }
+
   Status SetStorageCredentials(
       const std::vector<StorageCredential>& storage_credentials) override {
     credentials_ = storage_credentials;
@@ -69,8 +88,19 @@ class RecordingCredentialedFileIO : public RecordingFileIO,
 
   SupportsStorageCredentials* AsSupportsStorageCredentials() override { return this; }
 
+  Status Refresh() {
+    if (!provider_) {
+      return NotFound("no provider installed");
+    }
+    ICEBERG_ASSIGN_OR_RAISE(auto refreshed, provider_->Load());
+    return SetStorageCredentials(refreshed);
+  }
+
+  bool has_provider() const { return provider_ != nullptr; }
+
  private:
   std::vector<StorageCredential> credentials_;
+  std::shared_ptr<StorageCredentialProvider> provider_;
 };
 
 // File-scope recording state: registry factories are process-global, so they
@@ -316,6 +346,41 @@ TEST(ResolvingFileIOTest, LoadsWithoutTheLockAndDropsStaleDelegates) {
   EXPECT_THAT(install.get(), IsOk());
   ASSERT_EQ(calls, 2);
   EXPECT_EQ(last->credentials(), fresh);
+}
+
+TEST(ResolvingFileIOTest, ForwardsCredentialProviderToResolvedImplementations) {
+  RegisterRecordingFileIOs();
+  ResolvingFileIO io({});
+
+  std::vector<StorageCredential> refreshed = {{.prefix = "s3", .config = {{"k2", "v2"}}}};
+  auto provider = std::make_shared<StaticStorageCredentialProvider>(refreshed);
+  EXPECT_THAT(io.InitializeStorageCredentials(
+                  {{.prefix = "s3", .config = {{"k1", "v1"}}}}, provider),
+              IsOk());
+
+  std::ignore = io.NewInputFile("s3://bucket/db/table/data/file.parquet");
+  ASSERT_NE(last_s3_io, nullptr);
+  ASSERT_TRUE(last_s3_io->has_provider());
+  EXPECT_THAT(last_s3_io->Refresh(), IsOk());
+  EXPECT_EQ(last_s3_io->credentials(), refreshed);
+}
+
+TEST(ResolvingFileIOTest, RejectsCredentialProviderAfterFirstUse) {
+  RegisterRecordingFileIOs();
+  ResolvingFileIO io({});
+
+  EXPECT_THAT(io.SetStorageCredentials({{.prefix = "s3", .config = {{"k1", "v1"}}}}),
+              IsOk());
+  std::ignore = io.NewInputFile("s3://bucket/db/table/data/file.parquet");
+  ASSERT_NE(last_s3_io, nullptr);
+  EXPECT_FALSE(last_s3_io->has_provider());
+  EXPECT_EQ(s3_factory_calls, 1);
+
+  auto provider =
+      std::make_shared<StaticStorageCredentialProvider>(std::vector<StorageCredential>{});
+  EXPECT_THAT(io.InitializeStorageCredentials({}, provider),
+              IsError(ErrorKind::kInvalidArgument));
+  EXPECT_EQ(s3_factory_calls, 1);
 }
 
 }  // namespace iceberg

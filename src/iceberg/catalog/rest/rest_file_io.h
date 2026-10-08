@@ -44,6 +44,7 @@ ICEBERG_REST_EXPORT Result<std::unique_ptr<FileIO>> MakeCatalogFileIO(
 ICEBERG_REST_EXPORT Result<std::unique_ptr<FileIO>> MakeTableFileIO(
     const std::unordered_map<std::string, std::string>& catalog_config,
     const std::unordered_map<std::string, std::string>& table_config,
-    const std::vector<StorageCredential>& storage_credentials);
+    const std::vector<StorageCredential>& storage_credentials,
+    std::shared_ptr<StorageCredentialProvider> provider = nullptr);
 
 }  // namespace iceberg::rest
