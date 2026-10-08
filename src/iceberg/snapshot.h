@@ -412,6 +412,9 @@ struct ICEBERG_EXPORT Snapshot {
   std::optional<int64_t> first_row_id;
   /// The upper bound of rows with assigned row IDs in this snapshot.
   std::optional<int64_t> added_rows;
+  /// ID of the encryption key (in table metadata `encryption-keys`) that holds the
+  /// encrypted key metadata of the manifest list. Set only for encrypted tables.
+  std::optional<std::string> key_id;
 
   /// \brief Create a new Snapshot instance with validation on the inputs.
   static Result<std::unique_ptr<Snapshot>> Make(
