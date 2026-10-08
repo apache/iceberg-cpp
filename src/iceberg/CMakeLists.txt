@@ -32,6 +32,7 @@ set(ICEBERG_SOURCES
     deletes/position_delete_index.cc
     deletes/position_delete_range_consumer.cc
     deletes/roaring_position_bitmap.cc
+    encryption/standard_key_metadata.cc
     expression/aggregate.cc
     expression/binder.cc
     expression/evaluator.cc

@@ -25,9 +25,10 @@ repos:
     rev: v5.0.0
     hooks:
       - id: trailing-whitespace
-        exclude: ^src/iceberg/catalog/hive/gen-cpp/
+        # Encryption test vectors and fixtures are binary files written by Java.
+        exclude: ^src/iceberg/(catalog/hive/gen-cpp|test/resources/encryption)/
       - id: end-of-file-fixer
-        exclude: ^src/iceberg/catalog/hive/gen-cpp/
+        exclude: ^src/iceberg/(catalog/hive/gen-cpp|test/resources/encryption)/
       - id: check-yaml
       - id: check-added-large-files
         exclude: ^src/iceberg/catalog/hive/gen-cpp/
