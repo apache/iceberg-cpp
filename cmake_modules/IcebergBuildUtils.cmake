@@ -135,6 +135,8 @@ function(add_iceberg_lib LIB_NAME)
 
   if(BUILD_SHARED)
     add_library(${LIB_NAME}_shared SHARED)
+    target_compile_features(${LIB_NAME}_shared
+                            PUBLIC cxx_std_${ICEBERG_PUBLIC_CXX_STANDARD})
     set_target_properties(${LIB_NAME}_shared PROPERTIES COMPILE_WARNING_AS_ERROR ON)
 
     if(LIB_DEPS)
@@ -195,6 +197,8 @@ function(add_iceberg_lib LIB_NAME)
 
   if(BUILD_STATIC)
     add_library(${LIB_NAME}_static STATIC)
+    target_compile_features(${LIB_NAME}_static
+                            PUBLIC cxx_std_${ICEBERG_PUBLIC_CXX_STANDARD})
     set_target_properties(${LIB_NAME}_static PROPERTIES COMPILE_WARNING_AS_ERROR ON)
 
     if(LIB_DEPS)

@@ -57,7 +57,7 @@ Result<std::shared_ptr<FileIO>> ResolvingFileIO::FileIOForPath(
         status = credentialed->SetStorageCredentials(credentials);
       }
       if (!status) {
-        return std::unexpected(status.error());
+        return ::iceberg::unexpected(status.error());
       }
     }
     return io;

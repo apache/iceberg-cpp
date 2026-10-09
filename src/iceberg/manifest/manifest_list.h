@@ -27,6 +27,7 @@
 #include <string_view>
 #include <utility>
 
+#include "iceberg/compat/unreachable.h"
 #include "iceberg/constants.h"
 #include "iceberg/iceberg_export.h"
 #include "iceberg/partition_spec.h"
@@ -264,7 +265,7 @@ ICEBERG_EXPORT inline constexpr std::string_view ToString(ManifestContent type) 
     case ManifestContent::kDeletes:
       return "deletes";
   }
-  std::unreachable();
+  ::iceberg::unreachable();
 }
 
 /// \brief Get the relative manifest content type from name

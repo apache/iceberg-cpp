@@ -45,15 +45,19 @@ env:
 jobs:
   ubuntu:
     if: ${{ github.event_name != 'pull_request' || github.event.pull_request.draft == false }}
-    name: AMD64 Ubuntu 26.04 (${{ matrix.cmake_build_type }})
+    name: AMD64 Ubuntu 26.04 (${{ matrix.cmake_build_type }}, ${{ matrix.api_mode }})
     runs-on: ubuntu-26.04
     timeout-minutes: 60
     strategy:
       fail-fast: false
       matrix:
-        cmake_build_type:
-          - Debug
-          - RelWithDebInfo
+        include:
+          - cmake_build_type: Debug
+            extra_cmake_args: "-DICEBERG_CXX20_COMPAT=ON"
+            api_mode: C++20 Compat
+          - cmake_build_type: RelWithDebInfo
+            extra_cmake_args: ""
+            api_mode: C++23
     steps:
       - name: Checkout iceberg-cpp
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -71,22 +75,46 @@ jobs:
         env:
           CC: gcc-14
           CXX: g++-14
-        run: ci/scripts/build_iceberg.sh $(pwd) ON ON OFF OFF ON ${{ matrix.cmake_build_type }}
+          ICEBERG_EXTRA_CMAKE_ARGS: ${{ matrix.extra_cmake_args }}
+        run: |
+          ci/scripts/build_iceberg.sh \
+            --source-dir "$(pwd)" \
+            --build-type "${{ matrix.cmake_build_type }}" \
+            --sccache ON \
+            --rest-integration-tests ON \
+            --s3 OFF \
+            --sigv4 OFF \
+            --bundle-awssdk ON
+      - name: Build Example (C++20)
+        if: matrix.cmake_build_type == 'Debug'
+        shell: bash
+        env:
+          CC: gcc-14
+          CXX: g++-14
+        run: |
+          ci/scripts/build_example.sh \
+            --source-dir "$(pwd)/example" \
+            --build-type "${{ matrix.cmake_build_type }}" \
+            --cxx-standard 20
+      - name: Build Example (C++23)
+        shell: bash
+        env:
+          CC: gcc-14
+          CXX: g++-14
+        run: |
+          ci/scripts/build_example.sh \
+            --source-dir "$(pwd)/example" \
+            --build-type "${{ matrix.cmake_build_type }}" \
+            --cxx-standard 23
       - name: Save sccache
         if: always()
         uses: ./.github/actions/save-sccache
         with:
           key-prefix: sccache-test-ubuntu-${{ matrix.cmake_build_type }}
           job-status: ${{ job.status }}
-      - name: Build Example
-        shell: bash
-        env:
-          CC: gcc-14
-          CXX: g++-14
-        run: ci/scripts/build_example.sh $(pwd)/example
   hive:
     if: ${{ github.event_name != 'pull_request' || github.event.pull_request.draft == false }}
-    name: AMD64 Ubuntu 26.04 Hive
+    name: AMD64 Ubuntu 26.04 Hive (C++23)
     runs-on: ubuntu-26.04
     timeout-minutes: 45
     strategy:
@@ -118,7 +146,11 @@ jobs:
         env:
           CC: gcc-14
           CXX: g++-14
-        run: ci/scripts/build_iceberg.sh $(pwd) OFF ON
+        run: |
+          ci/scripts/build_iceberg.sh \
+            --source-dir "$(pwd)" \
+            --build-type Debug \
+            --sccache ON
       - name: Show sccache stats
         shell: bash
         run: sccache --show-stats
@@ -130,7 +162,7 @@ jobs:
           key: sccache-test-hive-${{ github.run_id }}
   macos:
     if: ${{ github.event_name != 'pull_request' || github.event.pull_request.draft == false }}
-    name: AArch64 macOS 26
+    name: AArch64 macOS 26 (C++20 Compat)
     runs-on: macos-26
     timeout-minutes: 30
     strategy:
@@ -146,19 +178,36 @@ jobs:
           key-prefix: sccache-test-macos
       - name: Build Iceberg
         shell: bash
-        run: ci/scripts/build_iceberg.sh $(pwd) OFF ON
+        env:
+          ICEBERG_EXTRA_CMAKE_ARGS: "-DICEBERG_CXX20_COMPAT=ON"
+        run: |
+          ci/scripts/build_iceberg.sh \
+            --source-dir "$(pwd)" \
+            --build-type Debug \
+            --sccache ON
       - name: Save sccache
         if: always()
         uses: ./.github/actions/save-sccache
         with:
           key-prefix: sccache-test-macos
           job-status: ${{ job.status }}
-      - name: Build Example
+      - name: Build Example (C++20)
         shell: bash
-        run: ci/scripts/build_example.sh $(pwd)/example
+        run: |
+          ci/scripts/build_example.sh \
+            --source-dir "$(pwd)/example" \
+            --build-type Debug \
+            --cxx-standard 20
+      - name: Build Example (C++23)
+        shell: bash
+        run: |
+          ci/scripts/build_example.sh \
+            --source-dir "$(pwd)/example" \
+            --build-type Debug \
+            --cxx-standard 23
   windows:
     if: ${{ github.event_name != 'pull_request' || github.event.pull_request.draft == false }}
-    name: AMD64 Windows 2025
+    name: AMD64 Windows 2025 (C++20 Compat)
     runs-on: windows-2025
     timeout-minutes: 60
     strategy:
@@ -189,9 +238,16 @@ jobs:
           key-prefix: sccache-test-windows
       - name: Build Iceberg
         shell: pwsh
+        env:
+          ICEBERG_EXTRA_CMAKE_ARGS: "-DICEBERG_CXX20_COMPAT=ON"
         run: |
           $ErrorActionPreference = "Stop"
-          bash -lc 'ci/scripts/build_iceberg.sh $(pwd) OFF ON'
+          bash -lc '
+            ci/scripts/build_iceberg.sh \
+              --source-dir "$(pwd)" \
+              --build-type Debug \
+              --sccache ON
+          '
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Save sccache
         if: always()
@@ -199,8 +255,23 @@ jobs:
         with:
           key-prefix: sccache-test-windows
           job-status: ${{ job.status }}
-      - name: Build Example
+      - name: Build Example (C++20)
         shell: pwsh
         run: |
           $ErrorActionPreference = "Stop"
-          bash -lc 'ci/scripts/build_example.sh $(pwd)/example'
+          bash -lc '
+            ci/scripts/build_example.sh \
+              --source-dir "$(pwd)/example" \
+              --build-type Debug \
+              --cxx-standard 20
+          '
+      - name: Build Example (C++23)
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          bash -lc '
+            ci/scripts/build_example.sh \
+              --source-dir "$(pwd)/example" \
+              --build-type Debug \
+              --cxx-standard 23
+          '

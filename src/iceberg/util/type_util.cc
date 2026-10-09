@@ -19,6 +19,7 @@
 
 #include "iceberg/util/type_util.h"
 
+#include <ranges>
 #include <stack>
 
 #include "iceberg/result.h"

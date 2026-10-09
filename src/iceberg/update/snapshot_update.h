@@ -33,6 +33,7 @@
 #include <unordered_set>
 #include <vector>
 
+#include "iceberg/compat/compiler.h"
 #include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
 #include "iceberg/snapshot.h"
@@ -47,6 +48,16 @@ namespace iceberg {
 /// This class contains common methods for all updates that create a new table
 /// Snapshot. It also provides the shared implementation for snapshot ID
 /// assignment, manifest list writing, retry-safe apply, and cleanup.
+///
+/// In the default C++23 package, setters return a reference to the concrete
+/// derived update, so derived operations can be chained after base setters:
+/// \code
+///   append.ToBranch("branch").AppendFile(file);
+/// \endcode
+///
+/// \note Packages built with ICEBERG_CXX20_COMPAT=ON return SnapshotUpdate& from
+/// these setters, including for C++23 consumers. Call derived-specific operations
+/// separately; chaining base setters and Commit() remains supported.
 class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
  public:
   /// \brief Result of applying a snapshot update
@@ -66,25 +77,35 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
   ///
   /// \param reporter The metrics reporter to use.
   /// \return Reference to this for method chaining.
+#if ICEBERG_CXX20_COMPAT
+  SnapshotUpdate& ReportWith(std::shared_ptr<MetricsReporter> reporter) {
+    SetReporter(std::move(reporter));
+    return *this;
+  }
+#else
   auto& ReportWith(this auto& self, std::shared_ptr<MetricsReporter> reporter) {
-    static_cast<SnapshotUpdate&>(self).reporter_ = std::move(reporter);
+    static_cast<SnapshotUpdate&>(self).SetReporter(std::move(reporter));
     return self;
   }
+#endif
 
   /// \brief Set a callback to delete files instead of the table's default.
   ///
   /// \param delete_func A function used to delete file locations.
   /// \return This update for method chaining.
   /// \note Cannot be called more than once.
+#if ICEBERG_CXX20_COMPAT
+  SnapshotUpdate& DeleteWith(std::function<Status(const std::string&)> delete_func) {
+    SetDeleteFunction(std::move(delete_func));
+    return *this;
+  }
+#else
   auto& DeleteWith(this auto& self,
                    std::function<Status(const std::string&)> delete_func) {
-    if (self.delete_func_) {
-      return self.AddError(ErrorKind::kInvalidArgument,
-                           "Cannot set delete callback more than once");
-    }
-    self.delete_func_ = std::move(delete_func);
+    static_cast<SnapshotUpdate&>(self).SetDeleteFunction(std::move(delete_func));
     return self;
   }
+#endif
 
   /// \brief Stage a snapshot in table metadata, but do not make it current.
   ///
@@ -92,70 +113,88 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
   /// current snapshot ID is not updated.
   ///
   /// \return This update for method chaining.
+#if ICEBERG_CXX20_COMPAT
+  SnapshotUpdate& StageOnly() {
+    SetStageOnly();
+    return *this;
+  }
+#else
   auto& StageOnly(this auto& self) {
-    self.stage_only_ = true;
+    static_cast<SnapshotUpdate&>(self).SetStageOnly();
     return self;
   }
+#endif
 
   /// \brief Configure an executor for manifest planning work.
   ///
   /// \param executor Executor to use while planning manifests.
   /// \return Reference to this for method chaining.
+#if ICEBERG_CXX20_COMPAT
+  SnapshotUpdate& ScanManifestsWith(Executor& executor) {
+    SetPlanExecutor(executor);
+    return *this;
+  }
+#else
   auto& ScanManifestsWith(this auto& self, Executor& executor) {
-    self.plan_executor_ = std::ref(executor);
+    static_cast<SnapshotUpdate&>(self).SetPlanExecutor(executor);
     return self;
   }
+#endif
 
   /// \brief Perform operations on a particular branch.
   ///
   /// \param branch The name of a SnapshotRef of type branch.
   /// \return This update for method chaining.
+#if ICEBERG_CXX20_COMPAT
+  SnapshotUpdate& ToBranch(const std::string& branch) {
+    SetTargetBranch(branch);
+    return *this;
+  }
+#else
   auto& ToBranch(this auto& self, const std::string& branch) {
-    if (branch.empty()) [[unlikely]] {
-      return self.AddError(ErrorKind::kInvalidArgument, "Branch name cannot be empty");
-    }
-
-    if (auto ref_it = self.base().refs.find(branch); ref_it != self.base().refs.end()) {
-      if (ref_it->second->type() != SnapshotRefType::kBranch) {
-        return self.AddError(ErrorKind::kInvalidArgument,
-                             "{} is a tag, not a branch. Tags cannot be targets for "
-                             "producing snapshots",
-                             branch);
-      }
-    }
-
-    self.target_branch_ = branch;
+    static_cast<SnapshotUpdate&>(self).SetTargetBranch(branch);
     return self;
   }
+#endif
 
   /// \brief Set a summary property in the snapshot produced by this update.
   ///
   /// \param property A String property name.
   /// \param value A String property value.
   /// \return This update for method chaining.
+#if ICEBERG_CXX20_COMPAT
+  SnapshotUpdate& Set(const std::string& property, const std::string& value) {
+    SetSummaryProperty(property, value);
+    return *this;
+  }
+#else
   auto& Set(this auto& self, const std::string& property, const std::string& value) {
     static_cast<SnapshotUpdate&>(self).SetSummaryProperty(property, value);
     return self;
   }
+#endif
 
   /// \brief Configure an executor and max writer count for writing new manifests.
   ///
   /// If this method is not called, manifest writes remain serial. When configured,
   /// files may be split into independent rolling-writer groups.
   ///
+  /// \param executor Executor to use while writing manifests.
+  /// \param parallelism Maximum number of concurrent manifest writers.
+  /// \return This update for method chaining.
   /// \note Custom FileIO implementations and registered writer factories used for
   /// manifest writes must support concurrent calls when an executor is configured.
+#if ICEBERG_CXX20_COMPAT
+  SnapshotUpdate& WriteManifestsWith(Executor& executor, int32_t parallelism) {
+    SetManifestWriter(executor, parallelism);
+    return *this;
+  }
+#else
   auto& WriteManifestsWith(this auto& self, Executor& executor, int32_t parallelism) {
-    if (parallelism <= 0) [[unlikely]] {
-      return self.AddError(
-          ErrorKind::kInvalidArgument,
-          "Manifest write parallelism must be greater than 0, but was: {}", parallelism);
-    }
-
-    self.write_manifest_executor_ = std::ref(executor);
-    self.write_manifest_parallelism_ = parallelism;
+    static_cast<SnapshotUpdate&>(self).SetManifestWriter(executor, parallelism);
     return self;
   }
+#endif
 
  protected:
   friend class Transaction;
@@ -270,6 +309,53 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
   SnapshotSummaryBuilder summary_;
 
  private:
+  void SetReporter(std::shared_ptr<MetricsReporter> reporter) {
+    reporter_ = std::move(reporter);
+  }
+
+  void SetDeleteFunction(std::function<Status(const std::string&)> delete_func) {
+    if (delete_func_) {
+      AddError(ErrorKind::kInvalidArgument, "Cannot set delete callback more than once");
+      return;
+    }
+    delete_func_ = std::move(delete_func);
+  }
+
+  void SetStageOnly() { stage_only_ = true; }
+
+  void SetPlanExecutor(Executor& executor) { plan_executor_ = std::ref(executor); }
+
+  void SetTargetBranch(const std::string& branch) {
+    if (branch.empty()) [[unlikely]] {
+      AddError(ErrorKind::kInvalidArgument, "Branch name cannot be empty");
+      return;
+    }
+
+    if (auto ref_it = base().refs.find(branch); ref_it != base().refs.end()) {
+      if (ref_it->second->type() != SnapshotRefType::kBranch) {
+        AddError(ErrorKind::kInvalidArgument,
+                 "{} is a tag, not a branch. Tags cannot be targets for "
+                 "producing snapshots",
+                 branch);
+        return;
+      }
+    }
+
+    target_branch_ = branch;
+  }
+
+  void SetManifestWriter(Executor& executor, int32_t parallelism) {
+    if (parallelism <= 0) [[unlikely]] {
+      AddError(ErrorKind::kInvalidArgument,
+               "Manifest write parallelism must be greater than 0, but was: {}",
+               parallelism);
+      return;
+    }
+
+    write_manifest_executor_ = std::ref(executor);
+    write_manifest_parallelism_ = parallelism;
+  }
+
   const bool can_inherit_snapshot_id_{true};
   const std::string commit_uuid_;
   OptionalExecutor write_manifest_executor_;

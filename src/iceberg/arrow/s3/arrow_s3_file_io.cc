@@ -62,8 +62,8 @@ Status EnsureS3Initialized() {
     return ::arrow::fs::InitializeS3(options);
   }();
   if (!init_status.ok()) {
-    return std::unexpected(Error{.kind = ::iceberg::arrow::ToErrorKind(init_status),
-                                 .message = init_status.ToString()});
+    return ::iceberg::unexpected(Error{.kind = ::iceberg::arrow::ToErrorKind(init_status),
+                                       .message = init_status.ToString()});
   }
   return {};
 }

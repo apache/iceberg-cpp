@@ -28,6 +28,7 @@
 #include <string>
 #include <vector>
 
+#include "iceberg/compat/unreachable.h"
 #include "iceberg/file_format.h"
 #include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
@@ -418,7 +419,7 @@ ICEBERG_EXPORT constexpr std::string_view ToString(DataFile::Content type) noexc
     case DataFile::Content::kEqualityDeletes:
       return "equality_deletes";
   }
-  std::unreachable();
+  ::iceberg::unreachable();
 }
 
 /// \brief Get the relative data file content type from int

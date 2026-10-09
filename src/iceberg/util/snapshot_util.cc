@@ -32,12 +32,12 @@
 namespace iceberg {
 
 // Shorthand to return for a NotFound error.
-#define ICEBERG_ACTION_FOR_NOT_FOUND(result, action)   \
-  if (!result.has_value()) [[unlikely]] {              \
-    if (result.error().kind == ErrorKind::kNotFound) { \
-      action;                                          \
-    }                                                  \
-    return std::unexpected<Error>(result.error());     \
+#define ICEBERG_ACTION_FOR_NOT_FOUND(result, action)     \
+  if (!result.has_value()) [[unlikely]] {                \
+    if (result.error().kind == ErrorKind::kNotFound) {   \
+      action;                                            \
+    }                                                    \
+    return ::iceberg::unexpected<Error>(result.error()); \
   }
 
 Result<std::vector<std::shared_ptr<Snapshot>>> SnapshotUtil::AncestorsOf(
@@ -428,7 +428,7 @@ Result<std::shared_ptr<Snapshot>> SnapshotUtil::OptionalLatestSnapshot(
         if (error.kind == ErrorKind::kNotFound) {
           return nullptr;
         }
-        return std::unexpected<Error>(error);
+        return ::iceberg::unexpected<Error>(error);
       });
 }
 
