@@ -805,6 +805,25 @@ TEST_F(ReferenceVisitorTest, Constants) {
   EXPECT_TRUE(refs_false.empty());
 }
 
+TEST_F(ReferenceVisitorTest, CountStar) {
+  // COUNT(*) has no referenced field; the aggregate's reference() is null, so
+  // GetReferencedFieldIds must return an empty set instead of dereferencing it.
+  ICEBERG_UNWRAP_OR_FAIL(auto bound_count_star, Bind(Expressions::CountStar()));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto refs,
+                         ReferenceVisitor::GetReferencedFieldIds(bound_count_star));
+  EXPECT_TRUE(refs.empty());
+}
+
+TEST_F(ReferenceVisitorTest, AggregateWithTerm) {
+  // An aggregate with a term (e.g. MAX(age)) still references its field, so the
+  // null guard must not drop the non-null case. age has field id 3.
+  ICEBERG_UNWRAP_OR_FAIL(auto bound_max, Bind(Expressions::Max("age")));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto refs, ReferenceVisitor::GetReferencedFieldIds(bound_max));
+  EXPECT_THAT(refs, ::testing::UnorderedElementsAre(3));
+}
+
 TEST_F(ReferenceVisitorTest, UnboundPredicate) {
   auto unbound_pred = Expressions::Equal("name", Literal::String("Alice"));
   auto result = ReferenceVisitor::GetReferencedFieldIds(unbound_pred);
