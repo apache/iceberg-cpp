@@ -529,16 +529,9 @@ TEST_F(ParquetReaderTest, RoundTripWithGenericFileIO) {
 }
 
 TEST_F(ParquetReaderTest, ReadSmallDecimalsWithStoredArrowSchema) {
-  auto expected_schema = std::make_shared<Schema>(std::vector<SchemaField>{
-      SchemaField::MakeRequired(1, "value", iceberg::decimal(20, 2)),
+  auto schema = std::make_shared<Schema>(std::vector<SchemaField>{
+      SchemaField::MakeRequired(1, "value", decimal(20, 2)),
   });
-  auto expected_type = ::arrow::struct_({
-      ::arrow::field("value", ::arrow::decimal128(20, 2), /*nullable=*/false),
-  });
-  auto expected = ::arrow::json::ArrayFromJSONString(expected_type,
-                                                     R"([["-1.23"], ["0.00"], ["4.56"]])")
-                      .ValueOrDie();
-
   for (const auto& type : {::arrow::decimal32(9, 2), ::arrow::decimal64(18, 2)}) {
     SCOPED_TRACE(type->ToString());
     auto arrow_schema = ::arrow::schema(
@@ -549,25 +542,22 @@ TEST_F(ParquetReaderTest, ReadSmallDecimalsWithStoredArrowSchema) {
     auto table = ::arrow::Table::Make(arrow_schema, {values});
     auto& io = internal::checked_cast<arrow::ArrowFileSystemFileIO&>(*file_io_);
     auto output = io.fs()->OpenOutputStream(temp_parquet_file_).ValueOrDie();
-    auto writer_properties =
-        ::parquet::WriterProperties::Builder().enable_store_decimal_as_integer()->build();
-    auto arrow_properties =
-        ::parquet::ArrowWriterProperties::Builder().store_schema()->build();
-    ASSERT_TRUE(::parquet::arrow::WriteTable(*table, ::arrow::default_memory_pool(),
-                                             output, table->num_rows(), writer_properties,
-                                             arrow_properties)
+    ASSERT_TRUE(::parquet::arrow::WriteTable(
+                    *table, ::arrow::default_memory_pool(), output, table->num_rows(),
+                    ::parquet::WriterProperties::Builder()
+                        .enable_store_decimal_as_integer()
+                        ->build(),
+                    ::parquet::ArrowWriterProperties::Builder().store_schema()->build())
                     .ok());
     ASSERT_TRUE(output->Close().ok());
 
-    std::shared_ptr<::arrow::Array> actual;
-    ASSERT_THAT(
-        ReadArray(
-            actual,
-            {.path = temp_parquet_file_, .io = file_io_, .projection = expected_schema},
-            nullptr),
-        IsOk());
-    ASSERT_NE(actual, nullptr);
-    EXPECT_TRUE(actual->Equals(*expected)) << actual->ToString();
+    auto reader = ReaderFactoryRegistry::Open(
+        FileFormatType::kParquet,
+        {.path = temp_parquet_file_, .io = file_io_, .projection = schema});
+    ASSERT_THAT(reader, IsOk());
+    ASSERT_NO_FATAL_FAILURE(
+        VerifyNextBatch(**reader, R"([["-1.23"], ["0.00"], ["4.56"]])"));
+    ASSERT_NO_FATAL_FAILURE(VerifyExhausted(**reader));
   }
 }
 

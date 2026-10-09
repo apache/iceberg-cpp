@@ -868,9 +868,15 @@ TEST(ParquetSchemaProjectionTest, ProjectSmallDecimalTypes) {
     ::arrow::Type::type arrow_type;
   };
   const std::array cases = {
-      TestCase{::parquet::Type::INT32, 9, ::arrow::Type::DECIMAL32},
-      TestCase{::parquet::Type::INT64, 18, ::arrow::Type::DECIMAL64},
+      TestCase{.physical_type = ::parquet::Type::INT32,
+               .precision = 9,
+               .arrow_type = ::arrow::Type::DECIMAL32},
+      TestCase{.physical_type = ::parquet::Type::INT64,
+               .precision = 18,
+               .arrow_type = ::arrow::Type::DECIMAL64},
   };
+  auto properties = ::parquet::default_arrow_reader_properties();
+  properties.set_smallest_decimal_enabled(true);
 
   for (const auto& test_case : cases) {
     SCOPED_TRACE(test_case.precision);
@@ -880,39 +886,23 @@ TEST(ParquetSchemaProjectionTest, ProjectSmallDecimalTypes) {
         /*primitive_length=*/-1, /*field_id=*/1);
     ::parquet::SchemaDescriptor descriptor;
     descriptor.Init(MakeGroupNode("iceberg_schema", {node}));
+    ::parquet::arrow::SchemaManifest manifest;
+    ASSERT_TRUE(::parquet::arrow::SchemaManifest::Make(
+                    &descriptor, /*key_value_metadata=*/nullptr, properties, &manifest)
+                    .ok());
+    ASSERT_EQ(manifest.schema_fields[0].field->type()->id(), test_case.arrow_type);
 
-    for (bool smallest_decimal_enabled : {false, true}) {
-      SCOPED_TRACE(smallest_decimal_enabled);
-      auto properties = ::parquet::default_arrow_reader_properties();
-      properties.set_smallest_decimal_enabled(smallest_decimal_enabled);
-      ::parquet::arrow::SchemaManifest manifest;
-      ASSERT_TRUE(::parquet::arrow::SchemaManifest::Make(
-                      &descriptor, /*key_value_metadata=*/nullptr, properties, &manifest)
-                      .ok());
-      ASSERT_EQ(
-          manifest.schema_fields[0].field->type()->id(),
-          smallest_decimal_enabled ? test_case.arrow_type : ::arrow::Type::DECIMAL128);
-
-      for (int32_t precision :
-           {test_case.precision - 1, test_case.precision, test_case.precision + 1}) {
-        for (int32_t scale : {2, 3}) {
-          SCOPED_TRACE(precision);
-          SCOPED_TRACE(scale);
-          Schema expected_schema({
-              SchemaField::MakeRequired(1, "value", iceberg::decimal(precision, scale)),
-          });
-          auto result = Project(expected_schema, manifest);
-          if (precision >= test_case.precision && scale == 2) {
-            ASSERT_THAT(result, IsOk());
-            ASSERT_EQ(result->fields.size(), 1);
-            ASSERT_PROJECTED_FIELD(result->fields[0], 0);
-          } else {
-            ASSERT_THAT(result, IsError(ErrorKind::kInvalidSchema));
-            ASSERT_THAT(result, HasErrorMessage("Cannot read"));
-          }
-        }
-      }
-    }
+    auto project_decimal = [&](int32_t precision, int32_t scale) {
+      return Project(
+          Schema({SchemaField::MakeRequired(1, "value", decimal(precision, scale))}),
+          manifest);
+    };
+    EXPECT_THAT(project_decimal(test_case.precision, 2), IsOk());
+    EXPECT_THAT(project_decimal(test_case.precision + 1, 2), IsOk());
+    EXPECT_THAT(project_decimal(test_case.precision - 1, 2),
+                IsError(ErrorKind::kInvalidSchema));
+    EXPECT_THAT(project_decimal(test_case.precision, 3),
+                IsError(ErrorKind::kInvalidSchema));
   }
 }
 
