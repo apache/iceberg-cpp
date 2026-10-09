@@ -19,6 +19,8 @@
 
 #include "iceberg/encryption/standard_key_metadata.h"
 
+#include <utility>
+
 #include "iceberg/util/macros.h"
 
 namespace iceberg {
@@ -66,7 +68,7 @@ class Decoder {
 
   Result<std::vector<uint8_t>> ReadBytes() {
     ICEBERG_ASSIGN_OR_RAISE(auto length, ReadLong());
-    if (length < 0 || static_cast<uint64_t>(length) > buffer_.size() - pos_) {
+    if (length < 0 || std::cmp_greater(length, buffer_.size() - pos_)) {
       return Invalid("Invalid bytes length in key metadata: {}", length);
     }
     std::vector<uint8_t> bytes(buffer_.begin() + pos_, buffer_.begin() + pos_ + length);
