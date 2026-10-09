@@ -528,6 +528,49 @@ TEST_F(ParquetReaderTest, RoundTripWithGenericFileIO) {
   ASSERT_TRUE(out->Equals(*array));
 }
 
+TEST_F(ParquetReaderTest, ReadSmallDecimalsWithStoredArrowSchema) {
+  auto expected_schema = std::make_shared<Schema>(std::vector<SchemaField>{
+      SchemaField::MakeRequired(1, "value", iceberg::decimal(20, 2)),
+  });
+  auto expected_type = ::arrow::struct_({
+      ::arrow::field("value", ::arrow::decimal128(20, 2), /*nullable=*/false),
+  });
+  auto expected = ::arrow::json::ArrayFromJSONString(expected_type,
+                                                     R"([["-1.23"], ["0.00"], ["4.56"]])")
+                      .ValueOrDie();
+
+  for (const auto& type : {::arrow::decimal32(9, 2), ::arrow::decimal64(18, 2)}) {
+    SCOPED_TRACE(type->ToString());
+    auto arrow_schema = ::arrow::schema(
+        {::arrow::field("value", type, /*nullable=*/false,
+                        ::arrow::key_value_metadata({"PARQUET:field_id"}, {"1"}))});
+    auto values = ::arrow::json::ArrayFromJSONString(type, R"(["-1.23", "0.00", "4.56"])")
+                      .ValueOrDie();
+    auto table = ::arrow::Table::Make(arrow_schema, {values});
+    auto& io = internal::checked_cast<arrow::ArrowFileSystemFileIO&>(*file_io_);
+    auto output = io.fs()->OpenOutputStream(temp_parquet_file_).ValueOrDie();
+    auto writer_properties =
+        ::parquet::WriterProperties::Builder().enable_store_decimal_as_integer()->build();
+    auto arrow_properties =
+        ::parquet::ArrowWriterProperties::Builder().store_schema()->build();
+    ASSERT_TRUE(::parquet::arrow::WriteTable(*table, ::arrow::default_memory_pool(),
+                                             output, table->num_rows(), writer_properties,
+                                             arrow_properties)
+                    .ok());
+    ASSERT_TRUE(output->Close().ok());
+
+    std::shared_ptr<::arrow::Array> actual;
+    ASSERT_THAT(
+        ReadArray(
+            actual,
+            {.path = temp_parquet_file_, .io = file_io_, .projection = expected_schema},
+            nullptr),
+        IsOk());
+    ASSERT_NE(actual, nullptr);
+    EXPECT_TRUE(actual->Equals(*expected)) << actual->ToString();
+  }
+}
+
 TEST_F(ParquetReaderTest, ReadReorderedFieldsWithNulls) {
   CreateSimpleParquetFile();
 

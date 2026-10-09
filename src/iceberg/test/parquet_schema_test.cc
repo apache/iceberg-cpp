@@ -861,6 +861,61 @@ TEST(ParquetSchemaProjectionTest, ProjectDecimalType) {
   ASSERT_PROJECTED_FIELD(projection.fields[0], 0);
 }
 
+TEST(ParquetSchemaProjectionTest, ProjectSmallDecimalTypes) {
+  struct TestCase {
+    ::parquet::Type::type physical_type;
+    int32_t precision;
+    ::arrow::Type::type arrow_type;
+  };
+  const std::array cases = {
+      TestCase{::parquet::Type::INT32, 9, ::arrow::Type::DECIMAL32},
+      TestCase{::parquet::Type::INT64, 18, ::arrow::Type::DECIMAL64},
+  };
+
+  for (const auto& test_case : cases) {
+    SCOPED_TRACE(test_case.precision);
+    auto node = ::parquet::schema::PrimitiveNode::Make(
+        "value", ::parquet::Repetition::REQUIRED,
+        ::parquet::LogicalType::Decimal(test_case.precision, 2), test_case.physical_type,
+        /*primitive_length=*/-1, /*field_id=*/1);
+    ::parquet::SchemaDescriptor descriptor;
+    descriptor.Init(MakeGroupNode("iceberg_schema", {node}));
+
+    for (bool smallest_decimal_enabled : {false, true}) {
+      SCOPED_TRACE(smallest_decimal_enabled);
+      auto properties = ::parquet::default_arrow_reader_properties();
+      properties.set_smallest_decimal_enabled(smallest_decimal_enabled);
+      ::parquet::arrow::SchemaManifest manifest;
+      ASSERT_TRUE(::parquet::arrow::SchemaManifest::Make(
+                      &descriptor, /*key_value_metadata=*/nullptr, properties, &manifest)
+                      .ok());
+      ASSERT_EQ(
+          manifest.schema_fields[0].field->type()->id(),
+          smallest_decimal_enabled ? test_case.arrow_type : ::arrow::Type::DECIMAL128);
+
+      for (int32_t precision :
+           {test_case.precision - 1, test_case.precision, test_case.precision + 1}) {
+        for (int32_t scale : {2, 3}) {
+          SCOPED_TRACE(precision);
+          SCOPED_TRACE(scale);
+          Schema expected_schema({
+              SchemaField::MakeRequired(1, "value", iceberg::decimal(precision, scale)),
+          });
+          auto result = Project(expected_schema, manifest);
+          if (precision >= test_case.precision && scale == 2) {
+            ASSERT_THAT(result, IsOk());
+            ASSERT_EQ(result->fields.size(), 1);
+            ASSERT_PROJECTED_FIELD(result->fields[0], 0);
+          } else {
+            ASSERT_THAT(result, IsError(ErrorKind::kInvalidSchema));
+            ASSERT_THAT(result, HasErrorMessage("Cannot read"));
+          }
+        }
+      }
+    }
+  }
+}
+
 TEST(ParquetSchemaProjectionTest, ProjectDecimalIncompatible) {
   Schema expected_schema({
       SchemaField::MakeRequired(/*field_id=*/1, "value", iceberg::decimal(18, 3)),
