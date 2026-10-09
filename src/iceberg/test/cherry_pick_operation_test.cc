@@ -86,8 +86,8 @@ class CherryPickOperationTest : public UpdateTestBase {
   Result<std::vector<std::string>> LiveDataFilePaths() {
     std::vector<std::string> paths;
     ICEBERG_ASSIGN_OR_RAISE(auto snapshot, table_->current_snapshot());
-    SnapshotCache cache(snapshot.get());
-    ICEBERG_ASSIGN_OR_RAISE(auto manifests, cache.DataManifests(file_io_));
+    SnapshotReader snapshot_reader(snapshot.get());
+    ICEBERG_ASSIGN_OR_RAISE(auto manifests, snapshot_reader.DataManifests(file_io_));
     for (const auto& manifest : manifests) {
       ICEBERG_ASSIGN_OR_RAISE(
           auto spec, table_->metadata()->PartitionSpecById(manifest.partition_spec_id));

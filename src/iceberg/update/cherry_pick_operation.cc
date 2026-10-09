@@ -61,8 +61,8 @@ Result<SnapshotChanges> ReadSnapshotChanges(const Snapshot& snapshot,
                                             const std::shared_ptr<FileIO>& file_io,
                                             const TableMetadata& metadata) {
   SnapshotChanges changes;
-  SnapshotCache cache(&snapshot);
-  ICEBERG_ASSIGN_OR_RAISE(auto manifests, cache.DataManifests(file_io));
+  SnapshotReader snapshot_reader(&snapshot);
+  ICEBERG_ASSIGN_OR_RAISE(auto manifests, snapshot_reader.DataManifests(file_io));
   for (const auto& manifest : manifests) {
     if (manifest.added_snapshot_id != snapshot.snapshot_id) {
       continue;

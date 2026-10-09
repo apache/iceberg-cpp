@@ -228,7 +228,8 @@ TEST_F(SnapshotUtilTest, IsAncestorOf) {
 TEST_F(SnapshotUtilTest, IsAncestorOfNoCurrentSnapshot) {
   TableMetadata metadata;
   metadata.current_snapshot_id = kInvalidSnapshotId;
-  metadata.snapshots = {CreateSnapshot(base_snapshot_id_, std::nullopt, 1, base_timestamp_)};
+  metadata.snapshots = {
+      CreateSnapshot(base_snapshot_id_, std::nullopt, 1, base_timestamp_)};
 
   ICEBERG_UNWRAP_OR_FAIL(auto result,
                          SnapshotUtil::IsAncestorOf(metadata, base_snapshot_id_));
