@@ -19,21 +19,8 @@
 
 #pragma once
 
-/// \file iceberg/util/unreachable.h
-/// \brief Portable stand-in for std::unreachable.
-
-namespace iceberg {
-
-/// \brief Marks a branch the program can never take.
-///
-/// Reaching it is undefined behavior, as with std::unreachable. That is C++23,
-/// so it cannot appear in a header a C++20 consumer includes.
-[[noreturn]] inline void Unreachable() {
-#if defined(_MSC_VER) && !defined(__clang__)
-  __assume(false);
-#else
-  __builtin_unreachable();
+#if defined(ICEBERG_CXX20_COMPAT)
+#  error "ICEBERG_CXX20_COMPAT is fixed by the library build; do not override it"
 #endif
-}
 
-}  // namespace iceberg
+#define ICEBERG_CXX20_COMPAT @ICEBERG_CXX20_COMPAT_VALUE@

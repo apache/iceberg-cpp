@@ -85,7 +85,7 @@ class RestStorageCredentialProvider final : public StorageCredentialProvider {
     }
     auto result = LoadCredentialsResponseFromJson(*json);
     if (!result.has_value()) {
-      return std::unexpected<Error>(
+      return ::iceberg::unexpected<Error>(
           {.kind = result.error().kind, .message = "Malformed LoadCredentials response"});
     }
     return std::move(result->storage_credentials);
@@ -160,7 +160,7 @@ Result<bool> CaptureNoSuchObject(const auto& status, ErrorKind kind) {
   if (status.error().kind == kind) {
     return false;
   }
-  return std::unexpected(status.error());
+  return ::iceberg::unexpected(status.error());
 }
 
 Result<bool> CaptureNoSuchTable(const auto& status) {

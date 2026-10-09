@@ -122,7 +122,7 @@ class StdSeekableInputStream : public SeekableInputStream {
     while (total_read < out.size()) {
       auto read_result = Read(out.subspan(total_read));
       if (!read_result.has_value()) {
-        read_status = std::unexpected<Error>(read_result.error());
+        read_status = ::iceberg::unexpected<Error>(read_result.error());
         break;
       }
       if (read_result.value() == 0) {

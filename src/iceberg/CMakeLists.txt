@@ -282,6 +282,7 @@ install(FILES "${CMAKE_CURRENT_BINARY_DIR}/version.h"
         DESTINATION "${ICEBERG_INSTALL_INCLUDEDIR}/iceberg")
 
 add_subdirectory(catalog)
+add_subdirectory(compat)
 add_subdirectory(data)
 add_subdirectory(deletes)
 add_subdirectory(encryption)

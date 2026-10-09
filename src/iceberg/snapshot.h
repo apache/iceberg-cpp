@@ -30,13 +30,13 @@
 #include <unordered_map>
 #include <variant>
 
+#include "iceberg/compat/unreachable.h"
 #include "iceberg/iceberg_export.h"
 #include "iceberg/manifest/manifest_list.h"
 #include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
 #include "iceberg/util/lazy.h"
 #include "iceberg/util/timepoint.h"
-#include "iceberg/util/unreachable.h"
 
 namespace iceberg {
 
@@ -58,7 +58,7 @@ ICEBERG_EXPORT constexpr std::string_view ToString(SnapshotRefType type) noexcep
     case SnapshotRefType::kTag:
       return "tag";
   }
-  Unreachable();
+  ::iceberg::unreachable();
 }
 /// \brief Get the relative snapshot reference type from name
 ICEBERG_EXPORT constexpr Result<SnapshotRefType> SnapshotRefTypeFromString(

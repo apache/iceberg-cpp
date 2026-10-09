@@ -232,7 +232,7 @@ License: https://www.apache.org/licenses/LICENSE-2.0
 
 This product includes code from zeus-cpp/expected.
 
-* src/iceberg/expected.h is adapted from zeus-cpp/expected.
+* src/iceberg/compat/expected.h is adapted from zeus-cpp/expected.
 
 Copyright: 2024 zeus-cpp.
 Home page: https://github.com/zeus-cpp/expected

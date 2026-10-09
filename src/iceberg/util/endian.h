@@ -21,42 +21,16 @@
 
 #include <bit>
 #include <concepts>
-#include <cstddef>
 #include <cstdint>
 #include <cstring>
 #include <type_traits>
+
+#include "iceberg/compat/byte_swap.h"
 
 /// \file iceberg/util/endian.h
 /// \brief Endianness conversion utilities
 
 namespace iceberg {
-
-namespace internal {
-
-// std::byteswap is C++23 and this header is public. GCC and Clang provide the same
-// swap as builtins, which are usable in constant expressions and compile to a
-// single instruction at any optimization level; other compilers reverse the bytes
-// by hand.
-template <std::unsigned_integral T>
-constexpr T ByteSwapUnsigned(T value) {
-#if defined(__GNUC__) || defined(__clang__)
-  if constexpr (sizeof(T) == sizeof(uint16_t)) {
-    return static_cast<T>(__builtin_bswap16(value));
-  } else if constexpr (sizeof(T) == sizeof(uint32_t)) {
-    return static_cast<T>(__builtin_bswap32(value));
-  } else if constexpr (sizeof(T) == sizeof(uint64_t)) {
-    return static_cast<T>(__builtin_bswap64(value));
-  }
-#endif
-  T swapped{0};
-  for (size_t byte = 0; byte < sizeof(T); ++byte) {
-    swapped = static_cast<T>(swapped << 8) | static_cast<T>(value & 0xFF);
-    value = static_cast<T>(value >> 8);
-  }
-  return swapped;
-}
-
-}  // namespace internal
 
 /// \brief Concept for values that can be converted to/from another endian format.
 template <typename T>

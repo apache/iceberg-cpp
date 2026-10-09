@@ -25,11 +25,11 @@ iceberg-cpp is a C++ implementation of [Apache Iceberg™](https://iceberg.apach
 
 ## Key Features
 
-- **Modern C++** — Built as C++23 with ranges, concepts, and other modern idioms; public headers require only C++20
+- **Modern C++23** — Developed and built with C++23, using ranges, concepts, and modern C++ idioms
 - **Cross-Platform** — Builds and runs on Linux, macOS, and Windows
 - **Spec Compliance** — Full table spec support today; Puffin, View, and UDF specs are on the roadmap
 - **Arrow-Native** — Uses the Arrow C Data Interface as the primary data API
-- **Easy Engine Integration** — Interface-oriented, pluggable design for Catalog, FileIO, FileFormat, and more
+- **Easy Engine Integration** — Interface-oriented, pluggable design for Catalog, FileIO, FileFormat, and more; additional [C++20 consumer compatibility](getting-started.md#using-the-library-from-c20)
 - **Battery-Included** — Deep integration with Apache Arrow for columnar layout and rich file system support
 - **REST Catalog Client** — Connects to any Iceberg REST catalog with pluggable authentication
 - **File Format Support** — Built-in readers and writers for Apache Parquet and Apache Avro

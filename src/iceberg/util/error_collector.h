@@ -25,6 +25,7 @@
 #include <string>
 #include <vector>
 
+#include "iceberg/compat/compiler.h"
 #include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
 
@@ -109,13 +110,24 @@ class ICEBERG_EXPORT ErrorCollector {
   /// \param kind The kind of error
   /// \param fmt The format string
   /// \param args The arguments to format the message
-  /// \return This error collector for method chaining
+  /// \return Reference to the concrete derived builder in the default C++23
+  /// package, or ErrorCollector& in compatibility mode.
+#if ICEBERG_CXX20_COMPAT
   template <typename... Args>
   ErrorCollector& AddError(ErrorKind kind, const std::format_string<Args...> fmt,
                            Args&&... args) {
-    errors_.emplace_back(kind, std::format(fmt, std::forward<Args>(args)...));
+    RecordError({kind, std::format(fmt, std::forward<Args>(args)...)});
     return *this;
   }
+#else
+  template <typename... Args>
+  auto& AddError(this auto& self, ErrorKind kind, const std::format_string<Args...> fmt,
+                 Args&&... args) {
+    static_cast<ErrorCollector&>(self).RecordError(
+        {kind, std::format(fmt, std::forward<Args>(args)...)});
+    return self;
+  }
+#endif
 
   /// \brief Add an existing error object
   ///
@@ -123,11 +135,19 @@ class ICEBERG_EXPORT ErrorCollector {
   /// error objects without deconstructing and reconstructing them.
   ///
   /// \param err The error to add
-  /// \return This error collector for method chaining
+  /// \return Reference to the concrete derived builder in the default C++23
+  /// package, or ErrorCollector& in compatibility mode.
+#if ICEBERG_CXX20_COMPAT
   ErrorCollector& AddError(Error err) {
-    errors_.push_back(std::move(err));
+    RecordError(std::move(err));
     return *this;
   }
+#else
+  auto& AddError(this auto& self, Error err) {
+    static_cast<ErrorCollector&>(self).RecordError(std::move(err));
+    return self;
+  }
+#endif
 
   /// \brief Add an unexpected result's error
   ///
@@ -138,11 +158,23 @@ class ICEBERG_EXPORT ErrorCollector {
   /// \endcode
   ///
   /// \param err The unexpected result containing the error to add
-  /// \return This error collector for method chaining
-  ErrorCollector& AddError(unexpected<Error> err) {
-    errors_.push_back(std::move(err.error()));
+  /// \return Reference to the concrete derived builder in the default C++23
+  /// package, or ErrorCollector& in compatibility mode.
+#if ICEBERG_CXX20_COMPAT
+  ErrorCollector& AddError(::iceberg::unexpected<Error> err) {
+    RecordError(std::move(err.error()));
     return *this;
   }
+#else
+  auto& AddError(this auto& self, ::iceberg::unexpected<Error> err) {
+    static_cast<ErrorCollector&>(self).RecordError(std::move(err.error()));
+    return self;
+  }
+  auto& AddError(this auto& self, std::unexpected<Error> err) {
+    static_cast<ErrorCollector&>(self).RecordError(std::move(err.error()));
+    return self;
+  }
+#endif
 
   /// \brief Check if any errors have been collected
   ///
@@ -187,6 +219,9 @@ class ICEBERG_EXPORT ErrorCollector {
 
   /// \brief Get read-only access to all collected errors
   [[nodiscard]] const std::vector<Error>& errors() const { return errors_; }
+
+ private:
+  void RecordError(Error err) { errors_.push_back(std::move(err)); }
 
  protected:
   std::vector<Error> errors_;

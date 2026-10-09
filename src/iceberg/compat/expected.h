@@ -22,14 +22,14 @@
  * SOFTWARE.
  */
 
-/// \file iceberg/expected.h
+/// \file iceberg/compat/expected.h
 /// \brief A C++20 backport of C++23 `std::expected`, used as the storage type
 /// behind `iceberg::Result`.
 ///
-/// Purpose: the library itself may be built as C++23, but its public headers
-/// must stay consumable from C++20 translation units. `std::expected` is a
-/// C++23 library feature, so `iceberg::Result<T>` (see iceberg/result.h) is
-/// defined in terms of `iceberg::expected` instead. The API mirrors
+/// Purpose: the library is developed and built as C++23. Compatibility-mode
+/// packages additionally support C++20 consumers. `iceberg::Result<T>` (see
+/// iceberg/result.h) uses the same `iceberg::expected` type in both package
+/// modes rather than selecting a storage type per translation unit. The API mirrors
 /// `std::expected` (including the monadic `and_then`, `or_else`, `transform`
 /// and `transform_error`), so code can be written as if against the standard
 /// type.
@@ -50,9 +50,9 @@
 /// * The default constructor no longer requires `T` to be default
 ///   constructible, so `expected<T, E>` can hold types with no (or a private)
 ///   default constructor, which MSVC otherwise tried to instantiate.
-/// * When `std::expected` is available, `iceberg::expected` can also be
-///   constructed from `std::unexpected<G>`, so library code compiled as C++23
-///   that still spells errors with `std::unexpected` keeps working.
+/// * The default package retains construction from `std::unexpected<G>` when
+///   available. Compatibility packages omit those constructors in all language
+///   modes so the class definition remains the same for library and consumer.
 /// * Reformatted with clang-format.
 ///
 /// History:
@@ -74,11 +74,12 @@
 #include <type_traits>
 #include <utility>
 #include <version>
-#if defined(__cpp_lib_expected) && __cpp_lib_expected >= 202202L
+
+#include "iceberg/compat/compiler.h"
+#include "iceberg/iceberg_export.h"
+#if !ICEBERG_CXX20_COMPAT && defined(__cpp_lib_expected) && __cpp_lib_expected >= 202202L
 #  include <expected>
 #endif
-
-#include "iceberg/iceberg_export.h"
 
 // NOLINTBEGIN
 
@@ -1294,7 +1295,7 @@ class ICEBERG_TEMPLATE_CLASS_EXPORT [[nodiscard]] expected
   constexpr explicit expected(U&& v) noexcept(std::is_nothrow_constructible_v<T, U>)
       : expected(std::in_place, std::forward<U>(v)) {}
 
-#if defined(__cpp_lib_expected) && __cpp_lib_expected >= 202202L
+#if !ICEBERG_CXX20_COMPAT && defined(__cpp_lib_expected) && __cpp_lib_expected >= 202202L
   // iceberg: library code built as C++23 still spells some errors std::unexpected.
   template <class G, std::enable_if_t<std::is_constructible_v<E, const G&>>* = nullptr>
   constexpr explicit(!std::is_convertible_v<const G&, E>) expected(
@@ -2081,7 +2082,7 @@ expected<void, E> : private expected_detail::move_assign_base<void, E>,
       : impl_base(expected_detail::construct_from_expected, std::move(rhs)),
         ctor_base(expected_detail::default_constructor_tag{}) {}
 
-#if defined(__cpp_lib_expected) && __cpp_lib_expected >= 202202L
+#if !ICEBERG_CXX20_COMPAT && defined(__cpp_lib_expected) && __cpp_lib_expected >= 202202L
   // iceberg: library code built as C++23 still spells some errors std::unexpected.
   template <class G, std::enable_if_t<std::is_constructible_v<E, const G&>>* = nullptr>
   constexpr explicit(!std::is_convertible_v<const G&, E>) expected(

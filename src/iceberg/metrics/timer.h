@@ -31,8 +31,8 @@
 #include <type_traits>
 #include <utility>
 
+#include "iceberg/compat/unreachable.h"
 #include "iceberg/iceberg_export.h"
-#include "iceberg/util/unreachable.h"
 
 namespace iceberg {
 
@@ -65,7 +65,7 @@ ICEBERG_EXPORT constexpr std::string_view ToString(TimerUnit unit) noexcept {
     case TimerUnit::kDays:
       return "days";
   }
-  Unreachable();
+  ::iceberg::unreachable();
 }
 
 /// \brief Abstract timer for measuring operation durations.

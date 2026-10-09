@@ -17,7 +17,7 @@
  * under the License.
  */
 
-#include "iceberg/expected.h"
+#include "iceberg/compat/expected.h"
 
 #include <functional>
 #include <memory>

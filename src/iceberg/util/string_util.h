@@ -26,7 +26,6 @@
 #include <cerrno>
 #include <charconv>
 #include <optional>
-#include <ranges>
 #include <string>
 #include <string_view>
 #include <type_traits>
@@ -34,9 +33,9 @@
 #include <utility>
 #include <vector>
 
+#include "iceberg/compat/unreachable.h"
 #include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
-#include "iceberg/util/unreachable.h"
 
 namespace iceberg {
 
@@ -70,14 +69,7 @@ class ICEBERG_EXPORT StringUtils {
   /// case-insensitive comparison. A Unicode upper-case is intentionally not provided:
   /// simple case mapping would be wrong for some letters (e.g. "ß" (U+00DF) would stay
   /// unchanged instead of becoming "SS"), and no caller needs it.
-  static std::string ToUpper(std::string_view str) {
-    std::string upper;
-    upper.reserve(str.size());
-    for (char ch : str) {
-      upper.push_back(ToUpperAscii(ch));
-    }
-    return upper;
-  }
+  static std::string ToUpper(std::string_view str);
 
   /// \brief Case-insensitive equality using Unicode simple (1:1) case mapping.
   ///
@@ -137,7 +129,7 @@ class ICEBERG_EXPORT StringUtils {
       return InvalidArgument("Failed to parse {} from string '{}': value out of range",
                              typeid(T).name(), str);
     }
-    Unreachable();
+    ::iceberg::unreachable();
   }
 
   /// \brief Decode a hex string (upper or lower case) into bytes.

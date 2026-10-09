@@ -23,6 +23,7 @@
 #include <chrono>
 #include <cstdint>
 #include <iterator>
+#include <ranges>
 #include <utility>
 
 #include "iceberg/expression/binder.h"

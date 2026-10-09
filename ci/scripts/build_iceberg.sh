@@ -17,18 +17,102 @@
 # specific language governing permissions and limitations
 # under the License.
 #
-# Usage: build_iceberg.sh <source_dir> [rest_integration_tests=OFF] [sccache=OFF] [s3=OFF] [sigv4=OFF] [bundle_awssdk=ON] [build_type=Debug]
+usage() {
+    cat <<'EOF'
+Usage: build_iceberg.sh --source-dir DIR [options]
 
-set -eux
+Options:
+  --build-type TYPE                 CMake build type (default: Debug)
+  --run-tests ON|OFF                Run CTest after building (default: ON)
+  --sccache ON|OFF                  Use sccache (default: OFF)
+  --rest-integration-tests ON|OFF   Build REST integration tests (default: OFF)
+  --s3 ON|OFF                       Enable S3 support (default: OFF)
+  --sigv4 ON|OFF                    Enable SigV4 support (default: OFF)
+  --bundle-awssdk ON|OFF            Bundle the AWS SDK (default: ON)
+  -h, --help                        Show this help
+EOF
+}
 
-source_dir=${1}
-build_dir=${1}/build
-build_rest_integration_test=${2:-OFF}
-build_enable_sccache=${3:-OFF}
-build_enable_s3=${4:-OFF}
-build_enable_sigv4=${5:-OFF}
-build_bundle_awssdk=${6:-ON}
-run_tests=${ICEBERG_RUN_TESTS:-ON}
+require_on_off() {
+    case "${2}" in
+        ON|OFF) ;;
+        *)
+            echo "$1 must be ON or OFF, got '${2:-}'" >&2
+            exit 2
+            ;;
+    esac
+}
+
+set -eu
+
+source_dir=
+build_type=Debug
+build_enable_sccache=OFF
+build_rest_integration_test=OFF
+build_enable_s3=OFF
+build_enable_sigv4=OFF
+build_bundle_awssdk=ON
+run_tests=ON
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --source-dir)
+            source_dir=${2:-}
+            shift 2
+            ;;
+        --build-type)
+            build_type=${2:-}
+            shift 2
+            ;;
+        --run-tests)
+            require_on_off "$1" "${2:-}"
+            run_tests=$2
+            shift 2
+            ;;
+        --sccache)
+            require_on_off "$1" "${2:-}"
+            build_enable_sccache=$2
+            shift 2
+            ;;
+        --rest-integration-tests)
+            require_on_off "$1" "${2:-}"
+            build_rest_integration_test=$2
+            shift 2
+            ;;
+        --s3)
+            require_on_off "$1" "${2:-}"
+            build_enable_s3=$2
+            shift 2
+            ;;
+        --sigv4)
+            require_on_off "$1" "${2:-}"
+            build_enable_sigv4=$2
+            shift 2
+            ;;
+        --bundle-awssdk)
+            require_on_off "$1" "${2:-}"
+            build_bundle_awssdk=$2
+            shift 2
+            ;;
+        -h|--help)
+            usage
+            exit 0
+            ;;
+        *)
+            echo "Unknown option: $1" >&2
+            usage >&2
+            exit 2
+            ;;
+    esac
+done
+
+if [[ -z "${source_dir}" || -z "${build_type}" ]]; then
+    usage >&2
+    exit 2
+fi
+
+set -x
+build_dir=${source_dir}/build
 
 mkdir ${build_dir}
 pushd ${build_dir}
@@ -36,8 +120,6 @@ pushd ${build_dir}
 is_windows() {
     [[ "${OSTYPE}" == "msys" || "${OSTYPE}" == "win32" || "${OSTYPE}" == "cygwin" ]]
 }
-
-build_type=${7:-Debug}
 
 CMAKE_ARGS=(
     "-G Ninja"
