@@ -25,6 +25,8 @@
 #include "iceberg/expression/expressions.h"
 #include "iceberg/expression/literal.h"
 #include "iceberg/result.h"
+#include "iceberg/row/struct_like.h"
+#include "iceberg/schema.h"
 #include "iceberg/transform.h"
 #include "iceberg/type.h"
 #include "iceberg/util/checked_cast.h"
@@ -230,7 +232,7 @@ Result<std::shared_ptr<Expression>> UnboundPredicateImpl<B>::Bind(
   ICEBERG_ASSIGN_OR_RAISE(auto bound_term, BASE::term()->Bind(schema, case_sensitive));
 
   if (values_.empty()) {
-    return BindUnaryOperation(std::move(bound_term));
+    return BindUnaryOperation(schema, std::move(bound_term));
   }
 
   if (BASE::op() == Expression::Operation::kIn ||
@@ -247,6 +249,19 @@ bool IsFloatingType(TypeId type) {
   return type == TypeId::kFloat || type == TypeId::kDouble;
 }
 
+bool AllAncestorsRequired(const StructType& struct_type, const BoundReference& ref) {
+  const auto& path = ref.accessor().position_path();
+  const StructType* parent = &struct_type;
+  for (size_t i = 0; i + 1 < path.size(); ++i) {
+    const auto& field = parent->fields()[path[i]];
+    if (field.optional()) {
+      return false;
+    }
+    parent = &internal::checked_cast<const StructType&>(*field.type());
+  }
+  return true;
+}
+
 bool StartsWith(const Literal& lhs, const Literal& rhs) {
   const auto& lhs_value = lhs.value();
   const auto& rhs_value = rhs.value();
@@ -261,17 +276,19 @@ bool StartsWith(const Literal& lhs, const Literal& rhs) {
 
 template <typename B>
 Result<std::shared_ptr<Expression>> UnboundPredicateImpl<B>::BindUnaryOperation(
-    std::shared_ptr<B> bound_term) const {
+    const StructType& struct_type, std::shared_ptr<B> bound_term) const {
   switch (BASE::op()) {
     case Expression::Operation::kIsNull:
-      if (!bound_term->MayProduceNull()) {
+      if (!bound_term->MayProduceNull() &&
+          AllAncestorsRequired(struct_type, *bound_term->reference())) {
         return Expressions::AlwaysFalse();
       }
       // TODO(gangwu): deal with UnknownType
       return BoundUnaryPredicate::Make(Expression::Operation::kIsNull,
                                        std::move(bound_term));
     case Expression::Operation::kNotNull:
-      if (!bound_term->MayProduceNull()) {
+      if (!bound_term->MayProduceNull() &&
+          AllAncestorsRequired(struct_type, *bound_term->reference())) {
         return Expressions::AlwaysTrue();
       }
       return BoundUnaryPredicate::Make(Expression::Operation::kNotNull,

@@ -21,6 +21,7 @@
 
 #include <limits>
 #include <memory>
+#include <utility>
 
 #include "iceberg/expression/expressions.h"
 #include "iceberg/schema.h"
@@ -363,6 +364,49 @@ TEST_F(PredicateTest, UnboundPredicateBindUnary) {
 
   auto bound_is_null = bound_is_null_result.value();
   EXPECT_EQ(bound_is_null->op(), Expression::Operation::kFalse);
+}
+
+TEST_F(PredicateTest, BindNestedNullPredicates) {
+  for (auto [outer_optional, inner_optional] :
+       {std::pair{false, false}, std::pair{true, false}, std::pair{false, true}}) {
+    auto inner = std::make_shared<StructType>(
+        std::vector<SchemaField>{SchemaField::MakeRequired(4, "leaf", int32())});
+    auto outer = std::make_shared<StructType>(
+        std::vector<SchemaField>{SchemaField(3, "middle", inner, inner_optional)});
+    Schema schema(
+        std::vector<SchemaField>{SchemaField::MakeOptional(1, "unrelated", int32()),
+                                 SchemaField(2, "key", outer, outer_optional)});
+    SCOPED_TRACE(schema.ToString());
+    bool nullable = outer_optional || inner_optional;
+    ICEBERG_UNWRAP_OR_FAIL(auto is_null,
+                           Expressions::IsNull("key.middle.leaf")->Bind(schema, true));
+    ICEBERG_UNWRAP_OR_FAIL(auto not_null,
+                           Expressions::NotNull("key.middle.leaf")->Bind(schema, true));
+    EXPECT_EQ(is_null->op(),
+              nullable ? Expression::Operation::kIsNull : Expression::Operation::kFalse);
+    EXPECT_EQ(not_null->op(),
+              nullable ? Expression::Operation::kNotNull : Expression::Operation::kTrue);
+  }
+}
+
+TEST_F(PredicateTest, BindTransformedNestedNullPredicates) {
+  for (bool parent_optional : {false, true}) {
+    Schema schema(std::vector<SchemaField>{SchemaField(
+        1, "key",
+        std::make_shared<StructType>(
+            std::vector<SchemaField>{SchemaField::MakeRequired(2, "nested", int32())}),
+        parent_optional)});
+    auto truncate = Expressions::Truncate("key.nested", 10);
+    ICEBERG_UNWRAP_OR_FAIL(
+        auto is_null, Expressions::IsNull<BoundTransform>(truncate)->Bind(schema, true));
+    ICEBERG_UNWRAP_OR_FAIL(
+        auto not_null,
+        Expressions::NotNull<BoundTransform>(truncate)->Bind(schema, true));
+    EXPECT_EQ(is_null->op(), parent_optional ? Expression::Operation::kIsNull
+                                             : Expression::Operation::kFalse);
+    EXPECT_EQ(not_null->op(), parent_optional ? Expression::Operation::kNotNull
+                                              : Expression::Operation::kTrue);
+  }
 }
 
 TEST_F(PredicateTest, UnboundPredicateBindLiteral) {

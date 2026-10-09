@@ -555,6 +555,19 @@ TEST_F(ParquetRowGroupFilterTest, NestedPrimitiveStatistics) {
   Check(Options(Expressions::Equal("key.nested", Literal::Int(10))), {2, 3});
 }
 
+TEST_F(ParquetRowGroupFilterTest, RequiredLeafWithNullableParent) {
+  SetKeyType(std::make_shared<StructType>(
+      std::vector<SchemaField>{SchemaField::MakeRequired(3, "nested", int32())}));
+  ASSERT_THAT(Write(true, "[[null,0],[null,1],[[10],2],[[11],3],[null,4],[null,5]]"),
+              IsOk());
+  auto is_null = Expressions::IsNull("key.nested");
+  auto not_null = Expressions::NotNull("key.nested");
+  Check(Options(is_null), {0, 1, 4, 5});
+  Check(Options(not_null), {2, 3});
+  Check(Options(Expressions::Not(is_null)), {2, 3});
+  Check(Options(Expressions::Not(not_null)), {0, 1, 4, 5});
+}
+
 TEST_F(ParquetRowGroupFilterTest, UnsupportedTransformRetainsGroups) {
   ASSERT_THAT(Write(), IsOk());
   Check(Options(Expressions::Equal<BoundTransform>(Expressions::Bucket("key", 16),
