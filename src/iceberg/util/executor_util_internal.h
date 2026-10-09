@@ -82,6 +82,19 @@ concept ParallelCollectible =
       requires ParallelReducible<ParallelCollectValueT<InputRange, Task>, Options...>;
     };
 
+// Checked through a class template rather than a lambda in the requires-clause because
+// older MSVC versions (e.g. 14.42) cannot expand the Args pack inside such a lambda.
+template <typename Indices, typename ArgsTuple, auto... Options>
+struct ParallelCollectibleArgs : std::false_type {};
+
+template <std::size_t... I, typename... Args, auto... Options>
+struct ParallelCollectibleArgs<std::index_sequence<I...>, std::tuple<Args...>, Options...>
+    : std::bool_constant<(
+          ParallelCollectible<typename ParallelCollectTraits<I, Args...>::input_type,
+                              typename ParallelCollectTraits<I, Args...>::task_type,
+                              Options...> &&
+          ...)> {};
+
 }  // namespace internal
 
 template <typename... Args>
@@ -157,82 +170,87 @@ struct ParallelReduce<std::tuple<Ts...>> {
   }
 };
 
+// The helpers below replace lambdas that were expanded over the pair index pack, which
+// older MSVC versions (e.g. 14.42) cannot compile.
+namespace internal {
+
+template <typename ArgsTuple, std::size_t... I>
+auto MakeParallelCollectValues(ArgsTuple& args_tuple, std::index_sequence<I...>) {
+  return std::tuple{
+      std::vector<ParallelCollectValueT<std::tuple_element_t<I * 2, ArgsTuple>,
+                                        std::tuple_element_t<I * 2 + 1, ArgsTuple>>>(
+          std::ranges::size(std::get<I * 2>(args_tuple)))...};
+}
+
+template <auto... Options, typename ValuesTuple, std::size_t... I>
+auto ReduceParallelCollectValues(ValuesTuple& values_tuple, std::index_sequence<I...>) {
+  if constexpr (sizeof...(I) == 1) {
+    return ParallelReduce<typename std::tuple_element_t<0, ValuesTuple>::value_type,
+                          Options...>::Reduce(std::get<0>(values_tuple));
+  } else {
+    return std::tuple{
+        ParallelReduce<typename std::tuple_element_t<I, ValuesTuple>::value_type,
+                       Options...>::Reduce(std::get<I>(values_tuple))...};
+  }
+}
+
+template <std::size_t I, typename Group, typename ArgsTuple, typename ValuesTuple>
+void SubmitParallelCollectPair(Group& group, ArgsTuple& args_tuple,
+                               ValuesTuple& values_tuple) {
+  using item_ref = std::ranges::range_reference_t<std::tuple_element_t<I * 2, ArgsTuple>>;
+
+  for (auto&& [item, value] :
+       std::views::zip(std::get<I * 2>(args_tuple), std::get<I>(values_tuple))) {
+    if constexpr (std::is_lvalue_reference_v<item_ref>) {
+      group.Submit([&]() -> Status {
+        ICEBERG_ASSIGN_OR_RAISE(value,
+                                std::invoke(std::get<I * 2 + 1>(args_tuple), item));
+        return {};
+      });
+    } else {
+      group.Submit([&, item = std::move(item)]() mutable -> Status {
+        ICEBERG_ASSIGN_OR_RAISE(
+            value, std::invoke(std::get<I * 2 + 1>(args_tuple), std::move(item)));
+        return {};
+      });
+    }
+  }
+}
+
+template <typename Group, typename ArgsTuple, typename ValuesTuple, std::size_t... I>
+void SubmitParallelCollectTasks(Group& group, ArgsTuple& args_tuple,
+                                ValuesTuple& values_tuple, std::index_sequence<I...>) {
+  (SubmitParallelCollectPair<I>(group, args_tuple, values_tuple), ...);
+}
+
+}  // namespace internal
+
 template <auto... Options, typename... Args>
-  requires(sizeof...(Args) >= 2 && sizeof...(Args) % 2 == 0 &&
-           []<std::size_t... I>(std::index_sequence<I...>) consteval {
-             return (internal::ParallelCollectible<
-                         typename internal::ParallelCollectTraits<I, Args...>::input_type,
-                         typename internal::ParallelCollectTraits<I, Args...>::task_type,
-                         Options...> &&
-                     ...);
-           }(std::make_index_sequence<sizeof...(Args) / 2>{}))
+  requires(
+      sizeof...(Args) >= 2 && sizeof...(Args) % 2 == 0 &&
+      internal::ParallelCollectibleArgs<std::make_index_sequence<sizeof...(Args) / 2>,
+                                        std::tuple<Args...>, Options...>::value)
 auto ParallelCollect(OptionalExecutor executor, Args&&... args) {
   constexpr std::size_t pair_count = sizeof...(Args) / 2;
   using indices = std::make_index_sequence<pair_count>;
 
   auto args_tuple = std::forward_as_tuple(std::forward<Args>(args)...);
+  auto values_tuple = internal::MakeParallelCollectValues(args_tuple, indices{});
 
-  auto values_tuple = [&]<std::size_t... I>(std::index_sequence<I...>) {
-    return std::tuple{[&] {
-      using traits = internal::ParallelCollectTraits<I, Args...>;
-
-      return std::vector<typename traits::value_type>(
-          std::ranges::size(std::get<I * 2>(args_tuple)));
-    }()...};
-  }(indices{});
-
-  auto reduce_all = [&]<std::size_t... I>(std::index_sequence<I...>) {
-    auto reduce_one = [&]<std::size_t PairIndex> {
-      using traits = internal::ParallelCollectTraits<PairIndex, Args...>;
-      using value_type = typename traits::value_type;
-      return ParallelReduce<value_type, Options...>::Reduce(
-          std::get<PairIndex>(values_tuple));
-    };
-
-    if constexpr (pair_count == 1) {
-      return reduce_one.template operator()<0>();
-    } else {
-      return std::tuple{reduce_one.template operator()<I>()...};
-    }
-  };
-
-  using result_type = decltype(reduce_all(indices{}));
+  using result_type = decltype(internal::ReduceParallelCollectValues<Options...>(
+      values_tuple, indices{}));
 
   TaskGroup group;
   group.SetExecutor(executor);
-
-  [&]<std::size_t... I>(std::index_sequence<I...>) {
-    (
-        [&] {
-          using item_ref = std::ranges::range_reference_t<
-              typename internal::ParallelCollectTraits<I, Args...>::input_type>;
-
-          for (auto&& [item, value] :
-               std::views::zip(std::get<I * 2>(args_tuple), std::get<I>(values_tuple))) {
-            if constexpr (std::is_lvalue_reference_v<item_ref>) {
-              group.Submit([&]() -> Status {
-                ICEBERG_ASSIGN_OR_RAISE(
-                    value, std::invoke(std::get<I * 2 + 1>(args_tuple), item));
-                return {};
-              });
-            } else {
-              group.Submit([&, item = std::move(item)]() mutable -> Status {
-                ICEBERG_ASSIGN_OR_RAISE(
-                    value, std::invoke(std::get<I * 2 + 1>(args_tuple), std::move(item)));
-                return {};
-              });
-            }
-          }
-        }(),
-        ...);
-  }(indices{});
+  internal::SubmitParallelCollectTasks(group, args_tuple, values_tuple, indices{});
 
   auto status = std::move(group).Run();
   if (!status.has_value()) {
     return Result<result_type>(::iceberg::unexpected<Error>(status.error()));
   }
 
-  return Result<result_type>(reduce_all(indices{}));
+  return Result<result_type>(
+      internal::ReduceParallelCollectValues<Options...>(values_tuple, indices{}));
 }
 
 }  // namespace iceberg

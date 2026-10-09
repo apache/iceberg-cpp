@@ -103,7 +103,7 @@ Result<std::vector<ManifestFile>> WriteManifestGroups(OptionalExecutor executor,
   // TODO(zehua): Replace the manual offset calculation with `std::views::chunk`
   // once the supported libc++ provides it.
   auto groups =
-      std::views::iota(0UZ, group_count) |
+      std::views::iota(size_t{0}, group_count) |
       std::views::transform([files, group_size](size_t group_index) {
         const size_t offset = group_index * group_size;
         return files.subspan(offset, std::min(group_size, files.size() - offset));

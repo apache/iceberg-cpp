@@ -1028,7 +1028,7 @@ TEST_F(MergingSnapshotUpdateTest, WriteDeleteGroups) {
   op->WriteManifestsWith(executor, 3);
 
   constexpr size_t kFileCount = 15'000;
-  auto files = std::views::iota(0UZ, kFileCount) |
+  auto files = std::views::iota(size_t{0}, kFileCount) |
                std::views::transform([this](size_t index) {
                  return MakeDeleteFile(std::format("/delete/group_{}.parquet", index),
                                        static_cast<int64_t>(index % 2));
