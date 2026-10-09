@@ -271,12 +271,9 @@ class ArrowS3FileIO final : public FileIO, public SupportsStorageCredentials {
     return storage_credentials_;
   }
 
-  void SetCredentialRefresher(StorageCredentialRefresher refresher) override {
-    std::unique_lock lock(mutex_);
-    refresher_ = std::move(refresher);
-    // A refresh in flight was started for the refresher just replaced.
-    ++credential_generation_;
-  }
+  Status InitializeStorageCredentials(
+      const std::vector<StorageCredential>& storage_credentials,
+      std::shared_ptr<StorageCredentialProvider> provider) override;
 
   SupportsStorageCredentials* AsSupportsStorageCredentials() override { return this; }
 
@@ -340,16 +337,28 @@ class ArrowS3FileIO final : public FileIO, public SupportsStorageCredentials {
   mutable std::shared_mutex mutex_;
   std::vector<StorageCredential> storage_credentials_;
   DelegatesByPrefix file_io_by_prefix_;
-  StorageCredentialRefresher refresher_;
+  std::shared_ptr<StorageCredentialProvider> provider_;
   std::optional<std::chrono::system_clock::time_point> expires_at_;
   std::chrono::steady_clock::time_point retry_refresh_at_;
-  // Bumped whenever the credentials or the refresher change, so a refresh that
-  // fetched before one of those happened can tell its result is already stale.
+  // Bumped on each install so a refresh cannot overwrite newer credentials.
   uint64_t credential_generation_ = 0;
   // Held across a refresh so concurrent operations skip it. Timed, so waiting
   // on it is bounded.
   std::timed_mutex refresh_mutex_;
 };
+
+Status ArrowS3FileIO::InitializeStorageCredentials(
+    const std::vector<StorageCredential>& storage_credentials,
+    std::shared_ptr<StorageCredentialProvider> provider) {
+  ICEBERG_ASSIGN_OR_RAISE(auto delegates, BuildDelegates(storage_credentials));
+  auto credentials = storage_credentials;
+  {
+    std::unique_lock lock(mutex_);
+    provider_.swap(provider);
+    InstallCredentials(credentials, delegates);
+  }
+  return {};
+}
 
 Status ArrowS3FileIO::SetStorageCredentials(
     const std::vector<StorageCredential>& storage_credentials) {
@@ -436,7 +445,7 @@ void ArrowS3FileIO::MaybeRefreshCredentials() {
   {
     // Cheap pre-check, so the common case costs one shared lock and no more.
     std::shared_lock lock(mutex_);
-    if (!refresher_ || !RefreshDue()) {
+    if (!provider_ || !RefreshDue()) {
       return;
     }
   }
@@ -455,24 +464,23 @@ void ArrowS3FileIO::MaybeRefreshCredentials() {
       return;
     }
   }
-  // Read together: pairing this refresher with a generation bumped by another
-  // one installed in between would make its result look current.
-  StorageCredentialRefresher refresher;
+  // Snapshot the provider and credentials' generation together.
+  std::shared_ptr<StorageCredentialProvider> provider;
   uint64_t generation = 0;
   {
     // Whoever held the lock may also have just finished, leaving nothing to do.
     std::shared_lock lock(mutex_);
-    if (!refresher_ || !RefreshDue()) {
+    if (!provider_ || !RefreshDue()) {
       return;
     }
-    refresher = refresher_;
+    provider = provider_;
     generation = credential_generation_;
   }
 
   // Outside `mutex_`: both are slow and must not block readers.
   Status status;
   DelegatesByPrefix delegates;
-  auto refreshed = refresher();
+  auto refreshed = provider->Load();
   if (refreshed.has_value()) {
     auto built = BuildDelegates(*refreshed);
     if (!built.has_value()) {

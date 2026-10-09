@@ -67,6 +67,11 @@ TEST_F(RestArrowFileIOTest, ReadsBackWhatItWroteThroughRealLocalFileIO) {
 
 #if ICEBERG_S3_ENABLED
 
+class MockStorageCredentialProvider : public StorageCredentialProvider {
+ public:
+  MOCK_METHOD((Result<std::vector<StorageCredential>>), Load, (), (override));
+};
+
 std::optional<std::string> GetEnvIfSet(const char* key) {
   const char* value = std::getenv(key);
   if (value == nullptr || std::string_view(value).empty()) {
@@ -189,6 +194,53 @@ TEST_F(RestArrowFileIOTest, ReadsBackWhatItWroteThroughAnOssLocation) {
   object_uri += "iceberg_oss_scheme_round_trip.txt";
   constexpr std::string_view kContent = "resolved and written through an oss:// location";
 
+  ASSERT_THAT(io.value()->WriteFile(object_uri, kContent), IsOk());
+  EXPECT_THAT(io.value()->ReadFile(object_uri, std::nullopt),
+              HasValue(::testing::Eq(std::string(kContent))));
+  EXPECT_THAT(io.value()->DeleteFile(object_uri), IsOk());
+}
+
+TEST_F(RestArrowFileIOTest, RefreshesCredentialsThroughTheRealS3FileIO) {
+  const auto base_uri = GetEnvIfSet("ICEBERG_TEST_S3_URI");
+  const auto access_key = GetEnvIfSet("AWS_ACCESS_KEY_ID");
+  const auto secret_key = GetEnvIfSet("AWS_SECRET_ACCESS_KEY");
+  if (!base_uri || !access_key || !secret_key) {
+    GTEST_SKIP()
+        << "Set ICEBERG_TEST_S3_URI, AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY";
+  }
+
+  std::unordered_map<std::string, std::string> config = {
+      {"s3.access-key-id", *access_key}, {"s3.secret-access-key", *secret_key}};
+  if (const auto token = GetEnvIfSet("AWS_SESSION_TOKEN")) {
+    config["s3.session-token"] = *token;
+  }
+  if (const auto endpoint = GetEnvIfSet("ICEBERG_TEST_S3_ENDPOINT")) {
+    config["s3.endpoint"] = *endpoint;
+  }
+  if (const auto region = GetEnvIfSet("AWS_REGION")) {
+    config["client.region"] = *region;
+  }
+  const std::vector<StorageCredential> refreshed = {{.prefix = "s3", .config = config}};
+  config["s3.access-key-id"] = "bad-access-key";
+  config["s3.secret-access-key"] = "bad-secret-key";
+  config["s3.session-token"] = "expired-token";
+  config["s3.session-token-expires-at-ms"] = "0";
+
+  // Only the provider can supply credentials that authenticate this round trip.
+  ScopedScrubbedAwsCredentialEnv scrubbed;
+  auto provider = std::make_shared<MockStorageCredentialProvider>();
+  EXPECT_CALL(*provider, Load()).WillOnce(::testing::Return(refreshed));
+  auto io = MakeTableFileIO({{"warehouse", "logical_warehouse_name"}},
+                            /*table_config=*/{},
+                            {{.prefix = "s3", .config = std::move(config)}}, provider);
+  ASSERT_THAT(io, IsOk());
+
+  auto object_uri = *base_uri;
+  if (!object_uri.ends_with('/')) {
+    object_uri += '/';
+  }
+  object_uri += "iceberg_refresh_provider.txt";
+  constexpr std::string_view kContent = "written after refreshing vended credentials";
   ASSERT_THAT(io.value()->WriteFile(object_uri, kContent), IsOk());
   EXPECT_THAT(io.value()->ReadFile(object_uri, std::nullopt),
               HasValue(::testing::Eq(std::string(kContent))));
