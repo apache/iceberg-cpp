@@ -20,21 +20,45 @@
 #include "iceberg/encryption/standard_key_metadata.h"
 
 #include <limits>
+#include <vector>
 
 #include <gtest/gtest.h>
 
-#include "iceberg/test/encryption_test_util.h"
 #include "iceberg/test/matchers.h"
 
 namespace iceberg {
 
-TEST(StandardKeyMetadataTest, ParseJavaVectors) {
-  auto key = ReadEncryptionVector("key.bin");
-  auto aad_prefix = ReadEncryptionVector("aad_prefix.bin");
-  ASSERT_EQ(key, VectorBytes(16, 1));
-  ASSERT_EQ(aad_prefix, VectorBytes(16, 2));
+namespace {
 
-  auto with_length = ReadEncryptionVector("key_metadata_with_length.bin");
+/// \brief Deterministic test bytes: byte i is (i * 31 + seed).
+std::vector<uint8_t> TestBytes(size_t length, int seed) {
+  std::vector<uint8_t> bytes(length);
+  for (size_t i = 0; i < length; ++i) {
+    bytes[i] = static_cast<uint8_t>(static_cast<int>(i) * 31 + seed);
+  }
+  return bytes;
+}
+
+// Serialized by Iceberg Java's StandardKeyMetadata, with encryption key
+// TestBytes(16, 1), AAD prefix TestBytes(16, 2) and no file length.
+const std::vector<uint8_t> kJavaKeyMetadata = {
+    0x01, 0x20, 0x01, 0x20, 0x3f, 0x5e, 0x7d, 0x9c, 0xbb, 0xda, 0xf9, 0x18, 0x37,
+    0x56, 0x75, 0x94, 0xb3, 0xd2, 0x02, 0x20, 0x02, 0x21, 0x40, 0x5f, 0x7e, 0x9d,
+    0xbc, 0xdb, 0xfa, 0x19, 0x38, 0x57, 0x76, 0x95, 0xb4, 0xd3, 0x00};
+
+// The same, with file length 1234567.
+const std::vector<uint8_t> kJavaKeyMetadataWithLength = {
+    0x01, 0x20, 0x01, 0x20, 0x3f, 0x5e, 0x7d, 0x9c, 0xbb, 0xda, 0xf9, 0x18, 0x37, 0x56,
+    0x75, 0x94, 0xb3, 0xd2, 0x02, 0x20, 0x02, 0x21, 0x40, 0x5f, 0x7e, 0x9d, 0xbc, 0xdb,
+    0xfa, 0x19, 0x38, 0x57, 0x76, 0x95, 0xb4, 0xd3, 0x02, 0x8e, 0xda, 0x96, 0x01};
+
+}  // namespace
+
+TEST(StandardKeyMetadataTest, ParseJavaVectors) {
+  auto key = TestBytes(16, 1);
+  auto aad_prefix = TestBytes(16, 2);
+
+  const auto& with_length = kJavaKeyMetadataWithLength;
   ICEBERG_UNWRAP_OR_FAIL(auto parsed, StandardKeyMetadata::Parse(with_length));
   EXPECT_EQ(parsed.encryption_key, key);
   EXPECT_EQ(parsed.aad_prefix, aad_prefix);
@@ -42,7 +66,7 @@ TEST(StandardKeyMetadataTest, ParseJavaVectors) {
   // Serialization is byte-for-byte identical to Java
   EXPECT_EQ(parsed.Serialize(), with_length);
 
-  auto without_length = ReadEncryptionVector("key_metadata.bin");
+  const auto& without_length = kJavaKeyMetadata;
   ICEBERG_UNWRAP_OR_FAIL(auto parsed2, StandardKeyMetadata::Parse(without_length));
   EXPECT_EQ(parsed2.encryption_key, key);
   EXPECT_FALSE(parsed2.file_length.has_value());
@@ -51,7 +75,7 @@ TEST(StandardKeyMetadataTest, ParseJavaVectors) {
 }
 
 TEST(StandardKeyMetadataTest, RoundTrip) {
-  StandardKeyMetadata metadata{.encryption_key = VectorBytes(32, 7)};
+  StandardKeyMetadata metadata{.encryption_key = TestBytes(32, 7)};
   ICEBERG_UNWRAP_OR_FAIL(auto parsed, StandardKeyMetadata::Parse(metadata.Serialize()));
   EXPECT_EQ(parsed, metadata);
 
@@ -66,7 +90,7 @@ TEST(StandardKeyMetadataTest, RoundTrip) {
   }
 
   // A present but empty AAD prefix is distinct from an absent one
-  StandardKeyMetadata empty_aad{.encryption_key = VectorBytes(16, 7),
+  StandardKeyMetadata empty_aad{.encryption_key = TestBytes(16, 7),
                                 .aad_prefix = std::vector<uint8_t>{}};
   ICEBERG_UNWRAP_OR_FAIL(auto parsed_empty,
                          StandardKeyMetadata::Parse(empty_aad.Serialize()));
