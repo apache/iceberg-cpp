@@ -213,6 +213,8 @@
 #ifdef ICEBERG_PUBLIC_HEADERS_HIVE
 #  include "iceberg/catalog/hive/hive_catalog.h"
 #  include "iceberg/catalog/hive/hive_catalog_properties.h"
+#  include "iceberg/catalog/hive/hive_schema.h"
+#  include "iceberg/catalog/hive/hive_utils.h"
 #  include "iceberg/catalog/hive/hms_client.h"
 #  include "iceberg/catalog/hive/iceberg_hive_export.h"
 #endif  // ICEBERG_PUBLIC_HEADERS_HIVE
