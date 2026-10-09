@@ -18,7 +18,9 @@
  */
 
 #include <arrow/array.h>
+#include <arrow/builder.h>
 #include <arrow/c/bridge.h>
+#include <arrow/extension/uuid.h>
 #include <arrow/json/from_string.h>
 #include <arrow/record_batch.h>
 #include <arrow/table.h>
@@ -39,6 +41,7 @@
 #include "iceberg/test/matchers.h"
 #include "iceberg/test/mock_io.h"
 #include "iceberg/type.h"
+#include "iceberg/util/uuid.h"
 
 namespace iceberg::parquet {
 namespace {
@@ -72,7 +75,10 @@ class ParquetRowGroupFilterTest : public ::testing::Test {
                                    ::arrow::RecordBatch::FromStructArray(array));
     ICEBERG_ARROW_ASSIGN_OR_RETURN(auto table,
                                    ::arrow::Table::FromRecordBatches({batch}));
+    return Write(table, statistics);
+  }
 
+  Status Write(const std::shared_ptr<::arrow::Table>& table, bool statistics = true) {
     ICEBERG_ASSIGN_OR_RAISE(auto out, arrow::OpenArrowOutputStream(io_, path_));
     ::parquet::WriterProperties::Builder properties;
     properties.disable_dictionary();
@@ -536,6 +542,35 @@ TEST_F(ParquetRowGroupFilterTest, PrimitiveComparisonTypes) {
     ASSERT_THAT(Write(true, test.json), IsOk());
     Check(Options(Expressions::Equal("key", test.literal)), {2, 3});
   }
+}
+
+TEST_F(ParquetRowGroupFilterTest, UnorderedUuidBoundsRetainGroups) {
+  SetKeyType(uuid());
+  ICEBERG_UNWRAP_OR_FAIL(auto lower,
+                         Uuid::FromString("00000000-0000-0000-0000-000000000001"));
+  ICEBERG_UNWRAP_OR_FAIL(auto upper,
+                         Uuid::FromString("00000000-0000-0000-0000-000000000002"));
+  ::arrow::FixedSizeBinaryBuilder keys(::arrow::fixed_size_binary(Uuid::kLength));
+  ASSERT_TRUE(keys.Append(lower.bytes().data()).ok());
+  ASSERT_TRUE(keys.Append(upper.bytes().data()).ok());
+  auto key_array = ::arrow::ExtensionType::WrapArray(::arrow::extension::uuid(),
+                                                     keys.Finish().ValueOrDie());
+  auto values =
+      ::arrow::json::ArrayFromJSONString(::arrow::int64(), "[0,1]").ValueOrDie();
+  ArrowSchema c_schema;
+  ASSERT_THAT(ToArrowSchema(*schema_, &c_schema), IsOk());
+  auto arrow_schema = ::arrow::ImportSchema(&c_schema).ValueOrDie();
+  ASSERT_THAT(Write(::arrow::Table::Make(arrow_schema, {key_array, values})), IsOk());
+  ASSERT_TRUE(metadata_->RowGroup(0)->ColumnChunk(0)->statistics()->HasMinMax());
+
+  auto options = Options(Expressions::LessThanOrEqual("key", Literal::UUID(upper)));
+  auto predicate = std::dynamic_pointer_cast<BoundPredicate>(options.filter);
+  ASSERT_NE(predicate, nullptr);
+  EXPECT_THAT(predicate->Test(Literal::UUID(upper)), HasValue(testing::Eq(true)));
+  Check(options, {0, 1});
+  Check(Options(Expressions::GreaterThanOrEqual("key", Literal::UUID(lower))), {0, 1});
+  Check(Options(Expressions::LessThan("key", Literal::UUID(upper))), {0, 1});
+  Check(Options(Expressions::GreaterThan("key", Literal::UUID(lower))), {0, 1});
 }
 
 TEST_F(ParquetRowGroupFilterTest, FloatingPointStatistics) {

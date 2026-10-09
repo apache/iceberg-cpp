@@ -18,6 +18,7 @@
  */
 
 #include <algorithm>
+#include <compare>
 #include <functional>
 #include <optional>
 #include <unordered_map>
@@ -273,6 +274,10 @@ class MetricsVisitor : public BoundVisitor<bool> {
     }
     const auto bound = lower_bound ? MinValue(ref) : MaxValue(ref);
     if (!bound) {
+      return kRowsMightMatch;
+    }
+    // An unordered comparison cannot rule out matching rows.
+    if ((*bound <=> value) == std::partial_ordering::unordered) {
       return kRowsMightMatch;
     }
     return compare(*bound, value);
