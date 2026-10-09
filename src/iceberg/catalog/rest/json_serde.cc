@@ -18,6 +18,7 @@
  */
 
 #include <iterator>
+#include <limits>
 #include <map>
 #include <memory>
 #include <optional>
@@ -132,8 +133,23 @@ constexpr std::string_view kContentSizeInBytes = "content-size-in-bytes";
 constexpr std::string_view kDataFile = "data-file";
 constexpr std::string_view kDeleteFileReferences = "delete-file-references";
 constexpr std::string_view kResidualFilter = "residual-filter";
+constexpr std::string_view kStart = "start";
+constexpr std::string_view kLength = "length";
 constexpr std::string_view kMapKeys = "keys";
 constexpr std::string_view kMapValues = "values";
+
+Result<int64_t> GetRangeValue(const nlohmann::json& json, std::string_view key) {
+  const auto& value = json.at(key);
+  if (!value.is_number_integer()) {
+    return JsonParseError("'{}' must be an integer, but is {}", key, value.type_name());
+  }
+  if (value.is_number_unsigned() &&
+      value.get<uint64_t>() >
+          static_cast<uint64_t>(std::numeric_limits<int64_t>::max())) {
+    return JsonParseError("'{}' integer is out of range: {}", key, SafeDumpJson(value));
+  }
+  return value.get<int64_t>();
+}
 
 Result<nlohmann::json> StorageCredentialToJson(const StorageCredential& credential) {
   ICEBERG_RETURN_UNEXPECTED(credential.Validate());
@@ -342,6 +358,17 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> FileScanTasksFromJson(
                             GetJsonValue<nlohmann::json>(task_json, kDataFile));
     ICEBERG_ASSIGN_OR_RAISE(
         auto data_file, DataFileFromJson(data_file_json, partition_spec_by_id, schema));
+    const bool has_start = task_json.contains(kStart);
+    const bool has_length = task_json.contains(kLength);
+    if (has_start != has_length) {
+      return JsonParseError("'start' and 'length' must be provided together");
+    }
+    int64_t start = 0;
+    int64_t length = data_file.file_size_in_bytes;
+    if (has_start) {
+      ICEBERG_ASSIGN_OR_RAISE(start, GetRangeValue(task_json, kStart));
+      ICEBERG_ASSIGN_OR_RAISE(length, GetRangeValue(task_json, kLength));
+    }
     // FIXME: REST scan-task DataFile JSON currently carries first-row-id,
     // but not the manifest-entry data sequence number. Until the REST API exposes
     // it, REST-planned tasks cannot inherit _last_updated_sequence_number.
@@ -369,9 +396,13 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> FileScanTasksFromJson(
       ICEBERG_ASSIGN_OR_RAISE(residual_filter, ExpressionFromJson(filter_json));
     }
 
-    file_scan_tasks.push_back(std::make_shared<FileScanTask>(
-        std::make_shared<DataFile>(std::move(data_file)), std::move(task_delete_files),
-        std::move(residual_filter)));
+    auto task = FileScanTask::MakeSplit(std::make_shared<DataFile>(std::move(data_file)),
+                                        start, length, std::move(task_delete_files),
+                                        std::move(residual_filter));
+    if (!task) {
+      return JsonParseError("Invalid FileScanTask range: {}", task.error().message);
+    }
+    file_scan_tasks.push_back(std::move(task.value()));
   }
   return file_scan_tasks;
 }
@@ -512,10 +543,18 @@ Result<nlohmann::json> ScanTaskFieldsToJson(
       if (!task) continue;
       nlohmann::json task_json;
       if (task->data_file()) {
+        auto range_result =
+            FileScanTask::MakeSplit(task->data_file(), task->start(), task->length());
+        if (!range_result) {
+          return ValidationFailed("Invalid FileScanTask range: {}",
+                                  range_result.error().message);
+        }
         ICEBERG_ASSIGN_OR_RAISE(
             auto data_file_json,
             ToJson(*task->data_file(), partition_specs_by_id, schema));
         task_json[kDataFile] = std::move(data_file_json);
+        task_json[kStart] = task->start();
+        task_json[kLength] = task->length();
       }
       if (!task->delete_files().empty()) {
         std::vector<int32_t> refs;
