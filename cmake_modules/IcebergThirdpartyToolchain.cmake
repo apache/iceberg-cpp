@@ -245,10 +245,16 @@ function(resolve_arrow_dependency)
 
   fetchcontent_makeavailable(VendoredArrow)
 
-  # Arrow's Parquet object library does not inherit the OpenSSL include directory
-  # when Arrow is vendored; add it for the Parquet encryption sources.
-  if(ICEBERG_ENCRYPTION AND TARGET parquet_objlib)
-    target_link_libraries(parquet_objlib PRIVATE OpenSSL::Crypto)
+  # Arrow's Parquet targets do not inherit the OpenSSL include directory when
+  # Arrow is vendored; add it for the Parquet encryption sources. Depending on the
+  # platform and build type, they are compiled in the object library or directly in
+  # the static/shared library. The bundle library links OpenSSL::Crypto.
+  if(ICEBERG_ENCRYPTION)
+    foreach(parquet_target parquet_objlib parquet_static parquet_shared)
+      if(TARGET ${parquet_target})
+        target_include_directories(${parquet_target} PRIVATE ${OPENSSL_INCLUDE_DIR})
+      endif()
+    endforeach()
   endif()
 
   if(vendoredarrow_SOURCE_DIR)
