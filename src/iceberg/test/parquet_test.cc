@@ -848,13 +848,8 @@ TEST_F(ParquetReaderTest, ReadSplit) {
       {.offset = split_offsets[1] + 1, .length = std::numeric_limits<size_t>::max()},
       {.offset = 0, .length = split_offsets[0]},
   };
-  // Each batch stays within one row group, including a split covering the whole file.
   std::vector<std::vector<std::string>> expected_json = {
-      {R"([[1, 0], [2, 1]])", R"([[3, 2]])"},
-      {R"([[1, 0], [2, 1]])"},
-      {R"([[3, 2]])"},
-      {},
-      {},
+      {R"([[1, 0], [2, 1], [3, 2]])"}, {R"([[1, 0], [2, 1]])"}, {R"([[3, 2]])"}, {}, {},
   };
 
   ReaderProperties reader_properties;

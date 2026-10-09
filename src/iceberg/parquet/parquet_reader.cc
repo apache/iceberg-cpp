@@ -263,7 +263,7 @@ struct ReadContext {
     int64_t first_row;
   };
   std::vector<SelectedRowGroup> row_groups_;
-  size_t current_row_group_ = 0;
+  size_t next_row_group_ = 0;
   // The arrow schema to output record batches. It may be different with
   // the schema of record batches returned by `record_batch_reader_`
   // when there is any schema evolution.
@@ -338,18 +338,11 @@ class ParquetReader::Impl {
 
     ICEBERG_ARROW_ASSIGN_OR_RETURN(auto batch, context_->record_batch_reader_->Next());
     while (!batch) {
-      const size_t next_group = context_->current_row_group_ + 1;
-      if (next_group >= context_->row_groups_.size()) {
+      if (context_->next_row_group_ >= context_->row_groups_.size()) {
         return std::nullopt;
       }
       ICEBERG_ARROW_RETURN_NOT_OK(context_->record_batch_reader_->Close());
-      const auto& group = context_->row_groups_[next_group];
-      ICEBERG_ARROW_ASSIGN_OR_RETURN(
-          context_->record_batch_reader_,
-          reader_->GetRecordBatchReader({group.index},
-                                        SelectedColumnIndices(projection_)));
-      context_->current_row_group_ = next_group;
-      metadata_context_.next_file_pos = group.first_row;
+      ICEBERG_RETURN_UNEXPECTED(OpenNextRowGroupRange());
       ICEBERG_ARROW_ASSIGN_OR_RETURN(batch, context_->record_batch_reader_->Next());
     }
 
@@ -413,6 +406,25 @@ class ParquetReader::Impl {
   }
 
  private:
+  Status OpenNextRowGroupRange() {
+    const size_t begin = context_->next_row_group_;
+    size_t end = begin + 1;
+    std::vector<int> row_groups{context_->row_groups_[begin].index};
+    // Share a reader across adjacent row groups so Arrow can coalesce pre-buffered
+    // reads. Stop at gaps to keep physical row positions contiguous within batches.
+    while (end < context_->row_groups_.size() &&
+           context_->row_groups_[end].index == context_->row_groups_[end - 1].index + 1) {
+      row_groups.push_back(context_->row_groups_[end].index);
+      ++end;
+    }
+    ICEBERG_ARROW_ASSIGN_OR_RETURN(
+        context_->record_batch_reader_,
+        reader_->GetRecordBatchReader(row_groups, SelectedColumnIndices(projection_)));
+    context_->next_row_group_ = end;
+    metadata_context_.next_file_pos = context_->row_groups_[begin].first_row;
+    return {};
+  }
+
   Status InitReadContext() {
     context_ = std::make_unique<ReadContext>();
     auto metadata = reader_->parquet_reader()->metadata();
@@ -445,10 +457,7 @@ class ParquetReader::Impl {
     if (context_->row_groups_.empty()) {
       context_->record_batch_reader_ = std::make_unique<EmptyRecordBatchReader>();
     } else {
-      ICEBERG_ARROW_ASSIGN_OR_RETURN(
-          context_->record_batch_reader_,
-          reader_->GetRecordBatchReader({context_->row_groups_.front().index},
-                                        SelectedColumnIndices(projection_)));
+      ICEBERG_RETURN_UNEXPECTED(OpenNextRowGroupRange());
     }
 
     // Build the output Arrow schema from the projected Iceberg schema. This schema is the
@@ -471,9 +480,6 @@ class ParquetReader::Impl {
         context_->output_arrow_schema_, context_->record_batch_reader_->schema(),
         projection_, use_large_list_);
 
-    if (!context_->row_groups_.empty()) {
-      metadata_context_.next_file_pos = context_->row_groups_.front().first_row;
-    }
     return {};
   }
 

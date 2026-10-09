@@ -193,38 +193,6 @@ TEST_F(ParquetRowGroupFilterTest, BatchSizesAcrossMultiplePhysicalGaps) {
   }
 }
 
-TEST_F(ParquetRowGroupFilterTest, BatchesStayWithinRowGroups) {
-  ASSERT_THAT(Write(), IsOk());
-  auto options = Options(nullptr);
-  options.properties.Set(ReaderProperties::kBatchSize, int64_t{32});
-  for (bool filtered : {false, true}) {
-    SCOPED_TRACE(filtered);
-    if (filtered) {
-      options.filter =
-          Expressions::Or(Expressions::LessThan("key", Literal::Int(2)),
-                          Expressions::GreaterThanOrEqual("key", Literal::Int(20)));
-      ICEBERG_UNWRAP_OR_FAIL(options.filter,
-                             Binder::Bind(*schema_, options.filter, true));
-    }
-    ICEBERG_UNWRAP_OR_FAIL(
-        auto reader, ReaderFactoryRegistry::Open(FileFormatType::kParquet, options));
-    std::vector<int64_t> batch_sizes;
-    while (true) {
-      ICEBERG_UNWRAP_OR_FAIL(auto array, reader->Next());
-      if (!array) {
-        break;
-      }
-      batch_sizes.push_back(array->length);
-      array->release(&*array);
-    }
-    EXPECT_EQ(batch_sizes,
-              filtered ? std::vector<int64_t>({2, 2}) : std::vector<int64_t>({2, 2, 2}));
-    ICEBERG_UNWRAP_OR_FAIL(auto end, reader->Next());
-    EXPECT_FALSE(end.has_value());
-    ASSERT_THAT(reader->Close(), IsOk());
-  }
-}
-
 TEST_F(ParquetRowGroupFilterTest, AllNoneAndResidualRows) {
   ASSERT_THAT(Write(), IsOk());
   Check(Options(nullptr), {0, 1, 2, 3, 4, 5});
