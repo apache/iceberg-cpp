@@ -33,9 +33,6 @@ namespace iceberg::hive {
 
 namespace {
 
-// Hive doesn't have a precise counterpart to every Iceberg primitive
-// type; the closest equivalent is chosen for each case below. Mapping
-// matches iceberg-rust's `HiveSchemaBuilder::primitive`.
 Result<std::string> PrimitiveToHive(const Type& type) {
   switch (type.type_id()) {
     case TypeId::kBoolean:
@@ -53,11 +50,6 @@ Result<std::string> PrimitiveToHive(const Type& type) {
     case TypeId::kTimestamp:
       return std::string("timestamp");
     case TypeId::kTimestampTz:
-      // Hive's TIMESTAMPLOCALTZ, the spelling iceberg-java emits on
-      // Hive 3+. Engines reading through HMS must see the tz-adjusted
-      // type, otherwise they read an Iceberg timestamptz column as a
-      // naive timestamp. See the header for why the Hive 2 fallback is
-      // not reproduced.
       return std::string("timestamp with local time zone");
     case TypeId::kTime:
     case TypeId::kString:
@@ -66,6 +58,8 @@ Result<std::string> PrimitiveToHive(const Type& type) {
     case TypeId::kBinary:
     case TypeId::kFixed:
       return std::string("binary");
+    case TypeId::kVariant:
+      return std::string("unknown");
     case TypeId::kDecimal: {
       const auto& decimal = internal::checked_cast<const DecimalType&>(type);
       return std::format("decimal({},{})", decimal.precision(), decimal.scale());

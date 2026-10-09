@@ -77,10 +77,11 @@ set(ICEBERG_HIVE_SHARED_INSTALL_INTERFACE_LIBS)
 #  * System: downstream find_package(Iceberg) re-creates `thrift::thrift` via
 #    find_dependency(ThriftAlt) (FindThriftAlt.cmake is shipped next to the
 #    config), so it must be propagated.
-list(APPEND ICEBERG_HIVE_STATIC_BUILD_INTERFACE_LIBS
-     "$<IF:$<TARGET_EXISTS:iceberg_static>,iceberg_static,iceberg_shared>" thrift::thrift)
-list(APPEND ICEBERG_HIVE_SHARED_BUILD_INTERFACE_LIBS
-     "$<IF:$<TARGET_EXISTS:iceberg_shared>,iceberg_shared,iceberg_static>" thrift::thrift)
+# Prefer Thrift headers over any system Thrift found through core.
+list(APPEND ICEBERG_HIVE_STATIC_BUILD_INTERFACE_LIBS thrift::thrift
+     "$<IF:$<TARGET_EXISTS:iceberg_static>,iceberg_static,iceberg_shared>")
+list(APPEND ICEBERG_HIVE_SHARED_BUILD_INTERFACE_LIBS thrift::thrift
+     "$<IF:$<TARGET_EXISTS:iceberg_shared>,iceberg_shared,iceberg_static>")
 list(APPEND
      ICEBERG_HIVE_STATIC_INSTALL_INTERFACE_LIBS
      "$<IF:$<TARGET_EXISTS:iceberg::iceberg_static>,iceberg::iceberg_static,iceberg::iceberg_shared>"

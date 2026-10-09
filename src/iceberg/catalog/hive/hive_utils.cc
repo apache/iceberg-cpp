@@ -26,6 +26,7 @@
 #include <string_view>
 #include <vector>
 
+#include "iceberg/table_properties.h"
 #include "iceberg/util/macros.h"
 #include "iceberg/util/string_util.h"
 
@@ -33,25 +34,17 @@ namespace iceberg::hive {
 
 namespace {
 
-// Keys lifted into dedicated `Database` fields, so they must not be
-// duplicated into `parameters`.
+// Keys lifted into dedicated Database fields.
 constexpr std::array<std::string_view, 4> kDatabaseReservedKeys = {
     kCommentProperty, kLocationProperty, kHmsDbOwnerProperty, kHmsDbOwnerTypeProperty};
 
-// The table equivalent: `location` and `owner` have dedicated `Table`
-// fields, and `comment` is not part of the Iceberg-on-HMS contract.
-constexpr std::array<std::string_view, 3> kTableReservedKeys = {
-    kCommentProperty, kLocationProperty, kOwnerProperty};
+constexpr std::string_view kExternalTablePurgeProperty = "external.table.purge";
 
 // HMS `PrincipalType` names accepted for a database owner.
 constexpr std::array<std::string_view, 3> kPrincipalTypes = {"USER", "GROUP", "ROLE"};
 
 bool IsDatabaseReservedKey(std::string_view key) {
   return std::ranges::find(kDatabaseReservedKeys, key) != kDatabaseReservedKeys.end();
-}
-
-bool IsTableReservedKey(std::string_view key) {
-  return std::ranges::find(kTableReservedKeys, key) != kTableReservedKeys.end();
 }
 
 std::string GetOrEmpty(const std::unordered_map<std::string, std::string>& properties,
@@ -91,9 +84,8 @@ Status ValidateOwnerSettings(
     return InvalidArgument("Hive namespace property '{}' requires '{}' to also be set.",
                            kHmsDbOwnerTypeProperty, kHmsDbOwnerProperty);
   }
-  const bool known = std::ranges::any_of(kPrincipalTypes, [&](std::string_view name) {
-    return StringUtils::EqualsIgnoreCase(owner_type->second, name);
-  });
+  const bool known =
+      std::ranges::find(kPrincipalTypes, owner_type->second) != kPrincipalTypes.end();
   if (!known) {
     return InvalidArgument(
         "Hive namespace property '{}' has value '{}'; expected one of "
@@ -148,11 +140,14 @@ Result<HiveTable> ConvertToHiveTable(
     const std::unordered_map<std::string, std::string>& table_properties) {
   ICEBERG_RETURN_UNEXPECTED(ValidateNamespace(identifier.ns));
   ICEBERG_RETURN_UNEXPECTED(identifier.Validate());
+  if (metadata_location.empty()) {
+    return InvalidArgument("Hive table metadata location cannot be empty.");
+  }
 
   HiveTable table;
   table.db_name = identifier.ns.levels[0];
   table.table_name = identifier.name;
-  table.owner = GetOrEmpty(table_properties, kOwnerProperty);
+  table.owner = GetOrEmpty(table_properties, kHmsTableOwnerProperty);
   table.table_type = "EXTERNAL_TABLE";
   table.location = std::string(location);
   table.columns = columns;
@@ -160,17 +155,19 @@ Result<HiveTable> ConvertToHiveTable(
   table.input_format = std::string(kFileInputFormat);
   table.output_format = std::string(kFileOutputFormat);
 
-  // Mandatory Iceberg-on-HMS marker parameters.
-  table.parameters.emplace(std::string(kMetadataLocationKey), metadata_location);
-  table.parameters.emplace(std::string(kTableTypeKey), std::string(kTableTypeIceberg));
-  table.parameters.emplace(std::string(kExternalKey), std::string(kExternalTrue));
-
-  // Forward any user-supplied table properties that aren't reserved.
   for (const auto& [key, value] : table_properties) {
-    if (!IsTableReservedKey(key) && !table.parameters.contains(key)) {
-      table.parameters.emplace(key, value);
+    if (StringUtils::EqualsIgnoreCase(key, kHmsTableOwnerProperty)) {
+      continue;
     }
+    const std::string hms_key = key == TableProperties::kGcEnabled.key()
+                                    ? std::string(kExternalTablePurgeProperty)
+                                    : key;
+    table.parameters.insert_or_assign(hms_key, value);
   }
+  // The catalog markers take precedence over user properties.
+  table.parameters[std::string(kMetadataLocationKey)] = std::string(metadata_location);
+  table.parameters[std::string(kTableTypeKey)] = std::string(kTableTypeIceberg);
+  table.parameters[std::string(kExternalKey)] = std::string(kExternalTrue);
   return table;
 }
 

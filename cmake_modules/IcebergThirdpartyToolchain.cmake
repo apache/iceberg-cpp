@@ -906,10 +906,7 @@ function(resolve_thrift_dependency)
     return()
   endif()
   if(ICEBERG_THRIFT_BUNDLED)
-    # Arrow's bundled build creates the Thrift C++ runtime as a `thrift` target
-    # scoped to its FetchContent directory, where iceberg_hive cannot see it.
-    # Promote it to a global `thrift::thrift` alias so iceberg_hive can link the
-    # generated Hive Metastore bindings against it.
+    # Expose bundled Thrift and its include paths to Hive.
     if(TARGET thrift AND NOT TARGET thrift::thrift)
       add_library(thrift::thrift INTERFACE IMPORTED GLOBAL)
       target_link_libraries(thrift::thrift INTERFACE thrift)

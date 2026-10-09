@@ -32,8 +32,7 @@ namespace iceberg::hive {
 
 namespace {
 
-// Convenience: convert a primitive Iceberg type to its Hive DDL string,
-// asserting success.
+// Assert successful conversion.
 std::string ToHive(const std::shared_ptr<Type>& type) {
   auto result = TypeToHiveString(*type);
   EXPECT_TRUE(result.has_value())
@@ -64,15 +63,40 @@ TEST(TypeToHiveStringTest, BinaryAndFixedMapToBinary) {
   EXPECT_EQ(ToHive(fixed(16)), "binary");
 }
 
+TEST(SchemaToHiveColumnsTest, VariantUsesHiveMetadataPlaceholder) {
+  Schema schema({SchemaField(1, "payload", variant(), true)});
+  auto columns = SchemaToHiveColumns(schema);
+  ASSERT_TRUE(columns.has_value()) << columns.error().message;
+  ASSERT_EQ(columns->size(), 1);
+  EXPECT_EQ(columns->front().name, "payload");
+  EXPECT_EQ(columns->front().type_string, "unknown");
+}
+
+TEST(TypeToHiveStringTest, UnsupportedTypesReturnNotImplemented) {
+  const std::vector<std::shared_ptr<Type>> types = {timestamp_ns(), timestamptz_ns(),
+                                                    unknown(), geometry(), geography()};
+  for (const auto& type : types) {
+    SCOPED_TRACE(type->ToString());
+    auto result = TypeToHiveString(*type);
+    ASSERT_FALSE(result.has_value());
+    EXPECT_EQ(result.error().kind, ErrorKind::kNotImplemented);
+  }
+}
+
+TEST(SchemaToHiveColumnsTest, PropagatesUnsupportedNestedType) {
+  auto list_type = std::make_shared<ListType>(1, timestamp_ns(), true);
+  Schema schema({SchemaField(2, "values", list_type, true)});
+  auto columns = SchemaToHiveColumns(schema);
+  ASSERT_FALSE(columns.has_value());
+  EXPECT_EQ(columns.error().kind, ErrorKind::kNotImplemented);
+}
+
 TEST(TypeToHiveStringTest, DecimalIncludesPrecisionAndScale) {
   EXPECT_EQ(ToHive(decimal(10, 2)), "decimal(10,2)");
   EXPECT_EQ(ToHive(decimal(38, 9)), "decimal(38,9)");
 }
 
 TEST(TypeToHiveStringTest, TimestampTzMapsToTimestampWithLocalTimeZone) {
-  // Hive's TIMESTAMPLOCALTZ, matching what iceberg-java emits on Hive 3+.
-  // A plain `timestamp` here would make every engine reading through HMS
-  // see a tz-adjusted column as naive.
   EXPECT_EQ(ToHive(timestamp_tz()), "timestamp with local time zone");
 }
 
@@ -120,9 +144,6 @@ TEST(TypeToHiveStringTest, StructInsideListEmitsArrayOfStruct) {
 }
 
 TEST(TypeToHiveStringTest, NestedTimestampTzKeepsTheMultiWordTypeName) {
-  // The Hive type name contains spaces, and it stays spelled out inside a
-  // nested type. Java composes struct fields the same way -- via Hive's
-  // own TypeInfo round-trip -- so Hive's type parser accepts this form.
   StructType struct_type(
       {SchemaField(1, "a", int32(), true), SchemaField(2, "b", timestamp_tz(), true)});
   auto result = TypeToHiveString(struct_type);
@@ -172,8 +193,7 @@ TEST(SchemaToHiveColumnsTest, FieldDocBecomesColumnComment) {
 }
 
 TEST(SchemaToHiveColumnsTest, TimestampTzColumnIsTzAdjustedInTheDdl) {
-  // Distinguishing the two timestamp types is the whole point: a schema
-  // carrying both must not collapse them onto the same Hive type.
+  // Both timestamp types must stay distinct.
   Schema schema({SchemaField(1, "ts", timestamp_tz(), true),
                  SchemaField(2, "naive", timestamp(), true)},
                 /*schema_id=*/1);

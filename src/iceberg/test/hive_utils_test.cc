@@ -49,7 +49,7 @@ TEST(ValidateOwnerSettingsTest, OwnerOrOwnerPlusTypeAreOk) {
   EXPECT_TRUE(
       ValidateOwnerSettings({{"hive.metastore.database.owner", "alice"}}).has_value());
   EXPECT_TRUE(ValidateOwnerSettings({{"hive.metastore.database.owner", "alice"},
-                                     {"hive.metastore.database.owner-type", "role"}})
+                                     {"hive.metastore.database.owner-type", "ROLE"}})
                   .has_value());
   EXPECT_TRUE(ValidateOwnerSettings({}).has_value());
 }
@@ -62,9 +62,6 @@ TEST(ValidateOwnerSettingsTest, UnknownOwnerTypeRejected) {
 }
 
 TEST(ValidateOwnerSettingsTest, BareOwnerKeysAreOrdinaryProperties) {
-  // Only the `hive.metastore.database.*` keys drive Database.ownerName /
-  // ownerType, matching iceberg-java and iceberg-rust. A bare `owner-type`
-  // is just a namespace property and needs no matching `owner`.
   EXPECT_TRUE(ValidateOwnerSettings({{"owner-type", "nonsense"}}).has_value());
 }
 
@@ -89,6 +86,14 @@ TEST(ConvertToHiveDatabaseTest, LiftsReservedKeysIntoDedicatedFields) {
 
 TEST(ConvertToHiveDatabaseTest, RejectsHierarchicalNamespace) {
   auto db = ConvertToHiveDatabase(Namespace{{"a", "b"}}, {});
+  ASSERT_FALSE(db.has_value());
+  EXPECT_EQ(db.error().kind, ErrorKind::kInvalidArgument);
+}
+
+TEST(ConvertToHiveDatabaseTest, RejectsNonCanonicalOwnerType) {
+  auto db = ConvertToHiveDatabase(Namespace{{"warehouse"}},
+                                  {{"hive.metastore.database.owner", "alice"},
+                                   {"hive.metastore.database.owner-type", "role"}});
   ASSERT_FALSE(db.has_value());
   EXPECT_EQ(db.error().kind, ErrorKind::kInvalidArgument);
 }
@@ -132,21 +137,78 @@ TEST(ConvertToHiveTableTest, SetsIcebergMarkerParametersAndStorageDescriptor) {
   EXPECT_EQ(table->parameters.at("table_type"), "ICEBERG");
   EXPECT_EQ(table->parameters.at("EXTERNAL"), "TRUE");
   EXPECT_EQ(table->parameters.at("format-version"), "2");
+  EXPECT_FALSE(table->parameters.contains("external.table.purge"));
 
   EXPECT_EQ(table->serde, "org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe");
   EXPECT_EQ(table->input_format, "org.apache.hadoop.mapred.FileInputFormat");
   EXPECT_EQ(table->output_format, "org.apache.hadoop.mapred.FileOutputFormat");
 }
 
-TEST(ConvertToHiveTableTest, ReservedTablePropertiesAreFiltered) {
+TEST(ConvertToHiveTableTest, UsesQualifiedOwnerAndPreservesCommentAndBareOwner) {
   TableIdentifier ident{.ns = Namespace{{"warehouse"}}, .name = "orders"};
   auto table = ConvertToHiveTable(ident, /*columns=*/{}, /*metadata_location=*/"loc",
                                   /*location=*/"root",
-                                  {{"comment", "ignore me"}, {"owner", "bob"}});
+                                  {{"comment", "table description"},
+                                   {"owner", "bob"},
+                                   {"hive.metastore.table.owner", "alice"},
+                                   {"location", "other root"}});
   ASSERT_TRUE(table.has_value()) << table.error().message;
-  EXPECT_EQ(table->owner, "bob");
-  EXPECT_FALSE(table->parameters.contains("comment"));
-  EXPECT_FALSE(table->parameters.contains("owner"));
+  EXPECT_EQ(table->owner, "alice");
+  EXPECT_EQ(table->location, "root");
+  EXPECT_FALSE(table->parameters.contains("hive.metastore.table.owner"));
+  EXPECT_EQ(table->parameters.at("location"), "other root");
+  EXPECT_EQ(table->parameters.at("comment"), "table description");
+  EXPECT_EQ(table->parameters.at("owner"), "bob");
+}
+
+TEST(ConvertToHiveTableTest, TranslatesGcEnabled) {
+  TableIdentifier ident{.ns = Namespace{{"warehouse"}}, .name = "orders"};
+  for (const std::string value : {"true", "false"}) {
+    SCOPED_TRACE(value);
+    auto table = ConvertToHiveTable(ident, {}, "loc", "root", {{"gc.enabled", value}});
+    ASSERT_TRUE(table.has_value()) << table.error().message;
+    EXPECT_EQ(table->parameters.at("external.table.purge"), value);
+    EXPECT_FALSE(table->parameters.contains("gc.enabled"));
+  }
+}
+
+TEST(ConvertToHiveTableTest, ConflictingPurgePropertiesFollowIterationOrder) {
+  TableIdentifier ident{.ns = Namespace{{"warehouse"}}, .name = "orders"};
+  const std::unordered_map<std::string, std::string> properties = {
+      {"gc.enabled", "false"}, {"external.table.purge", "true"}};
+  std::string expected;
+  for (const auto& [key, value] : properties) {
+    expected = value;
+  }
+  auto table = ConvertToHiveTable(ident, {}, "loc", "root", properties);
+  ASSERT_TRUE(table.has_value()) << table.error().message;
+  EXPECT_EQ(table->parameters.at("external.table.purge"), expected);
+}
+
+TEST(ConvertToHiveTableTest, PreservesExplicitPurgePropertyWithoutGcEnabled) {
+  TableIdentifier ident{.ns = Namespace{{"warehouse"}}, .name = "orders"};
+  auto table =
+      ConvertToHiveTable(ident, {}, "loc", "root", {{"external.table.purge", "true"}});
+  ASSERT_TRUE(table.has_value()) << table.error().message;
+  EXPECT_EQ(table->parameters.at("external.table.purge"), "true");
+}
+
+TEST(ConvertToHiveTableTest, RejectsEmptyMetadataLocation) {
+  TableIdentifier ident{.ns = Namespace{{"warehouse"}}, .name = "orders"};
+  auto table = ConvertToHiveTable(ident, {}, "", "root", {});
+  ASSERT_FALSE(table.has_value());
+  EXPECT_EQ(table.error().kind, ErrorKind::kInvalidArgument);
+}
+
+TEST(ConvertToHiveTableTest, ProtectsIcebergMarkerParameters) {
+  TableIdentifier ident{.ns = Namespace{{"warehouse"}}, .name = "orders"};
+  auto table = ConvertToHiveTable(
+      ident, {}, "loc", "root",
+      {{"metadata_location", "other"}, {"table_type", "OTHER"}, {"EXTERNAL", "FALSE"}});
+  ASSERT_TRUE(table.has_value()) << table.error().message;
+  EXPECT_EQ(table->parameters.at("metadata_location"), "loc");
+  EXPECT_EQ(table->parameters.at("table_type"), "ICEBERG");
+  EXPECT_EQ(table->parameters.at("EXTERNAL"), "TRUE");
 }
 
 TEST(GetMetadataLocationTest, ExtractsKnownKey) {
@@ -157,6 +219,12 @@ TEST(GetMetadataLocationTest, ExtractsKnownKey) {
 
 TEST(GetMetadataLocationTest, AbsenceMapsToNotFound) {
   auto loc = GetMetadataLocation({{"EXTERNAL", "TRUE"}});
+  ASSERT_FALSE(loc.has_value());
+  EXPECT_EQ(loc.error().kind, ErrorKind::kNotFound);
+}
+
+TEST(GetMetadataLocationTest, EmptyLocationMapsToNotFound) {
+  auto loc = GetMetadataLocation({{"metadata_location", ""}});
   ASSERT_FALSE(loc.has_value());
   EXPECT_EQ(loc.error().kind, ErrorKind::kNotFound);
 }
