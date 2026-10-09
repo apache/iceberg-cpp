@@ -19,6 +19,8 @@
 
 #include "iceberg/encryption/standard_key_metadata.h"
 
+#include <limits>
+
 #include <gtest/gtest.h>
 
 #include "iceberg/test/encryption_test_util.h"
@@ -53,13 +55,26 @@ TEST(StandardKeyMetadataTest, RoundTrip) {
   ICEBERG_UNWRAP_OR_FAIL(auto parsed, StandardKeyMetadata::Parse(metadata.Serialize()));
   EXPECT_EQ(parsed, metadata);
 
-  // Large and negative-looking lengths survive the zig-zag varint encoding
-  for (int64_t length : {int64_t{0}, int64_t{63}, int64_t{64}, int64_t{1} << 40}) {
+  // Zig-zag varint boundaries, including negative values and ten-byte encodings
+  for (int64_t length :
+       {int64_t{0}, int64_t{63}, int64_t{64}, int64_t{1} << 40, int64_t{-1},
+        std::numeric_limits<int64_t>::min(), std::numeric_limits<int64_t>::max()}) {
     auto with_length = metadata.WithFileLength(length);
     ICEBERG_UNWRAP_OR_FAIL(auto round_trip,
                            StandardKeyMetadata::Parse(with_length.Serialize()));
     EXPECT_EQ(round_trip, with_length);
   }
+
+  // A present but empty AAD prefix is distinct from an absent one
+  StandardKeyMetadata empty_aad{.encryption_key = VectorBytes(16, 7),
+                                .aad_prefix = std::vector<uint8_t>{}};
+  ICEBERG_UNWRAP_OR_FAIL(auto parsed_empty,
+                         StandardKeyMetadata::Parse(empty_aad.Serialize()));
+  ASSERT_TRUE(parsed_empty.aad_prefix.has_value());
+  EXPECT_TRUE(parsed_empty.aad_prefix->empty());
+  ICEBERG_UNWRAP_OR_FAIL(auto parsed_null,
+                         StandardKeyMetadata::Parse(metadata.Serialize()));
+  EXPECT_FALSE(parsed_null.aad_prefix.has_value());
 }
 
 TEST(StandardKeyMetadataTest, InvalidInput) {
@@ -77,6 +92,17 @@ TEST(StandardKeyMetadataTest, InvalidInput) {
   // Truncated optional fields
   EXPECT_THAT(StandardKeyMetadata::Parse(std::vector<uint8_t>{1, 0x02, 9}),
               IsError(ErrorKind::kInvalid));
+  // Negative key length (zig-zag 0x01 is -1)
+  EXPECT_THAT(StandardKeyMetadata::Parse(std::vector<uint8_t>{1, 0x01, 9}),
+              IsError(ErrorKind::kInvalid));
+  // Truncated varint
+  EXPECT_THAT(StandardKeyMetadata::Parse(std::vector<uint8_t>{1, 0x80}),
+              IsError(ErrorKind::kInvalid));
+  // Varint longer than ten bytes, rejected as by Java's Avro decoder
+  std::vector<uint8_t> long_varint{1};
+  long_varint.insert(long_varint.end(), 10, 0x80);
+  long_varint.push_back(0x01);
+  EXPECT_THAT(StandardKeyMetadata::Parse(long_varint), IsError(ErrorKind::kInvalid));
 }
 
 }  // namespace iceberg

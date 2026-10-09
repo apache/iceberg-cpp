@@ -112,8 +112,7 @@ Result<StandardKeyMetadata> StandardKeyMetadata::Parse(std::span<const uint8_t> 
   if (has_file_length) {
     ICEBERG_ASSIGN_OR_RAISE(metadata.file_length, decoder.ReadLong());
   }
-  // Trailing bytes may come from a newer schema version with extra fields; ignore them,
-  // as Java does.
+  // Trailing bytes are ignored, matching Java, which decodes a single record.
   return metadata;
 }
 
