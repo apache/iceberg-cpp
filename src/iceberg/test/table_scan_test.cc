@@ -27,6 +27,7 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include "iceberg/data_table_scan.h"
 #include "iceberg/expression/expressions.h"
 #include "iceberg/snapshot.h"
 #include "iceberg/table_metadata.h"

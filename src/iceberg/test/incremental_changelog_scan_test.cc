@@ -17,6 +17,8 @@
  * under the License.
  */
 
+#include "iceberg/incremental_changelog_scan.h"
+
 #include <memory>
 #include <optional>
 #include <string>

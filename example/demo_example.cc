@@ -23,6 +23,7 @@
 #include "iceberg/arrow/arrow_io_util.h"
 #include "iceberg/avro/avro_register.h"
 #include "iceberg/catalog/memory/in_memory_catalog.h"
+#include "iceberg/data_table_scan.h"
 #include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/parquet/parquet_register.h"
 #include "iceberg/table.h"

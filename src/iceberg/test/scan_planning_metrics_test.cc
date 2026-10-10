@@ -26,6 +26,7 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include "iceberg/data_table_scan.h"
 #include "iceberg/expression/expressions.h"
 #include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/metrics/metrics_reporter.h"
