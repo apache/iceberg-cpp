@@ -38,6 +38,12 @@ class ParquetMetrics {
  public:
   ParquetMetrics() = delete;
 
+  /// Convert one footer bound to an Iceberg literal, including supported promotions.
+  static Result<Literal> StatsValueToLiteral(const ::parquet::ColumnDescriptor& column,
+                                             const PrimitiveType& iceberg_type,
+                                             const ::parquet::Statistics& stats,
+                                             bool is_min);
+
   /// \brief Compute file-level metrics from Parquet file metadata.
   ///
   /// This function extracts metrics including row count, column sizes, value counts,

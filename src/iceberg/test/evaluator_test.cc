@@ -705,6 +705,29 @@ TEST_F(EvaluatorTest, Not) {
       *struct_evaluator, true);
 }
 
+TEST_F(EvaluatorTest, NotRangeComparisonsExcludeNull) {
+  struct Case {
+    std::shared_ptr<Expression> predicate;
+    bool below;
+    bool equal;
+    bool above;
+  };
+  const std::vector<Case> cases = {
+      {Expressions::LessThan("z", Literal::Int(7)), false, true, true},
+      {Expressions::LessThanOrEqual("z", Literal::Int(7)), false, false, true},
+      {Expressions::GreaterThan("z", Literal::Int(7)), true, true, false},
+      {Expressions::GreaterThanOrEqual("z", Literal::Int(7)), true, false, false}};
+  for (const auto& test : cases) {
+    SCOPED_TRACE(test.predicate->ToString());
+    ICEBERG_UNWRAP_OR_FAIL(auto evaluator,
+                           Evaluator::Make(*schema_, Expressions::Not(test.predicate)));
+    TestData(R"([{"x": 0, "y": 0.0, "z": null}])", *evaluator, false);
+    TestData(R"([{"x": 0, "y": 0.0, "z": 6}])", *evaluator, test.below);
+    TestData(R"([{"x": 0, "y": 0.0, "z": 7}])", *evaluator, test.equal);
+    TestData(R"([{"x": 0, "y": 0.0, "z": 8}])", *evaluator, test.above);
+  }
+}
+
 TEST_F(EvaluatorTest, CaseInsensitiveNot) {
   // Use case-insensitive binding (false)
   ICEBERG_UNWRAP_OR_FAIL(

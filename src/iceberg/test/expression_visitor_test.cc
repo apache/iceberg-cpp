@@ -305,14 +305,15 @@ TEST_F(BinderTest, ErrorNestedUnboundField) {
 class IsBoundVisitorTest : public ExpressionVisitorTest {};
 
 TEST_F(IsBoundVisitorTest, Constants) {
-  // True and False should error out
   auto true_expr = Expressions::AlwaysTrue();
   auto result_true = IsBoundVisitor::IsBound(true_expr);
-  EXPECT_THAT(result_true, IsError(ErrorKind::kInvalidExpression));
+  ASSERT_THAT(result_true, IsOk());
+  EXPECT_FALSE(*result_true);
 
   auto false_expr = Expressions::AlwaysFalse();
   auto result_false = IsBoundVisitor::IsBound(false_expr);
-  EXPECT_THAT(result_false, IsError(ErrorKind::kInvalidExpression));
+  ASSERT_THAT(result_false, IsOk());
+  EXPECT_FALSE(*result_false);
 }
 
 TEST_F(IsBoundVisitorTest, UnboundPredicate) {
@@ -320,6 +321,39 @@ TEST_F(IsBoundVisitorTest, UnboundPredicate) {
   auto unbound_pred = Expressions::Equal("name", Literal::String("Alice"));
   ICEBERG_UNWRAP_OR_FAIL(auto is_bound, IsBoundVisitor::IsBound(unbound_pred));
   EXPECT_FALSE(is_bound);
+}
+
+TEST_F(IsBoundVisitorTest, AndWithConstants) {
+  auto unbound = Expressions::Equal("name", Literal::String("Alice"));
+  ICEBERG_UNWRAP_OR_FAIL(auto bound, Bind(unbound));
+
+  // Use Make to keep constants in the expression tree instead of folding them.
+  ICEBERG_UNWRAP_OR_FAIL(std::shared_ptr<Expression> unbound_and,
+                         And::Make(Expressions::AlwaysTrue(), unbound));
+  ICEBERG_UNWRAP_OR_FAIL(auto unbound_result, IsBoundVisitor::IsBound(unbound_and));
+  EXPECT_FALSE(unbound_result);
+  EXPECT_THAT(Bind(unbound_and), IsOk());
+
+  ICEBERG_UNWRAP_OR_FAIL(std::shared_ptr<Expression> bound_and,
+                         And::Make(bound, Expressions::AlwaysTrue()));
+  ICEBERG_UNWRAP_OR_FAIL(auto bound_result, IsBoundVisitor::IsBound(bound_and));
+  EXPECT_TRUE(bound_result);
+}
+
+TEST_F(IsBoundVisitorTest, OrWithConstants) {
+  auto unbound = Expressions::Equal("name", Literal::String("Alice"));
+  ICEBERG_UNWRAP_OR_FAIL(auto bound, Bind(unbound));
+
+  ICEBERG_UNWRAP_OR_FAIL(std::shared_ptr<Expression> unbound_or,
+                         Or::Make(Expressions::AlwaysFalse(), unbound));
+  ICEBERG_UNWRAP_OR_FAIL(auto unbound_result, IsBoundVisitor::IsBound(unbound_or));
+  EXPECT_FALSE(unbound_result);
+  EXPECT_THAT(Bind(unbound_or), IsOk());
+
+  ICEBERG_UNWRAP_OR_FAIL(std::shared_ptr<Expression> bound_or,
+                         Or::Make(bound, Expressions::AlwaysFalse()));
+  ICEBERG_UNWRAP_OR_FAIL(auto bound_result, IsBoundVisitor::IsBound(bound_or));
+  EXPECT_TRUE(bound_result);
 }
 
 TEST_F(IsBoundVisitorTest, BoundPredicate) {
@@ -342,14 +376,14 @@ TEST_F(IsBoundVisitorTest, AndWithBoundChildren) {
 }
 
 TEST_F(IsBoundVisitorTest, AndWithUnboundChild) {
-  // AND with any unbound child should return false
+  // Mixing bound and unbound predicates is invalid.
   auto bound_pred = Expressions::Equal("name", Literal::String("Alice"));
   ICEBERG_UNWRAP_OR_FAIL(auto pred1, Bind(bound_pred));
   auto pred2 = Expressions::Equal("age", Literal::Int(25));  // unbound
   auto mixed_and = Expressions::And(pred1, pred2);
 
-  ICEBERG_UNWRAP_OR_FAIL(auto is_bound, IsBoundVisitor::IsBound(mixed_and));
-  EXPECT_FALSE(is_bound);
+  EXPECT_THAT(IsBoundVisitor::IsBound(mixed_and),
+              HasErrorMessage("Found partially bound expression"));
 }
 
 TEST_F(IsBoundVisitorTest, OrWithBoundChildren) {
@@ -364,14 +398,14 @@ TEST_F(IsBoundVisitorTest, OrWithBoundChildren) {
 }
 
 TEST_F(IsBoundVisitorTest, OrWithUnboundChild) {
-  // OR with any unbound child should return false
+  // Mixing bound and unbound predicates is invalid.
   auto pred1 = Expressions::IsNull("name");  // unbound
   auto bound_pred2 = Expressions::Equal("age", Literal::Int(25));
   ICEBERG_UNWRAP_OR_FAIL(auto pred2, Bind(bound_pred2));
   auto mixed_or = Expressions::Or(pred1, pred2);
 
-  ICEBERG_UNWRAP_OR_FAIL(auto is_bound, IsBoundVisitor::IsBound(mixed_or));
-  EXPECT_FALSE(is_bound);
+  EXPECT_THAT(IsBoundVisitor::IsBound(mixed_or),
+              HasErrorMessage("Found partially bound expression"));
 }
 
 TEST_F(IsBoundVisitorTest, NotWithBoundChild) {
@@ -405,15 +439,15 @@ TEST_F(IsBoundVisitorTest, ComplexExpression) {
   ICEBERG_UNWRAP_OR_FAIL(auto is_bound, IsBoundVisitor::IsBound(bound_complex));
   EXPECT_TRUE(is_bound);
 
-  // Complex expression: one unbound should return false
+  // Mixed binding state is rejected even in a nested expression.
   auto unbound_pred = Expressions::Equal("name", Literal::String("Alice"));
   ICEBERG_UNWRAP_OR_FAIL(auto bound_pred2, Bind(pred2));
   ICEBERG_UNWRAP_OR_FAIL(auto bound_pred3, Bind(pred3));
   auto mixed_and = Expressions::And(unbound_pred, bound_pred2);
   auto mixed_complex = Expressions::Or(mixed_and, bound_pred3);
 
-  ICEBERG_UNWRAP_OR_FAIL(auto is_bound_mixed, IsBoundVisitor::IsBound(mixed_complex));
-  EXPECT_FALSE(is_bound_mixed);
+  EXPECT_THAT(IsBoundVisitor::IsBound(mixed_complex),
+              HasErrorMessage("Found partially bound expression"));
 }
 
 class RewriteNotTest : public ExpressionVisitorTest {};

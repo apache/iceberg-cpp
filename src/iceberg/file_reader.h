@@ -80,6 +80,9 @@ class ICEBERG_EXPORT ReaderProperties : public ConfigBase<ReaderProperties> {
   /// Only the Parquet reader honors this option; other readers ignore it.
   /// Default: false (use 32-bit offset list).
   inline static Entry<bool> kArrowUseLargeList{"read.arrow.use-large-list", false};
+  /// \brief Use footer statistics to prune Parquet row groups.
+  inline static Entry<bool> kParquetRowGroupFilter{
+      "read.parquet.row-group-filter.enabled", true};
   /// \brief Skip GenericDatum in Avro reader for better performance.
   /// When true, decode directly from Avro to Arrow without GenericDatum intermediate.
   /// Default: true (skip GenericDatum for better performance).
@@ -103,10 +106,13 @@ struct ICEBERG_EXPORT ReaderOptions {
   /// \brief FileIO instance to open the file.
   std::shared_ptr<class FileIO> io;
   /// \brief The projection schema to read from the file. This field is required.
+  /// Include columns referenced by unbound filters; readers bind them to this schema.
   std::shared_ptr<class Schema> projection;
   /// \brief The filter to apply to the data. Reader implementations may ignore this if
   /// the file format does not support filtering.
   std::shared_ptr<class Expression> filter;
+  /// \brief Case sensitivity inherited from the scan when resolving field names.
+  bool case_sensitive = true;
   /// \brief Name mapping for schema evolution compatibility. Used when reading files
   /// that may have different field names than the current schema.
   std::shared_ptr<class NameMapping> name_mapping;
