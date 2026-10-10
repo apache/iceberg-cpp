@@ -38,7 +38,7 @@ uint64_t TokenRefreshScheduler::Schedule(std::chrono::milliseconds delay,
                                          std::function<void()> callback) {
   std::lock_guard lock(mutex_);
   if (shutdown_) {
-    return 0;
+    return kInvalidTaskHandle;
   }
   uint64_t id = next_id_++;
   tasks_.push_back(Task{.id = id,
@@ -49,7 +49,7 @@ uint64_t TokenRefreshScheduler::Schedule(std::chrono::milliseconds delay,
 }
 
 void TokenRefreshScheduler::Cancel(uint64_t handle) {
-  if (handle == 0) return;
+  if (handle == kInvalidTaskHandle) return;
   std::lock_guard lock(mutex_);
   std::erase_if(tasks_, [handle](const Task& t) { return t.id == handle; });
 }

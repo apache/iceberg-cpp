@@ -320,6 +320,7 @@ if(ICEBERG_BUILD_REST)
   add_rest_iceberg_test(rest_catalog_test
                         SOURCES
                         auth_manager_test.cc
+                        auth_session_cache_test.cc
                         error_handlers_test.cc
                         endpoint_test.cc
                         rest_file_io_test.cc

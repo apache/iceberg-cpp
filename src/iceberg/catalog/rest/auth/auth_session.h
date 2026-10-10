@@ -42,6 +42,7 @@ struct ICEBERG_REST_EXPORT OAuth2SessionInfo {
   std::string scope;
   std::string oauth2_server_uri;
   std::unordered_map<std::string, std::string> optional_oauth_params;
+  std::unordered_map<std::string, std::string> headers;
 };
 
 /// \brief An authentication session that can authenticate outgoing HTTP requests.

@@ -78,9 +78,17 @@ class ICEBERG_REST_EXPORT AuthProperties : public ConfigBase<AuthProperties> {
   inline static Entry<std::string> kOAuth2ServerUri{"oauth2-server-uri",
                                                     "v1/oauth/tokens"};
   inline static Entry<bool> kKeepRefreshed{"token-refresh-enabled", true};
+
+  /// Whether to use token exchange for refreshing OAuth2 sessions.
+  /// NOTE: Not yet implemented. Config is read but not used in refresh logic.
   inline static Entry<bool> kExchangeEnabled{"token-exchange-enabled", true};
+
   inline static Entry<std::string> kAudience{"audience", ""};
   inline static Entry<std::string> kResource{"resource", ""};
+
+  /// Session cache timeout in milliseconds. Sessions will be eligible for eviction
+  /// after this duration of inactivity. Default is 1 hour (3,600,000 ms).
+  inline static Entry<int64_t> kSessionTimeoutMs{"auth.session-timeout-ms", 3'600'000};
 
   // ---- OAuth2 token type constants ----
 

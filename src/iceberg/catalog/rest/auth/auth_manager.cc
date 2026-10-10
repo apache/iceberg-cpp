@@ -19,6 +19,7 @@
 
 #include "iceberg/catalog/rest/auth/auth_manager.h"
 
+#include <algorithm>
 #include <array>
 #include <chrono>
 #include <optional>
@@ -28,8 +29,10 @@
 #include "iceberg/catalog/rest/auth/auth_manager_internal.h"
 #include "iceberg/catalog/rest/auth/auth_properties.h"
 #include "iceberg/catalog/rest/auth/auth_session.h"
+#include "iceberg/catalog/rest/auth/auth_session_cache_internal.h"
 #include "iceberg/catalog/rest/auth/auth_session_internal.h"
 #include "iceberg/catalog/rest/auth/oauth2_util.h"
+#include "iceberg/catalog/rest/auth/token_refresh_scheduler.h"
 #include "iceberg/catalog/session_context.h"
 #include "iceberg/util/base64.h"
 #include "iceberg/util/macros.h"
@@ -156,13 +159,11 @@ class OAuth2Manager : public AuthManager {
       start_time_ = std::chrono::steady_clock::now();
       ICEBERG_ASSIGN_OR_RAISE(
           auth_response_, OAuth2Util::FetchToken(*init_client, *init_session, config));
-      // TODO(lishuxu): Match Java OAuth2Util.AuthSession.fromTokenResponse here.
       return AuthSession::MakeDefault(
           OAuth2Util::AuthHeaders(auth_response_->access_token));
     }
 
     if (!config.token().empty()) {
-      // TODO(lishuxu): Match Java OAuth2Util.AuthSession.fromAccessToken here.
       return AuthSession::MakeDefault(OAuth2Util::AuthHeaders(config.token()));
     }
 
@@ -176,6 +177,31 @@ class OAuth2Manager : public AuthManager {
     ICEBERG_PRECHECK(shared_client != nullptr,
                      "OAuth2 catalog session HTTP client must not be null");
     refresh_client_ = std::move(shared_client);
+
+    // Initialize catalog-level configuration
+    keep_refreshed_ = config.keep_refreshed();
+    exchange_enabled_ = config.exchange_enabled();
+    session_timeout_ =
+        std::chrono::milliseconds(config.Get(AuthProperties::kSessionTimeoutMs));
+
+    // Create session cache
+    ICEBERG_ASSIGN_OR_RAISE(
+        session_cache_,
+        internal::AuthSessionCache::Make(
+            session_timeout_, [](std::shared_ptr<AuthSession> session) {
+              if (auto oauth2 =
+                      std::dynamic_pointer_cast<internal::OAuth2Session>(session)) {
+                oauth2->StopRefreshing();
+              }
+            }));
+
+    // Periodically reclaim idle sessions. Sweep at most once a minute and at least
+    // once a second, so a zero timeout still gets periodic cleanup.
+    auto sweep_interval = std::clamp(session_timeout_, std::chrono::milliseconds(1000),
+                                     std::chrono::milliseconds(60000));
+    ICEBERG_RETURN_UNEXPECTED(session_cache_->StartPeriodicSweep(
+        TokenRefreshScheduler::Instance(), sweep_interval));
+
     // Reuse the token response and start time from the init phase.
     if (auth_response_.has_value()) {
       return internal::MakeOAuth2Session(
@@ -184,8 +210,8 @@ class OAuth2Manager : public AuthManager {
           config.optional_oauth_params(), refresh_client_, start_time_);
     }
 
-    // TODO(lishuxu): Honor token-refresh-enabled for catalog bearer tokens, matching
-    // Java. If token is provided, use it directly.
+    // TODO(lishuxu): Honor token-refresh-enabled for catalog bearer tokens.
+    // If token is provided, use it directly.
     if (!config.token().empty()) {
       OAuthTokenResponse token_response{
           .access_token = config.token(),
@@ -217,21 +243,31 @@ class OAuth2Manager : public AuthManager {
 
   Result<std::shared_ptr<AuthSession>> ContextualSession(
       const SessionContext& context, std::shared_ptr<AuthSession> parent) override {
-    // TODO(lishuxu): Add child-session caching and refresh, matching Java
-    // AuthSessionCache.
+    // Use session_id as cache key for contextual sessions
+    std::string cache_key = context.session_id.empty() ? "" : "ctx:" + context.session_id;
     return MaybeCreateChildSession(context.credentials, /*allow_credential=*/true,
-                                   std::move(parent));
+                                   std::move(parent), cache_key);
   }
 
   Result<std::shared_ptr<AuthSession>> TableSession(
       [[maybe_unused]] const TableIdentifier& table,
       const std::unordered_map<std::string, std::string>& properties,
       std::shared_ptr<AuthSession> parent) override {
+    // Use token value as cache key for table sessions
+    auto token_it = properties.find(AuthProperties::kToken.key());
+    std::string cache_key;
+    if (token_it != properties.end() && !token_it->second.empty()) {
+      cache_key = "tbl:" + token_it->second;
+    }
     return MaybeCreateChildSession(FilterTableSessionProperties(properties),
-                                   /*allow_credential=*/false, std::move(parent));
+                                   /*allow_credential=*/false, std::move(parent),
+                                   cache_key);
   }
 
   Status Close() override {
+    if (session_cache_) {
+      session_cache_->Close();
+    }
     refresh_client_.reset();
     return {};
   }
@@ -267,7 +303,8 @@ class OAuth2Manager : public AuthManager {
 
   Result<std::shared_ptr<AuthSession>> MaybeCreateChildSession(
       const std::unordered_map<std::string, std::string>& credentials,
-      bool allow_credential, std::shared_ptr<AuthSession> parent) {
+      bool allow_credential, std::shared_ptr<AuthSession> parent,
+      const std::string& cache_key) {
     auto token_it = credentials.find(AuthProperties::kToken.key());
     auto credential_it = credentials.find(AuthProperties::kCredential.key());
     auto typed_token = FindPreferredTypedToken(credentials);
@@ -283,35 +320,65 @@ class OAuth2Manager : public AuthManager {
     ICEBERG_PRECHECK(parent_info.has_value(),
                      "OAuth2 child session requires OAuth2 parent metadata");
 
+    // Use cache if we have a valid cache_key
+    if (!cache_key.empty() && session_cache_) {
+      return session_cache_->Get(cache_key,
+                                 [&]() -> Result<std::shared_ptr<AuthSession>> {
+                                   return CreateChildSessionUncached(
+                                       credentials, allow_credential, *parent_info);
+                                 });
+    }
+
+    // No cache, create session directly
+    return CreateChildSessionUncached(credentials, allow_credential, *parent_info);
+  }
+
+  Result<std::shared_ptr<AuthSession>> CreateChildSessionUncached(
+      const std::unordered_map<std::string, std::string>& credentials,
+      bool allow_credential, const OAuth2SessionInfo& parent_info) {
+    auto token_it = credentials.find(AuthProperties::kToken.key());
+    auto credential_it = credentials.find(AuthProperties::kCredential.key());
+    auto typed_token = FindPreferredTypedToken(credentials);
+
     if (token_it != credentials.end()) {
-      ICEBERG_ASSIGN_OR_RAISE(auto config,
-                              ChildConfig(*parent_info, parent_info->credential));
+      // Token child session: don't include parent credential in config.
+      // Token-based sessions are not refreshed; when token exchange is enabled,
+      // refresh will use the token itself rather than the parent credential.
+      auto properties = parent_info.optional_oauth_params;
+      properties[AuthProperties::kScope.key()] = parent_info.scope;
+      properties[AuthProperties::kOAuth2ServerUri.key()] = parent_info.oauth2_server_uri;
+      ICEBERG_ASSIGN_OR_RAISE(auto config, AuthProperties::FromProperties(properties));
       return MakeSession(AccessTokenResponse(token_it->second), config,
                          /*keep_refreshed=*/false);
     }
 
     if (allow_credential && credential_it != credentials.end()) {
       ICEBERG_ASSIGN_OR_RAISE(auto config,
-                              ChildConfig(*parent_info, credential_it->second));
-      ICEBERG_ASSIGN_OR_RAISE(auto response,
-                              OAuth2Util::FetchToken(*refresh_client_, *parent, config));
-      return MakeSession(response, config, /*keep_refreshed=*/false);
+                              ChildConfig(parent_info, credential_it->second));
+      // Use parent session headers for FetchToken authentication
+      auto temp_parent = AuthSession::MakeDefault(parent_info.headers);
+      ICEBERG_ASSIGN_OR_RAISE(
+          auto response, OAuth2Util::FetchToken(*refresh_client_, *temp_parent, config));
+      // Credential child sessions use keep_refreshed from catalog level
+      return MakeSession(response, config, keep_refreshed_);
     }
 
     std::optional<std::string> actor_token;
     std::optional<std::string> actor_token_type;
-    if (!parent_info->token.empty()) {
-      actor_token = parent_info->token;
-      actor_token_type = parent_info->issued_token_type;
+    if (!parent_info.token.empty()) {
+      actor_token = parent_info.token;
+      actor_token_type = parent_info.issued_token_type;
     }
+    // Use parent session headers for ExchangeToken authentication
+    auto temp_parent = AuthSession::MakeDefault(parent_info.headers);
     ICEBERG_ASSIGN_OR_RAISE(
         auto response,
-        OAuth2Util::ExchangeToken(*refresh_client_, *parent, {}, typed_token->second,
+        OAuth2Util::ExchangeToken(*refresh_client_, *temp_parent, {}, typed_token->second,
                                   typed_token->first, actor_token, actor_token_type,
-                                  parent_info->scope, parent_info->oauth2_server_uri,
-                                  parent_info->optional_oauth_params));
+                                  parent_info.scope, parent_info.oauth2_server_uri,
+                                  parent_info.optional_oauth_params));
     ICEBERG_ASSIGN_OR_RAISE(auto config,
-                            ChildConfig(*parent_info, parent_info->credential));
+                            ChildConfig(parent_info, parent_info.credential));
     return MakeSession(response, config, /*keep_refreshed=*/false);
   }
 
@@ -319,6 +386,12 @@ class OAuth2Manager : public AuthManager {
   std::optional<OAuthTokenResponse> auth_response_;
   std::optional<std::chrono::steady_clock::time_point> start_time_;
   std::shared_ptr<HttpClient> refresh_client_;
+
+  // Catalog-level configuration initialized in CatalogSession
+  bool keep_refreshed_ = true;
+  bool exchange_enabled_ = true;
+  std::chrono::milliseconds session_timeout_{3'600'000};
+  std::shared_ptr<internal::AuthSessionCache> session_cache_;
 };
 
 Result<std::unique_ptr<AuthManager>> MakeOAuth2Manager(

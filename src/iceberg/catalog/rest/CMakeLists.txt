@@ -22,6 +22,7 @@ set(ICEBERG_REST_SOURCES
     auth/auth_managers.cc
     auth/auth_properties.cc
     auth/auth_session.cc
+    auth/auth_session_cache.cc
     auth/oauth2_util.cc
     auth/sigv4_manager.cc
     auth/token_refresh_scheduler.cc

@@ -41,6 +41,9 @@ namespace iceberg {
 /// silently overriding credentials.
 struct ICEBERG_EXPORT SessionContext {
   /// Unique session identifier. Explicit contexts must provide a non-empty ID.
+  ///
+  /// A session ID identifies a stable caller context. Its identity and credentials
+  /// must not change while the ID is in use.
   std::string session_id;
 
   /// Caller identity. Empty means no identity was supplied. This value is
