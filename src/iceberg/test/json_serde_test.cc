@@ -406,6 +406,28 @@ TEST(JsonInternalTest, SnapshotFromJsonReadsTopLevelRowLineageFields) {
   EXPECT_EQ(json["summary"]["added-rows"], "26");
 }
 
+TEST(JsonInternalTest, SnapshotEncryptionKeyId) {
+  nlohmann::json snapshot_json =
+      R"({"snapshot-id":1234567890,
+          "sequence-number":1,
+          "timestamp-ms":1234567890123,
+          "manifest-list":"/path/to/manifest_list",
+          "summary":{"operation":"append"},
+          "key-id":"C9PJpnsZpsbZarERjyOitg=="})"_json;
+
+  ICEBERG_UNWRAP_OR_FAIL(auto snapshot, SnapshotFromJson(snapshot_json));
+  ASSERT_TRUE(snapshot->key_id.has_value());
+  EXPECT_EQ(snapshot->key_id.value(), "C9PJpnsZpsbZarERjyOitg==");
+  EXPECT_EQ(ToJson(*snapshot)["key-id"], "C9PJpnsZpsbZarERjyOitg==");
+
+  // Snapshots of unencrypted tables have no key-id
+  snapshot_json.erase("key-id");
+  ICEBERG_UNWRAP_OR_FAIL(auto plain, SnapshotFromJson(snapshot_json));
+  EXPECT_FALSE(plain->key_id.has_value());
+  EXPECT_FALSE(ToJson(*plain).contains("key-id"));
+  EXPECT_NE(*plain, *snapshot);
+}
+
 // FIXME: disable it for now since Iceberg Spark plugin generates
 // custom summary keys.
 TEST(JsonInternalTest, DISABLED_SnapshotFromJsonWithInvalidSummary) {

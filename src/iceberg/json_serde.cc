@@ -476,6 +476,7 @@ nlohmann::json ToJson(const Snapshot& snapshot) {
   if (snapshot.first_row_id.has_value()) {
     SetOptionalField(json, kAddedRows, snapshot.added_rows);
   }
+  SetOptionalField(json, kKeyId, snapshot.key_id);
   return json;
 }
 
@@ -893,11 +894,13 @@ Result<std::unique_ptr<Snapshot>> SnapshotFromJson(const nlohmann::json& json) {
   }
 
   ICEBERG_ASSIGN_OR_RAISE(auto schema_id, GetJsonValueOptional<int32_t>(json, kSchemaId));
+  ICEBERG_ASSIGN_OR_RAISE(auto key_id, GetJsonValueOptional<std::string>(json, kKeyId));
 
   return std::make_unique<Snapshot>(
       snapshot_id, parent_snapshot_id,
       sequence_number.value_or(TableMetadata::kInitialSequenceNumber), timestamp_ms,
-      manifest_list, std::move(summary), schema_id, first_row_id, added_rows);
+      manifest_list, std::move(summary), schema_id, first_row_id, added_rows,
+      std::move(key_id));
 }
 
 nlohmann::json ToJson(const BlobMetadata& blob_metadata) {
