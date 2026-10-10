@@ -171,17 +171,23 @@ TEST(PartitionSpecTest, PartitionTypeMissingSource) {
       PartitionSpec::Make(
           1, {PartitionField(1, 1000, "dropped_identity", Transform::Identity()),
               PartitionField(3, 1001, "dropped_bucket", Transform::Bucket(16)),
-              PartitionField(2, 1002, "ts_day", Transform::Day())}));
+              PartitionField(2, 1002, "ts_day", Transform::Day()),
+              PartitionField(4, 1003, "dropped_day", Transform::Day()),
+              PartitionField(4, 1004, "dropped_year", Transform::Year())}));
 
   ICEBERG_UNWRAP_OR_FAIL(auto partition_type, spec->PartitionType(schema));
 
-  ASSERT_EQ(partition_type->fields().size(), 3U);
+  ASSERT_EQ(partition_type->fields().size(), 5U);
   EXPECT_EQ(partition_type->fields()[0],
             SchemaField::MakeOptional(1000, "dropped_identity", unknown()));
   EXPECT_EQ(partition_type->fields()[1],
-            SchemaField::MakeOptional(1001, "dropped_bucket", unknown()));
+            SchemaField::MakeOptional(1001, "dropped_bucket", int32()));
   EXPECT_EQ(partition_type->fields()[2],
             SchemaField::MakeOptional(1002, "ts_day", date()));
+  EXPECT_EQ(partition_type->fields()[3],
+            SchemaField::MakeOptional(1003, "dropped_day", date()));
+  EXPECT_EQ(partition_type->fields()[4],
+            SchemaField::MakeOptional(1004, "dropped_year", int32()));
 }
 
 TEST(PartitionSpecTest, RawPartitionTypeNoReassign) {
