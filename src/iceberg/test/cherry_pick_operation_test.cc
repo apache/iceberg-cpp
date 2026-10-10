@@ -139,7 +139,10 @@ class CherryPickOperationTest : public UpdateTestBase {
   Result<int64_t> CommitAppendToBranch(const std::string& branch,
                                        const std::shared_ptr<DataFile>& file) {
     ICEBERG_ASSIGN_OR_RAISE(auto append, table_->NewFastAppend());
-    append->ToBranch(branch).AppendFile(file);
+    // ToBranch() returns SnapshotUpdate& in C++20 compat builds, so keep the
+    // FastAppend-only call separate.
+    append->ToBranch(branch);
+    append->AppendFile(file);
     ICEBERG_RETURN_UNEXPECTED(append->Commit());
     ICEBERG_RETURN_UNEXPECTED(table_->Refresh());
     return table_->metadata()->refs.at(branch)->snapshot_id;
