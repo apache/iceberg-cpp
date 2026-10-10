@@ -33,7 +33,7 @@ namespace iceberg {
 
 using ExecutorTask = FnOnce<void()>;
 
-/// \brief Schedules iceberg-cpp internal planning tasks.
+/// \brief Schedules iceberg-cpp tasks.
 ///
 /// Public APIs that accept an executor remain synchronous: the calling thread may block
 /// while waiting for submitted tasks to finish. Callers must ensure the executor can
@@ -41,7 +41,7 @@ using ExecutorTask = FnOnce<void()>;
 /// the same bounded executor's worker threads can deadlock unless the executor supports
 /// nested blocking work.
 ///
-/// When an executor is configured, planning callbacks may be called concurrently. Any
+/// When an executor is configured, tasks may be called concurrently. Any
 /// shared mutable state captured by those callbacks must be synchronized by the caller.
 class ICEBERG_EXPORT Executor {
  public:

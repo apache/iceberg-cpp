@@ -66,7 +66,6 @@ each file location's scheme.
 | `client.region` | `us-east-1` | Region to sign requests for |
 | `s3.endpoint` | `https://127.0.0.1:9000` | Endpoint to use instead of the AWS one. When absent, the `AWS_ENDPOINT_URL_S3` / `AWS_ENDPOINT_URL` environment variables are consulted |
 | `s3.path-style-access` | `true` | Address buckets as a path (`endpoint/bucket`) instead of a virtual host (`bucket.endpoint`). Only takes effect together with a custom endpoint |
-| `s3.delete.num-threads` | `8` | Size of the thread pool `DeleteFiles` runs on, shared by every call on the FileIO. Defaults to the number of hardware threads |
 
 The following keys are specific to iceberg-cpp; they are not part of the Java
 Iceberg or REST specification property set:
@@ -80,6 +79,26 @@ Iceberg or REST specification property set:
 Without credentials, the AWS default credential chain is used, which covers
 environment variables, the shared configuration file, and the various role and
 identity providers.
+
+### Bulk deletion
+
+S3 `DeleteFiles` attempts each file, logs each failed deletion, and returns the
+failure count. Exceptions thrown by a delete are counted as failures too.
+Deletion is sequential by default. To enable concurrency, configure an
+application-owned `iceberg::Executor` using
+`iceberg::arrow::SetS3FileIODeleteExecutor(executor)` from
+`iceberg/arrow/arrow_io_util.h`.
+
+The setting applies to all S3 FileIO instances, including ones created by the
+registry or a REST catalog. Configure it before starting deletes. The executor
+controls concurrency; each call submits at most 64 worker tasks, which share
+the file list rather than creating a task and future for every file.
+
+`DeleteFiles` is synchronous and waits for accepted tasks even if submission
+fails. Keep the executor alive until all calls finish, then reset the setting
+to `nullptr` before destroying it. Replace the executor only while no deletes
+are running. The executor must make progress while callers wait; do not call
+`DeleteFiles` from its workers unless it supports nested blocking work.
 
 ### S3-compatible storage
 

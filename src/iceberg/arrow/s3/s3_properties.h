@@ -54,9 +54,6 @@ struct S3Properties {
   static constexpr std::string_view kConnectTimeoutMs = "s3.connect-timeout-ms";
   /// Socket timeout in milliseconds
   static constexpr std::string_view kSocketTimeoutMs = "s3.socket-timeout-ms";
-  /// Size of the pool DeleteFiles runs on; defaults to the hardware thread count,
-  /// as in Java
-  static constexpr std::string_view kDeleteNumThreads = "s3.delete.num-threads";
 };
 
 /// \brief URI schemes served by the Arrow S3 FileIO, lower-case.
