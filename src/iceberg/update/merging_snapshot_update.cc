@@ -137,10 +137,10 @@ Result<ValidationHistoryResult> ValidationHistory(
     }
 
     result.snapshot_ids.insert(snapshot->snapshot_id);
-    auto cached = SnapshotCache(snapshot.get());
+    auto snapshot_reader = SnapshotReader(snapshot.get());
     ICEBERG_ASSIGN_OR_RAISE(auto manifests, content == ManifestContent::kData
-                                                ? cached.DataManifests(io)
-                                                : cached.DeleteManifests(io));
+                                                ? snapshot_reader.DataManifests(io)
+                                                : snapshot_reader.DeleteManifests(io));
     for (const auto& manifest : manifests) {
       if (manifest.added_snapshot_id == snapshot->snapshot_id) {
         result.manifests.push_back(manifest);
@@ -657,7 +657,7 @@ Status MergingSnapshotUpdate::AddManifest(ManifestFile manifest) {
   if (manifest.content != ManifestContent::kData) {
     return InvalidArgument("Cannot append delete manifest: {}", manifest.manifest_path);
   }
-  if (can_inherit_snapshot_id() && manifest.added_snapshot_id == kInvalidSnapshotId) {
+  if (can_inherit_snapshot_id() && !manifest.added_snapshot_id.has_value()) {
     if (manifest.first_row_id.has_value()) {
       return InvalidArgument("Cannot append manifest with assigned first row ID: {}",
                              manifest.manifest_path);
@@ -823,7 +823,7 @@ MergingSnapshotUpdate::MergeDVs() {
   auto merged_files = DVUtil::MergeAndWriteDVs(groups, output_path, ctx_->table->io());
   if (!merged_files) {
     std::ignore = DeleteFile(output_path);
-    return std::unexpected<Error>(std::move(merged_files.error()));
+    return ::iceberg::unexpected<Error>(std::move(merged_files.error()));
   }
 
   std::unordered_map<std::string, std::shared_ptr<DataFile>> merged_by_ref;

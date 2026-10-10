@@ -20,6 +20,8 @@
 #include "iceberg/catalog/rest/rest_catalog.h"
 
 #include <memory>
+#include <mutex>
+#include <string>
 #include <string_view>
 #include <tuple>
 #include <unordered_map>
@@ -42,6 +44,7 @@
 #include "iceberg/catalog/rest/rest_util.h"
 #include "iceberg/catalog/rest/types.h"
 #include "iceberg/json_serde_internal.h"
+#include "iceberg/logging/log_macros.h"
 #include "iceberg/metrics/metrics_reporters.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/result.h"
@@ -59,6 +62,41 @@
 namespace iceberg::rest {
 
 namespace {
+
+class RestStorageCredentialProvider final : public StorageCredentialProvider {
+ public:
+  RestStorageCredentialProvider(std::shared_ptr<HttpClient> client,
+                                std::shared_ptr<auth::AuthSession> session,
+                                std::string path)
+      : client_(std::move(client)),
+        session_(std::move(session)),
+        path_(std::move(path)) {}
+
+  Result<std::vector<StorageCredential>> Load() override {
+    // The provider can be shared by several FileIOs; keep fetches serialized.
+    std::lock_guard lock(mutex_);
+    ICEBERG_ASSIGN_OR_RAISE(const auto response,
+                            client_->Get(path_, /*params=*/{}, /*headers=*/{},
+                                         *TableErrorHandler::Instance(), *session_));
+    // Parse errors can contain credential data; return a fixed message.
+    auto json = FromJsonString(response.body());
+    if (!json.has_value()) {
+      return JsonParseError("Malformed LoadCredentials response");
+    }
+    auto result = LoadCredentialsResponseFromJson(*json);
+    if (!result.has_value()) {
+      return ::iceberg::unexpected<Error>(
+          {.kind = result.error().kind, .message = "Malformed LoadCredentials response"});
+    }
+    return std::move(result->storage_credentials);
+  }
+
+ private:
+  std::shared_ptr<HttpClient> client_;
+  std::shared_ptr<auth::AuthSession> session_;
+  std::string path_;
+  std::mutex mutex_;
+};
 
 /// \brief Get the default set of endpoints for backwards compatibility according to the
 /// iceberg rest spec.
@@ -122,7 +160,7 @@ Result<bool> CaptureNoSuchObject(const auto& status, ErrorKind kind) {
   if (status.error().kind == kind) {
     return false;
   }
-  return std::unexpected(status.error());
+  return ::iceberg::unexpected(status.error());
 }
 
 Result<bool> CaptureNoSuchTable(const auto& status) {
@@ -508,12 +546,45 @@ Result<std::shared_ptr<auth::AuthSession>> RestCatalog::TableAuthSession(
                                      std::move(contextual_session));
 }
 
+std::shared_ptr<StorageCredentialProvider> RestCatalog::MakeStorageCredentialProvider(
+    const TableIdentifier& identifier,
+    std::shared_ptr<auth::AuthSession> table_session) const {
+  if (!supported_endpoints_.contains(Endpoint::TableCredentials())) {
+    // Not an error, but it surfaces much later as credentials expiring.
+    ICEBERG_LOG_DEBUG(
+        "Catalog does not advertise {}; vended credentials for '{}' will not be "
+        "refreshed",
+        Endpoint::TableCredentials().ToString(), ToString(identifier));
+    return nullptr;
+  }
+  auto path = paths_->Credentials(identifier);
+  if (!path.has_value()) {
+    ICEBERG_LOG_WARN(
+        "Cannot build the credentials path for '{}' ({}); its vended credentials "
+        "will not be refreshed",
+        ToString(identifier), path.error().message);
+    return nullptr;
+  }
+  auto client = client_;
+  auto credentials_path = std::move(path.value());
+  auto session = std::move(table_session);
+  return std::make_shared<RestStorageCredentialProvider>(
+      std::move(client), std::move(session), std::move(credentials_path));
+}
+
 Result<std::shared_ptr<FileIO>> RestCatalog::TableFileIO(
-    const SessionContext& /*context*/,
+    const SessionContext& /*context*/, const TableIdentifier& identifier,
     const std::unordered_map<std::string, std::string>& table_config,
-    const std::vector<StorageCredential>& storage_credentials) const {
+    const std::vector<StorageCredential>& storage_credentials,
+    std::shared_ptr<auth::AuthSession> table_session) const {
   if (!table_config.empty() || !storage_credentials.empty()) {
-    return MakeTableFileIO(config_.configs(), table_config, storage_credentials);
+    // Only vended credentials expire, so only they need a provider.
+    std::shared_ptr<StorageCredentialProvider> provider;
+    if (!storage_credentials.empty()) {
+      provider = MakeStorageCredentialProvider(identifier, std::move(table_session));
+    }
+    return MakeTableFileIO(config_.configs(), table_config, storage_credentials,
+                           std::move(provider));
   }
 
   return file_io_;
@@ -523,7 +594,7 @@ Result<std::shared_ptr<MetricsReporter>> RestCatalog::MakeTableReporter(
     const TableIdentifier& identifier,
     const std::shared_ptr<auth::AuthSession>& table_session) const {
   auto metrics_enabled = config_.Get(RestCatalogProperties::kMetricsReportingEnabled);
-  if (StringUtils::ToLower(metrics_enabled) == "true" &&
+  if (StringUtils::ParseBoolean(metrics_enabled) &&
       supported_endpoints_.contains(Endpoint::ReportMetrics())) {
     ICEBERG_ASSIGN_OR_RAISE(auto path, paths_->Metrics(identifier));
     auto post = [client = client_](const std::string& endpoint, const std::string& body,
@@ -772,11 +843,12 @@ Result<std::shared_ptr<Transaction>> RestCatalog::StageCreateTable(
                           /*stage_create=*/true, *contextual_session));
   auto table_config = std::move(result.config);
   auto storage_credentials = std::move(result.storage_credentials);
-  ICEBERG_ASSIGN_OR_RAISE(auto table_io,
-                          TableFileIO(context, table_config, storage_credentials));
+  // Before the FileIO: refreshing its credentials reuses the table session.
   ICEBERG_ASSIGN_OR_RAISE(
       auto table_session,
       TableAuthSession(identifier, table_config, std::move(contextual_session)));
+  ICEBERG_ASSIGN_OR_RAISE(auto table_io, TableFileIO(context, identifier, table_config,
+                                                     storage_credentials, table_session));
   ICEBERG_ASSIGN_OR_RAISE(auto reporter, MakeTableReporter(identifier, table_session));
   auto table_catalog = std::make_shared<TableScopedCatalog>(
       shared_from_this(), context, identifier, table_config, std::move(table_session),
@@ -890,11 +962,12 @@ Result<std::shared_ptr<Table>> RestCatalog::MakeTableFromLoadResult(
     std::shared_ptr<auth::AuthSession> contextual_session) {
   auto table_config = std::move(result.config);
   auto storage_credentials = std::move(result.storage_credentials);
-  ICEBERG_ASSIGN_OR_RAISE(auto table_io,
-                          TableFileIO(context, table_config, storage_credentials));
+  // Before the FileIO: refreshing its credentials reuses the table session.
   ICEBERG_ASSIGN_OR_RAISE(
       auto table_session,
       TableAuthSession(identifier, table_config, std::move(contextual_session)));
+  ICEBERG_ASSIGN_OR_RAISE(auto table_io, TableFileIO(context, identifier, table_config,
+                                                     storage_credentials, table_session));
   ICEBERG_ASSIGN_OR_RAISE(auto reporter, MakeTableReporter(identifier, table_session));
   auto table_catalog = std::make_shared<TableScopedCatalog>(
       shared_from_this(), context, identifier, table_config, table_session, table_io);

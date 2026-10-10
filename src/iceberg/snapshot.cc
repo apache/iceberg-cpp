@@ -203,7 +203,7 @@ Result<std::unique_ptr<Snapshot>> Snapshot::Make(
   });
 }
 
-Result<SnapshotCache::ManifestsCache> SnapshotCache::InitManifestsCache(
+Result<SnapshotReader::ManifestsCache> SnapshotReader::InitManifestsCache(
     const Snapshot* snapshot, std::shared_ptr<FileIO> file_io) {
   if (file_io == nullptr) {
     return InvalidArgument("Cannot cache manifests: FileIO is null");
@@ -236,21 +236,21 @@ Result<SnapshotCache::ManifestsCache> SnapshotCache::InitManifestsCache(
   return std::make_pair(std::move(manifests), data_manifests_count);
 }
 
-Result<std::span<ManifestFile>> SnapshotCache::Manifests(
+Result<std::span<ManifestFile>> SnapshotReader::Manifests(
     std::shared_ptr<FileIO> file_io) const {
   ICEBERG_ASSIGN_OR_RAISE(auto cache_ref, manifests_cache_.Get(snapshot_, file_io));
   auto& cache = cache_ref.get();
   return std::span<ManifestFile>(cache.first.data(), cache.first.size());
 }
 
-Result<std::span<ManifestFile>> SnapshotCache::DataManifests(
+Result<std::span<ManifestFile>> SnapshotReader::DataManifests(
     std::shared_ptr<FileIO> file_io) const {
   ICEBERG_ASSIGN_OR_RAISE(auto cache_ref, manifests_cache_.Get(snapshot_, file_io));
   auto& cache = cache_ref.get();
   return std::span<ManifestFile>(cache.first.data(), cache.second);
 }
 
-Result<std::span<ManifestFile>> SnapshotCache::DeleteManifests(
+Result<std::span<ManifestFile>> SnapshotReader::DeleteManifests(
     std::shared_ptr<FileIO> file_io) const {
   ICEBERG_ASSIGN_OR_RAISE(auto cache_ref, manifests_cache_.Get(snapshot_, file_io));
   auto& cache = cache_ref.get();

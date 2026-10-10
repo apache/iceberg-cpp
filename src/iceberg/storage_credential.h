@@ -24,6 +24,7 @@
 
 #include <string>
 #include <unordered_map>
+#include <vector>
 
 #include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
@@ -46,6 +47,17 @@ struct ICEBERG_EXPORT StorageCredential {
   }
 
   bool operator==(const StorageCredential& other) const = default;
+};
+
+/// \brief Source for loading the current vended credentials.
+///
+/// Implementations must be safe for concurrent calls.
+class ICEBERG_EXPORT StorageCredentialProvider {
+ public:
+  virtual ~StorageCredentialProvider() = default;
+
+  /// \brief Load the current credentials. Returns the whole vended list.
+  virtual Result<std::vector<StorageCredential>> Load() = 0;
 };
 
 }  // namespace iceberg

@@ -23,11 +23,11 @@
 /// \brief Define Result, Status, and error helpers.
 
 #include <concepts>
-#include <expected>
 #include <format>
 #include <string>
 #include <type_traits>
 
+#include "iceberg/compat/expected.h"
 #include "iceberg/iceberg_export.h"
 
 namespace iceberg {
@@ -85,20 +85,20 @@ struct DefaultError {
 
 /// \brief Result alias
 template <typename T, typename E = typename DefaultError<T>::type>
-using Result = std::expected<T, E>;
+using Result = ::iceberg::expected<T, E>;
 
 using Status = Result<void>;
 
 /// \brief Macro to define error creation functions
-#define DEFINE_ERROR_FUNCTION(name)                                           \
-  template <typename... Args>                                                 \
-  inline auto name(const std::format_string<Args...> fmt, Args&&... args)     \
-      -> std::unexpected<Error> {                                             \
-    return std::unexpected<Error>(                                            \
-        {ErrorKind::k##name, std::format(fmt, std::forward<Args>(args)...)}); \
-  }                                                                           \
-  inline auto name(std::string message) -> std::unexpected<Error> {           \
-    return std::unexpected<Error>({ErrorKind::k##name, std::move(message)});  \
+#define DEFINE_ERROR_FUNCTION(name)                                                \
+  template <typename... Args>                                                      \
+  inline auto name(const std::format_string<Args...> fmt, Args&&... args)          \
+      -> ::iceberg::unexpected<Error> {                                            \
+    return ::iceberg::unexpected<Error>(                                           \
+        {ErrorKind::k##name, std::format(fmt, std::forward<Args>(args)...)});      \
+  }                                                                                \
+  inline auto name(std::string message) -> ::iceberg::unexpected<Error> {          \
+    return ::iceberg::unexpected<Error>({ErrorKind::k##name, std::move(message)}); \
   }
 
 DEFINE_ERROR_FUNCTION(AlreadyExists)

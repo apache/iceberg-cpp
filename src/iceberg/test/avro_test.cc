@@ -24,6 +24,8 @@
 #include <string>
 #include <string_view>
 #include <unordered_map>
+#include <utility>
+#include <vector>
 
 #include <arrow/array.h>
 #include <arrow/array/array_base.h>
@@ -484,6 +486,19 @@ TEST_P(AvroReaderParameterizedTest, DateTimeTypes) {
   std::string expected_string = R"([
     [18628, 43200000000, 1640995200000000],
     [18629, 86399000000, 1641081599000000]
+  ])";
+
+  WriteAndVerify(schema, expected_string);
+}
+
+TEST_P(AvroReaderParameterizedTest, TimestampTzTypes) {
+  auto schema = std::make_shared<iceberg::Schema>(std::vector<SchemaField>{
+      SchemaField::MakeRequired(1, "timestamptz_col", iceberg::timestamp_tz()),
+      SchemaField::MakeRequired(2, "timestamptz_ns_col", iceberg::timestamptz_ns())});
+
+  std::string expected_string = R"([
+    [1640995200000000, 1640995200000000001],
+    [1641081599000000, 1641081599000000002]
   ])";
 
   WriteAndVerify(schema, expected_string);
@@ -1199,6 +1214,41 @@ TEST_P(AvroWriterTest, WriteTemporalTypes) {
   ])";
 
   WriteAvroFile(schema, test_data);
+  VerifyWrittenData(test_data);
+}
+
+TEST_P(AvroWriterTest, WriteTimestampTzTypes) {
+  auto schema = std::make_shared<iceberg::Schema>(std::vector<SchemaField>{
+      SchemaField::MakeRequired(1, "timestamp_col", iceberg::timestamp()),
+      SchemaField::MakeRequired(2, "timestamptz_col", iceberg::timestamp_tz()),
+      SchemaField::MakeRequired(3, "timestamp_ns_col", iceberg::timestamp_ns()),
+      SchemaField::MakeRequired(4, "timestamptz_ns_col", iceberg::timestamptz_ns())});
+
+  std::string test_data = R"([
+    [1640995200000000, 1640995200000000, 1640995200000000001, 1640995200000000001],
+    [1641081599000000, 1641081599000000, 1641081599000000002, 1641081599000000002]
+  ])";
+
+  WriteAvroFile(schema, test_data);
+
+  auto root = PhysicalAvroSchema().root();
+  ASSERT_EQ(root->type(), ::avro::AVRO_RECORD);
+  ASSERT_EQ(root->leaves(), 4);
+  const std::vector<std::pair<::avro::LogicalType::Type, std::string>> expected = {
+      {::avro::LogicalType::TIMESTAMP_MICROS, "false"},
+      {::avro::LogicalType::TIMESTAMP_MICROS, "true"},
+      {::avro::LogicalType::TIMESTAMP_NANOS, "false"},
+      {::avro::LogicalType::TIMESTAMP_NANOS, "true"},
+  };
+  for (size_t i = 0; i < expected.size(); ++i) {
+    auto node = root->leafAt(i);
+    EXPECT_EQ(node->type(), ::avro::AVRO_LONG);
+    EXPECT_EQ(node->logicalType().type(), expected[i].first);
+    ASSERT_EQ(node->customAttributes(), 1);
+    EXPECT_EQ(node->customAttributesAt(0).getAttribute(std::string(kAdjustToUtcProp)),
+              expected[i].second);
+  }
+
   VerifyWrittenData(test_data);
 }
 

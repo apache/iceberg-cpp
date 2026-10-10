@@ -416,11 +416,13 @@ Status ValidateParquetTypeCompatibility(
       }
       break;
     case TypeId::kDecimal:
-      if (arrow_type->id() == ::arrow::Type::DECIMAL128) {
+      if (arrow_type->id() == ::arrow::Type::DECIMAL32 ||
+          arrow_type->id() == ::arrow::Type::DECIMAL64 ||
+          arrow_type->id() == ::arrow::Type::DECIMAL128) {
         const auto& decimal_type =
             internal::checked_cast<const DecimalType&>(expected_type);
         const auto& arrow_decimal =
-            internal::checked_cast<const ::arrow::Decimal128Type&>(*arrow_type);
+            internal::checked_cast<const ::arrow::DecimalType&>(*arrow_type);
         if (decimal_type.scale() == arrow_decimal.scale() &&
             decimal_type.precision() >= arrow_decimal.precision()) {
           return {};

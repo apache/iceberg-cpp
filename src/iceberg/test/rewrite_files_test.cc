@@ -142,16 +142,16 @@ class RewriteFilesTest : public MinimalUpdateTestBase {
   /// \brief Get data manifests from a snapshot.
   Result<std::vector<ManifestFile>> DataManifests(
       const std::shared_ptr<Snapshot>& snapshot) {
-    SnapshotCache snapshot_cache(snapshot.get());
-    ICEBERG_ASSIGN_OR_RAISE(auto manifests, snapshot_cache.DataManifests(file_io_));
+    SnapshotReader snapshot_reader(snapshot.get());
+    ICEBERG_ASSIGN_OR_RAISE(auto manifests, snapshot_reader.DataManifests(file_io_));
     return std::vector<ManifestFile>(manifests.begin(), manifests.end());
   }
 
   /// \brief Get delete manifests from a snapshot.
   Result<std::vector<ManifestFile>> DeleteManifests(
       const std::shared_ptr<Snapshot>& snapshot) {
-    SnapshotCache snapshot_cache(snapshot.get());
-    ICEBERG_ASSIGN_OR_RAISE(auto manifests, snapshot_cache.DeleteManifests(file_io_));
+    SnapshotReader snapshot_reader(snapshot.get());
+    ICEBERG_ASSIGN_OR_RAISE(auto manifests, snapshot_reader.DeleteManifests(file_io_));
     return std::vector<ManifestFile>(manifests.begin(), manifests.end());
   }
 

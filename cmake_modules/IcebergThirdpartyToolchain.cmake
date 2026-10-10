@@ -314,7 +314,7 @@ function(resolve_avro_dependency)
     fetchcontent_declare(avro-cpp
                          ${FC_DECLARE_COMMON_OPTIONS}
                          GIT_REPOSITORY ${AVRO_GIT_REPOSITORY}
-                         GIT_TAG 997d50d312613e921598aaed30b082f9bcf9c6ea
+                         GIT_TAG 209a3735ec330679790824da54b7558db55e4e7f
                          SOURCE_SUBDIR
                          lang/c++
                          FIND_PACKAGE_ARGS
@@ -350,7 +350,7 @@ function(resolve_avro_dependency)
     endif()
   else()
     set(AVRO_VENDORED FALSE)
-    list(APPEND ICEBERG_SYSTEM_DEPENDENCIES Avro)
+    list(APPEND ICEBERG_SYSTEM_DEPENDENCIES avro-cpp)
   endif()
 
   set(ICEBERG_SYSTEM_DEPENDENCIES
@@ -906,10 +906,7 @@ function(resolve_thrift_dependency)
     return()
   endif()
   if(ICEBERG_THRIFT_BUNDLED)
-    # Arrow's bundled build creates the Thrift C++ runtime as a `thrift` target
-    # scoped to its FetchContent directory, where iceberg_hive cannot see it.
-    # Promote it to a global `thrift::thrift` alias so iceberg_hive can link the
-    # generated Hive Metastore bindings against it.
+    # Expose bundled Thrift and its include paths to Hive.
     if(TARGET thrift AND NOT TARGET thrift::thrift)
       add_library(thrift::thrift INTERFACE IMPORTED GLOBAL)
       target_link_libraries(thrift::thrift INTERFACE thrift)

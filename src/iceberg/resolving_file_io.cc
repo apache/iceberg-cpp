@@ -24,6 +24,7 @@
 #include <utility>
 
 #include "iceberg/file_io_registry.h"
+#include "iceberg/logging/log_macros.h"
 #include "iceberg/util/location_util.h"
 #include "iceberg/util/macros.h"
 #include "iceberg/util/string_util.h"
@@ -40,28 +41,54 @@ Result<std::shared_ptr<FileIO>> ResolvingFileIO::FileIOForPath(
   const auto scheme = StringUtils::ToLower(LocationUtil::ParseScheme(location));
   ICEBERG_ASSIGN_OR_RAISE(const auto name, FileIORegistry::Resolve(scheme));
 
-  {
-    std::shared_lock lock(mutex_);
+  // Loads without holding `mutex_`: building a client can block (an S3 client
+  // without static keys may wait on the EC2 metadata service), which would
+  // stall every other operation. Forwards all credentials; each implementation
+  // applies the prefixes it understands.
+  auto load = [&](const std::vector<StorageCredential>& credentials,
+                  const std::shared_ptr<StorageCredentialProvider>& provider)
+      -> Result<std::shared_ptr<FileIO>> {
+    ICEBERG_ASSIGN_OR_RAISE(std::shared_ptr<FileIO> io,
+                            FileIORegistry::Load(name, properties_));
+    if (auto* credentialed = io->AsSupportsStorageCredentials()) {
+      auto status = credentialed->InitializeStorageCredentials(credentials, provider);
+      if (!status && provider && status.error().kind == ErrorKind::kNotSupported) {
+        ICEBERG_LOG_WARN("FileIO '{}' cannot refresh vended storage credentials", name);
+        status = credentialed->SetStorageCredentials(credentials);
+      }
+      if (!status) {
+        return ::iceberg::unexpected(status.error());
+      }
+    }
+    return io;
+  };
+
+  while (true) {
+    uint64_t generation = 0;
+    std::vector<StorageCredential> credentials;
+    std::shared_ptr<StorageCredentialProvider> provider;
+    {
+      std::shared_lock lock(mutex_);
+      if (const auto cached = io_by_name_.find(name); cached != io_by_name_.end()) {
+        return cached->second;
+      }
+      generation = credential_generation_;
+      credentials = storage_credentials_;
+      provider = provider_;
+    }
+    // Declared before the lock, so a delegate that is not cached is torn down
+    // only after the lock is released.
+    auto loaded = load(credentials, provider);
+    std::unique_lock lock(mutex_);
+    if (generation != credential_generation_) {
+      continue;  // Replaced mid-load; load again with what is installed now.
+    }
     if (const auto cached = io_by_name_.find(name); cached != io_by_name_.end()) {
       return cached->second;
     }
+    ICEBERG_RETURN_UNEXPECTED(loaded);
+    return io_by_name_.try_emplace(name, *loaded).first->second;
   }
-
-  std::unique_lock lock(mutex_);
-  auto it = io_by_name_.find(name);
-  if (it == io_by_name_.end()) {
-    ICEBERG_ASSIGN_OR_RAISE(auto io, FileIORegistry::Load(name, properties_));
-    // Forward all credentials; each implementation applies the prefixes it
-    // understands.
-    if (!storage_credentials_.empty()) {
-      if (auto* credentialed = io->AsSupportsStorageCredentials()) {
-        ICEBERG_RETURN_UNEXPECTED(
-            credentialed->SetStorageCredentials(storage_credentials_));
-      }
-    }
-    it = io_by_name_.emplace(std::string(name), std::move(io)).first;
-  }
-  return it->second;
 }
 
 Result<std::unique_ptr<InputFile>> ResolvingFileIO::NewInputFile(
@@ -103,14 +130,33 @@ Status ResolvingFileIO::SetStorageCredentials(
     const std::vector<StorageCredential>& storage_credentials) {
   // Rebuild delegates lazily with the new credentials. Updating live delegates
   // instead would leave the resolver inconsistent if one of them rejected them.
-  std::unique_lock lock(mutex_);
-  storage_credentials_ = storage_credentials;
-  io_by_name_.clear();
+  // Retired outside the lock: tearing down a delegate can block.
+  decltype(io_by_name_) retired;
+  {
+    std::unique_lock lock(mutex_);
+    storage_credentials_ = storage_credentials;
+    ++credential_generation_;
+    retired.swap(io_by_name_);
+  }
   return {};
 }
 
-const std::vector<StorageCredential>& ResolvingFileIO::credentials() const {
+std::vector<StorageCredential> ResolvingFileIO::credentials() const {
+  std::shared_lock lock(mutex_);
   return storage_credentials_;
+}
+
+Status ResolvingFileIO::InitializeStorageCredentials(
+    const std::vector<StorageCredential>& storage_credentials,
+    std::shared_ptr<StorageCredentialProvider> provider) {
+  std::unique_lock lock(mutex_);
+  if (!io_by_name_.empty()) {
+    return InvalidArgument("Storage credentials must be initialized before first use");
+  }
+  storage_credentials_ = storage_credentials;
+  provider_ = std::move(provider);
+  ++credential_generation_;
+  return {};
 }
 
 }  // namespace iceberg

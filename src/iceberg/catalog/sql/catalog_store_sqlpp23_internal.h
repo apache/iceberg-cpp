@@ -257,7 +257,7 @@ class Sqlpp23CatalogStore final : public CatalogStore {
         }
       });
     });
-    if (!status.has_value()) return std::unexpected(status.error());
+    if (!status.has_value()) return ::iceberg::unexpected(status.error());
     return names;
   }
 
@@ -280,7 +280,7 @@ class Sqlpp23CatalogStore final : public CatalogStore {
         }
       });
     });
-    if (!status.has_value()) return std::unexpected(status.error());
+    if (!status.has_value()) return ::iceberg::unexpected(status.error());
     return properties;
   }
 
@@ -320,7 +320,7 @@ class Sqlpp23CatalogStore final : public CatalogStore {
                 .affected_rows);
       });
     });
-    if (!status.has_value()) return std::unexpected(status.error());
+    if (!status.has_value()) return ::iceberg::unexpected(status.error());
     return affected;
   }
 
@@ -341,7 +341,7 @@ class Sqlpp23CatalogStore final : public CatalogStore {
         }
       });
     });
-    if (!status.has_value()) return std::unexpected(status.error());
+    if (!status.has_value()) return ::iceberg::unexpected(status.error());
     return names;
   }
 
@@ -359,7 +359,7 @@ class Sqlpp23CatalogStore final : public CatalogStore {
         exists = !result.empty();
       });
     });
-    if (!status.has_value()) return std::unexpected(status.error());
+    if (!status.has_value()) return ::iceberg::unexpected(status.error());
     return exists;
   }
 
@@ -383,7 +383,7 @@ class Sqlpp23CatalogStore final : public CatalogStore {
         }
       });
     });
-    if (!status.has_value()) return std::unexpected(status.error());
+    if (!status.has_value()) return ::iceberg::unexpected(status.error());
     return location;
   }
 
@@ -423,7 +423,7 @@ class Sqlpp23CatalogStore final : public CatalogStore {
                 .affected_rows);
       });
     });
-    if (!status.has_value()) return std::unexpected(status.error());
+    if (!status.has_value()) return ::iceberg::unexpected(status.error());
     return affected;
   }
 
@@ -440,7 +440,7 @@ class Sqlpp23CatalogStore final : public CatalogStore {
                 .affected_rows);
       });
     });
-    if (!status.has_value()) return std::unexpected(status.error());
+    if (!status.has_value()) return ::iceberg::unexpected(status.error());
     return affected;
   }
 
@@ -461,7 +461,7 @@ class Sqlpp23CatalogStore final : public CatalogStore {
                 .affected_rows);
       });
     });
-    if (!status.has_value()) return std::unexpected(status.error());
+    if (!status.has_value()) return ::iceberg::unexpected(status.error());
     return affected;
   }
 

@@ -270,8 +270,8 @@ class ReachableFileCleanup : public FileCleanupStrategy {
       const TableMetadata& metadata, int64_t snapshot_id) {
     ICEBERG_ASSIGN_OR_RAISE(auto snapshot, metadata.SnapshotById(snapshot_id));
 
-    SnapshotCache snapshot_cache(snapshot.get());
-    ICEBERG_ASSIGN_OR_RAISE(auto snapshot_manifests, snapshot_cache.Manifests(file_io_));
+    SnapshotReader snapshot_reader(snapshot.get());
+    ICEBERG_ASSIGN_OR_RAISE(auto snapshot_manifests, snapshot_reader.Manifests(file_io_));
 
     return snapshot_manifests | std::views::as_rvalue |
            std::ranges::to<std::unordered_set<ManifestFile>>();
@@ -466,8 +466,8 @@ class IncrementalFileCleanup : public FileCleanupStrategy {
               if (!snapshot) {
                 return {};
               }
-              SnapshotCache snapshot_cache(snapshot.get());
-              auto manifests_result = snapshot_cache.Manifests(file_io_);
+              SnapshotReader snapshot_reader(snapshot.get());
+              auto manifests_result = snapshot_reader.Manifests(file_io_);
               if (!manifests_result.has_value()) {
                 // best-effort
                 return {};
@@ -478,7 +478,9 @@ class IncrementalFileCleanup : public FileCleanupStrategy {
               for (auto& manifest : manifests) {
                 valid_manifest_result.insert(manifest.manifest_path);
 
-                int64_t writer_id = manifest.added_snapshot_id;
+                ICEBERG_CHECK(manifest.added_snapshot_id.has_value(),
+                              "Manifest {} has no snapshot ID", manifest.manifest_path);
+                int64_t writer_id = manifest.added_snapshot_id.value();
                 bool from_valid_snapshots = valid_ids.contains(writer_id);
                 bool is_from_ancestor = ancestor_ids.contains(writer_id);
                 bool is_picked = picked_ancestor_snapshot_ids.contains(writer_id);
@@ -537,8 +539,8 @@ class IncrementalFileCleanup : public FileCleanupStrategy {
                 return {};
               }
 
-              SnapshotCache snapshot_cache(snapshot.get());
-              auto manifests_result = snapshot_cache.Manifests(file_io_);
+              SnapshotReader snapshot_reader(snapshot.get());
+              auto manifests_result = snapshot_reader.Manifests(file_io_);
               if (!manifests_result.has_value()) {
                 return {};
               }
@@ -554,7 +556,9 @@ class IncrementalFileCleanup : public FileCleanupStrategy {
                 }
                 manifests_to_delete.insert(manifest.manifest_path);
 
-                int64_t writer_id = manifest.added_snapshot_id;
+                ICEBERG_CHECK(manifest.added_snapshot_id.has_value(),
+                              "Manifest {} has no snapshot ID", manifest.manifest_path);
+                int64_t writer_id = manifest.added_snapshot_id.value();
                 bool is_from_ancestor = ancestor_ids.contains(writer_id);
                 bool is_from_expiring_snapshot = expired_snapshot_ids.contains(writer_id);
 
@@ -973,9 +977,9 @@ Result<ExpireSnapshots::ApplyResult> ExpireSnapshots::Apply() {
               std::unordered_set<int32_t> spec_ids;
               std::unordered_set<int32_t> schema_ids;
               ICEBERG_ASSIGN_OR_RAISE(auto snapshot, base.SnapshotById(snapshot_id));
-              SnapshotCache snapshot_cache(snapshot.get());
+              SnapshotReader snapshot_reader(snapshot.get());
               ICEBERG_ASSIGN_OR_RAISE(auto manifests,
-                                      snapshot_cache.Manifests(ctx_->table->io()));
+                                      snapshot_reader.Manifests(ctx_->table->io()));
               for (const auto& manifest : manifests) {
                 spec_ids.insert(manifest.partition_spec_id);
               }

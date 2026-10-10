@@ -17,9 +17,12 @@
  * under the License.
  */
 
+#include <algorithm>
 #include <cstdlib>
 #include <memory>
+#include <mutex>
 #include <optional>
+#include <shared_mutex>
 #include <string>
 #include <string_view>
 #include <unordered_map>
@@ -37,6 +40,7 @@
 #include "iceberg/arrow/s3/s3_properties.h"
 #include "iceberg/logging/log_macros.h"
 #include "iceberg/util/macros.h"
+#include "iceberg/util/property_util.h"
 #include "iceberg/util/string_util.h"
 
 namespace iceberg::arrow {
@@ -52,30 +56,14 @@ const std::string* FindProperty(
   return it == properties.end() ? nullptr : &it->second;
 }
 
-Result<std::optional<bool>> ParseOptionalBool(
-    const std::unordered_map<std::string, std::string>& properties,
-    std::string_view key) {
-  const auto* value = FindProperty(properties, key);
-  if (value == nullptr) {
-    return std::nullopt;
-  }
-  if (StringUtils::EqualsIgnoreCase(*value, "true")) {
-    return true;
-  }
-  if (StringUtils::EqualsIgnoreCase(*value, "false")) {
-    return false;
-  }
-  return InvalidArgument(R"("{}" must be "true" or "false")", key);
-}
-
 Status EnsureS3Initialized() {
   static const ::arrow::Status init_status = []() {
     auto options = ::arrow::fs::S3GlobalOptions::Defaults();
     return ::arrow::fs::InitializeS3(options);
   }();
   if (!init_status.ok()) {
-    return std::unexpected(Error{.kind = ::iceberg::arrow::ToErrorKind(init_status),
-                                 .message = init_status.ToString()});
+    return ::iceberg::unexpected(Error{.kind = ::iceberg::arrow::ToErrorKind(init_status),
+                                       .message = init_status.ToString()});
   }
   return {};
 }
@@ -124,7 +112,7 @@ Result<::arrow::fs::S3Options> ConfigureS3Options(
     options.region = *region;
   }
 
-  // Configure endpoint (for MinIO, LocalStack, etc.)
+  // Configure endpoint (for S3-compatible object stores)
   if (const auto* endpoint = FindProperty(properties, S3Properties::kEndpoint);
       endpoint != nullptr) {
     options.endpoint_override = SplitEndpointScheme(*endpoint, options);
@@ -136,15 +124,17 @@ Result<::arrow::fs::S3Options> ConfigureS3Options(
     options.endpoint_override = SplitEndpointScheme(endpoint_env, options);
   }
 
-  ICEBERG_ASSIGN_OR_RAISE(const auto path_style_access,
-                          ParseOptionalBool(properties, S3Properties::kPathStyleAccess));
+  // Both boolean properties below read through PropertyUtil, so a value that does not
+  // spell a boolean reads as false instead of failing the build, as in Java.
+  const auto path_style_access =
+      PropertyUtil::PropertyAsOptionalBoolean(properties, S3Properties::kPathStyleAccess);
   if (path_style_access.has_value()) {
     options.force_virtual_addressing = !*path_style_access;
   }
 
   // Explicit `s3.ssl.enabled` overrides any endpoint-derived scheme.
-  ICEBERG_ASSIGN_OR_RAISE(const auto ssl_enabled,
-                          ParseOptionalBool(properties, S3Properties::kSslEnabled));
+  const auto ssl_enabled =
+      PropertyUtil::PropertyAsOptionalBoolean(properties, S3Properties::kSslEnabled);
   if (ssl_enabled.has_value()) {
     options.scheme = *ssl_enabled ? "https" : "http";
   }
@@ -192,7 +182,7 @@ class ArrowS3FileIO final : public FileIO, public SupportsStorageCredentials {
  public:
   ArrowS3FileIO(std::shared_ptr<::arrow::fs::FileSystem> arrow_fs,
                 std::unordered_map<std::string, std::string> default_properties)
-      : default_file_io_(std::move(arrow_fs)),
+      : default_file_io_(std::make_shared<ArrowFileSystemFileIO>(std::move(arrow_fs))),
         default_properties_(std::move(default_properties)) {}
 
   Result<std::unique_ptr<InputFile>> NewInputFile(std::string file_location) override;
@@ -209,27 +199,67 @@ class ArrowS3FileIO final : public FileIO, public SupportsStorageCredentials {
   Status SetStorageCredentials(
       const std::vector<StorageCredential>& storage_credentials) override;
 
-  const std::vector<StorageCredential>& credentials() const override {
+  std::vector<StorageCredential> credentials() const override {
+    std::shared_lock lock(mutex_);
     return storage_credentials_;
   }
 
   SupportsStorageCredentials* AsSupportsStorageCredentials() override { return this; }
 
  private:
-  ArrowFileSystemFileIO& FileIOForPath(std::string_view location);
+  /// \brief Delegate serving `location`, pinned by the caller against a
+  /// concurrent credential install.
+  std::shared_ptr<ArrowFileSystemFileIO> FileIOForPath(std::string_view location);
 
-  ArrowFileSystemFileIO default_file_io_;
+  using DelegatesByPrefix =
+      std::vector<std::pair<std::string, std::shared_ptr<ArrowFileSystemFileIO>>>;
+
+  /// \brief Longest-prefix match against one consistent view of the delegates.
+  static std::shared_ptr<ArrowFileSystemFileIO> MatchDelegate(
+      const std::shared_ptr<ArrowFileSystemFileIO>& fallback,
+      const DelegatesByPrefix& by_prefix, std::string_view location);
+
+  /// \brief Build a delegate for each credential this FileIO can serve.
+  ///
+  /// Runs without holding `mutex_`: building an S3 client can block (without
+  /// static keys the AWS SDK may wait on the EC2 metadata service), which would
+  /// stall every concurrent operation. Reads no mutable member state.
+  Result<DelegatesByPrefix> BuildDelegates(
+      const std::vector<StorageCredential>& storage_credentials) const;
+
+  /// \brief Swap in credentials and delegates, handing back the retired ones.
+  ///
+  /// Callers must hold `mutex_` exclusively and let the returned generation
+  /// destruct only after releasing it: tearing down an S3 client can block on
+  /// in-flight requests, which would stall every operation.
+  void InstallCredentials(std::vector<StorageCredential>& storage_credentials,
+                          DelegatesByPrefix& delegates);
+
+  std::shared_ptr<ArrowFileSystemFileIO> default_file_io_;
   std::unordered_map<std::string, std::string> default_properties_;
+  // Guards everything below; shared because reads happen per file operation.
+  mutable std::shared_mutex mutex_;
   std::vector<StorageCredential> storage_credentials_;
-  std::vector<std::pair<std::string, std::unique_ptr<ArrowFileSystemFileIO>>>
-      file_io_by_prefix_;
+  DelegatesByPrefix file_io_by_prefix_;
 };
 
 Status ArrowS3FileIO::SetStorageCredentials(
     const std::vector<StorageCredential>& storage_credentials) {
-  std::vector<std::pair<std::string, std::unique_ptr<ArrowFileSystemFileIO>>>
-      file_io_by_prefix;
-  file_io_by_prefix.reserve(storage_credentials.size());
+  ICEBERG_ASSIGN_OR_RAISE(auto delegates, BuildDelegates(storage_credentials));
+  auto credentials = storage_credentials;
+  {
+    std::unique_lock lock(mutex_);
+    InstallCredentials(credentials, delegates);
+  }
+  // `credentials` and `delegates` now hold the retired generation and destruct
+  // here, outside the lock.
+  return {};
+}
+
+Result<ArrowS3FileIO::DelegatesByPrefix> ArrowS3FileIO::BuildDelegates(
+    const std::vector<StorageCredential>& storage_credentials) const {
+  DelegatesByPrefix delegates;
+  delegates.reserve(storage_credentials.size());
   // TODO(gangwu): Refresh vended credentials via credentials.uri before tokens expire.
   for (const auto& credential : storage_credentials) {
     ICEBERG_RETURN_UNEXPECTED(credential.Validate());
@@ -244,11 +274,10 @@ Status ArrowS3FileIO::SetStorageCredentials(
       properties[key] = value;
     }
     ICEBERG_ASSIGN_OR_RAISE(auto fs, BuildArrowS3FileSystem(properties));
-    file_io_by_prefix.emplace_back(
-        CanonicalizeS3Scheme(credential.prefix),
-        std::make_unique<ArrowFileSystemFileIO>(std::move(fs)));
+    delegates.emplace_back(CanonicalizeS3Scheme(credential.prefix),
+                           std::make_shared<ArrowFileSystemFileIO>(std::move(fs)));
   }
-  if (file_io_by_prefix.empty() && !storage_credentials.empty()) {
+  if (delegates.empty() && !storage_credentials.empty()) {
     // Silent skipping of every vended credential is hard to diagnose: S3 access
     // would proceed with the default credentials and fail only at IO time.
     ICEBERG_LOG_WARN(
@@ -256,50 +285,80 @@ Status ArrowS3FileIO::SetStorageCredentials(
         "S3 access will use the default credentials",
         storage_credentials.size());
   }
-  file_io_by_prefix_ = std::move(file_io_by_prefix);
-  storage_credentials_ = storage_credentials;
-  return {};
+  return delegates;
 }
 
-ArrowFileSystemFileIO& ArrowS3FileIO::FileIOForPath(std::string_view location) {
-  if (file_io_by_prefix_.empty()) {
-    return default_file_io_;
+void ArrowS3FileIO::InstallCredentials(
+    std::vector<StorageCredential>& storage_credentials, DelegatesByPrefix& delegates) {
+  file_io_by_prefix_.swap(delegates);
+  storage_credentials_.swap(storage_credentials);
+}
+
+std::shared_ptr<ArrowFileSystemFileIO> ArrowS3FileIO::MatchDelegate(
+    const std::shared_ptr<ArrowFileSystemFileIO>& fallback,
+    const DelegatesByPrefix& by_prefix, std::string_view location) {
+  if (by_prefix.empty()) {
+    return fallback;
   }
   const std::string canonical = CanonicalizeS3Scheme(location);
-  ArrowFileSystemFileIO* best = &default_file_io_;
+  auto best = fallback;
   size_t best_len = 0;
-  for (const auto& [prefix, file_io] : file_io_by_prefix_) {
+  for (const auto& [prefix, file_io] : by_prefix) {
     if (prefix.size() > best_len && canonical.starts_with(prefix)) {
-      best = file_io.get();
+      best = file_io;
       best_len = prefix.size();
     }
   }
-  return *best;
+  return best;
+}
+
+std::shared_ptr<ArrowFileSystemFileIO> ArrowS3FileIO::FileIOForPath(
+    std::string_view location) {
+  std::shared_lock lock(mutex_);
+  return MatchDelegate(default_file_io_, file_io_by_prefix_, location);
 }
 
 Result<std::unique_ptr<InputFile>> ArrowS3FileIO::NewInputFile(
     std::string file_location) {
-  return FileIOForPath(file_location).NewInputFile(std::move(file_location));
+  return FileIOForPath(file_location)->NewInputFile(std::move(file_location));
 }
 
 Result<std::unique_ptr<InputFile>> ArrowS3FileIO::NewInputFile(std::string file_location,
                                                                size_t length) {
-  return FileIOForPath(file_location).NewInputFile(std::move(file_location), length);
+  return FileIOForPath(file_location)->NewInputFile(std::move(file_location), length);
 }
 
 Result<std::unique_ptr<OutputFile>> ArrowS3FileIO::NewOutputFile(
     std::string file_location) {
-  return FileIOForPath(file_location).NewOutputFile(std::move(file_location));
+  return FileIOForPath(file_location)->NewOutputFile(std::move(file_location));
 }
 
 Status ArrowS3FileIO::DeleteFile(const std::string& file_location) {
-  return FileIOForPath(file_location).DeleteFile(file_location);
+  return FileIOForPath(file_location)->DeleteFile(file_location);
 }
 
 Status ArrowS3FileIO::DeleteFiles(const std::vector<std::string>& file_locations) {
-  std::unordered_map<ArrowFileSystemFileIO*, std::vector<std::string>> locations_by_io;
+  // One snapshot so the whole batch matches the same delegate generation; only
+  // ever a handful of delegates, so a linear scan beats hashing.
+  std::shared_ptr<ArrowFileSystemFileIO> fallback;
+  DelegatesByPrefix by_prefix;
+  {
+    std::shared_lock lock(mutex_);
+    fallback = default_file_io_;
+    by_prefix = file_io_by_prefix_;
+  }
+  std::vector<std::pair<std::shared_ptr<ArrowFileSystemFileIO>, std::vector<std::string>>>
+      locations_by_io;
   for (const auto& file_location : file_locations) {
-    locations_by_io[&FileIOForPath(file_location)].push_back(file_location);
+    auto file_io = MatchDelegate(fallback, by_prefix, file_location);
+    auto it = std::ranges::find_if(
+        locations_by_io, [&](const auto& entry) { return entry.first == file_io; });
+    if (it == locations_by_io.end()) {
+      locations_by_io.emplace_back(std::move(file_io),
+                                   std::vector<std::string>{file_location});
+    } else {
+      it->second.push_back(file_location);
+    }
   }
   for (auto& [file_io, locations] : locations_by_io) {
     ICEBERG_RETURN_UNEXPECTED(file_io->DeleteFiles(locations));

@@ -43,3 +43,12 @@ repos:
     rev: v0.6.10
     hooks:
       - id: cmake-format
+
+  - repo: local
+    hooks:
+      - id: generate-public-headers
+        name: check src/iceberg/cpp20_compatibility_internal.h is up to date
+        entry: python ci/scripts/generate_public_headers.py
+        language: python
+        files: ^(src/.*(\.hpp?|CMakeLists\.txt)|ci/scripts/generate_public_headers\.py)$
+        pass_filenames: false

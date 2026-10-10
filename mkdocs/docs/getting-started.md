@@ -112,6 +112,35 @@ If using provided Apache Arrow, include both paths:
 cmake -S . -B build -G Ninja -DCMAKE_PREFIX_PATH="/path/to/install;/path/to/arrow"
 ```
 
+The examples default to C++23.
+
+### Using the Library from C++20
+
+To use iceberg-cpp from a C++20 application, build the library with
+`ICEBERG_CXX20_COMPAT=ON`. The library itself still requires C++23. Run these
+commands from the repository root:
+
+```bash
+cmake -S . -B build-compat -G Ninja -DICEBERG_CXX20_COMPAT=ON -DCMAKE_INSTALL_PREFIX=/path/to/compat-install
+cmake --build build-compat
+cmake --install build-compat
+```
+
+Then build the example against that installation:
+
+```bash
+cmake -S example -B example/build -G Ninja -DCMAKE_PREFIX_PATH=/path/to/compat-install -DICEBERG_EXAMPLE_CXX_STANDARD=20
+cmake --build example/build
+```
+
+Your toolchain must support C++20 library features such as `std::format`.
+In this mode, base setters return base-class references, so call derived-specific
+methods separately instead of chaining them. Use matching headers and libraries;
+do not mix the default and compatibility packages in one program.
+
+See [Contributing](contributing.md#public-header-compatibility) for implementation
+and testing details.
+
 ## Customizing Dependency URLs
 
 If you experience network issues when downloading dependencies, you can override the download URLs using environment variables:

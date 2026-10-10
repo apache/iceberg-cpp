@@ -19,6 +19,8 @@
 
 #include "iceberg/expression/inclusive_metrics_evaluator.h"
 
+#include <ranges>
+
 #include "iceberg/expression/binder.h"
 #include "iceberg/expression/expression_visitor.h"
 #include "iceberg/expression/rewrite_not.h"

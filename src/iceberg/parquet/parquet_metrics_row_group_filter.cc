@@ -56,11 +56,7 @@ class MetricsVisitor : public BoundVisitor<bool> {
 
   Result<bool> AlwaysFalse() override { return kRowsCannotMatch; }
 
-  Result<bool> Not(bool) override {
-    // Make() rewrites NOT before evaluation. If one remains, keep the group:
-    // negating a "might match" result cannot prove that no rows match.
-    return kRowsMightMatch;
-  }
+  Result<bool> Not(bool result) override { return !result; }
 
   Result<bool> And(bool left, bool right) override { return left && right; }
 

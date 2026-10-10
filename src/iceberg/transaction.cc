@@ -442,7 +442,7 @@ Result<std::shared_ptr<Table>> Transaction::Commit() {
   try {
     auto builder_status = ctx_->metadata_builder->CheckErrors();
     if (!builder_status) {
-      commit_result = std::unexpected(builder_status.error());
+      commit_result = ::iceberg::unexpected(builder_status.error());
     } else {
       const auto& props = ctx_->table->properties();
       const int32_t num_retries =

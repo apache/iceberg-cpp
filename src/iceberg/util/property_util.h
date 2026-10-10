@@ -22,7 +22,9 @@
 /// \file iceberg/util/property_util.h
 /// \brief Provide property conversion helpers.
 
+#include <optional>
 #include <string>
+#include <string_view>
 #include <unordered_map>
 
 #include "iceberg/iceberg_export.h"
@@ -34,6 +36,33 @@ class ICEBERG_EXPORT PropertyUtil {
  public:
   static Status ValidateCommitProperties(
       const std::unordered_map<std::string, std::string>& properties);
+
+  /// \brief Read a boolean property from a property map.
+  ///
+  /// Mirrors Java's PropertyUtil.propertyAsBoolean: the value is parsed with
+  /// StringUtils::ParseBoolean, so anything that is not "true" ignoring case reads as
+  /// false rather than being rejected.
+  ///
+  /// \param properties The property map to read from.
+  /// \param key The property key.
+  /// \param default_value Returned when the property is absent.
+  /// \return The parsed value, or default_value if the property is absent.
+  static bool PropertyAsBoolean(
+      const std::unordered_map<std::string, std::string>& properties,
+      std::string_view key, bool default_value);
+
+  /// \brief Read a boolean property that may be unset.
+  ///
+  /// Like PropertyAsBoolean, but returns std::nullopt when the property is absent so
+  /// callers can distinguish an unset property from an explicit "false". Mirrors Java's
+  /// PropertyUtil.propertyAsNullableBoolean.
+  ///
+  /// \param properties The property map to read from.
+  /// \param key The property key.
+  /// \return The parsed value, or std::nullopt if the property is absent.
+  static std::optional<bool> PropertyAsOptionalBoolean(
+      const std::unordered_map<std::string, std::string>& properties,
+      std::string_view key);
 };
 
 }  // namespace iceberg

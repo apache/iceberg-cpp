@@ -142,12 +142,13 @@ class FastAppendTest : public UpdateTestBase {
     return data_file;
   }
 
-  Result<ManifestFile> WriteManifest(
-      const std::string& path, const std::vector<std::shared_ptr<DataFile>>& files) {
+  Result<ManifestFile> WriteManifest(const std::string& path,
+                                     const std::vector<std::shared_ptr<DataFile>>& files,
+                                     std::optional<int64_t> snapshot_id = std::nullopt) {
     ICEBERG_ASSIGN_OR_RAISE(
-        auto writer, ManifestWriter::MakeWriter(table_->metadata()->format_version,
-                                                kInvalidSnapshotId, path, file_io_, spec_,
-                                                schema_, ManifestContent::kData));
+        auto writer,
+        ManifestWriter::MakeWriter(table_->metadata()->format_version, snapshot_id, path,
+                                   file_io_, spec_, schema_, ManifestContent::kData));
     for (const auto& file : files) {
       ManifestEntry entry;
       entry.status = ManifestStatus::kAdded;
@@ -169,8 +170,8 @@ class FastAppendTest : public UpdateTestBase {
 
   Result<std::vector<ManifestFile>> CurrentDataManifests() {
     ICEBERG_ASSIGN_OR_RAISE(auto snapshot, table_->current_snapshot());
-    SnapshotCache snapshot_cache(snapshot.get());
-    ICEBERG_ASSIGN_OR_RAISE(auto manifests, snapshot_cache.DataManifests(file_io_));
+    SnapshotReader snapshot_reader(snapshot.get());
+    ICEBERG_ASSIGN_OR_RAISE(auto manifests, snapshot_reader.DataManifests(file_io_));
     return std::vector<ManifestFile>(manifests.begin(), manifests.end());
   }
 
@@ -383,8 +384,8 @@ TEST_F(FastAppendTest, CommitFailureIgnoresCleanupDeleteFailure) {
   });
   ASSERT_THAT(append->Commit(), IsOk());
   ICEBERG_UNWRAP_OR_FAIL(auto snapshot, txn->current().Snapshot());
-  SnapshotCache cache(snapshot.get());
-  ICEBERG_UNWRAP_OR_FAIL(auto manifests, cache.Manifests(file_io_));
+  SnapshotReader snapshot_reader(snapshot.get());
+  ICEBERG_UNWRAP_OR_FAIL(auto manifests, snapshot_reader.Manifests(file_io_));
   ASSERT_THAT(manifests, ::testing::SizeIs(1));
   EXPECT_TRUE(deleted_paths.empty());
 
@@ -448,8 +449,8 @@ TEST_F(FastAppendTest, RebaseCopiesAppendManifestAgain) {
       ASSERT_THAT(properties->Commit(), IsOk());
     }
     ICEBERG_UNWRAP_OR_FAIL(auto snapshot, txn->current().Snapshot());
-    SnapshotCache cache(snapshot.get());
-    ICEBERG_UNWRAP_OR_FAIL(auto manifests, cache.DataManifests(file_io_));
+    SnapshotReader snapshot_reader(snapshot.get());
+    ICEBERG_UNWRAP_OR_FAIL(auto manifests, snapshot_reader.DataManifests(file_io_));
     ASSERT_THAT(manifests, ::testing::SizeIs(1));
     const auto& manifest_path = manifests[0].manifest_path;
     EXPECT_NE(manifest_path, path);
@@ -493,6 +494,49 @@ TEST_F(FastAppendTest, RebaseCopiesAppendManifestAgain) {
               ::testing::Not(::testing::Contains(manifests[0].manifest_path)));
   EXPECT_THAT(file_io_->ReadFile(path, std::nullopt), IsOk());
   EXPECT_THAT(file_io_->ReadFile(attempt_lists[2], std::nullopt), IsOk());
+}
+
+TEST_F(FastAppendTest, AppendManifestWithSnapshotIdInheritance) {
+  const auto path = table_location_ + "/metadata/inherited.avro";
+  ICEBERG_UNWRAP_OR_FAIL(auto manifest, WriteManifest(path, {file_a_, file_b_}));
+  ASSERT_FALSE(manifest.added_snapshot_id.has_value());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto append, table_->NewFastAppend());
+  append->AppendManifest(manifest);
+  EXPECT_THAT(append->Commit(), IsOk());
+
+  EXPECT_THAT(table_->Refresh(), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto snapshot, table_->current_snapshot());
+  ICEBERG_UNWRAP_OR_FAIL(auto manifests, CurrentDataManifests());
+  ASSERT_THAT(manifests, ::testing::SizeIs(1));
+  EXPECT_EQ(manifests[0].manifest_path, path);
+  EXPECT_EQ(manifests[0].added_snapshot_id, snapshot->snapshot_id);
+  ICEBERG_UNWRAP_OR_FAIL(auto entries, ReadEntries(manifests[0]));
+  ASSERT_THAT(entries, ::testing::SizeIs(2));
+  EXPECT_EQ(entries[0].snapshot_id, snapshot->snapshot_id);
+  EXPECT_EQ(entries[1].snapshot_id, snapshot->snapshot_id);
+}
+
+TEST_F(FastAppendTest, AppendManifestWithExplicitInvalidSnapshotIdIsCopied) {
+  const auto path = table_location_ + "/metadata/invalid.avro";
+  ICEBERG_UNWRAP_OR_FAIL(auto manifest,
+                         WriteManifest(path, {file_a_, file_b_}, kInvalidSnapshotId));
+  ASSERT_EQ(manifest.added_snapshot_id, kInvalidSnapshotId);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto append, table_->NewFastAppend());
+  append->AppendManifest(manifest);
+  EXPECT_THAT(append->Commit(), IsOk());
+
+  EXPECT_THAT(table_->Refresh(), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto snapshot, table_->current_snapshot());
+  ICEBERG_UNWRAP_OR_FAIL(auto manifests, CurrentDataManifests());
+  ASSERT_THAT(manifests, ::testing::SizeIs(1));
+  EXPECT_NE(manifests[0].manifest_path, path);
+  EXPECT_EQ(manifests[0].added_snapshot_id, snapshot->snapshot_id);
+  ICEBERG_UNWRAP_OR_FAIL(auto entries, ReadEntries(manifests[0]));
+  ASSERT_THAT(entries, ::testing::SizeIs(2));
+  EXPECT_EQ(entries[0].snapshot_id, snapshot->snapshot_id);
+  EXPECT_EQ(entries[1].snapshot_id, snapshot->snapshot_id);
 }
 
 TEST_F(FastAppendTest, AppendDuplicateFile) {
@@ -1076,8 +1120,8 @@ TEST_F(FastAppendTest, TransientConflictThenUnknownPreservesInitialAttempt) {
   EXPECT_TRUE(deleted_paths.empty());
   ICEBERG_UNWRAP_OR_FAIL(auto snapshot, txn->current().Snapshot());
   EXPECT_THAT(file_io_->ReadFile(snapshot->manifest_list, std::nullopt), IsOk());
-  SnapshotCache cache(snapshot.get());
-  ICEBERG_UNWRAP_OR_FAIL(auto manifests, cache.Manifests(file_io_));
+  SnapshotReader snapshot_reader(snapshot.get());
+  ICEBERG_UNWRAP_OR_FAIL(auto manifests, snapshot_reader.Manifests(file_io_));
   ASSERT_EQ(manifests.size(), 1U);
   EXPECT_THAT(file_io_->ReadFile(manifests[0].manifest_path, std::nullopt), IsOk());
   EXPECT_THAT(txn->Abort(), IsError(ErrorKind::kValidationFailed));
@@ -1323,8 +1367,8 @@ TEST_F(FastAppendTest, ReplayFailurePartwayThroughCleansAllUncommittedGeneration
   auto metadata = ReloadMetadata();
   for (const auto& snapshot : metadata->snapshots) {
     committed_paths.insert(snapshot->manifest_list);
-    SnapshotCache cache(snapshot.get());
-    ICEBERG_UNWRAP_OR_FAIL(auto manifests, cache.Manifests(file_io_));
+    SnapshotReader snapshot_reader(snapshot.get());
+    ICEBERG_UNWRAP_OR_FAIL(auto manifests, snapshot_reader.Manifests(file_io_));
     for (const auto& manifest : manifests) {
       committed_paths.insert(manifest.manifest_path);
     }

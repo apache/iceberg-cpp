@@ -22,6 +22,7 @@
 /// \file iceberg/resolving_file_io.h
 /// \brief FileIO that resolves the concrete implementation per file-path scheme.
 
+#include <cstdint>
 #include <memory>
 #include <shared_mutex>
 #include <string>
@@ -38,6 +39,9 @@
 namespace iceberg {
 
 /// \brief FileIO that resolves and caches implementations by registry name.
+///
+/// Vended credentials and any credential provider are forwarded to every resolved
+/// implementation that supports them; each applies what it understands.
 class ICEBERG_EXPORT ResolvingFileIO final : public FileIO,
                                              public SupportsStorageCredentials {
  public:
@@ -58,7 +62,16 @@ class ICEBERG_EXPORT ResolvingFileIO final : public FileIO,
   Status SetStorageCredentials(
       const std::vector<StorageCredential>& storage_credentials) override;
 
-  const std::vector<StorageCredential>& credentials() const override;
+  /// \brief Return the credentials installed on this resolver.
+  ///
+  /// Not necessarily the ones in use: a resolved implementation refreshes its
+  /// own without reporting back.
+  std::vector<StorageCredential> credentials() const override;
+
+  /// \brief Install initial credentials before the first delegate is loaded.
+  Status InitializeStorageCredentials(
+      const std::vector<StorageCredential>& storage_credentials,
+      std::shared_ptr<StorageCredentialProvider> provider) override;
 
   SupportsStorageCredentials* AsSupportsStorageCredentials() override { return this; }
 
@@ -67,9 +80,13 @@ class ICEBERG_EXPORT ResolvingFileIO final : public FileIO,
   Result<std::shared_ptr<FileIO>> FileIOForPath(std::string_view location);
 
   std::unordered_map<std::string, std::string> properties_;
-  // Guards lazy resolution and credential refresh.
-  std::shared_mutex mutex_;
+  // Guards lazy resolution and credential state.
+  mutable std::shared_mutex mutex_;
   std::vector<StorageCredential> storage_credentials_;
+  std::shared_ptr<StorageCredentialProvider> provider_;
+  // Bumped by every credential install, so a delegate loaded from an older set
+  // never reaches the cache.
+  uint64_t credential_generation_ = 0;
   std::unordered_map<std::string, std::shared_ptr<FileIO>, StringHash, StringEqual>
       io_by_name_;
 };

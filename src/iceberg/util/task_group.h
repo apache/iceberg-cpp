@@ -73,26 +73,30 @@ class ICEBERG_TEMPLATE_CLASS_EXPORT TaskGroup {
     requires(kRetryEnabled)
       : retry_config_(std::move(retry_config)) {}
 
-  auto&& SetExecutor(this auto&& self, OptionalExecutor executor) {
-    self.executor_ = std::move(executor);
-    return std::forward<decltype(self)>(self);
+  TaskGroup& SetExecutor(OptionalExecutor executor) & {
+    executor_ = std::move(executor);
+    return *this;
+  }
+
+  TaskGroup&& SetExecutor(OptionalExecutor executor) && {
+    executor_ = std::move(executor);
+    return std::move(*this);
   }
 
   template <typename F>
     requires((!kRetryEnabled && internal::OnceStatusTask<F>) ||
              (kRetryEnabled && internal::RetryableStatusTask<F>))
-  auto&& Submit(this auto&& self, F&& task) {
-    self.tasks_.emplace_back([&] {
-      if constexpr (!kRetryEnabled) {
-        return std::forward<F>(task);
-      } else {
-        return [retry_config = self.retry_config_,
-                task = std::forward<F>(task)]() mutable -> Status {
-          return RetryRunner<RetryPolicy>(retry_config).Run(task);
-        };
-      }
-    }());
-    return std::forward<decltype(self)>(self);
+  TaskGroup& Submit(F&& task) & {
+    AddTask(std::forward<F>(task));
+    return *this;
+  }
+
+  template <typename F>
+    requires((!kRetryEnabled && internal::OnceStatusTask<F>) ||
+             (kRetryEnabled && internal::RetryableStatusTask<F>))
+  TaskGroup&& Submit(F&& task) && {
+    AddTask(std::forward<F>(task));
+    return std::move(*this);
   }
 
   Status Run() && {
@@ -103,6 +107,21 @@ class ICEBERG_TEMPLATE_CLASS_EXPORT TaskGroup {
   }
 
  private:
+  // Shared by both Submit overloads.
+  template <typename F>
+  void AddTask(F&& task) {
+    tasks_.emplace_back([&] {
+      if constexpr (!kRetryEnabled) {
+        return std::forward<F>(task);
+      } else {
+        return [retry_config = retry_config_,
+                task = std::forward<F>(task)]() mutable -> Status {
+          return RetryRunner<RetryPolicy>(retry_config).Run(task);
+        };
+      }
+    }());
+  }
+
   std::vector<FnOnce<Status()>> tasks_;
   OptionalExecutor executor_;
   [[no_unique_address]] RetryConfigStorage retry_config_;

@@ -20,9 +20,26 @@ cmake_minimum_required(VERSION 3.25)
 
 project(example)
 
-set(CMAKE_CXX_STANDARD 23)
+set(ICEBERG_EXAMPLE_CXX_STANDARD
+    23
+    CACHE STRING "C++ standard used to build the example (20 or newer)")
+if(NOT ICEBERG_EXAMPLE_CXX_STANDARD MATCHES "^[0-9]+$")
+  message(FATAL_ERROR "ICEBERG_EXAMPLE_CXX_STANDARD must be a numeric CMake C++ standard")
+endif()
+if(ICEBERG_EXAMPLE_CXX_STANDARD EQUAL 98 OR ICEBERG_EXAMPLE_CXX_STANDARD LESS 20)
+  message(FATAL_ERROR "ICEBERG_EXAMPLE_CXX_STANDARD must be 20 or newer, got "
+                      "'${ICEBERG_EXAMPLE_CXX_STANDARD}'")
+endif()
+
+set(CMAKE_CXX_STANDARD ${ICEBERG_EXAMPLE_CXX_STANDARD})
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
 find_package(iceberg CONFIG REQUIRED COMPONENTS bundle rest)
+if(ICEBERG_EXAMPLE_CXX_STANDARD EQUAL 20 AND NOT ICEBERG_CXX20_COMPAT)
+  message(FATAL_ERROR "C++20 examples require an Iceberg package built with "
+                      "ICEBERG_CXX20_COMPAT=ON")
+endif()
 
 add_executable(demo_example demo_example.cc)
 

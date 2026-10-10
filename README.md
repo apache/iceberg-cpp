@@ -39,6 +39,11 @@ C++ implementation of [Apache Iceberg™](https://iceberg.apache.org/).
 
 - Python 3 and [pre-commit](https://pre-commit.com/) (for linting)
 
+Building and developing iceberg-cpp requires C++23. Applications linking against
+an installation built with `ICEBERG_CXX20_COMPAT=ON` may also use C++20 through
+the public-header compatibility layer. See [Using the Library from C++20](mkdocs/docs/getting-started.md#using-the-library-from-c20)
+for its scope.
+
 ## Quick Start
 
 ```bash
@@ -104,6 +109,7 @@ cmake --install build
 | `ICEBERG_SQL_MYSQL` | `OFF` | Build the MySQL connector for the SQL catalog |
 | `ICEBERG_ENABLE_ASAN` | `OFF` | Enable Address Sanitizer |
 | `ICEBERG_ENABLE_UBSAN` | `OFF` | Enable Undefined Behavior Sanitizer |
+| `ICEBERG_CXX20_COMPAT` | `OFF` | Build a package with the C++20-compatible public API; library sources remain C++23 |
 
 ### Build Examples
 
@@ -119,6 +125,13 @@ If you are using provided Apache Arrow, include `/path/to/arrow` in `CMAKE_PREFI
 
 ```bash
 cmake -S . -B build -G Ninja -DCMAKE_PREFIX_PATH="/path/to/install;/path/to/arrow"
+```
+
+The examples default to C++23. To compile an application as C++20, use a library
+installation built with `ICEBERG_CXX20_COMPAT=ON` and set the example standard:
+
+```bash
+cmake -S . -B build -G Ninja -DCMAKE_PREFIX_PATH=/path/to/compat-install -DICEBERG_EXAMPLE_CXX_STANDARD=20
 ```
 
 ## Customizing Dependency URLs

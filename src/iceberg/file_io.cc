@@ -35,7 +35,7 @@ Status FinishWithCloseStatus(Status operation_status, Status close_status) {
       error.message += "; additionally failed to close stream: ";
       error.message += close_status.error().message;
     }
-    return std::unexpected<Error>(std::move(error));
+    return ::iceberg::unexpected<Error>(std::move(error));
   }
   return close_status;
 }

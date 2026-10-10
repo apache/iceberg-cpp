@@ -28,6 +28,7 @@
 #include <string_view>
 #include <utility>
 
+#include "iceberg/compat/unreachable.h"
 #include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
 #include "iceberg/util/string_util.h"
@@ -51,7 +52,7 @@ ICEBERG_EXPORT constexpr std::string_view ToString(CounterUnit unit) noexcept {
     case CounterUnit::kUndefined:
       return "undefined";
   }
-  std::unreachable();
+  ::iceberg::unreachable();
 }
 
 /// \brief Parse a CounterUnit from a string.

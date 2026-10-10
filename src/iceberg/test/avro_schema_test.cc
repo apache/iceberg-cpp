@@ -1339,6 +1339,64 @@ TEST(AvroSchemaProjectionTest, RejectTimestampNsFromMicrosType) {
   ASSERT_THAT(projection_result, HasErrorMessage("Cannot read"));
 }
 
+TEST(AvroSchemaProjectionTest, ProjectTimestampTzFromParsedAdjustToUtc) {
+  Schema expected_schema({
+      SchemaField::MakeRequired(/*field_id=*/1, "ts", iceberg::timestamp_tz()),
+      SchemaField::MakeRequired(/*field_id=*/2, "ts_ns", iceberg::timestamptz_ns()),
+  });
+
+  std::string avro_schema_json = R"({
+    "type": "record",
+    "name": "iceberg_schema",
+    "fields": [
+      {"name": "ts", "type": {
+        "type": "long",
+        "logicalType": "timestamp-micros",
+        "adjust-to-utc": true
+      }, "field-id": 1},
+      {"name": "ts_ns", "type": {
+        "type": "long",
+        "logicalType": "timestamp-nanos",
+        "adjust-to-utc": true
+      }, "field-id": 2}
+    ]
+  })";
+  auto avro_schema = ::avro::compileJsonSchemaFromString(avro_schema_json);
+
+  auto projection_result =
+      Project(expected_schema, avro_schema.root(), /*prune_source=*/false);
+  ASSERT_THAT(projection_result, IsOk());
+
+  const auto& projection = *projection_result;
+  ASSERT_EQ(projection.fields.size(), 2);
+  EXPECT_EQ(projection.fields[0].kind, FieldProjection::Kind::kProjected);
+  EXPECT_EQ(projection.fields[1].kind, FieldProjection::Kind::kProjected);
+}
+
+TEST(AvroSchemaProjectionTest, RejectTimestampFromParsedAdjustToUtc) {
+  Schema expected_schema({
+      SchemaField::MakeRequired(/*field_id=*/1, "ts", iceberg::timestamp()),
+  });
+
+  std::string avro_schema_json = R"({
+    "type": "record",
+    "name": "iceberg_schema",
+    "fields": [
+      {"name": "ts", "type": {
+        "type": "long",
+        "logicalType": "timestamp-micros",
+        "adjust-to-utc": true
+      }, "field-id": 1}
+    ]
+  })";
+  auto avro_schema = ::avro::compileJsonSchemaFromString(avro_schema_json);
+
+  auto projection_result =
+      Project(expected_schema, avro_schema.root(), /*prune_source=*/false);
+  ASSERT_THAT(projection_result, IsError(ErrorKind::kInvalidSchema));
+  ASSERT_THAT(projection_result, HasErrorMessage("Cannot read"));
+}
+
 TEST(AvroSchemaProjectionTest, ProjectMapTypeWithNonStringKey) {
   ::iceberg::avro::RegisterLogicalTypes();
 

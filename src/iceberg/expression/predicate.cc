@@ -283,13 +283,18 @@ Result<std::shared_ptr<Expression>> UnboundPredicateImpl<B>::BindUnaryOperation(
           AllAncestorsRequired(struct_type, *bound_term->reference())) {
         return Expressions::AlwaysFalse();
       }
-      // TODO(gangwu): deal with UnknownType
+      if (bound_term->type()->type_id() == TypeId::kUnknown) {
+        return Expressions::AlwaysTrue();
+      }
       return BoundUnaryPredicate::Make(Expression::Operation::kIsNull,
                                        std::move(bound_term));
     case Expression::Operation::kNotNull:
       if (!bound_term->MayProduceNull() &&
           AllAncestorsRequired(struct_type, *bound_term->reference())) {
         return Expressions::AlwaysTrue();
+      }
+      if (bound_term->type()->type_id() == TypeId::kUnknown) {
+        return Expressions::AlwaysFalse();
       }
       return BoundUnaryPredicate::Make(Expression::Operation::kNotNull,
                                        std::move(bound_term));

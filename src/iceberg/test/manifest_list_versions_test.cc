@@ -223,6 +223,18 @@ TEST_F(TestManifestListVersions, TestV1Write) {
   EXPECT_EQ(manifest.deleted_rows_count, kDeletedRows);
 }
 
+TEST_F(TestManifestListVersions, RejectsUnassignedSnapshotId) {
+  ICEBERG_UNWRAP_OR_FAIL(auto writer, ManifestListWriter::MakeWriter(
+                                          /*format_version=*/2, kSnapshotId,
+                                          /*parent_snapshot_id=*/std::nullopt,
+                                          CreateManifestListPath(), file_io_, kSeqNum));
+
+  ManifestFile manifest;
+  manifest.manifest_path = "unassigned.avro";
+  EXPECT_THAT(writer->Add(manifest),
+              HasErrorMessage("Cannot write manifest with unassigned snapshot ID"));
+}
+
 TEST_F(TestManifestListVersions, TestV2Write) {
   auto manifest = WriteAndReadManifestList(/*format_version=*/2);
 

@@ -30,6 +30,7 @@
 #include <unordered_map>
 #include <variant>
 
+#include "iceberg/compat/unreachable.h"
 #include "iceberg/iceberg_export.h"
 #include "iceberg/manifest/manifest_list.h"
 #include "iceberg/result.h"
@@ -57,7 +58,7 @@ ICEBERG_EXPORT constexpr std::string_view ToString(SnapshotRefType type) noexcep
     case SnapshotRefType::kTag:
       return "tag";
   }
-  std::unreachable();
+  ::iceberg::unreachable();
 }
 /// \brief Get the relative snapshot reference type from name
 ICEBERG_EXPORT constexpr Result<SnapshotRefType> SnapshotRefTypeFromString(
@@ -462,12 +463,11 @@ struct ICEBERG_EXPORT Snapshot {
   bool Equals(const Snapshot& other) const;
 };
 
-/// \brief A snapshot with cached manifest loading capabilities.
-///
-/// This class wraps a Snapshot pointer and provides lazy-loading of manifests.
-class ICEBERG_EXPORT SnapshotCache {
+/// \brief Reads a snapshot's manifests, loading and caching its manifest list on
+/// first access.
+class ICEBERG_EXPORT SnapshotReader {
  public:
-  explicit SnapshotCache(const Snapshot* snapshot) : snapshot_(snapshot) {}
+  explicit SnapshotReader(const Snapshot* snapshot) : snapshot_(snapshot) {}
 
   /// \brief Get the underlying Snapshot reference
   const Snapshot& snapshot() const { return *snapshot_; }

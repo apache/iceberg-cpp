@@ -29,6 +29,7 @@
 #include <span>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 #include "iceberg/iceberg_export.h"
@@ -193,8 +194,23 @@ class ICEBERG_EXPORT SupportsStorageCredentials {
   virtual Status SetStorageCredentials(
       const std::vector<StorageCredential>& storage_credentials) = 0;
 
-  /// \brief Return currently installed storage credentials.
-  virtual const std::vector<StorageCredential>& credentials() const = 0;
+  /// \brief Return the storage credentials this FileIO holds.
+  ///
+  /// By value because a concurrent install may replace them. An implementation
+  /// that delegates may report what was installed on it.
+  virtual std::vector<StorageCredential> credentials() const = 0;
+
+  /// \brief Install initial credentials and their refresh source before first use.
+  ///
+  /// The default implementation supports static credentials only.
+  virtual Status InitializeStorageCredentials(
+      const std::vector<StorageCredential>& storage_credentials,
+      std::shared_ptr<StorageCredentialProvider> provider) {
+    if (provider) {
+      return NotSupported("Credential refresh is not supported");
+    }
+    return SetStorageCredentials(storage_credentials);
+  }
 };
 
 }  // namespace iceberg

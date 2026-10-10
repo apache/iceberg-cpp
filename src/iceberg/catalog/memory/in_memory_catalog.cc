@@ -185,7 +185,7 @@ Result<bool> InMemoryNamespace::NamespaceExists(const Namespace& namespace_ident
   if (ns.error().kind == ErrorKind::kNoSuchNamespace) {
     return false;
   }
-  return std::unexpected<Error>(ns.error());
+  return ::iceberg::unexpected<Error>(ns.error());
 }
 
 Result<std::vector<Namespace>> InMemoryNamespace::ListNamespaces(

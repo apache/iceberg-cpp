@@ -74,8 +74,8 @@ jobs:
             bundle_awssdk: "ON"
     env:
       ICEBERG_TEST_S3_URI: s3://iceberg-test
-      AWS_ACCESS_KEY_ID: minio
-      AWS_SECRET_ACCESS_KEY: minio123
+      AWS_ACCESS_KEY_ID: admin
+      AWS_SECRET_ACCESS_KEY: password
       AWS_DEFAULT_REGION: us-east-1
       AWS_ENDPOINT_URL: http://127.0.0.1:9000
       AWS_EC2_METADATA_DISABLED: "TRUE"
@@ -114,10 +114,10 @@ jobs:
         run: |
           echo "CC=${{ matrix.CC }}" >> $GITHUB_ENV
           echo "CXX=${{ matrix.CXX }}" >> $GITHUB_ENV
-      - name: Start MinIO
+      - name: Start Object Store
         if: ${{ matrix.s3 == 'ON' }}
         shell: bash
-        run: bash ci/scripts/start_minio.sh
+        run: bash ci/scripts/start_object_store.sh
       - name: Set up sccache
         uses: ./.github/actions/setup-sccache
         with:
@@ -126,7 +126,15 @@ jobs:
         shell: bash
         env:
           CMAKE_TOOLCHAIN_FILE: ${{ startsWith(matrix.runs-on, 'ubuntu') && matrix.bundle_awssdk == 'OFF' && '/usr/local/share/vcpkg/scripts/buildsystems/vcpkg.cmake' || '' }}
-        run: ci/scripts/build_iceberg.sh "$(pwd)" OFF ON ${{ matrix.s3 }} ${{ matrix.sigv4 }} ${{ matrix.bundle_awssdk }}
+        run: |
+          ci/scripts/build_iceberg.sh \
+            --source-dir "$(pwd)" \
+            --build-type Debug \
+            --sccache ON \
+            --rest-integration-tests OFF \
+            --s3 ${{ matrix.s3 }} \
+            --sigv4 ${{ matrix.sigv4 }} \
+            --bundle-awssdk ${{ matrix.bundle_awssdk }}
       - name: Save sccache
         if: always()
         uses: ./.github/actions/save-sccache

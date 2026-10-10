@@ -25,6 +25,7 @@
 #include <string>
 #include <vector>
 
+#include "iceberg/compat/compiler.h"
 #include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
 
@@ -48,7 +49,8 @@ namespace iceberg {
 #define ICEBERG_BUILDER_ASSIGN_OR_RETURN_WITH_ERROR_IMPL(result_name, lhs, rexpr, ...) \
   auto&& result_name = (rexpr);                                                        \
   if (!result_name) [[unlikely]] {                                                     \
-    return AddError(ErrorKind::kInvalidArgument, __VA_ARGS__);                         \
+    AddError(ErrorKind::kInvalidArgument, __VA_ARGS__);                                \
+    return *this;                                                                      \
   }                                                                                    \
   lhs = std::move(result_name.value());
 
@@ -56,11 +58,12 @@ namespace iceberg {
   ICEBERG_BUILDER_ASSIGN_OR_RETURN_WITH_ERROR_IMPL(                  \
       ICEBERG_ASSIGN_OR_RAISE_NAME(result_, __COUNTER__), lhs, rexpr, __VA_ARGS__)
 
-#define ICEBERG_BUILDER_CHECK(expr, ...)                         \
-  do {                                                           \
-    if (!(expr)) [[unlikely]] {                                  \
-      return AddError(ErrorKind::kInvalidArgument, __VA_ARGS__); \
-    }                                                            \
+#define ICEBERG_BUILDER_CHECK(expr, ...)                  \
+  do {                                                    \
+    if (!(expr)) [[unlikely]] {                           \
+      AddError(ErrorKind::kInvalidArgument, __VA_ARGS__); \
+      return *this;                                       \
+    }                                                     \
   } while (false)
 
 /// \brief Base class for collecting errors in the builder pattern.
@@ -75,7 +78,8 @@ namespace iceberg {
 ///    public:
 ///     MyBuilder& SetValue(int val) {
 ///       if (val < 0) {
-///         return AddError(ErrorKind::kInvalidArgument, "Value must be non-negative");
+///         AddError(ErrorKind::kInvalidArgument, "Value must be non-negative");
+///         return *this;
 ///       }
 ///       value_ = val;
 ///       return *this;
@@ -101,47 +105,76 @@ class ICEBERG_EXPORT ErrorCollector {
   ErrorCollector(const ErrorCollector&) = default;
   ErrorCollector& operator=(const ErrorCollector&) = default;
 
-  /// \brief Add a specific error and return reference to derived class
+  /// \brief Add a specific error
   ///
-  /// \param self Deduced reference to the derived class instance
   /// \param kind The kind of error
   /// \param fmt The format string
   /// \param args The arguments to format the message
-  /// \return Reference to the derived class for method chaining
+  /// \return Reference to the concrete derived builder in the default C++23
+  /// package, or ErrorCollector& in compatibility mode.
+#if ICEBERG_CXX20_COMPAT
+  template <typename... Args>
+  ErrorCollector& AddError(ErrorKind kind, const std::format_string<Args...> fmt,
+                           Args&&... args) {
+    RecordError({kind, std::format(fmt, std::forward<Args>(args)...)});
+    return *this;
+  }
+#else
   template <typename... Args>
   auto& AddError(this auto& self, ErrorKind kind, const std::format_string<Args...> fmt,
                  Args&&... args) {
-    self.errors_.emplace_back(kind, std::format(fmt, std::forward<Args>(args)...));
+    static_cast<ErrorCollector&>(self).RecordError(
+        {kind, std::format(fmt, std::forward<Args>(args)...)});
     return self;
   }
+#endif
 
-  /// \brief Add an existing error object and return reference to derived class
+  /// \brief Add an existing error object
   ///
   /// Useful when propagating errors from other components or reusing
   /// error objects without deconstructing and reconstructing them.
   ///
-  /// \param self Deduced reference to the derived class instance
   /// \param err The error to add
-  /// \return Reference to the derived class for method chaining
+  /// \return Reference to the concrete derived builder in the default C++23
+  /// package, or ErrorCollector& in compatibility mode.
+#if ICEBERG_CXX20_COMPAT
+  ErrorCollector& AddError(Error err) {
+    RecordError(std::move(err));
+    return *this;
+  }
+#else
   auto& AddError(this auto& self, Error err) {
-    self.errors_.push_back(std::move(err));
+    static_cast<ErrorCollector&>(self).RecordError(std::move(err));
     return self;
   }
+#endif
 
-  /// \brief Add an unexpected result's error and return reference to derived class
+  /// \brief Add an unexpected result's error
   ///
   /// Useful for cases like below:
   /// \code
-  ///   return AddError(InvalidArgument("Invalid value: {}", value));
+  ///   AddError(InvalidArgument("Invalid value: {}", value));
+  ///   return *this;
   /// \endcode
   ///
-  /// \param self Deduced reference to the derived class instance
   /// \param err The unexpected result containing the error to add
-  /// \return Reference to the derived class for method chaining
-  auto& AddError(this auto& self, std::unexpected<Error> err) {
-    self.errors_.push_back(std::move(err.error()));
+  /// \return Reference to the concrete derived builder in the default C++23
+  /// package, or ErrorCollector& in compatibility mode.
+#if ICEBERG_CXX20_COMPAT
+  ErrorCollector& AddError(::iceberg::unexpected<Error> err) {
+    RecordError(std::move(err.error()));
+    return *this;
+  }
+#else
+  auto& AddError(this auto& self, ::iceberg::unexpected<Error> err) {
+    static_cast<ErrorCollector&>(self).RecordError(std::move(err.error()));
     return self;
   }
+  auto& AddError(this auto& self, std::unexpected<Error> err) {
+    static_cast<ErrorCollector&>(self).RecordError(std::move(err.error()));
+    return self;
+  }
+#endif
 
   /// \brief Check if any errors have been collected
   ///
@@ -186,6 +219,9 @@ class ICEBERG_EXPORT ErrorCollector {
 
   /// \brief Get read-only access to all collected errors
   [[nodiscard]] const std::vector<Error>& errors() const { return errors_; }
+
+ private:
+  void RecordError(Error err) { errors_.push_back(std::move(err)); }
 
  protected:
   std::vector<Error> errors_;

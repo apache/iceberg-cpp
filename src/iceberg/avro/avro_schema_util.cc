@@ -493,6 +493,9 @@ bool HasLogicalType(const ::avro::NodePtr& node,
   return node->logicalType().type() == expected_type;
 }
 
+// Relies on Avro preserving custom attributes on primitive nodes (AVRO-4351);
+// before that, "adjust-to-utc" was dropped when parsing a file schema and every
+// timestamp read from a file looked like it had no timezone.
 std::optional<std::string> GetAdjustToUtc(const ::avro::NodePtr& node) {
   if (node->customAttributes() == 0) {
     return std::nullopt;
