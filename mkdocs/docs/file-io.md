@@ -63,6 +63,7 @@ each file location's scheme.
 | `s3.access-key-id` | `admin` | Static access key ID; must be set together with the secret key |
 | `s3.secret-access-key` | `password` | Static secret access key |
 | `s3.session-token` | `AQoDYXdzEJr...` | Session token, for temporary credentials. Ignored unless both static keys are set |
+| `s3.session-token-expires-at-ms` | `1767225600000` | When the session token expires, in epoch milliseconds. Vended credentials are refreshed from the catalog five minutes before |
 | `client.region` | `us-east-1` | Region to sign requests for |
 | `s3.endpoint` | `https://127.0.0.1:9000` | Endpoint to use instead of the AWS one. When absent, the `AWS_ENDPOINT_URL_S3` / `AWS_ENDPOINT_URL` environment variables are consulted |
 | `s3.path-style-access` | `true` | Address buckets as a path (`endpoint/bucket`) instead of a virtual host (`bucket.endpoint`). Only takes effect together with a custom endpoint |
