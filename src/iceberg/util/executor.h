@@ -41,8 +41,8 @@ using ExecutorTask = FnOnce<void()>;
 /// the same bounded executor's worker threads can deadlock unless the executor supports
 /// nested blocking work.
 ///
-/// When an executor is configured, tasks may be called concurrently. Any
-/// shared mutable state captured by those callbacks must be synchronized by the caller.
+/// When an executor is configured, callbacks may be called concurrently. Any shared
+/// mutable state captured by those callbacks must be synchronized by the caller.
 class ICEBERG_EXPORT Executor {
  public:
   virtual ~Executor() = default;

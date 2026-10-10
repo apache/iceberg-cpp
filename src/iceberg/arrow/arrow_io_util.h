@@ -29,7 +29,7 @@
 #include "iceberg/file_io.h"
 #include "iceberg/iceberg_bundle_export.h"
 #include "iceberg/result.h"
-#include "iceberg/util/executor.h"
+#include "iceberg/type_fwd.h"
 
 namespace iceberg::arrow {
 
@@ -52,7 +52,8 @@ ICEBERG_BUNDLE_EXPORT Result<std::unique_ptr<FileIO>> MakeS3FileIO(
 ///
 /// Includes registry-created FileIOs; nullptr (default) runs sequentially.
 /// The caller owns the executor. Configure only while no deletes are active,
-/// and clear it before destruction. DeleteFiles waits for accepted work on error.
+/// and clear it before destruction. DeleteFiles waits for accepted work on error,
+/// and deletes on the calling thread what a rejected worker would have.
 /// See Executor for blocking requirements.
 ICEBERG_BUNDLE_EXPORT void SetS3FileIODeleteExecutor(Executor* executor);
 

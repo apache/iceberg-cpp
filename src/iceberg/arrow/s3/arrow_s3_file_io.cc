@@ -44,6 +44,7 @@
 #include "iceberg/arrow/s3/s3_properties.h"
 #include "iceberg/logging/log_macros.h"
 #include "iceberg/logging/logger.h"
+#include "iceberg/util/executor.h"
 #include "iceberg/util/macros.h"
 #include "iceberg/util/property_util.h"
 #include "iceberg/util/string_util.h"
@@ -53,6 +54,9 @@ namespace iceberg::arrow {
 namespace {
 
 std::atomic<Executor*> delete_executor{nullptr};
+
+// Bounds the tasks and futures of one call, however many files it deletes.
+constexpr size_t kMaxDeleteWorkers = 64;
 
 struct DeleteTasks {
   std::vector<std::future<void>> futures;
@@ -65,6 +69,17 @@ struct DeleteTasks {
     }
   }
 };
+
+// Submit may throw instead of returning an error; both reject the worker.
+Status SubmitWorker(Executor& executor, ExecutorTask task) {
+  try {
+    return executor.Submit(std::move(task));
+  } catch (const std::exception& e) {
+    return IOError("Submit threw an exception: {}", e.what());
+  } catch (...) {
+    return IOError("Submit threw an unknown exception");
+  }
+}
 
 }  // namespace
 
@@ -104,19 +119,28 @@ Status BulkDeleteFiles(const std::vector<std::string>& file_locations, Executor*
     if (executor == nullptr) {
       work();
     } else {
-      // Bound tasks and futures independently of the file count.
-      const auto workers = std::min(size_t{64}, file_locations.size());
+      const auto workers = std::min(kMaxDeleteWorkers, file_locations.size());
       DeleteTasks tasks;
       tasks.futures.reserve(workers);
-      for (size_t i = 0; i < workers; ++i) {
+      size_t accepted = 0;
+      for (; accepted < workers; ++accepted) {
         std::packaged_task<void()> task(work);
-        // Submit may accept the task before throwing.
+        // Submit may accept the task before failing.
         tasks.futures.push_back(task.get_future());
         ExecutorTask executor_task([task = std::move(task)]() mutable { task(); });
-        ICEBERG_RETURN_UNEXPECTED(executor->Submit(std::move(executor_task)));
+        if (auto status = SubmitWorker(*executor, std::move(executor_task));
+            !status.has_value()) {
+          // Take what the accepted workers have not, so every file is still
+          // attempted and counted even if none was accepted.
+          ICEBERG_LOG_WARN("Delete worker rejected; deleting on the calling thread: {}",
+                           status.error().message);
+          work();
+          break;
+        }
       }
-      for (auto& future : tasks.futures) {
-        future.get();
+      // A rejected worker's future is only waited for, by `tasks`.
+      for (size_t i = 0; i < accepted; ++i) {
+        tasks.futures[i].get();
       }
     }
   } catch (const std::exception& e) {

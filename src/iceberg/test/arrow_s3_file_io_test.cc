@@ -290,7 +290,9 @@ TEST(BulkDeleteFilesTest, DrainsAcceptedTasksWhenSubmissionFails) {
     auto first_completed = executor.first_completed.get_future();
     const std::vector<std::string> paths = {"first", "second", "third"};
     std::atomic<int> attempted = 0;
+    auto logger = std::make_shared<CapturingLogger>();
     auto run = std::async(std::launch::async, [&] {
+      ScopedLogger bind(logger);
       return BulkDeleteFiles(paths, &executor, [&](const std::string&) -> Status {
         ++attempted;
         return {};
@@ -310,10 +312,34 @@ TEST(BulkDeleteFilesTest, DrainsAcceptedTasksWhenSubmissionFails) {
     EXPECT_EQ(submitted, std::future_status::ready);
     EXPECT_EQ(first, std::future_status::ready);
     EXPECT_EQ(returned, std::future_status::timeout);
-    EXPECT_THAT(status, HasErrorMessage("executor rejected deletion"));
+    // The caller deletes what the accepted workers did not; the rejection is
+    // logged, not returned.
+    EXPECT_THAT(status, IsOk());
     EXPECT_EQ(attempted, 3);
+    const auto records = logger->records();
+    ASSERT_EQ(records.size(), 1);
+    EXPECT_THAT(records[0].message, ::testing::HasSubstr("executor rejected deletion"));
     EXPECT_EQ(executor.completed, failure == SubmitFailure::kAcceptedException ? 2 : 1);
   }
+}
+
+TEST(BulkDeleteFilesTest, DeletesOnTheCallerWhenNoWorkerIsAccepted) {
+  test::ThreadExecutor executor(ServiceUnavailable("executor is shut down"));
+  const std::vector<std::string> paths = {"first", "second", "third"};
+  std::vector<std::string> attempted;
+  const auto caller = std::this_thread::get_id();
+  EXPECT_THAT(BulkDeleteFiles(paths, &executor,
+                              [&](const std::string& path) -> Status {
+                                EXPECT_EQ(std::this_thread::get_id(), caller);
+                                attempted.push_back(path);
+                                if (path == "second") {
+                                  return IOError("delete failed");
+                                }
+                                return {};
+                              }),
+              HasErrorMessage("Failed to delete 1 of 3 files"));
+  EXPECT_EQ(attempted, paths);
+  EXPECT_EQ(executor.submit_count(), 1);
 }
 
 TEST(BulkDeleteFilesTest, TaskCountDoesNotGrowWithTheFileList) {

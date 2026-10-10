@@ -95,10 +95,12 @@ controls concurrency; each call submits at most 64 worker tasks, which share
 the file list rather than creating a task and future for every file.
 
 `DeleteFiles` is synchronous and waits for accepted tasks even if submission
-fails. Keep the executor alive until all calls finish, then reset the setting
-to `nullptr` before destroying it. Replace the executor only while no deletes
-are running. The executor must make progress while callers wait; do not call
-`DeleteFiles` from its workers unless it supports nested blocking work.
+fails. If the executor rejects a worker, the rejection is logged and the
+calling thread deletes the files no accepted worker has taken. Keep the
+executor alive until all calls finish, then reset the setting to `nullptr`
+before destroying it. Replace the executor only while no deletes are running.
+The executor must make progress while callers wait; do not call `DeleteFiles`
+from its workers unless it supports nested blocking work.
 
 ### S3-compatible storage
 
