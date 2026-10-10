@@ -39,16 +39,21 @@ namespace iceberg {
 
 namespace {
 
-ReaderOptions MakeReaderOptions(const DataFile& data_file, std::shared_ptr<FileIO> io,
+ReaderOptions MakeReaderOptions(const FileScanTask& task, std::shared_ptr<FileIO> io,
                                 std::shared_ptr<Schema> projection,
                                 std::shared_ptr<Expression> filter,
                                 std::shared_ptr<NameMapping> name_mapping,
                                 ReaderProperties properties,
                                 std::optional<int64_t> first_row_id,
                                 std::optional<int64_t> data_sequence_number) {
+  const auto& data_file = *task.data_file();
   return ReaderOptions{
       .path = data_file.file_path,
       .length = static_cast<size_t>(data_file.file_size_in_bytes),
+      .split = task.is_split() ? std::make_optional(
+                                     Split{.offset = static_cast<size_t>(task.start()),
+                                           .length = static_cast<size_t>(task.length())})
+                               : std::nullopt,
       .io = std::move(io),
       .projection = std::move(projection),
       .filter = std::move(filter),
@@ -163,16 +168,29 @@ class FileScanTaskReader::Impl {
     ICEBERG_PRECHECK(data_file->file_size_in_bytes >= 0,
                      "Data file size must not be negative: {}",
                      data_file->file_size_in_bytes);
+    ICEBERG_PRECHECK(std::in_range<size_t>(data_file->file_size_in_bytes),
+                     "Data file size cannot be represented as size_t: {}",
+                     data_file->file_size_in_bytes);
     if (task.is_split()) {
-      return NotSupported(
-          "Reading a partial FileScanTask is not supported yet: {} "
-          "(start={}, length={})",
-          data_file->file_path, task.start(), task.length());
+      ICEBERG_PRECHECK(task.start() >= 0 &&
+                           task.start() <= data_file->file_size_in_bytes &&
+                           task.length() > 0 &&
+                           task.length() <= data_file->file_size_in_bytes - task.start(),
+                       "Task range is outside file {} of size {} (start={}, length={})",
+                       data_file->file_path, data_file->file_size_in_bytes, task.start(),
+                       task.length());
+      // The validated endpoints are bounded by the size_t-representable file size.
+      if (data_file->file_format != FileFormatType::kParquet) {
+        return NotSupported(
+            "Reading a partial FileScanTask requires Parquet: {} "
+            "(start={}, length={})",
+            data_file->file_path, task.start(), task.length());
+      }
     }
 
     if (task.delete_files().empty()) {
       auto options = MakeReaderOptions(
-          *data_file, io_, projected_schema_, task.residual_filter(), name_mapping_,
+          task, io_, projected_schema_, task.residual_filter(), name_mapping_,
           properties_, data_file->first_row_id, data_file->data_sequence_number);
       ICEBERG_ASSIGN_OR_RAISE(
           auto reader, ReaderFactoryRegistry::Open(data_file->file_format, options));
@@ -197,9 +215,9 @@ class FileScanTaskReader::Impl {
                             ProjectionContext::Make(*required_schema, *projected_schema_,
                                                     project_batch_function));
 
-    auto options = MakeReaderOptions(
-        *data_file, io_, required_schema, task.residual_filter(), name_mapping_,
-        properties_, data_file->first_row_id, data_file->data_sequence_number);
+    auto options = MakeReaderOptions(task, io_, required_schema, task.residual_filter(),
+                                     name_mapping_, properties_, data_file->first_row_id,
+                                     data_file->data_sequence_number);
     ICEBERG_ASSIGN_OR_RAISE(auto reader,
                             ReaderFactoryRegistry::Open(data_file->file_format, options));
 

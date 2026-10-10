@@ -39,7 +39,9 @@
 #include <parquet/arrow/reader.h>
 #include <parquet/arrow/writer.h>
 #include <parquet/file_reader.h>
+#include <parquet/file_writer.h>
 #include <parquet/metadata.h>
+#include <parquet/schema.h>
 
 #include "iceberg/arrow/arrow_io_internal.h"
 #include "iceberg/arrow/arrow_status_internal.h"
@@ -47,6 +49,7 @@
 #include "iceberg/file_reader.h"
 #include "iceberg/file_writer.h"
 #include "iceberg/metadata_columns.h"
+#include "iceberg/parquet/parquet_data_util_internal.h"
 #include "iceberg/parquet/parquet_register.h"
 #include "iceberg/result.h"
 #include "iceberg/schema.h"
@@ -158,6 +161,31 @@ std::optional<ParquetCodec> FirstUnavailableParquetCodec() {
   return std::nullopt;
 }
 
+std::unique_ptr<::parquet::FileMetaData> MakeMetadataWithPageOffsets(
+    const std::vector<std::pair<int64_t, std::optional<int64_t>>>& page_offsets) {
+  ::parquet::schema::NodeVector fields;
+  for (size_t i = 0; i < page_offsets.size(); ++i) {
+    fields.push_back(::parquet::schema::PrimitiveNode::Make(
+        "col" + std::to_string(i), ::parquet::Repetition::REQUIRED, nullptr,
+        ::parquet::Type::INT32, /*primitive_length=*/-1, /*field_id=*/i + 1));
+  }
+  ::parquet::SchemaDescriptor schema;
+  schema.Init(::parquet::schema::GroupNode::Make(
+      "schema", ::parquet::Repetition::REQUIRED, fields));
+  auto builder = ::parquet::FileMetaDataBuilder::Make(
+      &schema, ::parquet::default_writer_properties());
+  auto row_group = builder->AppendRowGroup();
+  row_group->set_num_rows(1);
+  for (const auto& [data_offset, dictionary_offset] : page_offsets) {
+    row_group->NextColumnChunk()->Finish(
+        /*num_values=*/1, dictionary_offset.value_or(0), /*index_page_offset=*/0,
+        data_offset, /*compressed_size=*/10, /*uncompressed_size=*/10,
+        dictionary_offset.has_value(), /*dictionary_fallback=*/false, {}, {});
+  }
+  row_group->Finish(10 * page_offsets.size());
+  return builder->Finish();
+}
+
 constexpr std::array<uint8_t, Uuid::kLength> kUuidBytes1 = {
     0x12, 0x3e, 0x45, 0x67, 0xe8, 0x9b, 0x12, 0xd3,
     0xa4, 0x56, 0x42, 0x66, 0x14, 0x17, 0x40, 0x00};
@@ -166,6 +194,28 @@ constexpr std::array<uint8_t, Uuid::kLength> kUuidBytes2 = {
     0xa4, 0x79, 0x3f, 0x34, 0x9c, 0xb7, 0x85, 0xe7};
 
 }  // namespace
+
+TEST(ParquetSplitTest, CanonicalStartUsesFirstColumnPages) {
+  for (auto dictionary_offset :
+       {std::optional<int64_t>{}, std::optional<int64_t>{0}, std::optional<int64_t>{80},
+        std::optional<int64_t>{100}, std::optional<int64_t>{120}}) {
+    // The second column starts earlier and must not be used as the assignment key.
+    auto metadata = MakeMetadataWithPageOffsets({{100, dictionary_offset}, {50, 40}});
+    const int64_t expected = dictionary_offset == 80 ? 80 : 100;
+    EXPECT_THAT(RowGroupStart(*metadata->RowGroup(0), 200),
+                HasValue(::testing::Eq(expected)));
+  }
+}
+
+TEST(ParquetSplitTest, CanonicalStartRejectsMissingOrOutOfFilePages) {
+  for (int64_t offset : {-1, 0, 200, 201}) {
+    auto metadata = MakeMetadataWithPageOffsets({{offset, std::nullopt}});
+    EXPECT_THAT(RowGroupStart(*metadata->RowGroup(0), 200), IsError(ErrorKind::kInvalid));
+  }
+  auto no_columns = MakeMetadataWithPageOffsets({});
+  EXPECT_THAT(RowGroupStart(*no_columns->RowGroup(0), 200),
+              HasErrorMessage("without columns"));
+}
 
 class ParquetReaderTest : public TempFileTestBase {
  protected:
@@ -251,7 +301,7 @@ class ParquetReaderTest : public TempFileTestBase {
                                    .properties = std::move(writer_properties)}));
   }
 
-  void CreateSplitParquetFile() {
+  void CreateSplitParquetFile(int64_t row_group_size = 2, bool dictionary = true) {
     const std::string kParquetFieldIdKey = "PARQUET:field_id";
     auto arrow_schema = ::arrow::schema(
         {::arrow::field("id", ::arrow::int32(), /*nullable=*/false,
@@ -270,10 +320,28 @@ class ParquetReaderTest : public TempFileTestBase {
     auto io = internal::checked_cast<arrow::ArrowFileSystemFileIO&>(*file_io_);
     auto outfile = io.fs()->OpenOutputStream(temp_parquet_file_).ValueOrDie();
 
+    ::parquet::WriterProperties::Builder properties;
+    if (!dictionary) {
+      properties.disable_dictionary();
+    }
     ASSERT_TRUE(::parquet::arrow::WriteTable(*table, ::arrow::default_memory_pool(),
-                                             outfile, /*chunk_size=*/2)
+                                             outfile, row_group_size, properties.build())
                     .ok());
     ASSERT_TRUE(outfile->Close().ok());
+  }
+
+  void ReorderRowGroups(const std::vector<int>& row_groups) {
+    ICEBERG_UNWRAP_OR_FAIL(auto input,
+                           arrow::OpenArrowInputStream(file_io_, temp_parquet_file_));
+    auto metadata = ::parquet::ReadMetaData(input);
+    auto file_size = input->GetSize().ValueOrDie();
+    auto pages = input->ReadAt(0, file_size - metadata->size() - 8).ValueOrDie();
+    ASSERT_TRUE(input->Close().ok());
+    ICEBERG_UNWRAP_OR_FAIL(auto output,
+                           arrow::OpenArrowOutputStream(file_io_, temp_parquet_file_));
+    ASSERT_TRUE(output->Write(pages).ok());
+    ::parquet::WriteFileMetaData(*metadata->Subset(row_groups), output.get());
+    ASSERT_TRUE(output->Close().ok());
   }
 
   std::shared_ptr<Schema> RowLineageSchema() {
@@ -1015,7 +1083,10 @@ TEST_F(ParquetReaderTest, ReadSplit) {
   auto metadata = ::parquet::ReadMetaData(input_stream);
   std::vector<size_t> split_offsets;
   for (int i = 0; i < metadata->num_row_groups(); ++i) {
-    split_offsets.push_back(static_cast<size_t>(metadata->RowGroup(i)->file_offset()));
+    auto column = metadata->RowGroup(i)->ColumnChunk(0);
+    ASSERT_TRUE(column->has_dictionary_page());
+    ASSERT_LT(column->dictionary_page_offset(), column->data_page_offset());
+    split_offsets.push_back(static_cast<size_t>(column->dictionary_page_offset()));
   }
   ASSERT_EQ(split_offsets.size(), 2);
 
@@ -1030,9 +1101,17 @@ TEST_F(ParquetReaderTest, ReadSplit) {
       {.offset = split_offsets[1], .length = 1},
       {.offset = split_offsets[1] + 1, .length = std::numeric_limits<size_t>::max()},
       {.offset = 0, .length = split_offsets[0]},
+      {.offset = split_offsets[0] + 1, .length = split_offsets[1] - split_offsets[0]},
+      {.offset = split_offsets[0], .length = 0},
   };
   std::vector<std::string> expected_json = {
-      R"([[1, 0], [2, 1], [3, 2]])", R"([[1, 0], [2, 1]])", R"([[3, 2]])", "", "",
+      R"([[1, 0], [2, 1], [3, 2]])",
+      R"([[1, 0], [2, 1]])",
+      R"([[3, 2]])",
+      "",
+      "",
+      R"([[3, 2]])",
+      "",
   };
 
   ReaderProperties reader_properties;
@@ -1054,6 +1133,129 @@ TEST_F(ParquetReaderTest, ReadSplit) {
     }
     ASSERT_NO_FATAL_FAILURE(VerifyExhausted(*reader));
   }
+}
+
+TEST_F(ParquetReaderTest, ReadSplitWithoutDictionaryPages) {
+  ASSERT_NO_FATAL_FAILURE(
+      CreateSplitParquetFile(/*row_group_size=*/2, /*dictionary=*/false));
+  ICEBERG_UNWRAP_OR_FAIL(auto input,
+                         arrow::OpenArrowInputStream(file_io_, temp_parquet_file_));
+  auto metadata = ::parquet::ReadMetaData(input);
+  auto column = metadata->RowGroup(1)->ColumnChunk(0);
+  ASSERT_FALSE(column->has_dictionary_page());
+  auto schema = std::make_shared<Schema>(std::vector<SchemaField>{
+      SchemaField::MakeRequired(1, "id", int32()), MetadataColumns::kRowPosition});
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto reader,
+      ReaderFactoryRegistry::Open(
+          FileFormatType::kParquet,
+          {.path = temp_parquet_file_,
+           .split = Split{.offset = static_cast<size_t>(column->data_page_offset()),
+                          .length = 1},
+           .io = file_io_,
+           .projection = schema}));
+  ASSERT_NO_FATAL_FAILURE(VerifyNextBatch(*reader, R"([[3, 2]])"));
+  ASSERT_NO_FATAL_FAILURE(VerifyExhausted(*reader));
+}
+
+TEST_F(ParquetReaderTest, ReadSplitsWithOmittedRowGroupOffsets) {
+  file_io_ = arrow::ArrowFileSystemFileIO::MakeLocalFileIO();
+  temp_parquet_file_ = GetResourcePath("split-without-row-group-offsets.parquet");
+  ICEBERG_UNWRAP_OR_FAIL(auto input,
+                         arrow::OpenArrowInputStream(file_io_, temp_parquet_file_));
+  auto metadata = ::parquet::ReadMetaData(input);
+  ASSERT_EQ(metadata->num_row_groups(), 3);
+  for (int i = 0; i < metadata->num_row_groups(); ++i) {
+    ASSERT_EQ(metadata->RowGroup(i)->file_offset(), 0);
+  }
+  auto boundary = static_cast<size_t>(
+      metadata->RowGroup(1)->ColumnChunk(0)->dictionary_page_offset());
+  auto file_size = static_cast<size_t>(input->GetSize().ValueOrDie());
+  auto schema = std::make_shared<Schema>(std::vector<SchemaField>{
+      SchemaField::MakeRequired(1, "id", int32()), MetadataColumns::kRowPosition,
+      MetadataColumns::kRowId, MetadataColumns::kLastUpdatedSequenceNumber});
+  const std::vector<std::optional<Split>> splits{
+      std::nullopt, Split{.offset = 0, .length = boundary},
+      Split{.offset = boundary, .length = file_size - boundary}};
+  const std::vector<std::string> expected{
+      R"([[1, 0, 100, 7], [2, 1, 101, 7], [3, 2, 102, 7], [4, 3, 103, 7], [5, 4, 104, 7], [6, 5, 105, 7]])",
+      R"([[1, 0, 100, 7], [2, 1, 101, 7]])",
+      R"([[3, 2, 102, 7], [4, 3, 103, 7], [5, 4, 104, 7], [6, 5, 105, 7]])"};
+  for (size_t i = 0; i < splits.size(); ++i) {
+    SCOPED_TRACE(i);
+    ICEBERG_UNWRAP_OR_FAIL(auto reader,
+                           ReaderFactoryRegistry::Open(FileFormatType::kParquet,
+                                                       {.path = temp_parquet_file_,
+                                                        .length = file_size,
+                                                        .split = splits[i],
+                                                        .io = file_io_,
+                                                        .projection = schema,
+                                                        .first_row_id = 100,
+                                                        .data_sequence_number = 7}));
+    ASSERT_NO_FATAL_FAILURE(VerifyNextBatch(*reader, expected[i]));
+    ASSERT_NO_FATAL_FAILURE(VerifyExhausted(*reader));
+  }
+}
+
+TEST_F(ParquetReaderTest, RejectsSplitWithInvalidPageOffsetsBeforeReading) {
+  auto schema = std::make_shared<Schema>(
+      std::vector<SchemaField>{SchemaField::MakeRequired(1, "col0", int32())});
+  for (int64_t offset : {int64_t{-1}, int64_t{0}, std::numeric_limits<int64_t>::max()}) {
+    auto metadata = MakeMetadataWithPageOffsets({{offset, std::nullopt}});
+    ICEBERG_UNWRAP_OR_FAIL(auto output,
+                           arrow::OpenArrowOutputStream(file_io_, temp_parquet_file_));
+    ::parquet::WriteMetaDataFile(*metadata, output.get());
+    ASSERT_TRUE(output->Close().ok());
+    auto reader = ReaderFactoryRegistry::Open(FileFormatType::kParquet,
+                                              {.path = temp_parquet_file_,
+                                               .split = Split{.offset = 0, .length = 1},
+                                               .io = file_io_,
+                                               .projection = schema});
+    EXPECT_THAT(reader, IsError(ErrorKind::kInvalid));
+    EXPECT_THAT(reader, HasErrorMessage("row group 0"));
+    EXPECT_THAT(reader, HasErrorMessage(temp_parquet_file_));
+  }
+}
+
+TEST_F(ParquetReaderTest, ReadSplitWithNonmonotonicRowGroupStarts) {
+  ASSERT_NO_FATAL_FAILURE(CreateSplitParquetFile(/*row_group_size=*/1));
+  // Logical row order becomes [1, 3, 2], while the pages stay in physical order [1, 2,
+  // 3].
+  ASSERT_NO_FATAL_FAILURE(ReorderRowGroups({0, 2, 1}));
+  ICEBERG_UNWRAP_OR_FAIL(auto input,
+                         arrow::OpenArrowInputStream(file_io_, temp_parquet_file_));
+  auto metadata = ::parquet::ReadMetaData(input);
+  auto last_start = static_cast<size_t>(
+      metadata->RowGroup(1)->ColumnChunk(0)->dictionary_page_offset());
+  auto schema = std::make_shared<Schema>(std::vector<SchemaField>{
+      SchemaField::MakeRequired(1, "id", int32()), MetadataColumns::kRowPosition,
+      MetadataColumns::kRowId, MetadataColumns::kLastUpdatedSequenceNumber});
+
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto reader,
+      ReaderFactoryRegistry::Open(FileFormatType::kParquet,
+                                  {.path = temp_parquet_file_,
+                                   .split = Split{.offset = 0, .length = last_start},
+                                   .io = file_io_,
+                                   .projection = schema,
+                                   .first_row_id = 100,
+                                   .data_sequence_number = 7}));
+  // A batch must not span the skipped row group, or generated positions would be wrong.
+  ASSERT_NO_FATAL_FAILURE(VerifyNextBatch(*reader, R"([[1, 0, 100, 7]])"));
+  ASSERT_NO_FATAL_FAILURE(VerifyNextBatch(*reader, R"([[2, 2, 102, 7]])"));
+  ASSERT_NO_FATAL_FAILURE(VerifyExhausted(*reader));
+
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto tail,
+      ReaderFactoryRegistry::Open(FileFormatType::kParquet,
+                                  {.path = temp_parquet_file_,
+                                   .split = Split{.offset = last_start, .length = 1},
+                                   .io = file_io_,
+                                   .projection = schema,
+                                   .first_row_id = 100,
+                                   .data_sequence_number = 7}));
+  ASSERT_NO_FATAL_FAILURE(VerifyNextBatch(*tail, R"([[3, 1, 101, 7]])"));
+  ASSERT_NO_FATAL_FAILURE(VerifyExhausted(*tail));
 }
 
 TEST_F(ParquetReaderTest, ReadMetadataColumns) {

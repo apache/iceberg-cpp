@@ -24,6 +24,7 @@
 #include <arrow/compute/api.h>
 #include <arrow/record_batch.h>
 #include <arrow/type.h>
+#include <parquet/metadata.h>
 
 #include "iceberg/arrow/arrow_status_internal.h"
 #include "iceberg/arrow/literal_util_internal.h"
@@ -36,6 +37,28 @@
 #include "iceberg/util/macros.h"
 
 namespace iceberg::parquet {
+
+Result<int64_t> RowGroupStart(const ::parquet::RowGroupMetaData& row_group,
+                              int64_t file_size) {
+  if (row_group.num_columns() == 0) {
+    return Invalid("Cannot split a Parquet row group without columns");
+  }
+  auto column = row_group.ColumnChunk(0);
+  int64_t start = column->data_page_offset();
+  if (column->has_dictionary_page()) {
+    const int64_t dictionary_start = column->dictionary_page_offset();
+    if (dictionary_start > 0 && dictionary_start < start) {
+      start = dictionary_start;
+    }
+  }
+  if (start <= 0 || start >= file_size) {
+    return Invalid(
+        "Cannot split a Parquet row group with missing or out-of-file "
+        "starting page {} (file size {})",
+        start, file_size);
+  }
+  return start;
+}
 
 namespace {
 
