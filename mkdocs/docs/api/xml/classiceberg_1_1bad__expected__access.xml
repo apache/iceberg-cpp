@@ -1,0 +1,116 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1bad__expected__access" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::bad_expected_access</compoundname>
+    <templateparamlist>
+      <param>
+        <type>class E</type>
+      </param>
+    </templateparamlist>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1bad__expected__access_1a44c19d0be26a27cf611519cca2703399" prot="private" static="no" mutable="no">
+        <type>E</type>
+        <definition>E iceberg::bad_expected_access&lt; E &gt;::m_val</definition>
+        <argsstring></argsstring>
+        <name>m_val</name>
+        <qualifiedname>iceberg::bad_expected_access::m_val</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/compat/expected.h" line="355" column="5" bodyfile="iceberg/compat/expected.h" bodystart="355" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1bad__expected__access_1aeaf7f2b70a53c8530e6fa23ed948b013" prot="public" static="no" const="no" explicit="yes" inline="yes" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::bad_expected_access&lt; E &gt;::bad_expected_access</definition>
+        <argsstring>(E e) noexcept(std::is_nothrow_move_constructible_v&lt; E &gt;)</argsstring>
+        <name>bad_expected_access</name>
+        <qualifiedname>iceberg::bad_expected_access::bad_expected_access</qualifiedname>
+        <param>
+          <type>E</type>
+          <declname>e</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/compat/expected.h" line="346" column="12" bodyfile="iceberg/compat/expected.h" bodystart="346" bodyend="347"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1bad__expected__access_1a87b1154944a4a2ee44b23d0aa9a14319" prot="public" static="no" const="yes" explicit="no" inline="yes" refqual="lvalue" noexcept="yes" virt="non-virtual">
+        <type>const E &amp;</type>
+        <definition>const E &amp; iceberg::bad_expected_access&lt; E &gt;::error</definition>
+        <argsstring>() const &amp;noexcept</argsstring>
+        <name>error</name>
+        <qualifiedname>iceberg::bad_expected_access::error</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/compat/expected.h" line="349" column="11" bodyfile="iceberg/compat/expected.h" bodystart="349" bodyend="349"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1bad__expected__access_1a4b66ba28625330f2dee8e9296c6ce9dd" prot="public" static="no" const="no" explicit="no" inline="yes" refqual="lvalue" noexcept="yes" virt="non-virtual">
+        <type>E &amp;</type>
+        <definition>E &amp; iceberg::bad_expected_access&lt; E &gt;::error</definition>
+        <argsstring>() &amp;noexcept</argsstring>
+        <name>error</name>
+        <qualifiedname>iceberg::bad_expected_access::error</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/compat/expected.h" line="350" column="5" bodyfile="iceberg/compat/expected.h" bodystart="350" bodyend="350"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1bad__expected__access_1aece148a244c5bebb9d231f48db696733" prot="public" static="no" const="yes" explicit="no" inline="yes" refqual="rvalue" noexcept="yes" virt="non-virtual">
+        <type>const E &amp;&amp;</type>
+        <definition>const E &amp;&amp; iceberg::bad_expected_access&lt; E &gt;::error</definition>
+        <argsstring>() const &amp;&amp;noexcept</argsstring>
+        <name>error</name>
+        <qualifiedname>iceberg::bad_expected_access::error</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/compat/expected.h" line="351" column="11" bodyfile="iceberg/compat/expected.h" bodystart="351" bodyend="351"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1bad__expected__access_1a809a2ed152a52fd7908883175b99e285" prot="public" static="no" const="no" explicit="no" inline="yes" refqual="rvalue" noexcept="yes" virt="non-virtual">
+        <type>E &amp;&amp;</type>
+        <definition>E &amp;&amp; iceberg::bad_expected_access&lt; E &gt;::error</definition>
+        <argsstring>() &amp;&amp;noexcept</argsstring>
+        <name>error</name>
+        <qualifiedname>iceberg::bad_expected_access::error</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/compat/expected.h" line="352" column="5" bodyfile="iceberg/compat/expected.h" bodystart="352" bodyend="352"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/compat/expected.h" line="344" column="1" bodyfile="iceberg/compat/expected.h" bodystart="344" bodyend="356"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1bad__expected__access_1aeaf7f2b70a53c8530e6fa23ed948b013" prot="public" virt="non-virtual"><scope>iceberg::bad_expected_access</scope><name>bad_expected_access</name></member>
+      <member refid="classiceberg_1_1bad__expected__access_1a87b1154944a4a2ee44b23d0aa9a14319" prot="public" virt="non-virtual"><scope>iceberg::bad_expected_access</scope><name>error</name></member>
+      <member refid="classiceberg_1_1bad__expected__access_1a4b66ba28625330f2dee8e9296c6ce9dd" prot="public" virt="non-virtual"><scope>iceberg::bad_expected_access</scope><name>error</name></member>
+      <member refid="classiceberg_1_1bad__expected__access_1aece148a244c5bebb9d231f48db696733" prot="public" virt="non-virtual"><scope>iceberg::bad_expected_access</scope><name>error</name></member>
+      <member refid="classiceberg_1_1bad__expected__access_1a809a2ed152a52fd7908883175b99e285" prot="public" virt="non-virtual"><scope>iceberg::bad_expected_access</scope><name>error</name></member>
+      <member refid="classiceberg_1_1bad__expected__access_1a44c19d0be26a27cf611519cca2703399" prot="private" virt="non-virtual"><scope>iceberg::bad_expected_access</scope><name>m_val</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

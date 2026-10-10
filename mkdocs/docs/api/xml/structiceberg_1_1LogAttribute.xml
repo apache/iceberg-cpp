@@ -1,0 +1,66 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1LogAttribute" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::LogAttribute</compoundname>
+    <includes refid="logger_8h" local="no">logger.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1LogAttribute_1a63fdac6c60fd0874c040680da7817328" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::LogAttribute::key</definition>
+        <argsstring></argsstring>
+        <name>key</name>
+        <qualifiedname>iceberg::LogAttribute::key</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/logging/logger.h" line="54" column="15" bodyfile="iceberg/logging/logger.h" bodystart="54" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1LogAttribute_1a48b420f17f4170d772e087583caa76d1" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::LogAttribute::value</definition>
+        <argsstring></argsstring>
+        <name>value</name>
+        <qualifiedname>iceberg::LogAttribute::value</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/logging/logger.h" line="55" column="15" bodyfile="iceberg/logging/logger.h" bodystart="55" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>A structured key/value attribute attached to a log record. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>Both key and value are owned so a sink may retain the record safely. Engine loggers can surface these as discrete fields (query id, task id, table name, snapshot id, file path, ...); see LogMessage::Builder to populate them. </para>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::LogAttribute</label>
+        <link refid="structiceberg_1_1LogAttribute"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>key</edgelabel>
+          <edgelabel>value</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/logging/logger.h" line="53" column="1" bodyfile="iceberg/logging/logger.h" bodystart="53" bodyend="56"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1LogAttribute_1a63fdac6c60fd0874c040680da7817328" prot="public" virt="non-virtual"><scope>iceberg::LogAttribute</scope><name>key</name></member>
+      <member refid="structiceberg_1_1LogAttribute_1a48b420f17f4170d772e087583caa76d1" prot="public" virt="non-virtual"><scope>iceberg::LogAttribute</scope><name>value</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

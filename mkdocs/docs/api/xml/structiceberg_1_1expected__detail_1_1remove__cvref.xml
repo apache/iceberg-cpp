@@ -1,0 +1,35 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1expected__detail_1_1remove__cvref" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::expected_detail::remove_cvref</compoundname>
+    <templateparamlist>
+      <param>
+        <type>class T</type>
+      </param>
+    </templateparamlist>
+    <sectiondef kind="public-type">
+      <memberdef kind="typedef" id="structiceberg_1_1expected__detail_1_1remove__cvref_1ae7faf371f272d10bff0bd1fe8d2615f0" prot="public" static="no">
+        <type>std::remove_cv_t&lt; std::remove_reference_t&lt; T &gt; &gt;</type>
+        <definition>using iceberg::expected_detail::remove_cvref&lt; T &gt;::type =  std::remove_cv_t&lt;std::remove_reference_t&lt;T&gt; &gt;</definition>
+        <argsstring></argsstring>
+        <name>type</name>
+        <qualifiedname>iceberg::expected_detail::remove_cvref::type</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/compat/expected.h" line="125" column="3" bodyfile="iceberg/compat/expected.h" bodystart="125" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/compat/expected.h" line="124" column="1" bodyfile="iceberg/compat/expected.h" bodystart="124" bodyend="126"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1expected__detail_1_1remove__cvref_1ae7faf371f272d10bff0bd1fe8d2615f0" prot="public" virt="non-virtual"><scope>iceberg::expected_detail::remove_cvref</scope><name>type</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

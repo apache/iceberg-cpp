@@ -1,0 +1,120 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1FieldMetrics" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::FieldMetrics</compoundname>
+    <includes refid="metrics_8h" local="no">metrics.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1FieldMetrics_1a74e7b16be3cf9d1447f15f93b0eb64ca" prot="public" static="no" mutable="no">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::FieldMetrics::field_id</definition>
+        <argsstring></argsstring>
+        <name>field_id</name>
+        <qualifiedname>iceberg::FieldMetrics::field_id</qualifiedname>
+        <initializer>= -1</initializer>
+        <briefdescription>
+<para>The field ID this metrics belongs to. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics.h" line="39" column="11" bodyfile="iceberg/metrics.h" bodystart="39" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1FieldMetrics_1afbb6f7b781db27961bb698e7792845ad" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t iceberg::FieldMetrics::value_count</definition>
+        <argsstring></argsstring>
+        <name>value_count</name>
+        <qualifiedname>iceberg::FieldMetrics::value_count</qualifiedname>
+        <initializer>= -1</initializer>
+        <briefdescription>
+<para>The total number of values (including nulls) for this field. A negative value indicates the count is unknown. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics.h" line="43" column="11" bodyfile="iceberg/metrics.h" bodystart="43" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1FieldMetrics_1aa83ce731bb0ecf18c7d55790f6ea83e0" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t iceberg::FieldMetrics::null_value_count</definition>
+        <argsstring></argsstring>
+        <name>null_value_count</name>
+        <qualifiedname>iceberg::FieldMetrics::null_value_count</qualifiedname>
+        <initializer>= -1</initializer>
+        <briefdescription>
+<para>The number of null values for this field. A negative value indicates the count is unknown. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics.h" line="47" column="11" bodyfile="iceberg/metrics.h" bodystart="47" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1FieldMetrics_1ab1a664de1ca783302621ab695082ddab" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t iceberg::FieldMetrics::nan_value_count</definition>
+        <argsstring></argsstring>
+        <name>nan_value_count</name>
+        <qualifiedname>iceberg::FieldMetrics::nan_value_count</qualifiedname>
+        <initializer>= -1</initializer>
+        <briefdescription>
+<para>The number of NaN values for this field. A negative value indicates the count is unknown. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics.h" line="51" column="11" bodyfile="iceberg/metrics.h" bodystart="51" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1FieldMetrics_1a206fd2af6f4cba5c26a7ad606a2939fc" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &gt;</type>
+        <definition>std::optional&lt;Literal&gt; iceberg::FieldMetrics::lower_bound</definition>
+        <argsstring></argsstring>
+        <name>lower_bound</name>
+        <qualifiedname>iceberg::FieldMetrics::lower_bound</qualifiedname>
+        <initializer>= std::nullopt</initializer>
+        <briefdescription>
+<para>The lower bound value as a <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref>. Empty if no lower bound is available. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics.h" line="55" column="17" bodyfile="iceberg/metrics.h" bodystart="55" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1FieldMetrics_1a4dd2a538baeffa8a5559d19b9dd9b24d" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &gt;</type>
+        <definition>std::optional&lt;Literal&gt; iceberg::FieldMetrics::upper_bound</definition>
+        <argsstring></argsstring>
+        <name>upper_bound</name>
+        <qualifiedname>iceberg::FieldMetrics::upper_bound</qualifiedname>
+        <initializer>= std::nullopt</initializer>
+        <briefdescription>
+<para>The upper bound value as a <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref>. Empty if no upper bound is available. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics.h" line="59" column="17" bodyfile="iceberg/metrics.h" bodystart="59" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Field-level metrics for a single column. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>This structure captures value counts, null counts, NaN counts, and optional lower/upper bounds for a specific field identified by its field_id. </para>
+    </detaileddescription>
+    <location file="iceberg/metrics.h" line="37" column="1" bodyfile="iceberg/metrics.h" bodystart="37" bodyend="60"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1FieldMetrics_1a74e7b16be3cf9d1447f15f93b0eb64ca" prot="public" virt="non-virtual"><scope>iceberg::FieldMetrics</scope><name>field_id</name></member>
+      <member refid="structiceberg_1_1FieldMetrics_1a206fd2af6f4cba5c26a7ad606a2939fc" prot="public" virt="non-virtual"><scope>iceberg::FieldMetrics</scope><name>lower_bound</name></member>
+      <member refid="structiceberg_1_1FieldMetrics_1ab1a664de1ca783302621ab695082ddab" prot="public" virt="non-virtual"><scope>iceberg::FieldMetrics</scope><name>nan_value_count</name></member>
+      <member refid="structiceberg_1_1FieldMetrics_1aa83ce731bb0ecf18c7d55790f6ea83e0" prot="public" virt="non-virtual"><scope>iceberg::FieldMetrics</scope><name>null_value_count</name></member>
+      <member refid="structiceberg_1_1FieldMetrics_1a4dd2a538baeffa8a5559d19b9dd9b24d" prot="public" virt="non-virtual"><scope>iceberg::FieldMetrics</scope><name>upper_bound</name></member>
+      <member refid="structiceberg_1_1FieldMetrics_1afbb6f7b781db27961bb698e7792845ad" prot="public" virt="non-virtual"><scope>iceberg::FieldMetrics</scope><name>value_count</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

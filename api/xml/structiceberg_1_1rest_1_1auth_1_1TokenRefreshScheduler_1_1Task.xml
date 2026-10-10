@@ -1,0 +1,60 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1rest_1_1auth_1_1TokenRefreshScheduler_1_1Task" kind="struct" language="C++" prot="private">
+    <compoundname>iceberg::rest::auth::TokenRefreshScheduler::Task</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1auth_1_1TokenRefreshScheduler_1_1Task_1a5e70568fdcd60c2e2e981b953358b806" prot="public" static="no" mutable="no">
+        <type>uint64_t</type>
+        <definition>uint64_t iceberg::rest::auth::TokenRefreshScheduler::Task::id</definition>
+        <argsstring></argsstring>
+        <name>id</name>
+        <qualifiedname>iceberg::rest::auth::TokenRefreshScheduler::Task::id</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/token_refresh_scheduler.h" line="99" column="14" bodyfile="iceberg/catalog/rest/auth/token_refresh_scheduler.h" bodystart="99" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1auth_1_1TokenRefreshScheduler_1_1Task_1ab1e882971ffcf40476355b68635ad8cc" prot="public" static="no" mutable="no">
+        <type>std::chrono::steady_clock::time_point</type>
+        <definition>std::chrono::steady_clock::time_point iceberg::rest::auth::TokenRefreshScheduler::Task::fire_at</definition>
+        <argsstring></argsstring>
+        <name>fire_at</name>
+        <qualifiedname>iceberg::rest::auth::TokenRefreshScheduler::Task::fire_at</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/token_refresh_scheduler.h" line="100" column="43" bodyfile="iceberg/catalog/rest/auth/token_refresh_scheduler.h" bodystart="100" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1auth_1_1TokenRefreshScheduler_1_1Task_1a822ea8a6008800f98cb46ba78227a75a" prot="public" static="no" mutable="no">
+        <type>std::function&lt; void()&gt;</type>
+        <definition>std::function&lt;void()&gt; iceberg::rest::auth::TokenRefreshScheduler::Task::callback</definition>
+        <argsstring></argsstring>
+        <name>callback</name>
+        <qualifiedname>iceberg::rest::auth::TokenRefreshScheduler::Task::callback</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/token_refresh_scheduler.h" line="101" column="19" bodyfile="iceberg/catalog/rest/auth/token_refresh_scheduler.h" bodystart="101" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/rest/auth/token_refresh_scheduler.h" line="98" column="3" bodyfile="iceberg/catalog/rest/auth/token_refresh_scheduler.h" bodystart="98" bodyend="102"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1rest_1_1auth_1_1TokenRefreshScheduler_1_1Task_1a822ea8a6008800f98cb46ba78227a75a" prot="public" virt="non-virtual"><scope>iceberg::rest::auth::TokenRefreshScheduler::Task</scope><name>callback</name></member>
+      <member refid="structiceberg_1_1rest_1_1auth_1_1TokenRefreshScheduler_1_1Task_1ab1e882971ffcf40476355b68635ad8cc" prot="public" virt="non-virtual"><scope>iceberg::rest::auth::TokenRefreshScheduler::Task</scope><name>fire_at</name></member>
+      <member refid="structiceberg_1_1rest_1_1auth_1_1TokenRefreshScheduler_1_1Task_1a5e70568fdcd60c2e2e981b953358b806" prot="public" virt="non-virtual"><scope>iceberg::rest::auth::TokenRefreshScheduler::Task</scope><name>id</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,516 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="namespaceiceberg_1_1hive" kind="namespace" language="C++">
+    <compoundname>iceberg::hive</compoundname>
+    <innerclass refid="classiceberg_1_1hive_1_1HiveCatalog" prot="public">iceberg::hive::HiveCatalog</innerclass>
+    <innerclass refid="classiceberg_1_1hive_1_1HiveCatalogProperties" prot="public">iceberg::hive::HiveCatalogProperties</innerclass>
+    <innerclass refid="structiceberg_1_1hive_1_1HiveColumn" prot="public">iceberg::hive::HiveColumn</innerclass>
+    <innerclass refid="structiceberg_1_1hive_1_1HiveDatabase" prot="public">iceberg::hive::HiveDatabase</innerclass>
+    <innerclass refid="structiceberg_1_1hive_1_1HiveNamespace" prot="public">iceberg::hive::HiveNamespace</innerclass>
+    <innerclass refid="structiceberg_1_1hive_1_1HiveTable" prot="public">iceberg::hive::HiveTable</innerclass>
+    <innerclass refid="classiceberg_1_1hive_1_1HmsClient" prot="public">iceberg::hive::HmsClient</innerclass>
+    <innerclass refid="structiceberg_1_1hive_1_1HmsEndpoint" prot="public">iceberg::hive::HmsEndpoint</innerclass>
+    <sectiondef kind="enum">
+      <memberdef kind="enum" id="namespaceiceberg_1_1hive_1a3960254acbead9ea013f258192c6cb9e" prot="public" static="no" strong="yes">
+        <type>uint8_t</type>
+        <name>HiveThriftTransport</name>
+        <qualifiedname>iceberg::hive::HiveThriftTransport</qualifiedname>
+        <enumvalue id="namespaceiceberg_1_1hive_1a3960254acbead9ea013f258192c6cb9ea94f5a611048af894e9e9af74df4fbdda" prot="public">
+          <name>kBuffered</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="namespaceiceberg_1_1hive_1a3960254acbead9ea013f258192c6cb9ea9eb83276e892923810fd9d66de231995" prot="public">
+          <name>kFramed</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+<para>Thrift framing mode used to connect to the Hive Metastore. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Most HMS deployments default to TBufferedTransport. TFramedTransport is required by HMS instances that have been configured to use framed transport (for example, certain Hive 3.x setups with SASL enabled). </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/hive_catalog_properties.h" line="39" column="1" bodyfile="iceberg/catalog/hive/hive_catalog_properties.h" bodystart="39" bodyend="39"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="var">
+      <memberdef kind="variable" id="namespaceiceberg_1_1hive_1a76a68a0599d85cc401ba84b4a9ea85e5" prot="public" static="no" constexpr="yes" mutable="no">
+        <type>constexpr std::string_view</type>
+        <definition>constexpr std::string_view iceberg::hive::kMetadataLocationKey</definition>
+        <argsstring></argsstring>
+        <name>kMetadataLocationKey</name>
+        <qualifiedname>iceberg::hive::kMetadataLocationKey</qualifiedname>
+        <initializer>= &quot;metadata_location&quot;</initializer>
+        <briefdescription>
+<para>Iceberg-on-HMS parameter keys. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/hive_utils.h" line="38" column="35" bodyfile="iceberg/catalog/hive/hive_utils.h" bodystart="38" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespaceiceberg_1_1hive_1a09703b894e2ae75849fd58057cc3f2eb" prot="public" static="no" constexpr="yes" mutable="no">
+        <type>constexpr std::string_view</type>
+        <definition>constexpr std::string_view iceberg::hive::kTableTypeKey</definition>
+        <argsstring></argsstring>
+        <name>kTableTypeKey</name>
+        <qualifiedname>iceberg::hive::kTableTypeKey</qualifiedname>
+        <initializer>= &quot;table_type&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/hive_utils.h" line="39" column="35" bodyfile="iceberg/catalog/hive/hive_utils.h" bodystart="39" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespaceiceberg_1_1hive_1a039ff8ee07b9975cbea1d0b2b02a7b41" prot="public" static="no" constexpr="yes" mutable="no">
+        <type>constexpr std::string_view</type>
+        <definition>constexpr std::string_view iceberg::hive::kTableTypeIceberg</definition>
+        <argsstring></argsstring>
+        <name>kTableTypeIceberg</name>
+        <qualifiedname>iceberg::hive::kTableTypeIceberg</qualifiedname>
+        <initializer>= &quot;ICEBERG&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/hive_utils.h" line="40" column="35" bodyfile="iceberg/catalog/hive/hive_utils.h" bodystart="40" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespaceiceberg_1_1hive_1ad08eb57e43a7450a92aaaeb1ded72488" prot="public" static="no" constexpr="yes" mutable="no">
+        <type>constexpr std::string_view</type>
+        <definition>constexpr std::string_view iceberg::hive::kExternalKey</definition>
+        <argsstring></argsstring>
+        <name>kExternalKey</name>
+        <qualifiedname>iceberg::hive::kExternalKey</qualifiedname>
+        <initializer>= &quot;EXTERNAL&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/hive_utils.h" line="41" column="35" bodyfile="iceberg/catalog/hive/hive_utils.h" bodystart="41" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespaceiceberg_1_1hive_1ad6c818d880c063fd4f922e4b42009ba5" prot="public" static="no" constexpr="yes" mutable="no">
+        <type>constexpr std::string_view</type>
+        <definition>constexpr std::string_view iceberg::hive::kExternalTrue</definition>
+        <argsstring></argsstring>
+        <name>kExternalTrue</name>
+        <qualifiedname>iceberg::hive::kExternalTrue</qualifiedname>
+        <initializer>= &quot;TRUE&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/hive_utils.h" line="42" column="35" bodyfile="iceberg/catalog/hive/hive_utils.h" bodystart="42" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespaceiceberg_1_1hive_1a9e65ab650a5a193e84bd3c846b00e34c" prot="public" static="no" constexpr="yes" mutable="no">
+        <type>constexpr std::string_view</type>
+        <definition>constexpr std::string_view iceberg::hive::kCommentProperty</definition>
+        <argsstring></argsstring>
+        <name>kCommentProperty</name>
+        <qualifiedname>iceberg::hive::kCommentProperty</qualifiedname>
+        <initializer>= &quot;comment&quot;</initializer>
+        <briefdescription>
+<para>Property keys lifted into HMS fields. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/hive_utils.h" line="45" column="35" bodyfile="iceberg/catalog/hive/hive_utils.h" bodystart="45" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespaceiceberg_1_1hive_1af82c518fbed806660a8340d287795106" prot="public" static="no" constexpr="yes" mutable="no">
+        <type>constexpr std::string_view</type>
+        <definition>constexpr std::string_view iceberg::hive::kLocationProperty</definition>
+        <argsstring></argsstring>
+        <name>kLocationProperty</name>
+        <qualifiedname>iceberg::hive::kLocationProperty</qualifiedname>
+        <initializer>= &quot;location&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/hive_utils.h" line="46" column="35" bodyfile="iceberg/catalog/hive/hive_utils.h" bodystart="46" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespaceiceberg_1_1hive_1a02c8273fec2fc51cb6f08901d13f9091" prot="public" static="no" constexpr="yes" mutable="no">
+        <type>constexpr std::string_view</type>
+        <definition>constexpr std::string_view iceberg::hive::kHmsTableOwnerProperty</definition>
+        <argsstring></argsstring>
+        <name>kHmsTableOwnerProperty</name>
+        <qualifiedname>iceberg::hive::kHmsTableOwnerProperty</qualifiedname>
+        <initializer>= &quot;hive.metastore.table.owner&quot;</initializer>
+        <briefdescription>
+<para>HMS table owner key. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/hive_utils.h" line="49" column="35" bodyfile="iceberg/catalog/hive/hive_utils.h" bodystart="49" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespaceiceberg_1_1hive_1adc09628ab32e50d37fe0c99652d91efd" prot="public" static="no" constexpr="yes" mutable="no">
+        <type>constexpr std::string_view</type>
+        <definition>constexpr std::string_view iceberg::hive::kHmsDbOwnerProperty</definition>
+        <argsstring></argsstring>
+        <name>kHmsDbOwnerProperty</name>
+        <qualifiedname>iceberg::hive::kHmsDbOwnerProperty</qualifiedname>
+        <initializer>= &quot;hive.metastore.database.owner&quot;</initializer>
+        <briefdescription>
+<para>HMS database owner keys. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/hive_utils.h" line="52" column="35" bodyfile="iceberg/catalog/hive/hive_utils.h" bodystart="52" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespaceiceberg_1_1hive_1a7399eeb5a66b48c93c7d75a0dc72eb10" prot="public" static="no" constexpr="yes" mutable="no">
+        <type>constexpr std::string_view</type>
+        <definition>constexpr std::string_view iceberg::hive::kHmsDbOwnerTypeProperty</definition>
+        <argsstring></argsstring>
+        <name>kHmsDbOwnerTypeProperty</name>
+        <qualifiedname>iceberg::hive::kHmsDbOwnerTypeProperty</qualifiedname>
+        <initializer>=
+    &quot;hive.metastore.database.owner-type&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/hive_utils.h" line="53" column="35" bodyfile="iceberg/catalog/hive/hive_utils.h" bodystart="53" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespaceiceberg_1_1hive_1afcee3c71119dd3d24d04b314b8d37e8d" prot="public" static="no" constexpr="yes" mutable="no">
+        <type>constexpr std::string_view</type>
+        <definition>constexpr std::string_view iceberg::hive::kLazySimpleSerDe</definition>
+        <argsstring></argsstring>
+        <name>kLazySimpleSerDe</name>
+        <qualifiedname>iceberg::hive::kLazySimpleSerDe</qualifiedname>
+        <initializer>=
+    &quot;org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe&quot;</initializer>
+        <briefdescription>
+<para>Fallback storage descriptor classes. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/hive_utils.h" line="57" column="35" bodyfile="iceberg/catalog/hive/hive_utils.h" bodystart="57" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespaceiceberg_1_1hive_1afc25f3b12ba9521fd848486d7ce7bb48" prot="public" static="no" constexpr="yes" mutable="no">
+        <type>constexpr std::string_view</type>
+        <definition>constexpr std::string_view iceberg::hive::kFileInputFormat</definition>
+        <argsstring></argsstring>
+        <name>kFileInputFormat</name>
+        <qualifiedname>iceberg::hive::kFileInputFormat</qualifiedname>
+        <initializer>=
+    &quot;org.apache.hadoop.mapred.FileInputFormat&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/hive_utils.h" line="59" column="35" bodyfile="iceberg/catalog/hive/hive_utils.h" bodystart="59" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespaceiceberg_1_1hive_1aba73e91c122f9efa69f8c9732a69cb4b" prot="public" static="no" constexpr="yes" mutable="no">
+        <type>constexpr std::string_view</type>
+        <definition>constexpr std::string_view iceberg::hive::kFileOutputFormat</definition>
+        <argsstring></argsstring>
+        <name>kFileOutputFormat</name>
+        <qualifiedname>iceberg::hive::kFileOutputFormat</qualifiedname>
+        <initializer>=
+    &quot;org.apache.hadoop.mapred.FileOutputFormat&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/hive_utils.h" line="61" column="35" bodyfile="iceberg/catalog/hive/hive_utils.h" bodystart="61" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespaceiceberg_1_1hive_1ab49e066f157b4da08ca41b933484470a" prot="public" static="no" constexpr="yes" mutable="no">
+        <type>constexpr int</type>
+        <definition>constexpr int iceberg::hive::kDefaultHmsPort</definition>
+        <argsstring></argsstring>
+        <name>kDefaultHmsPort</name>
+        <qualifiedname>iceberg::hive::kDefaultHmsPort</qualifiedname>
+        <initializer>= 9083</initializer>
+        <briefdescription>
+<para>Hive&apos;s well-known metastore port, used when an HMS URI omits one. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/hms_client.h" line="39" column="22" bodyfile="iceberg/catalog/hive/hms_client.h" bodystart="39" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="namespaceiceberg_1_1hive_1a608d6f8ee6197a41df06b4a592dd8f67" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>ICEBERG_HIVE_EXPORT <ref refid="namespaceiceberg_1aac79523734e35ca4d34cced52e56ec9b" kindref="member">Result</ref>&lt; std::string &gt;</type>
+        <definition>ICEBERG_HIVE_EXPORT Result&lt; std::string &gt; iceberg::hive::TypeToHiveString</definition>
+        <argsstring>(const Type &amp;type)</argsstring>
+        <name>TypeToHiveString</name>
+        <qualifiedname>iceberg::hive::TypeToHiveString</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Type" kindref="compound">Type</ref> &amp;</type>
+          <declname>type</declname>
+        </param>
+        <briefdescription>
+<para>Render a Hive type string, including nested types. Follow Java: variant -&gt; unknown, time/uuid -&gt; string, fixed -&gt; binary. Unsupported types return kNotImplemented. Zoned timestamps require Hive 3+. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/hive_schema.h" line="44" column="28" declfile="iceberg/catalog/hive/hive_schema.h" declline="44" declcolumn="28"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceiceberg_1_1hive_1a0c4c60826a690ec10ad102ed99845064" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>ICEBERG_HIVE_EXPORT <ref refid="namespaceiceberg_1aac79523734e35ca4d34cced52e56ec9b" kindref="member">Result</ref>&lt; std::vector&lt; <ref refid="structiceberg_1_1hive_1_1HiveColumn" kindref="compound">HiveColumn</ref> &gt; &gt;</type>
+        <definition>ICEBERG_HIVE_EXPORT Result&lt; std::vector&lt; HiveColumn &gt; &gt; iceberg::hive::SchemaToHiveColumns</definition>
+        <argsstring>(const Schema &amp;schema)</argsstring>
+        <name>SchemaToHiveColumns</name>
+        <qualifiedname>iceberg::hive::SchemaToHiveColumns</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &amp;</type>
+          <declname>schema</declname>
+        </param>
+        <briefdescription>
+<para>Convert top-level fields to HMS columns. Docs become comments. Field IDs and requiredness are not represented in HMS. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/hive_schema.h" line="48" column="28" declfile="iceberg/catalog/hive/hive_schema.h" declline="48" declcolumn="28"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceiceberg_1_1hive_1aec54f4aa225bad5f2b0d31c75770745f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>ICEBERG_HIVE_EXPORT <ref refid="namespaceiceberg_1aac79523734e35ca4d34cced52e56ec9b" kindref="member">Result</ref>&lt; <ref refid="structiceberg_1_1hive_1_1HiveDatabase" kindref="compound">HiveDatabase</ref> &gt;</type>
+        <definition>ICEBERG_HIVE_EXPORT Result&lt; HiveDatabase &gt; iceberg::hive::ConvertToHiveDatabase</definition>
+        <argsstring>(const Namespace &amp;ns, const std::unordered_map&lt; std::string, std::string &gt; &amp;properties)</argsstring>
+        <name>ConvertToHiveDatabase</name>
+        <qualifiedname>iceberg::hive::ConvertToHiveDatabase</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1Namespace" kindref="compound">Namespace</ref> &amp;</type>
+          <declname>ns</declname>
+        </param>
+        <param>
+          <type>const std::unordered_map&lt; std::string, std::string &gt; &amp;</type>
+          <declname>properties</declname>
+        </param>
+        <briefdescription>
+<para>Lift reserved properties into HMS fields. Caller resolves defaults. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/hive_utils.h" line="95" column="28" declfile="iceberg/catalog/hive/hive_utils.h" declline="95" declcolumn="28"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceiceberg_1_1hive_1afb113a4fb241b761270784296794fc9f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>ICEBERG_HIVE_EXPORT <ref refid="structiceberg_1_1hive_1_1HiveNamespace" kindref="compound">HiveNamespace</ref></type>
+        <definition>ICEBERG_HIVE_EXPORT HiveNamespace iceberg::hive::ConvertFromHiveDatabase</definition>
+        <argsstring>(const HiveDatabase &amp;database)</argsstring>
+        <name>ConvertFromHiveDatabase</name>
+        <qualifiedname>iceberg::hive::ConvertFromHiveDatabase</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1hive_1_1HiveDatabase" kindref="compound">HiveDatabase</ref> &amp;</type>
+          <declname>database</declname>
+        </param>
+        <briefdescription>
+<para>Extract namespace properties from an HMS database. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/hive_utils.h" line="99" column="35" declfile="iceberg/catalog/hive/hive_utils.h" declline="99" declcolumn="35"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceiceberg_1_1hive_1a2d712f066b1f205a467ffed70ec11653" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>ICEBERG_HIVE_EXPORT <ref refid="namespaceiceberg_1aac79523734e35ca4d34cced52e56ec9b" kindref="member">Result</ref>&lt; <ref refid="structiceberg_1_1hive_1_1HiveTable" kindref="compound">HiveTable</ref> &gt;</type>
+        <definition>ICEBERG_HIVE_EXPORT Result&lt; HiveTable &gt; iceberg::hive::ConvertToHiveTable</definition>
+        <argsstring>(const TableIdentifier &amp;identifier, const std::vector&lt; HiveColumn &gt; &amp;columns, std::string_view metadata_location, std::string_view location, const std::unordered_map&lt; std::string, std::string &gt; &amp;table_properties)</argsstring>
+        <name>ConvertToHiveTable</name>
+        <qualifiedname>iceberg::hive::ConvertToHiveTable</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1TableIdentifier" kindref="compound">TableIdentifier</ref> &amp;</type>
+          <declname>identifier</declname>
+        </param>
+        <param>
+          <type>const std::vector&lt; <ref refid="structiceberg_1_1hive_1_1HiveColumn" kindref="compound">HiveColumn</ref> &gt; &amp;</type>
+          <declname>columns</declname>
+        </param>
+        <param>
+          <type>std::string_view</type>
+          <declname>metadata_location</declname>
+        </param>
+        <param>
+          <type>std::string_view</type>
+          <declname>location</declname>
+        </param>
+        <param>
+          <type>const std::unordered_map&lt; std::string, std::string &gt; &amp;</type>
+          <declname>table_properties</declname>
+        </param>
+        <briefdescription>
+<para>Build an external Iceberg table with a LazySimpleSerDe descriptor. Translate gc.enabled to external.table.purge. <ref refid="classiceberg_1_1Catalog" kindref="compound">Catalog</ref> markers override user properties. metadata_location must be non-empty; caller resolves the owner. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/hive_utils.h" line="104" column="28" declfile="iceberg/catalog/hive/hive_utils.h" declline="104" declcolumn="28"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceiceberg_1_1hive_1a8a2c5cf17610416f569cddcb59c311d9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>ICEBERG_HIVE_EXPORT <ref refid="namespaceiceberg_1aac79523734e35ca4d34cced52e56ec9b" kindref="member">Result</ref>&lt; std::string &gt;</type>
+        <definition>ICEBERG_HIVE_EXPORT Result&lt; std::string &gt; iceberg::hive::GetMetadataLocation</definition>
+        <argsstring>(const std::unordered_map&lt; std::string, std::string &gt; &amp;table_parameters)</argsstring>
+        <name>GetMetadataLocation</name>
+        <qualifiedname>iceberg::hive::GetMetadataLocation</qualifiedname>
+        <param>
+          <type>const std::unordered_map&lt; std::string, std::string &gt; &amp;</type>
+          <declname>table_parameters</declname>
+        </param>
+        <briefdescription>
+<para>Return metadata_location, or kNotFound if absent or empty. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/hive_utils.h" line="110" column="28" declfile="iceberg/catalog/hive/hive_utils.h" declline="110" declcolumn="28"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceiceberg_1_1hive_1a6e3098cdc64f1badcdab3a7eaad9d1ae" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>ICEBERG_HIVE_EXPORT <ref refid="classiceberg_1_1expected" kindref="compound">Status</ref></type>
+        <definition>ICEBERG_HIVE_EXPORT Status iceberg::hive::ValidateIcebergTable</definition>
+        <argsstring>(const TableIdentifier &amp;identifier, const std::unordered_map&lt; std::string, std::string &gt; &amp;table_parameters)</argsstring>
+        <name>ValidateIcebergTable</name>
+        <qualifiedname>iceberg::hive::ValidateIcebergTable</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1TableIdentifier" kindref="compound">TableIdentifier</ref> &amp;</type>
+          <declname>identifier</declname>
+        </param>
+        <param>
+          <type>const std::unordered_map&lt; std::string, std::string &gt; &amp;</type>
+          <declname>table_parameters</declname>
+        </param>
+        <briefdescription>
+<para>Require table_type=ICEBERG (case-insensitive). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/hive_utils.h" line="114" column="28" declfile="iceberg/catalog/hive/hive_utils.h" declline="114" declcolumn="28"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceiceberg_1_1hive_1a44076271867edf8cf11fa8295ed11f9d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>ICEBERG_HIVE_EXPORT std::string</type>
+        <definition>ICEBERG_HIVE_EXPORT std::string iceberg::hive::GetDefaultTableLocation</definition>
+        <argsstring>(std::string_view warehouse, const Namespace &amp;ns, std::string_view table_name)</argsstring>
+        <name>GetDefaultTableLocation</name>
+        <qualifiedname>iceberg::hive::GetDefaultTableLocation</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>warehouse</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structiceberg_1_1Namespace" kindref="compound">Namespace</ref> &amp;</type>
+          <declname>ns</declname>
+        </param>
+        <param>
+          <type>std::string_view</type>
+          <declname>table_name</declname>
+        </param>
+        <briefdescription>
+<para>Return &lt;warehouse&gt;/&lt;namespace&gt;.db/&lt;table_name&gt;. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/hive_utils.h" line="119" column="33" declfile="iceberg/catalog/hive/hive_utils.h" declline="119" declcolumn="33"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceiceberg_1_1hive_1a2044ca4b5a304d95ff52d12eeb9b1605" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>ICEBERG_HIVE_EXPORT <ref refid="classiceberg_1_1expected" kindref="compound">Status</ref></type>
+        <definition>ICEBERG_HIVE_EXPORT Status iceberg::hive::ValidateNamespace</definition>
+        <argsstring>(const Namespace &amp;ns)</argsstring>
+        <name>ValidateNamespace</name>
+        <qualifiedname>iceberg::hive::ValidateNamespace</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1Namespace" kindref="compound">Namespace</ref> &amp;</type>
+          <declname>ns</declname>
+        </param>
+        <briefdescription>
+<para>Require a single-level namespace. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/hive_utils.h" line="124" column="28" declfile="iceberg/catalog/hive/hive_utils.h" declline="124" declcolumn="28"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceiceberg_1_1hive_1a7c9a0f0e8a5757074c7d9a0135b9d1bf" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>ICEBERG_HIVE_EXPORT <ref refid="classiceberg_1_1expected" kindref="compound">Status</ref></type>
+        <definition>ICEBERG_HIVE_EXPORT Status iceberg::hive::ValidateOwnerSettings</definition>
+        <argsstring>(const std::unordered_map&lt; std::string, std::string &gt; &amp;properties)</argsstring>
+        <name>ValidateOwnerSettings</name>
+        <qualifiedname>iceberg::hive::ValidateOwnerSettings</qualifiedname>
+        <param>
+          <type>const std::unordered_map&lt; std::string, std::string &gt; &amp;</type>
+          <declname>properties</declname>
+        </param>
+        <briefdescription>
+<para>Require owner when owner-type is set. owner-type must be USER, GROUP or ROLE. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/hive_utils.h" line="129" column="1" declfile="iceberg/catalog/hive/hive_utils.h" declline="129" declcolumn="1"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceiceberg_1_1hive_1a27c51b7c7c62afef919b21a2eccbb491" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>ICEBERG_HIVE_EXPORT <ref refid="namespaceiceberg_1aac79523734e35ca4d34cced52e56ec9b" kindref="member">Result</ref>&lt; std::vector&lt; <ref refid="structiceberg_1_1hive_1_1HmsEndpoint" kindref="compound">HmsEndpoint</ref> &gt; &gt;</type>
+        <definition>ICEBERG_HIVE_EXPORT Result&lt; std::vector&lt; HmsEndpoint &gt; &gt; iceberg::hive::ParseHmsUris</definition>
+        <argsstring>(std::string_view uri)</argsstring>
+        <name>ParseHmsUris</name>
+        <qualifiedname>iceberg::hive::ParseHmsUris</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>uri</declname>
+        </param>
+        <briefdescription>
+<para>Parse an HMS URI string into one or more endpoints. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Each comma-separated segment is treated as an independent endpoint; surrounding whitespace and an optional <computeroutput>thrift://</computeroutput> scheme prefix are stripped. Returns an InvalidArgument error if any segment fails to produce a non-empty host and a port within (0, 65535]. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/hms_client.h" line="61" column="28" declfile="iceberg/catalog/hive/hms_client.h" declline="61" declcolumn="28"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Hive catalog APIs. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/hive/hive_catalog.h" line="34" column="1"/>
+  </compounddef>
+</doxygen>

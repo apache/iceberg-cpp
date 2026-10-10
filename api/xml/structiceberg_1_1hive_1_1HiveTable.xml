@@ -1,0 +1,219 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1hive_1_1HiveTable" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::hive::HiveTable</compoundname>
+    <includes refid="hive__utils_8h" local="no">hive_utils.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1hive_1_1HiveTable_1af3c34fc41fb022b2bd030b70e1e9e062" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::hive::HiveTable::db_name</definition>
+        <argsstring></argsstring>
+        <name>db_name</name>
+        <qualifiedname>iceberg::hive::HiveTable::db_name</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/hive_utils.h" line="76" column="15" bodyfile="iceberg/catalog/hive/hive_utils.h" bodystart="76" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1hive_1_1HiveTable_1a4ad816b432613f6558908fd7e6a4a2a8" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::hive::HiveTable::table_name</definition>
+        <argsstring></argsstring>
+        <name>table_name</name>
+        <qualifiedname>iceberg::hive::HiveTable::table_name</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/hive_utils.h" line="77" column="15" bodyfile="iceberg/catalog/hive/hive_utils.h" bodystart="77" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1hive_1_1HiveTable_1a18b1fa6ac0f27fa208d785221d05f25c" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::hive::HiveTable::owner</definition>
+        <argsstring></argsstring>
+        <name>owner</name>
+        <qualifiedname>iceberg::hive::HiveTable::owner</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/hive_utils.h" line="78" column="15" bodyfile="iceberg/catalog/hive/hive_utils.h" bodystart="78" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1hive_1_1HiveTable_1a936b4d2074213def688540aac8590fa2" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::hive::HiveTable::table_type</definition>
+        <argsstring></argsstring>
+        <name>table_type</name>
+        <qualifiedname>iceberg::hive::HiveTable::table_type</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/hive_utils.h" line="79" column="15" bodyfile="iceberg/catalog/hive/hive_utils.h" bodystart="79" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1hive_1_1HiveTable_1a54b7c7cedcac8e5207c3469ea51d20c9" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::hive::HiveTable::location</definition>
+        <argsstring></argsstring>
+        <name>location</name>
+        <qualifiedname>iceberg::hive::HiveTable::location</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/hive_utils.h" line="80" column="15" bodyfile="iceberg/catalog/hive/hive_utils.h" bodystart="80" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1hive_1_1HiveTable_1a82c4dede9beb425339b28b2c7642dffb" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="structiceberg_1_1hive_1_1HiveColumn" kindref="compound">HiveColumn</ref> &gt;</type>
+        <definition>std::vector&lt;HiveColumn&gt; iceberg::hive::HiveTable::columns</definition>
+        <argsstring></argsstring>
+        <name>columns</name>
+        <qualifiedname>iceberg::hive::HiveTable::columns</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/hive_utils.h" line="81" column="15" bodyfile="iceberg/catalog/hive/hive_utils.h" bodystart="81" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1hive_1_1HiveTable_1a1629452310b18e75d141aa8781153651" prot="public" static="no" mutable="no">
+        <type>std::unordered_map&lt; std::string, std::string &gt;</type>
+        <definition>std::unordered_map&lt;std::string, std::string&gt; iceberg::hive::HiveTable::parameters</definition>
+        <argsstring></argsstring>
+        <name>parameters</name>
+        <qualifiedname>iceberg::hive::HiveTable::parameters</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/hive_utils.h" line="82" column="22" bodyfile="iceberg/catalog/hive/hive_utils.h" bodystart="82" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1hive_1_1HiveTable_1a31e6f6e6f1aefb1a72e4619282283f7e" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::hive::HiveTable::serde</definition>
+        <argsstring></argsstring>
+        <name>serde</name>
+        <qualifiedname>iceberg::hive::HiveTable::serde</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/hive_utils.h" line="83" column="15" bodyfile="iceberg/catalog/hive/hive_utils.h" bodystart="83" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1hive_1_1HiveTable_1afc6e5db1847280579334b6d9ff81e608" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::hive::HiveTable::input_format</definition>
+        <argsstring></argsstring>
+        <name>input_format</name>
+        <qualifiedname>iceberg::hive::HiveTable::input_format</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/hive_utils.h" line="84" column="15" bodyfile="iceberg/catalog/hive/hive_utils.h" bodystart="84" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1hive_1_1HiveTable_1a880e9c3a089436228ae1903f3648c0f8" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::hive::HiveTable::output_format</definition>
+        <argsstring></argsstring>
+        <name>output_format</name>
+        <qualifiedname>iceberg::hive::HiveTable::output_format</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/hive_utils.h" line="85" column="15" bodyfile="iceberg/catalog/hive/hive_utils.h" bodystart="85" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Subset of HMS <ref refid="classiceberg_1_1Table" kindref="compound">Table</ref> used by <ref refid="classiceberg_1_1hive_1_1HiveCatalog" kindref="compound">HiveCatalog</ref>. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="5">
+        <label>iceberg::hive::HiveColumn</label>
+        <link refid="structiceberg_1_1hive_1_1HiveColumn"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>comment</edgelabel>
+          <edgelabel>name</edgelabel>
+          <edgelabel>type_string</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::hive::HiveTable</label>
+        <link refid="structiceberg_1_1hive_1_1HiveTable"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>db_name</edgelabel>
+          <edgelabel>input_format</edgelabel>
+          <edgelabel>location</edgelabel>
+          <edgelabel>output_format</edgelabel>
+          <edgelabel>owner</edgelabel>
+          <edgelabel>serde</edgelabel>
+          <edgelabel>table_name</edgelabel>
+          <edgelabel>table_type</edgelabel>
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>columns</edgelabel>
+        </childnode>
+        <childnode refid="6" relation="usage">
+          <edgelabel>parameters</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>std::unordered_map&lt; std::string, std::string &gt;</label>
+        <childnode refid="2" relation="usage">
+          <edgelabel>elements</edgelabel>
+          <edgelabel>keys</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>std::vector&lt; iceberg::hive::HiveColumn &gt;</label>
+        <childnode refid="5" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/hive_utils.h" line="75" column="1" bodyfile="iceberg/catalog/hive/hive_utils.h" bodystart="75" bodyend="86"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1hive_1_1HiveTable_1a82c4dede9beb425339b28b2c7642dffb" prot="public" virt="non-virtual"><scope>iceberg::hive::HiveTable</scope><name>columns</name></member>
+      <member refid="structiceberg_1_1hive_1_1HiveTable_1af3c34fc41fb022b2bd030b70e1e9e062" prot="public" virt="non-virtual"><scope>iceberg::hive::HiveTable</scope><name>db_name</name></member>
+      <member refid="structiceberg_1_1hive_1_1HiveTable_1afc6e5db1847280579334b6d9ff81e608" prot="public" virt="non-virtual"><scope>iceberg::hive::HiveTable</scope><name>input_format</name></member>
+      <member refid="structiceberg_1_1hive_1_1HiveTable_1a54b7c7cedcac8e5207c3469ea51d20c9" prot="public" virt="non-virtual"><scope>iceberg::hive::HiveTable</scope><name>location</name></member>
+      <member refid="structiceberg_1_1hive_1_1HiveTable_1a880e9c3a089436228ae1903f3648c0f8" prot="public" virt="non-virtual"><scope>iceberg::hive::HiveTable</scope><name>output_format</name></member>
+      <member refid="structiceberg_1_1hive_1_1HiveTable_1a18b1fa6ac0f27fa208d785221d05f25c" prot="public" virt="non-virtual"><scope>iceberg::hive::HiveTable</scope><name>owner</name></member>
+      <member refid="structiceberg_1_1hive_1_1HiveTable_1a1629452310b18e75d141aa8781153651" prot="public" virt="non-virtual"><scope>iceberg::hive::HiveTable</scope><name>parameters</name></member>
+      <member refid="structiceberg_1_1hive_1_1HiveTable_1a31e6f6e6f1aefb1a72e4619282283f7e" prot="public" virt="non-virtual"><scope>iceberg::hive::HiveTable</scope><name>serde</name></member>
+      <member refid="structiceberg_1_1hive_1_1HiveTable_1a4ad816b432613f6558908fd7e6a4a2a8" prot="public" virt="non-virtual"><scope>iceberg::hive::HiveTable</scope><name>table_name</name></member>
+      <member refid="structiceberg_1_1hive_1_1HiveTable_1a936b4d2074213def688540aac8590fa2" prot="public" virt="non-virtual"><scope>iceberg::hive::HiveTable</scope><name>table_type</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

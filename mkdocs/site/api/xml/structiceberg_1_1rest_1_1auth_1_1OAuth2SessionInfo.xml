@@ -1,0 +1,138 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1rest_1_1auth_1_1OAuth2SessionInfo" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::rest::auth::OAuth2SessionInfo</compoundname>
+    <includes refid="auth__session_8h" local="no">auth_session.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1auth_1_1OAuth2SessionInfo_1a85c24255a85560062d4c254370d8b680" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::rest::auth::OAuth2SessionInfo::token</definition>
+        <argsstring></argsstring>
+        <name>token</name>
+        <qualifiedname>iceberg::rest::auth::OAuth2SessionInfo::token</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/auth_session.h" line="39" column="15" bodyfile="iceberg/catalog/rest/auth/auth_session.h" bodystart="39" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1auth_1_1OAuth2SessionInfo_1a90af135ecab84c60796d62d9cbf53382" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::rest::auth::OAuth2SessionInfo::issued_token_type</definition>
+        <argsstring></argsstring>
+        <name>issued_token_type</name>
+        <qualifiedname>iceberg::rest::auth::OAuth2SessionInfo::issued_token_type</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/auth_session.h" line="40" column="15" bodyfile="iceberg/catalog/rest/auth/auth_session.h" bodystart="40" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1auth_1_1OAuth2SessionInfo_1adf5a984d047390a68e3c43c21efb181f" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::rest::auth::OAuth2SessionInfo::credential</definition>
+        <argsstring></argsstring>
+        <name>credential</name>
+        <qualifiedname>iceberg::rest::auth::OAuth2SessionInfo::credential</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/auth_session.h" line="41" column="15" bodyfile="iceberg/catalog/rest/auth/auth_session.h" bodystart="41" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1auth_1_1OAuth2SessionInfo_1a0a081e1e92339ec92681d49f95e687e6" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::rest::auth::OAuth2SessionInfo::scope</definition>
+        <argsstring></argsstring>
+        <name>scope</name>
+        <qualifiedname>iceberg::rest::auth::OAuth2SessionInfo::scope</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/auth_session.h" line="42" column="15" bodyfile="iceberg/catalog/rest/auth/auth_session.h" bodystart="42" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1auth_1_1OAuth2SessionInfo_1aed6c8a62fac8842e99adf3fa2d596255" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::rest::auth::OAuth2SessionInfo::oauth2_server_uri</definition>
+        <argsstring></argsstring>
+        <name>oauth2_server_uri</name>
+        <qualifiedname>iceberg::rest::auth::OAuth2SessionInfo::oauth2_server_uri</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/auth_session.h" line="43" column="15" bodyfile="iceberg/catalog/rest/auth/auth_session.h" bodystart="43" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1auth_1_1OAuth2SessionInfo_1a8fc35ab39a73cdc435c1c6b29b9e1501" prot="public" static="no" mutable="no">
+        <type>std::unordered_map&lt; std::string, std::string &gt;</type>
+        <definition>std::unordered_map&lt;std::string, std::string&gt; iceberg::rest::auth::OAuth2SessionInfo::optional_oauth_params</definition>
+        <argsstring></argsstring>
+        <name>optional_oauth_params</name>
+        <qualifiedname>iceberg::rest::auth::OAuth2SessionInfo::optional_oauth_params</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/auth_session.h" line="44" column="22" bodyfile="iceberg/catalog/rest/auth/auth_session.h" bodystart="44" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>OAuth2 metadata used to derive child authentication sessions. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::rest::auth::OAuth2SessionInfo</label>
+        <link refid="structiceberg_1_1rest_1_1auth_1_1OAuth2SessionInfo"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>credential</edgelabel>
+          <edgelabel>issued_token_type</edgelabel>
+          <edgelabel>oauth2_server_uri</edgelabel>
+          <edgelabel>scope</edgelabel>
+          <edgelabel>token</edgelabel>
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>optional_oauth_params</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>std::unordered_map&lt; std::string, std::string &gt;</label>
+        <childnode refid="2" relation="usage">
+          <edgelabel>elements</edgelabel>
+          <edgelabel>keys</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/rest/auth/auth_session.h" line="38" column="1" bodyfile="iceberg/catalog/rest/auth/auth_session.h" bodystart="38" bodyend="45"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1rest_1_1auth_1_1OAuth2SessionInfo_1adf5a984d047390a68e3c43c21efb181f" prot="public" virt="non-virtual"><scope>iceberg::rest::auth::OAuth2SessionInfo</scope><name>credential</name></member>
+      <member refid="structiceberg_1_1rest_1_1auth_1_1OAuth2SessionInfo_1a90af135ecab84c60796d62d9cbf53382" prot="public" virt="non-virtual"><scope>iceberg::rest::auth::OAuth2SessionInfo</scope><name>issued_token_type</name></member>
+      <member refid="structiceberg_1_1rest_1_1auth_1_1OAuth2SessionInfo_1aed6c8a62fac8842e99adf3fa2d596255" prot="public" virt="non-virtual"><scope>iceberg::rest::auth::OAuth2SessionInfo</scope><name>oauth2_server_uri</name></member>
+      <member refid="structiceberg_1_1rest_1_1auth_1_1OAuth2SessionInfo_1a8fc35ab39a73cdc435c1c6b29b9e1501" prot="public" virt="non-virtual"><scope>iceberg::rest::auth::OAuth2SessionInfo</scope><name>optional_oauth_params</name></member>
+      <member refid="structiceberg_1_1rest_1_1auth_1_1OAuth2SessionInfo_1a0a081e1e92339ec92681d49f95e687e6" prot="public" virt="non-virtual"><scope>iceberg::rest::auth::OAuth2SessionInfo</scope><name>scope</name></member>
+      <member refid="structiceberg_1_1rest_1_1auth_1_1OAuth2SessionInfo_1a85c24255a85560062d4c254370d8b680" prot="public" virt="non-virtual"><scope>iceberg::rest::auth::OAuth2SessionInfo</scope><name>token</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>
