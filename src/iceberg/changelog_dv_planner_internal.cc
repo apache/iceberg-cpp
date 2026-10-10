@@ -19,210 +19,234 @@
 
 #include "iceberg/changelog_dv_planner_internal.h"
 
-#include <ranges>
+#include <algorithm>
 #include <utility>
 
-#include "iceberg/expression/residual_evaluator.h"
+#include "iceberg/expression/manifest_evaluator.h"
+#include "iceberg/expression/projections.h"
 #include "iceberg/manifest/manifest_entry.h"
-#include "iceberg/manifest/manifest_group.h"
 #include "iceberg/manifest/manifest_reader.h"
-#include "iceberg/util/content_file_util.h"
+#include "iceberg/partition_spec.h"
 #include "iceberg/util/executor_util_internal.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg {
 
-namespace {
-
-Status ValidateChangelogDeleteFile(const DataFile& file) {
-  if (file.content == DataFile::Content::kEqualityDeletes) {
-    return NotSupported("Equality delete files are not supported in changelog scans: {}",
-                        file.file_path);
-  }
-  if (!file.IsDeletionVector()) {
-    return NotSupported("Position delete files are not supported in changelog scans: {}",
-                        file.file_path);
-  }
-  ICEBERG_PRECHECK(file.referenced_data_file.has_value(),
-                   "Deletion vector {} does not reference a data file", file.file_path);
-  return {};
-}
-
-std::vector<std::shared_ptr<DataFile>> FindDeletionVector(
-    const std::unordered_map<std::string, std::shared_ptr<DataFile>>& dvs_by_path,
-    const std::string& data_file_path) {
-  auto it = dvs_by_path.find(data_file_path);
-  if (it == dvs_by_path.end()) {
-    return {};
-  }
-  return {it->second};
-}
-
-}  // namespace
-
-DeletionVectorChangelogPlanner::DeletionVectorChangelogPlanner(
-    std::shared_ptr<FileIO> io, std::shared_ptr<Schema> schema,
-    std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>> specs_by_id,
-    internal::TableScanContext context, std::vector<std::string> scan_columns,
-    std::shared_ptr<Expression> filter,
-    std::unordered_map<int64_t, SnapshotDeletionVectors> dvs_by_snapshot)
-    : io_(std::move(io)),
-      schema_(std::move(schema)),
-      specs_by_id_(std::move(specs_by_id)),
-      context_(std::move(context)),
-      scan_columns_(std::move(scan_columns)),
-      filter_(std::move(filter)),
-      dvs_by_snapshot_(std::move(dvs_by_snapshot)) {}
-
 Result<std::unique_ptr<DeletionVectorChangelogPlanner>>
 DeletionVectorChangelogPlanner::Make(
     std::shared_ptr<FileIO> io, std::shared_ptr<Schema> schema,
-    std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>> specs_by_id,
-    const internal::TableScanContext& context, std::vector<std::string> scan_columns,
-    std::shared_ptr<Expression> filter, const std::vector<ManifestFile>& delete_manifests,
-    const std::unordered_set<int64_t>& snapshot_ids) {
+    const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>& specs_by_id,
+    std::shared_ptr<Expression> filter, bool case_sensitive, OptionalExecutor executor,
+    const std::vector<ManifestFile>& delete_manifests,
+    const std::unordered_map<int64_t, int64_t>& sequence_numbers) {
   ICEBERG_ASSIGN_OR_RAISE(
       auto entries,
       ParallelCollect(
-          context.plan_executor, delete_manifests,
+          executor, delete_manifests,
           [&](const ManifestFile& manifest) -> Result<std::vector<ManifestEntry>> {
+            auto spec_it = specs_by_id.find(manifest.partition_spec_id);
+            ICEBERG_CHECK(spec_it != specs_by_id.end(),
+                          "Partition spec ID {} not found when reading delete manifest",
+                          manifest.partition_spec_id);
+            std::shared_ptr<Expression> partition_filter;
+            if (filter != nullptr) {
+              auto projector =
+                  Projections::Inclusive(*spec_it->second, *schema, case_sensitive);
+              ICEBERG_ASSIGN_OR_RAISE(partition_filter, projector->Project(filter));
+              ICEBERG_ASSIGN_OR_RAISE(
+                  auto evaluator,
+                  ManifestEvaluator::MakePartitionFilter(
+                      partition_filter, spec_it->second, *schema, case_sensitive));
+              ICEBERG_ASSIGN_OR_RAISE(bool may_match, evaluator->Evaluate(manifest));
+              if (!may_match) {
+                return std::vector<ManifestEntry>{};
+              }
+            }
+
             ICEBERG_ASSIGN_OR_RAISE(
                 auto reader, ManifestReader::Make(manifest, io, schema, specs_by_id));
+            if (partition_filter != nullptr) {
+              reader->FilterPartitions(partition_filter).CaseSensitive(case_sensitive);
+            }
             reader->TryDropStats();
             ICEBERG_ASSIGN_OR_RAISE(auto entries, reader->Entries());
-            auto in_range = [&snapshot_ids](const ManifestEntry& entry) {
-              return entry.snapshot_id.has_value() &&
-                     snapshot_ids.contains(entry.snapshot_id.value());
-            };
-            for (const auto& entry : entries) {
-              ICEBERG_PRECHECK(entry.data_file != nullptr,
-                               "Invalid manifest entry with missing delete file");
-              // A delete file removed before the range no longer applies to any data
-              // file, so it cannot affect the changelog. Every other delete file can: a
-              // live one applies to data files whose rows the changelog reports, and one
-              // removed by a changelog snapshot was applied to the rows that snapshot
-              // reports as deleted. Those must be deletion vectors.
-              if (entry.status == ManifestStatus::kDeleted && !in_range(entry)) {
-                continue;
-              }
-              ICEBERG_RETURN_UNEXPECTED(ValidateChangelogDeleteFile(*entry.data_file));
-            }
-            std::erase_if(entries, [&in_range](const ManifestEntry& entry) {
-              return entry.status == ManifestStatus::kExisting || !in_range(entry);
+            // A delete file removed before the range no longer applies to any data
+            // file. One removed by a snapshot in the range applied until then.
+            std::erase_if(entries, [&](const ManifestEntry& entry) {
+              return entry.status == ManifestStatus::kDeleted &&
+                     !(entry.snapshot_id.has_value() &&
+                       sequence_numbers.contains(entry.snapshot_id.value()));
             });
             return entries;
           }));
 
-  std::unordered_map<int64_t, SnapshotDeletionVectors> dvs_by_snapshot;
+  auto planner = std::unique_ptr<DeletionVectorChangelogPlanner>(
+      new DeletionVectorChangelogPlanner());
   for (auto& entry : entries) {
-    const int64_t snapshot_id = entry.snapshot_id.value();
-    auto& dvs = dvs_by_snapshot[snapshot_id];
-    auto& dvs_by_path = entry.status == ManifestStatus::kAdded ? dvs.added : dvs.removed;
-    const std::string& data_file_path = entry.data_file->referenced_data_file.value();
-    auto [it, inserted] =
-        dvs_by_path.try_emplace(data_file_path, std::move(entry.data_file));
+    ICEBERG_PRECHECK(entry.data_file != nullptr,
+                     "Invalid manifest entry with missing delete file");
+    const DataFile& file = *entry.data_file;
+    // The file sequence number belongs to the snapshot that committed the file, unlike
+    // the data sequence number, which a rewrite can carry over from an older file.
     ICEBERG_PRECHECK(
-        inserted, "Snapshot {} {} multiple deletion vectors for {}", snapshot_id,
-        entry.status == ManifestStatus::kAdded ? "added" : "removed", data_file_path);
-  }
+        entry.file_sequence_number.has_value() && entry.sequence_number.has_value(),
+        "Missing sequence number from delete file {}", file.file_path);
+    ICEBERG_PRECHECK(file.partition_spec_id.has_value(),
+                     "Missing partition spec ID from delete file {}", file.file_path);
 
-  return std::unique_ptr<DeletionVectorChangelogPlanner>(
-      new DeletionVectorChangelogPlanner(
-          std::move(io), std::move(schema), std::move(specs_by_id), context,
-          std::move(scan_columns), std::move(filter), std::move(dvs_by_snapshot)));
-}
+    if (file.content == DataFile::Content::kEqualityDeletes) {
+      auto spec_it = specs_by_id.find(file.partition_spec_id.value());
+      ICEBERG_CHECK(spec_it != specs_by_id.end(),
+                    "Partition spec ID {} not found for delete file {}",
+                    file.partition_spec_id.value(), file.file_path);
+      KeepLatest(spec_it->second->IsUnpartitioned()
+                     ? planner->global_equality_deletes_
+                     : LatestFor(planner->equality_deletes_by_partition_, file),
+                 entry.sequence_number.value(), file.file_path);
+      continue;
+    }
 
-std::vector<std::shared_ptr<DataFile>> DeletionVectorChangelogPlanner::AddedDeletes(
-    int64_t snapshot_id, const std::string& data_file_path) const {
-  auto it = dvs_by_snapshot_.find(snapshot_id);
-  if (it == dvs_by_snapshot_.end()) {
-    return {};
-  }
-  return FindDeletionVector(it->second.added, data_file_path);
-}
+    if (!file.IsDeletionVector()) {
+      KeepLatest(
+          file.referenced_data_file.has_value()
+              ? planner->position_deletes_by_path_[file.referenced_data_file.value()]
+              : LatestFor(planner->position_deletes_by_partition_, file),
+          entry.sequence_number.value(), file.file_path);
+      continue;
+    }
 
-std::vector<std::shared_ptr<DataFile>> DeletionVectorChangelogPlanner::RemovedDeletes(
-    int64_t snapshot_id, const std::string& data_file_path) const {
-  auto it = dvs_by_snapshot_.find(snapshot_id);
-  if (it == dvs_by_snapshot_.end()) {
-    return {};
-  }
-  return FindDeletionVector(it->second.removed, data_file_path);
-}
-
-Result<std::vector<std::shared_ptr<ChangelogScanTask>>>
-DeletionVectorChangelogPlanner::PlanDeletedRows(
-    int64_t snapshot_id, int32_t change_ordinal, std::span<ManifestFile> data_manifests,
-    const std::unordered_set<std::string>& added_data_file_paths) const {
-  auto dvs_it = dvs_by_snapshot_.find(snapshot_id);
-  if (dvs_it == dvs_by_snapshot_.end()) {
-    return std::vector<std::shared_ptr<ChangelogScanTask>>{};
-  }
-  const SnapshotDeletionVectors& dvs = dvs_it->second;
-
-  std::unordered_set<std::string> pending_paths;
-  for (const auto& [data_file_path, dv] : dvs.added) {
-    if (!added_data_file_paths.contains(data_file_path)) {
-      pending_paths.insert(data_file_path);
+    ICEBERG_PRECHECK(file.referenced_data_file.has_value(),
+                     "Deletion vector {} does not reference a data file", file.file_path);
+    // The same vector appears once per manifest that lists it, for example as added in
+    // the manifest of the snapshot that committed it and as deleted in the manifest of
+    // the snapshot that removed it.
+    auto& versions = planner->dvs_by_path_[file.referenced_data_file.value()];
+    auto version_it = std::ranges::find_if(versions, [&file](const auto& version) {
+      return version.file->file_path == file.file_path &&
+             version.file->content_offset == file.content_offset;
+    });
+    if (version_it == versions.end()) {
+      versions.push_back({.file = entry.data_file,
+                          .added_sequence_number = entry.file_sequence_number.value()});
+      version_it = std::prev(versions.end());
+    }
+    if (entry.status == ManifestStatus::kDeleted) {
+      version_it->removed_sequence_number =
+          sequence_numbers.at(entry.snapshot_id.value());
     }
   }
-  if (pending_paths.empty()) {
-    return std::vector<std::shared_ptr<ChangelogScanTask>>{};
+
+  for (const auto& [data_file_path, versions] : planner->dvs_by_path_) {
+    for (auto it = versions.begin(); it != versions.end(); ++it) {
+      ICEBERG_PRECHECK(
+          std::ranges::find(std::next(it), versions.end(), it->added_sequence_number,
+                            &DeletionVectorVersion::added_sequence_number) ==
+              versions.end(),
+          "Snapshot with sequence number {} added multiple deletion vectors for {}",
+          it->added_sequence_number, data_file_path);
+    }
   }
 
-  ICEBERG_ASSIGN_OR_RAISE(
-      auto manifest_group,
-      ManifestGroup::Make(
-          io_, schema_, specs_by_id_,
-          std::vector<ManifestFile>(data_manifests.begin(), data_manifests.end()),
-          /*delete_manifests=*/{}));
-  manifest_group->CaseSensitive(context_.case_sensitive)
-      .Select(scan_columns_)
-      .FilterData(filter_)
-      .FilterManifestEntries([&pending_paths](const ManifestEntry& entry) {
-        return entry.data_file != nullptr &&
-               pending_paths.contains(entry.data_file->file_path);
-      })
-      .IgnoreDeleted()
-      .ColumnsToKeepStats(context_.columns_to_keep_stats)
-      .PlanWith(context_.plan_executor);
-  if (context_.ignore_residuals) {
-    manifest_group->IgnoreResiduals();
+  return planner;
+}
+
+std::optional<DeletionVectorChangelogPlanner::LatestDeleteFile>&
+DeletionVectorChangelogPlanner::LatestFor(
+    PartitionMap<std::optional<LatestDeleteFile>>& deletes_by_partition,
+    const DataFile& file) {
+  const int32_t spec_id = file.partition_spec_id.value();
+  if (!deletes_by_partition.contains(spec_id, file.partition)) {
+    deletes_by_partition.put(spec_id, file.partition, std::nullopt);
   }
+  return deletes_by_partition.get(spec_id, file.partition)->get();
+}
 
-  auto create_tasks_func =
-      [&](std::vector<ManifestEntry>&& entries,
-          const TaskContext& ctx) -> Result<std::vector<std::shared_ptr<ScanTask>>> {
-    std::vector<std::shared_ptr<ScanTask>> tasks;
-    tasks.reserve(entries.size());
+void DeletionVectorChangelogPlanner::KeepLatest(std::optional<LatestDeleteFile>& latest,
+                                                int64_t sequence_number,
+                                                const std::string& file_path) {
+  if (!latest.has_value() || latest->sequence_number < sequence_number) {
+    latest = LatestDeleteFile{.sequence_number = sequence_number, .file_path = file_path};
+  }
+}
 
-    for (auto& entry : entries) {
-      ICEBERG_PRECHECK(entry.data_file != nullptr,
-                       "Invalid manifest entry with missing data file");
+std::shared_ptr<DataFile> DeletionVectorChangelogPlanner::AddedDeletionVector(
+    int64_t sequence_number, const std::string& data_file_path) const {
+  auto it = dvs_by_path_.find(data_file_path);
+  if (it == dvs_by_path_.end()) {
+    return nullptr;
+  }
+  auto version_it = std::ranges::find(it->second, sequence_number,
+                                      &DeletionVectorVersion::added_sequence_number);
+  return version_it == it->second.end() ? nullptr : version_it->file;
+}
 
-      if (ctx.drop_stats) {
-        ContentFileUtil::DropAllStats(*entry.data_file);
-      } else if (!ctx.columns_to_keep_stats.empty()) {
-        ContentFileUtil::DropUnselectedStats(*entry.data_file, ctx.columns_to_keep_stats);
+std::unordered_map<std::string, std::vector<int64_t>>
+DeletionVectorChangelogPlanner::AddedDeletionVectors(
+    const std::unordered_set<int64_t>& sequence_numbers) const {
+  std::unordered_map<std::string, std::vector<int64_t>> added;
+  for (const auto& [data_file_path, versions] : dvs_by_path_) {
+    for (const auto& version : versions) {
+      if (sequence_numbers.contains(version.added_sequence_number)) {
+        added[data_file_path].push_back(version.added_sequence_number);
       }
-
-      ICEBERG_ASSIGN_OR_RAISE(auto residual,
-                              ctx.residuals->ResidualFor(entry.data_file->partition));
-      const std::string& data_file_path = entry.data_file->file_path;
-      auto added_deletes = FindDeletionVector(dvs.added, data_file_path);
-      auto existing_deletes = FindDeletionVector(dvs.removed, data_file_path);
-      tasks.push_back(std::make_shared<DeletedRowsScanTask>(
-          change_ordinal, snapshot_id, std::move(entry.data_file),
-          std::move(added_deletes), std::move(existing_deletes), std::move(residual)));
     }
-    return tasks;
-  };
+  }
+  return added;
+}
 
-  ICEBERG_ASSIGN_OR_RAISE(auto tasks, manifest_group->Plan(create_tasks_func));
-  return tasks | std::views::transform([](const auto& task) {
-           return std::static_pointer_cast<ChangelogScanTask>(task);
-         }) |
-         std::ranges::to<std::vector>();
+Result<std::shared_ptr<DataFile>> DeletionVectorChangelogPlanner::ExistingDeletionVector(
+    int64_t sequence_number, const std::string& data_file_path) const {
+  auto it = dvs_by_path_.find(data_file_path);
+  if (it == dvs_by_path_.end()) {
+    return nullptr;
+  }
+  std::shared_ptr<DataFile> existing;
+  for (const auto& version : it->second) {
+    const bool live = version.added_sequence_number < sequence_number &&
+                      (!version.removed_sequence_number.has_value() ||
+                       version.removed_sequence_number.value() >= sequence_number);
+    if (!live) {
+      continue;
+    }
+    ICEBERG_PRECHECK(existing == nullptr,
+                     "Multiple deletion vectors apply to {} before sequence number {}",
+                     data_file_path, sequence_number);
+    existing = version.file;
+  }
+  return existing;
+}
+
+Status DeletionVectorChangelogPlanner::ValidateNoOtherDeletes(
+    int64_t data_sequence_number, const DataFile& data_file) const {
+  ICEBERG_PRECHECK(data_file.partition_spec_id.has_value(),
+                   "Missing partition spec ID from data file {}", data_file.file_path);
+  const int32_t spec_id = data_file.partition_spec_id.value();
+  auto in_partition = [&](const PartitionMap<std::optional<LatestDeleteFile>>& deletes) {
+    auto latest = deletes.get(spec_id, data_file.partition);
+    return latest.has_value() ? latest->get() : std::nullopt;
+  };
+  auto for_path = position_deletes_by_path_.find(data_file.file_path);
+
+  // An equality delete file applies to data files written before it, and a position
+  // delete file also to those written in the same commit.
+  for (const auto& latest :
+       {global_equality_deletes_, in_partition(equality_deletes_by_partition_)}) {
+    if (latest.has_value() && latest->sequence_number > data_sequence_number) {
+      return NotSupported(
+          "Equality delete files are not supported in changelog scans: {} applies to {}",
+          latest->file_path, data_file.file_path);
+    }
+  }
+  for (const auto& latest :
+       {in_partition(position_deletes_by_partition_),
+        for_path == position_deletes_by_path_.end() ? std::nullopt : for_path->second}) {
+    if (latest.has_value() && latest->sequence_number >= data_sequence_number) {
+      return NotSupported(
+          "Position delete files are not supported in changelog scans: {} applies to {}",
+          latest->file_path, data_file.file_path);
+    }
+  }
+  return {};
 }
 
 }  // namespace iceberg

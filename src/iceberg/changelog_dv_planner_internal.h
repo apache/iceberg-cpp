@@ -24,7 +24,7 @@
 
 #include <cstdint>
 #include <memory>
-#include <span>
+#include <optional>
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
@@ -32,8 +32,9 @@
 
 #include "iceberg/manifest/manifest_list.h"
 #include "iceberg/result.h"
-#include "iceberg/table_scan.h"
 #include "iceberg/type_fwd.h"
+#include "iceberg/util/executor.h"
+#include "iceberg/util/partition_value_util.h"
 
 namespace iceberg {
 
@@ -41,81 +42,100 @@ namespace iceberg {
 ///
 /// Format version 3 stores row-level deletes as deletion vectors, with at most one live
 /// vector per data file, and a new vector replaces the previous one. The rows a snapshot
-/// deleted are therefore the difference between the vector it added and the vector it
-/// removed, which DeletedRowsScanTask carries as added and existing deletes. Position
-/// delete files and equality delete files accumulate instead, so attributing their rows
-/// to a snapshot would require reading every earlier delete file; they are rejected
-/// wherever they could still apply to a reported row, whether or not a changelog
-/// snapshot wrote them.
+/// deleted are therefore the difference between the vector it added and the vector that
+/// was live just before it, which DeletedRowsScanTask carries as added and existing
+/// deletes. Snapshots are identified by sequence number, so the history of each vector is
+/// the sequence number of the snapshot that added it and, if it was removed, of the
+/// snapshot that removed it.
+///
+/// Position delete files and equality delete files accumulate instead, so attributing
+/// their rows to a snapshot would require reading every earlier delete file. A data file
+/// that the changelog reports is rejected when one of them applies to it.
 class DeletionVectorChangelogPlanner {
  public:
-  /// \brief Index the deletion vectors added and removed by the changelog snapshots.
+  /// \brief Index the delete files that can apply to the rows of a changelog.
   ///
-  /// \param context Scan context that supplies filtering and planning options.
-  /// \param scan_columns Manifest columns to read for data files.
-  /// \param filter Row filter of the scan.
-  /// \param delete_manifests All delete manifests of the changelog snapshots. Only the
-  /// manifests written by those snapshots can hold the vectors, because removing a
-  /// vector rewrites its manifest, but a manifest untouched during the range can still
-  /// carry position delete files or equality delete files that apply to the reported
-  /// rows. Every manifest is therefore checked, and only entries written by the
-  /// changelog snapshots are indexed.
-  /// \param snapshot_ids IDs of the changelog snapshots.
+  /// \param io FileIO used to read the delete manifests.
+  /// \param schema Schema of the scan.
+  /// \param specs_by_id Partition specs of the table.
+  /// \param filter Row filter of the scan, used to prune delete manifests and entries by
+  /// partition. A data file outside the filter is never reported, so neither are the
+  /// delete files of its partition.
+  /// \param case_sensitive Whether the filter binds case-sensitively.
+  /// \param executor Executor used to read the delete manifests.
+  /// \param delete_manifests Delete manifests of every snapshot in the range, including
+  /// replace snapshots. A snapshot's own manifests are the only ones guaranteed to hold
+  /// the entries it removed, because later snapshots drop removed entries when they
+  /// rewrite a manifest.
+  /// \param sequence_numbers Sequence numbers of every snapshot in the range, keyed by
+  /// snapshot ID. A delete file removed by any other snapshot was removed before the
+  /// range and can no longer apply to a reported row.
   static Result<std::unique_ptr<DeletionVectorChangelogPlanner>> Make(
       std::shared_ptr<FileIO> io, std::shared_ptr<Schema> schema,
-      std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>> specs_by_id,
-      const internal::TableScanContext& context, std::vector<std::string> scan_columns,
-      std::shared_ptr<Expression> filter,
+      const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>& specs_by_id,
+      std::shared_ptr<Expression> filter, bool case_sensitive, OptionalExecutor executor,
       const std::vector<ManifestFile>& delete_manifests,
-      const std::unordered_set<int64_t>& snapshot_ids);
+      const std::unordered_map<int64_t, int64_t>& sequence_numbers);
 
-  /// \brief The deletion vector that the snapshot committed for the data file, if any.
-  std::vector<std::shared_ptr<DataFile>> AddedDeletes(
-      int64_t snapshot_id, const std::string& data_file_path) const;
+  /// \brief The deletion vector that the snapshot with the given sequence number added
+  /// for the data file, or nullptr.
+  std::shared_ptr<DataFile> AddedDeletionVector(int64_t sequence_number,
+                                                const std::string& data_file_path) const;
 
-  /// \brief The deletion vector that the snapshot removed from the data file, if any.
-  std::vector<std::shared_ptr<DataFile>> RemovedDeletes(
-      int64_t snapshot_id, const std::string& data_file_path) const;
-
-  /// \brief Plan DeletedRowsScanTasks for the deletion vectors a snapshot committed
-  /// against data files it did not add.
+  /// \brief The deletion vector that applied to the data file just before the snapshot
+  /// with the given sequence number, or nullptr.
   ///
-  /// \param snapshot_id The changelog snapshot.
-  /// \param change_ordinal Position of the snapshot in the changelog order.
-  /// \param data_manifests All data manifests of the snapshot. The referenced data files
-  /// are located there because an earlier snapshot added them and a later snapshot in the
-  /// range may remove them again.
-  /// \param added_data_file_paths Data files added by the snapshot, whose deletion
-  /// vectors belong to their AddedRowsScanTask instead.
-  Result<std::vector<std::shared_ptr<ChangelogScanTask>>> PlanDeletedRows(
-      int64_t snapshot_id, int32_t change_ordinal, std::span<ManifestFile> data_manifests,
-      const std::unordered_set<std::string>& added_data_file_paths) const;
+  /// This is the vector the snapshot replaced or removed, or one it left behind when it
+  /// removed the data file, so every row it deletes is excluded from the changelog.
+  Result<std::shared_ptr<DataFile>> ExistingDeletionVector(
+      int64_t sequence_number, const std::string& data_file_path) const;
+
+  /// \brief Which of the snapshots with the given sequence numbers added a deletion
+  /// vector, keyed by the path of the data file the vector references.
+  std::unordered_map<std::string, std::vector<int64_t>> AddedDeletionVectors(
+      const std::unordered_set<int64_t>& sequence_numbers) const;
+
+  /// \brief Fail with NotSupported if a position delete file or an equality delete file
+  /// applies to the data file.
+  ///
+  /// \param data_sequence_number Data sequence number of the data file.
+  /// \param data_file The data file that the changelog reports.
+  Status ValidateNoOtherDeletes(int64_t data_sequence_number,
+                                const DataFile& data_file) const;
 
  private:
-  using DeletionVectorsByPath =
-      std::unordered_map<std::string, std::shared_ptr<DataFile>>;
-
-  // Deletion vectors committed and removed by one changelog snapshot, keyed by the path
-  // of the data file they reference.
-  struct SnapshotDeletionVectors {
-    DeletionVectorsByPath added;
-    DeletionVectorsByPath removed;
+  // One deletion vector and the sequence numbers of the snapshots that added and
+  // removed it.
+  struct DeletionVectorVersion {
+    std::shared_ptr<DataFile> file;
+    int64_t added_sequence_number;
+    std::optional<int64_t> removed_sequence_number;
   };
 
-  DeletionVectorChangelogPlanner(
-      std::shared_ptr<FileIO> io, std::shared_ptr<Schema> schema,
-      std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>> specs_by_id,
-      internal::TableScanContext context, std::vector<std::string> scan_columns,
-      std::shared_ptr<Expression> filter,
-      std::unordered_map<int64_t, SnapshotDeletionVectors> dvs_by_snapshot);
+  // The delete file with the highest sequence number among those sharing a scope. A
+  // delete file applies to a data file based on sequence numbers alone once the scope
+  // matches, so the latest one decides whether any of them applies.
+  struct LatestDeleteFile {
+    int64_t sequence_number;
+    std::string file_path;
+  };
 
-  std::shared_ptr<FileIO> io_;
-  std::shared_ptr<Schema> schema_;
-  std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>> specs_by_id_;
-  internal::TableScanContext context_;
-  std::vector<std::string> scan_columns_;
-  std::shared_ptr<Expression> filter_;
-  std::unordered_map<int64_t, SnapshotDeletionVectors> dvs_by_snapshot_;
+  DeletionVectorChangelogPlanner() = default;
+
+  static std::optional<LatestDeleteFile>& LatestFor(
+      PartitionMap<std::optional<LatestDeleteFile>>& deletes_by_partition,
+      const DataFile& file);
+  static void KeepLatest(std::optional<LatestDeleteFile>& latest, int64_t sequence_number,
+                         const std::string& file_path);
+
+  // Deletion vector history keyed by the path of the data file it references.
+  std::unordered_map<std::string, std::vector<DeletionVectorVersion>> dvs_by_path_;
+
+  std::optional<LatestDeleteFile> global_equality_deletes_;
+  PartitionMap<std::optional<LatestDeleteFile>> equality_deletes_by_partition_;
+  PartitionMap<std::optional<LatestDeleteFile>> position_deletes_by_partition_;
+  std::unordered_map<std::string, std::optional<LatestDeleteFile>>
+      position_deletes_by_path_;
 };
 
 }  // namespace iceberg
