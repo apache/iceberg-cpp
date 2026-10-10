@@ -66,9 +66,11 @@ Result<bool> SnapshotUtil::IsAncestorOf(const Table& table,
 
 Result<bool> SnapshotUtil::IsAncestorOf(const TableMetadata& metadata,
                                         int64_t ancestor_snapshot_id) {
-  ICEBERG_ASSIGN_OR_RAISE(auto current, metadata.Snapshot());
-  ICEBERG_CHECK(current != nullptr, "Current snapshot is null");
-  return IsAncestorOf(metadata, current->snapshot_id, ancestor_snapshot_id);
+  // An empty current state has no ancestors.
+  if (metadata.current_snapshot_id == kInvalidSnapshotId) {
+    return false;
+  }
+  return IsAncestorOf(metadata, metadata.current_snapshot_id, ancestor_snapshot_id);
 }
 
 Result<bool> SnapshotUtil::IsAncestorOf(const Table& table, int64_t snapshot_id,

@@ -23,6 +23,7 @@
 #include "iceberg/table.h"
 #include "iceberg/table_metadata.h"
 #include "iceberg/transaction.h"
+#include "iceberg/update/cherry_pick_operation.h"
 #include "iceberg/update/fast_append.h"
 #include "iceberg/update/set_snapshot.h"
 #include "iceberg/update/update_snapshot_reference.h"
@@ -55,8 +56,10 @@ SnapshotManager::~SnapshotManager() = default;
 
 SnapshotManager& SnapshotManager::Cherrypick(int64_t snapshot_id) {
   ICEBERG_BUILDER_RETURN_IF_ERROR(CommitIfRefUpdatesExist());
-  // TODO(anyone): Implement cherrypick operation
-  ICEBERG_BUILDER_CHECK(false, "Cherrypick operation not yet implemented");
+  ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto cherry_pick,
+                                   transaction_->NewCherryPickOperation());
+  cherry_pick->Cherrypick(snapshot_id);
+  ICEBERG_BUILDER_RETURN_IF_ERROR(cherry_pick->Commit());
   return *this;
 }
 

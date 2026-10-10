@@ -35,6 +35,7 @@
 #include "iceberg/table_requirement.h"
 #include "iceberg/table_requirements.h"
 #include "iceberg/table_update.h"
+#include "iceberg/update/cherry_pick_operation.h"
 #include "iceberg/update/delete_files.h"
 #include "iceberg/update/expire_snapshots.h"
 #include "iceberg/update/fast_append.h"
@@ -356,11 +357,14 @@ Status Transaction::ApplyUpdateSnapshot(SnapshotUpdate& update) {
   const auto& base = ctx_->metadata_builder->current();
 
   ICEBERG_ASSIGN_OR_RAISE(auto result, update.Apply());
+  if (result.snapshot == nullptr) {
+    return {};
+  }
 
   // Create a temp builder to check if this is an empty update
   auto temp_update = TableMetadataBuilder::BuildFrom(&base);
   if (base.SnapshotById(result.snapshot->snapshot_id).has_value()) {
-    // This is a rollback operation
+    // Move the branch to an existing snapshot.
     temp_update->SetBranchSnapshot(result.snapshot->snapshot_id, result.target_branch);
   } else if (result.stage_only) {
     temp_update->AddSnapshot(result.snapshot);
@@ -633,6 +637,13 @@ Result<std::shared_ptr<UpdateLocation>> Transaction::NewUpdateLocation() {
                           UpdateLocation::Make(ctx_));
   ICEBERG_RETURN_UNEXPECTED(AddUpdate(update_location));
   return update_location;
+}
+
+Result<std::shared_ptr<CherryPickOperation>> Transaction::NewCherryPickOperation() {
+  ICEBERG_ASSIGN_OR_RAISE(std::shared_ptr<CherryPickOperation> cherry_pick,
+                          CherryPickOperation::Make(ctx_->table->name().name, ctx_));
+  ICEBERG_RETURN_UNEXPECTED(AddUpdate(cherry_pick));
+  return cherry_pick;
 }
 
 Result<std::shared_ptr<SetSnapshot>> Transaction::NewSetSnapshot() {

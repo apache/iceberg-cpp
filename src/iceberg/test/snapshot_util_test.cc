@@ -222,6 +222,17 @@ TEST_F(SnapshotUtilTest, IsAncestorOf) {
   EXPECT_FALSE(result5);
 }
 
+TEST_F(SnapshotUtilTest, IsAncestorOfNoCurrentSnapshot) {
+  TableMetadata metadata;
+  metadata.current_snapshot_id = kInvalidSnapshotId;
+  metadata.snapshots = {
+      CreateSnapshot(base_snapshot_id_, std::nullopt, 1, base_timestamp_)};
+
+  ICEBERG_UNWRAP_OR_FAIL(auto result,
+                         SnapshotUtil::IsAncestorOf(metadata, base_snapshot_id_));
+  EXPECT_FALSE(result);
+}
+
 TEST_F(SnapshotUtilTest, CurrentAncestors) {
   ICEBERG_UNWRAP_OR_FAIL(auto ancestors, SnapshotUtil::CurrentAncestors(*table_));
   auto ids = ExtractSnapshotIds(ancestors);

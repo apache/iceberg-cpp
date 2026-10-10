@@ -62,6 +62,7 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
  public:
   /// \brief Result of applying a snapshot update
   struct ApplyResult {
+    // Null when applying an unconfigured update to an empty table.
     std::shared_ptr<Snapshot> snapshot;
     std::string target_branch;
     bool stage_only = false;
@@ -200,7 +201,7 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
   friend class Transaction;
 
   /// Build snapshot state for the transaction's current metadata.
-  Result<ApplyResult> Apply();
+  virtual Result<ApplyResult> Apply();
   Status Finalize(const TableMetadata& committed) override;
   Status CleanStaged() override;
 
