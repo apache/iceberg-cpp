@@ -109,6 +109,12 @@ class ICEBERG_EXPORT StructLikeAccessor {
                               std::span<const size_t> position_path,
                               std::vector<bool> is_optional);
 
+  // Deep-path accessors capture this, so the object must keep a stable address.
+  StructLikeAccessor(const StructLikeAccessor&) = delete;
+  StructLikeAccessor& operator=(const StructLikeAccessor&) = delete;
+  StructLikeAccessor(StructLikeAccessor&&) = delete;
+  StructLikeAccessor& operator=(StructLikeAccessor&&) = delete;
+
   /// \brief Get the scalar value at the given position.
   /// A null optional parent returns monostate; a null required field is an error.
   Result<Scalar> Get(const StructLike& struct_like) const {
