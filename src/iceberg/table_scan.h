@@ -596,10 +596,10 @@ class ICEBERG_EXPORT IncrementalAppendScan : public IncrementalScan<FileScanTask
 /// are deletion vectors. A deletion vector committed for a data file added by the same
 /// snapshot is attached to the file's AddedRowsScanTask; one committed for a data file
 /// that already existed produces a DeletedRowsScanTask; and one removed together with
-/// its data file becomes an existing delete of the file's DeletedDataFileScanTask.
-/// Position delete files and equality delete files are not supported: planning fails
-/// with NotSupported when any changelog snapshot carries one that is live or that a
-/// changelog snapshot removed.
+/// its data file, or left behind when the data file was removed, becomes an existing
+/// delete of the file's DeletedDataFileScanTask. Position delete files and equality
+/// delete files are not supported: planning fails with NotSupported when one applies to a
+/// data file that the changelog reports.
 class ICEBERG_EXPORT IncrementalChangelogScan
     : public IncrementalScan<ChangelogScanTask> {
  public:
