@@ -81,6 +81,25 @@ struct ICEBERG_EXPORT SchemaProjection {
   std::vector<FieldProjection> fields;
 };
 
+/// \brief Options to control schema projection behavior.
+struct ICEBERG_EXPORT ProjectionOptions {
+  /// \brief Which default value fills a field that is missing in the source schema.
+  enum class DefaultPolicy {
+    /// \brief Use the v3 `initial-default`; for reading data written before the field
+    /// existed.
+    kInitial,
+    /// \brief Use the v3 `write-default`; for aligning data to the write schema.
+    kWrite,
+  };
+
+  /// \brief The default value policy for missing fields.
+  DefaultPolicy default_policy = DefaultPolicy::kInitial;
+  /// \brief Whether type promotion (e.g. int to long) is allowed for projected fields.
+  /// Must be disabled when projecting for the write path, where the source values are
+  /// stored as-is and therefore must exactly match the expected type.
+  bool allow_type_promotion = true;
+};
+
 /// \brief Project the expected schema on top of the source schema.
 ///
 /// \param expected_schema The expected schema.
@@ -90,10 +109,12 @@ struct ICEBERG_EXPORT SchemaProjection {
 /// column pruning, so `prune_source` is set to true in this case such that the `from`
 /// field in `FieldProjection` exactly reflects the position (relative to its nesting
 /// level) to get the column value from the reader.
+/// \param options Options controlling default values and type promotion.
 /// \return The projection result.
 ICEBERG_EXPORT Result<SchemaProjection> Project(const Schema& expected_schema,
                                                 const Schema& source_schema,
-                                                bool prune_source);
+                                                bool prune_source,
+                                                const ProjectionOptions& options = {});
 
 ICEBERG_EXPORT std::string_view ToString(FieldProjection::Kind kind);
 ICEBERG_EXPORT std::string ToString(const FieldProjection& projection);

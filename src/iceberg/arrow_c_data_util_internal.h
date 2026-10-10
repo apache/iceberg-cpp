@@ -35,6 +35,10 @@
 #include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
 
+namespace arrow {
+class MemoryPool;
+}
+
 namespace iceberg {
 
 /// \brief Cached state for ProjectBatch over one input/output schema pair.
@@ -241,5 +245,22 @@ ICEBERG_EXPORT Result<ArrowArrayStream> MakeArrowArrayStream(
 ICEBERG_EXPORT Result<ArrowArray> ProjectBatch(ArrowArray* input_batch,
                                                std::span<const int32_t> row_indices,
                                                ProjectionContext& projection);
+
+namespace arrow {
+
+/// \brief Align an Arrow batch to an Iceberg write schema.
+///
+/// Fields are matched by Iceberg field id. Missing fields are materialized from their
+/// `write-default`, or as null when optional. Missing required fields without a
+/// `write-default` are rejected. Existing values, including explicit nulls, are
+/// preserved. Nested structs are aligned recursively.
+///
+/// `input_batch` is consumed even when alignment fails.
+ICEBERG_EXPORT Result<ArrowArray> AlignBatchForWrite(ArrowArray* input_batch,
+                                                     const Schema& input_schema,
+                                                     const Schema& write_schema,
+                                                     ::arrow::MemoryPool* pool);
+
+}  // namespace arrow
 
 }  // namespace iceberg
