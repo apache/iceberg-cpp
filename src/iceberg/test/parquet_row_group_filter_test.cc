@@ -404,6 +404,20 @@ TEST_F(ParquetRowGroupFilterTest, RewriteNotForBoundPredicates) {
   Check(Options(Expressions::Not(Expressions::NotNull("key"))), {0, 1});
 }
 
+TEST_F(ParquetRowGroupFilterTest, RewrittenNotPrunesNullableGroups) {
+  ASSERT_THAT(Write(true, "[[null,0],[null,1],[null,2],[50,3],[100,4],[150,5]]"), IsOk());
+  // Match Evaluator's normalized predicates: null does not match these ranges.
+  Check(Options(Expressions::Not(Expressions::LessThan("key", Literal::Int(100)))),
+        {4, 5});
+  Check(Options(Expressions::Not(Expressions::LessThanOrEqual("key", Literal::Int(100)))),
+        {4, 5});
+  Check(Options(Expressions::Not(Expressions::GreaterThan("key", Literal::Int(100)))),
+        {2, 3, 4, 5});
+  Check(Options(
+            Expressions::Not(Expressions::GreaterThanOrEqual("key", Literal::Int(100)))),
+        {2, 3});
+}
+
 TEST_F(ParquetRowGroupFilterTest, BoundComparisonBoundariesAndAllNullGroups) {
   ASSERT_THAT(Write(true, "[[null,0],[null,1],[10,2],[11,3],[20,4],[21,5]]"), IsOk());
   struct Case {
@@ -569,6 +583,8 @@ TEST_F(ParquetRowGroupFilterTest, RequiredLeafWithNullableParent) {
   Check(Options(not_null), {2, 3});
   Check(Options(Expressions::Not(is_null)), {2, 3});
   Check(Options(Expressions::Not(not_null)), {0, 1, 4, 5});
+  Check(Options(Expressions::Not(Expressions::LessThan("key.nested", Literal::Int(100)))),
+        {});
 }
 
 TEST_F(ParquetRowGroupFilterTest, UnsupportedTransformRetainsGroups) {

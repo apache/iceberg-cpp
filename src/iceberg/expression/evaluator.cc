@@ -21,6 +21,7 @@
 
 #include "iceberg/expression/binder.h"
 #include "iceberg/expression/expression_visitor.h"
+#include "iceberg/expression/rewrite_not.h"
 #include "iceberg/schema.h"
 #include "iceberg/util/macros.h"
 
@@ -140,6 +141,7 @@ Result<std::unique_ptr<Evaluator>> Evaluator::Make(const Schema& schema,
                                                    std::shared_ptr<Expression> unbound,
                                                    bool case_sensitive) {
   ICEBERG_ASSIGN_OR_RAISE(auto bound_expr, Binder::Bind(schema, unbound, case_sensitive));
+  ICEBERG_ASSIGN_OR_RAISE(bound_expr, RewriteNot::Visit(bound_expr));
   return std::unique_ptr<Evaluator>(new Evaluator(std::move(bound_expr)));
 }
 
