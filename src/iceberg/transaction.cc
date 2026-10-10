@@ -357,11 +357,14 @@ Status Transaction::ApplyUpdateSnapshot(SnapshotUpdate& update) {
   const auto& base = ctx_->metadata_builder->current();
 
   ICEBERG_ASSIGN_OR_RAISE(auto result, update.Apply());
+  if (result.snapshot == nullptr) {
+    return {};
+  }
 
   // Create a temp builder to check if this is an empty update
   auto temp_update = TableMetadataBuilder::BuildFrom(&base);
   if (base.SnapshotById(result.snapshot->snapshot_id).has_value()) {
-    // This is a rollback operation
+    // Move the branch to an existing snapshot.
     temp_update->SetBranchSnapshot(result.snapshot->snapshot_id, result.target_branch);
   } else if (result.stage_only) {
     temp_update->AddSnapshot(result.snapshot);

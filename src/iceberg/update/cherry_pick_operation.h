@@ -34,27 +34,10 @@
 
 namespace iceberg {
 
-/// \brief Cherry-picks the changes of a snapshot onto the current state.
+/// \brief Cherry-picks or fast-forwards the current state to a snapshot.
 ///
 /// This update is not exposed through the Table API. It is part of the
 /// Transaction API intended for use in SnapshotManager.
-///
-/// Three kinds of snapshot can be picked. An append snapshot has its added
-/// data files re-applied on top of the current state. An overwrite snapshot
-/// carrying "replace-partitions"="true" has both its added and its removed
-/// data files re-applied, and can only be picked while the partitions it
-/// replaced are unchanged. Any other snapshot can only be fast-forwarded.
-///
-/// A fast-forward moves the current state to the picked snapshot without
-/// producing a new one, which this operation cannot express because Apply()
-/// always builds a new snapshot. Callers detect that case with
-/// SnapshotUtil::CanFastForward() and set the current snapshot instead of
-/// committing this operation; ValidateFastForward() applies the checks this
-/// operation would otherwise have run.
-///
-/// The new snapshot records the picked snapshot in "source-snapshot-id". When
-/// the picked snapshot carries a "wap.id", that id is recorded in
-/// "published-wap-id" and the pick fails if the id was already published.
 class ICEBERG_EXPORT CherryPickOperation : public MergingSnapshotUpdate {
  public:
   /// \brief Create a new CherryPickOperation instance.
@@ -65,29 +48,18 @@ class ICEBERG_EXPORT CherryPickOperation : public MergingSnapshotUpdate {
   static Result<std::unique_ptr<CherryPickOperation>> Make(
       std::string table_name, std::shared_ptr<TransactionContext> ctx);
 
-  /// \brief Apply the changes of the given snapshot to the current state.
+  /// \brief Cherry-pick the changes of the given snapshot, or fast-forward to it.
   ///
   /// \param snapshot_id The ID of the snapshot whose changes to apply
   /// \return Reference to this for method chaining
   CherryPickOperation& Cherrypick(int64_t snapshot_id);
 
-  /// \brief Run the checks that apply when the given snapshot is fast-forwarded
-  /// to rather than picked.
-  ///
-  /// A fast-forward publishes the picked snapshot itself, so the WAP id staged
-  /// on it must not already have been published. Mirrors Java, where this check
-  /// runs in cherrypick() for append and dynamic overwrite snapshots, before
-  /// apply() elects to fast-forward.
-  ///
-  /// \param metadata The table metadata to fast-forward
-  /// \param snapshot The snapshot to fast-forward to
-  static Status ValidateFastForward(const TableMetadata& metadata,
-                                    const Snapshot& snapshot);
+ protected:
+  Result<ApplyResult> Apply() override;
 
   std::string operation() override;
 
- protected:
-  Status Validate(const TableMetadata& current_metadata,
+  Status Validate(const TableMetadata& base,
                   const std::shared_ptr<Snapshot>& snapshot) override;
 
  private:
@@ -95,18 +67,18 @@ class ICEBERG_EXPORT CherryPickOperation : public MergingSnapshotUpdate {
                                std::shared_ptr<TransactionContext> ctx);
 
   /// \brief Whether the snapshot passed to Cherrypick() can be fast-forwarded.
-  bool IsFastForward() const;
+  bool IsFastForward(const TableMetadata& base) const;
 
   /// \brief Fail if the picked snapshot is already part of the current history,
   /// either directly or as the source of an earlier pick.
-  Status ValidateNonAncestor(const TableMetadata& metadata, int64_t snapshot_id) const;
+  Status ValidateNonAncestor(const TableMetadata& meta, int64_t snapshot_id) const;
 
-  /// \brief Fail if any partition replaced by the picked snapshot received new
-  /// files after the picked snapshot's parent.
-  Status ValidateReplacedPartitions(const TableMetadata& metadata) const;
+  /// \brief If there is a current snapshot, require an ancestral parent (if any)
+  /// and reject files added to replaced partitions since that parent.
+  Status ValidateReplacedPartitions(const TableMetadata& meta) const;
 
   std::shared_ptr<Snapshot> cherrypick_snapshot_;
-  // Set only when the picked snapshot is a dynamic partition overwrite.
+  bool require_fast_forward_ = false;
   std::optional<PartitionSet> replaced_partitions_;
 };
 

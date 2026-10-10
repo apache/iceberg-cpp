@@ -30,9 +30,11 @@
 #include "iceberg/table.h"
 #include "iceberg/table_metadata.h"
 #include "iceberg/transaction.h"
+#include "iceberg/util/content_file_util.h"
 #include "iceberg/util/error_collector.h"
 #include "iceberg/util/macros.h"
 #include "iceberg/util/snapshot_util.h"
+#include "iceberg/util/string_util.h"
 
 namespace iceberg {
 
@@ -68,29 +70,34 @@ Result<SnapshotChanges> ReadSnapshotChanges(const Snapshot& snapshot,
       continue;
     }
     ICEBERG_ASSIGN_OR_RAISE(auto reader, MakeManifestReader(manifest, file_io, metadata));
-    ICEBERG_ASSIGN_OR_RAISE(auto entries, reader->Entries());
-    for (const auto& entry : entries) {
-      if (!entry.data_file) {
+    ICEBERG_ASSIGN_OR_RAISE(auto entries, reader->EntriesStream());
+    while (true) {
+      ICEBERG_ASSIGN_OR_RAISE(auto entry, entries->Next());
+      if (!entry.has_value()) {
+        break;
+      }
+      if (!entry->data_file) {
         continue;
       }
-      if (entry.status == ManifestStatus::kAdded) {
-        changes.added.push_back(entry.data_file);
-      } else if (entry.status == ManifestStatus::kDeleted) {
-        changes.removed.push_back(entry.data_file);
+      if (entry->status == ManifestStatus::kAdded) {
+        changes.added.push_back(std::move(entry->data_file));
+      } else if (entry->status == ManifestStatus::kDeleted) {
+        ContentFileUtil::DropAllStats(*entry->data_file);
+        changes.removed.push_back(std::move(entry->data_file));
       }
     }
   }
   return changes;
 }
 
-std::string StagedWapId(const Snapshot& snapshot) {
+std::optional<std::string> StagedWapId(const Snapshot& snapshot) {
   auto it = snapshot.summary.find(SnapshotSummaryFields::kWAPId);
-  return it == snapshot.summary.end() ? std::string() : it->second;
+  return it == snapshot.summary.end() ? std::nullopt : std::make_optional(it->second);
 }
 
-std::string PublishedWapId(const Snapshot& snapshot) {
+std::optional<std::string> PublishedWapId(const Snapshot& snapshot) {
   auto it = snapshot.summary.find(SnapshotSummaryFields::kPublishedWAPId);
-  return it == snapshot.summary.end() ? std::string() : it->second;
+  return it == snapshot.summary.end() ? std::nullopt : std::make_optional(it->second);
 }
 
 Result<std::vector<int64_t>> CurrentAncestorIds(const TableMetadata& metadata) {
@@ -109,11 +116,11 @@ Result<std::vector<int64_t>> CurrentAncestorIds(const TableMetadata& metadata) {
 
 /// \brief Fail if the WAP id staged on the picked snapshot was already
 /// published, and return that id when the snapshot has one.
-Result<std::string> ValidateWapPublish(const TableMetadata& metadata,
-                                       int64_t wap_snapshot_id) {
+Result<std::optional<std::string>> ValidateWapPublish(const TableMetadata& metadata,
+                                                      int64_t wap_snapshot_id) {
   ICEBERG_ASSIGN_OR_RAISE(auto snapshot, metadata.SnapshotById(wap_snapshot_id));
-  std::string wap_id = StagedWapId(*snapshot);
-  if (wap_id.empty()) {
+  auto wap_id = StagedWapId(*snapshot);
+  if (!wap_id.has_value() || wap_id->empty()) {
     return wap_id;
   }
 
@@ -121,9 +128,9 @@ Result<std::string> ValidateWapPublish(const TableMetadata& metadata,
   for (int64_t ancestor_id : ancestor_ids) {
     ICEBERG_ASSIGN_OR_RAISE(auto ancestor, metadata.SnapshotById(ancestor_id));
     if (wap_id == StagedWapId(*ancestor) || wap_id == PublishedWapId(*ancestor)) {
-      return CommitFailed(
+      return ValidationFailed(
           "Duplicate request to cherry pick wap id that was published already: {}",
-          wap_id);
+          *wap_id);
     }
   }
   return wap_id;
@@ -131,7 +138,8 @@ Result<std::string> ValidateWapPublish(const TableMetadata& metadata,
 
 bool IsReplacePartitions(const Snapshot& snapshot) {
   auto it = snapshot.summary.find(SnapshotSummaryFields::kReplacePartitions);
-  return it != snapshot.summary.end() && it->second == "true";
+  return it != snapshot.summary.end() &&
+         StringUtils::EqualsIgnoreCase(it->second, "true");
 }
 
 }  // namespace
@@ -149,39 +157,46 @@ CherryPickOperation::CherryPickOperation(std::string table_name,
     : MergingSnapshotUpdate(std::move(table_name), std::move(ctx)) {}
 
 std::string CherryPickOperation::operation() {
+  ICEBERG_DCHECK(cherrypick_snapshot_ != nullptr, "Uninitialized cherry-pick operation");
+  return std::string(cherrypick_snapshot_->Operation().value());
+}
+
+bool CherryPickOperation::IsFastForward(const TableMetadata& base) const {
+  if (base.current_snapshot_id == kInvalidSnapshotId) {
+    return !cherrypick_snapshot_->parent_snapshot_id.has_value();
+  }
+  return cherrypick_snapshot_->parent_snapshot_id == base.current_snapshot_id;
+}
+
+Result<SnapshotUpdate::ApplyResult> CherryPickOperation::Apply() {
+  ICEBERG_RETURN_UNEXPECTED(CheckErrors());
+  const auto& base = this->base();
   if (cherrypick_snapshot_ == nullptr) {
-    return DataOperation::kAppend;
-  }
-  auto op = cherrypick_snapshot_->Operation();
-  return op.has_value() ? std::string(*op) : DataOperation::kAppend;
-}
-
-Status CherryPickOperation::ValidateFastForward(const TableMetadata& metadata,
-                                                const Snapshot& snapshot) {
-  // Java runs the WAP check only for the two pickable operations; any other
-  // snapshot reaches a fast-forward without one.
-  const auto operation = snapshot.Operation();
-  const bool is_pickable =
-      operation == DataOperation::kAppend ||
-      (operation == DataOperation::kOverwrite && IsReplacePartitions(snapshot));
-  if (!is_pickable) {
-    return {};
+    ICEBERG_ASSIGN_OR_RAISE(auto current,
+                            SnapshotUtil::OptionalLatestSnapshot(
+                                base, std::string(SnapshotRef::kMainBranch)));
+    return ApplyResult{.snapshot = std::move(current),
+                       .target_branch = std::string(SnapshotRef::kMainBranch)};
   }
 
-  ICEBERG_ASSIGN_OR_RAISE(std::ignore,
-                          ValidateWapPublish(metadata, snapshot.snapshot_id));
-  return {};
-}
-
-bool CherryPickOperation::IsFastForward() const {
-  return cherrypick_snapshot_ != nullptr &&
-         SnapshotUtil::CanFastForward(ctx_->current(), *cherrypick_snapshot_);
+  const bool is_fast_forward = IsFastForward(base);
+  if (require_fast_forward_ || is_fast_forward) {
+    ICEBERG_CHECK(
+        is_fast_forward,
+        "Cannot cherry-pick snapshot {}: not append, dynamic overwrite, or fast-forward",
+        cherrypick_snapshot_->snapshot_id);
+    ICEBERG_ASSIGN_OR_RAISE(auto snapshot,
+                            base.SnapshotById(cherrypick_snapshot_->snapshot_id));
+    return ApplyResult{.snapshot = std::move(snapshot),
+                       .target_branch = std::string(SnapshotRef::kMainBranch)};
+  }
+  return SnapshotUpdate::Apply();
 }
 
 CherryPickOperation& CherryPickOperation::Cherrypick(int64_t snapshot_id) {
-  const TableMetadata& metadata = ctx_->current();
+  const TableMetadata& current = ctx_->current();
   ICEBERG_BUILDER_ASSIGN_OR_RETURN_WITH_ERROR(
-      cherrypick_snapshot_, metadata.SnapshotById(snapshot_id),
+      cherrypick_snapshot_, current.SnapshotById(snapshot_id),
       "Cannot cherry-pick unknown snapshot ID: {}", snapshot_id);
 
   const auto picked_operation = cherrypick_snapshot_->Operation();
@@ -191,19 +206,21 @@ CherryPickOperation& CherryPickOperation::Cherrypick(int64_t snapshot_id) {
 
   if (!is_append && !is_dynamic_overwrite) {
     ICEBERG_BUILDER_CHECK(
-        IsFastForward(),
+        IsFastForward(current),
         "Cannot cherry-pick snapshot {}: not append, dynamic overwrite, or fast-forward",
         snapshot_id);
+    require_fast_forward_ = true;
     return *this;
   }
 
   if (is_dynamic_overwrite) {
-    // The replaced partitions can only be checked against files added since the
-    // picked snapshot's parent, so that parent must still be in the history.
+    // Partition conflicts are checked against files added since the parent snapshot.
+    // The parent must be a current ancestor, or absent if the overwrite was based on
+    // an empty table.
     if (cherrypick_snapshot_->parent_snapshot_id.has_value()) {
       ICEBERG_BUILDER_ASSIGN_OR_RETURN(
           bool is_ancestor,
-          SnapshotUtil::IsAncestorOf(metadata,
+          SnapshotUtil::IsAncestorOf(current,
                                      cherrypick_snapshot_->parent_snapshot_id.value()));
       ICEBERG_BUILDER_CHECK(is_ancestor,
                             "Cannot cherry-pick overwrite not based on an ancestor of "
@@ -212,16 +229,11 @@ CherryPickOperation& CherryPickOperation::Cherrypick(int64_t snapshot_id) {
     }
   }
 
-  ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto wap_id,
-                                   ValidateWapPublish(metadata, snapshot_id));
-  if (!wap_id.empty()) {
-    Set(SnapshotSummaryFields::kPublishedWAPId, wap_id);
+  ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto wap_id, ValidateWapPublish(current, snapshot_id));
+  if (wap_id.has_value()) {
+    Set(SnapshotSummaryFields::kPublishedWAPId, *wap_id);
   }
   Set(SnapshotSummaryFields::kSourceSnapshotId, std::to_string(snapshot_id));
-
-  auto io = ctx_->table->io();
-  ICEBERG_BUILDER_ASSIGN_OR_RETURN(
-      auto changes, ReadSnapshotChanges(*cherrypick_snapshot_, io, metadata));
 
   if (is_dynamic_overwrite) {
     // A replace can only be re-applied if the files it removed are all present.
@@ -229,40 +241,45 @@ CherryPickOperation& CherryPickOperation::Cherrypick(int64_t snapshot_id) {
     replaced_partitions_.emplace();
   }
 
-  for (const auto& added : changes.added) {
-    ICEBERG_BUILDER_RETURN_IF_ERROR(AddDataFile(added));
+  auto io = ctx_->table->io();
+  ICEBERG_BUILDER_ASSIGN_OR_RETURN(
+      auto changes, ReadSnapshotChanges(*cherrypick_snapshot_, io, current));
+
+  for (const auto& added_file : changes.added) {
+    ICEBERG_BUILDER_RETURN_IF_ERROR(AddDataFile(added_file));
     if (replaced_partitions_.has_value()) {
-      ICEBERG_BUILDER_CHECK(added->partition_spec_id.has_value(),
+      ICEBERG_BUILDER_CHECK(added_file->partition_spec_id.has_value(),
                             "Data file must have partition spec ID");
-      replaced_partitions_->add(added->partition_spec_id.value(), added->partition);
+      replaced_partitions_->add(added_file->partition_spec_id.value(),
+                                added_file->partition);
     }
   }
 
   if (is_dynamic_overwrite) {
-    for (const auto& removed : changes.removed) {
-      ICEBERG_BUILDER_RETURN_IF_ERROR(DeleteDataFile(removed));
+    for (const auto& deleted_file : changes.removed) {
+      ICEBERG_BUILDER_RETURN_IF_ERROR(DeleteDataFile(deleted_file));
     }
   }
 
   return *this;
 }
 
-Status CherryPickOperation::ValidateNonAncestor(const TableMetadata& metadata,
+Status CherryPickOperation::ValidateNonAncestor(const TableMetadata& meta,
                                                 int64_t snapshot_id) const {
   ICEBERG_ASSIGN_OR_RAISE(bool is_ancestor,
-                          SnapshotUtil::IsAncestorOf(metadata, snapshot_id));
+                          SnapshotUtil::IsAncestorOf(meta, snapshot_id));
   if (is_ancestor) {
-    return CommitFailed("Cannot cherrypick snapshot {}: already an ancestor",
-                        snapshot_id);
+    return ValidationFailed("Cannot cherrypick snapshot {}: already an ancestor",
+                            snapshot_id);
   }
 
   const std::string snapshot_id_str = std::to_string(snapshot_id);
-  ICEBERG_ASSIGN_OR_RAISE(auto ancestor_ids, CurrentAncestorIds(metadata));
+  ICEBERG_ASSIGN_OR_RAISE(auto ancestor_ids, CurrentAncestorIds(meta));
   for (int64_t ancestor_id : ancestor_ids) {
-    ICEBERG_ASSIGN_OR_RAISE(auto ancestor, metadata.SnapshotById(ancestor_id));
+    ICEBERG_ASSIGN_OR_RAISE(auto ancestor, meta.SnapshotById(ancestor_id));
     auto it = ancestor->summary.find(SnapshotSummaryFields::kSourceSnapshotId);
     if (it != ancestor->summary.end() && it->second == snapshot_id_str) {
-      return CommitFailed(
+      return ValidationFailed(
           "Cannot cherrypick snapshot {}: already picked to create ancestor {}",
           snapshot_id, ancestor_id);
     }
@@ -270,17 +287,16 @@ Status CherryPickOperation::ValidateNonAncestor(const TableMetadata& metadata,
   return {};
 }
 
-Status CherryPickOperation::ValidateReplacedPartitions(
-    const TableMetadata& metadata) const {
+Status CherryPickOperation::ValidateReplacedPartitions(const TableMetadata& meta) const {
   if (!replaced_partitions_.has_value() ||
-      metadata.current_snapshot_id == kInvalidSnapshotId) {
+      meta.current_snapshot_id == kInvalidSnapshotId) {
     return {};
   }
 
   const auto parent_id = cherrypick_snapshot_->parent_snapshot_id;
   if (parent_id.has_value()) {
     ICEBERG_ASSIGN_OR_RAISE(bool is_ancestor,
-                            SnapshotUtil::IsAncestorOf(metadata, parent_id.value()));
+                            SnapshotUtil::IsAncestorOf(meta, parent_id.value()));
     if (!is_ancestor) {
       return ValidationFailed(
           "Cannot cherry-pick overwrite, based on non-ancestor of the current state: {}",
@@ -291,42 +307,56 @@ Status CherryPickOperation::ValidateReplacedPartitions(
   // Walk back from the current snapshot to the picked snapshot's parent and
   // reject any file added into a partition this pick replaces.
   auto io = ctx_->table->io();
-  ICEBERG_ASSIGN_OR_RAISE(
-      auto ancestors, SnapshotUtil::AncestorsOf(metadata, metadata.current_snapshot_id));
-  for (const auto& ancestor : ancestors) {
-    if (parent_id.has_value() && ancestor->snapshot_id == parent_id.value()) {
-      break;
-    }
-    ICEBERG_ASSIGN_OR_RAISE(auto changes, ReadSnapshotChanges(*ancestor, io, metadata));
-    for (const auto& added : changes.added) {
-      if (!added->partition_spec_id.has_value() ||
-          !replaced_partitions_->contains(added->partition_spec_id.value(),
-                                          added->partition)) {
+  ICEBERG_ASSIGN_OR_RAISE(auto snapshots, SnapshotUtil::AncestorsBetween(
+                                              meta, meta.current_snapshot_id, parent_id));
+  // TODO: Parallelize added-file validation using the planning executor.
+  // Bound active readers and wait for in-flight tasks before returning.
+  for (const auto& snap : snapshots) {
+    SnapshotReader snapshot_reader(snap.get());
+    ICEBERG_ASSIGN_OR_RAISE(auto manifests, snapshot_reader.DataManifests(io));
+    for (const auto& manifest : manifests) {
+      if (manifest.added_snapshot_id != snap->snapshot_id) {
         continue;
       }
-      ICEBERG_ASSIGN_OR_RAISE(auto spec,
-                              metadata.PartitionSpecById(*added->partition_spec_id));
-      ICEBERG_ASSIGN_OR_RAISE(auto partition_path, spec->PartitionPath(added->partition));
-      return ValidationFailed(
-          "Cannot cherry-pick replace partitions with changed partition: {}",
-          partition_path);
+      ICEBERG_ASSIGN_OR_RAISE(auto reader, MakeManifestReader(manifest, io, meta));
+      ICEBERG_ASSIGN_OR_RAISE(auto entries, reader->EntriesStream());
+      while (true) {
+        ICEBERG_ASSIGN_OR_RAISE(auto entry, entries->Next());
+        if (!entry.has_value()) {
+          break;
+        }
+        if (entry->status != ManifestStatus::kAdded || !entry->data_file) {
+          continue;
+        }
+        const auto& new_file = entry->data_file;
+        if (!new_file->partition_spec_id.has_value() ||
+            !replaced_partitions_->contains(new_file->partition_spec_id.value(),
+                                            new_file->partition)) {
+          continue;
+        }
+        ICEBERG_ASSIGN_OR_RAISE(auto spec,
+                                meta.PartitionSpecById(*new_file->partition_spec_id));
+        ICEBERG_ASSIGN_OR_RAISE(auto partition_path,
+                                spec->PartitionPath(new_file->partition));
+        return ValidationFailed(
+            "Cannot cherry-pick replace partitions with changed partition: {}",
+            partition_path);
+      }
     }
   }
   return {};
 }
 
-Status CherryPickOperation::Validate(const TableMetadata& current_metadata,
-                                     const std::shared_ptr<Snapshot>& snapshot) {
-  if (cherrypick_snapshot_ == nullptr || IsFastForward()) {
+Status CherryPickOperation::Validate(
+    const TableMetadata& base,
+    [[maybe_unused]] const std::shared_ptr<Snapshot>& snapshot) {
+  if (IsFastForward(base)) {
     return {};
   }
 
-  ICEBERG_RETURN_UNEXPECTED(
-      ValidateNonAncestor(current_metadata, cherrypick_snapshot_->snapshot_id));
-  ICEBERG_RETURN_UNEXPECTED(ValidateReplacedPartitions(current_metadata));
-  ICEBERG_ASSIGN_OR_RAISE(
-      std::ignore,
-      ValidateWapPublish(current_metadata, cherrypick_snapshot_->snapshot_id));
+  ICEBERG_RETURN_UNEXPECTED(ValidateNonAncestor(base, cherrypick_snapshot_->snapshot_id));
+  ICEBERG_RETURN_UNEXPECTED(ValidateReplacedPartitions(base));
+  ICEBERG_RETURN_UNEXPECTED(ValidateWapPublish(base, cherrypick_snapshot_->snapshot_id));
   return {};
 }
 

@@ -139,6 +139,7 @@
 #include "iceberg/transform_function.h"
 #include "iceberg/type.h"
 #include "iceberg/type_fwd.h"
+#include "iceberg/update/cherry_pick_operation.h"
 #include "iceberg/update/delete_files.h"
 #include "iceberg/update/expire_snapshots.h"
 #include "iceberg/update/fast_append.h"

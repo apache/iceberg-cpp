@@ -222,9 +222,6 @@ TEST_F(SnapshotUtilTest, IsAncestorOf) {
   EXPECT_FALSE(result5);
 }
 
-// No current snapshot means an empty ancestor history, so nothing can be an
-// ancestor of it; this must return false rather than raising "No current
-// snapshot", matching Java's SnapshotUtil.ancestorsOf(null, ...).
 TEST_F(SnapshotUtilTest, IsAncestorOfNoCurrentSnapshot) {
   TableMetadata metadata;
   metadata.current_snapshot_id = kInvalidSnapshotId;

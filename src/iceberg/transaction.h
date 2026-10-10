@@ -155,9 +155,6 @@ class ICEBERG_EXPORT Transaction : public std::enable_shared_from_this<Transacti
 
   /// \brief Create a new CherryPickOperation to apply the changes of an existing
   /// snapshot onto the current state.
-  ///
-  /// \note Intended for use by SnapshotManager. Prefer
-  /// SnapshotManager::Cherrypick(), which also handles the fast-forward case.
   Result<std::shared_ptr<CherryPickOperation>> NewCherryPickOperation();
 
   /// \brief Create a new SetSnapshot to set the current snapshot or rollback to a
