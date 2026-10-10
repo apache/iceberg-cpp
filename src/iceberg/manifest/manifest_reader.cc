@@ -20,6 +20,7 @@
 #include "iceberg/manifest/manifest_reader.h"
 
 #include <algorithm>
+#include <cstring>
 #include <memory>
 #include <optional>
 #include <ranges>
@@ -416,6 +417,16 @@ Status ParsePartitionValues(ArrowArrayView* view, int64_t row_idx,
     case ArrowType::NANOARROW_TYPE_DOUBLE:
       partition.AddValue(Literal::Double(ArrowArrayViewGetDoubleUnsafe(view, row_idx)));
       break;
+    case ArrowType::NANOARROW_TYPE_DECIMAL128: {
+      const auto& type = static_cast<const DecimalType&>(*field_type);
+      ArrowDecimal value;
+      ArrowDecimalInit(&value, Decimal::kBitWidth, type.precision(), type.scale());
+      ArrowArrayViewGetDecimalUnsafe(view, row_idx, &value);
+      int128_t unscaled;
+      std::memcpy(&unscaled, value.words, sizeof(unscaled));
+      partition.AddValue(Literal::Decimal(unscaled, type.precision(), type.scale()));
+      break;
+    }
     case ArrowType::NANOARROW_TYPE_STRING: {
       auto str_value = ArrowArrayViewGetStringUnsafe(view, row_idx);
       partition.AddValue(
