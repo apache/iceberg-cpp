@@ -315,8 +315,8 @@ class ParquetReader::Impl {
       auto filter = options.filter;
       ICEBERG_ASSIGN_OR_RAISE(auto is_bound, IsBoundVisitor::IsBound(filter));
       if (!is_bound) {
-        ICEBERG_ASSIGN_OR_RAISE(filter, Binder::Bind(*options.projection, filter,
-                                                     options.filter_case_sensitive));
+        ICEBERG_ASSIGN_OR_RAISE(
+            filter, Binder::Bind(*options.projection, filter, options.case_sensitive));
       }
       ICEBERG_ASSIGN_OR_RAISE(stats_filter_, ParquetMetricsRowGroupFilter::Make(
                                                  filter, *reader_->manifest().descr));
@@ -410,8 +410,8 @@ class ParquetReader::Impl {
     const size_t begin = context_->next_row_group_;
     size_t end = begin + 1;
     std::vector<int> row_groups{context_->row_groups_[begin].index};
-    // Share a reader across adjacent row groups so Arrow can coalesce pre-buffered
-    // reads. Stop at gaps to keep physical row positions contiguous within batches.
+    // Preserve multi-group batching and pre-buffering within each contiguous range.
+    // Stop at pruned gaps so each batch contains consecutive physical row positions.
     while (end < context_->row_groups_.size() &&
            context_->row_groups_[end].index == context_->row_groups_[end - 1].index + 1) {
       row_groups.push_back(context_->row_groups_[end].index);
@@ -433,6 +433,7 @@ class ParquetReader::Impl {
     for (int i = 0; i < metadata->num_row_groups(); ++i) {
       auto row_group = metadata->RowGroup(i);
       const int64_t row_start = next_row_start;
+      // Count rows before pruning so retained groups keep their original file positions.
       next_row_start += row_group->num_rows();
       if (split_.has_value()) {
         auto row_group_offset = row_group->file_offset();

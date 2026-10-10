@@ -46,7 +46,7 @@ class ICEBERG_BUNDLE_EXPORT ParquetMetricsRowGroupFilter {
  private:
   ParquetMetricsRowGroupFilter() = default;
   std::shared_ptr<Expression> bound_;
-  std::unordered_map<int32_t, int> column_indices_;
+  std::unordered_map<int32_t, int> field_id_to_column_idx_;
 };
 
 }  // namespace iceberg::parquet

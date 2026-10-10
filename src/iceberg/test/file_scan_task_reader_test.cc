@@ -748,7 +748,7 @@ TEST_F(FileScanTaskReaderTest, RowGroupPruningUsesCallerReadSchema) {
         .table_schema = table_schema_,
         .projected_schema = table_schema_,
     };
-    options.filter_case_sensitive = false;
+    options.case_sensitive = false;
     ICEBERG_UNWRAP_OR_FAIL(auto reader, FileScanTaskReader::Make(std::move(options)));
     ICEBERG_UNWRAP_OR_FAIL(auto stream, reader->Open(task));
     VerifyStream(&stream, R"([[2,"c","keep"],[3,"d","keep"]])");
@@ -805,13 +805,13 @@ TEST_F(FileScanTaskReaderTest, ScanCaseSensitivityAndProjection) {
         .io = scan->io(),
         .table_schema = table_schema_,
         .projected_schema = projection,
-        .filter_case_sensitive = scan->is_case_sensitive(),
+        .case_sensitive = scan->is_case_sensitive(),
     };
     FileScanTask task(data_file, {}, scan->filter());
     ICEBERG_UNWRAP_OR_FAIL(auto reader, FileScanTaskReader::Make(options));
     ICEBERG_UNWRAP_OR_FAIL(auto stream, reader->Open(task));
     VerifyStream(&stream, R"([[0,"a","keep"],[1,"b","keep"]])");
-    options.filter_case_sensitive = true;
+    options.case_sensitive = true;
     ICEBERG_UNWRAP_OR_FAIL(auto case_sensitive_reader, FileScanTaskReader::Make(options));
     EXPECT_THAT(case_sensitive_reader->Open(task),
                 IsError(ErrorKind::kInvalidExpression));

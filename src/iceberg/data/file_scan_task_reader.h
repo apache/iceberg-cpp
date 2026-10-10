@@ -55,8 +55,8 @@ class ICEBERG_DATA_EXPORT FileScanTaskReader {
     /// The output schema for the returned ArrowArrayStream. Must be a
     /// projection of table_schema.
     std::shared_ptr<Schema> projected_schema;
-    /// Case sensitivity for filter binding. Pass TableScan::is_case_sensitive().
-    bool filter_case_sensitive = true;
+    /// Case sensitivity for field name resolution. Pass TableScan::is_case_sensitive().
+    bool case_sensitive = true;
     /// Optional name mapping for files written without field IDs.
     std::shared_ptr<NameMapping> name_mapping;
     /// Format-specific or implementation-specific options for data readers.

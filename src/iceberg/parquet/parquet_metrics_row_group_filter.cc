@@ -47,14 +47,20 @@ class MetricsVisitor : public BoundVisitor<bool> {
  public:
   MetricsVisitor(const ::parquet::arrow::SchemaManifest& manifest,
                  const ::parquet::RowGroupMetaData& row_group,
-                 const std::unordered_map<int32_t, int>& column_indices)
-      : manifest_(manifest), row_group_(row_group), column_indices_(column_indices) {}
+                 const std::unordered_map<int32_t, int>& field_id_to_column_idx)
+      : manifest_(manifest),
+        row_group_(row_group),
+        field_id_to_column_idx_(field_id_to_column_idx) {}
 
   Result<bool> AlwaysTrue() override { return kRowsMightMatch; }
 
   Result<bool> AlwaysFalse() override { return kRowsCannotMatch; }
 
-  Result<bool> Not(bool) override { return kRowsMightMatch; }
+  Result<bool> Not(bool) override {
+    // Make() rewrites NOT before evaluation. If one remains, keep the group:
+    // negating a "might match" result cannot prove that no rows match.
+    return kRowsMightMatch;
+  }
 
   Result<bool> And(bool left, bool right) override { return left && right; }
 
@@ -165,7 +171,7 @@ class MetricsVisitor : public BoundVisitor<bool> {
       return kRowsCannotMatch;
     }
     const auto lower = MinValue(ref);
-    if (!lower || lower->type()->type_id() != TypeId::kString) {
+    if (!lower) {
       return kRowsMightMatch;
     }
     const auto& prefix = std::get<std::string>(value.value());
@@ -173,7 +179,7 @@ class MetricsVisitor : public BoundVisitor<bool> {
       return kRowsCannotMatch;
     }
     const auto upper = MaxValue(ref);
-    if (!upper || upper->type()->type_id() != TypeId::kString) {
+    if (!upper) {
       return kRowsMightMatch;
     }
     return std::get<std::string>(upper->value()).compare(0, prefix.size(), prefix) >= 0;
@@ -186,7 +192,7 @@ class MetricsVisitor : public BoundVisitor<bool> {
       return kRowsMightMatch;
     }
     const auto lower = MinValue(ref);
-    if (!lower || lower->type()->type_id() != TypeId::kString) {
+    if (!lower) {
       return kRowsMightMatch;
     }
     const auto& prefix = std::get<std::string>(value.value());
@@ -194,7 +200,7 @@ class MetricsVisitor : public BoundVisitor<bool> {
       return kRowsMightMatch;
     }
     const auto upper = MaxValue(ref);
-    if (!upper || upper->type()->type_id() != TypeId::kString) {
+    if (!upper) {
       return kRowsMightMatch;
     }
     return !std::get<std::string>(upper->value()).starts_with(prefix);
@@ -203,8 +209,12 @@ class MetricsVisitor : public BoundVisitor<bool> {
  private:
   bool ContainsNullsOnly(const std::shared_ptr<BoundReference>& ref) const {
     const auto stats = GetStatistics(ref);
-    // GetStatistics excludes repeated columns, so each row contributes one value.
-    return stats && stats->HasNullCount() && stats->null_count() == row_group_.num_rows();
+    if (!stats || !stats->HasNullCount()) {
+      return false;
+    }
+    const auto column =
+        row_group_.ColumnChunk(field_id_to_column_idx_.at(ref->field_id()));
+    return stats->null_count() == column->num_values();
   }
 
   bool MayContainNull(const std::shared_ptr<BoundReference>& ref) const {
@@ -215,20 +225,16 @@ class MetricsVisitor : public BoundVisitor<bool> {
   std::shared_ptr<::parquet::Statistics> GetStatistics(
       const std::shared_ptr<BoundReference>& ref) const {
     if (!ref || !ref->type()->is_primitive() ||
-        MetadataColumns::IsMetadataColumn(ref->field_id()) ||
-        MetadataColumns::IsRowLineageColumn(ref->field_id())) {
+        MetadataColumns::IsMetadataColumn(ref->field_id())) {
       return nullptr;
     }
-    auto column = column_indices_.find(ref->field_id());
+    auto column = field_id_to_column_idx_.find(ref->field_id());
     // Missing columns can have initial defaults, so do not assume all nulls.
-    if (column == column_indices_.end()) {
+    if (column == field_id_to_column_idx_.end()) {
       return nullptr;
     }
-    const auto& descriptor = *manifest_.descr->Column(column->second);
     auto field = manifest_.column_index_to_field.find(column->second);
-    // Repeated-column statistics describe elements rather than rows.
-    if (descriptor.max_repetition_level() != 0 ||
-        field == manifest_.column_index_to_field.end() ||
+    if (field == manifest_.column_index_to_field.end() ||
         !ValidateParquetTypeCompatibility(*ref->type(), *field->second)) {
       return nullptr;
     }
@@ -285,7 +291,7 @@ class MetricsVisitor : public BoundVisitor<bool> {
 
   const ::parquet::arrow::SchemaManifest& manifest_;
   const ::parquet::RowGroupMetaData& row_group_;
-  const std::unordered_map<int32_t, int>& column_indices_;
+  const std::unordered_map<int32_t, int>& field_id_to_column_idx_;
 };
 
 }  // namespace
@@ -298,7 +304,7 @@ Result<std::unique_ptr<ParquetMetricsRowGroupFilter>> ParquetMetricsRowGroupFilt
   for (int i = 0; i < file_schema.num_columns(); ++i) {
     auto id = file_schema.Column(i)->schema_node()->field_id();
     if (id >= 0) {
-      result->column_indices_.emplace(id, i);
+      result->field_id_to_column_idx_.emplace(id, i);
     }
   }
   result->bound_ = True::Instance();
@@ -316,7 +322,7 @@ Result<bool> ParquetMetricsRowGroupFilter::ShouldRead(
     return kRowsCannotMatch;
   }
   try {
-    MetricsVisitor visitor(manifest, row_group, column_indices_);
+    MetricsVisitor visitor(manifest, row_group, field_id_to_column_idx_);
     return Visit<bool>(bound_, visitor);
   } catch (const ::parquet::ParquetException&) {
     // Unusable optional statistics must never turn into false negatives.

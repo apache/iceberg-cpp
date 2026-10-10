@@ -113,7 +113,7 @@ class ParquetRowGroupFilterTest : public ::testing::Test {
                           .projection = projection_,
                           .filter = std::move(filter),
                           .first_row_id = 100};
-    options.filter_case_sensitive = case_sensitive;
+    options.case_sensitive = case_sensitive;
     options.properties.Set(ReaderProperties::kBatchSize, int64_t{3});
     return options;
   }
@@ -226,7 +226,7 @@ TEST_F(ParquetRowGroupFilterTest, OpenBindsUnboundProjectedReferences) {
   options.filter = Expressions::GreaterThanOrEqual("VALUE", Literal::Long(4));
   EXPECT_THAT(ReaderFactoryRegistry::Open(FileFormatType::kParquet, options),
               HasErrorMessage("Cannot find field 'VALUE'"));
-  options.filter_case_sensitive = false;
+  options.case_sensitive = false;
   Check(options, {4, 5});
 }
 

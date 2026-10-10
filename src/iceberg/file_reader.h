@@ -111,8 +111,8 @@ struct ICEBERG_EXPORT ReaderOptions {
   /// \brief The filter to apply to the data. Reader implementations may ignore this if
   /// the file format does not support filtering.
   std::shared_ptr<class Expression> filter;
-  /// \brief Case sensitivity inherited from the scan when binding filter references.
-  bool filter_case_sensitive = true;
+  /// \brief Case sensitivity inherited from the scan when resolving field names.
+  bool case_sensitive = true;
   /// \brief Name mapping for schema evolution compatibility. Used when reading files
   /// that may have different field names than the current schema.
   std::shared_ptr<class NameMapping> name_mapping;
