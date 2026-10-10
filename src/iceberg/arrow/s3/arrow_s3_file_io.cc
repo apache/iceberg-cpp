@@ -18,7 +18,11 @@
  */
 
 #include <algorithm>
+#include <atomic>
 #include <cstdlib>
+#include <exception>
+#include <functional>
+#include <future>
 #include <memory>
 #include <mutex>
 #include <optional>
@@ -39,11 +43,117 @@
 #include "iceberg/arrow/arrow_status_internal.h"
 #include "iceberg/arrow/s3/s3_properties.h"
 #include "iceberg/logging/log_macros.h"
+#include "iceberg/logging/logger.h"
+#include "iceberg/util/executor.h"
 #include "iceberg/util/macros.h"
 #include "iceberg/util/property_util.h"
 #include "iceberg/util/string_util.h"
 
 namespace iceberg::arrow {
+
+namespace {
+
+std::atomic<Executor*> delete_executor{nullptr};
+
+// Bounds the tasks and futures of one call, however many files it deletes.
+constexpr size_t kMaxDeleteWorkers = 64;
+
+struct DeleteTasks {
+  std::vector<std::future<void>> futures;
+
+  ~DeleteTasks() {
+    for (auto& future : futures) {
+      if (future.valid()) {
+        future.wait();
+      }
+    }
+  }
+};
+
+// Submit may throw instead of returning an error; both reject the worker.
+Status SubmitWorker(Executor& executor, ExecutorTask task) {
+  try {
+    return executor.Submit(std::move(task));
+  } catch (const std::exception& e) {
+    return IOError("Submit threw an exception: {}", e.what());
+  } catch (...) {
+    return IOError("Submit threw an unknown exception");
+  }
+}
+
+}  // namespace
+
+void SetS3FileIODeleteExecutor(Executor* executor) {
+  delete_executor.store(executor, std::memory_order_release);
+}
+
+Status BulkDeleteFiles(const std::vector<std::string>& file_locations, Executor* executor,
+                       const std::function<Status(const std::string&)>& delete_file) {
+  auto logger = GetCurrentLogger();
+  std::atomic<size_t> next = 0;
+  std::atomic<size_t> failed = 0;
+  auto work = [&] {
+    ScopedLogger bind(logger);
+    while (true) {
+      const auto index = next.fetch_add(1, std::memory_order_relaxed);
+      if (index >= file_locations.size()) {
+        return;
+      }
+      const auto& location = file_locations[index];
+      Status status;
+      try {
+        status = delete_file(location);
+      } catch (const std::exception& e) {
+        status = IOError("Delete threw an exception: {}", e.what());
+      } catch (...) {
+        status = IOError("Delete threw an unknown exception");
+      }
+      if (!status.has_value()) {
+        failed.fetch_add(1, std::memory_order_relaxed);
+        ICEBERG_LOG_WARN("Failed to delete {}: {}", location, status.error().message);
+      }
+    }
+  };
+
+  try {
+    if (executor == nullptr) {
+      work();
+    } else {
+      const auto workers = std::min(kMaxDeleteWorkers, file_locations.size());
+      DeleteTasks tasks;
+      tasks.futures.reserve(workers);
+      size_t accepted = 0;
+      for (; accepted < workers; ++accepted) {
+        std::packaged_task<void()> task(work);
+        // Submit may accept the task before failing.
+        tasks.futures.push_back(task.get_future());
+        ExecutorTask executor_task([task = std::move(task)]() mutable { task(); });
+        if (auto status = SubmitWorker(*executor, std::move(executor_task));
+            !status.has_value()) {
+          // Take what the accepted workers have not, so every file is still
+          // attempted and counted even if none was accepted.
+          ICEBERG_LOG_WARN("Delete worker rejected; deleting on the calling thread: {}",
+                           status.error().message);
+          work();
+          break;
+        }
+      }
+      // A rejected worker's future is only waited for, by `tasks`.
+      for (size_t i = 0; i < accepted; ++i) {
+        tasks.futures[i].get();
+      }
+    }
+  } catch (const std::exception& e) {
+    return IOError("Bulk delete execution failed: {}", e.what());
+  } catch (...) {
+    return IOError("Bulk delete execution failed with an unknown exception");
+  }
+  if (failed > 0) {
+    return IOError("Failed to delete {} of {} files", failed.load(),
+                   file_locations.size());
+  }
+  return {};
+}
 
 #if ICEBERG_S3_ENABLED
 
@@ -338,8 +448,7 @@ Status ArrowS3FileIO::DeleteFile(const std::string& file_location) {
 }
 
 Status ArrowS3FileIO::DeleteFiles(const std::vector<std::string>& file_locations) {
-  // One snapshot so the whole batch matches the same delegate generation; only
-  // ever a handful of delegates, so a linear scan beats hashing.
+  // Keep one delegate snapshot for the whole batch.
   std::shared_ptr<ArrowFileSystemFileIO> fallback;
   DelegatesByPrefix by_prefix;
   {
@@ -347,23 +456,11 @@ Status ArrowS3FileIO::DeleteFiles(const std::vector<std::string>& file_locations
     fallback = default_file_io_;
     by_prefix = file_io_by_prefix_;
   }
-  std::vector<std::pair<std::shared_ptr<ArrowFileSystemFileIO>, std::vector<std::string>>>
-      locations_by_io;
-  for (const auto& file_location : file_locations) {
-    auto file_io = MatchDelegate(fallback, by_prefix, file_location);
-    auto it = std::ranges::find_if(
-        locations_by_io, [&](const auto& entry) { return entry.first == file_io; });
-    if (it == locations_by_io.end()) {
-      locations_by_io.emplace_back(std::move(file_io),
-                                   std::vector<std::string>{file_location});
-    } else {
-      it->second.push_back(file_location);
-    }
-  }
-  for (auto& [file_io, locations] : locations_by_io) {
-    ICEBERG_RETURN_UNEXPECTED(file_io->DeleteFiles(locations));
-  }
-  return {};
+  return BulkDeleteFiles(
+      file_locations, delete_executor.load(std::memory_order_acquire),
+      [&](const std::string& location) {
+        return MatchDelegate(fallback, by_prefix, location)->DeleteFile(location);
+      });
 }
 
 }  // namespace

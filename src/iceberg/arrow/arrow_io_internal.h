@@ -20,6 +20,7 @@
 #pragma once
 
 #include <cstddef>
+#include <functional>
 #include <memory>
 #include <optional>
 #include <string>
@@ -30,8 +31,14 @@
 
 #include "iceberg/file_io.h"
 #include "iceberg/iceberg_bundle_export.h"
+#include "iceberg/util/executor.h"
 
 namespace iceberg::arrow {
+
+/// \brief Delete files, count failures, and wait for accepted tasks.
+ICEBERG_BUNDLE_EXPORT Status
+BulkDeleteFiles(const std::vector<std::string>& file_locations, Executor* executor,
+                const std::function<Status(const std::string&)>& delete_file);
 
 /// \brief Open a FileIO input as an Arrow input stream.
 ///

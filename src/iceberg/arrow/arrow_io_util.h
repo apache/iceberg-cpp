@@ -29,6 +29,7 @@
 #include "iceberg/file_io.h"
 #include "iceberg/iceberg_bundle_export.h"
 #include "iceberg/result.h"
+#include "iceberg/type_fwd.h"
 
 namespace iceberg::arrow {
 
@@ -46,6 +47,15 @@ ICEBERG_BUNDLE_EXPORT std::unique_ptr<FileIO> MakeLocalFileIO();
 /// \return A FileIO instance for S3 operations, or an error if S3 is not supported.
 ICEBERG_BUNDLE_EXPORT Result<std::unique_ptr<FileIO>> MakeS3FileIO(
     const std::unordered_map<std::string, std::string>& properties = {});
+
+/// \brief Set the shared executor for all S3 bulk deletes.
+///
+/// Includes registry-created FileIOs; nullptr (default) runs sequentially.
+/// The caller owns the executor. Configure only while no deletes are active,
+/// and clear it before destruction. DeleteFiles waits for accepted work on error,
+/// and deletes on the calling thread what a rejected worker would have.
+/// See Executor for blocking requirements.
+ICEBERG_BUNDLE_EXPORT void SetS3FileIODeleteExecutor(Executor* executor);
 
 /// \brief Finalize (clean up) the Arrow S3 subsystem.
 ///

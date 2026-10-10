@@ -80,6 +80,28 @@ Without credentials, the AWS default credential chain is used, which covers
 environment variables, the shared configuration file, and the various role and
 identity providers.
 
+### Bulk deletion
+
+S3 `DeleteFiles` attempts each file, logs each failed deletion, and returns the
+failure count. Exceptions thrown by a delete are counted as failures too.
+Deletion is sequential by default. To enable concurrency, configure an
+application-owned `iceberg::Executor` using
+`iceberg::arrow::SetS3FileIODeleteExecutor(executor)` from
+`iceberg/arrow/arrow_io_util.h`.
+
+The setting applies to all S3 FileIO instances, including ones created by the
+registry or a REST catalog. Configure it before starting deletes. The executor
+controls concurrency; each call submits at most 64 worker tasks, which share
+the file list rather than creating a task and future for every file.
+
+`DeleteFiles` is synchronous and waits for accepted tasks even if submission
+fails. If the executor rejects a worker, the rejection is logged and the
+calling thread deletes the files no accepted worker has taken. Keep the
+executor alive until all calls finish, then reset the setting to `nullptr`
+before destroying it. Replace the executor only while no deletes are running.
+The executor must make progress while callers wait; do not call `DeleteFiles`
+from its workers unless it supports nested blocking work.
+
 ### S3-compatible storage
 
 Stores that speak the S3 API are served by the same implementation. The scheme

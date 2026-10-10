@@ -19,11 +19,14 @@
 
 #include <algorithm>
 #include <atomic>
+#include <chrono>
 #include <cstdlib>
+#include <future>
 #include <iostream>
 #include <memory>
 #include <optional>
 #include <span>
+#include <stdexcept>
 #include <string>
 #include <string_view>
 #include <thread>
@@ -38,12 +41,16 @@
 #  include <arrow/filesystem/s3fs.h>
 #endif
 
+#include "iceberg/arrow/arrow_io_internal.h"
 #include "iceberg/arrow/arrow_io_util.h"
+#include "iceberg/arrow/arrow_register.h"
 #include "iceberg/arrow/s3/s3_properties.h"
 #include "iceberg/file_io.h"
+#include "iceberg/file_io_registry.h"
 #include "iceberg/logging/logger.h"
 #include "iceberg/result.h"
 #include "iceberg/storage_credential.h"
+#include "iceberg/test/executor.h"
 #include "iceberg/test/logging_test_helpers.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/util/macros.h"
@@ -156,7 +163,218 @@ Status CheckReadWrite(FileIO& io, const std::string& object_uri,
   return io.DeleteFile(object_uri);
 }
 
+class InlineDeleteExecutor : public Executor {
+ public:
+  Status Submit(ExecutorTask task) override {
+    ++submissions;
+    std::move(task)();
+    return {};
+  }
+
+  int submissions = 0;
+};
+
+class ScopedDeleteExecutor {
+ public:
+  explicit ScopedDeleteExecutor(Executor* executor) {
+    SetS3FileIODeleteExecutor(executor);
+  }
+  ~ScopedDeleteExecutor() { SetS3FileIODeleteExecutor(nullptr); }
+};
+
+enum class SubmitFailure { kStatus, kException, kAcceptedException };
+
+class FailingDeleteExecutor : public Executor {
+ public:
+  FailingDeleteExecutor(SubmitFailure failure, std::shared_future<void> release)
+      : failure_(failure), release_(std::move(release)) {}
+
+  ~FailingDeleteExecutor() override { Wait(); }
+
+  void Wait() {
+    for (auto& thread : threads_) {
+      if (thread.joinable()) {
+        thread.join();
+      }
+    }
+  }
+
+  Status Submit(ExecutorTask task) override {
+    ++submissions_;
+    if (submissions_ == 1 || failure_ == SubmitFailure::kAcceptedException) {
+      const bool first = submissions_ == 1;
+      const bool wait = !first || failure_ != SubmitFailure::kAcceptedException;
+      threads_.emplace_back([this, first, wait, task = std::move(task)]() mutable {
+        if (wait) {
+          release_.wait();
+        }
+        std::move(task)();
+        ++completed;
+        if (first) {
+          first_completed.set_value();
+        }
+      });
+    }
+    if (submissions_ == 2) {
+      submission_failed.set_value();
+      if (failure_ == SubmitFailure::kStatus) {
+        return ServiceUnavailable("executor rejected deletion");
+      }
+      throw std::runtime_error("executor rejected deletion");
+    }
+    return {};
+  }
+
+  std::promise<void> submission_failed;
+  std::promise<void> first_completed;
+  std::atomic<int> completed = 0;
+
+ private:
+  SubmitFailure failure_;
+  std::shared_future<void> release_;
+  int submissions_ = 0;
+  std::vector<std::thread> threads_;
+};
+
 }  // namespace
+
+TEST(BulkDeleteFilesTest, SequentialDeletionRunsOnTheCaller) {
+  const std::vector<std::string> paths = {"first", "second", "third"};
+  std::vector<std::string> attempted;
+  const auto caller = std::this_thread::get_id();
+  EXPECT_THAT(BulkDeleteFiles(paths, nullptr,
+                              [&](const std::string& path) -> Status {
+                                EXPECT_EQ(std::this_thread::get_id(), caller);
+                                attempted.push_back(path);
+                                return {};
+                              }),
+              IsOk());
+  EXPECT_EQ(attempted, paths);
+}
+
+TEST(BulkDeleteFilesTest, CountsThrownDeletesAndAttemptsRemainingFiles) {
+  for (bool parallel : {false, true}) {
+    SCOPED_TRACE(parallel);
+    test::ThreadExecutor executor;
+    const std::vector<std::string> paths = {"status", "exception", "unknown", "ok"};
+    std::atomic<int> attempted = 0;
+    auto logger = std::make_shared<CapturingLogger>();
+    ScopedLogger bind(logger);
+    auto status = BulkDeleteFiles(paths, parallel ? &executor : nullptr,
+                                  [&](const std::string& path) -> Status {
+                                    ++attempted;
+                                    if (path == "status") {
+                                      return IOError("delete failed");
+                                    }
+                                    if (path == "exception") {
+                                      throw std::runtime_error("delete threw");
+                                    }
+                                    if (path == "unknown") {
+                                      throw 42;
+                                    }
+                                    return {};
+                                  });
+    EXPECT_THAT(status, HasErrorMessage("Failed to delete 3 of 4 files"));
+    EXPECT_EQ(attempted, 4);
+    EXPECT_EQ(logger->count(), 3);
+  }
+}
+
+TEST(BulkDeleteFilesTest, DrainsAcceptedTasksWhenSubmissionFails) {
+  for (auto failure : {SubmitFailure::kStatus, SubmitFailure::kException,
+                       SubmitFailure::kAcceptedException}) {
+    SCOPED_TRACE(static_cast<int>(failure));
+    std::promise<void> release;
+    FailingDeleteExecutor executor(failure, release.get_future().share());
+    auto submission_failed = executor.submission_failed.get_future();
+    auto first_completed = executor.first_completed.get_future();
+    const std::vector<std::string> paths = {"first", "second", "third"};
+    std::atomic<int> attempted = 0;
+    auto logger = std::make_shared<CapturingLogger>();
+    auto run = std::async(std::launch::async, [&] {
+      ScopedLogger bind(logger);
+      return BulkDeleteFiles(paths, &executor, [&](const std::string&) -> Status {
+        ++attempted;
+        return {};
+      });
+    });
+    const auto submitted = submission_failed.wait_for(std::chrono::seconds(5));
+    auto first = std::future_status::ready;
+    if (failure == SubmitFailure::kAcceptedException) {
+      // Leave only the last task blocked.
+      first = first_completed.wait_for(std::chrono::seconds(5));
+    }
+    const auto returned = run.wait_for(std::chrono::milliseconds(100));
+    // Unblock workers before assertions.
+    release.set_value();
+    auto status = run.get();
+    executor.Wait();
+    EXPECT_EQ(submitted, std::future_status::ready);
+    EXPECT_EQ(first, std::future_status::ready);
+    EXPECT_EQ(returned, std::future_status::timeout);
+    // The caller deletes what the accepted workers did not; the rejection is
+    // logged, not returned.
+    EXPECT_THAT(status, IsOk());
+    EXPECT_EQ(attempted, 3);
+    const auto records = logger->records();
+    ASSERT_EQ(records.size(), 1);
+    EXPECT_THAT(records[0].message, ::testing::HasSubstr("executor rejected deletion"));
+    EXPECT_EQ(executor.completed, failure == SubmitFailure::kAcceptedException ? 2 : 1);
+  }
+}
+
+TEST(BulkDeleteFilesTest, DeletesOnTheCallerWhenNoWorkerIsAccepted) {
+  test::ThreadExecutor executor(ServiceUnavailable("executor is shut down"));
+  const std::vector<std::string> paths = {"first", "second", "third"};
+  std::vector<std::string> attempted;
+  const auto caller = std::this_thread::get_id();
+  EXPECT_THAT(BulkDeleteFiles(paths, &executor,
+                              [&](const std::string& path) -> Status {
+                                EXPECT_EQ(std::this_thread::get_id(), caller);
+                                attempted.push_back(path);
+                                if (path == "second") {
+                                  return IOError("delete failed");
+                                }
+                                return {};
+                              }),
+              HasErrorMessage("Failed to delete 1 of 3 files"));
+  EXPECT_EQ(attempted, paths);
+  EXPECT_EQ(executor.submit_count(), 1);
+}
+
+TEST(BulkDeleteFilesTest, TaskCountDoesNotGrowWithTheFileList) {
+  std::vector<int> task_counts;
+  for (size_t size : {4096, 16384}) {
+    InlineDeleteExecutor executor;
+    std::vector<std::string> paths;
+    std::vector<int> attempts(size, 0);
+    for (size_t i = 0; i < size; ++i) {
+      paths.push_back(std::to_string(i));
+    }
+    EXPECT_THAT(BulkDeleteFiles(paths, &executor,
+                                [&](const std::string& path) -> Status {
+                                  ++attempts[std::stoul(path)];
+                                  return {};
+                                }),
+                IsOk());
+    EXPECT_THAT(attempts, ::testing::Each(1));
+    EXPECT_LT(executor.submissions, size);
+    task_counts.push_back(executor.submissions);
+  }
+  EXPECT_EQ(task_counts[0], task_counts[1]);
+}
+
+TEST(BulkDeleteFilesTest, EmptyDeleteDoesNotSubmitTasks) {
+  InlineDeleteExecutor executor;
+  EXPECT_THAT(BulkDeleteFiles({}, &executor,
+                              [](const std::string&) -> Status {
+                                ADD_FAILURE()
+                                    << "An empty delete should not invoke the callback";
+                                return {};
+                              }),
+              IsOk());
+  EXPECT_EQ(executor.submissions, 0);
+}
 
 TEST_F(ArrowS3FileIOTest, Create) {
   auto result = MakeS3FileIO({});
@@ -299,6 +517,26 @@ TEST_F(ArrowS3FileIOTest, RejectsIncompleteStaticCredentials) {
                           "S3 client access key ID and secret access key must be set"));
 }
 
+TEST_F(ArrowS3FileIOTest, SharesDeleteExecutorWithRegistryCreatedFileIOs) {
+  RegisterAll();
+  ICEBERG_UNWRAP_OR_FAIL(auto direct, MakeS3FileIO({}));
+  ICEBERG_UNWRAP_OR_FAIL(auto registered,
+                         FileIORegistry::Load(FileIORegistry::kArrowS3FileIO, {}));
+  InlineDeleteExecutor executor;
+  ScopedDeleteExecutor configured(&executor);
+  // Invalid schemes avoid network I/O.
+  for (auto* io : {direct.get(), registered.get()}) {
+    EXPECT_THAT(io->DeleteFiles({"invalid://bucket/file"}),
+                HasErrorMessage("Failed to delete 1 of 1 files"));
+  }
+  EXPECT_EQ(executor.submissions, 2);
+
+  SetS3FileIODeleteExecutor(nullptr);
+  EXPECT_THAT(direct->DeleteFiles({"invalid://bucket/file"}),
+              HasErrorMessage("Failed to delete 1 of 1 files"));
+  EXPECT_EQ(executor.submissions, 2);
+}
+
 TEST_F(ArrowS3FileIOTest, ReadWrite) {
   if (!HasIntegrationEnv()) {
     GTEST_SKIP() << "Set ICEBERG_TEST_S3_URI to enable S3 IO test";
@@ -351,6 +589,56 @@ TEST_F(ArrowS3FileIOTest, LongestCredentialPrefix) {
               IsOk());
   EXPECT_THAT(CheckReadWrite(*io, object_uri, "hello s3 with vended credentials"),
               IsOk());
+}
+
+TEST_F(ArrowS3FileIOTest, DeleteFilesAttemptsEveryFile) {
+  if (!HasIntegrationEnv()) {
+    GTEST_SKIP() << "Set ICEBERG_TEST_S3_URI to enable S3 IO test";
+  }
+
+  auto properties = PropertiesFromEnv();
+  if (properties.empty()) {
+    GTEST_SKIP() << "Set S3 properties to enable credential routing test";
+  }
+  test::ThreadExecutor executor;
+  ScopedDeleteExecutor configured(&executor);
+
+  auto io_res = MakeS3FileIO(properties);
+  ASSERT_THAT(io_res, IsOk());
+  auto io = std::move(io_res).value();
+  auto* credentialed = io->AsSupportsStorageCredentials();
+  ASSERT_NE(credentialed, nullptr);
+
+  const auto denied = ObjectUri("delete_denied/");
+  const auto allowed = ObjectUri("delete_allowed/") + "only";
+  const std::vector<std::string> paths = {denied + "first", allowed, denied + "second"};
+  for (const auto& path : paths) {
+    ASSERT_THAT(io->WriteFile(path, "payload"), IsOk());
+  }
+
+  // Deletes under `denied` fail; the one between them must still run.
+  auto bad_properties = properties;
+  for (const auto& [key, value] : BadS3Credentials()) {
+    bad_properties.insert_or_assign(key, value);
+  }
+  ASSERT_THAT(credentialed->SetStorageCredentials(
+                  {{.prefix = denied, .config = std::move(bad_properties)}}),
+              IsOk());
+  // Each failure reaches the caller's logger, whichever thread hit it.
+  auto logger = std::make_shared<CapturingLogger>();
+  {
+    ScopedLogger bind(logger);
+    EXPECT_THAT(io->DeleteFiles(paths), HasErrorMessage("Failed to delete 2 of 3 files"));
+  }
+  EXPECT_EQ(std::ranges::count_if(
+                logger->records(),
+                [](const LogMessage& record) { return record.level == LogLevel::kWarn; }),
+            2);
+  EXPECT_FALSE(io->ReadFile(allowed, std::nullopt).has_value());
+
+  // The denied files remain: Arrow fails to delete a missing object.
+  ASSERT_THAT(credentialed->SetStorageCredentials({}), IsOk());
+  EXPECT_THAT(io->DeleteFiles({paths[0], paths[2]}), IsOk());
 }
 
 // The credential is vended under the oss spelling and the object addressed as
