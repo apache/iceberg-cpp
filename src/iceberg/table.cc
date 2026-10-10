@@ -22,6 +22,9 @@
 #include <memory>
 
 #include "iceberg/catalog.h"
+#include "iceberg/data_table_scan.h"
+#include "iceberg/incremental_append_scan.h"
+#include "iceberg/incremental_changelog_scan.h"
 #include "iceberg/location_provider.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/result.h"

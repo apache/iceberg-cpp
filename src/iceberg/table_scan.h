@@ -462,34 +462,6 @@ class ICEBERG_EXPORT TableScan {
   mutable std::shared_ptr<Schema> projected_schema_;
 };
 
-/// \brief A scan that reads data files and applies delete files to filter rows.
-class ICEBERG_EXPORT DataTableScan : public TableScan {
- public:
-  ~DataTableScan() override = default;
-
-  /// \brief Constructs a DataTableScan instance.
-  static Result<std::unique_ptr<DataTableScan>> Make(
-      std::shared_ptr<TableMetadata> metadata, std::shared_ptr<Schema> schema,
-      std::shared_ptr<FileIO> io, internal::TableScanContext context);
-
-  /// \brief Plans the scan tasks by resolving manifests and data files.
-  ///
-  /// Collects PlanFilesStream() into a vector.
-  /// \return A Result containing scan tasks or an error.
-  Result<std::vector<std::shared_ptr<FileScanTask>>> PlanFiles() const;
-
-  /// \brief Lazily plans scan tasks by resolving manifests and data files on demand.
-  ///
-  /// The returned fallible, single-pass stream owns its planning resources and
-  /// can outlive this scan. An executor configured through PlanWith() is borrowed and
-  /// must remain alive until the stream is destroyed, as later Next() calls may submit
-  /// work to it.
-  Result<FileScanTaskStreamPtr> PlanFilesStream() const;
-
- protected:
-  using TableScan::TableScan;
-};
-
 /// \brief A base template class for incremental scans that read changes between
 /// snapshots, and return scan tasks of the specified type.
 template <typename ScanTaskType>
@@ -511,53 +483,5 @@ class IncrementalScan : public TableScan {
   friend Result<std::vector<std::shared_ptr<T>>> ResolvePlanFiles(
       const IncrementalScan<T>& scan);
 };
-
-/// \brief A scan that reads data files added between snapshots (incremental appends).
-class ICEBERG_EXPORT IncrementalAppendScan : public IncrementalScan<FileScanTask> {
- public:
-  /// \brief Constructs an IncrementalAppendScan instance.
-  static Result<std::unique_ptr<IncrementalAppendScan>> Make(
-      std::shared_ptr<TableMetadata> metadata, std::shared_ptr<Schema> schema,
-      std::shared_ptr<FileIO> io, internal::TableScanContext context);
-
-  ~IncrementalAppendScan() override = default;
-
-  Result<std::vector<std::shared_ptr<FileScanTask>>> PlanFiles() const override;
-
- protected:
-  Result<std::vector<std::shared_ptr<FileScanTask>>> PlanFiles(
-      std::optional<int64_t> from_snapshot_id_exclusive,
-      int64_t to_snapshot_id_inclusive) const override;
-
-  using IncrementalScan::IncrementalScan;
-};
-
-/// \brief A scan that reads changelog entries between snapshots.
-class ICEBERG_EXPORT IncrementalChangelogScan
-    : public IncrementalScan<ChangelogScanTask> {
- public:
-  /// \brief Constructs an IncrementalChangelogScan instance.
-  static Result<std::unique_ptr<IncrementalChangelogScan>> Make(
-      std::shared_ptr<TableMetadata> metadata, std::shared_ptr<Schema> schema,
-      std::shared_ptr<FileIO> io, internal::TableScanContext context);
-
-  ~IncrementalChangelogScan() override = default;
-
-  Result<std::vector<std::shared_ptr<ChangelogScanTask>>> PlanFiles() const override;
-
- protected:
-  Result<std::vector<std::shared_ptr<ChangelogScanTask>>> PlanFiles(
-      std::optional<int64_t> from_snapshot_id_exclusive,
-      int64_t to_snapshot_id_inclusive) const override;
-
-  using IncrementalScan::IncrementalScan;
-};
-
-extern template class ICEBERG_EXTERN_TEMPLATE_CLASS_EXPORT
-    TableScanBuilder<DataTableScan>;
-extern template class ICEBERG_EXTERN_TEMPLATE_CLASS_EXPORT
-    TableScanBuilder<IncrementalAppendScan>;
-extern template class ICEBERG_EXTERN_TEMPLATE_CLASS_EXPORT
-    TableScanBuilder<IncrementalChangelogScan>;
 
 }  // namespace iceberg

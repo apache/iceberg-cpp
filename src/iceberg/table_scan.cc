@@ -20,27 +20,23 @@
 #include "iceberg/table_scan.h"
 
 #include <algorithm>
-#include <chrono>
 #include <cstdint>
 #include <iterator>
 #include <ranges>
 #include <utility>
 
+#include "iceberg/data_table_scan.h"
 #include "iceberg/expression/binder.h"
 #include "iceberg/expression/expression.h"
-#include "iceberg/expression/residual_evaluator.h"
-#include "iceberg/expression/sanitize_expression.h"
+#include "iceberg/incremental_append_scan.h"
+#include "iceberg/incremental_changelog_scan.h"
 #include "iceberg/manifest/manifest_entry.h"
-#include "iceberg/manifest/manifest_group.h"
-#include "iceberg/metrics/metrics_context.h"
 #include "iceberg/metrics/metrics_reporters.h"
-#include "iceberg/metrics/scan_report.h"
 #include "iceberg/result.h"
 #include "iceberg/schema.h"
 #include "iceberg/snapshot.h"
 #include "iceberg/table.h"
 #include "iceberg/table_metadata.h"
-#include "iceberg/util/content_file_util.h"
 #include "iceberg/util/macros.h"
 #include "iceberg/util/snapshot_util.h"
 #include "iceberg/util/timepoint.h"
@@ -66,95 +62,6 @@ const std::vector<std::string> kScanColumnsWithStats = [] {
   cols.insert(cols.end(), kStatsColumns.begin(), kStatsColumns.end());
   return cols;
 }();
-
-template <typename T>
-class EmptyStream final : public Stream<T> {
- public:
-  Result<std::optional<T>> NextImpl() override { return std::nullopt; }
-};
-
-Result<ScanReport> MakeScanReport(const DataTableScan& scan, const Snapshot& snapshot,
-                                  ScanMetricsResult scan_metrics) {
-  ICEBERG_ASSIGN_OR_RAISE(auto schema_ptr, scan.schema());
-
-  ICEBERG_ASSIGN_OR_RAISE(
-      auto projected_id_set,
-      GetProjectedIdsVisitor::GetProjectedIds(*schema_ptr, /*include_struct_ids=*/true));
-  std::vector<int32_t> projected_field_ids(projected_id_set.begin(),
-                                           projected_id_set.end());
-  std::ranges::sort(projected_field_ids);
-
-  std::vector<std::string> projected_field_names;
-  projected_field_names.reserve(projected_field_ids.size());
-  for (int32_t field_id : projected_field_ids) {
-    ICEBERG_ASSIGN_OR_RAISE(auto field_name, schema_ptr->FindColumnNameById(field_id));
-    ICEBERG_CHECK(field_name.has_value(), "Projected field {} not found in schema",
-                  field_id);
-    projected_field_names.emplace_back(*field_name);
-  }
-
-  ICEBERG_ASSIGN_OR_RAISE(auto sanitized_filter,
-                          SanitizeExpression::Sanitize(*schema_ptr, scan.filter(),
-                                                       scan.context().case_sensitive));
-
-  return ScanReport{
-      .table_name = scan.context().table_name,
-      .snapshot_id = snapshot.snapshot_id,
-      .filter = std::move(sanitized_filter),
-      .schema_id = schema_ptr->schema_id(),
-      .projected_field_ids = std::move(projected_field_ids),
-      .projected_field_names = std::move(projected_field_names),
-      .scan_metrics = std::move(scan_metrics),
-      .metadata = scan.context().options,
-  };
-}
-
-class ReportingFileTaskStream final : public FileScanTaskStream {
- public:
-  ReportingFileTaskStream(FileScanTaskStreamPtr stream,
-                          std::shared_ptr<ScanMetrics> scan_metrics,
-                          std::chrono::nanoseconds planning_duration,
-                          std::shared_ptr<MetricsReporter> reporter, ScanReport report)
-      : stream_(std::move(stream)),
-        scan_metrics_(std::move(scan_metrics)),
-        planning_duration_(std::move(planning_duration)),
-        reporter_(std::move(reporter)),
-        report_(std::move(report)) {}
-
-  ~ReportingFileTaskStream() override { Finalize(); }
-
-  Result<std::optional<std::shared_ptr<FileScanTask>>> NextImpl() override {
-    auto start = std::chrono::steady_clock::now();
-    auto result = stream_->Next();
-    planning_duration_ += std::chrono::duration_cast<std::chrono::nanoseconds>(
-        std::chrono::steady_clock::now() - start);
-    if (!result.has_value()) {
-      // Failed planning does not emit a successful scan report.
-      finalized_ = true;
-    } else if (!result.value().has_value()) {
-      Finalize();
-    }
-    return result;
-  }
-
- private:
-  void Finalize() {
-    if (finalized_) {
-      return;
-    }
-    finalized_ = true;
-    scan_metrics_->total_planning_duration->Record(planning_duration_);
-    report_.scan_metrics = scan_metrics_->ToResult();
-    std::ignore = reporter_->Report(report_);
-  }
-
-  FileScanTaskStreamPtr stream_;
-  std::shared_ptr<ScanMetrics> scan_metrics_;
-  std::chrono::nanoseconds planning_duration_;
-  std::shared_ptr<MetricsReporter> reporter_;
-  ScanReport report_;
-  bool finalized_ = false;
-};
 
 }  // namespace
 
@@ -650,92 +557,6 @@ const std::vector<std::string>& TableScan::ScanColumns() const {
   return context_.return_column_stats ? kScanColumnsWithStats : kScanColumns;
 }
 
-Result<std::unique_ptr<DataTableScan>> DataTableScan::Make(
-    std::shared_ptr<TableMetadata> metadata, std::shared_ptr<Schema> schema,
-    std::shared_ptr<FileIO> io, internal::TableScanContext context) {
-  ICEBERG_PRECHECK(metadata != nullptr, "Table metadata cannot be null");
-  ICEBERG_PRECHECK(schema != nullptr, "Schema cannot be null");
-  ICEBERG_PRECHECK(io != nullptr, "FileIO cannot be null");
-  return std::unique_ptr<DataTableScan>(new DataTableScan(
-      std::move(metadata), std::move(schema), std::move(io), std::move(context)));
-}
-
-Result<std::vector<std::shared_ptr<FileScanTask>>> DataTableScan::PlanFiles() const {
-  ICEBERG_ASSIGN_OR_RAISE(auto stream, PlanFilesStream());
-  return stream->ToVector();
-}
-
-Result<FileScanTaskStreamPtr> DataTableScan::PlanFilesStream() const {
-  ICEBERG_ASSIGN_OR_RAISE(auto snapshot, this->snapshot());
-  if (!snapshot) {
-    return std::make_unique<EmptyStream<std::shared_ptr<FileScanTask>>>();
-  }
-
-  std::shared_ptr<ScanMetrics> scan_metrics;
-  std::optional<std::chrono::steady_clock::time_point> planning_start;
-  if (context_.metrics_reporter) {
-    auto metrics_context = MetricsContext::Default();
-    scan_metrics = ScanMetrics::Make(*metrics_context);
-    planning_start = std::chrono::steady_clock::now();
-  }
-
-  TableMetadataCache metadata_cache(metadata_.get());
-  ICEBERG_ASSIGN_OR_RAISE(auto specs_by_id, metadata_cache.GetPartitionSpecsById());
-
-  SnapshotReader snapshot_reader(snapshot.get());
-  ICEBERG_ASSIGN_OR_RAISE(auto data_manifests, snapshot_reader.DataManifests(io_));
-  ICEBERG_ASSIGN_OR_RAISE(auto delete_manifests, snapshot_reader.DeleteManifests(io_));
-
-  if (scan_metrics) {
-    scan_metrics->total_data_manifests->Increment(
-        static_cast<int64_t>(data_manifests.size()));
-    scan_metrics->total_delete_manifests->Increment(
-        static_cast<int64_t>(delete_manifests.size()));
-  }
-
-  std::vector<ManifestFile> owned_data_manifests(
-      std::make_move_iterator(data_manifests.begin()),
-      std::make_move_iterator(data_manifests.end()));
-  std::vector<ManifestFile> owned_delete_manifests(
-      std::make_move_iterator(delete_manifests.begin()),
-      std::make_move_iterator(delete_manifests.end()));
-
-  ICEBERG_ASSIGN_OR_RAISE(
-      auto manifest_group,
-      ManifestGroup::Make(io_, schema_, specs_by_id, std::move(owned_data_manifests),
-                          std::move(owned_delete_manifests)));
-  manifest_group->CaseSensitive(context_.case_sensitive)
-      .Select(ScanColumns())
-      .FilterData(filter())
-      .IgnoreDeleted()
-      .ColumnsToKeepStats(context_.columns_to_keep_stats)
-      .WithScanMetrics(scan_metrics);
-  if (data_manifests.size() > 1 || delete_manifests.size() > 1) {
-    manifest_group->PlanWith(context_.plan_executor);
-  }
-  if (context_.ignore_residuals) {
-    manifest_group->IgnoreResiduals();
-  }
-
-  ICEBERG_ASSIGN_OR_RAISE(auto stream, std::move(*manifest_group).PlanFilesStream());
-  if (!planning_start.has_value()) {
-    return stream;
-  }
-
-  auto planning_duration = std::chrono::duration_cast<std::chrono::nanoseconds>(
-      std::chrono::steady_clock::now() - planning_start.value());
-
-  auto report = MakeScanReport(*this, *snapshot, ScanMetricsResult{});
-  if (!report.has_value()) {
-    // Scan reporting is best effort.
-    return stream;
-  }
-
-  return std::make_unique<ReportingFileTaskStream>(
-      std::move(stream), std::move(scan_metrics), planning_duration,
-      context_.metrics_reporter, std::move(report).value());
-}
-
 // Friend function template for IncrementalScan that implements the shared PlanFiles
 // logic. It resolves the from/to snapshot range from the scan context and delegates
 // to the two-arg virtual PlanFiles() override in the concrete subclass.
@@ -760,234 +581,9 @@ Result<std::vector<std::shared_ptr<ScanTaskType>>> ResolvePlanFiles(
   return scan.PlanFiles(from_snapshot_id_exclusive, to_snapshot_id_inclusive);
 }
 
-// IncrementalAppendScan implementation
-
-Result<std::unique_ptr<IncrementalAppendScan>> IncrementalAppendScan::Make(
-    std::shared_ptr<TableMetadata> metadata, std::shared_ptr<Schema> schema,
-    std::shared_ptr<FileIO> io, internal::TableScanContext context) {
-  ICEBERG_PRECHECK(metadata != nullptr, "Table metadata cannot be null");
-  ICEBERG_PRECHECK(schema != nullptr, "Schema cannot be null");
-  ICEBERG_PRECHECK(io != nullptr, "FileIO cannot be null");
-  return std::unique_ptr<IncrementalAppendScan>(new IncrementalAppendScan(
-      std::move(metadata), std::move(schema), std::move(io), std::move(context)));
-}
-
-Result<std::vector<std::shared_ptr<FileScanTask>>> IncrementalAppendScan::PlanFiles()
-    const {
-  return ResolvePlanFiles<FileScanTask>(*this);
-}
-
-Result<std::vector<std::shared_ptr<FileScanTask>>> IncrementalAppendScan::PlanFiles(
-    std::optional<int64_t> from_snapshot_id_exclusive,
-    int64_t to_snapshot_id_inclusive) const {
-  ICEBERG_ASSIGN_OR_RAISE(
-      auto ancestors_snapshots,
-      SnapshotUtil::AncestorsBetween(*metadata_, to_snapshot_id_inclusive,
-                                     from_snapshot_id_exclusive));
-
-  std::vector<std::shared_ptr<Snapshot>> append_snapshots;
-  std::ranges::copy_if(ancestors_snapshots, std::back_inserter(append_snapshots),
-                       [](const auto& snapshot) {
-                         return snapshot != nullptr &&
-                                snapshot->Operation().has_value() &&
-                                snapshot->Operation().value() == DataOperation::kAppend;
-                       });
-  if (append_snapshots.empty()) {
-    return std::vector<std::shared_ptr<FileScanTask>>{};
-  }
-
-  std::unordered_set<int64_t> snapshot_ids;
-  std::ranges::transform(append_snapshots,
-                         std::inserter(snapshot_ids, snapshot_ids.end()),
-                         [](const auto& snapshot) { return snapshot->snapshot_id; });
-
-  std::unordered_set<ManifestFile> data_manifests;
-  for (const auto& snapshot : append_snapshots) {
-    SnapshotReader snapshot_reader(snapshot.get());
-    ICEBERG_ASSIGN_OR_RAISE(auto manifests, snapshot_reader.DataManifests(io_));
-    std::ranges::copy_if(
-        manifests, std::inserter(data_manifests, data_manifests.end()),
-        [&snapshot_ids](const ManifestFile& manifest) {
-          return manifest.added_snapshot_id.has_value() &&
-                 snapshot_ids.contains(manifest.added_snapshot_id.value());
-        });
-  }
-  if (data_manifests.empty()) {
-    return std::vector<std::shared_ptr<FileScanTask>>{};
-  }
-
-  TableMetadataCache metadata_cache(metadata_.get());
-  ICEBERG_ASSIGN_OR_RAISE(auto specs_by_id, metadata_cache.GetPartitionSpecsById());
-
-  ICEBERG_ASSIGN_OR_RAISE(
-      auto manifest_group,
-      ManifestGroup::Make(
-          io_, schema_, specs_by_id,
-          std::vector<ManifestFile>(data_manifests.begin(), data_manifests.end()), {}));
-
-  manifest_group->CaseSensitive(context_.case_sensitive)
-      .Select(ScanColumns())
-      .FilterData(filter())
-      .FilterManifestEntries([&snapshot_ids](const ManifestEntry& entry) {
-        return entry.snapshot_id.has_value() &&
-               snapshot_ids.contains(entry.snapshot_id.value()) &&
-               entry.status == ManifestStatus::kAdded;
-      })
-      .IgnoreDeleted()
-      .ColumnsToKeepStats(context_.columns_to_keep_stats)
-      .PlanWith(context_.plan_executor);
-
-  if (context_.ignore_residuals) {
-    manifest_group->IgnoreResiduals();
-  }
-
-  return std::move(*manifest_group).PlanFiles();
-}
-
-// IncrementalChangelogScan implementation
-
-Result<std::unique_ptr<IncrementalChangelogScan>> IncrementalChangelogScan::Make(
-    std::shared_ptr<TableMetadata> metadata, std::shared_ptr<Schema> schema,
-    std::shared_ptr<FileIO> io, internal::TableScanContext context) {
-  ICEBERG_PRECHECK(metadata != nullptr, "Table metadata cannot be null");
-  ICEBERG_PRECHECK(schema != nullptr, "Schema cannot be null");
-  ICEBERG_PRECHECK(io != nullptr, "FileIO cannot be null");
-  return std::unique_ptr<IncrementalChangelogScan>(new IncrementalChangelogScan(
-      std::move(metadata), std::move(schema), std::move(io), std::move(context)));
-}
-
-Result<std::vector<std::shared_ptr<ChangelogScanTask>>>
-IncrementalChangelogScan::PlanFiles() const {
-  return ResolvePlanFiles<ChangelogScanTask>(*this);
-}
-
-Result<std::vector<std::shared_ptr<ChangelogScanTask>>>
-IncrementalChangelogScan::PlanFiles(std::optional<int64_t> from_snapshot_id_exclusive,
-                                    int64_t to_snapshot_id_inclusive) const {
-  ICEBERG_ASSIGN_OR_RAISE(
-      auto ancestors_snapshots,
-      SnapshotUtil::AncestorsBetween(*metadata_, to_snapshot_id_inclusive,
-                                     from_snapshot_id_exclusive));
-
-  std::vector<std::pair<std::shared_ptr<Snapshot>, std::unique_ptr<SnapshotReader>>>
-      changelog_snapshots;
-
-  for (const auto& snapshot : std::ranges::reverse_view(ancestors_snapshots)) {
-    auto operation = snapshot->Operation();
-    if (!operation.has_value() || operation.value() != DataOperation::kReplace) {
-      auto snapshot_reader = std::make_unique<SnapshotReader>(snapshot.get());
-      ICEBERG_ASSIGN_OR_RAISE(auto delete_manifests,
-                              snapshot_reader->DeleteManifests(io_));
-      if (!delete_manifests.empty()) {
-        return NotSupported(
-            "Delete files are currently not supported in changelog scans");
-      }
-      changelog_snapshots.emplace_back(snapshot, std::move(snapshot_reader));
-    }
-  }
-  if (changelog_snapshots.empty()) {
-    return std::vector<std::shared_ptr<ChangelogScanTask>>{};
-  }
-
-  std::unordered_set<int64_t> snapshot_ids;
-  std::unordered_map<int64_t, int32_t> snapshot_ordinals;
-  for (const auto& snapshot : changelog_snapshots) {
-    ICEBERG_PRECHECK(
-        std::cmp_less_equal(snapshot_ids.size(), std::numeric_limits<int32_t>::max()),
-        "Number of snapshots in changelog scan exceeds maximum supported");
-    snapshot_ids.insert(snapshot.first->snapshot_id);
-    snapshot_ordinals.try_emplace(snapshot.first->snapshot_id,
-                                  static_cast<int32_t>(snapshot_ordinals.size()));
-  }
-
-  std::vector<ManifestFile> data_manifests;
-  std::unordered_set<std::string> seen_manifest_paths;
-  for (const auto& snapshot : changelog_snapshots) {
-    ICEBERG_ASSIGN_OR_RAISE(auto manifests, snapshot.second->DataManifests(io_));
-    for (auto& manifest : manifests) {
-      if (manifest.added_snapshot_id.has_value() &&
-          snapshot_ids.contains(manifest.added_snapshot_id.value()) &&
-          seen_manifest_paths.insert(manifest.manifest_path).second) {
-        data_manifests.push_back(manifest);
-      }
-    }
-  }
-  if (data_manifests.empty()) {
-    return std::vector<std::shared_ptr<ChangelogScanTask>>{};
-  }
-
-  TableMetadataCache metadata_cache(metadata_.get());
-  ICEBERG_ASSIGN_OR_RAISE(auto specs_by_id, metadata_cache.GetPartitionSpecsById());
-
-  ICEBERG_ASSIGN_OR_RAISE(
-      auto manifest_group,
-      ManifestGroup::Make(io_, schema_, specs_by_id, std::move(data_manifests),
-                          /*delete_manifests=*/{}));
-
-  manifest_group->CaseSensitive(context_.case_sensitive)
-      .Select(ScanColumns())
-      .FilterData(filter())
-      .FilterManifestEntries([&snapshot_ids](const ManifestEntry& entry) {
-        return entry.snapshot_id.has_value() &&
-               snapshot_ids.contains(entry.snapshot_id.value());
-      })
-      .IgnoreExisting()
-      .ColumnsToKeepStats(context_.columns_to_keep_stats)
-      .PlanWith(context_.plan_executor);
-
-  if (context_.ignore_residuals) {
-    manifest_group->IgnoreResiduals();
-  }
-
-  auto create_tasks_func =
-      [&snapshot_ordinals](
-          std::vector<ManifestEntry>&& entries,
-          const TaskContext& ctx) -> Result<std::vector<std::shared_ptr<ScanTask>>> {
-    std::vector<std::shared_ptr<ScanTask>> tasks;
-    tasks.reserve(entries.size());
-
-    for (auto& entry : entries) {
-      ICEBERG_PRECHECK(entry.snapshot_id.has_value() && entry.data_file,
-                       "Invalid manifest entry with missing snapshot id or data file");
-
-      int64_t commit_snapshot_id = entry.snapshot_id.value();
-      auto ordinal_it = snapshot_ordinals.find(commit_snapshot_id);
-      ICEBERG_PRECHECK(ordinal_it != snapshot_ordinals.end(),
-                       "Invalid manifest entry with missing snapshot ordinal");
-
-      int32_t change_ordinal = ordinal_it->second;
-
-      if (ctx.drop_stats) {
-        ContentFileUtil::DropAllStats(*entry.data_file);
-      } else if (!ctx.columns_to_keep_stats.empty()) {
-        ContentFileUtil::DropUnselectedStats(*entry.data_file, ctx.columns_to_keep_stats);
-      }
-
-      ICEBERG_ASSIGN_OR_RAISE(auto residual,
-                              ctx.residuals->ResidualFor(entry.data_file->partition));
-      switch (entry.status) {
-        case ManifestStatus::kAdded:
-          tasks.push_back(std::make_shared<AddedRowsScanTask>(
-              change_ordinal, commit_snapshot_id, std::move(entry.data_file),
-              std::vector<std::shared_ptr<DataFile>>{}, std::move(residual)));
-          break;
-        case ManifestStatus::kDeleted:
-          tasks.push_back(std::make_shared<DeletedDataFileScanTask>(
-              change_ordinal, commit_snapshot_id, std::move(entry.data_file),
-              std::vector<std::shared_ptr<DataFile>>{}, std::move(residual)));
-          break;
-        case ManifestStatus::kExisting:
-          return InvalidArgument("Unexpected entry status: EXISTING");
-      }
-    }
-    return tasks;
-  };
-
-  ICEBERG_ASSIGN_OR_RAISE(auto tasks, manifest_group->Plan(create_tasks_func));
-  return tasks | std::views::transform([](const auto& task) {
-           return std::static_pointer_cast<ChangelogScanTask>(task);
-         }) |
-         std::ranges::to<std::vector>();
-}
+template Result<std::vector<std::shared_ptr<FileScanTask>>> ResolvePlanFiles(
+    const IncrementalScan<FileScanTask>& scan);
+template Result<std::vector<std::shared_ptr<ChangelogScanTask>>> ResolvePlanFiles(
+    const IncrementalScan<ChangelogScanTask>& scan);
 
 }  // namespace iceberg
