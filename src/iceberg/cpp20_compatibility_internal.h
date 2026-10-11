@@ -240,6 +240,8 @@
 #  include "iceberg/catalog/rest/resource_paths.h"
 #  include "iceberg/catalog/rest/rest_catalog.h"
 #  include "iceberg/catalog/rest/rest_file_io.h"
+#  include "iceberg/catalog/rest/rest_table.h"
+#  include "iceberg/catalog/rest/rest_table_scan.h"
 #  include "iceberg/catalog/rest/rest_util.h"
 #  include "iceberg/catalog/rest/type_fwd.h"
 #  include "iceberg/catalog/rest/types.h"
