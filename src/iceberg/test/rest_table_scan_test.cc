@@ -1362,8 +1362,7 @@ class RestIncrementalAppendScanTest : public RestTableScanTest {
   }
 
   RestIncrementalAppendScanBuilder MakeBuilder(RestScanContext ctx) {
-    return RestIncrementalAppendScanBuilder(metadata_, file_io_, "test.my_table", nullptr,
-                                            std::move(ctx));
+    return {metadata_, file_io_, "test.my_table", nullptr, std::move(ctx)};
   }
 
   Result<std::unique_ptr<IncrementalAppendScan>> MakeIncrementalScan(
