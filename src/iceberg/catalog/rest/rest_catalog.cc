@@ -1064,7 +1064,13 @@ Result<std::shared_ptr<Table>> RestCatalog::MakeTable(
       if (catalog == nullptr) {
         return nullptr;
       }
-      return catalog->MakeStorageCredentialProvider(identifier, table_session, plan_id);
+      // Without a plan id, refresh is table-scoped (no planId query parameter).
+      std::optional<std::string> scoped_plan_id;
+      if (!plan_id.empty()) {
+        scoped_plan_id = plan_id;
+      }
+      return catalog->MakeStorageCredentialProvider(identifier, table_session,
+                                                    std::move(scoped_plan_id));
     };
     RestScanContext rest_ctx{
         .client = client_,

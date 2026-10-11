@@ -361,6 +361,40 @@ TEST_F(RestCatalogLoadTableTest, ScanCredentialProviderRequestsPlanId) {
 }
 
 // --------------------------------------------------------------------------
+// A completed plan without a plan-id refreshes credentials without planId.
+// --------------------------------------------------------------------------
+TEST_F(RestCatalogLoadTableTest, ScanCredentialProviderWithoutPlanIdOmitsPlanId) {
+  RegisterCredentialedFileIO();
+  EXPECT_CALL(*mock_client_,
+              Get(::testing::Not(::testing::HasSubstr("/credentials")), _, _, _, _))
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, kLoadTableServerScanResponse)));
+  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
+      .WillOnce(Return(HttpResponse::MakeForTesting(
+          200,
+          R"({"status":"completed","storage-credentials":[{"prefix":"s3://bucket","config":{"k":"v"}}]})")));
+  EXPECT_CALL(*mock_client_,
+              Get(::testing::HasSubstr("/credentials"), ::testing::IsEmpty(), _, _, _))
+      .WillOnce(Return(HttpResponse::MakeForTesting(
+          200,
+          R"({"storage-credentials":[{"prefix":"s3://bucket","config":{"k":"v2"}}]})")));
+
+  auto endpoints = all_plan_endpoints_;
+  endpoints.insert(Endpoint::TableCredentials());
+  ICEBERG_UNWRAP_OR_FAIL(auto catalog,
+                         MakeCatalog(endpoints, /*client_scan_mode=*/"",
+                                     {{"io-impl", std::string(kCredentialedFileIO)}}));
+  ICEBERG_UNWRAP_OR_FAIL(auto as_catalog, catalog->AsCatalog());
+  ICEBERG_UNWRAP_OR_FAIL(auto table, as_catalog->LoadTable(identifier_));
+  ICEBERG_UNWRAP_OR_FAIL(auto builder, table->NewScan());
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
+  ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
+
+  ASSERT_NE(installed_provider, nullptr);
+  ICEBERG_UNWRAP_OR_FAIL(auto refreshed, installed_provider->Load());
+  ASSERT_EQ(refreshed.size(), 1);
+}
+
+// --------------------------------------------------------------------------
 // Without the TableCredentials endpoint, scan credentials are not refreshed.
 // --------------------------------------------------------------------------
 TEST_F(RestCatalogLoadTableTest,
