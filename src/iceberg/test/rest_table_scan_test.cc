@@ -911,6 +911,133 @@ TEST_F(RestTableScanTest, PlanFilesStreamSubmittedThenCompleted) {
 }
 
 // --------------------------------------------------------------------------
+// PlanFilesStream: SUBMITTED → COMPLETED with plan tasks; tokens are fetched
+// lazily as the stream is consumed.
+// --------------------------------------------------------------------------
+TEST_F(RestTableScanTest, PlanFilesStreamSubmittedFetchesTokensLazily) {
+  constexpr std::string_view kSubmittedBody =
+      R"({"status":"submitted","plan-id":"plan-poll-lazy"})";
+  constexpr std::string_view kCompletedBody =
+      R"({"status":"completed","plan-tasks":["tok-1","tok-2"]})";
+  constexpr std::string_view kTask1Response = R"({
+    "file-scan-tasks": [
+      {"data-file":{"content":"data","file-path":"s3://b/f1.parquet",
+       "file-format":"PARQUET","spec-id":0,"partition":[],"file-size-in-bytes":1,"record-count":1}}
+    ]
+  })";
+  constexpr std::string_view kTask2Response = R"({
+    "file-scan-tasks": [
+      {"data-file":{"content":"data","file-path":"s3://b/f2.parquet",
+       "file-format":"PARQUET","spec-id":0,"partition":[],"file-size-in-bytes":1,"record-count":1}}
+    ]
+  })";
+
+  int fetch_count = 0;
+  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kSubmittedBody))))
+      .WillOnce([&](auto&&...) -> Result<HttpResponse> {
+        ++fetch_count;
+        return HttpResponse::MakeForTesting(200, std::string(kTask1Response));
+      })
+      .WillOnce([&](auto&&...) -> Result<HttpResponse> {
+        ++fetch_count;
+        return HttpResponse::MakeForTesting(200, std::string(kTask2Response));
+      });
+  EXPECT_CALL(*mock_client_, Get(_, _, _, _, _))
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kCompletedBody))));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeScan(MakeContext()));
+  ICEBERG_UNWRAP_OR_FAIL(auto stream, scan->PlanFilesStream());
+  EXPECT_EQ(fetch_count, 0);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto t1, stream->Next());
+  ASSERT_TRUE(t1.has_value());
+  EXPECT_EQ(fetch_count, 1);
+  EXPECT_EQ((*t1)->data_file()->file_path, "s3://b/f1.parquet");
+
+  ICEBERG_UNWRAP_OR_FAIL(auto t2, stream->Next());
+  ASSERT_TRUE(t2.has_value());
+  EXPECT_EQ(fetch_count, 2);
+  EXPECT_EQ((*t2)->data_file()->file_path, "s3://b/f2.parquet");
+
+  ICEBERG_UNWRAP_OR_FAIL(auto end, stream->Next());
+  EXPECT_FALSE(end.has_value());
+}
+
+// --------------------------------------------------------------------------
+// PlanFilesStream: SUBMITTED → COMPLETED, stream destroyed before its plan
+// tasks are fetched → DELETE /plan called by the destructor.
+// --------------------------------------------------------------------------
+TEST_F(RestTableScanTest, PlanFilesStreamSubmittedCancelOnPartialConsumption) {
+  constexpr std::string_view kSubmittedBody =
+      R"({"status":"submitted","plan-id":"plan-poll-partial"})";
+  constexpr std::string_view kCompletedBody =
+      R"({"status":"completed","plan-tasks":["tok-1"]})";
+
+  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kSubmittedBody))));
+  EXPECT_CALL(*mock_client_, Get(_, _, _, _, _))
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kCompletedBody))));
+  EXPECT_CALL(*mock_client_, Delete(_, _, _, _, _))
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, "{}")));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeScan(MakeContext()));
+  {
+    ICEBERG_UNWRAP_OR_FAIL(auto stream, scan->PlanFilesStream());
+  }
+}
+
+// --------------------------------------------------------------------------
+// PlanFilesStream: nested plan tasks returned by FetchScanTasks are fetched
+// only when the stream reaches them.
+// --------------------------------------------------------------------------
+TEST_F(RestTableScanTest, PlanFilesStreamFetchesNestedPlanTasksLazily) {
+  constexpr std::string_view kPlanResponse =
+      R"({"status":"completed","plan-id":"plan-nested","plan-tasks":["tok-1"]})";
+  constexpr std::string_view kTask1Response = R"({
+    "plan-tasks": ["tok-nested"],
+    "file-scan-tasks": [
+      {"data-file":{"content":"data","file-path":"s3://b/f1.parquet",
+       "file-format":"PARQUET","spec-id":0,"partition":[],"file-size-in-bytes":1,"record-count":1}}
+    ]
+  })";
+  constexpr std::string_view kNestedResponse = R"({
+    "file-scan-tasks": [
+      {"data-file":{"content":"data","file-path":"s3://b/f2.parquet",
+       "file-format":"PARQUET","spec-id":0,"partition":[],"file-size-in-bytes":1,"record-count":1}}
+    ]
+  })";
+
+  int fetch_count = 0;
+  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kPlanResponse))))
+      .WillOnce([&](auto&&...) -> Result<HttpResponse> {
+        ++fetch_count;
+        return HttpResponse::MakeForTesting(200, std::string(kTask1Response));
+      })
+      .WillOnce([&](auto&&...) -> Result<HttpResponse> {
+        ++fetch_count;
+        return HttpResponse::MakeForTesting(200, std::string(kNestedResponse));
+      });
+
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeScan(MakeContext()));
+  ICEBERG_UNWRAP_OR_FAIL(auto stream, scan->PlanFilesStream());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto t1, stream->Next());
+  ASSERT_TRUE(t1.has_value());
+  EXPECT_EQ(fetch_count, 1);
+  EXPECT_EQ((*t1)->data_file()->file_path, "s3://b/f1.parquet");
+
+  ICEBERG_UNWRAP_OR_FAIL(auto t2, stream->Next());
+  ASSERT_TRUE(t2.has_value());
+  EXPECT_EQ(fetch_count, 2);
+  EXPECT_EQ((*t2)->data_file()->file_path, "s3://b/f2.parquet");
+
+  ICEBERG_UNWRAP_OR_FAIL(auto end, stream->Next());
+  EXPECT_FALSE(end.has_value());
+}
+
+// --------------------------------------------------------------------------
 // PlanFilesStream: FAILED → stream returns an error.
 // --------------------------------------------------------------------------
 TEST_F(RestTableScanTest, PlanFilesStreamFailed) {

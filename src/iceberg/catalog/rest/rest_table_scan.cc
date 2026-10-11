@@ -130,9 +130,12 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> ResolveScanTasks(
   return result;
 }
 
-Result<std::vector<std::shared_ptr<FileScanTask>>> FetchScanTasks(
-    const RestScanContext& ctx, const Schema& schema, const std::string& plan_task,
-    const SpecsById& specs, std::shared_ptr<FileIO>& scan_io) {
+// Fetches one plan task without resolving any nested plan tasks it returns.
+Result<FetchScanTasksResponse> FetchScanTasksOnce(const RestScanContext& ctx,
+                                                  const Schema& schema,
+                                                  const std::string& plan_task,
+                                                  const SpecsById& specs,
+                                                  std::shared_ptr<FileIO>& scan_io) {
   ICEBERG_ENDPOINT_CHECK(ctx.supported_endpoints, Endpoint::FetchScanTasks());
 
   ICEBERG_ASSIGN_OR_RAISE(auto path, ctx.paths->FetchScanTasks(ctx.identifier));
@@ -148,12 +151,21 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> FetchScanTasks(
   ICEBERG_RETURN_UNEXPECTED(result.Validate());
   ICEBERG_RETURN_UNEXPECTED(
       ApplyStorageCredentials(ctx, result.storage_credentials, scan_io));
+  return result;
+}
 
+Result<std::vector<std::shared_ptr<FileScanTask>>> FetchScanTasks(
+    const RestScanContext& ctx, const Schema& schema, const std::string& plan_task,
+    const SpecsById& specs, std::shared_ptr<FileIO>& scan_io) {
+  ICEBERG_ASSIGN_OR_RAISE(auto result,
+                          FetchScanTasksOnce(ctx, schema, plan_task, specs, scan_io));
   return ResolveScanTasks(ctx, schema, result.plan_tasks, result.file_scan_tasks, specs,
                           scan_io);
 }
 
-Result<std::vector<std::shared_ptr<FileScanTask>>> FetchPlanningResult(
+// Polls until the plan completes and returns the completed response. Plan tasks
+// are left unresolved.
+Result<FetchPlanningResultResponse> FetchPlanningResult(
     const RestScanContext& ctx, const Schema& schema, const std::string& plan_id,
     const SpecsById& specs, std::shared_ptr<FileIO>& scan_io) {
   ICEBERG_ENDPOINT_CHECK(ctx.supported_endpoints, Endpoint::FetchPlanningResult());
@@ -197,10 +209,7 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> FetchPlanningResult(
           CancelPlanning(ctx, plan_id);
           return std::unexpected<Error>(s.error());
         }
-        auto tasks = ResolveScanTasks(ctx, schema, result.plan_tasks,
-                                      result.file_scan_tasks, specs, scan_io);
-        if (!tasks) CancelPlanning(ctx, plan_id);
-        return tasks;
+        return std::move(result);
       }
       case PlanStatus::kSubmitted: {
         auto elapsed_ms = std::chrono::duration_cast<std::chrono::milliseconds>(
@@ -233,7 +242,8 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> FetchPlanningResult(
 ///
 /// The eager POST /plan (or poll until COMPLETED) is done before this stream is
 /// constructed. The stream then yields the directly-returned file_scan_tasks first,
-/// then fetches each plan_task token lazily one at a time as Next() is called.
+/// then fetches each plan_task token lazily one at a time as Next() is called,
+/// queuing any nested plan tasks returned by the server.
 ///
 /// scan_io_slot is shared with the owning RestTableScan so that credentials vended
 /// by any FetchScanTasks response are visible through RestTableScan::io() even after
@@ -267,9 +277,15 @@ class RestFileScanTaskStream final : public FileScanTaskStream {
         consumed_ = true;
         return std::nullopt;
       }
-      const auto& token = plan_task_tokens_[token_pos_++];
+      const std::string token = plan_task_tokens_[token_pos_++];
       ICEBERG_ASSIGN_OR_RAISE(
-          buffer_, FetchScanTasks(ctx_, *schema_, token, specs_, *scan_io_slot_));
+          auto result, FetchScanTasksOnce(ctx_, *schema_, token, specs_, *scan_io_slot_));
+      if (result.plan_tasks.has_value()) {
+        plan_task_tokens_.insert(plan_task_tokens_.end(), result.plan_tasks->begin(),
+                                 result.plan_tasks->end());
+      }
+      buffer_ = std::move(result.file_scan_tasks)
+                    .value_or(std::vector<std::shared_ptr<FileScanTask>>{});
       buffer_pos_ = 0;
     }
   }
@@ -310,13 +326,14 @@ Result<FileScanTaskStreamPtr> ExecuteScanPlanStream(
   const std::string plan_id = result.plan_id;
 
   if (result.plan_status == PlanStatus::kSubmitted) {
-    // Poll until COMPLETED, eagerly collecting all tasks into the buffer.
-    std::string mutable_plan_id = plan_id;
-    ICEBERG_ASSIGN_OR_RAISE(auto tasks, FetchPlanningResult(ctx, schema, mutable_plan_id,
-                                                            specs, *scan_io_slot));
+    ICEBERG_ASSIGN_OR_RAISE(
+        auto completed, FetchPlanningResult(ctx, schema, plan_id, specs, *scan_io_slot));
     return std::make_unique<RestFileScanTaskStream>(
-        ctx, schema_ptr, mutable_plan_id, std::move(tasks), std::vector<std::string>{},
-        specs, scan_io_slot);
+        ctx, std::move(schema_ptr), plan_id,
+        std::move(completed.file_scan_tasks)
+            .value_or(std::vector<std::shared_ptr<FileScanTask>>{}),
+        std::move(completed.plan_tasks).value_or(std::vector<std::string>{}), specs,
+        std::move(scan_io_slot));
   }
 
   if (result.plan_status == PlanStatus::kFailed) {
@@ -380,8 +397,14 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> ExecuteScanPlan(
       if (!tasks) CancelPlanning(ctx, plan_id);
       return tasks;
     }
-    case PlanStatus::kSubmitted:
-      return FetchPlanningResult(ctx, schema, plan_id, specs, scan_io);
+    case PlanStatus::kSubmitted: {
+      ICEBERG_ASSIGN_OR_RAISE(auto completed,
+                              FetchPlanningResult(ctx, schema, plan_id, specs, scan_io));
+      auto tasks = ResolveScanTasks(ctx, schema, completed.plan_tasks,
+                                    completed.file_scan_tasks, specs, scan_io);
+      if (!tasks) CancelPlanning(ctx, plan_id);
+      return tasks;
+    }
     case PlanStatus::kFailed:
       CancelPlanning(ctx, plan_id);
       return IOError("Scan planning failed: {}",
