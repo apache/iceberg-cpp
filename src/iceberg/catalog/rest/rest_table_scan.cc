@@ -19,6 +19,7 @@
 
 #include "iceberg/catalog/rest/rest_table_scan.h"
 
+#include <algorithm>
 #include <chrono>
 #include <thread>
 
@@ -37,6 +38,7 @@
 #include "iceberg/schema.h"
 #include "iceberg/table_metadata.h"
 #include "iceberg/util/macros.h"
+#include "iceberg/util/type_util.h"
 
 namespace iceberg::rest {
 
@@ -63,6 +65,23 @@ using ScanIoSlot = std::shared_ptr<std::shared_ptr<FileIO>>;
 // ---------------------------------------------------------------------------
 // Shared HTTP scan planning helpers used by all REST scan implementations.
 // ---------------------------------------------------------------------------
+
+// Column names of the projected schema, sent as the request's select.
+Result<std::vector<std::string>> ProjectedColumnNames(const Schema& projected) {
+  ICEBERG_ASSIGN_OR_RAISE(auto id_set, GetProjectedIdsVisitor::GetProjectedIds(
+                                           projected, /*include_struct_ids=*/true));
+  std::vector<int32_t> field_ids(id_set.begin(), id_set.end());
+  std::ranges::sort(field_ids);
+
+  std::vector<std::string> names;
+  names.reserve(field_ids.size());
+  for (int32_t field_id : field_ids) {
+    ICEBERG_ASSIGN_OR_RAISE(auto name, projected.FindColumnNameById(field_id));
+    ICEBERG_CHECK(name.has_value(), "Projected field {} not found in schema", field_id);
+    names.emplace_back(*name);
+  }
+  return names;
+}
 
 Status ApplyStorageCredentials(const RestScanContext& ctx,
                                const std::vector<StorageCredential>& credentials,
@@ -407,7 +426,8 @@ Result<FileScanTaskStreamPtr> RestTableScan::PlanFilesStream() const {
   ICEBERG_ASSIGN_OR_RAISE(auto specs, metadata_cache.GetPartitionSpecsById());
 
   PlanTableScanRequest request;
-  request.select = context_.selected_columns.value_or(std::vector<std::string>{});
+  ICEBERG_ASSIGN_OR_RAISE(auto projected_schema, schema());
+  ICEBERG_ASSIGN_OR_RAISE(request.select, ProjectedColumnNames(*projected_schema));
   request.filter = context_.filter;
   request.case_sensitive = context_.case_sensitive;
   request.min_rows_requested = context_.min_rows_requested;
@@ -452,6 +472,7 @@ RestTableScanBuilder::RestTableScanBuilder(
 
 Result<std::unique_ptr<DataTableScan>> RestTableScanBuilder::Build() {
   ICEBERG_RETURN_UNEXPECTED(CheckErrors());
+  ICEBERG_RETURN_UNEXPECTED(ResolveColumnStatsSelection());
   ICEBERG_RETURN_UNEXPECTED(context_.Validate());
   ICEBERG_ASSIGN_OR_RAISE(auto schema, ResolveSnapshotSchema());
   return RestTableScan::Make(metadata_, schema.get(), io_, std::move(context_),
@@ -495,7 +516,8 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> RestIncrementalAppendScan::Pl
   ICEBERG_ASSIGN_OR_RAISE(auto specs, metadata_cache.GetPartitionSpecsById());
 
   PlanTableScanRequest request;
-  request.select = context_.selected_columns.value_or(std::vector<std::string>{});
+  ICEBERG_ASSIGN_OR_RAISE(auto projected_schema, schema());
+  ICEBERG_ASSIGN_OR_RAISE(request.select, ProjectedColumnNames(*projected_schema));
   request.filter = context_.filter;
   request.case_sensitive = context_.case_sensitive;
   request.min_rows_requested = context_.min_rows_requested;
@@ -533,6 +555,7 @@ RestIncrementalAppendScanBuilder::RestIncrementalAppendScanBuilder(
 
 Result<std::unique_ptr<IncrementalAppendScan>> RestIncrementalAppendScanBuilder::Build() {
   ICEBERG_RETURN_UNEXPECTED(CheckErrors());
+  ICEBERG_RETURN_UNEXPECTED(ResolveColumnStatsSelection());
   ICEBERG_RETURN_UNEXPECTED(context_.Validate());
   ICEBERG_ASSIGN_OR_RAISE(auto schema, ResolveSnapshotSchema());
   return RestIncrementalAppendScan::Make(metadata_, schema.get(), io_,

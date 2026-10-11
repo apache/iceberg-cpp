@@ -36,6 +36,8 @@
 #include "iceberg/catalog/rest/resource_paths.h"
 #include "iceberg/catalog/rest/rest_table.h"
 #include "iceberg/constants.h"
+#include "iceberg/expression/expressions.h"
+#include "iceberg/expression/literal.h"
 #include "iceberg/file_io.h"
 #include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/partition_spec.h"
@@ -437,6 +439,124 @@ TEST_F(RestTableScanTest, DefaultScanDoesNotSetUseSnapshotSchema) {
 
   RestTableScanBuilder builder(metadata_, file_io_, "test.my_table", nullptr,
                                MakeContext(std::nullopt));
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, builder.Build());
+  ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
+  EXPECT_TRUE(tasks.empty());
+}
+
+// --------------------------------------------------------------------------
+// IncludeColumnStats() columns are sent as stats-fields.
+// --------------------------------------------------------------------------
+TEST_F(RestTableScanTest, IncludeColumnStatsSendsStatsFields) {
+  constexpr std::string_view kResponseBody = R"({"status":"completed"})";
+  EXPECT_CALL(
+      *mock_client_,
+      Post(_, JsonBodyHas("stats-fields", std::vector<std::string>{"id"}), _, _, _))
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kResponseBody))));
+
+  RestTableScanBuilder builder(metadata_, file_io_, "test.my_table", nullptr,
+                               MakeContext());
+  builder.IncludeColumnStats({"id"});
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, builder.Build());
+  ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
+  EXPECT_TRUE(tasks.empty());
+}
+
+// --------------------------------------------------------------------------
+// IncludeColumnStats() with an unknown column → ValidationFailed.
+// --------------------------------------------------------------------------
+TEST_F(RestTableScanTest, IncludeColumnStatsRejectsMissingColumn) {
+  RestTableScanBuilder builder(metadata_, file_io_, "test.my_table", nullptr,
+                               MakeContext());
+  builder.IncludeColumnStats({"missing"});
+  EXPECT_THAT(builder.Build(),
+              ::testing::AllOf(IsError(ErrorKind::kValidationFailed),
+                               HasErrorMessage("Cannot find stats column: missing")));
+}
+
+// --------------------------------------------------------------------------
+// Project() columns are sent as select.
+// --------------------------------------------------------------------------
+TEST_F(RestTableScanTest, ProjectSendsProjectedColumnsAsSelect) {
+  constexpr std::string_view kResponseBody = R"({"status":"completed"})";
+  EXPECT_CALL(*mock_client_,
+              Post(_, JsonBodyHas("select", std::vector<std::string>{"id"}), _, _, _))
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kResponseBody))));
+
+  RestTableScanBuilder builder(metadata_, file_io_, "test.my_table", nullptr,
+                               MakeContext());
+  builder.Project(std::make_shared<Schema>(
+      std::vector<SchemaField>{SchemaField::MakeRequired(1, "id", int32())}));
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, builder.Build());
+  ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
+  EXPECT_TRUE(tasks.empty());
+}
+
+// --------------------------------------------------------------------------
+// Select() sends the selected columns plus filter columns.
+// --------------------------------------------------------------------------
+TEST_F(RestTableScanTest, SelectIncludesFilterColumns) {
+  constexpr std::string_view kResponseBody = R"({"status":"completed"})";
+  EXPECT_CALL(
+      *mock_client_,
+      Post(_, JsonBodyHas("select", std::vector<std::string>{"id", "data"}), _, _, _))
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kResponseBody))));
+
+  RestTableScanBuilder builder(metadata_, file_io_, "test.my_table", nullptr,
+                               MakeContext());
+  builder.Select({"data"}).Filter(Expressions::Equal("id", Literal::Int(1)));
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, builder.Build());
+  ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
+  EXPECT_TRUE(tasks.empty());
+}
+
+// --------------------------------------------------------------------------
+// Case-insensitive Select() sends the schema's column names.
+// --------------------------------------------------------------------------
+TEST_F(RestTableScanTest, SelectResolvesCaseInsensitiveNames) {
+  constexpr std::string_view kResponseBody = R"({"status":"completed"})";
+  EXPECT_CALL(*mock_client_,
+              Post(_, JsonBodyHas("select", std::vector<std::string>{"data"}), _, _, _))
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kResponseBody))));
+
+  RestTableScanBuilder builder(metadata_, file_io_, "test.my_table", nullptr,
+                               MakeContext());
+  builder.CaseSensitive(false).Select({"DATA"});
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, builder.Build());
+  ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
+  EXPECT_TRUE(tasks.empty());
+}
+
+// --------------------------------------------------------------------------
+// Select("*") sends every column, not a literal "*".
+// --------------------------------------------------------------------------
+TEST_F(RestTableScanTest, SelectAllColumnsSendsAllColumns) {
+  constexpr std::string_view kResponseBody = R"({"status":"completed"})";
+  EXPECT_CALL(
+      *mock_client_,
+      Post(_, JsonBodyHas("select", std::vector<std::string>{"id", "data"}), _, _, _))
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kResponseBody))));
+
+  RestTableScanBuilder builder(metadata_, file_io_, "test.my_table", nullptr,
+                               MakeContext());
+  builder.Select({std::string(Schema::kAllColumns)});
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, builder.Build());
+  ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
+  EXPECT_TRUE(tasks.empty());
+}
+
+// --------------------------------------------------------------------------
+// No projection sends every column.
+// --------------------------------------------------------------------------
+TEST_F(RestTableScanTest, NoProjectionSendsAllColumns) {
+  constexpr std::string_view kResponseBody = R"({"status":"completed"})";
+  EXPECT_CALL(
+      *mock_client_,
+      Post(_, JsonBodyHas("select", std::vector<std::string>{"id", "data"}), _, _, _))
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kResponseBody))));
+
+  RestTableScanBuilder builder(metadata_, file_io_, "test.my_table", nullptr,
+                               MakeContext());
   ICEBERG_UNWRAP_OR_FAIL(auto scan, builder.Build());
   ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
   EXPECT_TRUE(tasks.empty());
@@ -1194,6 +1314,51 @@ TEST_F(RestIncrementalAppendScanTest, RejectsFromSnapshotNotAncestorOfEnd) {
                                                         /*from_inclusive=*/false));
   auto result = scan->PlanFiles();
   EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
+}
+
+// --------------------------------------------------------------------------
+// IncludeColumnStats() columns are sent as stats-fields.
+// --------------------------------------------------------------------------
+TEST_F(RestIncrementalAppendScanTest, IncludeColumnStatsSendsStatsFields) {
+  constexpr std::string_view kResponseBody = R"({"status":"completed"})";
+  EXPECT_CALL(
+      *mock_client_,
+      Post(_, JsonBodyHas("stats-fields", std::vector<std::string>{"id"}), _, _, _))
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kResponseBody))));
+
+  auto builder = MakeBuilder(MakeContext());
+  builder.FromSnapshot(kRootId).IncludeColumnStats({"id"});
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, builder.Build());
+  ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
+  EXPECT_TRUE(tasks.empty());
+}
+
+// --------------------------------------------------------------------------
+// IncludeColumnStats() with an unknown column → ValidationFailed.
+// --------------------------------------------------------------------------
+TEST_F(RestIncrementalAppendScanTest, IncludeColumnStatsRejectsMissingColumn) {
+  auto builder = MakeBuilder(MakeContext());
+  builder.FromSnapshot(kRootId).IncludeColumnStats({"missing"});
+  EXPECT_THAT(builder.Build(),
+              ::testing::AllOf(IsError(ErrorKind::kValidationFailed),
+                               HasErrorMessage("Cannot find stats column: missing")));
+}
+
+// --------------------------------------------------------------------------
+// Project() columns are sent as select.
+// --------------------------------------------------------------------------
+TEST_F(RestIncrementalAppendScanTest, ProjectSendsProjectedColumnsAsSelect) {
+  constexpr std::string_view kResponseBody = R"({"status":"completed"})";
+  EXPECT_CALL(*mock_client_,
+              Post(_, JsonBodyHas("select", std::vector<std::string>{"id"}), _, _, _))
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kResponseBody))));
+
+  auto builder = MakeBuilder(MakeContext());
+  builder.FromSnapshot(kRootId).Project(std::make_shared<Schema>(
+      std::vector<SchemaField>{SchemaField::MakeRequired(1, "id", int32())}));
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, builder.Build());
+  ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
+  EXPECT_TRUE(tasks.empty());
 }
 
 // --------------------------------------------------------------------------
