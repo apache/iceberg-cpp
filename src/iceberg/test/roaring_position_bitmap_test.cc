@@ -387,6 +387,27 @@ TEST(RoaringPositionBitmapTest, TestSerializeDeserializeRoundTrip) {
   AssertEqualContent(copy, {10L, 20L, (int64_t{1} << 32) | 30L});
 }
 
+TEST(RoaringPositionBitmapTest, TestPortableLittleEndianEncoding) {
+  // One bitmap with key 0 and an array container containing position 1.
+  // Check canonical wire bytes: a same-host round trip can hide endian errors.
+  constexpr char kExpected[] =
+      "\x01\x00\x00\x00\x00\x00\x00\x00"           // Number of bitmaps.
+      "\x00\x00\x00\x00"                           // Bitmap key.
+      "\x3a\x30\x00\x00\x01\x00\x00\x00"           // Cookie and number of containers.
+      "\x00\x00\x00\x00\x10\x00\x00\x00\x01\x00";  // Array container.
+  const std::string expected(kExpected, sizeof(kExpected) - 1);
+
+  RoaringPositionBitmap bitmap;
+  bitmap.Add(1L);
+  auto serialized = bitmap.Serialize();
+  ASSERT_THAT(serialized, IsOk());
+  EXPECT_EQ(serialized.value(), expected);
+
+  auto deserialized = RoaringPositionBitmap::Deserialize(expected);
+  ASSERT_THAT(deserialized, IsOk());
+  AssertEqualContent(deserialized.value(), {1L});
+}
+
 TEST(RoaringPositionBitmapTest, TestCopyConstructor) {
   RoaringPositionBitmap bitmap;
   bitmap.Add(10L);

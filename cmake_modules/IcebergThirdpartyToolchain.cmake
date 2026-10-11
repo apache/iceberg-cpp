@@ -422,7 +422,7 @@ function(resolve_croaring_dependency)
     set(CROARING_URL "$ENV{ICEBERG_CROARING_URL}")
   else()
     set(CROARING_URL
-        "https://github.com/RoaringBitmap/CRoaring/archive/refs/tags/v4.4.3.tar.gz")
+        "https://github.com/RoaringBitmap/CRoaring/archive/refs/tags/v4.7.1.tar.gz")
   endif()
 
   fetchcontent_declare(croaring
