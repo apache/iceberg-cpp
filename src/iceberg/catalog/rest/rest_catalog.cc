@@ -992,12 +992,10 @@ Result<std::shared_ptr<Table>> RestCatalog::MakeTableFromLoadResult(
   auto table_catalog = std::make_shared<TableScopedCatalog>(
       shared_from_this(), context, identifier, table_config, table_session, table_io);
 
-  // Determine effective scan planning mode: table config overrides client config.
   ICEBERG_ASSIGN_OR_RAISE(auto client_mode,
                           RestCatalogProperties::ScanPlanningModeFrom(config_.configs()));
   ICEBERG_ASSIGN_OR_RAISE(auto server_mode,
                           RestCatalogProperties::ScanPlanningModeFrom(table_config));
-
   if (client_mode.has_value() && server_mode.has_value() &&
       *client_mode != *server_mode) {
     Log(LogLevel::kWarn,
@@ -1008,6 +1006,38 @@ Result<std::shared_ptr<Table>> RestCatalog::MakeTableFromLoadResult(
         *server_mode == ScanPlanningMode::kClient ? "client" : "server");
   }
 
+  return MakeTable(identifier, std::move(result.metadata),
+                   std::move(result.metadata_location), std::move(table_io),
+                   std::move(table_catalog), std::move(reporter), table_config,
+                   std::move(table_session));
+}
+
+Result<std::shared_ptr<Table>> RestCatalog::MakeTableFromCommitResponse(
+    const TableIdentifier& identifier, CommitTableResponse response,
+    const SessionContext& context,
+    const std::unordered_map<std::string, std::string>& table_config,
+    std::shared_ptr<auth::AuthSession> table_session, std::shared_ptr<FileIO> table_io) {
+  ICEBERG_ASSIGN_OR_RAISE(auto reporter, MakeTableReporter(identifier, table_session));
+  // Reuse the bound FileIO because commit responses carry no config or credentials.
+  auto table_catalog = std::make_shared<TableScopedCatalog>(
+      shared_from_this(), context, identifier, table_config, table_session, table_io);
+  return MakeTable(identifier, std::move(response.metadata),
+                   std::move(response.metadata_location), std::move(table_io),
+                   std::move(table_catalog), std::move(reporter), table_config,
+                   std::move(table_session));
+}
+
+Result<std::shared_ptr<Table>> RestCatalog::MakeTable(
+    const TableIdentifier& identifier, std::shared_ptr<TableMetadata> metadata,
+    std::string metadata_location, std::shared_ptr<FileIO> table_io,
+    std::shared_ptr<Catalog> table_catalog, std::shared_ptr<MetricsReporter> reporter,
+    const std::unordered_map<std::string, std::string>& table_config,
+    std::shared_ptr<auth::AuthSession> table_session) {
+  // Table config overrides client config.
+  ICEBERG_ASSIGN_OR_RAISE(auto client_mode,
+                          RestCatalogProperties::ScanPlanningModeFrom(config_.configs()));
+  ICEBERG_ASSIGN_OR_RAISE(auto server_mode,
+                          RestCatalogProperties::ScanPlanningModeFrom(table_config));
   ScanPlanningMode effective_mode =
       server_mode.value_or(client_mode.value_or(ScanPlanningMode::kClient));
 
@@ -1021,37 +1051,21 @@ Result<std::shared_ptr<Table>> RestCatalog::MakeTableFromLoadResult(
     RestScanContext rest_ctx{
         .client = client_,
         .paths = paths_,
-        .session = table_session,
+        .session = std::move(table_session),
         .supported_endpoints = supported_endpoints_,
         .identifier = identifier,
         .catalog_config = config_.configs(),
         .table_config = table_config,
     };
-    return RestTable::Make(identifier, std::move(result.metadata),
-                           std::move(result.metadata_location), std::move(table_io),
-                           std::move(table_catalog), RestTableName(name_, identifier),
-                           reporter, std::move(rest_ctx));
+    return RestTable::Make(identifier, std::move(metadata), std::move(metadata_location),
+                           std::move(table_io), std::move(table_catalog),
+                           RestTableName(name_, identifier), std::move(reporter),
+                           std::move(rest_ctx));
   }
 
-  return Table::Make(identifier, std::move(result.metadata),
-                     std::move(result.metadata_location), std::move(table_io),
-                     std::move(table_catalog), RestTableName(name_, identifier),
-                     std::move(reporter));
-}
-
-Result<std::shared_ptr<Table>> RestCatalog::MakeTableFromCommitResponse(
-    const TableIdentifier& identifier, CommitTableResponse response,
-    const SessionContext& context,
-    const std::unordered_map<std::string, std::string>& table_config,
-    std::shared_ptr<auth::AuthSession> table_session, std::shared_ptr<FileIO> table_io) {
-  ICEBERG_ASSIGN_OR_RAISE(auto reporter, MakeTableReporter(identifier, table_session));
-  // Reuse the bound FileIO because commit responses carry no config or credentials.
-  auto table_catalog = std::make_shared<TableScopedCatalog>(
-      shared_from_this(), context, identifier, table_config, table_session, table_io);
-  return Table::Make(identifier, std::move(response.metadata),
-                     std::move(response.metadata_location), std::move(table_io),
-                     std::move(table_catalog), RestTableName(name_, identifier),
-                     std::move(reporter));
+  return Table::Make(identifier, std::move(metadata), std::move(metadata_location),
+                     std::move(table_io), std::move(table_catalog),
+                     RestTableName(name_, identifier), std::move(reporter));
 }
 
 }  // namespace iceberg::rest

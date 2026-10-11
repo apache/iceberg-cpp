@@ -413,7 +413,7 @@ class ICEBERG_TEMPLATE_CLASS_EXPORT TableScanBuilder : public ErrorCollector {
   TableScanBuilder(TableScanBuilder&&) = default;
   TableScanBuilder& operator=(TableScanBuilder&&) = default;
 
-  // Return the schema bound to the specified snapshot.
+  // Return the snapshot schema for tags and time travel, else the table schema.
   Result<std::reference_wrapper<const std::shared_ptr<Schema>>> ResolveSnapshotSchema();
   Status ResolveColumnStatsSelection();
 

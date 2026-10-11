@@ -205,6 +205,14 @@ class ICEBERG_REST_EXPORT RestCatalog final
       const std::unordered_map<std::string, std::string>& table_config,
       std::shared_ptr<auth::AuthSession> table_session, std::shared_ptr<FileIO> table_io);
 
+  /// \brief Returns a RestTable when scan planning mode is server, else a Table.
+  Result<std::shared_ptr<Table>> MakeTable(
+      const TableIdentifier& identifier, std::shared_ptr<TableMetadata> metadata,
+      std::string metadata_location, std::shared_ptr<FileIO> table_io,
+      std::shared_ptr<Catalog> table_catalog, std::shared_ptr<MetricsReporter> reporter,
+      const std::unordered_map<std::string, std::string>& table_config,
+      std::shared_ptr<auth::AuthSession> table_session);
+
   RestCatalogProperties config_;
   std::shared_ptr<FileIO> file_io_;
   std::shared_ptr<HttpClient> client_;

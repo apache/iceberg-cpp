@@ -25,6 +25,7 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include "iceberg/catalog.h"
 #include "iceberg/catalog/rest/catalog_properties.h"
 #include "iceberg/catalog/rest/endpoint.h"
 #include "iceberg/catalog/rest/error_handlers.h"
@@ -32,8 +33,12 @@
 #include "iceberg/catalog/rest/resource_paths.h"
 #include "iceberg/catalog/rest/rest_catalog.h"
 #include "iceberg/catalog/rest/rest_table.h"
+#include "iceberg/catalog/rest/rest_table_scan.h"
 #include "iceberg/file_io.h"
+#include "iceberg/table.h"
 #include "iceberg/table_identifier.h"
+#include "iceberg/table_requirement.h"
+#include "iceberg/table_update.h"
 #include "iceberg/test/matchers.h"
 
 namespace iceberg::rest {
@@ -98,6 +103,10 @@ const std::string kLoadTableServerScanResponse =
 const std::string kLoadTableDefaultResponse =
     std::string("{") + std::string(kBaseMetadataJson) + "}";
 
+// UpdateTable (commit) response.
+const std::string kCommitTableResponse =
+    std::string("{") + std::string(kBaseMetadataJson) + "}";
+
 // --------------------------------------------------------------------------
 // Test fixture: builds a RestCatalog via MakeForTesting so no HTTP calls
 // are made during catalog construction.
@@ -114,9 +123,9 @@ class RestCatalogLoadTableTest : public ::testing::Test {
 
     identifier_ = TableIdentifier{.ns = Namespace{{"default"}}, .name = "my_table"};
 
-    all_plan_endpoints_ = {Endpoint::LoadTable(), Endpoint::PlanTableScan(),
-                           Endpoint::FetchPlanningResult(), Endpoint::CancelPlanning(),
-                           Endpoint::FetchScanTasks()};
+    all_plan_endpoints_ = {Endpoint::LoadTable(),      Endpoint::UpdateTable(),
+                           Endpoint::PlanTableScan(),  Endpoint::FetchPlanningResult(),
+                           Endpoint::CancelPlanning(), Endpoint::FetchScanTasks()};
 
     no_plan_endpoint_set_ = {Endpoint::LoadTable()};
   }
@@ -206,6 +215,63 @@ TEST_F(RestCatalogLoadTableTest, DefaultScanModeReturnsPlainTable) {
 
   EXPECT_EQ(dynamic_cast<RestTable*>(table.get()), nullptr)
       << "Expected plain Table (not RestTable) when no scan-planning-mode is configured";
+}
+
+// --------------------------------------------------------------------------
+// Committing through a server-planning table returns a RestTable.
+// --------------------------------------------------------------------------
+TEST_F(RestCatalogLoadTableTest, CommitPreservesRestTableFromTableConfig) {
+  EXPECT_CALL(*mock_client_, Get(_, _, _, _, _))
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, kLoadTableServerScanResponse)));
+  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, kCommitTableResponse)));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto catalog, MakeCatalog(all_plan_endpoints_));
+  ICEBERG_UNWRAP_OR_FAIL(auto as_catalog, catalog->AsCatalog());
+  ICEBERG_UNWRAP_OR_FAIL(auto table, as_catalog->LoadTable(identifier_));
+  ICEBERG_UNWRAP_OR_FAIL(auto committed,
+                         table->catalog()->UpdateTable(identifier_, {}, {}));
+
+  EXPECT_NE(dynamic_cast<RestTable*>(committed.get()), nullptr);
+  ICEBERG_UNWRAP_OR_FAIL(auto builder, committed->NewScan());
+  EXPECT_NE(dynamic_cast<RestTableScanBuilder*>(builder.get()), nullptr);
+}
+
+// --------------------------------------------------------------------------
+// Client config "scan-planning-mode":"server" → commit returns a RestTable.
+// --------------------------------------------------------------------------
+TEST_F(RestCatalogLoadTableTest, CommitPreservesRestTableFromClientConfig) {
+  EXPECT_CALL(*mock_client_, Get(_, _, _, _, _))
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, kLoadTableDefaultResponse)));
+  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, kCommitTableResponse)));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto catalog,
+                         MakeCatalog(all_plan_endpoints_, /*client_scan_mode=*/"server"));
+  ICEBERG_UNWRAP_OR_FAIL(auto as_catalog, catalog->AsCatalog());
+  ICEBERG_UNWRAP_OR_FAIL(auto table, as_catalog->LoadTable(identifier_));
+  ICEBERG_UNWRAP_OR_FAIL(auto committed,
+                         table->catalog()->UpdateTable(identifier_, {}, {}));
+
+  EXPECT_NE(dynamic_cast<RestTable*>(committed.get()), nullptr);
+}
+
+// --------------------------------------------------------------------------
+// Default scan mode → commit returns a plain Table.
+// --------------------------------------------------------------------------
+TEST_F(RestCatalogLoadTableTest, CommitWithDefaultScanModeReturnsPlainTable) {
+  EXPECT_CALL(*mock_client_, Get(_, _, _, _, _))
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, kLoadTableDefaultResponse)));
+  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, kCommitTableResponse)));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto catalog, MakeCatalog(all_plan_endpoints_));
+  ICEBERG_UNWRAP_OR_FAIL(auto as_catalog, catalog->AsCatalog());
+  ICEBERG_UNWRAP_OR_FAIL(auto table, as_catalog->LoadTable(identifier_));
+  ICEBERG_UNWRAP_OR_FAIL(auto committed,
+                         table->catalog()->UpdateTable(identifier_, {}, {}));
+
+  EXPECT_EQ(dynamic_cast<RestTable*>(committed.get()), nullptr);
 }
 
 }  // namespace iceberg::rest

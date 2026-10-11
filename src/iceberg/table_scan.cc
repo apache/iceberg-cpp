@@ -437,7 +437,7 @@ template <typename ScanType>
 Result<std::reference_wrapper<const std::shared_ptr<Schema>>>
 TableScanBuilder<ScanType>::ResolveSnapshotSchema() {
   if (snapshot_schema_ == nullptr) {
-    if (context_.snapshot_id.has_value()) {
+    if (context_.snapshot_id.has_value() && context_.use_snapshot_schema) {
       ICEBERG_ASSIGN_OR_RAISE(auto snapshot,
                               metadata_->SnapshotById(*context_.snapshot_id));
       int32_t schema_id = snapshot->schema_id.value_or(Schema::kInitialSchemaId);

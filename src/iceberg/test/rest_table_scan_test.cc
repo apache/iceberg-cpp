@@ -443,6 +443,75 @@ TEST_F(RestTableScanTest, DefaultScanDoesNotSetUseSnapshotSchema) {
 }
 
 // --------------------------------------------------------------------------
+// UseRef(): branches use the table schema, tags use the snapshot schema.
+// --------------------------------------------------------------------------
+class RestTableScanRefSchemaTest : public RestTableScanTest {
+ protected:
+  static constexpr int64_t kEvolvedSnapshotId = 2000L;
+
+  void SetUp() override {
+    RestTableScanTest::SetUp();
+    evolved_schema_ = std::make_shared<Schema>(
+        std::vector<SchemaField>{SchemaField::MakeRequired(10, "id", int32()),
+                                 SchemaField::MakeRequired(11, "data", string())},
+        /*schema_id=*/1);
+    metadata_->schemas.push_back(evolved_schema_);
+    metadata_->last_column_id = 11;
+    metadata_->snapshots.push_back(std::make_shared<Snapshot>(
+        Snapshot{.snapshot_id = kEvolvedSnapshotId,
+                 .parent_snapshot_id = 1000L,
+                 .sequence_number = 2L,
+                 .timestamp_ms = TimePointMsFromUnixMs(1609459201000L),
+                 .manifest_list = "/tmp/manifest-list-2.avro",
+                 .schema_id = evolved_schema_->schema_id()}));
+    metadata_->refs["evolved-branch"] = std::make_shared<SnapshotRef>(SnapshotRef{
+        .snapshot_id = kEvolvedSnapshotId, .retention = SnapshotRef::Branch{}});
+    metadata_->refs["evolved-tag"] = std::make_shared<SnapshotRef>(
+        SnapshotRef{.snapshot_id = kEvolvedSnapshotId, .retention = SnapshotRef::Tag{}});
+  }
+
+  std::shared_ptr<Schema> evolved_schema_;
+};
+
+TEST_F(RestTableScanRefSchemaTest, UseRefBranchUsesTableSchema) {
+  constexpr std::string_view kResponseBody = R"({"status":"completed"})";
+  EXPECT_CALL(*mock_client_,
+              Post(_,
+                   testing::AllOf(JsonBodyHas("snapshot-id", kEvolvedSnapshotId),
+                                  JsonBodyHas("use-snapshot-schema", false)),
+                   _, _, _))
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kResponseBody))));
+
+  RestTableScanBuilder builder(metadata_, file_io_, "test.my_table", nullptr,
+                               MakeContext());
+  builder.UseRef("evolved-branch");
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, builder.Build());
+  ICEBERG_UNWRAP_OR_FAIL(auto scan_schema, scan->schema());
+  EXPECT_EQ(scan_schema->schema_id(), schema_->schema_id());
+  ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
+  EXPECT_TRUE(tasks.empty());
+}
+
+TEST_F(RestTableScanRefSchemaTest, UseRefTagUsesSnapshotSchema) {
+  constexpr std::string_view kResponseBody = R"({"status":"completed"})";
+  EXPECT_CALL(*mock_client_,
+              Post(_,
+                   testing::AllOf(JsonBodyHas("snapshot-id", kEvolvedSnapshotId),
+                                  JsonBodyHas("use-snapshot-schema", true)),
+                   _, _, _))
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kResponseBody))));
+
+  RestTableScanBuilder builder(metadata_, file_io_, "test.my_table", nullptr,
+                               MakeContext());
+  builder.UseRef("evolved-tag");
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, builder.Build());
+  ICEBERG_UNWRAP_OR_FAIL(auto scan_schema, scan->schema());
+  EXPECT_EQ(scan_schema->schema_id(), evolved_schema_->schema_id());
+  ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
+  EXPECT_TRUE(tasks.empty());
+}
+
+// --------------------------------------------------------------------------
 // Storage credentials in COMPLETED response: io() returns a
 // credential-scoped IO, not the original table IO.
 // --------------------------------------------------------------------------
