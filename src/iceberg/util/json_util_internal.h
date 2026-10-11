@@ -19,6 +19,9 @@
 
 #pragma once
 
+#include <concepts>
+#include <format>
+#include <limits>
 #include <optional>
 
 #include <nlohmann/json.hpp>
@@ -103,6 +106,75 @@ Result<T> GetJsonValueOrDefault(const nlohmann::json& json, std::string_view key
     return default_value;
   }
   return GetJsonValueImpl<T>(json, key);
+}
+
+/// \brief Parses a JSON integer that must be an exact, in-range signed integer.
+///
+/// Unlike `GetJsonValue<Integer>`, which relies on nlohmann's implicit conversions,
+/// this rejects fractional numbers (e.g. `1.5`), non-numeric values, and values that do
+/// not fit `Integer`, matching Java Iceberg's `JsonUtil.getInt`/`getLong`.
+template <std::signed_integral Integer>
+Result<Integer> IntegerFromJson(const nlohmann::json& json,
+                                std::string_view description) {
+  if (!json.is_number_integer()) {
+    return JsonParseError("{} must be an integer, but is {}", description,
+                          json.type_name());
+  }
+  if (json.is_number_unsigned()) {
+    const auto value = json.get<uint64_t>();
+    if (value > static_cast<uint64_t>(std::numeric_limits<Integer>::max())) {
+      return JsonParseError("{} integer is out of range: {}", description,
+                            SafeDumpJson(json));
+    }
+    return static_cast<Integer>(value);
+  }
+
+  const auto value = json.get<int64_t>();
+  if (value < static_cast<int64_t>(std::numeric_limits<Integer>::min()) ||
+      value > static_cast<int64_t>(std::numeric_limits<Integer>::max())) {
+    return JsonParseError("{} integer is out of range: {}", description,
+                          SafeDumpJson(json));
+  }
+  return static_cast<Integer>(value);
+}
+
+/// \brief Parses a required JSON integer field with `IntegerFromJson` strictness.
+template <std::signed_integral Integer>
+Result<Integer> GetJsonInteger(const nlohmann::json& json, std::string_view key) {
+  ICEBERG_ASSIGN_OR_RAISE(auto value, GetJsonValue<nlohmann::json>(json, key));
+  return IntegerFromJson<Integer>(value, std::format("'{}'", key));
+}
+
+/// \brief Parses an optional `int64_t` field, returning `default_value` when the key is
+/// missing or null.
+inline Result<int64_t> GetJsonIntegerOrDefault(const nlohmann::json& json,
+                                               std::string_view key,
+                                               int64_t default_value) {
+  if (!json.contains(key) || json.at(key).is_null()) {
+    return default_value;
+  }
+  return IntegerFromJson<int64_t>(json.at(key), std::format("'{}'", key));
+}
+
+/// \brief Parses a JSON array of signed integers with `IntegerFromJson` strictness.
+template <std::signed_integral Integer>
+Result<std::vector<Integer>> IntegerVectorFromJson(const nlohmann::json& json,
+                                                   std::string_view key) {
+  ICEBERG_ASSIGN_OR_RAISE(auto values_json, GetJsonValue<nlohmann::json>(json, key));
+  if (!values_json.is_array()) {
+    return JsonParseError("'{}' must be an array, but is {}", key,
+                          values_json.type_name());
+  }
+
+  std::vector<Integer> values;
+  values.reserve(values_json.size());
+  for (const auto& value_json : values_json) {
+    ICEBERG_ASSIGN_OR_RAISE(
+        auto value,
+        IntegerFromJson<Integer>(value_json, std::format("'{}' element", key)));
+    values.push_back(value);
+  }
+  return values;
 }
 
 /// \brief Convert a list of items to a json array.

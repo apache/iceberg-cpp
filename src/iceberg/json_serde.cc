@@ -21,7 +21,6 @@
 #include <concepts>
 #include <cstdint>
 #include <format>
-#include <limits>
 #include <map>
 #include <regex>
 #include <string>
@@ -281,57 +280,6 @@ constexpr std::string_view kStart = "start";
 constexpr std::string_view kLength = "length";
 constexpr std::string_view kMapKeys = "keys";
 constexpr std::string_view kMapValues = "values";
-
-template <std::signed_integral Integer>
-Result<Integer> IntegerFromJson(const nlohmann::json& json,
-                                std::string_view description) {
-  if (!json.is_number_integer()) {
-    return JsonParseError("{} must be an integer, but is {}", description,
-                          json.type_name());
-  }
-  if (json.is_number_unsigned()) {
-    const auto value = json.get<uint64_t>();
-    if (value > static_cast<uint64_t>(std::numeric_limits<Integer>::max())) {
-      return JsonParseError("{} integer is out of range: {}", description,
-                            SafeDumpJson(json));
-    }
-    return static_cast<Integer>(value);
-  }
-
-  const auto value = json.get<int64_t>();
-  if (value < static_cast<int64_t>(std::numeric_limits<Integer>::min()) ||
-      value > static_cast<int64_t>(std::numeric_limits<Integer>::max())) {
-    return JsonParseError("{} integer is out of range: {}", description,
-                          SafeDumpJson(json));
-  }
-  return static_cast<Integer>(value);
-}
-
-template <std::signed_integral Integer>
-Result<Integer> GetJsonInteger(const nlohmann::json& json, std::string_view key) {
-  ICEBERG_ASSIGN_OR_RAISE(auto value, GetJsonValue<nlohmann::json>(json, key));
-  return IntegerFromJson<Integer>(value, std::format("'{}'", key));
-}
-
-template <std::signed_integral Integer>
-Result<std::vector<Integer>> IntegerVectorFromJson(const nlohmann::json& json,
-                                                   std::string_view key) {
-  ICEBERG_ASSIGN_OR_RAISE(auto values_json, GetJsonValue<nlohmann::json>(json, key));
-  if (!values_json.is_array()) {
-    return JsonParseError("'{}' must be an array, but is {}", key,
-                          values_json.type_name());
-  }
-
-  std::vector<Integer> values;
-  values.reserve(values_json.size());
-  for (const auto& value_json : values_json) {
-    ICEBERG_ASSIGN_OR_RAISE(
-        auto value,
-        IntegerFromJson<Integer>(value_json, std::format("'{}' element", key)));
-    values.push_back(value);
-  }
-  return values;
-}
 
 template <std::signed_integral Value>
 Result<std::map<int32_t, Value>> KeyValueMapFromJson(const nlohmann::json& json,
@@ -2466,7 +2414,11 @@ Result<nlohmann::json> ToJson(
   ICEBERG_ASSIGN_OR_RAISE(auto data_file_json,
                           ToJson(*task.data_file(), partition_specs_by_id, schema));
   const auto spec_id = task.data_file()->partition_spec_id.value();
-  json[kSpec] = ToJson(*partition_specs_by_id.at(spec_id));
+  const auto spec_it = partition_specs_by_id.find(spec_id);
+  if (spec_it == partition_specs_by_id.end() || !spec_it->second) {
+    return ValidationFailed("Invalid partition spec: null");
+  }
+  json[kSpec] = ToJson(*spec_it->second);
   json[kDataFile] = std::move(data_file_json);
   json[kStart] = 0;
   json[kLength] = task.data_file()->file_size_in_bytes;
@@ -2491,7 +2443,9 @@ Result<nlohmann::json> ToJson(
                             ToJson(*delete_file, partition_specs_by_id, schema));
     delete_files_json.push_back(std::move(delete_file_json));
   }
-  json[kDeleteFiles] = std::move(delete_files_json);
+  if (!delete_files_json.empty()) {
+    json[kDeleteFiles] = std::move(delete_files_json);
+  }
 
   if (task.residual_filter()) {
     ICEBERG_ASSIGN_OR_RAISE(auto residual_json, ToJson(*task.residual_filter()));

@@ -1628,11 +1628,11 @@ TEST_F(FileScanTaskJsonTest, ParsesJavaGoldenWithoutExternalSchemaOrSpec) {
   EXPECT_EQ(residual, true);
 }
 
-TEST_F(FileScanTaskJsonTest, SerializesEmptyDeleteFilesArray) {
+TEST_F(FileScanTaskJsonTest, OmitsEmptyDeleteFilesLikeJava) {
   FileScanTask task(std::make_shared<DataFile>(DataFileForTask()));
 
   ICEBERG_UNWRAP_OR_FAIL(auto json, ToJson(task, specs_, schema_));
-  EXPECT_EQ(json["delete-files"], nlohmann::json::array());
+  EXPECT_FALSE(json.contains("delete-files"));
   EXPECT_EQ(json["start"], 0);
   EXPECT_EQ(json["length"], 10);
 }
