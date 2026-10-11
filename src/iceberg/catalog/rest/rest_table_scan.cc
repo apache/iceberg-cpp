@@ -238,6 +238,8 @@ Result<FetchPlanningResultResponse> FetchPlanningResult(
                  plan_id);
 }
 
+// TODO(sandeepg): Fetch plan tasks concurrently when an executor is configured via
+// PlanWith(), as Java's ScanTaskIterable does.
 /// A lazy stream that drives FetchScanTasks calls on demand.
 ///
 /// The eager POST /plan (or poll until COMPLETED) is done before this stream is

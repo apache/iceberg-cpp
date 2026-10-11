@@ -77,6 +77,8 @@ class ICEBERG_REST_EXPORT RestTableScan : public DataTableScan {
       RestScanContext rest_context);
 
   /// \brief Plans files lazily via the REST scan planning endpoints.
+  ///
+  /// Plan tasks are fetched serially; an executor set via PlanWith() is not used.
   Result<FileScanTaskStreamPtr> PlanFilesStream() const override;
 
   /// \brief Returns the effective FileIO for reading scan results.
@@ -134,6 +136,8 @@ class ICEBERG_REST_EXPORT RestIncrementalAppendScan : public IncrementalAppendSc
 
  protected:
   /// \brief Plans files via the REST scan planning endpoints.
+  ///
+  /// Plan tasks are fetched serially; an executor set via PlanWith() is not used.
   Result<std::vector<std::shared_ptr<FileScanTask>>> PlanFiles(
       std::optional<int64_t> from_snapshot_id_exclusive,
       int64_t to_snapshot_id_inclusive) const override;

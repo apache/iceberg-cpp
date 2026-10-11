@@ -46,6 +46,7 @@
 #include "iceberg/table_identifier.h"
 #include "iceberg/table_metadata.h"
 #include "iceberg/table_scan.h"
+#include "iceberg/test/executor.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/type.h"
 
@@ -1035,6 +1036,42 @@ TEST_F(RestTableScanTest, PlanFilesStreamFetchesNestedPlanTasksLazily) {
 
   ICEBERG_UNWRAP_OR_FAIL(auto end, stream->Next());
   EXPECT_FALSE(end.has_value());
+}
+
+// --------------------------------------------------------------------------
+// PlanWith(): plan tasks are fetched serially and the executor is not used.
+// --------------------------------------------------------------------------
+TEST_F(RestTableScanTest, PlanFilesStreamIgnoresPlanExecutor) {
+  constexpr std::string_view kPlanResponse =
+      R"({"status":"completed","plan-id":"plan-exec","plan-tasks":["tok-1","tok-2"]})";
+  constexpr std::string_view kTask1Response = R"({
+    "file-scan-tasks": [
+      {"data-file":{"content":"data","file-path":"s3://b/f1.parquet",
+       "file-format":"PARQUET","spec-id":0,"partition":[],"file-size-in-bytes":1,"record-count":1}}
+    ]
+  })";
+  constexpr std::string_view kTask2Response = R"({
+    "file-scan-tasks": [
+      {"data-file":{"content":"data","file-path":"s3://b/f2.parquet",
+       "file-format":"PARQUET","spec-id":0,"partition":[],"file-size-in-bytes":1,"record-count":1}}
+    ]
+  })";
+  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kPlanResponse))))
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kTask1Response))))
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kTask2Response))));
+
+  test::ThreadExecutor executor;
+  RestTableScanBuilder builder(metadata_, file_io_, "test.my_table", nullptr,
+                               MakeContext());
+  builder.PlanWith(executor);
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, builder.Build());
+  ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
+
+  ASSERT_EQ(tasks.size(), 2);
+  EXPECT_EQ(tasks[0]->data_file()->file_path, "s3://b/f1.parquet");
+  EXPECT_EQ(tasks[1]->data_file()->file_path, "s3://b/f2.parquet");
+  EXPECT_EQ(executor.submit_count(), 0);
 }
 
 // --------------------------------------------------------------------------
