@@ -19,7 +19,9 @@
 
 #pragma once
 
+#include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
@@ -124,8 +126,13 @@ class ICEBERG_REST_EXPORT RestIncrementalAppendScan : public IncrementalAppendSc
       std::shared_ptr<FileIO> io, internal::TableScanContext context,
       RestScanContext rest_context);
 
+  using IncrementalAppendScan::PlanFiles;
+
+ protected:
   /// \brief Plans files via the REST scan planning endpoints.
-  Result<std::vector<std::shared_ptr<FileScanTask>>> PlanFiles() const override;
+  Result<std::vector<std::shared_ptr<FileScanTask>>> PlanFiles(
+      std::optional<int64_t> from_snapshot_id_exclusive,
+      int64_t to_snapshot_id_inclusive) const override;
 
  private:
   RestIncrementalAppendScan(std::shared_ptr<TableMetadata> metadata,

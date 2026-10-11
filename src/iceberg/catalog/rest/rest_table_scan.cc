@@ -31,12 +31,10 @@
 #include "iceberg/catalog/rest/resource_paths.h"
 #include "iceberg/catalog/rest/rest_file_io.h"
 #include "iceberg/catalog/rest/types.h"
-#include "iceberg/constants.h"
 #include "iceberg/json_serde_internal.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/result.h"
 #include "iceberg/schema.h"
-#include "iceberg/snapshot.h"
 #include "iceberg/table_metadata.h"
 #include "iceberg/util/macros.h"
 
@@ -484,8 +482,14 @@ Result<std::unique_ptr<IncrementalAppendScan>> RestIncrementalAppendScan::Make(
                                     std::move(context), std::move(rest_context)));
 }
 
-Result<std::vector<std::shared_ptr<FileScanTask>>> RestIncrementalAppendScan::PlanFiles()
-    const {
+Result<std::vector<std::shared_ptr<FileScanTask>>> RestIncrementalAppendScan::PlanFiles(
+    std::optional<int64_t> from_snapshot_id_exclusive,
+    int64_t to_snapshot_id_inclusive) const {
+  // The REST API requires start-snapshot-id for incremental scans.
+  if (!from_snapshot_id_exclusive.has_value()) {
+    return NotSupported("REST incremental append scan requires a start snapshot");
+  }
+
   scan_io_ = nullptr;  // reset so stale credentials from a prior plan are not reused
   TableMetadataCache metadata_cache(metadata_.get());
   ICEBERG_ASSIGN_OR_RAISE(auto specs, metadata_cache.GetPartitionSpecsById());
@@ -495,27 +499,9 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> RestIncrementalAppendScan::Pl
   request.filter = context_.filter;
   request.case_sensitive = context_.case_sensitive;
   request.min_rows_requested = context_.min_rows_requested;
-
-  // Resolve end snapshot: use to_snapshot_id if set, else current table snapshot.
-  if (context_.to_snapshot_id.has_value()) {
-    request.end_snapshot_id = context_.to_snapshot_id;
-  } else {
-    if (metadata_->current_snapshot_id == kInvalidSnapshotId) return {};
-    ICEBERG_ASSIGN_OR_RAISE(auto snapshot, metadata_->Snapshot());
-    if (!snapshot) return {};
-    request.end_snapshot_id = snapshot->snapshot_id;
-  }
-
-  // Resolve start snapshot (exclusive): respect from_snapshot_id_inclusive.
-  if (context_.from_snapshot_id.has_value()) {
-    if (context_.from_snapshot_id_inclusive) {
-      ICEBERG_ASSIGN_OR_RAISE(auto from_snap,
-                              metadata_->SnapshotById(*context_.from_snapshot_id));
-      request.start_snapshot_id = from_snap->parent_snapshot_id;
-    } else {
-      request.start_snapshot_id = context_.from_snapshot_id;
-    }
-  }
+  request.start_snapshot_id = from_snapshot_id_exclusive;
+  request.end_snapshot_id = to_snapshot_id_inclusive;
+  request.use_snapshot_schema = true;
 
   if (!context_.columns_to_keep_stats.empty()) {
     for (int32_t field_id : context_.columns_to_keep_stats) {

@@ -807,16 +807,52 @@ TEST_F(RestTableScanTest, SecondPlanFilesStreamCallClearsStaleCredentials) {
 // ==========================================================================
 // RestIncrementalAppendScan tests
 // ==========================================================================
-
+// Lineage: 100 <- 200 <- 300 (main), and 200 <- 400 (branch "audit").
 class RestIncrementalAppendScanTest : public RestTableScanTest {
  protected:
-  // Creates a RestIncrementalAppendScan with the given context and optional
-  // snapshot range.
+  static constexpr int64_t kRootId = 100L;
+  static constexpr int64_t kMiddleId = 200L;
+  static constexpr int64_t kMainHeadId = 300L;
+  static constexpr int64_t kBranchHeadId = 400L;
+  static constexpr std::string_view kBranch = "audit";
+
+  void SetUp() override {
+    RestTableScanTest::SetUp();
+
+    auto make_snapshot = [&](int64_t id, std::optional<int64_t> parent_id,
+                             int64_t sequence_number) {
+      return std::make_shared<Snapshot>(
+          Snapshot{.snapshot_id = id,
+                   .parent_snapshot_id = parent_id,
+                   .sequence_number = sequence_number,
+                   .timestamp_ms = TimePointMsFromUnixMs(1609459200000L + id),
+                   .manifest_list = "/tmp/manifest-list.avro",
+                   .schema_id = schema_->schema_id()});
+    };
+    auto make_branch = [](int64_t id) {
+      return std::make_shared<SnapshotRef>(
+          SnapshotRef{.snapshot_id = id, .retention = SnapshotRef::Branch{}});
+    };
+
+    metadata_->snapshots = {make_snapshot(kRootId, std::nullopt, 1L),
+                            make_snapshot(kMiddleId, kRootId, 2L),
+                            make_snapshot(kMainHeadId, kMiddleId, 3L),
+                            make_snapshot(kBranchHeadId, kMiddleId, 4L)};
+    metadata_->last_sequence_number = 4L;
+    metadata_->current_snapshot_id = kMainHeadId;
+    metadata_->refs = {{"main", make_branch(kMainHeadId)},
+                       {std::string(kBranch), make_branch(kBranchHeadId)}};
+  }
+
+  RestIncrementalAppendScanBuilder MakeBuilder(RestScanContext ctx) {
+    return RestIncrementalAppendScanBuilder(metadata_, file_io_, "test.my_table", nullptr,
+                                            std::move(ctx));
+  }
+
   Result<std::unique_ptr<IncrementalAppendScan>> MakeIncrementalScan(
-      RestScanContext ctx, std::optional<int64_t> from_snapshot_id = std::nullopt,
+      RestScanContext ctx, std::optional<int64_t> from_snapshot_id = kRootId,
       bool from_inclusive = false, std::optional<int64_t> to_snapshot_id = std::nullopt) {
-    RestIncrementalAppendScanBuilder builder(metadata_, file_io_, "test.my_table",
-                                             nullptr, std::move(ctx));
+    auto builder = MakeBuilder(std::move(ctx));
     if (from_snapshot_id.has_value()) {
       builder.FromSnapshot(*from_snapshot_id, from_inclusive);
     }
@@ -931,62 +967,164 @@ TEST_F(RestIncrementalAppendScanTest, PlanFilesEmptyWhenNoCurrentSnapshot) {
 }
 
 // --------------------------------------------------------------------------
-// Explicit to_snapshot_id: POST body must contain "end-snapshot-id" set to
-// the given value, not the current table snapshot.
+// POST body carries the resolved snapshot range.
+// --------------------------------------------------------------------------
+TEST_F(RestIncrementalAppendScanTest, PlanFilesSendsResolvedRange) {
+  constexpr std::string_view kResponseBody = R"({"status":"completed"})";
+  EXPECT_CALL(*mock_client_,
+              Post(_,
+                   testing::AllOf(JsonBodyHas("start-snapshot-id", kRootId),
+                                  JsonBodyHas("end-snapshot-id", kMainHeadId),
+                                  JsonBodyHas("use-snapshot-schema", true)),
+                   _, _, _))
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kResponseBody))));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeIncrementalScan(MakeContext()));
+  ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
+  EXPECT_TRUE(tasks.empty());
+}
+
+// --------------------------------------------------------------------------
+// Explicit to_snapshot_id is sent as end-snapshot-id.
 // --------------------------------------------------------------------------
 TEST_F(RestIncrementalAppendScanTest, PlanFilesWithExplicitToSnapshotId) {
-  constexpr int64_t kToSnapshotId = 1000L;
   constexpr std::string_view kResponseBody = R"({"status":"completed"})";
   EXPECT_CALL(*mock_client_,
-              Post(_, JsonBodyHas("end-snapshot-id", kToSnapshotId), _, _, _))
+              Post(_,
+                   testing::AllOf(JsonBodyHas("start-snapshot-id", kRootId),
+                                  JsonBodyHas("end-snapshot-id", kMiddleId)),
+                   _, _, _))
       .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kResponseBody))));
 
-  ICEBERG_UNWRAP_OR_FAIL(
-      auto scan, MakeIncrementalScan(MakeContext(), std::nullopt, false, kToSnapshotId));
+  ICEBERG_UNWRAP_OR_FAIL(auto scan,
+                         MakeIncrementalScan(MakeContext(), kRootId,
+                                             /*from_inclusive=*/false, kMiddleId));
   ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
   EXPECT_TRUE(tasks.empty());
 }
 
 // --------------------------------------------------------------------------
-// Exclusive from_snapshot_id: POST body must pass from_snapshot_id directly
-// as "start-snapshot-id" (exclusive), and current snapshot as "end-snapshot-id".
+// Exclusive from_snapshot_id is sent as start-snapshot-id.
 // --------------------------------------------------------------------------
 TEST_F(RestIncrementalAppendScanTest, PlanFilesWithFromSnapshotIdExclusive) {
-  constexpr int64_t kFromSnapshotId = 999L;
-  constexpr int64_t kCurrentSnapshotId = 1000L;
   constexpr std::string_view kResponseBody = R"({"status":"completed"})";
   EXPECT_CALL(*mock_client_,
               Post(_,
-                   testing::AllOf(JsonBodyHas("start-snapshot-id", kFromSnapshotId),
-                                  JsonBodyHas("end-snapshot-id", kCurrentSnapshotId)),
+                   testing::AllOf(JsonBodyHas("start-snapshot-id", kMiddleId),
+                                  JsonBodyHas("end-snapshot-id", kMainHeadId)),
                    _, _, _))
       .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kResponseBody))));
 
-  ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeIncrementalScan(MakeContext(), kFromSnapshotId,
-                                                        /*inclusive=*/false));
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeIncrementalScan(MakeContext(), kMiddleId,
+                                                        /*from_inclusive=*/false));
   ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
   EXPECT_TRUE(tasks.empty());
 }
 
 // --------------------------------------------------------------------------
-// Inclusive from_snapshot_id: parent snapshot is used as start_snapshot_id.
-// The fixture snapshot (id=1000) has no parent, so "start-snapshot-id" is
-// absent from the POST body.
+// Inclusive from_snapshot_id sends its parent as start-snapshot-id.
 // --------------------------------------------------------------------------
-TEST_F(RestIncrementalAppendScanTest, PlanFilesWithFromSnapshotIdInclusiveNoParent) {
-  constexpr int64_t kFromSnapshotId = 1000L;
+TEST_F(RestIncrementalAppendScanTest, PlanFilesWithFromSnapshotIdInclusiveWithParent) {
   constexpr std::string_view kResponseBody = R"({"status":"completed"})";
   EXPECT_CALL(*mock_client_,
               Post(_,
-                   testing::AllOf(JsonBodyLacks("start-snapshot-id"),
-                                  JsonBodyHas("end-snapshot-id", kFromSnapshotId)),
+                   testing::AllOf(JsonBodyHas("start-snapshot-id", kRootId),
+                                  JsonBodyHas("end-snapshot-id", kMainHeadId)),
                    _, _, _))
       .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kResponseBody))));
 
-  ICEBERG_UNWRAP_OR_FAIL(
-      auto scan, MakeIncrementalScan(MakeContext(), kFromSnapshotId, /*inclusive=*/true));
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeIncrementalScan(MakeContext(), kMiddleId,
+                                                        /*from_inclusive=*/true));
   ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
   EXPECT_TRUE(tasks.empty());
+}
+
+// --------------------------------------------------------------------------
+// Inclusive from_snapshot_id on the root snapshot → NotSupported.
+// --------------------------------------------------------------------------
+TEST_F(RestIncrementalAppendScanTest, PlanFilesWithFromSnapshotIdInclusiveNoParent) {
+  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _)).Times(0);
+
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto scan, MakeIncrementalScan(MakeContext(), kRootId, /*from_inclusive=*/true));
+  auto result = scan->PlanFiles();
+  EXPECT_THAT(result, IsError(ErrorKind::kNotSupported));
+}
+
+// --------------------------------------------------------------------------
+// No from_snapshot_id → NotSupported.
+// --------------------------------------------------------------------------
+TEST_F(RestIncrementalAppendScanTest, PlanFilesWithoutFromSnapshotIdNotSupported) {
+  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _)).Times(0);
+
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto scan, MakeIncrementalScan(MakeContext(), /*from_snapshot_id=*/std::nullopt));
+  auto result = scan->PlanFiles();
+  EXPECT_THAT(result, IsError(ErrorKind::kNotSupported));
+}
+
+// --------------------------------------------------------------------------
+// UseBranch() without to_snapshot_id sends the branch head as end-snapshot-id.
+// --------------------------------------------------------------------------
+TEST_F(RestIncrementalAppendScanTest, UseBranchWithoutToSnapshotUsesBranchHead) {
+  constexpr std::string_view kResponseBody = R"({"status":"completed"})";
+  EXPECT_CALL(*mock_client_,
+              Post(_,
+                   testing::AllOf(JsonBodyHas("start-snapshot-id", kRootId),
+                                  JsonBodyHas("end-snapshot-id", kBranchHeadId)),
+                   _, _, _))
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kResponseBody))));
+
+  auto builder = MakeBuilder(MakeContext());
+  builder.FromSnapshot(kRootId).UseBranch(std::string(kBranch));
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, builder.Build());
+  ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
+  EXPECT_TRUE(tasks.empty());
+}
+
+// --------------------------------------------------------------------------
+// UseBranch() with to_snapshot_id on the branch.
+// --------------------------------------------------------------------------
+TEST_F(RestIncrementalAppendScanTest, UseBranchWithToSnapshotOnBranch) {
+  constexpr std::string_view kResponseBody = R"({"status":"completed"})";
+  EXPECT_CALL(*mock_client_,
+              Post(_,
+                   testing::AllOf(JsonBodyHas("start-snapshot-id", kRootId),
+                                  JsonBodyHas("end-snapshot-id", kMiddleId)),
+                   _, _, _))
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kResponseBody))));
+
+  auto builder = MakeBuilder(MakeContext());
+  builder.FromSnapshot(kRootId).ToSnapshot(kMiddleId).UseBranch(std::string(kBranch));
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, builder.Build());
+  ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
+  EXPECT_TRUE(tasks.empty());
+}
+
+// --------------------------------------------------------------------------
+// UseBranch() with to_snapshot_id not on the branch → ValidationFailed.
+// --------------------------------------------------------------------------
+TEST_F(RestIncrementalAppendScanTest, UseBranchRejectsToSnapshotNotOnBranch) {
+  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _)).Times(0);
+
+  auto builder = MakeBuilder(MakeContext());
+  builder.FromSnapshot(kRootId).ToSnapshot(kMainHeadId).UseBranch(std::string(kBranch));
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, builder.Build());
+  auto result = scan->PlanFiles();
+  EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
+  EXPECT_THAT(result, HasErrorMessage("not a valid snapshot on the current branch"));
+}
+
+// --------------------------------------------------------------------------
+// from_snapshot_id not an ancestor of the end snapshot → ValidationFailed.
+// --------------------------------------------------------------------------
+TEST_F(RestIncrementalAppendScanTest, RejectsFromSnapshotNotAncestorOfEnd) {
+  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _)).Times(0);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeIncrementalScan(MakeContext(), kBranchHeadId,
+                                                        /*from_inclusive=*/false));
+  auto result = scan->PlanFiles();
+  EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
 }
 
 // --------------------------------------------------------------------------
@@ -1034,39 +1172,6 @@ TEST_F(RestIncrementalAppendScanTest, SecondPlanFilesCallClearsStaleCredentials)
   // credentials from the first plan do not bleed into the second request.
   ICEBERG_UNWRAP_OR_FAIL(auto tasks2, scan->PlanFiles());
   EXPECT_TRUE(tasks2.empty());
-}
-
-// --------------------------------------------------------------------------
-// Inclusive from_snapshot_id with a parent: POST body must use the parent's id
-// as "start-snapshot-id" and the current snapshot as "end-snapshot-id".
-// --------------------------------------------------------------------------
-TEST_F(RestIncrementalAppendScanTest, PlanFilesWithFromSnapshotIdInclusiveWithParent) {
-  constexpr int64_t kParentSnapshotId = 900L;
-  constexpr int64_t kChildSnapshotId = 1001L;
-  constexpr int64_t kCurrentSnapshotId = 1000L;
-
-  // Add a second snapshot with a parent to the metadata.
-  auto child_snapshot = std::make_shared<Snapshot>(
-      Snapshot{.snapshot_id = kChildSnapshotId,
-               .parent_snapshot_id = kParentSnapshotId,
-               .sequence_number = 2L,
-               .timestamp_ms = TimePointMsFromUnixMs(1609459260000L),
-               .manifest_list = "/tmp/manifest-list-2.avro",
-               .schema_id = schema_->schema_id()});
-  metadata_->snapshots.push_back(child_snapshot);
-
-  constexpr std::string_view kResponseBody = R"({"status":"completed"})";
-  EXPECT_CALL(*mock_client_,
-              Post(_,
-                   testing::AllOf(JsonBodyHas("start-snapshot-id", kParentSnapshotId),
-                                  JsonBodyHas("end-snapshot-id", kCurrentSnapshotId)),
-                   _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kResponseBody))));
-
-  ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeIncrementalScan(MakeContext(), kChildSnapshotId,
-                                                        /*inclusive=*/true));
-  ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
-  EXPECT_TRUE(tasks.empty());
 }
 
 // ==========================================================================
