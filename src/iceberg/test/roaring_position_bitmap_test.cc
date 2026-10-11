@@ -19,6 +19,7 @@
 
 #include "iceberg/deletes/roaring_position_bitmap.h"
 
+#include <array>
 #include <cstddef>
 #include <cstdint>
 #include <filesystem>
@@ -390,12 +391,12 @@ TEST(RoaringPositionBitmapTest, TestSerializeDeserializeRoundTrip) {
 TEST(RoaringPositionBitmapTest, TestPortableLittleEndianEncoding) {
   // One bitmap with key 0 and an array container containing position 1.
   // Check canonical wire bytes: a same-host round trip can hide endian errors.
-  constexpr char kExpected[] =
-      "\x01\x00\x00\x00\x00\x00\x00\x00"           // Number of bitmaps.
-      "\x00\x00\x00\x00"                           // Bitmap key.
-      "\x3a\x30\x00\x00\x01\x00\x00\x00"           // Cookie and number of containers.
-      "\x00\x00\x00\x00\x10\x00\x00\x00\x01\x00";  // Array container.
-  const std::string expected(kExpected, sizeof(kExpected) - 1);
+  constexpr auto kExpected = std::to_array(
+      "\x01\x00\x00\x00\x00\x00\x00\x00"            // Number of bitmaps.
+      "\x00\x00\x00\x00"                            // Bitmap key.
+      "\x3a\x30\x00\x00\x01\x00\x00\x00"            // Cookie and number of containers.
+      "\x00\x00\x00\x00\x10\x00\x00\x00\x01\x00");  // Array container.
+  const std::string expected(kExpected.data(), kExpected.size() - 1);
 
   RoaringPositionBitmap bitmap;
   bitmap.Add(1L);
