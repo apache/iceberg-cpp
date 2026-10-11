@@ -1599,6 +1599,13 @@ INSTANTIATE_TEST_SUITE_P(
             .expected_error_kind = ErrorKind::kValidationFailed,
             .expected_error_msg = "tasks can only be defined when status is 'completed'"},
         PlanTableScanResponseInvalidParam{
+            .test_name = "FailedWithPlanId",
+            .json_str =
+                R"({"status":"failed","plan-id":"somePlanId","error":{"message":"x","type":"y","code":500}})",
+            .expected_error_kind = ErrorKind::kValidationFailed,
+            .expected_error_msg =
+                "plan id can only be defined when status is 'submitted' or 'completed'"},
+        PlanTableScanResponseInvalidParam{
             .test_name = "FailedWithoutError",
             .json_str = R"({"status":"failed"})",
             .expected_error_kind = ErrorKind::kJsonParseError,
@@ -2543,16 +2550,6 @@ TEST(PlanTableScanResponseRoundtripTest, FailedWithError) {
       PlanTableScanResponseFromJson(roundtrip_json, EmptySpecs(), EmptySchema());
   ASSERT_THAT(result2, IsOk());
   EXPECT_EQ(*result, *result2);
-}
-
-TEST(PlanTableScanResponseRoundtripTest, FailedWithPlanId) {
-  // A server may include a plan-id in a failed response so the client can cancel.
-  auto json = nlohmann::json::parse(
-      R"({"status":"failed","plan-id":"plan-123","error":{"message":"Planning failed","type":"PlanningException","code":500}})");
-  auto result = PlanTableScanResponseFromJson(json, EmptySpecs(), EmptySchema());
-  ASSERT_THAT(result, IsOk());
-  EXPECT_EQ(result->plan_id, "plan-123");
-  EXPECT_EQ(result->plan_status, PlanStatus::kFailed);
 }
 
 TEST(FetchPlanningResultResponseRoundtripTest, CompletedWithPlanTasks) {

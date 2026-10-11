@@ -298,10 +298,10 @@ Status PlanTableScanResponse::Validate() const {
         "Invalid response: tasks can only be defined when status is 'completed'");
   }
   if (!plan_id.empty() && plan_status != PlanStatus::kSubmitted &&
-      plan_status != PlanStatus::kCompleted && plan_status != PlanStatus::kFailed) {
+      plan_status != PlanStatus::kCompleted) {
     return ValidationFailed(
-        "Invalid response: plan id can only be defined when status is 'submitted', "
-        "'completed', or 'failed'");
+        "Invalid response: plan id can only be defined when status is 'submitted' or "
+        "'completed'");
   }
   if (!HasNonEmptyFileScanTasks(*this) && !delete_files.empty()) {
     return ValidationFailed(

@@ -1283,8 +1283,8 @@ TEST_F(RestTableScanTest, PlanFilesStreamFailed) {
 }
 
 // --------------------------------------------------------------------------
-// PlanFilesStream: FAILED with plan-id → DELETE /plan called before returning
-// the error (tests the ExecuteScanPlanStream kFailed cancel fix).
+// PlanFilesStream: FAILED with plan-id is an invalid response → DELETE /plan
+// called before returning the error.
 // --------------------------------------------------------------------------
 TEST_F(RestTableScanTest, PlanFilesStreamFailedWithPlanIdCancels) {
   constexpr std::string_view kFailedBody =
@@ -1297,7 +1297,7 @@ TEST_F(RestTableScanTest, PlanFilesStreamFailedWithPlanIdCancels) {
 
   ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeScan(MakeContext()));
   auto result = scan->PlanFilesStream();
-  EXPECT_THAT(result, IsError(ErrorKind::kIOError));
+  EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
 }
 
 // --------------------------------------------------------------------------
@@ -1720,8 +1720,8 @@ TEST_F(RestIncrementalAppendScanTest, ProjectSendsProjectedColumnsAsSelect) {
 }
 
 // --------------------------------------------------------------------------
-// PlanFiles: FAILED with plan-id → DELETE /plan called before returning the
-// error (tests the ExecuteScanPlan kFailed cancel fix).
+// PlanFiles: FAILED with plan-id is an invalid response → DELETE /plan called
+// before returning the error.
 // --------------------------------------------------------------------------
 TEST_F(RestIncrementalAppendScanTest, PlanFilesFailedWithPlanIdCancels) {
   constexpr std::string_view kFailedBody =
@@ -1734,7 +1734,7 @@ TEST_F(RestIncrementalAppendScanTest, PlanFilesFailedWithPlanIdCancels) {
 
   ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeIncrementalScan(MakeContext()));
   auto result = scan->PlanFiles();
-  EXPECT_THAT(result, IsError(ErrorKind::kIOError));
+  EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
 }
 
 // --------------------------------------------------------------------------
