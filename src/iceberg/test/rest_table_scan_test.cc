@@ -1075,6 +1075,34 @@ TEST_F(RestTableScanTest, PlanFilesStreamIgnoresPlanExecutor) {
 }
 
 // --------------------------------------------------------------------------
+// PlanFilesStream: invalid plan response with a plan-id → DELETE /plan called.
+// --------------------------------------------------------------------------
+TEST_F(RestTableScanTest, PlanFilesStreamInvalidResponseWithPlanIdCancels) {
+  constexpr std::string_view kInvalidBody =
+      R"({"status":"submitted","plan-id":"plan-invalid","plan-tasks":["tok-1"]})";
+  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kInvalidBody))));
+  EXPECT_CALL(*mock_client_, Delete(_, _, _, _, _))
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, "{}")));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeScan(MakeContext()));
+  EXPECT_THAT(scan->PlanFilesStream(), IsError(ErrorKind::kValidationFailed));
+}
+
+// --------------------------------------------------------------------------
+// PlanFilesStream: invalid plan response without a plan-id → no DELETE.
+// --------------------------------------------------------------------------
+TEST_F(RestTableScanTest, PlanFilesStreamInvalidResponseWithoutPlanIdDoesNotCancel) {
+  constexpr std::string_view kInvalidBody = R"({"status":"failed"})";
+  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kInvalidBody))));
+  EXPECT_CALL(*mock_client_, Delete(_, _, _, _, _)).Times(0);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeScan(MakeContext()));
+  EXPECT_THAT(scan->PlanFilesStream(), IsError(ErrorKind::kJsonParseError));
+}
+
+// --------------------------------------------------------------------------
 // PlanFilesStream: FAILED → stream returns an error.
 // --------------------------------------------------------------------------
 TEST_F(RestTableScanTest, PlanFilesStreamFailed) {
@@ -1541,6 +1569,21 @@ TEST_F(RestIncrementalAppendScanTest, PlanFilesFailedWithPlanIdCancels) {
   ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeIncrementalScan(MakeContext()));
   auto result = scan->PlanFiles();
   EXPECT_THAT(result, IsError(ErrorKind::kIOError));
+}
+
+// --------------------------------------------------------------------------
+// PlanFiles: invalid plan response with a plan-id → DELETE /plan called.
+// --------------------------------------------------------------------------
+TEST_F(RestIncrementalAppendScanTest, PlanFilesInvalidResponseWithPlanIdCancels) {
+  constexpr std::string_view kInvalidBody =
+      R"({"status":"submitted","plan-id":"plan-invalid-incr","plan-tasks":["tok-1"]})";
+  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kInvalidBody))));
+  EXPECT_CALL(*mock_client_, Delete(_, _, _, _, _))
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, "{}")));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeIncrementalScan(MakeContext()));
+  EXPECT_THAT(scan->PlanFiles(), IsError(ErrorKind::kValidationFailed));
 }
 
 // --------------------------------------------------------------------------

@@ -321,9 +321,17 @@ Result<FileScanTaskStreamPtr> ExecuteScanPlanStream(
                           ctx.client->Post(path, json_request, /*headers=*/{},
                                            *PlanErrorHandler::Instance(), *ctx.session));
   ICEBERG_ASSIGN_OR_RAISE(auto json, FromJsonString(response.body()));
-  ICEBERG_ASSIGN_OR_RAISE(auto result,
-                          PlanTableScanResponseFromJson(json, specs, schema));
-  ICEBERG_RETURN_UNEXPECTED(result.Validate());
+  // The parser validates the response, so read the plan id first to cancel on failure.
+  std::string raw_plan_id;
+  if (auto it = json.find("plan-id"); it != json.end() && it->is_string()) {
+    raw_plan_id = it->get<std::string>();
+  }
+  auto result_or = PlanTableScanResponseFromJson(json, specs, schema);
+  if (!result_or) {
+    CancelPlanning(ctx, raw_plan_id);
+    return std::unexpected<Error>(result_or.error());
+  }
+  auto& result = *result_or;
 
   const std::string plan_id = result.plan_id;
 
@@ -381,9 +389,17 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> ExecuteScanPlan(
                           ctx.client->Post(path, json_request, /*headers=*/{},
                                            *PlanErrorHandler::Instance(), *ctx.session));
   ICEBERG_ASSIGN_OR_RAISE(auto json, FromJsonString(response.body()));
-  ICEBERG_ASSIGN_OR_RAISE(auto result,
-                          PlanTableScanResponseFromJson(json, specs, schema));
-  ICEBERG_RETURN_UNEXPECTED(result.Validate());
+  // The parser validates the response, so read the plan id first to cancel on failure.
+  std::string raw_plan_id;
+  if (auto it = json.find("plan-id"); it != json.end() && it->is_string()) {
+    raw_plan_id = it->get<std::string>();
+  }
+  auto result_or = PlanTableScanResponseFromJson(json, specs, schema);
+  if (!result_or) {
+    CancelPlanning(ctx, raw_plan_id);
+    return std::unexpected<Error>(result_or.error());
+  }
+  auto& result = *result_or;
 
   const std::string plan_id = result.plan_id;
 
