@@ -876,7 +876,7 @@ TEST_F(RestTableScanTest, PlanFilesStreamCancelAfterPartialConsumption) {
 // PlanFilesStream: stream destroyed with no Next() calls at all →
 // DELETE /plan called by the destructor.
 // --------------------------------------------------------------------------
-TEST_F(RestTableScanTest, PlanFilesStreamCancelOnPartialConsumption) {
+TEST_F(RestTableScanTest, PlanFilesStreamCancelOnNoConsumption) {
   constexpr std::string_view kPlanResponse =
       R"({"status":"completed","plan-id":"plan-never-consumed","plan-tasks":["tok-p1"]})";
 
@@ -966,10 +966,10 @@ TEST_F(RestTableScanTest, PlanFilesStreamSubmittedFetchesTokensLazily) {
 }
 
 // --------------------------------------------------------------------------
-// PlanFilesStream: SUBMITTED → COMPLETED, stream destroyed before its plan
-// tasks are fetched → DELETE /plan called by the destructor.
+// PlanFilesStream: SUBMITTED → COMPLETED, stream destroyed with no Next() calls
+// → DELETE /plan called by the destructor.
 // --------------------------------------------------------------------------
-TEST_F(RestTableScanTest, PlanFilesStreamSubmittedCancelOnPartialConsumption) {
+TEST_F(RestTableScanTest, PlanFilesStreamSubmittedCancelOnNoConsumption) {
   constexpr std::string_view kSubmittedBody =
       R"({"status":"submitted","plan-id":"plan-poll-partial"})";
   constexpr std::string_view kCompletedBody =
