@@ -78,4 +78,40 @@ TEST(ScanPlanningModeTest, OtherKeysAreIgnored) {
   EXPECT_EQ(**result, ScanPlanningMode::kClient);
 }
 
+TEST(ScanPlanningPollTest, Defaults) {
+  auto properties = RestCatalogProperties::default_properties();
+  EXPECT_THAT(properties.ScanPlanningPollTimeoutMs(), HasValue(::testing::Eq(300000)));
+  EXPECT_THAT(properties.ScanPlanningPollNumRetries(), HasValue(::testing::Eq(10)));
+}
+
+TEST(ScanPlanningPollTest, ValidValues) {
+  auto properties =
+      RestCatalogProperties::FromMap({{"rest-scan-planning.poll-timeout-ms", "1000"},
+                                      {"rest-scan-planning.poll-num-retries", "0"}});
+  EXPECT_THAT(properties.ScanPlanningPollTimeoutMs(), HasValue(::testing::Eq(1000)));
+  EXPECT_THAT(properties.ScanPlanningPollNumRetries(), HasValue(::testing::Eq(0)));
+}
+
+TEST(ScanPlanningPollTest, InvalidTimeout) {
+  for (const auto& value : {"0", "-1", "abc"}) {
+    auto properties =
+        RestCatalogProperties::FromMap({{"rest-scan-planning.poll-timeout-ms", value}});
+    EXPECT_THAT(properties.ScanPlanningPollTimeoutMs(),
+                ::testing::AllOf(IsError(ErrorKind::kInvalidArgument),
+                                 HasErrorMessage("must be positive")))
+        << value;
+  }
+}
+
+TEST(ScanPlanningPollTest, InvalidNumRetries) {
+  for (const auto& value : {"-1", "abc"}) {
+    auto properties =
+        RestCatalogProperties::FromMap({{"rest-scan-planning.poll-num-retries", value}});
+    EXPECT_THAT(properties.ScanPlanningPollNumRetries(),
+                ::testing::AllOf(IsError(ErrorKind::kInvalidArgument),
+                                 HasErrorMessage("must be non-negative")))
+        << value;
+  }
+}
+
 }  // namespace iceberg::rest

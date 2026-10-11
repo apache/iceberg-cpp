@@ -1103,6 +1103,39 @@ TEST_F(RestTableScanTest, PlanFilesStreamInvalidResponseWithoutPlanIdDoesNotCanc
 }
 
 // --------------------------------------------------------------------------
+// poll-num-retries=0: a single GET for a SUBMITTED plan, then cancel.
+// --------------------------------------------------------------------------
+TEST_F(RestTableScanTest, PlanFilesStreamPollNumRetriesZero) {
+  constexpr std::string_view kSubmittedBody =
+      R"({"status":"submitted","plan-id":"plan-no-retry"})";
+  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kSubmittedBody))));
+  EXPECT_CALL(*mock_client_, Get(_, _, _, _, _))
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kSubmittedBody))));
+  EXPECT_CALL(*mock_client_, Delete(_, _, _, _, _))
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, "{}")));
+
+  auto ctx = MakeContext();
+  ctx.catalog_config = {{"rest-scan-planning.poll-num-retries", "0"}};
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeScan(std::move(ctx)));
+  EXPECT_THAT(scan->PlanFilesStream(),
+              ::testing::AllOf(IsError(ErrorKind::kIOError),
+                               HasErrorMessage("exceeded max retries (0)")));
+}
+
+// --------------------------------------------------------------------------
+// Invalid poll-timeout-ms fails before the plan is submitted.
+// --------------------------------------------------------------------------
+TEST_F(RestTableScanTest, PlanFilesStreamInvalidPollTimeoutFailsBeforePlanning) {
+  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _)).Times(0);
+
+  auto ctx = MakeContext();
+  ctx.catalog_config = {{"rest-scan-planning.poll-timeout-ms", "0"}};
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeScan(std::move(ctx)));
+  EXPECT_THAT(scan->PlanFilesStream(), IsError(ErrorKind::kInvalidArgument));
+}
+
+// --------------------------------------------------------------------------
 // PlanFilesStream: FAILED → stream returns an error.
 // --------------------------------------------------------------------------
 TEST_F(RestTableScanTest, PlanFilesStreamFailed) {

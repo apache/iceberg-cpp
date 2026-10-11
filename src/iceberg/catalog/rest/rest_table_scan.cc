@@ -21,10 +21,12 @@
 
 #include <algorithm>
 #include <chrono>
+#include <cstdint>
 #include <thread>
 
 #include <nlohmann/json.hpp>
 
+#include "iceberg/catalog/rest/catalog_properties.h"
 #include "iceberg/catalog/rest/endpoint.h"
 #include "iceberg/catalog/rest/error_handlers.h"
 #include "iceberg/catalog/rest/http_client.h"
@@ -46,8 +48,18 @@ namespace {
 
 constexpr int64_t kMinSleepMs = 1'000;
 constexpr int64_t kMaxSleepMs = 60'000;
-constexpr int kMaxRetries = 10;
-constexpr int64_t kMaxWaitTimeMs = 5 * 60 * 1'000;
+
+struct PollConfig {
+  int64_t max_wait_ms;
+  int32_t max_retries;
+};
+
+Result<PollConfig> ResolvePollConfig(const RestScanContext& ctx) {
+  auto properties = RestCatalogProperties::FromMap(ctx.catalog_config);
+  ICEBERG_ASSIGN_OR_RAISE(auto max_wait_ms, properties.ScanPlanningPollTimeoutMs());
+  ICEBERG_ASSIGN_OR_RAISE(auto max_retries, properties.ScanPlanningPollNumRetries());
+  return PollConfig{.max_wait_ms = max_wait_ms, .max_retries = max_retries};
+}
 
 using SpecsById = std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>;
 // A shared slot that lets the scan and the stream share a single FileIO reference.
@@ -167,7 +179,8 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> FetchScanTasks(
 // are left unresolved.
 Result<FetchPlanningResultResponse> FetchPlanningResult(
     const RestScanContext& ctx, const Schema& schema, const std::string& plan_id,
-    const SpecsById& specs, std::shared_ptr<FileIO>& scan_io) {
+    const SpecsById& specs, const PollConfig& poll_config,
+    std::shared_ptr<FileIO>& scan_io) {
   ICEBERG_ENDPOINT_CHECK(ctx.supported_endpoints, Endpoint::FetchPlanningResult());
 
   ICEBERG_ASSIGN_OR_RAISE(auto path, ctx.paths->Plan(ctx.identifier, plan_id));
@@ -175,7 +188,7 @@ Result<FetchPlanningResultResponse> FetchPlanningResult(
   auto delay_ms = kMinSleepMs;
   auto start = std::chrono::steady_clock::now();
 
-  for (int retry = 0; retry <= kMaxRetries; ++retry) {
+  for (int32_t retry = 0; retry <= poll_config.max_retries; ++retry) {
     auto response_or = ctx.client->Get(path, /*params=*/{}, /*headers=*/{},
                                        *PlanErrorHandler::Instance(), *ctx.session);
     if (!response_or) {
@@ -215,11 +228,12 @@ Result<FetchPlanningResultResponse> FetchPlanningResult(
         auto elapsed_ms = std::chrono::duration_cast<std::chrono::milliseconds>(
                               std::chrono::steady_clock::now() - start)
                               .count();
-        if (elapsed_ms >= kMaxWaitTimeMs) {
+        if (elapsed_ms >= poll_config.max_wait_ms) {
           CancelPlanning(ctx, plan_id);
           return IOError("Scan planning timed out after {}ms waiting for plan_id={}",
                          elapsed_ms, plan_id);
         }
+        if (retry == poll_config.max_retries) break;
         std::this_thread::sleep_for(std::chrono::milliseconds(delay_ms));
         delay_ms = std::min(delay_ms * 2, kMaxSleepMs);
         continue;
@@ -234,8 +248,8 @@ Result<FetchPlanningResultResponse> FetchPlanningResult(
   }
 
   CancelPlanning(ctx, plan_id);
-  return IOError("Scan planning exceeded max retries ({}) for plan_id={}", kMaxRetries,
-                 plan_id);
+  return IOError("Scan planning exceeded max retries ({}) for plan_id={}",
+                 poll_config.max_retries, plan_id);
 }
 
 // TODO(sandeepg): Fetch plan tasks concurrently when an executor is configured via
@@ -313,6 +327,7 @@ Result<FileScanTaskStreamPtr> ExecuteScanPlanStream(
     const RestScanContext& ctx, const Schema& schema, std::shared_ptr<Schema> schema_ptr,
     PlanTableScanRequest request, const SpecsById& specs, ScanIoSlot scan_io_slot) {
   ICEBERG_ENDPOINT_CHECK(ctx.supported_endpoints, Endpoint::PlanTableScan());
+  ICEBERG_ASSIGN_OR_RAISE(auto poll_config, ResolvePollConfig(ctx));
 
   ICEBERG_ASSIGN_OR_RAISE(auto path, ctx.paths->Plan(ctx.identifier));
   ICEBERG_ASSIGN_OR_RAISE(auto request_json, ToJson(request));
@@ -337,7 +352,8 @@ Result<FileScanTaskStreamPtr> ExecuteScanPlanStream(
 
   if (result.plan_status == PlanStatus::kSubmitted) {
     ICEBERG_ASSIGN_OR_RAISE(
-        auto completed, FetchPlanningResult(ctx, schema, plan_id, specs, *scan_io_slot));
+        auto completed,
+        FetchPlanningResult(ctx, schema, plan_id, specs, poll_config, *scan_io_slot));
     return std::make_unique<RestFileScanTaskStream>(
         ctx, std::move(schema_ptr), plan_id,
         std::move(completed.file_scan_tasks)
@@ -381,6 +397,7 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> ExecuteScanPlan(
     const RestScanContext& ctx, const Schema& schema, PlanTableScanRequest request,
     const SpecsById& specs, std::shared_ptr<FileIO>& scan_io) {
   ICEBERG_ENDPOINT_CHECK(ctx.supported_endpoints, Endpoint::PlanTableScan());
+  ICEBERG_ASSIGN_OR_RAISE(auto poll_config, ResolvePollConfig(ctx));
 
   ICEBERG_ASSIGN_OR_RAISE(auto path, ctx.paths->Plan(ctx.identifier));
   ICEBERG_ASSIGN_OR_RAISE(auto request_json, ToJson(request));
@@ -416,8 +433,9 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> ExecuteScanPlan(
       return tasks;
     }
     case PlanStatus::kSubmitted: {
-      ICEBERG_ASSIGN_OR_RAISE(auto completed,
-                              FetchPlanningResult(ctx, schema, plan_id, specs, scan_io));
+      ICEBERG_ASSIGN_OR_RAISE(
+          auto completed,
+          FetchPlanningResult(ctx, schema, plan_id, specs, poll_config, scan_io));
       auto tasks = ResolveScanTasks(ctx, schema, completed.plan_tasks,
                                     completed.file_scan_tasks, specs, scan_io);
       if (!tasks) CancelPlanning(ctx, plan_id);

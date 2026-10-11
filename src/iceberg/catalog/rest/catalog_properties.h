@@ -19,6 +19,7 @@
 
 #pragma once
 
+#include <cstdint>
 #include <string>
 #include <unordered_map>
 
@@ -63,6 +64,12 @@ class ICEBERG_REST_EXPORT RestCatalogProperties
       "rest-metrics-reporting-enabled", "true"};
   /// \brief The scan planning mode (client or server).
   inline static Entry<std::string> kScanPlanningMode{"scan-planning-mode", "client"};
+  /// \brief Maximum time to wait for a submitted scan plan, in milliseconds.
+  inline static Entry<std::string> kScanPlanningPollTimeoutMs{
+      "rest-scan-planning.poll-timeout-ms", "300000"};
+  /// \brief Extra polls after the first fetch of a submitted scan plan.
+  inline static Entry<std::string> kScanPlanningPollNumRetries{
+      "rest-scan-planning.poll-num-retries", "10"};
   /// \brief The prefix for HTTP headers.
   inline static constexpr std::string_view kHeaderPrefix = "header.";
 
@@ -90,6 +97,12 @@ class ICEBERG_REST_EXPORT RestCatalogProperties
   ///        std::nullopt if the key is absent.
   static Result<std::optional<ScanPlanningMode>> ScanPlanningModeFrom(
       const std::unordered_map<std::string, std::string>& config);
+
+  /// \brief Get the scan planning poll timeout in milliseconds; must be positive.
+  Result<int64_t> ScanPlanningPollTimeoutMs() const;
+
+  /// \brief Get the number of scan planning poll retries; must be non-negative.
+  Result<int32_t> ScanPlanningPollNumRetries() const;
 };
 
 }  // namespace iceberg::rest
