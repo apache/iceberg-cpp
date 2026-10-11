@@ -20,6 +20,7 @@
 #pragma once
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <unordered_set>
 
@@ -101,8 +102,8 @@ class ICEBERG_REST_EXPORT RestCatalog final
   ///
   /// Returns nullptr when the catalog does not serve LoadCredentials.
   std::shared_ptr<StorageCredentialProvider> MakeStorageCredentialProvider(
-      const TableIdentifier& identifier,
-      std::shared_ptr<auth::AuthSession> table_session) const;
+      const TableIdentifier& identifier, std::shared_ptr<auth::AuthSession> table_session,
+      std::optional<std::string> plan_id = std::nullopt) const;
 
   Result<std::vector<Namespace>> ListNamespaces(const Namespace& ns,
                                                 auth::AuthSession& session) const;

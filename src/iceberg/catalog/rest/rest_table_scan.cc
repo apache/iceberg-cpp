@@ -95,12 +95,16 @@ Result<std::vector<std::string>> ProjectedColumnNames(const Schema& projected) {
   return names;
 }
 
-Status ApplyStorageCredentials(const RestScanContext& ctx,
+Status ApplyStorageCredentials(const RestScanContext& ctx, const std::string& plan_id,
                                const std::vector<StorageCredential>& credentials,
                                std::shared_ptr<FileIO>& scan_io) {
   if (credentials.empty()) return {};
-  ICEBERG_ASSIGN_OR_RAISE(
-      auto io, MakeTableFileIO(ctx.catalog_config, ctx.table_config, credentials));
+  std::shared_ptr<StorageCredentialProvider> provider;
+  if (ctx.credential_provider_factory) {
+    provider = ctx.credential_provider_factory(plan_id);
+  }
+  ICEBERG_ASSIGN_OR_RAISE(auto io, MakeTableFileIO(ctx.catalog_config, ctx.table_config,
+                                                   credentials, std::move(provider)));
   scan_io = std::move(io);
   return {};
 }
@@ -117,11 +121,12 @@ void CancelPlanning(const RestScanContext& ctx, const std::string& plan_id) {
 }
 
 Result<std::vector<std::shared_ptr<FileScanTask>>> FetchScanTasks(
-    const RestScanContext& ctx, const Schema& schema, const std::string& plan_task,
-    const SpecsById& specs, std::shared_ptr<FileIO>& scan_io);
+    const RestScanContext& ctx, const std::string& plan_id, const Schema& schema,
+    const std::string& plan_task, const SpecsById& specs,
+    std::shared_ptr<FileIO>& scan_io);
 
 Result<std::vector<std::shared_ptr<FileScanTask>>> ResolveScanTasks(
-    const RestScanContext& ctx, const Schema& schema,
+    const RestScanContext& ctx, const std::string& plan_id, const Schema& schema,
     const std::optional<std::vector<std::string>>& plan_tasks,
     const std::optional<std::vector<std::shared_ptr<FileScanTask>>>& file_scan_tasks,
     const SpecsById& specs, std::shared_ptr<FileIO>& scan_io) {
@@ -133,8 +138,8 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> ResolveScanTasks(
 
   if (plan_tasks.has_value()) {
     for (const auto& token : *plan_tasks) {
-      ICEBERG_ASSIGN_OR_RAISE(auto tasks,
-                              FetchScanTasks(ctx, schema, token, specs, scan_io));
+      ICEBERG_ASSIGN_OR_RAISE(
+          auto tasks, FetchScanTasks(ctx, plan_id, schema, token, specs, scan_io));
       result.insert(result.end(), tasks.begin(), tasks.end());
     }
   }
@@ -144,6 +149,7 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> ResolveScanTasks(
 
 // Fetches one plan task without resolving any nested plan tasks it returns.
 Result<FetchScanTasksResponse> FetchScanTasksOnce(const RestScanContext& ctx,
+                                                  const std::string& plan_id,
                                                   const Schema& schema,
                                                   const std::string& plan_task,
                                                   const SpecsById& specs,
@@ -162,17 +168,18 @@ Result<FetchScanTasksResponse> FetchScanTasksOnce(const RestScanContext& ctx,
                           FetchScanTasksResponseFromJson(json, specs, schema));
   ICEBERG_RETURN_UNEXPECTED(result.Validate());
   ICEBERG_RETURN_UNEXPECTED(
-      ApplyStorageCredentials(ctx, result.storage_credentials, scan_io));
+      ApplyStorageCredentials(ctx, plan_id, result.storage_credentials, scan_io));
   return result;
 }
 
 Result<std::vector<std::shared_ptr<FileScanTask>>> FetchScanTasks(
-    const RestScanContext& ctx, const Schema& schema, const std::string& plan_task,
-    const SpecsById& specs, std::shared_ptr<FileIO>& scan_io) {
-  ICEBERG_ASSIGN_OR_RAISE(auto result,
-                          FetchScanTasksOnce(ctx, schema, plan_task, specs, scan_io));
-  return ResolveScanTasks(ctx, schema, result.plan_tasks, result.file_scan_tasks, specs,
-                          scan_io);
+    const RestScanContext& ctx, const std::string& plan_id, const Schema& schema,
+    const std::string& plan_task, const SpecsById& specs,
+    std::shared_ptr<FileIO>& scan_io) {
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto result, FetchScanTasksOnce(ctx, plan_id, schema, plan_task, specs, scan_io));
+  return ResolveScanTasks(ctx, plan_id, schema, result.plan_tasks, result.file_scan_tasks,
+                          specs, scan_io);
 }
 
 // Polls until the plan completes and returns the completed response. Plan tasks
@@ -217,7 +224,8 @@ Result<FetchPlanningResultResponse> FetchPlanningResult(
 
     switch (result.plan_status) {
       case PlanStatus::kCompleted: {
-        if (auto s = ApplyStorageCredentials(ctx, result.storage_credentials, scan_io);
+        if (auto s = ApplyStorageCredentials(ctx, plan_id, result.storage_credentials,
+                                             scan_io);
             !s) {
           CancelPlanning(ctx, plan_id);
           return ::iceberg::unexpected<Error>(s.error());
@@ -295,7 +303,8 @@ class RestFileScanTaskStream final : public FileScanTaskStream {
       }
       const std::string token = plan_task_tokens_[token_pos_++];
       ICEBERG_ASSIGN_OR_RAISE(
-          auto result, FetchScanTasksOnce(ctx_, *schema_, token, specs_, *scan_io_slot_));
+          auto result,
+          FetchScanTasksOnce(ctx_, plan_id_, *schema_, token, specs_, *scan_io_slot_));
       if (result.plan_tasks.has_value()) {
         plan_task_tokens_.insert(plan_task_tokens_.end(), result.plan_tasks->begin(),
                                  result.plan_tasks->end());
@@ -372,7 +381,8 @@ Result<FileScanTaskStreamPtr> ExecuteScanPlanStream(
   }
 
   // kCompleted: apply credentials from the initial response, then build the lazy stream.
-  if (auto s = ApplyStorageCredentials(ctx, result.storage_credentials, *scan_io_slot);
+  if (auto s = ApplyStorageCredentials(ctx, plan_id, result.storage_credentials,
+                                       *scan_io_slot);
       !s) {
     CancelPlanning(ctx, plan_id);
     return ::iceberg::unexpected<Error>(s.error());
@@ -422,12 +432,13 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> ExecuteScanPlan(
 
   switch (result.plan_status) {
     case PlanStatus::kCompleted: {
-      if (auto s = ApplyStorageCredentials(ctx, result.storage_credentials, scan_io);
+      if (auto s =
+              ApplyStorageCredentials(ctx, plan_id, result.storage_credentials, scan_io);
           !s) {
         CancelPlanning(ctx, plan_id);
         return ::iceberg::unexpected<Error>(s.error());
       }
-      auto tasks = ResolveScanTasks(ctx, schema, result.plan_tasks,
+      auto tasks = ResolveScanTasks(ctx, plan_id, schema, result.plan_tasks,
                                     result.file_scan_tasks, specs, scan_io);
       if (!tasks) CancelPlanning(ctx, plan_id);
       return tasks;
@@ -436,7 +447,7 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> ExecuteScanPlan(
       ICEBERG_ASSIGN_OR_RAISE(
           auto completed,
           FetchPlanningResult(ctx, schema, plan_id, specs, poll_config, scan_io));
-      auto tasks = ResolveScanTasks(ctx, schema, completed.plan_tasks,
+      auto tasks = ResolveScanTasks(ctx, plan_id, schema, completed.plan_tasks,
                                     completed.file_scan_tasks, specs, scan_io);
       if (!tasks) CancelPlanning(ctx, plan_id);
       return tasks;

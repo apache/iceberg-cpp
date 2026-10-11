@@ -35,6 +35,8 @@
 #include "iceberg/catalog/rest/rest_table.h"
 #include "iceberg/catalog/rest/rest_table_scan.h"
 #include "iceberg/file_io.h"
+#include "iceberg/file_io_registry.h"
+#include "iceberg/storage_credential.h"
 #include "iceberg/table.h"
 #include "iceberg/table_identifier.h"
 #include "iceberg/table_requirement.h"
@@ -86,6 +88,55 @@ class NoOpFileIO : public FileIO {
   Status DeleteFile(const std::string&) override { return {}; }
 };
 
+namespace {
+
+std::shared_ptr<StorageCredentialProvider> installed_provider;
+
+class CredentialedFileIO : public NoOpFileIO, public SupportsStorageCredentials {
+ public:
+  Status InitializeStorageCredentials(
+      const std::vector<StorageCredential>& credentials,
+      std::shared_ptr<StorageCredentialProvider> provider) override {
+    credentials_ = credentials;
+    installed_provider = std::move(provider);
+    return {};
+  }
+
+  Status SetStorageCredentials(
+      const std::vector<StorageCredential>& credentials) override {
+    credentials_ = credentials;
+    return {};
+  }
+
+  std::vector<StorageCredential> credentials() const override { return credentials_; }
+
+  SupportsStorageCredentials* AsSupportsStorageCredentials() override { return this; }
+
+ private:
+  std::vector<StorageCredential> credentials_;
+};
+
+constexpr std::string_view kCredentialedFileIO = "rest-catalog-unit-test-credentialed";
+
+void RegisterCredentialedFileIO() {
+  FileIORegistry::Register(
+      std::string(kCredentialedFileIO),
+      {.create = [](const std::unordered_map<std::string, std::string>&)
+           -> Result<std::unique_ptr<FileIO>> {
+        return std::make_unique<CredentialedFileIO>();
+      }});
+  installed_provider = nullptr;
+}
+
+// Plan response that vends credentials for the scan.
+constexpr std::string_view kPlanWithCredentialsResponse = R"({
+  "status": "completed",
+  "plan-id": "plan-1",
+  "storage-credentials": [{"prefix": "s3://bucket", "config": {"k": "v"}}]
+})";
+
+}  // namespace
+
 // --------------------------------------------------------------------------
 // Helper JSON bodies for LoadTable GET responses
 // --------------------------------------------------------------------------
@@ -134,10 +185,10 @@ class RestCatalogLoadTableTest : public ::testing::Test {
   // client-side scan-planning-mode setting.
   Result<std::shared_ptr<RestCatalog>> MakeCatalog(
       const std::unordered_set<Endpoint>& endpoints,
-      const std::string& client_scan_mode = "") {
-    std::unordered_map<std::string, std::string> props{
-        {"uri", "http://test-server"},
-    };
+      const std::string& client_scan_mode = "",
+      std::unordered_map<std::string, std::string> extra_props = {}) {
+    std::unordered_map<std::string, std::string> props = std::move(extra_props);
+    props["uri"] = "http://test-server";
     if (!client_scan_mode.empty()) {
       props["scan-planning-mode"] = client_scan_mode;
     }
@@ -272,6 +323,65 @@ TEST_F(RestCatalogLoadTableTest, CommitWithDefaultScanModeReturnsPlainTable) {
                          table->catalog()->UpdateTable(identifier_, {}, {}));
 
   EXPECT_EQ(dynamic_cast<RestTable*>(committed.get()), nullptr);
+}
+
+// --------------------------------------------------------------------------
+// Scan-vended credentials get a provider that refreshes via /credentials?planId=.
+// --------------------------------------------------------------------------
+TEST_F(RestCatalogLoadTableTest, ScanCredentialProviderRequestsPlanId) {
+  RegisterCredentialedFileIO();
+  EXPECT_CALL(*mock_client_,
+              Get(::testing::Not(::testing::HasSubstr("/credentials")), _, _, _, _))
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, kLoadTableServerScanResponse)));
+  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
+      .WillOnce(Return(
+          HttpResponse::MakeForTesting(200, std::string(kPlanWithCredentialsResponse))));
+  EXPECT_CALL(*mock_client_,
+              Get(::testing::HasSubstr("/credentials"),
+                  ::testing::Contains(::testing::Pair("planId", "plan-1")), _, _, _))
+      .WillOnce(Return(HttpResponse::MakeForTesting(
+          200,
+          R"({"storage-credentials":[{"prefix":"s3://bucket","config":{"k":"v2"}}]})")));
+
+  auto endpoints = all_plan_endpoints_;
+  endpoints.insert(Endpoint::TableCredentials());
+  ICEBERG_UNWRAP_OR_FAIL(auto catalog,
+                         MakeCatalog(endpoints, /*client_scan_mode=*/"",
+                                     {{"io-impl", std::string(kCredentialedFileIO)}}));
+  ICEBERG_UNWRAP_OR_FAIL(auto as_catalog, catalog->AsCatalog());
+  ICEBERG_UNWRAP_OR_FAIL(auto table, as_catalog->LoadTable(identifier_));
+  ICEBERG_UNWRAP_OR_FAIL(auto builder, table->NewScan());
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
+  ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
+
+  ASSERT_NE(installed_provider, nullptr);
+  ICEBERG_UNWRAP_OR_FAIL(auto refreshed, installed_provider->Load());
+  ASSERT_EQ(refreshed.size(), 1);
+  EXPECT_EQ(refreshed[0].config.at("k"), "v2");
+}
+
+// --------------------------------------------------------------------------
+// Without the TableCredentials endpoint, scan credentials are not refreshed.
+// --------------------------------------------------------------------------
+TEST_F(RestCatalogLoadTableTest,
+       ScanCredentialsWithoutCredentialsEndpointHaveNoProvider) {
+  RegisterCredentialedFileIO();
+  EXPECT_CALL(*mock_client_, Get(_, _, _, _, _))
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, kLoadTableServerScanResponse)));
+  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
+      .WillOnce(Return(
+          HttpResponse::MakeForTesting(200, std::string(kPlanWithCredentialsResponse))));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto catalog,
+                         MakeCatalog(all_plan_endpoints_, /*client_scan_mode=*/"",
+                                     {{"io-impl", std::string(kCredentialedFileIO)}}));
+  ICEBERG_UNWRAP_OR_FAIL(auto as_catalog, catalog->AsCatalog());
+  ICEBERG_UNWRAP_OR_FAIL(auto table, as_catalog->LoadTable(identifier_));
+  ICEBERG_UNWRAP_OR_FAIL(auto builder, table->NewScan());
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
+  ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
+
+  EXPECT_EQ(installed_provider, nullptr);
 }
 
 }  // namespace iceberg::rest

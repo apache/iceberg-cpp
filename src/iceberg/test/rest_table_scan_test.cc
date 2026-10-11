@@ -39,10 +39,12 @@
 #include "iceberg/expression/expressions.h"
 #include "iceberg/expression/literal.h"
 #include "iceberg/file_io.h"
+#include "iceberg/file_io_registry.h"
 #include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/schema.h"
 #include "iceberg/snapshot.h"
+#include "iceberg/storage_credential.h"
 #include "iceberg/table_identifier.h"
 #include "iceberg/table_metadata.h"
 #include "iceberg/table_scan.h"
@@ -133,6 +135,44 @@ class NoOpFileIO : public FileIO {
   Status DeleteFile(const std::string&) override { return {}; }
 };
 
+namespace {
+
+// Records the credentials and provider installed on the scan FileIO.
+std::vector<StorageCredential> installed_credentials;
+std::shared_ptr<StorageCredentialProvider> installed_provider;
+
+class CredentialedFileIO : public NoOpFileIO, public SupportsStorageCredentials {
+ public:
+  Status InitializeStorageCredentials(
+      const std::vector<StorageCredential>& credentials,
+      std::shared_ptr<StorageCredentialProvider> provider) override {
+    installed_credentials = credentials;
+    installed_provider = std::move(provider);
+    return {};
+  }
+
+  Status SetStorageCredentials(
+      const std::vector<StorageCredential>& credentials) override {
+    installed_credentials = credentials;
+    return {};
+  }
+
+  std::vector<StorageCredential> credentials() const override {
+    return installed_credentials;
+  }
+
+  SupportsStorageCredentials* AsSupportsStorageCredentials() override { return this; }
+};
+
+constexpr std::string_view kCredentialedFileIO = "rest-table-scan-test-credentialed";
+
+class StaticCredentialProvider : public StorageCredentialProvider {
+ public:
+  Result<std::vector<StorageCredential>> Load() override { return {}; }
+};
+
+}  // namespace
+
 // --------------------------------------------------------------------------
 // Test fixture shared by RestTableScan tests.
 // --------------------------------------------------------------------------
@@ -199,6 +239,17 @@ class RestTableScanTest : public ::testing::Test {
         .supported_endpoints = std::move(effective),
         .identifier = identifier_,
     };
+  }
+
+  static void RegisterCredentialedFileIO() {
+    FileIORegistry::Register(
+        std::string(kCredentialedFileIO),
+        {.create = [](const std::unordered_map<std::string, std::string>&)
+             -> Result<std::unique_ptr<FileIO>> {
+          return std::make_unique<CredentialedFileIO>();
+        }});
+    installed_credentials.clear();
+    installed_provider = nullptr;
   }
 
   Result<std::unique_ptr<DataTableScan>> MakeScan(RestScanContext ctx) {
@@ -1133,6 +1184,88 @@ TEST_F(RestTableScanTest, PlanFilesStreamInvalidPollTimeoutFailsBeforePlanning) 
   ctx.catalog_config = {{"rest-scan-planning.poll-timeout-ms", "0"}};
   ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeScan(std::move(ctx)));
   EXPECT_THAT(scan->PlanFilesStream(), IsError(ErrorKind::kInvalidArgument));
+}
+
+// --------------------------------------------------------------------------
+// Vended credentials in the plan response install a provider scoped to the plan.
+// --------------------------------------------------------------------------
+TEST_F(RestTableScanTest, StorageCredentialsInstallPlanScopedProvider) {
+  constexpr std::string_view kPlanResponse = R"({
+    "status": "completed",
+    "plan-id": "plan-cred",
+    "storage-credentials": [{"prefix": "s3://bucket", "config": {"k": "v"}}]
+  })";
+  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kPlanResponse))));
+  RegisterCredentialedFileIO();
+
+  std::vector<std::string> requested_plan_ids;
+  auto provider = std::make_shared<StaticCredentialProvider>();
+  auto ctx = MakeContext();
+  ctx.catalog_config = {{"io-impl", std::string(kCredentialedFileIO)}};
+  ctx.credential_provider_factory = [&](const std::string& plan_id) {
+    requested_plan_ids.push_back(plan_id);
+    return provider;
+  };
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeScan(std::move(ctx)));
+  ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
+
+  EXPECT_THAT(requested_plan_ids, ::testing::ElementsAre("plan-cred"));
+  EXPECT_EQ(installed_provider, provider);
+  ASSERT_EQ(installed_credentials.size(), 1);
+  EXPECT_EQ(installed_credentials[0].prefix, "s3://bucket");
+}
+
+// --------------------------------------------------------------------------
+// Vended credentials in a FetchScanTasks response also use the plan id.
+// --------------------------------------------------------------------------
+TEST_F(RestTableScanTest, FetchScanTasksCredentialsInstallPlanScopedProvider) {
+  constexpr std::string_view kPlanResponse =
+      R"({"status":"completed","plan-id":"plan-cred-tasks","plan-tasks":["tok-1"]})";
+  constexpr std::string_view kTasksResponse = R"({
+    "file-scan-tasks": [],
+    "storage-credentials": [{"prefix": "s3://bucket", "config": {"k": "v"}}]
+  })";
+  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kPlanResponse))))
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kTasksResponse))));
+  RegisterCredentialedFileIO();
+
+  std::vector<std::string> requested_plan_ids;
+  auto provider = std::make_shared<StaticCredentialProvider>();
+  auto ctx = MakeContext();
+  ctx.catalog_config = {{"io-impl", std::string(kCredentialedFileIO)}};
+  ctx.credential_provider_factory = [&](const std::string& plan_id) {
+    requested_plan_ids.push_back(plan_id);
+    return provider;
+  };
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeScan(std::move(ctx)));
+  ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
+
+  EXPECT_THAT(requested_plan_ids, ::testing::ElementsAre("plan-cred-tasks"));
+  EXPECT_EQ(installed_provider, provider);
+}
+
+// --------------------------------------------------------------------------
+// Without a provider factory, vended credentials are installed as static.
+// --------------------------------------------------------------------------
+TEST_F(RestTableScanTest, StorageCredentialsWithoutFactoryInstallNoProvider) {
+  constexpr std::string_view kPlanResponse = R"({
+    "status": "completed",
+    "plan-id": "plan-static",
+    "storage-credentials": [{"prefix": "s3://bucket", "config": {"k": "v"}}]
+  })";
+  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kPlanResponse))));
+  RegisterCredentialedFileIO();
+
+  auto ctx = MakeContext();
+  ctx.catalog_config = {{"io-impl", std::string(kCredentialedFileIO)}};
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeScan(std::move(ctx)));
+  ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
+
+  EXPECT_EQ(installed_provider, nullptr);
+  EXPECT_EQ(installed_credentials.size(), 1);
 }
 
 // --------------------------------------------------------------------------

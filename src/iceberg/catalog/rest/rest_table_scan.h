@@ -20,6 +20,7 @@
 #pragma once
 
 #include <cstdint>
+#include <functional>
 #include <memory>
 #include <optional>
 #include <string>
@@ -62,6 +63,9 @@ struct ICEBERG_REST_EXPORT RestScanContext {
   std::unordered_map<std::string, std::string> catalog_config;
   /// Table-level config merged with catalog_config for scan-scoped FileIO creation.
   std::unordered_map<std::string, std::string> table_config;
+  /// Builds a plan-scoped provider for refreshing vended credentials; may be empty.
+  std::function<std::shared_ptr<StorageCredentialProvider>(const std::string& plan_id)>
+      credential_provider_factory;
 };
 
 /// \brief A DataTableScan that delegates PlanFilesStream() to the REST catalog server

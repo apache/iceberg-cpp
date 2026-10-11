@@ -21,6 +21,7 @@
 
 #include <memory>
 #include <mutex>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <tuple>
@@ -71,16 +72,18 @@ class RestStorageCredentialProvider final : public StorageCredentialProvider {
  public:
   RestStorageCredentialProvider(std::shared_ptr<HttpClient> client,
                                 std::shared_ptr<auth::AuthSession> session,
-                                std::string path)
+                                std::string path,
+                                std::unordered_map<std::string, std::string> params)
       : client_(std::move(client)),
         session_(std::move(session)),
-        path_(std::move(path)) {}
+        path_(std::move(path)),
+        params_(std::move(params)) {}
 
   Result<std::vector<StorageCredential>> Load() override {
     // The provider can be shared by several FileIOs; keep fetches serialized.
     std::lock_guard lock(mutex_);
     ICEBERG_ASSIGN_OR_RAISE(const auto response,
-                            client_->Get(path_, /*params=*/{}, /*headers=*/{},
+                            client_->Get(path_, params_, /*headers=*/{},
                                          *TableErrorHandler::Instance(), *session_));
     // Parse errors can contain credential data; return a fixed message.
     auto json = FromJsonString(response.body());
@@ -99,6 +102,7 @@ class RestStorageCredentialProvider final : public StorageCredentialProvider {
   std::shared_ptr<HttpClient> client_;
   std::shared_ptr<auth::AuthSession> session_;
   std::string path_;
+  std::unordered_map<std::string, std::string> params_;
   std::mutex mutex_;
 };
 
@@ -567,8 +571,8 @@ Result<std::shared_ptr<auth::AuthSession>> RestCatalog::TableAuthSession(
 }
 
 std::shared_ptr<StorageCredentialProvider> RestCatalog::MakeStorageCredentialProvider(
-    const TableIdentifier& identifier,
-    std::shared_ptr<auth::AuthSession> table_session) const {
+    const TableIdentifier& identifier, std::shared_ptr<auth::AuthSession> table_session,
+    std::optional<std::string> plan_id) const {
   if (!supported_endpoints_.contains(Endpoint::TableCredentials())) {
     // Not an error, but it surfaces much later as credentials expiring.
     ICEBERG_LOG_DEBUG(
@@ -588,8 +592,13 @@ std::shared_ptr<StorageCredentialProvider> RestCatalog::MakeStorageCredentialPro
   auto client = client_;
   auto credentials_path = std::move(path.value());
   auto session = std::move(table_session);
+  std::unordered_map<std::string, std::string> params;
+  if (plan_id.has_value()) {
+    params.emplace("planId", std::move(*plan_id));
+  }
   return std::make_shared<RestStorageCredentialProvider>(
-      std::move(client), std::move(session), std::move(credentials_path));
+      std::move(client), std::move(session), std::move(credentials_path),
+      std::move(params));
 }
 
 Result<std::shared_ptr<FileIO>> RestCatalog::TableFileIO(
@@ -1048,6 +1057,15 @@ Result<std::shared_ptr<Table>> RestCatalog::MakeTable(
           "the PlanTableScan endpoint.",
           identifier.ToString());
     }
+    auto credential_provider_factory =
+        [weak_catalog = weak_from_this(), identifier, table_session](
+            const std::string& plan_id) -> std::shared_ptr<StorageCredentialProvider> {
+      auto catalog = weak_catalog.lock();
+      if (catalog == nullptr) {
+        return nullptr;
+      }
+      return catalog->MakeStorageCredentialProvider(identifier, table_session, plan_id);
+    };
     RestScanContext rest_ctx{
         .client = client_,
         .paths = paths_,
@@ -1056,6 +1074,7 @@ Result<std::shared_ptr<Table>> RestCatalog::MakeTable(
         .identifier = identifier,
         .catalog_config = config_.configs(),
         .table_config = table_config,
+        .credential_provider_factory = std::move(credential_provider_factory),
     };
     return RestTable::Make(identifier, std::move(metadata), std::move(metadata_location),
                            std::move(table_io), std::move(table_catalog),
