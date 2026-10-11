@@ -193,24 +193,24 @@ Result<FetchPlanningResultResponse> FetchPlanningResult(
                                        *PlanErrorHandler::Instance(), *ctx.session);
     if (!response_or) {
       CancelPlanning(ctx, plan_id);
-      return std::unexpected<Error>(response_or.error());
+      return ::iceberg::unexpected<Error>(response_or.error());
     }
 
     auto json_or = FromJsonString(response_or->body());
     if (!json_or) {
       CancelPlanning(ctx, plan_id);
-      return std::unexpected<Error>(json_or.error());
+      return ::iceberg::unexpected<Error>(json_or.error());
     }
 
     auto result_or = FetchPlanningResultResponseFromJson(*json_or, specs, schema);
     if (!result_or) {
       CancelPlanning(ctx, plan_id);
-      return std::unexpected<Error>(result_or.error());
+      return ::iceberg::unexpected<Error>(result_or.error());
     }
 
     if (auto s = result_or->Validate(); !s) {
       CancelPlanning(ctx, plan_id);
-      return std::unexpected<Error>(s.error());
+      return ::iceberg::unexpected<Error>(s.error());
     }
 
     auto& result = *result_or;
@@ -220,7 +220,7 @@ Result<FetchPlanningResultResponse> FetchPlanningResult(
         if (auto s = ApplyStorageCredentials(ctx, result.storage_credentials, scan_io);
             !s) {
           CancelPlanning(ctx, plan_id);
-          return std::unexpected<Error>(s.error());
+          return ::iceberg::unexpected<Error>(s.error());
         }
         return std::move(result);
       }
@@ -344,7 +344,7 @@ Result<FileScanTaskStreamPtr> ExecuteScanPlanStream(
   auto result_or = PlanTableScanResponseFromJson(json, specs, schema);
   if (!result_or) {
     CancelPlanning(ctx, raw_plan_id);
-    return std::unexpected<Error>(result_or.error());
+    return ::iceberg::unexpected<Error>(result_or.error());
   }
   auto& result = *result_or;
 
@@ -375,7 +375,7 @@ Result<FileScanTaskStreamPtr> ExecuteScanPlanStream(
   if (auto s = ApplyStorageCredentials(ctx, result.storage_credentials, *scan_io_slot);
       !s) {
     CancelPlanning(ctx, plan_id);
-    return std::unexpected<Error>(s.error());
+    return ::iceberg::unexpected<Error>(s.error());
   }
 
   std::vector<std::shared_ptr<FileScanTask>> initial_tasks;
@@ -414,7 +414,7 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> ExecuteScanPlan(
   auto result_or = PlanTableScanResponseFromJson(json, specs, schema);
   if (!result_or) {
     CancelPlanning(ctx, raw_plan_id);
-    return std::unexpected<Error>(result_or.error());
+    return ::iceberg::unexpected<Error>(result_or.error());
   }
   auto& result = *result_or;
 
@@ -425,7 +425,7 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> ExecuteScanPlan(
       if (auto s = ApplyStorageCredentials(ctx, result.storage_credentials, scan_io);
           !s) {
         CancelPlanning(ctx, plan_id);
-        return std::unexpected<Error>(s.error());
+        return ::iceberg::unexpected<Error>(s.error());
       }
       auto tasks = ResolveScanTasks(ctx, schema, result.plan_tasks,
                                     result.file_scan_tasks, specs, scan_io);
