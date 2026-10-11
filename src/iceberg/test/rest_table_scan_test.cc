@@ -1167,11 +1167,70 @@ TEST_F(RestIncrementalAppendScanTest, SecondPlanFilesCallClearsStaleCredentials)
   // First call: server vends credentials.
   ICEBERG_UNWRAP_OR_FAIL(auto tasks1, scan->PlanFiles());
   EXPECT_TRUE(tasks1.empty());
+  EXPECT_NE(scan->io().get(), file_io_.get());
 
   // Second call: no credentials. Verifies scan_io_ was cleared so stale
   // credentials from the first plan do not bleed into the second request.
   ICEBERG_UNWRAP_OR_FAIL(auto tasks2, scan->PlanFiles());
   EXPECT_TRUE(tasks2.empty());
+  EXPECT_EQ(scan->io().get(), file_io_.get());
+}
+
+// --------------------------------------------------------------------------
+// Storage credentials in COMPLETED response: io() returns a credential-scoped IO.
+// --------------------------------------------------------------------------
+TEST_F(RestIncrementalAppendScanTest,
+       StorageCredentialsInPlanResponseUpdatesEffectiveIO) {
+  constexpr std::string_view kResponseBody = R"({
+    "status": "completed",
+    "storage-credentials": [
+      {"prefix": "s3://bucket/prefix", "config": {"key": "value"}}
+    ]
+  })";
+  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kResponseBody))));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeIncrementalScan(MakeContext()));
+  ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
+  EXPECT_TRUE(tasks.empty());
+  EXPECT_NE(scan->io().get(), file_io_.get());
+}
+
+// --------------------------------------------------------------------------
+// No storage credentials: io() falls back to the table's FileIO.
+// --------------------------------------------------------------------------
+TEST_F(RestIncrementalAppendScanTest, NoStorageCredentialsEffectiveIoFallsBackToTableIO) {
+  constexpr std::string_view kResponseBody = R"({"status":"completed"})";
+  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kResponseBody))));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeIncrementalScan(MakeContext()));
+  ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
+  EXPECT_TRUE(tasks.empty());
+  EXPECT_EQ(scan->io().get(), file_io_.get());
+}
+
+// --------------------------------------------------------------------------
+// Storage credentials in FetchScanTasksResponse also update io().
+// --------------------------------------------------------------------------
+TEST_F(RestIncrementalAppendScanTest,
+       StorageCredentialsInFetchScanTasksResponseUpdatesEffectiveIO) {
+  constexpr std::string_view kPlanResponse =
+      R"({"status":"completed","plan-id":"incr-plan-1","plan-tasks":["tok-incr-1"]})";
+  constexpr std::string_view kTasksResponse = R"({
+    "file-scan-tasks": [],
+    "storage-credentials": [
+      {"prefix": "s3://bucket/prefix", "config": {"key": "value"}}
+    ]
+  })";
+  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kPlanResponse))))
+      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kTasksResponse))));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeIncrementalScan(MakeContext()));
+  ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
+  EXPECT_TRUE(tasks.empty());
+  EXPECT_NE(scan->io().get(), file_io_.get());
 }
 
 // ==========================================================================

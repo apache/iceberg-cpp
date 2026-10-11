@@ -515,6 +515,10 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> RestIncrementalAppendScan::Pl
   return ExecuteScanPlan(rest_context_, *schema_, std::move(request), specs, scan_io_);
 }
 
+const std::shared_ptr<FileIO>& RestIncrementalAppendScan::io() const {
+  return scan_io_ ? scan_io_ : io_;
+}
+
 // ---------------------------------------------------------------------------
 // RestIncrementalAppendScanBuilder
 // ---------------------------------------------------------------------------

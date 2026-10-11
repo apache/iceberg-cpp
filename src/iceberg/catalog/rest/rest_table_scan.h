@@ -128,6 +128,10 @@ class ICEBERG_REST_EXPORT RestIncrementalAppendScan : public IncrementalAppendSc
 
   using IncrementalAppendScan::PlanFiles;
 
+  /// \brief Returns the FileIO with vended credentials if the server returned any
+  /// during planning; otherwise returns the table's FileIO.
+  const std::shared_ptr<FileIO>& io() const override;
+
  protected:
   /// \brief Plans files via the REST scan planning endpoints.
   Result<std::vector<std::shared_ptr<FileScanTask>>> PlanFiles(
