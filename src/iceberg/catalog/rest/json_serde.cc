@@ -128,8 +128,7 @@ Result<StorageCredential> StorageCredentialFromJson(const nlohmann::json& json) 
   return credential;
 }
 
-/// \brief Reads the optional `storage-credentials` array shared by the
-/// LoadTable and LoadCredentials responses.
+/// \brief Reads the optional `storage-credentials` array.
 Result<std::vector<StorageCredential>> StorageCredentialsFromJson(
     const nlohmann::json& json) {
   std::vector<StorageCredential> credentials;
@@ -145,6 +144,21 @@ Result<std::vector<StorageCredential>> StorageCredentialsFromJson(
     credentials.push_back(std::move(credential));
   }
   return credentials;
+}
+
+/// \brief Writes `storage-credentials` to json if any are present.
+Status StorageCredentialsToJson(const std::vector<StorageCredential>& credentials,
+                                nlohmann::json& json) {
+  if (credentials.empty()) {
+    return {};
+  }
+  nlohmann::json creds_json = nlohmann::json::array();
+  for (const auto& cred : credentials) {
+    ICEBERG_ASSIGN_OR_RAISE(auto entry, StorageCredentialToJson(cred));
+    creds_json.push_back(std::move(entry));
+  }
+  json[kStorageCredentials] = std::move(creds_json);
+  return {};
 }
 }  // namespace
 
@@ -292,15 +306,6 @@ Result<nlohmann::json> ScanTaskFieldsToJson(
     json[kFileScanTasks] = std::move(tasks_json);
   }
 
-  if (!response.storage_credentials.empty()) {
-    nlohmann::json creds_json = nlohmann::json::array();
-    for (const auto& cred : response.storage_credentials) {
-      ICEBERG_ASSIGN_OR_RAISE(auto entry, StorageCredentialToJson(cred));
-      creds_json.push_back(std::move(entry));
-    }
-    json[kStorageCredentials] = std::move(creds_json);
-  }
-
   return json;
 }
 
@@ -341,20 +346,6 @@ Status ScanTaskFieldsFromJson(
         response.file_scan_tasks,
         FileScanTasksFromJson(file_scan_tasks_json, response.delete_files,
                               partition_specs_by_id, schema));
-  }
-
-  // 4. storage_credentials
-  if (json.contains(kStorageCredentials)) {
-    ICEBERG_ASSIGN_OR_RAISE(auto creds_json,
-                            GetJsonValue<nlohmann::json>(json, kStorageCredentials));
-    if (!creds_json.is_array()) {
-      return JsonParseError("Cannot parse storage credentials from non-array: {}",
-                            SafeDumpJson(creds_json));
-    }
-    for (const auto& entry : creds_json) {
-      ICEBERG_ASSIGN_OR_RAISE(auto cred, StorageCredentialFromJson(entry));
-      response.storage_credentials.push_back(std::move(cred));
-    }
   }
 
   return {};
@@ -908,6 +899,7 @@ Result<PlanTableScanResponse> PlanTableScanResponseFromJson(
   }
   ICEBERG_RETURN_UNEXPECTED(
       ScanTaskFieldsFromJson(json, response, partition_specs_by_id, schema));
+  ICEBERG_ASSIGN_OR_RAISE(response.storage_credentials, StorageCredentialsFromJson(json));
   ICEBERG_RETURN_UNEXPECTED(response.Validate());
   return response;
 }
@@ -919,6 +911,7 @@ Result<nlohmann::json> ToJson(
     const Schema& schema) {
   ICEBERG_ASSIGN_OR_RAISE(nlohmann::json json,
                           ScanTaskFieldsToJson(response, partition_specs_by_id, schema));
+  ICEBERG_RETURN_UNEXPECTED(StorageCredentialsToJson(response.storage_credentials, json));
   json[kPlanStatus] = ToString(response.plan_status);
   if (!response.plan_id.empty()) {
     json[kPlanId] = response.plan_id;
@@ -945,6 +938,7 @@ Result<FetchPlanningResultResponse> FetchPlanningResultResponseFromJson(
   }
   ICEBERG_RETURN_UNEXPECTED(
       ScanTaskFieldsFromJson(json, response, partition_specs_by_id, schema));
+  ICEBERG_ASSIGN_OR_RAISE(response.storage_credentials, StorageCredentialsFromJson(json));
   ICEBERG_RETURN_UNEXPECTED(response.Validate());
   return response;
 }
@@ -956,6 +950,7 @@ Result<nlohmann::json> ToJson(
     const Schema& schema) {
   ICEBERG_ASSIGN_OR_RAISE(nlohmann::json json,
                           ScanTaskFieldsToJson(response, partition_specs_by_id, schema));
+  ICEBERG_RETURN_UNEXPECTED(StorageCredentialsToJson(response.storage_credentials, json));
   json[kPlanStatus] = ToString(response.plan_status);
   if (response.error.has_value()) {
     json[kError] = ToJson(*response.error)[kError];

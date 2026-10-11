@@ -388,7 +388,6 @@ struct ICEBERG_REST_EXPORT FetchScanTasksResponse {
   std::optional<std::vector<std::string>> plan_tasks;
   std::optional<std::vector<std::shared_ptr<FileScanTask>>> file_scan_tasks;
   std::vector<std::shared_ptr<DataFile>> delete_files;
-  std::vector<StorageCredential> storage_credentials;
 
   Status Validate() const;
 

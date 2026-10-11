@@ -721,9 +721,9 @@ TEST_F(RestTableScanTest, NoStorageCredentialsEffectiveIoFallsBackToTableIO) {
 }
 
 // --------------------------------------------------------------------------
-// Storage credentials returned in FetchScanTasksResponse also update io().
+// Storage credentials in a FetchScanTasks response are ignored.
 // --------------------------------------------------------------------------
-TEST_F(RestTableScanTest, StorageCredentialsInFetchScanTasksResponseUpdatesEffectiveIO) {
+TEST_F(RestTableScanTest, StorageCredentialsInFetchScanTasksResponseAreIgnored) {
   constexpr std::string_view kPlanResponse =
       R"({"status":"completed","plan-id":"plan-cred","plan-tasks":["tok-cred"]})";
   constexpr std::string_view kTasksResponse = R"({
@@ -741,7 +741,7 @@ TEST_F(RestTableScanTest, StorageCredentialsInFetchScanTasksResponseUpdatesEffec
   ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
   EXPECT_TRUE(tasks.empty());
 
-  EXPECT_NE(scan->io().get(), file_io_.get());
+  EXPECT_EQ(scan->io().get(), file_io_.get());
 }
 
 // --------------------------------------------------------------------------
@@ -1217,36 +1217,6 @@ TEST_F(RestTableScanTest, StorageCredentialsInstallPlanScopedProvider) {
 }
 
 // --------------------------------------------------------------------------
-// Vended credentials in a FetchScanTasks response also use the plan id.
-// --------------------------------------------------------------------------
-TEST_F(RestTableScanTest, FetchScanTasksCredentialsInstallPlanScopedProvider) {
-  constexpr std::string_view kPlanResponse =
-      R"({"status":"completed","plan-id":"plan-cred-tasks","plan-tasks":["tok-1"]})";
-  constexpr std::string_view kTasksResponse = R"({
-    "file-scan-tasks": [],
-    "storage-credentials": [{"prefix": "s3://bucket", "config": {"k": "v"}}]
-  })";
-  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kPlanResponse))))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kTasksResponse))));
-  RegisterCredentialedFileIO();
-
-  std::vector<std::string> requested_plan_ids;
-  auto provider = std::make_shared<StaticCredentialProvider>();
-  auto ctx = MakeContext();
-  ctx.catalog_config = {{"io-impl", std::string(kCredentialedFileIO)}};
-  ctx.credential_provider_factory = [&](const std::string& plan_id) {
-    requested_plan_ids.push_back(plan_id);
-    return provider;
-  };
-  ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeScan(std::move(ctx)));
-  ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
-
-  EXPECT_THAT(requested_plan_ids, ::testing::ElementsAre("plan-cred-tasks"));
-  EXPECT_EQ(installed_provider, provider);
-}
-
-// --------------------------------------------------------------------------
 // Without a provider factory, vended credentials are installed as static.
 // --------------------------------------------------------------------------
 TEST_F(RestTableScanTest, StorageCredentialsWithoutFactoryInstallNoProvider) {
@@ -1321,7 +1291,7 @@ TEST_F(RestTableScanTest, CancelCalledOnFetchPlanningResultGetError) {
 }
 
 // --------------------------------------------------------------------------
-// Stale credentials: second PlanFilesStream call resets scan_io_slot_ so that
+// Stale credentials: second PlanFilesStream call resets the scan FileIO so that
 // credentials from the first plan response do not persist into the second.
 // --------------------------------------------------------------------------
 TEST_F(RestTableScanTest, SecondPlanFilesStreamCallClearsStaleCredentials) {
@@ -1818,10 +1788,10 @@ TEST_F(RestIncrementalAppendScanTest, NoStorageCredentialsEffectiveIoFallsBackTo
 }
 
 // --------------------------------------------------------------------------
-// Storage credentials in FetchScanTasksResponse also update io().
+// Storage credentials in a FetchScanTasks response are ignored.
 // --------------------------------------------------------------------------
 TEST_F(RestIncrementalAppendScanTest,
-       StorageCredentialsInFetchScanTasksResponseUpdatesEffectiveIO) {
+       StorageCredentialsInFetchScanTasksResponseAreIgnored) {
   constexpr std::string_view kPlanResponse =
       R"({"status":"completed","plan-id":"incr-plan-1","plan-tasks":["tok-incr-1"]})";
   constexpr std::string_view kTasksResponse = R"({
@@ -1837,7 +1807,7 @@ TEST_F(RestIncrementalAppendScanTest,
   ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeIncrementalScan(MakeContext()));
   ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
   EXPECT_TRUE(tasks.empty());
-  EXPECT_NE(scan->io().get(), file_io_.get());
+  EXPECT_EQ(scan->io().get(), file_io_.get());
 }
 
 // ==========================================================================

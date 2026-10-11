@@ -97,9 +97,7 @@ class ICEBERG_REST_EXPORT RestTableScan : public DataTableScan {
                 RestScanContext rest_context);
 
   RestScanContext rest_context_;
-  /// Shared slot so credentials vended by any lazy FetchScanTasks response are
-  /// visible through io() even after the stream has been consumed.
-  mutable std::shared_ptr<std::shared_ptr<FileIO>> scan_io_slot_;
+  mutable std::shared_ptr<FileIO> scan_io_;
 };
 
 /// \brief Builder that produces a RestTableScan with the REST HTTP context injected.

@@ -62,10 +62,6 @@ Result<PollConfig> ResolvePollConfig(const RestScanContext& ctx) {
 }
 
 using SpecsById = std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>;
-// A shared slot that lets the scan and the stream share a single FileIO reference.
-// Credentials vended by any lazy FetchScanTasks response are written into *slot,
-// making them visible to RestTableScan::io() even after the stream is consumed.
-using ScanIoSlot = std::shared_ptr<std::shared_ptr<FileIO>>;
 
 #define ICEBERG_ENDPOINT_CHECK(endpoints, endpoint)                           \
   do {                                                                        \
@@ -121,15 +117,14 @@ void CancelPlanning(const RestScanContext& ctx, const std::string& plan_id) {
 }
 
 Result<std::vector<std::shared_ptr<FileScanTask>>> FetchScanTasks(
-    const RestScanContext& ctx, const std::string& plan_id, const Schema& schema,
-    const std::string& plan_task, const SpecsById& specs,
-    std::shared_ptr<FileIO>& scan_io);
+    const RestScanContext& ctx, const Schema& schema, const std::string& plan_task,
+    const SpecsById& specs);
 
 Result<std::vector<std::shared_ptr<FileScanTask>>> ResolveScanTasks(
-    const RestScanContext& ctx, const std::string& plan_id, const Schema& schema,
+    const RestScanContext& ctx, const Schema& schema,
     const std::optional<std::vector<std::string>>& plan_tasks,
     const std::optional<std::vector<std::shared_ptr<FileScanTask>>>& file_scan_tasks,
-    const SpecsById& specs, std::shared_ptr<FileIO>& scan_io) {
+    const SpecsById& specs) {
   std::vector<std::shared_ptr<FileScanTask>> result;
 
   if (file_scan_tasks.has_value()) {
@@ -138,8 +133,7 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> ResolveScanTasks(
 
   if (plan_tasks.has_value()) {
     for (const auto& token : *plan_tasks) {
-      ICEBERG_ASSIGN_OR_RAISE(
-          auto tasks, FetchScanTasks(ctx, plan_id, schema, token, specs, scan_io));
+      ICEBERG_ASSIGN_OR_RAISE(auto tasks, FetchScanTasks(ctx, schema, token, specs));
       result.insert(result.end(), tasks.begin(), tasks.end());
     }
   }
@@ -149,11 +143,9 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> ResolveScanTasks(
 
 // Fetches one plan task without resolving any nested plan tasks it returns.
 Result<FetchScanTasksResponse> FetchScanTasksOnce(const RestScanContext& ctx,
-                                                  const std::string& plan_id,
                                                   const Schema& schema,
                                                   const std::string& plan_task,
-                                                  const SpecsById& specs,
-                                                  std::shared_ptr<FileIO>& scan_io) {
+                                                  const SpecsById& specs) {
   ICEBERG_ENDPOINT_CHECK(ctx.supported_endpoints, Endpoint::FetchScanTasks());
 
   ICEBERG_ASSIGN_OR_RAISE(auto path, ctx.paths->FetchScanTasks(ctx.identifier));
@@ -167,19 +159,14 @@ Result<FetchScanTasksResponse> FetchScanTasksOnce(const RestScanContext& ctx,
   ICEBERG_ASSIGN_OR_RAISE(auto result,
                           FetchScanTasksResponseFromJson(json, specs, schema));
   ICEBERG_RETURN_UNEXPECTED(result.Validate());
-  ICEBERG_RETURN_UNEXPECTED(
-      ApplyStorageCredentials(ctx, plan_id, result.storage_credentials, scan_io));
   return result;
 }
 
 Result<std::vector<std::shared_ptr<FileScanTask>>> FetchScanTasks(
-    const RestScanContext& ctx, const std::string& plan_id, const Schema& schema,
-    const std::string& plan_task, const SpecsById& specs,
-    std::shared_ptr<FileIO>& scan_io) {
-  ICEBERG_ASSIGN_OR_RAISE(
-      auto result, FetchScanTasksOnce(ctx, plan_id, schema, plan_task, specs, scan_io));
-  return ResolveScanTasks(ctx, plan_id, schema, result.plan_tasks, result.file_scan_tasks,
-                          specs, scan_io);
+    const RestScanContext& ctx, const Schema& schema, const std::string& plan_task,
+    const SpecsById& specs) {
+  ICEBERG_ASSIGN_OR_RAISE(auto result, FetchScanTasksOnce(ctx, schema, plan_task, specs));
+  return ResolveScanTasks(ctx, schema, result.plan_tasks, result.file_scan_tasks, specs);
 }
 
 // Polls until the plan completes and returns the completed response. Plan tasks
@@ -268,24 +255,18 @@ Result<FetchPlanningResultResponse> FetchPlanningResult(
 /// constructed. The stream then yields the directly-returned file_scan_tasks first,
 /// then fetches each plan_task token lazily one at a time as Next() is called,
 /// queuing any nested plan tasks returned by the server.
-///
-/// scan_io_slot is shared with the owning RestTableScan so that credentials vended
-/// by any FetchScanTasks response are visible through RestTableScan::io() even after
-/// the stream has been consumed.
 class RestFileScanTaskStream final : public FileScanTaskStream {
  public:
   RestFileScanTaskStream(RestScanContext ctx, std::shared_ptr<Schema> schema,
                          std::string plan_id,
                          std::vector<std::shared_ptr<FileScanTask>> initial_tasks,
-                         std::vector<std::string> plan_task_tokens, SpecsById specs,
-                         ScanIoSlot scan_io_slot)
+                         std::vector<std::string> plan_task_tokens, SpecsById specs)
       : ctx_(std::move(ctx)),
         schema_(std::move(schema)),
         plan_id_(std::move(plan_id)),
         buffer_(std::move(initial_tasks)),
         plan_task_tokens_(std::move(plan_task_tokens)),
-        specs_(std::move(specs)),
-        scan_io_slot_(std::move(scan_io_slot)) {}
+        specs_(std::move(specs)) {}
 
   ~RestFileScanTaskStream() override {
     if (!consumed_) CancelPlanning(ctx_, plan_id_);
@@ -302,9 +283,8 @@ class RestFileScanTaskStream final : public FileScanTaskStream {
         return std::nullopt;
       }
       const std::string token = plan_task_tokens_[token_pos_++];
-      ICEBERG_ASSIGN_OR_RAISE(
-          auto result,
-          FetchScanTasksOnce(ctx_, plan_id_, *schema_, token, specs_, *scan_io_slot_));
+      ICEBERG_ASSIGN_OR_RAISE(auto result,
+                              FetchScanTasksOnce(ctx_, *schema_, token, specs_));
       if (result.plan_tasks.has_value()) {
         plan_task_tokens_.insert(plan_task_tokens_.end(), result.plan_tasks->begin(),
                                  result.plan_tasks->end());
@@ -324,17 +304,16 @@ class RestFileScanTaskStream final : public FileScanTaskStream {
   std::vector<std::string> plan_task_tokens_;
   size_t token_pos_ = 0;
   SpecsById specs_;
-  ScanIoSlot scan_io_slot_;
   bool consumed_ = false;
 };
 
 /// POST /plan (polling if SUBMITTED), apply credentials, return a lazy stream.
-///
-/// scan_io_slot is shared with the caller (RestTableScan) so that credentials
-/// vended by FetchScanTasks responses update RestTableScan::io() in place.
-Result<FileScanTaskStreamPtr> ExecuteScanPlanStream(
-    const RestScanContext& ctx, const Schema& schema, std::shared_ptr<Schema> schema_ptr,
-    PlanTableScanRequest request, const SpecsById& specs, ScanIoSlot scan_io_slot) {
+Result<FileScanTaskStreamPtr> ExecuteScanPlanStream(const RestScanContext& ctx,
+                                                    const Schema& schema,
+                                                    std::shared_ptr<Schema> schema_ptr,
+                                                    PlanTableScanRequest request,
+                                                    const SpecsById& specs,
+                                                    std::shared_ptr<FileIO>& scan_io) {
   ICEBERG_ENDPOINT_CHECK(ctx.supported_endpoints, Endpoint::PlanTableScan());
   ICEBERG_ASSIGN_OR_RAISE(auto poll_config, ResolvePollConfig(ctx));
 
@@ -362,13 +341,12 @@ Result<FileScanTaskStreamPtr> ExecuteScanPlanStream(
   if (result.plan_status == PlanStatus::kSubmitted) {
     ICEBERG_ASSIGN_OR_RAISE(
         auto completed,
-        FetchPlanningResult(ctx, schema, plan_id, specs, poll_config, *scan_io_slot));
+        FetchPlanningResult(ctx, schema, plan_id, specs, poll_config, scan_io));
     return std::make_unique<RestFileScanTaskStream>(
         ctx, std::move(schema_ptr), plan_id,
         std::move(completed.file_scan_tasks)
             .value_or(std::vector<std::shared_ptr<FileScanTask>>{}),
-        std::move(completed.plan_tasks).value_or(std::vector<std::string>{}), specs,
-        std::move(scan_io_slot));
+        std::move(completed.plan_tasks).value_or(std::vector<std::string>{}), specs);
   }
 
   if (result.plan_status == PlanStatus::kFailed) {
@@ -381,8 +359,7 @@ Result<FileScanTaskStreamPtr> ExecuteScanPlanStream(
   }
 
   // kCompleted: apply credentials from the initial response, then build the lazy stream.
-  if (auto s = ApplyStorageCredentials(ctx, plan_id, result.storage_credentials,
-                                       *scan_io_slot);
+  if (auto s = ApplyStorageCredentials(ctx, plan_id, result.storage_credentials, scan_io);
       !s) {
     CancelPlanning(ctx, plan_id);
     return ::iceberg::unexpected<Error>(s.error());
@@ -397,9 +374,9 @@ Result<FileScanTaskStreamPtr> ExecuteScanPlanStream(
     plan_task_tokens = std::move(*result.plan_tasks);
   }
 
-  return std::make_unique<RestFileScanTaskStream>(
-      ctx, std::move(schema_ptr), plan_id, std::move(initial_tasks),
-      std::move(plan_task_tokens), specs, std::move(scan_io_slot));
+  return std::make_unique<RestFileScanTaskStream>(ctx, std::move(schema_ptr), plan_id,
+                                                  std::move(initial_tasks),
+                                                  std::move(plan_task_tokens), specs);
 }
 
 /// Eager batch planning: used by RestIncrementalAppendScan which has no stream path.
@@ -438,8 +415,8 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> ExecuteScanPlan(
         CancelPlanning(ctx, plan_id);
         return ::iceberg::unexpected<Error>(s.error());
       }
-      auto tasks = ResolveScanTasks(ctx, plan_id, schema, result.plan_tasks,
-                                    result.file_scan_tasks, specs, scan_io);
+      auto tasks =
+          ResolveScanTasks(ctx, schema, result.plan_tasks, result.file_scan_tasks, specs);
       if (!tasks) CancelPlanning(ctx, plan_id);
       return tasks;
     }
@@ -447,8 +424,8 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> ExecuteScanPlan(
       ICEBERG_ASSIGN_OR_RAISE(
           auto completed,
           FetchPlanningResult(ctx, schema, plan_id, specs, poll_config, scan_io));
-      auto tasks = ResolveScanTasks(ctx, plan_id, schema, completed.plan_tasks,
-                                    completed.file_scan_tasks, specs, scan_io);
+      auto tasks = ResolveScanTasks(ctx, schema, completed.plan_tasks,
+                                    completed.file_scan_tasks, specs);
       if (!tasks) CancelPlanning(ctx, plan_id);
       return tasks;
     }
@@ -474,8 +451,7 @@ RestTableScan::RestTableScan(std::shared_ptr<TableMetadata> metadata,
                              RestScanContext rest_context)
     : DataTableScan(std::move(metadata), std::move(schema), std::move(io),
                     std::move(context)),
-      rest_context_(std::move(rest_context)),
-      scan_io_slot_(std::make_shared<std::shared_ptr<FileIO>>()) {}
+      rest_context_(std::move(rest_context)) {}
 
 Result<std::unique_ptr<DataTableScan>> RestTableScan::Make(
     std::shared_ptr<TableMetadata> metadata, std::shared_ptr<Schema> schema,
@@ -490,8 +466,7 @@ Result<std::unique_ptr<DataTableScan>> RestTableScan::Make(
 }
 
 Result<FileScanTaskStreamPtr> RestTableScan::PlanFilesStream() const {
-  *scan_io_slot_ =
-      nullptr;  // reset so stale credentials from a prior plan are not reused
+  scan_io_ = nullptr;  // reset so stale credentials from a prior plan are not reused
   TableMetadataCache metadata_cache(metadata_.get());
   ICEBERG_ASSIGN_OR_RAISE(auto specs, metadata_cache.GetPartitionSpecsById());
 
@@ -521,11 +496,11 @@ Result<FileScanTaskStreamPtr> RestTableScan::PlanFilesStream() const {
   }
 
   return ExecuteScanPlanStream(rest_context_, *schema_, schema_, std::move(request),
-                               specs, scan_io_slot_);
+                               specs, scan_io_);
 }
 
 const std::shared_ptr<FileIO>& RestTableScan::io() const {
-  return *scan_io_slot_ ? *scan_io_slot_ : io_;
+  return scan_io_ ? scan_io_ : io_;
 }
 
 // ---------------------------------------------------------------------------

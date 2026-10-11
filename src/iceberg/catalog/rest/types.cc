@@ -210,7 +210,6 @@ bool OptionalSharedPtrVectorEqual(
 template <typename Response>
 bool ScanTaskFieldsEqual(const Response& lhs, const Response& rhs) {
   return lhs.plan_tasks == rhs.plan_tasks &&
-         lhs.storage_credentials == rhs.storage_credentials &&
          SharedPtrVectorEqual(lhs.delete_files, rhs.delete_files) &&
          OptionalSharedPtrVectorEqual(lhs.file_scan_tasks, rhs.file_scan_tasks,
                                       FileScanTaskEqual);
@@ -230,13 +229,14 @@ bool HasNonEmptyFileScanTasks(const Response& response) {
 
 bool PlanTableScanResponse::operator==(const PlanTableScanResponse& other) const {
   return ScanTaskFieldsEqual(*this, other) && plan_status == other.plan_status &&
-         plan_id == other.plan_id && error == other.error;
+         plan_id == other.plan_id && error == other.error &&
+         storage_credentials == other.storage_credentials;
 }
 
 bool FetchPlanningResultResponse::operator==(
     const FetchPlanningResultResponse& other) const {
   return ScanTaskFieldsEqual(*this, other) && plan_status == other.plan_status &&
-         error == other.error;
+         error == other.error && storage_credentials == other.storage_credentials;
 }
 
 bool FetchScanTasksRequest::operator==(const FetchScanTasksRequest& other) const {
