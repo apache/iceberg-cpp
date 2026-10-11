@@ -858,9 +858,10 @@ TEST_P(TableScanTest, SchemaWithSelectedColumnsAndFilter) {
   }
 }
 
-// use_snapshot_schema propagation tests: verify the field is set correctly for
-// UseSnapshot, UseRef (tag vs branch), and default/incremental scans.
-TEST_P(TableScanTest, UseSnapshotSetsTrueUseSnapshotSchema) {
+// use_snapshot_schema checks do not depend on format version, so run them once.
+class TableScanContextTest : public TableScanTest {};
+
+TEST_F(TableScanContextTest, UseSnapshotSetsTrueUseSnapshotSchema) {
   constexpr int64_t kSnapshotId = 1000L;
   ICEBERG_UNWRAP_OR_FAIL(auto builder, MakeScanBuilder<DataTableScan>(table_metadata_));
   builder->UseSnapshot(kSnapshotId);
@@ -868,7 +869,7 @@ TEST_P(TableScanTest, UseSnapshotSetsTrueUseSnapshotSchema) {
   EXPECT_TRUE(scan->context().use_snapshot_schema);
 }
 
-TEST_P(TableScanTest, UseRefTagSetsTrueUseSnapshotSchema) {
+TEST_F(TableScanContextTest, UseRefTagSetsTrueUseSnapshotSchema) {
   constexpr int64_t kSnapshotId = 1000L;
   table_metadata_->refs["v1.0"] = std::make_shared<SnapshotRef>(
       SnapshotRef{.snapshot_id = kSnapshotId, .retention = SnapshotRef::Tag{}});
@@ -879,14 +880,14 @@ TEST_P(TableScanTest, UseRefTagSetsTrueUseSnapshotSchema) {
   EXPECT_TRUE(scan->context().use_snapshot_schema);
 }
 
-TEST_P(TableScanTest, UseRefBranchSetsFalseUseSnapshotSchema) {
+TEST_F(TableScanContextTest, UseRefBranchSetsFalseUseSnapshotSchema) {
   ICEBERG_UNWRAP_OR_FAIL(auto builder, MakeScanBuilder<DataTableScan>(table_metadata_));
   builder->UseRef("main");
   ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
   EXPECT_FALSE(scan->context().use_snapshot_schema);
 }
 
-TEST_P(TableScanTest, DefaultScanHasFalseUseSnapshotSchema) {
+TEST_F(TableScanContextTest, DefaultScanHasFalseUseSnapshotSchema) {
   ICEBERG_UNWRAP_OR_FAIL(auto builder, MakeScanBuilder<DataTableScan>(table_metadata_));
   ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
   EXPECT_FALSE(scan->context().use_snapshot_schema);
