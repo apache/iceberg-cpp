@@ -168,7 +168,7 @@ Status BulkDeleteFiles(std::span<const std::string> file_locations, Executor* ex
       submission_error->message += std::format("; failed to delete {} of {} files",
                                                failed.load(), file_locations.size());
     }
-    return std::unexpected(std::move(*submission_error));
+    return Status::unexpected_type(std::move(*submission_error));
   }
   if (failed > 0) {
     return IOError("Failed to delete {} of {} files", failed.load(),
