@@ -71,7 +71,6 @@ class DataWriterTest : public ::testing::Test {
     return DataWriterOptions{
         .path = "test_data.parquet",
         .schema = schema_,
-        .input_schema = schema_,
         .spec = partition_spec_,
         .partition = std::move(partition),
         .format = FileFormatType::kParquet,
@@ -139,22 +138,11 @@ class DataWriterFormatTest
     : public DataWriterTest,
       public ::testing::WithParamInterface<std::pair<FileFormatType, std::string>> {};
 
-TEST_F(DataWriterTest, RejectsMissingInputSchema) {
-  auto options = MakeDefaultOptions();
-  options.input_schema.reset();
-
-  auto result = DataWriter::Make(options);
-
-  EXPECT_THAT(result, IsError(ErrorKind::kInvalidArgument));
-  EXPECT_THAT(result, HasErrorMessage("Input schema must not be null"));
-}
-
 TEST_P(DataWriterFormatTest, CreateWithFormat) {
   auto [format, path] = GetParam();
   DataWriterOptions options{
       .path = path,
       .schema = schema_,
-      .input_schema = schema_,
       .spec = partition_spec_,
       .partition = PartitionValues{},
       .format = format,
@@ -174,12 +162,12 @@ TEST_P(DataWriterFormatTest, WriteRowLineage) {
   DataWriterOptions options{
       .path = path,
       .schema = schema,
-      .input_schema = schema,
       .spec = partition_spec_,
       .partition = PartitionValues{},
       .format = format,
       .io = file_io_,
       .properties = FormatProperties(format),
+      .input_schema = schema,
   };
 
   ICEBERG_UNWRAP_OR_FAIL(auto writer, DataWriter::Make(options));

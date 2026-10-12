@@ -85,6 +85,8 @@ struct ICEBERG_EXPORT WriterOptions {
   std::shared_ptr<MetricsConfig> metrics_config = MetricsConfig::Default();
   /// \brief Format-specific or implementation-specific properties.
   WriterProperties properties;
+  /// \brief Schema of input batches; when omitted, batches use the target schema.
+  std::shared_ptr<Schema> input_schema;
 };
 
 /// \brief Base writer class to write data from different file formats.
@@ -106,12 +108,6 @@ class ICEBERG_EXPORT Writer {
   /// \return Status of write results.
   /// \note Ownership of the data is transferred to the writer.
   virtual Status Write(ArrowArray* data) = 0;
-
-  /// \brief Write Arrow data described by an input schema that may differ from the
-  /// writer schema.
-  ///
-  /// \note Ownership of the data is transferred to the writer.
-  virtual Status Write(ArrowArray* data, const Schema& input_schema) = 0;
 
   /// \brief Get the file statistics.
   /// Only valid after the file is closed.

@@ -253,7 +253,7 @@ namespace arrow {
 /// Fields are matched by Iceberg field id. Missing fields are materialized from their
 /// `write-default`, or as null when optional. Missing required fields without a
 /// `write-default` are rejected. Existing values, including explicit nulls, are
-/// preserved. Nested structs are aligned recursively.
+/// preserved. Structs, lists, and maps are aligned recursively.
 ///
 /// `input_batch` is consumed even when alignment fails.
 ICEBERG_EXPORT Result<ArrowArray> AlignBatchForWrite(ArrowArray* input_batch,

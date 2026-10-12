@@ -40,8 +40,6 @@ class ICEBERG_BUNDLE_EXPORT ParquetWriter : public Writer {
 
   Status Write(ArrowArray* array) final;
 
-  Status Write(ArrowArray* array, const Schema& input_schema) final;
-
   Result<Metrics> metrics() final;
 
   Result<int64_t> length() final;

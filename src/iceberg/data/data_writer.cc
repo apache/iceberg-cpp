@@ -26,7 +26,6 @@
 #include "iceberg/file_writer.h"
 #include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/partition_spec.h"
-#include "iceberg/schema.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg {
@@ -35,12 +34,12 @@ class DataWriter::Impl {
  public:
   static Result<std::unique_ptr<Impl>> Make(DataWriterOptions options) {
     ICEBERG_PRECHECK(options.schema != nullptr, "Write schema must not be null");
-    ICEBERG_PRECHECK(options.input_schema != nullptr, "Input schema must not be null");
     WriterOptions writer_options{
         .path = options.path,
         .schema = options.schema,
         .io = options.io,
         .properties = WriterProperties::FromMap(options.properties),
+        .input_schema = options.input_schema,
     };
 
     ICEBERG_ASSIGN_OR_RAISE(auto writer,
@@ -49,12 +48,7 @@ class DataWriter::Impl {
     return std::unique_ptr<Impl>(new Impl(std::move(options), std::move(writer)));
   }
 
-  Status Write(ArrowArray* data) {
-    if (*options_.input_schema == *options_.schema) {
-      return writer_->Write(data);
-    }
-    return writer_->Write(data, *options_.input_schema);
-  }
+  Status Write(ArrowArray* data) { return writer_->Write(data); }
 
   Result<int64_t> Length() const { return writer_->length(); }
 

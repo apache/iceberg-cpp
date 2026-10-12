@@ -42,14 +42,14 @@ namespace iceberg {
 struct ICEBERG_DATA_EXPORT DataWriterOptions {
   std::string path;
   std::shared_ptr<Schema> schema;
-  /// Required schema of Arrow batches passed to Write.
-  std::shared_ptr<Schema> input_schema;
   std::shared_ptr<PartitionSpec> spec;
   PartitionValues partition;
   FileFormatType format = FileFormatType::kParquet;
   std::shared_ptr<FileIO> io;
   std::optional<int32_t> sort_order_id;
   std::unordered_map<std::string, std::string> properties;
+  /// \brief Schema of input batches; when omitted, batches use the target schema.
+  std::shared_ptr<Schema> input_schema;
 };
 
 /// \brief Writer for Iceberg data files.

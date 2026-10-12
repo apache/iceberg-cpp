@@ -25,8 +25,10 @@
 #include <variant>
 #include <vector>
 
-#include <arrow/array.h>
+#include <arrow/array/array_base.h>
 #include <arrow/array/array_primitive.h>
+#include <arrow/array/data.h>
+#include <arrow/array/util.h>
 #include <arrow/buffer.h>
 #include <arrow/c/bridge.h>
 #include <arrow/compute/api_vector.h>
@@ -151,22 +153,21 @@ Result<std::shared_ptr<::arrow::Schema>> ImportIcebergSchema(const Schema& schem
   return arrow_schema;
 }
 
-// Writers must not silently drop data: every input field, at any struct nesting level,
-// has to exist in the write schema.
-Status RejectUnknownInputFields(const StructType& input_struct,
-                                const StructType& write_struct) {
-  for (const auto& input_field : input_struct.fields()) {
+// Writers must not silently drop data at any nesting level.
+Status RejectUnknownInputFields(const NestedType& input_type,
+                                const NestedType& write_type) {
+  for (const auto& input_field : input_type.fields()) {
     ICEBERG_ASSIGN_OR_RAISE(auto write_field,
-                            write_struct.GetFieldById(input_field.field_id()));
+                            write_type.GetFieldById(input_field.field_id()));
     if (!write_field.has_value()) {
       return InvalidSchema("Input field id {} is not present in write schema",
                            input_field.field_id());
     }
-    if (input_field.type()->type_id() == TypeId::kStruct &&
-        write_field->get().type()->type_id() == TypeId::kStruct) {
+    if (input_field.type()->is_nested() &&
+        input_field.type()->type_id() == write_field->get().type()->type_id()) {
       ICEBERG_RETURN_UNEXPECTED(RejectUnknownInputFields(
-          internal::checked_cast<const StructType&>(*input_field.type()),
-          internal::checked_cast<const StructType&>(*write_field->get().type())));
+          internal::checked_cast<const NestedType&>(*input_field.type()),
+          internal::checked_cast<const NestedType&>(*write_field->get().type())));
     }
   }
   return {};
@@ -175,8 +176,8 @@ Status RejectUnknownInputFields(const StructType& input_struct,
 Result<std::vector<std::shared_ptr<::arrow::Array>>> MaterializeProjection(
     std::span<const FieldProjection> projections,
     const std::vector<std::shared_ptr<::arrow::Array>>& input_arrays,
-    const std::vector<std::shared_ptr<::arrow::Field>>& write_arrow_fields, int64_t length,
-    ::arrow::MemoryPool* pool) {
+    const std::vector<std::shared_ptr<::arrow::Field>>& write_arrow_fields,
+    int64_t length, ::arrow::MemoryPool* pool) {
   std::vector<std::shared_ptr<::arrow::Array>> result;
   result.reserve(projections.size());
   for (size_t index = 0; index < projections.size(); ++index) {
@@ -189,39 +190,54 @@ Result<std::vector<std::shared_ptr<::arrow::Array>>> MaterializeProjection(
           result.emplace_back(input_array);
           break;
         }
-        auto input_struct = std::dynamic_pointer_cast<::arrow::StructArray>(input_array);
-        auto write_struct_type =
-            std::dynamic_pointer_cast<::arrow::StructType>(write_arrow_type);
-        if (input_struct == nullptr || write_struct_type == nullptr) {
-          return InvalidArrowData("Expected struct array for projected field {}",
-                                  index);
+        auto data = input_array->data()->Copy();
+        data->type = write_arrow_type;
+        auto child_data = data;
+        auto child_type = write_arrow_type;
+        int64_t child_length = data->offset + data->length;
+        switch (write_arrow_type->id()) {
+          case ::arrow::Type::STRUCT:
+            break;
+          case ::arrow::Type::LIST:
+            child_length = data->child_data[0]->length;
+            break;
+          case ::arrow::Type::MAP:
+            // Arrow maps have an entries struct between the map and its key/value.
+            child_data = data->child_data[0]->Copy();
+            child_type = write_arrow_type->field(0)->type();
+            child_length = child_data->offset + child_data->length;
+            break;
+          default:
+            return InvalidArrowData("Expected nested array for projected field {}",
+                                    index);
         }
+        std::vector<std::shared_ptr<::arrow::Array>> input_children;
+        input_children.reserve(child_data->child_data.size());
+        for (const auto& child : child_data->child_data) {
+          input_children.emplace_back(::arrow::MakeArray(child));
+        }
+        // Raw child data retains the parent's physical row positions.
+        // StructArray::fields() would apply the parent slice, causing its offset to be
+        // applied twice.
         ICEBERG_ASSIGN_OR_RAISE(
             auto children,
-            MaterializeProjection(projection.children, input_struct->fields(),
-                                  write_struct_type->fields(), input_struct->length(),
-                                  pool));
-        if (children.empty()) {
-          result.emplace_back(std::make_shared<::arrow::StructArray>(
-              write_struct_type, input_struct->length(), std::move(children),
-              input_struct->null_bitmap(), input_struct->null_count(),
-              input_struct->offset()));
-          break;
+            MaterializeProjection(projection.children, input_children,
+                                  child_type->fields(), child_length, pool));
+        child_data->type = child_type;
+        child_data->child_data.clear();
+        for (const auto& child : children) {
+          child_data->child_data.emplace_back(child->data());
         }
-        ICEBERG_ARROW_ASSIGN_OR_RETURN(
-            auto struct_array,
-            ::arrow::StructArray::Make(std::move(children), write_struct_type->fields(),
-                                       input_struct->null_bitmap(),
-                                       input_struct->null_count(),
-                                       input_struct->offset()));
-        result.emplace_back(std::move(struct_array));
+        if (write_arrow_type->id() == ::arrow::Type::MAP) {
+          data->child_data = {std::move(child_data)};
+        }
+        result.emplace_back(::arrow::MakeArray(std::move(data)));
         break;
       }
       case FieldProjection::Kind::kDefault: {
-        ICEBERG_ASSIGN_OR_RAISE(
-            auto default_array,
-            MakeDefaultArray(std::get<Literal>(projection.from), write_arrow_type,
-                             length, pool));
+        ICEBERG_ASSIGN_OR_RAISE(auto default_array,
+                                MakeDefaultArray(std::get<Literal>(projection.from),
+                                                 write_arrow_type, length, pool));
         result.emplace_back(std::move(default_array));
         break;
       }
@@ -259,15 +275,15 @@ Result<ArrowArray> AlignBatchForWrite(ArrowArray* input_batch, const Schema& inp
   ICEBERG_RETURN_UNEXPECTED(RejectUnknownInputFields(input_schema, write_schema));
   ICEBERG_ASSIGN_OR_RAISE(
       auto projection,
-      Project(write_schema, input_schema, /*prune_source=*/false,
-              ProjectionOptions{
-                  .default_policy = ProjectionOptions::DefaultPolicy::kWrite,
-                  .allow_type_promotion = false}));
+      Project(
+          write_schema, input_schema, /*prune_source=*/false,
+          ProjectionOptions{.default_policy = ProjectionOptions::DefaultPolicy::kWrite,
+                            .allow_type_promotion = false}));
   ICEBERG_ASSIGN_OR_RAISE(
       auto columns,
       MaterializeProjection(projection.fields, input_record_batch->columns(),
-                            write_arrow_schema->fields(),
-                            input_record_batch->num_rows(), pool));
+                            write_arrow_schema->fields(), input_record_batch->num_rows(),
+                            pool));
   auto output_record_batch = ::arrow::RecordBatch::Make(
       write_arrow_schema, input_record_batch->num_rows(), std::move(columns));
 
