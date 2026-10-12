@@ -24,6 +24,21 @@
 
 namespace iceberg {
 
+namespace {
+
+Result<std::optional<bool>> CombineResults(const std::optional<bool>& left_result,
+                                           const std::optional<bool>& right_result) {
+  if (!left_result.has_value()) {
+    return right_result;
+  }
+  if (right_result.has_value() && left_result != right_result) {
+    return InvalidExpression("Found partially bound expression");
+  }
+  return left_result;
+}
+
+}  // namespace
+
 Binder::Binder(const Schema& schema, bool case_sensitive)
     : schema_(schema), case_sensitive_(case_sensitive) {}
 
@@ -82,40 +97,44 @@ Result<std::shared_ptr<Expression>> Binder::Aggregate(
 Result<bool> IsBoundVisitor::IsBound(const std::shared_ptr<Expression>& expr) {
   ICEBERG_PRECHECK(expr != nullptr, "Expression cannot be null");
   IsBoundVisitor visitor;
-  return Visit<bool, IsBoundVisitor>(expr, visitor);
+  ICEBERG_ASSIGN_OR_RAISE(auto is_bound, Visit<std::optional<bool>>(expr, visitor));
+  return is_bound.value_or(false);
 }
 
-Result<bool> IsBoundVisitor::AlwaysTrue() {
-  return InvalidExpression("IsBoundVisitor does not support AlwaysTrue expression");
+Result<std::optional<bool>> IsBoundVisitor::AlwaysTrue() { return std::nullopt; }
+
+Result<std::optional<bool>> IsBoundVisitor::AlwaysFalse() { return std::nullopt; }
+
+Result<std::optional<bool>> IsBoundVisitor::Not(const std::optional<bool>& child_result) {
+  return child_result;
 }
 
-Result<bool> IsBoundVisitor::AlwaysFalse() {
-  return InvalidExpression("IsBoundVisitor does not support AlwaysFalse expression");
+Result<std::optional<bool>> IsBoundVisitor::And(const std::optional<bool>& left_result,
+                                                const std::optional<bool>& right_result) {
+  return CombineResults(left_result, right_result);
 }
 
-Result<bool> IsBoundVisitor::Not(bool child_result) { return child_result; }
-
-Result<bool> IsBoundVisitor::And(bool left_result, bool right_result) {
-  return left_result && right_result;
+Result<std::optional<bool>> IsBoundVisitor::Or(const std::optional<bool>& left_result,
+                                               const std::optional<bool>& right_result) {
+  return CombineResults(left_result, right_result);
 }
 
-Result<bool> IsBoundVisitor::Or(bool left_result, bool right_result) {
-  return left_result && right_result;
-}
-
-Result<bool> IsBoundVisitor::Predicate(const std::shared_ptr<BoundPredicate>& pred) {
+Result<std::optional<bool>> IsBoundVisitor::Predicate(
+    const std::shared_ptr<BoundPredicate>& pred) {
   return true;
 }
 
-Result<bool> IsBoundVisitor::Predicate(const std::shared_ptr<UnboundPredicate>& pred) {
+Result<std::optional<bool>> IsBoundVisitor::Predicate(
+    const std::shared_ptr<UnboundPredicate>& pred) {
   return false;
 }
 
-Result<bool> IsBoundVisitor::Aggregate(const std::shared_ptr<BoundAggregate>& aggregate) {
+Result<std::optional<bool>> IsBoundVisitor::Aggregate(
+    const std::shared_ptr<BoundAggregate>& aggregate) {
   return true;
 }
 
-Result<bool> IsBoundVisitor::Aggregate(
+Result<std::optional<bool>> IsBoundVisitor::Aggregate(
     const std::shared_ptr<UnboundAggregate>& aggregate) {
   return false;
 }
