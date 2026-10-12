@@ -211,6 +211,8 @@ Result<std::shared_ptr<FileScanTask>> FileScanTask::MakeSplit(
     return InvalidArgument("Split length {} from start {} is outside file {} of size {}",
                            length, start, data_file->file_path, file_size);
   }
+  // A full-file range is a whole-file task (is_split() is false). This is also the
+  // only valid empty range: [0, 0) of an empty file.
   if (start == 0 && length == file_size) {
     return std::make_shared<FileScanTask>(std::move(data_file), std::move(delete_files),
                                           std::move(filter));
@@ -243,8 +245,8 @@ int64_t FileScanTask::estimated_row_count() const {
     return 0;
   }
 
-  // Cumulative boundaries make estimates additive across contiguous splits, and
-  // 128-bit products avoid overflow for any valid int64 file size and row count.
+  // floor(end * rows / size) - floor(start * rows / size), so splits that cover
+  // the file sum exactly to record_count. int128 avoids overflow.
   const auto end = static_cast<int128_t>(range_->start) + range_->length;
   const auto count_at_end = end * record_count / range_->file_size;
   const auto count_at_start =

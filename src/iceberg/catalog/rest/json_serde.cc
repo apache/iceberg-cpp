@@ -114,6 +114,7 @@ constexpr std::string_view kLength = "length";
 constexpr std::string_view kMapKeys = "keys";
 constexpr std::string_view kMapValues = "values";
 
+// Reject values above INT64_MAX; get<int64_t>() would wrap them to negative.
 Result<int64_t> GetRangeValue(const nlohmann::json& json, std::string_view key) {
   const auto& value = json.at(key);
   if (!value.is_number_integer()) {
@@ -185,6 +186,7 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> FileScanTasksFromJson(
                             GetJsonValue<nlohmann::json>(task_json, kDataFile));
     ICEBERG_ASSIGN_OR_RAISE(
         auto data_file, DataFileFromJson(data_file_json, partition_spec_by_id, schema));
+    // Neither field means the whole file. Only one field is ambiguous.
     const bool has_start = task_json.contains(kStart);
     const bool has_length = task_json.contains(kLength);
     if (has_start != has_length) {
@@ -277,6 +279,7 @@ Result<nlohmann::json> ScanTaskFieldsToJson(
       if (!task) continue;
       nlohmann::json task_json;
       if (task->data_file()) {
+        // The shared data file may have changed size; don't write an invalid range.
         auto range_result =
             FileScanTask::MakeSplit(task->data_file(), task->start(), task->length());
         if (!range_result) {

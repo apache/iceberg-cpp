@@ -115,9 +115,11 @@ class ICEBERG_EXPORT FileScanTask : public ScanTask {
   int64_t estimated_row_count() const override;
 
  private:
+  // Only set for a partial file; whole-file tasks leave range_ empty.
   struct Range {
     int64_t start;
     int64_t length;
+    // Size when the range was validated. Always positive, so safe to divide by.
     int64_t file_size;
   };
 
