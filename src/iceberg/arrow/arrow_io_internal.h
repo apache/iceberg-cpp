@@ -22,7 +22,9 @@
 #include <cstddef>
 #include <functional>
 #include <memory>
+#include <mutex>
 #include <optional>
+#include <span>
 #include <string>
 #include <vector>
 
@@ -35,10 +37,22 @@
 
 namespace iceberg::arrow {
 
-/// \brief Delete files, count failures, and wait for accepted tasks.
-ICEBERG_BUNDLE_EXPORT Status
-BulkDeleteFiles(const std::vector<std::string>& file_locations, Executor* executor,
-                const std::function<Status(const std::string&)>& delete_file);
+// The first initialization or lookup fixes the executor for this state.
+class ICEBERG_BUNDLE_EXPORT DeleteExecutorState {
+ public:
+  Status Initialize(Executor* executor);
+  Executor* Get();
+
+ private:
+  std::mutex mutex_;
+  bool initialized_ = false;
+  Executor* executor_ = nullptr;
+};
+
+// Attempt each file unless submission fails; always wait for accepted work.
+ICEBERG_BUNDLE_EXPORT Status BulkDeleteFiles(
+    std::span<const std::string> file_locations, Executor* executor, size_t parallelism,
+    const std::function<Status(const std::string&)>& delete_file);
 
 /// \brief Open a FileIO input as an Arrow input stream.
 ///

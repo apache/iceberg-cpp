@@ -66,6 +66,7 @@ each file location's scheme.
 | `client.region` | `us-east-1` | Region to sign requests for |
 | `s3.endpoint` | `https://127.0.0.1:9000` | Endpoint to use instead of the AWS one. When absent, the `AWS_ENDPOINT_URL_S3` / `AWS_ENDPOINT_URL` environment variables are consulted |
 | `s3.path-style-access` | `true` | Address buckets as a path (`endpoint/bucket`) instead of a virtual host (`bucket.endpoint`). Only takes effect together with a custom endpoint |
+| `s3.delete.num-threads` | `8` | Maximum worker tasks per `DeleteFiles` call; defaults to the hardware thread count. Requires a delete executor |
 
 The following keys are specific to iceberg-cpp; they are not part of the Java
 Iceberg or REST specification property set:
@@ -82,23 +83,24 @@ identity providers.
 
 ### Bulk deletion
 
-S3 `DeleteFiles` attempts each file, logs each failed deletion, and returns the
-failure count. Exceptions thrown by a delete are counted as failures too.
-Deletion is sequential by default. To enable concurrency, configure an
-application-owned `iceberg::Executor` using
-`iceberg::arrow::SetS3FileIODeleteExecutor(executor)` from
-`iceberg/arrow/arrow_io_util.h`.
+S3 `DeleteFiles` attempts each file and returns the failure count, including
+exceptions thrown by a delete. Deletion is sequential by default. To enable
+concurrency, call `iceberg::arrow::InitializeS3FileIODeleteExecutor(executor)`
+from `iceberg/arrow/arrow_io_util.h` before the first delete. The application
+owns the executor; the setting applies to direct and registry-created FileIOs.
 
-The setting applies to all S3 FileIO instances, including ones created by the
-registry or a REST catalog. Configure it before starting deletes. The executor
-controls concurrency; each call submits at most 64 worker tasks, which share
-the file list rather than creating a task and future for every file.
+Initialization is permanent. Repeating the same pointer is allowed, but changing
+it returns an error. The first delete freezes the default `nullptr` if no executor
+was initialized. Keep the executor alive until the last delete finishes, and do
+not start more deletes after destroying it.
 
-`DeleteFiles` is synchronous and waits for accepted tasks even if submission
-fails. If the executor rejects a worker, the rejection is logged and the
-calling thread deletes the files no accepted worker has taken. Keep the
-executor alive until all calls finish, then reset the setting to `nullptr`
-before destroying it. Replace the executor only while no deletes are running.
+`s3.delete.num-threads` limits workers within one call, not across concurrent
+calls. The shared executor controls total concurrency; this property does not
+create or resize a thread pool. Workers share the file list, so task and future
+storage is bounded by the configured parallelism.
+
+`DeleteFiles` waits for accepted work before returning, even when submission
+fails or throws. A submission failure is returned without deleting on the caller.
 The executor must make progress while callers wait; do not call `DeleteFiles`
 from its workers unless it supports nested blocking work.
 

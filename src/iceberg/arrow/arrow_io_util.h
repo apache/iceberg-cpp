@@ -48,14 +48,13 @@ ICEBERG_BUNDLE_EXPORT std::unique_ptr<FileIO> MakeLocalFileIO();
 ICEBERG_BUNDLE_EXPORT Result<std::unique_ptr<FileIO>> MakeS3FileIO(
     const std::unordered_map<std::string, std::string>& properties = {});
 
-/// \brief Set the shared executor for all S3 bulk deletes.
+/// \brief Initialize the shared executor for S3 bulk deletes.
 ///
-/// Includes registry-created FileIOs; nullptr (default) runs sequentially.
-/// The caller owns the executor. Configure only while no deletes are active,
-/// and clear it before destruction. DeleteFiles waits for accepted work on error,
-/// and deletes on the calling thread what a rejected worker would have.
-/// See Executor for blocking requirements.
-ICEBERG_BUNDLE_EXPORT void SetS3FileIODeleteExecutor(Executor* executor);
+/// nullptr runs sequentially. The first delete freezes this default if not initialized.
+/// Repeating the same executor is allowed; replacing it is not. The caller owns it
+/// and must keep it alive until the last delete completes. Includes registry-created
+/// FileIOs. See Executor for blocking requirements.
+ICEBERG_BUNDLE_EXPORT Status InitializeS3FileIODeleteExecutor(Executor* executor);
 
 /// \brief Finalize (clean up) the Arrow S3 subsystem.
 ///

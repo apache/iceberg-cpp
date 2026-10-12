@@ -19,16 +19,20 @@
 
 #include <algorithm>
 #include <atomic>
+#include <cstdint>
 #include <cstdlib>
 #include <exception>
+#include <format>
 #include <functional>
 #include <future>
 #include <memory>
 #include <mutex>
 #include <optional>
 #include <shared_mutex>
+#include <span>
 #include <string>
 #include <string_view>
+#include <thread>
 #include <unordered_map>
 #include <utility>
 #include <vector>
@@ -53,11 +57,6 @@ namespace iceberg::arrow {
 
 namespace {
 
-std::atomic<Executor*> delete_executor{nullptr};
-
-// Bounds the tasks and futures of one call, however many files it deletes.
-constexpr size_t kMaxDeleteWorkers = 64;
-
 struct DeleteTasks {
   std::vector<std::future<void>> futures;
 
@@ -81,14 +80,33 @@ Status SubmitWorker(Executor& executor, ExecutorTask task) {
   }
 }
 
+DeleteExecutorState delete_executor;
+
 }  // namespace
 
-void SetS3FileIODeleteExecutor(Executor* executor) {
-  delete_executor.store(executor, std::memory_order_release);
+Status DeleteExecutorState::Initialize(Executor* executor) {
+  std::lock_guard lock(mutex_);
+  if (initialized_) {
+    if (executor_ != executor) {
+      return InvalidArgument("Delete executor is already initialized");
+    }
+    return {};
+  }
+  executor_ = executor;
+  initialized_ = true;
+  return {};
 }
 
-Status BulkDeleteFiles(const std::vector<std::string>& file_locations, Executor* executor,
+Executor* DeleteExecutorState::Get() {
+  std::lock_guard lock(mutex_);
+  initialized_ = true;
+  return executor_;
+}
+
+Status BulkDeleteFiles(std::span<const std::string> file_locations, Executor* executor,
+                       size_t parallelism,
                        const std::function<Status(const std::string&)>& delete_file) {
+  ICEBERG_PRECHECK(parallelism > 0, "Delete parallelism must be positive");
   auto logger = GetCurrentLogger();
   std::atomic<size_t> next = 0;
   std::atomic<size_t> failed = 0;
@@ -115,11 +133,12 @@ Status BulkDeleteFiles(const std::vector<std::string>& file_locations, Executor*
     }
   };
 
+  std::optional<Error> submission_error;
   try {
     if (executor == nullptr) {
       work();
     } else {
-      const auto workers = std::min(kMaxDeleteWorkers, file_locations.size());
+      const auto workers = std::min(parallelism, file_locations.size());
       DeleteTasks tasks;
       tasks.futures.reserve(workers);
       size_t accepted = 0;
@@ -130,11 +149,7 @@ Status BulkDeleteFiles(const std::vector<std::string>& file_locations, Executor*
         ExecutorTask executor_task([task = std::move(task)]() mutable { task(); });
         if (auto status = SubmitWorker(*executor, std::move(executor_task));
             !status.has_value()) {
-          // Take what the accepted workers have not, so every file is still
-          // attempted and counted even if none was accepted.
-          ICEBERG_LOG_WARN("Delete worker rejected; deleting on the calling thread: {}",
-                           status.error().message);
-          work();
+          submission_error = std::move(status.error());
           break;
         }
       }
@@ -148,11 +163,22 @@ Status BulkDeleteFiles(const std::vector<std::string>& file_locations, Executor*
   } catch (...) {
     return IOError("Bulk delete execution failed with an unknown exception");
   }
+  if (submission_error.has_value()) {
+    if (failed > 0) {
+      submission_error->message += std::format("; failed to delete {} of {} files",
+                                               failed.load(), file_locations.size());
+    }
+    return std::unexpected(std::move(*submission_error));
+  }
   if (failed > 0) {
     return IOError("Failed to delete {} of {} files", failed.load(),
                    file_locations.size());
   }
   return {};
+}
+
+Status InitializeS3FileIODeleteExecutor(Executor* executor) {
+  return delete_executor.Initialize(executor);
 }
 
 #if ICEBERG_S3_ENABLED
@@ -291,9 +317,11 @@ std::string CanonicalizeS3Scheme(std::string_view location) {
 class ArrowS3FileIO final : public FileIO, public SupportsStorageCredentials {
  public:
   ArrowS3FileIO(std::shared_ptr<::arrow::fs::FileSystem> arrow_fs,
-                std::unordered_map<std::string, std::string> default_properties)
+                std::unordered_map<std::string, std::string> default_properties,
+                size_t delete_parallelism)
       : default_file_io_(std::make_shared<ArrowFileSystemFileIO>(std::move(arrow_fs))),
-        default_properties_(std::move(default_properties)) {}
+        default_properties_(std::move(default_properties)),
+        delete_parallelism_(delete_parallelism) {}
 
   Result<std::unique_ptr<InputFile>> NewInputFile(std::string file_location) override;
 
@@ -347,6 +375,7 @@ class ArrowS3FileIO final : public FileIO, public SupportsStorageCredentials {
 
   std::shared_ptr<ArrowFileSystemFileIO> default_file_io_;
   std::unordered_map<std::string, std::string> default_properties_;
+  const size_t delete_parallelism_;
   // Guards everything below; shared because reads happen per file operation.
   mutable std::shared_mutex mutex_;
   std::vector<StorageCredential> storage_credentials_;
@@ -457,7 +486,7 @@ Status ArrowS3FileIO::DeleteFiles(const std::vector<std::string>& file_locations
     by_prefix = file_io_by_prefix_;
   }
   return BulkDeleteFiles(
-      file_locations, delete_executor.load(std::memory_order_acquire),
+      file_locations, delete_executor.Get(), delete_parallelism_,
       [&](const std::string& location) {
         return MatchDelegate(fallback, by_prefix, location)->DeleteFile(location);
       });
@@ -467,9 +496,16 @@ Status ArrowS3FileIO::DeleteFiles(const std::vector<std::string>& file_locations
 
 Result<std::unique_ptr<FileIO>> MakeS3FileIO(
     const std::unordered_map<std::string, std::string>& properties) {
+  size_t delete_parallelism = std::max(1u, std::thread::hardware_concurrency());
+  if (const auto* value = FindProperty(properties, S3Properties::kDeleteNumThreads);
+      value != nullptr) {
+    ICEBERG_ASSIGN_OR_RAISE(auto count, StringUtils::ParseNumber<int32_t>(*value));
+    ICEBERG_PRECHECK(count > 0, "{} must be positive", S3Properties::kDeleteNumThreads);
+    delete_parallelism = static_cast<size_t>(count);
+  }
   // Uses default credentials if properties are empty.
   ICEBERG_ASSIGN_OR_RAISE(auto fs, BuildArrowS3FileSystem(properties));
-  return std::make_unique<ArrowS3FileIO>(std::move(fs), properties);
+  return std::make_unique<ArrowS3FileIO>(std::move(fs), properties, delete_parallelism);
 }
 
 Status FinalizeS3() {
