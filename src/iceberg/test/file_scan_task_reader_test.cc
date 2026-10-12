@@ -574,8 +574,9 @@ TEST_P(FileScanTaskReaderSplitTest, SplitsMatchWholeFileWithAbsolutePositionsAnd
     boundaries.push_back(column->dictionary_page_offset() + 1);
     boundaries.push_back(column->data_page_offset());
   }
-  std::sort(boundaries.begin(), boundaries.end());
-  boundaries.erase(std::unique(boundaries.begin(), boundaries.end()), boundaries.end());
+  std::ranges::sort(boundaries);
+  auto duplicates = std::ranges::unique(boundaries);
+  boundaries.erase(duplicates.begin(), duplicates.end());
   std::vector<RowWithPositionAndLineage> split_rows;
   for (size_t i = 1; i < boundaries.size(); ++i) {
     SCOPED_TRACE(i);
