@@ -183,10 +183,7 @@ class AvroWriter::Impl {
  public:
   Status Open(const WriterOptions& options) {
     write_schema_ = options.schema;
-    input_schema_ = options.input_schema;
-    if (input_schema_ != nullptr && *input_schema_ == *write_schema_) {
-      input_schema_.reset();
-    }
+    input_schema_ = options.input_schema ? options.input_schema : write_schema_;
 
     ::avro::NodePtr root;
     ICEBERG_RETURN_UNEXPECTED(ToAvroNodeVisitor{}.Visit(*write_schema_, &root));
@@ -235,16 +232,12 @@ class AvroWriter::Impl {
   }
 
   Status Write(ArrowArray* data) {
-    ArrowArray aligned_data{};
+    ICEBERG_ASSIGN_OR_RAISE(
+        auto aligned_data, arrow::AlignBatchForWrite(data, *input_schema_, *write_schema_,
+                                                     ::arrow::default_memory_pool()));
     internal::ArrowArrayGuard aligned_guard(&aligned_data);
-    if (input_schema_ != nullptr) {
-      ICEBERG_ASSIGN_OR_RAISE(
-          aligned_data, arrow::AlignBatchForWrite(data, *input_schema_, *write_schema_,
-                                                  ::arrow::default_memory_pool()));
-      data = &aligned_data;
-    }
-    ICEBERG_ARROW_ASSIGN_OR_RETURN(auto batch,
-                                   ::arrow::ImportRecordBatch(data, arrow_schema_));
+    ICEBERG_ARROW_ASSIGN_OR_RETURN(
+        auto batch, ::arrow::ImportRecordBatch(&aligned_data, arrow_schema_));
 
     ICEBERG_ARROW_ASSIGN_OR_RETURN(auto struct_array, batch->ToStructArray());
     for (int64_t i = 0; i < struct_array->length(); i++) {

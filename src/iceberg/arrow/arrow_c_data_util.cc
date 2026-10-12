@@ -261,8 +261,11 @@ Result<ArrowArray> AlignBatchForWrite(ArrowArray* input_batch, const Schema& inp
                                       const Schema& write_schema,
                                       ::arrow::MemoryPool* pool) {
   ICEBERG_PRECHECK(input_batch != nullptr, "input_batch must not be null");
-  ICEBERG_PRECHECK(pool != nullptr, "pool must not be null");
   internal::ArrowArrayGuard input_guard(input_batch);
+  if (input_schema == write_schema) {
+    return std::exchange(*input_batch, ArrowArray{});
+  }
+  ICEBERG_PRECHECK(pool != nullptr, "pool must not be null");
 
   ICEBERG_ASSIGN_OR_RAISE(auto input_arrow_schema, ImportIcebergSchema(input_schema));
   ICEBERG_ARROW_ASSIGN_OR_RETURN(

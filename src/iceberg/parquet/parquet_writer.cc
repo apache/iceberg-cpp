@@ -242,10 +242,7 @@ class ParquetWriter::Impl {
  public:
   Status Open(const WriterOptions& options) {
     schema_ = options.schema;
-    input_schema_ = options.input_schema;
-    if (input_schema_ != nullptr && *input_schema_ == *schema_) {
-      input_schema_.reset();
-    }
+    input_schema_ = options.input_schema ? options.input_schema : schema_;
 
     ICEBERG_ASSIGN_OR_RAISE(auto compression, ParseCompression(options.properties));
     ICEBERG_ASSIGN_OR_RAISE(auto compression_level, ParseCodecLevel(options.properties));
@@ -288,15 +285,12 @@ class ParquetWriter::Impl {
   }
 
   Status Write(ArrowArray* array) {
-    ArrowArray aligned_array{};
+    ICEBERG_ASSIGN_OR_RAISE(
+        auto aligned_array,
+        arrow::AlignBatchForWrite(array, *input_schema_, *schema_, pool_));
     internal::ArrowArrayGuard aligned_guard(&aligned_array);
-    if (input_schema_ != nullptr) {
-      ICEBERG_ASSIGN_OR_RAISE(aligned_array, arrow::AlignBatchForWrite(
-                                                 array, *input_schema_, *schema_, pool_));
-      array = &aligned_array;
-    }
-    ICEBERG_ARROW_ASSIGN_OR_RETURN(auto batch,
-                                   ::arrow::ImportRecordBatch(array, arrow_schema_));
+    ICEBERG_ARROW_ASSIGN_OR_RETURN(
+        auto batch, ::arrow::ImportRecordBatch(&aligned_array, arrow_schema_));
 
     ICEBERG_ARROW_ASSIGN_OR_RETURN(auto struct_array, batch->ToStructArray());
     FieldMetricsCollector field_metrics_collector(field_metrics_, *metrics_config_,

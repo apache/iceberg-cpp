@@ -234,6 +234,31 @@ TEST(ProjectBatchTest, ProjectionRejectsNestedPruning) {
   EXPECT_THAT(projection, IsError(ErrorKind::kInvalidArgument));
 }
 
+TEST(AlignBatchForWriteTest, IdenticalSchemasTransferBatchWithoutConversion) {
+  auto input_schema = MakeFullSchema();
+  auto write_schema = MakeFullSchema();
+  auto input =
+      MakeBatch(*input_schema, R"([[1,"alice",1.0],[2,null,2.0],[3,"carol",3.0]])")
+          ->Slice(1, 2);
+  ArrowArray c_array;
+  ASSERT_TRUE(::arrow::ExportRecordBatch(*input, &c_array).ok());
+  auto original = c_array;
+
+  ICEBERG_UNWRAP_OR_FAIL(auto aligned,
+                         arrow::AlignBatchForWrite(&c_array, *input_schema, *write_schema,
+                                                   ::arrow::default_memory_pool()));
+  ArrowArrayGuard aligned_guard(&aligned);
+  EXPECT_EQ(c_array.release, nullptr);
+  EXPECT_EQ(aligned.private_data, original.private_data);
+  EXPECT_EQ(aligned.release, original.release);
+  EXPECT_EQ(aligned.buffers, original.buffers);
+  EXPECT_EQ(aligned.children, original.children);
+
+  auto actual = ::arrow::ImportRecordBatch(&aligned, input->schema()).ValueOrDie();
+  ASSERT_TRUE(actual->ValidateFull().ok());
+  EXPECT_TRUE(actual->Equals(*input));
+}
+
 TEST(AlignBatchForWriteTest, ReordersAndMaterializesWriteDefaultsAndNulls) {
   Schema input_schema({SchemaField::MakeOptional(2, "name", string()),
                        SchemaField::MakeRequired(1, "id", int32())});
