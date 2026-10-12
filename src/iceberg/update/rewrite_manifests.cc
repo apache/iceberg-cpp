@@ -80,12 +80,14 @@ RewriteManifests::RewriteManifests(std::string table_name,
 RewriteManifests& RewriteManifests::ClusterBy(ClusterByFunc func) {
   ICEBERG_BUILDER_CHECK(static_cast<bool>(func), "Cluster function cannot be null");
   cluster_by_func_ = std::move(func);
+  rewrite_dirty_ = true;
   return *this;
 }
 
 RewriteManifests& RewriteManifests::RewriteIf(RewritePredicate predicate) {
   ICEBERG_BUILDER_CHECK(static_cast<bool>(predicate), "Rewrite predicate cannot be null");
   predicate_ = std::move(predicate);
+  rewrite_dirty_ = true;
   return *this;
 }
 
@@ -108,7 +110,7 @@ RewriteManifests& RewriteManifests::AddManifest(const ManifestFile& manifest) {
   ICEBERG_BUILDER_CHECK(manifest.sequence_number == kInvalidSequenceNumber,
                         "Sequence number must be assigned during commit");
 
-  if (can_inherit_snapshot_id()) {
+  if (can_inherit_snapshot_id() && !manifest.added_snapshot_id.has_value()) {
     added_manifests_.push_back(manifest);
   } else {
     // Retain the input so Apply can recreate the copy after retry cleanup.
@@ -141,11 +143,26 @@ Result<std::vector<ManifestFile>> RewriteManifests::Apply(
   ICEBERG_RETURN_UNEXPECTED(
       ValidateDeletedManifests(current_manifest_set, snapshot->snapshot_id));
 
-  if (rewritten_added_manifests_.empty()) {
-    for (const auto& manifest : added_manifests_to_copy_) {
-      ICEBERG_ASSIGN_OR_RAISE(auto copied_manifest, CopyManifest(manifest));
-      rewritten_added_manifests_.push_back(std::move(copied_manifest));
+  if (base().format_version > 1) {
+    for (auto it = added_manifests_.begin(); it != added_manifests_.end();) {
+      ICEBERG_ASSIGN_OR_RAISE(auto format_version,
+                              ReadManifestFormatVersion(*it, ctx_->table->io()));
+      if (format_version == 1) {
+        // Reusing a v1 manifest with a new positive commit sequence would leave
+        // its EXISTING entries without sequence numbers. Copy it on this apply,
+        // including when the table was upgraded before transaction replay.
+        added_manifests_to_copy_.push_back(*it);
+        it = added_manifests_.erase(it);
+      } else {
+        ++it;
+      }
     }
+  }
+  for (size_t i = rewritten_added_manifests_.size(); i < added_manifests_to_copy_.size();
+       ++i) {
+    ICEBERG_ASSIGN_OR_RAISE(auto copied_manifest,
+                            CopyManifest(added_manifests_to_copy_[i]));
+    rewritten_added_manifests_.push_back(std::move(copied_manifest));
   }
 
   if (RequiresRewrite(current_manifest_set)) {
@@ -173,9 +190,6 @@ Result<std::vector<ManifestFile>> RewriteManifests::Apply(
       std::ranges::to<std::vector>();
   manifests.insert(manifests.end(), kept_manifests_.begin(), kept_manifests_.end());
 
-  manifest_count_summary_ = BuildManifestCountSummary(
-      manifests,
-      static_cast<int32_t>(rewritten_manifests_.size() + deleted_manifests_.size()));
   return manifests;
 }
 
@@ -185,7 +199,13 @@ std::unordered_map<std::string, std::string> RewriteManifests::Summary() {
   for (const auto& [property, value] : custom_summary_properties_) {
     summary_.Set(property, value);
   }
-  summary_.Merge(manifest_count_summary_);
+  summary_.Set(SnapshotSummaryFields::kManifestsCreated,
+               std::to_string(new_manifests_.size() + added_manifests_.size() +
+                              rewritten_added_manifests_.size()));
+  summary_.Set(SnapshotSummaryFields::kManifestsKept,
+               std::to_string(kept_manifests_.size()));
+  summary_.Set(SnapshotSummaryFields::kManifestsReplaced,
+               std::to_string(rewritten_manifests_.size() + deleted_manifests_.size()));
   summary_.Set(SnapshotSummaryFields::kEntriesProcessed, std::to_string(entry_count_));
   return summary_.Build();
 }
@@ -203,7 +223,6 @@ Status RewriteManifests::CleanUncommitted(
   entry_count_ = 0;
   kept_manifests_.clear();
   rewritten_manifests_.clear();
-  manifest_count_summary_.Clear();
   return {};
 }
 
@@ -213,8 +232,8 @@ bool RewriteManifests::RequiresRewrite(
     // manifests are deleted and added directly so don't perform a rewrite
     return false;
   }
-  if (rewritten_manifests_.empty()) {
-    // nothing yet processed so perform a full rewrite
+  if (rewrite_dirty_ || rewritten_manifests_.empty()) {
+    // Configuration changes or an empty cache require a full rewrite.
     return true;
   }
 
@@ -439,6 +458,7 @@ Status RewriteManifests::Rewrite(std::span<const ManifestFile> current_manifests
   if (first_close_error.has_value()) {
     return ::iceberg::unexpected<Error>(std::move(first_close_error).value());
   }
+  rewrite_dirty_ = false;
   return {};
 }
 
@@ -458,6 +478,7 @@ void RewriteManifests::ResetRewriteState() {
   entry_count_ = 0;
   kept_manifests_.clear();
   rewritten_manifests_.clear();
+  rewrite_dirty_ = true;
 }
 
 }  // namespace iceberg

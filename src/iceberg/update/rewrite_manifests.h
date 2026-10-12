@@ -80,17 +80,15 @@ class ICEBERG_EXPORT RewriteManifests : public SnapshotUpdate {
   ///
   /// The added manifest cannot contain new or deleted files.
   ///
-  /// By default, the manifest will be rewritten to ensure all entries have
-  /// explicit snapshot IDs. In that case, it is always the responsibility of the
-  /// caller to manage the lifecycle of the original manifest.
+  /// The manifest is copied unless snapshot ID inheritance is enabled and its
+  /// snapshot ID is unset. A copy may also be required for format compatibility.
+  /// Copies preserve existing entry snapshot IDs. Added manifests are not merged
+  /// with other manifests.
   ///
-  /// If manifest entries are allowed to inherit the snapshot ID assigned on
-  /// commit, the manifest should never be deleted manually if the commit succeeds
-  /// as it will become part of the table metadata and will be cleaned up on
-  /// expiry. If the manifest gets merged with others while preparing a new
-  /// snapshot, it will be deleted automatically if this operation is successful.
-  /// If the commit fails, the manifest will never be deleted and it is up to the
-  /// caller whether to delete or reuse it.
+  /// When a copy is made, the caller manages the original manifest and this update
+  /// manages the copy. When the original is reused and the commit succeeds, it
+  /// becomes part of the table metadata and must not be deleted manually; it will
+  /// be cleaned up on expiry. This update does not delete the original on failure.
   RewriteManifests& AddManifest(const ManifestFile& manifest);
 
   std::string operation() override;
@@ -125,6 +123,7 @@ class ICEBERG_EXPORT RewriteManifests : public SnapshotUpdate {
   std::string table_name_;
   ClusterByFunc cluster_by_func_;
   RewritePredicate predicate_;
+  bool rewrite_dirty_{true};
 
   std::unordered_set<ManifestFile> deleted_manifests_;
   std::vector<ManifestFile> added_manifests_;
@@ -137,7 +136,6 @@ class ICEBERG_EXPORT RewriteManifests : public SnapshotUpdate {
   int64_t entry_count_{0};
 
   std::unordered_map<std::string, std::string> custom_summary_properties_;
-  SnapshotSummaryBuilder manifest_count_summary_;
 };
 
 }  // namespace iceberg

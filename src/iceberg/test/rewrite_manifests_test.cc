@@ -403,6 +403,57 @@ class RewriteManifestsTest : public MinimalUpdateTestBase,
     EXPECT_THAT(table_->Refresh(), IsOk());
   }
 
+  void ReplayV1ReplacementAfterUpgrade(bool inherit_snapshot_id) {
+    if (format_version() != 1) {
+      GTEST_SKIP() << "This regression starts from a v1 table";
+    }
+
+    ASSERT_THAT(AppendFiles({file_a_, file_b_}), IsOk());
+    if (inherit_snapshot_id) {
+      SetSnapshotIdInheritanceEnabled();
+    }
+    ICEBERG_UNWRAP_OR_FAIL(auto snapshot, table_->current_snapshot());
+    ICEBERG_UNWRAP_OR_FAIL(auto before, CurrentManifests());
+    ASSERT_EQ(before.size(), 1U);
+    ICEBERG_UNWRAP_OR_FAIL(auto replacement, WriteExistingManifest("legacy-replacement",
+                                                                   snapshot->snapshot_id,
+                                                                   {file_a_, file_b_}));
+    if (inherit_snapshot_id) {
+      replacement.added_snapshot_id.reset();
+    }
+
+    ICEBERG_UNWRAP_OR_FAIL(auto txn, table_->NewTransaction());
+    ICEBERG_UNWRAP_OR_FAIL(auto rewrite, txn->NewRewriteManifests());
+    rewrite->DeleteManifest(before[0]).AddManifest(replacement);
+    ASSERT_THAT(rewrite->Commit(), IsOk());
+
+    ICEBERG_UNWRAP_OR_FAIL(auto props, table_->NewUpdateProperties());
+    props->Set(std::string(TableProperties::kFormatVersion.key()), "2");
+    ASSERT_THAT(props->Commit(), IsOk());
+    ASSERT_THAT(table_->Refresh(), IsOk());
+    ASSERT_THAT(txn->Commit(), IsOk());
+
+    ICEBERG_UNWRAP_OR_FAIL(auto after, CurrentManifests());
+    ASSERT_EQ(after.size(), 1U);
+    EXPECT_NE(after[0].manifest_path, replacement.manifest_path);
+    EXPECT_TRUE(FileExists(replacement.manifest_path));
+    ICEBERG_UNWRAP_OR_FAIL(auto entries, ReadManifestEntries(after[0]));
+    ASSERT_EQ(entries.size(), 2U);
+    for (const auto& entry : entries) {
+      EXPECT_EQ(entry.status, ManifestStatus::kExisting);
+      EXPECT_EQ(entry.snapshot_id, snapshot->snapshot_id);
+      EXPECT_EQ(entry.sequence_number, std::make_optional<int64_t>(0));
+      EXPECT_EQ(entry.file_sequence_number, std::make_optional<int64_t>(0));
+    }
+    ICEBERG_UNWRAP_OR_FAIL(auto rewritten_snapshot, table_->current_snapshot());
+    ValidateSummary(rewritten_snapshot, /*replaced=*/1, /*kept=*/0, /*created=*/1,
+                    /*entry_count=*/0);
+
+    ICEBERG_UNWRAP_OR_FAIL(auto remove, table_->NewDeleteFiles());
+    remove->DeleteFile(file_a_);
+    ASSERT_THAT(remove->Commit(), IsOk());
+  }
+
   void SetManifestMergeEnabled(bool enabled) {
     ICEBERG_UNWRAP_OR_FAIL(auto props, table_->NewUpdateProperties());
     props->Set(std::string(TableProperties::kManifestMergeEnabled.key()),
@@ -981,6 +1032,96 @@ TEST_P(RewriteManifestsTest, RewriteAfterV2ToV3UpgradeAssignsRowIds) {
             TableMetadata::kInitialRowId + assigned_rows);
 }
 
+TEST_P(RewriteManifestsTest, RewritesWhenClusterByChangesAfterApply) {
+  ASSERT_THAT(AppendFiles({file_a_, file_b_}), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto snapshot, table_->current_snapshot());
+  ICEBERG_UNWRAP_OR_FAIL(auto rewrite, table_->NewRewriteManifests());
+  rewrite->ClusterBy([](const DataFile&) { return "all"; });
+  ICEBERG_UNWRAP_OR_FAIL(auto prepared, rewrite->Apply(*table_->metadata(), snapshot));
+  ASSERT_EQ(prepared.size(), 1U);
+  EXPECT_TRUE(FileExists(prepared[0].manifest_path));
+
+  rewrite->ClusterBy([](const DataFile& file) { return file.file_path; });
+  ASSERT_THAT(rewrite->Commit(), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto after, CurrentManifests());
+  ASSERT_EQ(after.size(), 2U);
+  for (const auto& manifest : after) {
+    ICEBERG_UNWRAP_OR_FAIL(auto entries, ReadManifestEntries(manifest));
+    EXPECT_EQ(entries.size(), 1U);
+  }
+  EXPECT_FALSE(FileExists(prepared[0].manifest_path));
+  ICEBERG_UNWRAP_OR_FAIL(auto rewritten_snapshot, table_->current_snapshot());
+  ValidateSummary(rewritten_snapshot, /*replaced=*/1, /*kept=*/0, /*created=*/2,
+                  /*entry_count=*/2);
+}
+
+TEST_P(RewriteManifestsTest, RewritesWhenPredicateChangesAfterApply) {
+  ASSERT_THAT(AppendFiles({file_a_}), IsOk());
+  ASSERT_THAT(AppendFiles({file_b_}), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto before, CurrentManifests());
+  ASSERT_EQ(before.size(), 2U);
+  ICEBERG_UNWRAP_OR_FAIL(auto snapshot, table_->current_snapshot());
+  ICEBERG_UNWRAP_OR_FAIL(auto rewrite, table_->NewRewriteManifests());
+  rewrite->ClusterBy([](const DataFile&) { return "all"; });
+  rewrite->RewriteIf([path = before[0].manifest_path](const ManifestFile& manifest) {
+    return manifest.manifest_path == path;
+  });
+  ICEBERG_UNWRAP_OR_FAIL(auto prepared, rewrite->Apply(*table_->metadata(), snapshot));
+
+  rewrite->RewriteIf([](const ManifestFile&) { return false; });
+  ASSERT_THAT(rewrite->Commit(), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto after, CurrentManifests());
+  EXPECT_THAT(after, ::testing::UnorderedElementsAreArray(before));
+  for (const auto& manifest : prepared) {
+    if (!std::ranges::contains(before, manifest)) {
+      EXPECT_FALSE(FileExists(manifest.manifest_path));
+    }
+  }
+  ICEBERG_UNWRAP_OR_FAIL(auto rewritten_snapshot, table_->current_snapshot());
+  ValidateSummary(rewritten_snapshot, /*replaced=*/0, /*kept=*/2, /*created=*/0,
+                  /*entry_count=*/0);
+}
+
+TEST_P(RewriteManifestsTest, ReplaysV1ReplacementAfterUpgradeWithSnapshotIdInheritance) {
+  ReplayV1ReplacementAfterUpgrade(/*inherit_snapshot_id=*/true);
+}
+
+TEST_P(RewriteManifestsTest,
+       ReplaysV1ReplacementAfterUpgradeWithoutSnapshotIdInheritance) {
+  ReplayV1ReplacementAfterUpgrade(/*inherit_snapshot_id=*/false);
+}
+
+TEST_P(RewriteManifestsTest, CopiesV1ReplacementAddedAfterFormatUpgrade) {
+  if (format_version() != 1) {
+    GTEST_SKIP() << "This regression starts from a v1 manifest";
+  }
+  ASSERT_THAT(AppendFiles({file_a_}), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto snapshot, table_->current_snapshot());
+  ICEBERG_UNWRAP_OR_FAIL(auto before, CurrentManifests());
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto replacement,
+      WriteExistingManifest("legacy-replacement", snapshot->snapshot_id, {file_a_}));
+  replacement.added_snapshot_id.reset();
+
+  ICEBERG_UNWRAP_OR_FAIL(auto props, table_->NewUpdateProperties());
+  props->Set(std::string(TableProperties::kFormatVersion.key()), "2");
+  ASSERT_THAT(props->Commit(), IsOk());
+  ASSERT_THAT(table_->Refresh(), IsOk());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto rewrite, table_->NewRewriteManifests());
+  rewrite->DeleteManifest(before[0]).AddManifest(replacement);
+  ASSERT_THAT(rewrite->Commit(), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto after, CurrentManifests());
+  ASSERT_EQ(after.size(), 1U);
+  EXPECT_NE(after[0].manifest_path, replacement.manifest_path);
+  EXPECT_TRUE(FileExists(replacement.manifest_path));
+  ICEBERG_UNWRAP_OR_FAIL(auto entries, ReadManifestEntries(after[0]));
+  ASSERT_EQ(entries.size(), 1U);
+  EXPECT_EQ(entries[0].snapshot_id, snapshot->snapshot_id);
+  EXPECT_EQ(entries[0].sequence_number, std::make_optional<int64_t>(0));
+  EXPECT_EQ(entries[0].file_sequence_number, std::make_optional<int64_t>(0));
+}
+
 TEST_P(RewriteManifestsTest, ReplaceManifestsSeparate) {
   ASSERT_THAT(AppendFiles({file_a_, file_b_}), IsOk());
   ICEBERG_UNWRAP_OR_FAIL(auto append_snapshot, table_->current_snapshot());
@@ -1289,9 +1430,6 @@ TEST_P(RewriteManifestsTest, CleansWritersAfterTransactionApplyFailure) {
 }
 
 TEST_P(RewriteManifestsTest, ClosesAndCleansCopiedManifestOnFailure) {
-  if (format_version() != 1) {
-    GTEST_SKIP() << "Manifest copying is only required without snapshot ID inheritance";
-  }
   ASSERT_THAT(AppendFiles({file_a_}), IsOk());
   ICEBERG_UNWRAP_OR_FAIL(auto snapshot, table_->current_snapshot());
   ICEBERG_UNWRAP_OR_FAIL(auto before, CurrentManifests());
@@ -1469,13 +1607,8 @@ TEST_P(RewriteManifestsTest, BasicManifestReplacement) {
 
   ICEBERG_UNWRAP_OR_FAIL(auto manifests, CurrentManifests());
   ASSERT_EQ(manifests.size(), 3U);
-  if (GetParam() == 1) {
-    EXPECT_NE(manifests[0].manifest_path, manifest_a.manifest_path);
-    EXPECT_NE(manifests[1].manifest_path, manifest_b.manifest_path);
-  } else {
-    EXPECT_EQ(manifests[0].manifest_path, manifest_a.manifest_path);
-    EXPECT_EQ(manifests[1].manifest_path, manifest_b.manifest_path);
-  }
+  EXPECT_NE(manifests[0].manifest_path, manifest_a.manifest_path);
+  EXPECT_NE(manifests[1].manifest_path, manifest_b.manifest_path);
   ExpectManifestEntriesWithSnapshotIds(manifests[0], {file_a_->file_path},
                                        {ManifestStatus::kExisting}, {first_snapshot_id});
   ExpectManifestEntriesWithSnapshotIds(manifests[1], {file_b_->file_path},
@@ -1563,6 +1696,8 @@ TEST_P(RewriteManifestsTest, BasicManifestReplacementWithSnapshotIdInheritance) 
   ICEBERG_UNWRAP_OR_FAIL(
       auto manifest_b,
       WriteExistingManifest("rewrite-inherit-b", first_snapshot_id, {file_b_}));
+  manifest_a.added_snapshot_id.reset();
+  manifest_b.added_snapshot_id.reset();
 
   ICEBERG_UNWRAP_OR_FAIL(auto rewrite, table_->NewRewriteManifests());
   rewrite->DeleteManifest(first_snapshot_manifests[0])
@@ -1591,6 +1726,37 @@ TEST_P(RewriteManifestsTest, BasicManifestReplacementWithSnapshotIdInheritance) 
   ICEBERG_UNWRAP_OR_FAIL(auto delete_files, table_->NewDeleteFiles());
   delete_files->DeleteFromRowFilter(Expressions::AlwaysTrue());
   EXPECT_THAT(delete_files->Commit(), IsOk());
+}
+
+TEST_P(RewriteManifestsTest, ManifestReplacementWithExplicitInvalidSnapshotIdIsCopied) {
+  SetSnapshotIdInheritanceEnabled();
+  ASSERT_THAT(AppendFiles({file_a_}), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto original_snapshot, table_->current_snapshot());
+  ICEBERG_UNWRAP_OR_FAIL(auto before, CurrentManifests());
+  ASSERT_EQ(before.size(), 1U);
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto replacement,
+      WriteExistingManifest("explicit-invalid-id", original_snapshot->snapshot_id,
+                            {file_a_}, ManifestContent::kData, nullptr,
+                            original_snapshot->sequence_number,
+                            original_snapshot->sequence_number));
+  ASSERT_EQ(replacement.added_snapshot_id, kInvalidSnapshotId);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto rewrite, table_->NewRewriteManifests());
+  rewrite->DeleteManifest(before[0]).AddManifest(replacement);
+  ASSERT_THAT(rewrite->Commit(), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto manifests, CurrentManifests());
+  ASSERT_EQ(manifests.size(), 1U);
+  EXPECT_NE(manifests[0].manifest_path, replacement.manifest_path);
+  EXPECT_TRUE(FileExists(replacement.manifest_path));
+  ICEBERG_UNWRAP_OR_FAIL(auto snapshot, table_->current_snapshot());
+  EXPECT_EQ(manifests[0].added_snapshot_id, snapshot->snapshot_id);
+  ICEBERG_UNWRAP_OR_FAIL(auto entries, ReadManifestEntries(manifests[0]));
+  ASSERT_EQ(entries.size(), 1U);
+  EXPECT_EQ(entries[0].status, ManifestStatus::kExisting);
+  EXPECT_EQ(entries[0].snapshot_id, original_snapshot->snapshot_id);
+  EXPECT_EQ(entries[0].sequence_number, original_snapshot->sequence_number);
+  EXPECT_EQ(entries[0].file_sequence_number, original_snapshot->sequence_number);
 }
 
 TEST_P(RewriteManifestsTest, WithMultiplePartitionSpec) {
@@ -2066,6 +2232,7 @@ TEST_P(RewriteManifestsTest, ManifestReplacementFailureWithSnapshotIdInheritance
       auto new_manifest,
       WriteExistingManifest("manifest-file", {{file_a_, first_snapshot_id},
                                               {file_b_, second_snapshot_id}}));
+  new_manifest.added_snapshot_id.reset();
   EXPECT_TRUE(FileExists(new_manifest.manifest_path));
 
   SetCommitRetryProperties(1);
