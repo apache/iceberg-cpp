@@ -18,6 +18,7 @@
  */
 
 #include <algorithm>
+#include <array>
 #include <atomic>
 #include <barrier>
 #include <chrono>
@@ -271,7 +272,8 @@ TEST(DeleteExecutorStateTest, ConcurrentInitializationChoosesOneExecutor) {
 }
 
 TEST(BulkDeleteFilesTest, LimitsConcurrentDeletes) {
-  const std::pair<size_t, size_t> cases[] = {{2, 3}, {16, 1}, {16, 3}, {128, 3}};
+  const std::array<std::pair<size_t, size_t>, 4> cases = {
+      {{2, 3}, {16, 1}, {16, 3}, {128, 3}}};
   for (const auto& [file_count, parallelism] : cases) {
     SCOPED_TRACE(file_count);
     SCOPED_TRACE(parallelism);
