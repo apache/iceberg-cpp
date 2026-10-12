@@ -45,12 +45,15 @@ Result<int64_t> RowGroupStart(const ::parquet::RowGroupMetaData& row_group,
   }
   auto column = row_group.ColumnChunk(0);
   int64_t start = column->data_page_offset();
+  // A dictionary page comes before the data pages. Like parquet-mr, ignore it
+  // unless its offset is positive and earlier.
   if (column->has_dictionary_page()) {
     const int64_t dictionary_start = column->dictionary_page_offset();
     if (dictionary_start > 0 && dictionary_start < start) {
       start = dictionary_start;
     }
   }
+  // Byte 0 is the "PAR1" magic, so no page can start there.
   if (start <= 0 || start >= file_size) {
     return Invalid(
         "Cannot split a Parquet row group with missing or out-of-file "
