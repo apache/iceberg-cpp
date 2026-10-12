@@ -335,6 +335,7 @@ class ParquetReader::Impl {
       ICEBERG_RETURN_UNEXPECTED(InitReadContext());
     }
 
+    // Each row-group range has its own batch reader. When one runs out, open the next.
     std::shared_ptr<::arrow::RecordBatch> batch;
     while (true) {
       ICEBERG_ARROW_ASSIGN_OR_RETURN(batch, context_->record_batch_reader_->Next());
@@ -424,6 +425,7 @@ class ParquetReader::Impl {
     if (options.split.has_value()) {
       const auto& split = *options.split;
       ICEBERG_ARROW_ASSIGN_OR_RETURN(auto file_size, input_stream_->GetSize());
+      // Rows in all earlier row groups, selected or not, so _pos is file-relative.
       int64_t row_position = 0;
       for (int i = 0; i < metadata->num_row_groups(); ++i) {
         auto row_group = metadata->RowGroup(i);
@@ -441,6 +443,8 @@ class ParquetReader::Impl {
         // Subtraction avoids overflow for a caller-supplied unbounded split length.
         if (std::cmp_greater_equal(*start, split.offset) &&
             static_cast<uint64_t>(*start) - split.offset < split.length) {
+          // Extend the last range if this row group follows it; otherwise start a
+          // new range so its _pos can jump past the skipped row groups.
           if (!row_group_ranges_.empty() && row_group_ranges_.back().end == i) {
             row_group_ranges_.back().end = i + 1;
           } else {
@@ -478,6 +482,7 @@ class ParquetReader::Impl {
   }
 
   Status InitReadContext() {
+    // Build locally so a failure leaves context_ unset.
     auto context = std::make_unique<ReadContext>();
     ICEBERG_ASSIGN_OR_RAISE(context->record_batch_reader_, OpenNextRowGroupRange());
 
