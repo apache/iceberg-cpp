@@ -99,10 +99,35 @@ class OAuth2Session final : public AuthSession,
         .scope = config_.scope,
         .oauth2_server_uri = config_.token_endpoint,
         .optional_oauth_params = config_.optional_oauth_params,
+        .headers = headers_,
     };
   }
 
   Status Close() override { return CloseImpl(); }
+
+  /// \brief Stop scheduling token refreshes without waiting.
+  ///
+  /// Unlike Close(), this does not wait for an in-flight refresh to finish, so it
+  /// is safe to call from any thread, including the refresh scheduler thread. The
+  /// session keeps its current token and remains usable; an in-flight refresh may
+  /// still update the token but will not schedule further refreshes.
+  void StopRefreshing() {
+    closed_.store(true);
+    TokenRefreshScheduler::Instance().Cancel(
+        scheduled_task_id_.exchange(kInvalidTaskHandle));
+  }
+
+  /// \brief Expiration time of the current token, or std::nullopt if unknown.
+  std::optional<std::chrono::steady_clock::time_point> ExpiresAt() const {
+    std::shared_lock lock(mutex_);
+    if (expires_at_ == std::chrono::steady_clock::time_point{}) {
+      return std::nullopt;
+    }
+    return expires_at_;
+  }
+
+  /// \brief Whether this session can refresh its token automatically.
+  bool IsRefreshable() const { return config_.keep_refreshed; }
 
   ~OAuth2Session() override { std::ignore = CloseImpl(); }
 
@@ -114,14 +139,16 @@ class OAuth2Session final : public AuthSession,
         client_(std::move(client)) {}
 
   Status CloseImpl() {
-    bool expected = false;
-    if (!closed_.compare_exchange_strong(expected, true)) {
-      return {};
-    }
-    TokenRefreshScheduler::Instance().Cancel(scheduled_task_id_.exchange(0));
+    closed_.store(true);
+    TokenRefreshScheduler::Instance().Cancel(
+        scheduled_task_id_.exchange(kInvalidTaskHandle));
     std::unique_lock lock(refresh_mutex_);
     refresh_cv_.wait(lock, [this] { return active_refresh_count_ == 0; });
-    TokenRefreshScheduler::Instance().Cancel(scheduled_task_id_.exchange(0));
+    // Defensive: cancel again in case a refresh callback scheduled a retry between
+    // the first cancel and acquiring refresh_mutex_. With StoreScheduledTask()'s
+    // closed_ recheck, this should be a no-op, but it's cheap insurance.
+    TokenRefreshScheduler::Instance().Cancel(
+        scheduled_task_id_.exchange(kInvalidTaskHandle));
     return {};
   }
 
@@ -200,8 +227,7 @@ class OAuth2Session final : public AuthSession,
     if (closed_.load()) return;
 
     auto empty_session = AuthSession::MakeDefault({});
-    // TODO(lishuxu): Honor token-exchange-enabled and refresh via token exchange,
-    // matching Java.
+    // TODO(lishuxu): Use token exchange to refresh exchanged tokens when enabled.
     auto result = OAuth2Util::FetchToken(*client_, *empty_session, refresh_properties_);
     if (result.has_value()) {
       auto& response = result.value();
@@ -225,7 +251,7 @@ class OAuth2Session final : public AuthSession,
               self->DoRefreshAttempt(next_attempt, next_backoff, refresh_started_at);
             }
           });
-      scheduled_task_id_.store(retry_id);
+      StoreScheduledTask(retry_id);
     }
   }
 
@@ -239,7 +265,17 @@ class OAuth2Session final : public AuthSession,
         delay, [weak_self = std::move(weak_self)] {
           if (auto self = weak_self.lock()) self->DoRefresh();
         });
-    scheduled_task_id_.store(new_id);
+    StoreScheduledTask(new_id);
+  }
+
+  void StoreScheduledTask(uint64_t task_id) {
+    scheduled_task_id_.store(task_id);
+    // StopRefreshing() may run between the caller's closed_ check and the store
+    // above; cancel the task it could not see.
+    if (closed_.load()) {
+      TokenRefreshScheduler::Instance().Cancel(
+          scheduled_task_id_.exchange(kInvalidTaskHandle));
+    }
   }
 
   std::chrono::milliseconds CalculateRefreshDelay() const {
@@ -264,7 +300,7 @@ class OAuth2Session final : public AuthSession,
   Config config_;
   AuthProperties refresh_properties_;
   std::shared_ptr<HttpClient> client_;
-  std::atomic<uint64_t> scheduled_task_id_{0};
+  std::atomic<uint64_t> scheduled_task_id_{kInvalidTaskHandle};
   std::atomic<bool> closed_{false};
   std::mutex refresh_mutex_;
   std::condition_variable refresh_cv_;

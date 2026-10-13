@@ -44,6 +44,9 @@ namespace iceberg::rest::auth {
 ///
 /// TODO(lishuxu): Migrate to the shared thread pool abstraction once available
 /// (see https://github.com/apache/iceberg-cpp/pull/646#discussion_r3304315308).
+/// Invalid task handle returned when scheduling fails or used to represent "no task".
+constexpr uint64_t kInvalidTaskHandle = 0;
+
 class ICEBERG_REST_EXPORT TokenRefreshScheduler {
  public:
   /// \brief Get the global singleton instance.

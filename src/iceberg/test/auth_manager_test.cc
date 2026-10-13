@@ -432,6 +432,20 @@ TEST_F(AuthManagerTest, OAuth2StaticToken) {
 }
 
 // Verifies OAuth2 type is inferred from token property
+TEST_F(AuthManagerTest, OAuth2ZeroSessionTimeoutCreatesCatalogSession) {
+  std::unordered_map<std::string, std::string> properties = {
+      {AuthProperties::kAuthType, "oauth2"},
+      {AuthProperties::kToken.key(), "my-static-token"},
+      {AuthProperties::kSessionTimeoutMs.key(), "0"},
+  };
+
+  ICEBERG_UNWRAP_OR_FAIL(auto manager, AuthManagers::Load("test-catalog", properties));
+  ICEBERG_UNWRAP_OR_FAIL(auto session, manager->CatalogSession(client_, properties));
+
+  EXPECT_NE(session, nullptr);
+  EXPECT_THAT(manager->Close(), IsOk());
+}
+
 TEST_F(AuthManagerTest, OAuth2InferredFromToken) {
   std::unordered_map<std::string, std::string> properties = {
       {AuthProperties::kToken.key(), "inferred-token"},
@@ -789,6 +803,55 @@ TEST(OAuth2SessionTest, InitialTokenIsUsed) {
   EXPECT_EQ(auth_result.value().headers.at("Authorization"), "Bearer initial-token-123");
 
   session->Close();
+}
+
+TEST(OAuth2SessionTest, StopRefreshingKeepsSessionUsable) {
+  OAuthTokenResponse token_response{
+      .access_token = "token",
+      .token_type = "bearer",
+      .expires_in_secs = 3600,
+  };
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto session,
+      internal::OAuth2Session::Make(token_response,
+                                    {.token_endpoint = "http://localhost/oauth/tokens",
+                                     .client_id = "client_id",
+                                     .client_secret = "client_secret",
+                                     .scope = "catalog",
+                                     .keep_refreshed = true},
+                                    std::make_shared<HttpClient>(), std::nullopt));
+
+  session->StopRefreshing();
+  session->StopRefreshing();
+
+  ICEBERG_UNWRAP_OR_FAIL(auto request, session->Authenticate({}));
+  EXPECT_EQ(request.headers.at("Authorization"), "Bearer token");
+  EXPECT_THAT(session->Close(), IsOk());
+}
+
+TEST(OAuth2SessionTest, ExpiresAtReflectsTokenLifetime) {
+  auto make_session = [](std::optional<int64_t> expires_in_secs) {
+    OAuthTokenResponse token_response{
+        .access_token = "opaque-token",
+        .token_type = "bearer",
+        .expires_in_secs = expires_in_secs,
+    };
+    return internal::OAuth2Session::Make(
+        token_response,
+        {.token_endpoint = "http://localhost/oauth/tokens", .keep_refreshed = false},
+        std::make_shared<HttpClient>(), std::nullopt);
+  };
+
+  auto before = std::chrono::steady_clock::now();
+  ICEBERG_UNWRAP_OR_FAIL(auto expiring, make_session(60));
+  auto after = std::chrono::steady_clock::now();
+  auto expires_at = expiring->ExpiresAt();
+  ASSERT_TRUE(expires_at.has_value());
+  EXPECT_GE(*expires_at, before + std::chrono::seconds(60));
+  EXPECT_LE(*expires_at, after + std::chrono::seconds(60));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto unknown, make_session(std::nullopt));
+  EXPECT_FALSE(unknown->ExpiresAt().has_value());
 }
 
 TEST(OAuth2SessionTest, InitTokenExpirationUsesRequestStartTime) {
