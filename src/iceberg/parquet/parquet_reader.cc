@@ -421,16 +421,17 @@ class ParquetReader::Impl {
         if (row_group->num_rows() == 0) {
           continue;
         }
-        auto start = RowGroupStart(*row_group, file_size);
-        if (!start.has_value()) {
+        // Like Java Iceberg, a split reads the row groups whose midpoints it contains.
+        auto midpoint = RowGroupMidpoint(*row_group, file_size);
+        if (!midpoint.has_value()) {
           return Invalid(
               "Cannot read Parquet split {} (start={}, length={}), row "
               "group {}: {}",
-              options.path, split.offset, split.length, i, start.error().message);
+              options.path, split.offset, split.length, i, midpoint.error().message);
         }
         // Subtraction avoids overflow for a caller-supplied unbounded split length.
-        if (std::cmp_greater_equal(*start, split.offset) &&
-            static_cast<uint64_t>(*start) - split.offset < split.length) {
+        if (std::cmp_greater_equal(*midpoint, split.offset) &&
+            static_cast<uint64_t>(*midpoint) - split.offset < split.length) {
           // Extend the last range if this row group follows it; otherwise start a
           // new range so its _pos can jump past the skipped row groups.
           if (!row_group_ranges_.empty() && row_group_ranges_.back().end == i) {
