@@ -39,8 +39,9 @@ namespace iceberg::arrow {
 
 /// \brief Context for populating metadata columns during reading.
 struct MetadataColumnContext {
-  std::string file_path;      // The file path to populate _file column.
-  int64_t next_file_pos = 0;  // The next row position for populating _pos column.
+  std::string file_path;  // The file path to populate _file column.
+  // The file row position used when appending metadata values.
+  int64_t next_file_pos = 0;
   std::optional<int64_t> first_row_id;          // First row ID used to populate _row_id.
   std::optional<int64_t> data_sequence_number;  // Data sequence number for lineage.
 };
@@ -66,27 +67,18 @@ Result<std::shared_ptr<::arrow::Array>> MakeFilePathArray(const std::string& fil
                                                           int64_t num_rows,
                                                           ::arrow::MemoryPool* pool);
 
-/// \brief Create a sequential int64 array for _pos column.
-///
-/// Creates an Arrow Int64Array with sequential values starting from start_position.
-///
-/// \param start_position Starting row position (inclusive).
-/// \param num_rows Number of rows in the batch.
-/// \param pool Arrow memory pool.
-/// \return Arrow Int64Array with values [start_position, start_position + num_rows).
-Result<std::shared_ptr<::arrow::Array>> MakeRowPositionArray(int64_t start_position,
-                                                             int64_t num_rows,
-                                                             ::arrow::MemoryPool* pool);
-
 /// \brief Create a row ID array for _row_id column.
 ///
 /// \param first_row_id First row ID of the data file.
-/// \param start_position Starting row position (inclusive).
+/// \param row_positions File row positions. May be null when first_row_id is unknown;
+/// otherwise must contain num_rows non-null positions.
 /// \param num_rows Number of rows in the batch.
 /// \param pool Arrow memory pool.
-/// \return Arrow Int64Array for _row_id.
+/// \return Arrow Int64Array with `first_row_id + pos`, or all nulls when
+/// `first_row_id` is unknown.
 Result<std::shared_ptr<::arrow::Array>> MakeRowIdArray(
-    std::optional<int64_t> first_row_id, int64_t start_position, int64_t num_rows,
+    std::optional<int64_t> first_row_id,
+    const std::shared_ptr<::arrow::Int64Array>& row_positions, int64_t num_rows,
     ::arrow::MemoryPool* pool);
 
 /// \brief Create a sequence number array for _last_updated_sequence_number column.

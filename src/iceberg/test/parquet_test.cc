@@ -18,6 +18,8 @@
  */
 
 #include <array>
+#include <format>
+#include <limits>
 #include <optional>
 #include <string>
 #include <utility>
@@ -1027,6 +1029,92 @@ TEST_F(ParquetReaderTest, ReadPhysicalLineage) {
   ASSERT_NO_FATAL_FAILURE(VerifyNextBatch(*reader, R"([[1, 100, null],
                                                        [2, 777, 8],
                                                        [3, 102, null]])"));
+}
+
+TEST_F(ParquetReaderTest, ReadPositionsAndLineageAcrossRowGroups) {
+  temp_parquet_file_ = "positions_across_row_groups.parquet";
+  constexpr int64_t kRowGroupRows = 100;
+  constexpr int64_t kNumRows = 3 * kRowGroupRows;
+  constexpr int64_t kFirstRowId = 1000;
+
+  // Odd rows keep a physical _row_id; even rows inherit `first_row_id + _pos`.
+  std::string input_json = "[";
+  for (int64_t i = 0; i < kNumRows; ++i) {
+    input_json += std::format("{}[{}, {}, null]", i == 0 ? "" : ",", i,
+                              i % 2 == 0 ? "null" : std::to_string(5000 + i));
+  }
+  input_json += "]";
+
+  auto write_schema = RowLineageSchema();
+  ArrowSchema arrow_c_schema;
+  ASSERT_THAT(ToArrowSchema(*write_schema, &arrow_c_schema), IsOk());
+  auto arrow_type = ::arrow::ImportType(&arrow_c_schema).ValueOrDie();
+  auto array = ::arrow::json::ArrayFromJSONString(arrow_type, input_json).ValueOrDie();
+
+  WriterProperties writer_properties;
+  writer_properties.Set(WriterProperties::kParquetCompression,
+                        std::string("uncompressed"));
+  writer_properties.Set(WriterProperties::kParquetMaxRowGroupRows, kRowGroupRows);
+  ASSERT_THAT(WriteArray(array, {.path = temp_parquet_file_,
+                                 .schema = write_schema,
+                                 .io = file_io_,
+                                 .properties = std::move(writer_properties)}),
+              IsOk());
+
+  auto io = internal::checked_cast<arrow::ArrowFileSystemFileIO&>(*file_io_);
+  auto metadata =
+      ::parquet::ReadMetaData(io.fs()->OpenInputFile(temp_parquet_file_).ValueOrDie());
+  ASSERT_EQ(metadata->num_row_groups(), 3);
+
+  auto read_schema = std::make_shared<Schema>(std::vector<SchemaField>{
+      SchemaField::MakeRequired(1, "id", int32()),
+      MetadataColumns::kRowPosition,
+      MetadataColumns::kRowId,
+  });
+
+  auto expected_json = [&](int64_t start, int64_t end) {
+    std::string json = "[";
+    for (int64_t pos = start; pos < end; ++pos) {
+      json += std::format("{}[{}, {}, {}]", pos == start ? "" : ",", pos, pos,
+                          pos % 2 == 0 ? kFirstRowId + pos : 5000 + pos);
+    }
+    return json + "]";
+  };
+
+  ReaderProperties reader_properties;
+  reader_properties.Set(ReaderProperties::kBatchSize, int64_t{150});
+
+  // Skip the first row group; the first batch spans the second and third ones.
+  const auto second_offset = static_cast<size_t>(metadata->RowGroup(1)->file_offset());
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto reader,
+      ReaderFactoryRegistry::Open(
+          FileFormatType::kParquet,
+          {.path = temp_parquet_file_,
+           .split = Split{.offset = second_offset,
+                          .length = std::numeric_limits<size_t>::max() - second_offset},
+           .io = file_io_,
+           .projection = read_schema,
+           .first_row_id = kFirstRowId,
+           .properties = reader_properties}));
+  ASSERT_NO_FATAL_FAILURE(VerifyNextBatch(*reader, expected_json(100, 250)));
+  ASSERT_NO_FATAL_FAILURE(VerifyNextBatch(*reader, expected_json(250, 300)));
+  ASSERT_NO_FATAL_FAILURE(VerifyExhausted(*reader));
+
+  // Read only the middle row group.
+  const auto third_offset = static_cast<size_t>(metadata->RowGroup(2)->file_offset());
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto middle_reader,
+      ReaderFactoryRegistry::Open(FileFormatType::kParquet,
+                                  {.path = temp_parquet_file_,
+                                   .split = Split{.offset = second_offset,
+                                                  .length = third_offset - second_offset},
+                                   .io = file_io_,
+                                   .projection = read_schema,
+                                   .first_row_id = kFirstRowId,
+                                   .properties = reader_properties}));
+  ASSERT_NO_FATAL_FAILURE(VerifyNextBatch(*middle_reader, expected_json(100, 200)));
+  ASSERT_NO_FATAL_FAILURE(VerifyExhausted(*middle_reader));
 }
 
 TEST_F(ParquetReaderTest, ReadNestedUnknownProjection) {

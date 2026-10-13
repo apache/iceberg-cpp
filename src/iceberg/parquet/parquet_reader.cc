@@ -24,6 +24,7 @@
 #include <variant>
 #include <vector>
 
+#include <arrow/array.h>
 #include <arrow/c/bridge.h>
 #include <arrow/memory_pool.h>
 #include <arrow/record_batch.h>
@@ -41,6 +42,7 @@
 #include "iceberg/parquet/parquet_data_util_internal.h"
 #include "iceberg/parquet/parquet_register.h"
 #include "iceberg/parquet/parquet_schema_util_internal.h"
+#include "iceberg/parquet/row_number_reader_internal.h"
 #include "iceberg/result.h"
 #include "iceberg/schema_internal.h"
 #include "iceberg/schema_util.h"
@@ -268,6 +270,10 @@ struct ReadContext {
   std::shared_ptr<::arrow::Schema> output_arrow_schema_;
   // The reader to read record batches from the Parquet file.
   std::unique_ptr<::arrow::RecordBatchReader> record_batch_reader_;
+  // Produces file row positions in lockstep with `record_batch_reader_`. Only set when
+  // the projection needs row positions (_pos or inherited _row_id).
+  // TODO: replace with the Arrow C++ row number virtual column once available.
+  std::unique_ptr<RowNumberReader> row_number_reader_;
 };
 
 // TODO(gangwu): list of work items
@@ -308,7 +314,6 @@ class ParquetReader::Impl {
     // Project read schema onto the Parquet file schema
     ICEBERG_ASSIGN_OR_RAISE(projection_, BuildProjection(reader_.get(), *read_schema_));
     metadata_context_ = {.file_path = options.path,
-                         .next_file_pos = 0,
                          .first_row_id = options.first_row_id,
                          .data_sequence_number = options.data_sequence_number};
 
@@ -326,11 +331,20 @@ class ParquetReader::Impl {
       return std::nullopt;
     }
 
+    std::shared_ptr<::arrow::Int64Array> row_positions;
+    if (context_->row_number_reader_) {
+      ICEBERG_ASSIGN_OR_RAISE(row_positions,
+                              context_->row_number_reader_->NextBatch(batch->num_rows()));
+      if (row_positions->length() != batch->num_rows()) {
+        return Invalid("Parquet batch has {} rows, but row number reader returned {}",
+                       batch->num_rows(), row_positions->length());
+      }
+    }
+
     ICEBERG_ASSIGN_OR_RAISE(
         batch, ProjectRecordBatch(std::move(batch), context_->output_arrow_schema_,
-                                  *read_schema_, projection_, metadata_context_, pool_));
-
-    metadata_context_.next_file_pos += batch->num_rows();
+                                  *read_schema_, projection_, metadata_context_,
+                                  row_positions, pool_));
 
     ArrowArray arrow_array;
     ICEBERG_ARROW_RETURN_NOT_OK(::arrow::ExportRecordBatch(*batch, &arrow_array));
@@ -392,9 +406,9 @@ class ParquetReader::Impl {
 
     // Row group pruning based on the split
     // TODO(gangwu): add row group filtering based on zone map, bloom filter, etc.
+    auto metadata = reader_->parquet_reader()->metadata();
     std::vector<int> row_group_indices;
     if (split_.has_value()) {
-      auto metadata = reader_->parquet_reader()->metadata();
       for (int i = 0; i < metadata->num_row_groups(); ++i) {
         auto row_group_offset = metadata->RowGroup(i)->file_offset();
         if (row_group_offset >= split_->offset &&
@@ -402,12 +416,10 @@ class ParquetReader::Impl {
           row_group_indices.push_back(i);
         } else if (row_group_offset >= split_->offset + split_->length) {
           break;
-        } else {
-          metadata_context_.next_file_pos += metadata->RowGroup(i)->num_rows();
         }
       }
     } else {
-      row_group_indices.resize(reader_->parquet_reader()->metadata()->num_row_groups());
+      row_group_indices.resize(metadata->num_row_groups());
       std::iota(row_group_indices.begin(), row_group_indices.end(), 0);  // NOLINT
     }
 
@@ -420,6 +432,11 @@ class ParquetReader::Impl {
       ICEBERG_ARROW_ASSIGN_OR_RETURN(
           context_->record_batch_reader_,
           reader_->GetRecordBatchReader(row_group_indices, column_indices));
+    }
+
+    if (NeedsRowPositions(*read_schema_, metadata_context_)) {
+      ICEBERG_ASSIGN_OR_RAISE(context_->row_number_reader_,
+                              RowNumberReader::Make(*metadata, row_group_indices, pool_));
     }
 
     // Build the output Arrow schema from the projected Iceberg schema. This schema is the
@@ -460,7 +477,7 @@ class ParquetReader::Impl {
   std::shared_ptr<::arrow::io::RandomAccessFile> input_stream_;
   // Parquet file reader to create RecordBatchReader.
   std::unique_ptr<::parquet::arrow::FileReader> reader_;
-  // Metadata column context for populating _file and _pos columns.
+  // File-level constants for metadata and row lineage columns.
   arrow::MetadataColumnContext metadata_context_;
   // The context to keep track of the reading progress.
   std::unique_ptr<ReadContext> context_;

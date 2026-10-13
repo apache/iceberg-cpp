@@ -29,6 +29,7 @@
 #include <gtest/gtest.h>
 
 #include "iceberg/expression/literal.h"
+#include "iceberg/metadata_columns.h"
 #include "iceberg/parquet/parquet_data_util_internal.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_internal.h"
@@ -55,9 +56,11 @@ std::shared_ptr<::arrow::RecordBatch> RecordBatchFromJson(
                                     struct_array->fields());
 }
 
-void VerifyProjectRecordBatch(const Schema& projected_schema, const Schema& source_schema,
-                              const std::string& input_json,
-                              const std::string& expected_json) {
+void VerifyProjectRecordBatch(
+    const Schema& projected_schema, const Schema& source_schema,
+    const std::string& input_json, const std::string& expected_json,
+    const arrow::MetadataColumnContext& metadata_context = {},
+    const std::shared_ptr<::arrow::Int64Array>& row_positions = nullptr) {
   auto schema_projection_result =
       Project(projected_schema, source_schema, /*prune_source=*/false);
   ASSERT_THAT(schema_projection_result, IsOk());
@@ -75,7 +78,7 @@ void VerifyProjectRecordBatch(const Schema& projected_schema, const Schema& sour
 
   auto project_result = ProjectRecordBatch(
       input_record_batch, projected_arrow_schema, projected_schema, schema_projection,
-      /*metadata_context=*/{}, ::arrow::default_memory_pool());
+      metadata_context, row_positions, ::arrow::default_memory_pool());
   ASSERT_THAT(project_result, IsOk());
   auto projected_record_batch = std::move(project_result.value());
 
@@ -87,6 +90,120 @@ void VerifyProjectRecordBatch(const Schema& projected_schema, const Schema& sour
 
 class ProjectRecordBatchTest : public ::testing::TestWithParam<ProjectRecordBatchParam> {
 };
+
+TEST(ProjectRecordBatchTest, InheritedLineageUsesFilePositions) {
+  Schema source_schema({SchemaField::MakeRequired(1, "id", int32())});
+  Schema projected_schema({SchemaField::MakeRequired(1, "id", int32()),
+                           MetadataColumns::kRowPosition, MetadataColumns::kRowId,
+                           MetadataColumns::kLastUpdatedSequenceNumber});
+  auto positions = std::static_pointer_cast<::arrow::Int64Array>(
+      ::arrow::json::ArrayFromJSONString(::arrow::int64(), "[12, 3, 30]").ValueOrDie());
+  ASSERT_NO_FATAL_FAILURE(VerifyProjectRecordBatch(
+      projected_schema, source_schema, "[[10], [20], [30]]",
+      "[[10, 12, 112, 7], [20, 3, 103, 7], [30, 30, 130, 7]]",
+      {.first_row_id = 100, .data_sequence_number = 7}, positions));
+}
+
+TEST(ProjectRecordBatchTest, PhysicalLineageUsesFilePositionsForNulls) {
+  Schema source_schema({SchemaField::MakeRequired(1, "id", int32()),
+                        MetadataColumns::kRowId,
+                        MetadataColumns::kLastUpdatedSequenceNumber});
+  Schema projected_schema({SchemaField::MakeRequired(1, "id", int32()),
+                           MetadataColumns::kRowPosition, MetadataColumns::kRowId,
+                           MetadataColumns::kLastUpdatedSequenceNumber});
+  // A sliced array verifies that lineage uses the array's logical offset.
+  auto positions = std::static_pointer_cast<::arrow::Int64Array>(
+      ::arrow::json::ArrayFromJSONString(::arrow::int64(), "[999, 12, 3, 30]")
+          .ValueOrDie()
+          ->Slice(1));
+  ASSERT_NO_FATAL_FAILURE(VerifyProjectRecordBatch(
+      projected_schema, source_schema, "[[10, null, null], [20, 777, 8], [30, null, 9]]",
+      "[[10, 12, 112, 7], [20, 3, 777, 8], [30, 30, 130, 9]]",
+      {.first_row_id = 100, .data_sequence_number = 7}, positions));
+}
+
+TEST(ProjectRecordBatchTest, RowPositionsMustMatchBatch) {
+  Schema source_schema(std::vector<SchemaField>{});
+  auto input = ::arrow::RecordBatch::Make(::arrow::schema({}), 3, ::arrow::ArrayVector{});
+  for (const auto& field : {MetadataColumns::kRowPosition, MetadataColumns::kRowId}) {
+    SCOPED_TRACE(field.name());
+    Schema projected_schema({field});
+    ICEBERG_UNWRAP_OR_FAIL(auto projection, Project(projected_schema, source_schema,
+                                                    /*prune_source=*/false));
+    auto output_schema = ::arrow::schema(
+        {::arrow::field(std::string(field.name()), ::arrow::int64(), field.optional())});
+
+    EXPECT_THAT(ProjectRecordBatch(input, output_schema, projected_schema, projection,
+                                   {.first_row_id = 100}, nullptr,
+                                   ::arrow::default_memory_pool()),
+                IsError(ErrorKind::kInvalidArgument));
+    for (const auto& json : {"[12, 3]", "[12, null, 30]"}) {
+      auto positions = std::static_pointer_cast<::arrow::Int64Array>(
+          ::arrow::json::ArrayFromJSONString(::arrow::int64(), json).ValueOrDie());
+      EXPECT_THAT(ProjectRecordBatch(input, output_schema, projected_schema, projection,
+                                     {.first_row_id = 100}, positions,
+                                     ::arrow::default_memory_pool()),
+                  IsError(ErrorKind::kInvalidArgument));
+    }
+  }
+}
+
+TEST(ProjectRecordBatchTest, RowPositionsRequiredForPhysicalRowIdInheritance) {
+  Schema schema({MetadataColumns::kRowId});
+  ICEBERG_UNWRAP_OR_FAIL(auto projection,
+                         Project(schema, schema, /*prune_source=*/false));
+  auto arrow_schema = ::arrow::schema({::arrow::field("_row_id", ::arrow::int64())});
+  auto input = RecordBatchFromJson(arrow_schema, "[[null], [777], [null]]");
+  EXPECT_THAT(
+      ProjectRecordBatch(input, arrow_schema, schema, projection, {.first_row_id = 100},
+                         nullptr, ::arrow::default_memory_pool()),
+      IsError(ErrorKind::kInvalidArgument));
+}
+
+TEST(ProjectRecordBatchTest, LineageWithoutRowPositions) {
+  Schema data_schema({SchemaField::MakeRequired(1, "id", int32())});
+  Schema lineage_schema({SchemaField::MakeRequired(1, "id", int32()),
+                         MetadataColumns::kRowId,
+                         MetadataColumns::kLastUpdatedSequenceNumber});
+  ASSERT_NO_FATAL_FAILURE(VerifyProjectRecordBatch(
+      lineage_schema, data_schema, "[[10], [20], [30]]",
+      "[[10, null, 7], [20, null, 7], [30, null, 7]]", {.data_sequence_number = 7}));
+  const std::string physical_values = "[[10, null, null], [20, 777, 8], [30, null, 9]]";
+  ASSERT_NO_FATAL_FAILURE(VerifyProjectRecordBatch(
+      lineage_schema, lineage_schema, physical_values,
+      "[[10, null, 7], [20, 777, 8], [30, null, 9]]", {.data_sequence_number = 7}));
+  ASSERT_NO_FATAL_FAILURE(VerifyProjectRecordBatch(lineage_schema, lineage_schema,
+                                                   physical_values, physical_values));
+}
+
+TEST(ProjectRecordBatchTest, RowPositionsAreIndependentOfPhysicalColumns) {
+  Schema source_schema({SchemaField::MakeRequired(1, "_pos", int64())});
+  Schema projected_schema({MetadataColumns::kRowPosition, MetadataColumns::kRowId});
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto projection, Project(projected_schema, source_schema, /*prune_source=*/false));
+  auto positions = std::static_pointer_cast<::arrow::Int64Array>(
+      ::arrow::json::ArrayFromJSONString(::arrow::int64(), "[12, 3, 30]").ValueOrDie());
+  auto physical =
+      ::arrow::json::ArrayFromJSONString(::arrow::int64(), "[10, 20, 30]").ValueOrDie();
+  auto output_schema = ::arrow::schema({::arrow::field("_pos", ::arrow::int64(), false),
+                                        ::arrow::field("_row_id", ::arrow::int64())});
+  // A physical column named _pos must not be mistaken for the virtual column.
+  auto input_schema = ::arrow::schema({::arrow::field("_pos", ::arrow::int64())});
+  auto input = ::arrow::RecordBatch::Make(input_schema, 3, {physical});
+  EXPECT_THAT(
+      ProjectRecordBatch(input, output_schema, projected_schema, projection,
+                         {.first_row_id = 100}, nullptr, ::arrow::default_memory_pool()),
+      IsError(ErrorKind::kInvalidArgument));
+
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto output, ProjectRecordBatch(input, output_schema, projected_schema, projection,
+                                      {.first_row_id = 100}, positions,
+                                      ::arrow::default_memory_pool()));
+  EXPECT_TRUE(output->column(0)->Equals(*positions));
+  EXPECT_EQ(output->column(0)->data()->buffers[1], positions->data()->buffers[1]);
+  EXPECT_TRUE(output->Equals(
+      *RecordBatchFromJson(output_schema, "[[12, 112], [3, 103], [30, 130]]")));
+}
 
 TEST_P(ProjectRecordBatchTest, PrimitiveType) {
   const auto& test_case = GetParam();
@@ -659,7 +776,7 @@ TEST(ProjectRecordBatchTest, LargeListOfIntegers) {
   // Project the record batch
   auto project_result = ProjectRecordBatch(
       input_record_batch, output_arrow_schema, iceberg_schema, schema_projection,
-      /*metadata_context=*/{}, ::arrow::default_memory_pool());
+      /*metadata_context=*/{}, /*row_positions=*/nullptr, ::arrow::default_memory_pool());
   ASSERT_THAT(project_result, IsOk());
   auto projected_record_batch = std::move(project_result.value());
 
@@ -751,7 +868,7 @@ TEST(ProjectRecordBatchTest, LargeListOfStructs) {
   // Project the record batch
   auto project_result = ProjectRecordBatch(
       input_record_batch, output_arrow_schema, iceberg_schema, schema_projection,
-      /*metadata_context=*/{}, ::arrow::default_memory_pool());
+      /*metadata_context=*/{}, /*row_positions=*/nullptr, ::arrow::default_memory_pool());
   ASSERT_THAT(project_result, IsOk());
   auto projected_record_batch = std::move(project_result.value());
 

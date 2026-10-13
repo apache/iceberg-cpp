@@ -26,19 +26,27 @@
 
 namespace iceberg::parquet {
 
+/// \brief Whether the schema projects _pos, or _row_id with a known first_row_id.
+bool NeedsRowPositions(const Schema& read_schema,
+                       const arrow::MetadataColumnContext& metadata_context);
+
 /// \brief Convert record batch read from a Parquet file to projected Iceberg Schema.
 ///
 /// \param record_batch The record batch to convert.
 /// \param output_arrow_schema The Arrow schema to convert to.
 /// \param projected_schema The projected Iceberg schema.
 /// \param projection The projection from projected Iceberg schema to the record batch.
-/// \param metadata_context The metadata column context for populating _file and _pos.
+/// \param metadata_context The file-level constants for populating metadata columns.
+/// \param row_positions Optional file row positions for _pos and inherited _row_id.
+/// Required when NeedsRowPositions(projected_schema, metadata_context) is true.
+/// When non-null, must contain one non-null value per row in record_batch.
 /// \param pool The arrow memory pool.
 /// \return The converted record batch.
 Result<std::shared_ptr<::arrow::RecordBatch>> ProjectRecordBatch(
     std::shared_ptr<::arrow::RecordBatch> record_batch,
     const std::shared_ptr<::arrow::Schema>& output_arrow_schema,
     const Schema& projected_schema, const SchemaProjection& projection,
-    const arrow::MetadataColumnContext& metadata_context, ::arrow::MemoryPool* pool);
+    const arrow::MetadataColumnContext& metadata_context,
+    const std::shared_ptr<::arrow::Int64Array>& row_positions, ::arrow::MemoryPool* pool);
 
 }  // namespace iceberg::parquet

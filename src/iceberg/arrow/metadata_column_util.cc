@@ -69,21 +69,9 @@ Result<std::shared_ptr<::arrow::Array>> MakeFilePathArray(const std::string& fil
   return array;
 }
 
-Result<std::shared_ptr<::arrow::Array>> MakeRowPositionArray(int64_t start_position,
-                                                             int64_t num_rows,
-                                                             ::arrow::MemoryPool* pool) {
-  ::arrow::Int64Builder builder(pool);
-  ICEBERG_ARROW_RETURN_NOT_OK(builder.Reserve(num_rows));
-  for (int64_t i = 0; i < num_rows; ++i) {
-    ICEBERG_ARROW_RETURN_NOT_OK(builder.Append(start_position + i));
-  }
-  std::shared_ptr<::arrow::Array> array;
-  ICEBERG_ARROW_RETURN_NOT_OK(builder.Finish(&array));
-  return array;
-}
-
 Result<std::shared_ptr<::arrow::Array>> MakeRowIdArray(
-    std::optional<int64_t> first_row_id, int64_t start_position, int64_t num_rows,
+    std::optional<int64_t> first_row_id,
+    const std::shared_ptr<::arrow::Int64Array>& row_positions, int64_t num_rows,
     ::arrow::MemoryPool* pool) {
   ::arrow::Int64Builder builder(pool);
   ICEBERG_ARROW_RETURN_NOT_OK(builder.Reserve(num_rows));
@@ -92,7 +80,7 @@ Result<std::shared_ptr<::arrow::Array>> MakeRowIdArray(
   } else {
     for (int64_t row_index = 0; row_index < num_rows; ++row_index) {
       ICEBERG_ARROW_RETURN_NOT_OK(
-          builder.Append(first_row_id.value() + start_position + row_index));
+          builder.Append(first_row_id.value() + row_positions->Value(row_index)));
     }
   }
 

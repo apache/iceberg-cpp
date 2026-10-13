@@ -20,6 +20,7 @@
 #include <functional>
 #include <memory>
 #include <mutex>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <thread>
@@ -38,6 +39,7 @@
 #include <gtest/gtest.h>
 
 #include "iceberg/arrow/arrow_status_internal.h"
+#include "iceberg/arrow/metadata_column_util_internal.h"
 #include "iceberg/constants.h"
 #include "iceberg/result.h"
 #include "iceberg/schema.h"
@@ -47,6 +49,15 @@
 #include "iceberg/util/task_group.h"
 
 namespace iceberg {
+
+TEST(MetadataColumnUtilTest, RowIdsWithoutFirstRowId) {
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto row_ids,
+      arrow::MakeRowIdArray(std::nullopt, nullptr, 3, ::arrow::default_memory_pool()));
+  ASSERT_TRUE(row_ids->ValidateFull().ok());
+  EXPECT_EQ(row_ids->length(), 3);
+  EXPECT_EQ(row_ids->null_count(), row_ids->length());
+}
 
 struct ToArrowSchemaParam {
   std::shared_ptr<Type> iceberg_type;
