@@ -44,9 +44,7 @@ class ICEBERG_EXPORT RefsTable : public MetadataTable {
 
   ~RefsTable() override;
 
-  MetadataTableKind kind() const noexcept override {
-    return MetadataTableKind::kRefs;
-  }
+  MetadataTableKind kind() const noexcept override { return MetadataTableKind::kRefs; }
 
   const std::shared_ptr<Schema>& schema() const override;
 
@@ -68,16 +66,14 @@ class ICEBERG_EXPORT RefsTable : public MetadataTable {
 class ICEBERG_EXPORT RefsScan final : public MetadataScan {
  public:
   /// \brief Create a scan from captured metadata table settings.
-  static Result<std::unique_ptr<RefsScan>> Make(
-      internal::MetadataScanContext context);
+  static Result<std::unique_ptr<RefsScan>> Make(internal::MetadataScanContext context);
 
   ~RefsScan() override;
 
   Result<MetadataScanTaskStreamPtr> PlanTasksStream() const override;
 
  private:
-  RefsScan(internal::MetadataScanContext context,
-                std::shared_ptr<MetadataScanTask> task);
+  RefsScan(internal::MetadataScanContext context, std::shared_ptr<MetadataScanTask> task);
 
   const std::shared_ptr<MetadataScanTask> task_;
 };

@@ -56,8 +56,7 @@ Result<ArrowArrayStream> MetadataScanTaskReader::Open(
                                           options_.batch_size);
         case MetadataTableKind::kRefs:
           return RefsTable::ReadRows(static_task.metadata(),
-                                    static_task.projected_schema(),
-                                    options_.batch_size);
+                                     static_task.projected_schema(), options_.batch_size);
         case MetadataTableKind::kHistory:
           return HistoryTable::ReadRows(static_task.metadata(),
                                         static_task.projected_schema(),

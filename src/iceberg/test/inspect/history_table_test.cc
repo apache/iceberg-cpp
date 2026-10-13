@@ -32,8 +32,8 @@
 #include "iceberg/snapshot.h"
 #include "iceberg/table_metadata.h"
 #include "iceberg/test/arrow_test_util.h"
+#include "iceberg/test/inspect/metadata_table_test_base.h"
 #include "iceberg/test/matchers.h"
-#include "iceberg/test/metadata_table_test_base.h"
 #include "iceberg/type.h"
 #include "iceberg/util/timepoint.h"
 

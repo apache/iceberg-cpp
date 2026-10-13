@@ -21,10 +21,12 @@
 
 #include <algorithm>
 #include <array>
+#include <cstdint>
+#include <memory>
 #include <optional>
 #include <string>
-#include <memory>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "iceberg/arrow_row_builder_internal.h"
@@ -59,17 +61,27 @@ Status AppendOptional(ArrowArray* array, const auto& value) {
 
 constexpr std::array<internal::MetadataTableColumn<RefRow>, 6> kRefColumns = {
     {{.field_id = 1,
-      .append = [](ArrowArray* column, const RefRow& row) { return AppendString(column, row.name); }},
+      .append = [](ArrowArray* column,
+                   const RefRow& row) { return AppendString(column, row.name); }},
      {.field_id = 2,
-      .append = [](ArrowArray* column, const RefRow& row) { return AppendString(column, row.type); }},
+      .append = [](ArrowArray* column,
+                   const RefRow& row) { return AppendString(column, row.type); }},
      {.field_id = 3,
-      .append = [](ArrowArray* column, const RefRow& row) { return AppendInt(column, row.snapshot_id); }},
+      .append = [](ArrowArray* column,
+                   const RefRow& row) { return AppendInt(column, row.snapshot_id); }},
      {.field_id = 4,
-      .append = [](ArrowArray* column, const RefRow& row) { return AppendOptional(column, row.max_ref_age_ms); }},
+      .append =
+          [](ArrowArray* column, const RefRow& row) {
+            return AppendOptional(column, row.max_ref_age_ms);
+          }},
      {.field_id = 5,
-      .append = [](ArrowArray* column, const RefRow& row) { return AppendOptional(column, row.min_snapshots_to_keep); }},
-     {.field_id = 6,
-      .append = [](ArrowArray* column, const RefRow& row) { return AppendOptional(column, row.max_snapshot_age_ms); }}}};
+      .append =
+          [](ArrowArray* column, const RefRow& row) {
+            return AppendOptional(column, row.min_snapshots_to_keep);
+          }},
+     {.field_id = 6, .append = [](ArrowArray* column, const RefRow& row) {
+        return AppendOptional(column, row.max_snapshot_age_ms);
+      }}}};
 
 }  // namespace
 
@@ -79,9 +91,7 @@ RefsTable::RefsTable(std::shared_ptr<const Table> table)
 
 RefsTable::~RefsTable() = default;
 
-const std::shared_ptr<Schema>& RefsTable::schema() const {
-  return CanonicalSchema();
-}
+const std::shared_ptr<Schema>& RefsTable::schema() const { return CanonicalSchema(); }
 
 const std::shared_ptr<Schema>& RefsTable::CanonicalSchema() {
   static const auto schema = std::make_shared<Schema>(std::vector<SchemaField>{
@@ -95,8 +105,7 @@ const std::shared_ptr<Schema>& RefsTable::CanonicalSchema() {
   return schema;
 }
 
-Result<std::unique_ptr<RefsTable>> RefsTable::Make(
-    std::shared_ptr<const Table> table) {
+Result<std::unique_ptr<RefsTable>> RefsTable::Make(std::shared_ptr<const Table> table) {
   ICEBERG_PRECHECK(table != nullptr, "Table cannot be null");
   return std::unique_ptr<RefsTable>(new RefsTable(std::move(table)));
 }
@@ -110,13 +119,21 @@ Result<ArrowArrayStream> RefsTable::ReadRows(
     std::shared_ptr<const TableMetadata> metadata,
     const std::shared_ptr<Schema>& projected_schema, int64_t batch_size) {
   std::vector<RefRow> rows;
-  for (const auto& [name, ref] : metadata->refs) {
-    ICEBERG_PRECHECK(ref != nullptr, "Snapshot reference '{}' is null", name);
+  const auto& refs = metadata->refs;
+  rows.reserve(refs.size());
+  for (const auto& [name, ref] : refs) {
+    if (ref == nullptr) {
+      return Invalid("Snapshot reference '{}' is null", name);
+    }
+    const auto* branch = std::get_if<SnapshotRef::Branch>(&ref->retention);
     RefRow row{.name = name,
-               .type = ref->type() == SnapshotRefType::kBranch ? "BRANCH" : "TAG",
+               .type = branch != nullptr ? "BRANCH" : "TAG",
                .snapshot_id = ref->snapshot_id,
-               .max_ref_age_ms = ref->max_ref_age_ms()};
-    if (const auto* branch = std::get_if<SnapshotRef::Branch>(&ref->retention)) {
+               .max_ref_age_ms =
+                   branch != nullptr
+                       ? branch->max_ref_age_ms
+                       : std::get<SnapshotRef::Tag>(ref->retention).max_ref_age_ms};
+    if (branch != nullptr) {
       row.min_snapshots_to_keep = branch->min_snapshots_to_keep;
       row.max_snapshot_age_ms = branch->max_snapshot_age_ms;
     }
@@ -131,13 +148,12 @@ Result<ArrowArrayStream> RefsTable::ReadRows(
 
 // RefsScan implementation
 RefsScan::RefsScan(internal::MetadataScanContext context,
-                             std::shared_ptr<MetadataScanTask> task)
+                   std::shared_ptr<MetadataScanTask> task)
     : MetadataScan(std::move(context)), task_(std::move(task)) {}
 
 RefsScan::~RefsScan() = default;
 
-Result<std::unique_ptr<RefsScan>> RefsScan::Make(
-    internal::MetadataScanContext context) {
+Result<std::unique_ptr<RefsScan>> RefsScan::Make(internal::MetadataScanContext context) {
   ICEBERG_PRECHECK(context.kind == MetadataTableKind::kRefs,
                    "Unexpected metadata table kind for refs scan");
   if (context.snapshot_id.has_value() || !context.ref_name.empty() ||
@@ -153,8 +169,7 @@ Result<std::unique_ptr<RefsScan>> RefsScan::Make(
   ICEBERG_ASSIGN_OR_RAISE(auto task,
                           StaticMetadataTask::Make(context.kind, context.table_metadata,
                                                    context.projected_schema));
-  return std::unique_ptr<RefsScan>(
-      new RefsScan(std::move(context), std::move(task)));
+  return std::unique_ptr<RefsScan>(new RefsScan(std::move(context), std::move(task)));
 }
 
 Result<MetadataScanTaskStreamPtr> RefsScan::PlanTasksStream() const {
