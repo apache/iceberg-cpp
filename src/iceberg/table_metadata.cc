@@ -489,8 +489,16 @@ Result<std::string> TableMetadataUtil::Write(FileIO& io, const TableMetadata* ba
 
 Status TableMetadataUtil::Write(FileIO& io, const std::string& location,
                                 const TableMetadata& metadata) {
+  ICEBERG_ASSIGN_OR_RAISE(auto codec_type, Codec::FromFileName(location));
   ICEBERG_ASSIGN_OR_RAISE(auto json, ToJson(metadata));
   ICEBERG_ASSIGN_OR_RAISE(auto json_string, ToJsonString(json));
+
+  if (codec_type == MetadataFileCodecType::kGzip) {
+    auto gzip_compressor = std::make_unique<GZipCompressor>();
+    ICEBERG_RETURN_UNEXPECTED(gzip_compressor->Init());
+    ICEBERG_ASSIGN_OR_RAISE(json_string, gzip_compressor->Compress(json_string));
+  }
+
   return io.WriteFile(location, json_string);
 }
 

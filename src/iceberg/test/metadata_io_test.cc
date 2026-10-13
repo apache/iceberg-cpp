@@ -163,6 +163,28 @@ TEST_F(MetadataIOTest, CodecFromFileInvalidName) {
               IsError(ErrorKind::kInvalidArgument));
 }
 
+TEST_F(MetadataIOTest, RoundTripGzipCompressedMetadata) {
+  // With metadata compression enabled the writer names the file
+  // "<version>-<uuid>.gz.metadata.json", the same layout Iceberg Java uses.
+  // The payload must really be gzip, and reading it back must decompress it.
+  TableMetadata metadata = PrepareMetadata();
+  metadata.properties.Set(TableProperties::kMetadataCompression, std::string("gzip"));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto written_location,
+                         TableMetadataUtil::Write(*io_, nullptr, "", metadata));
+  EXPECT_THAT(written_location, testing::HasSubstr(".gz.metadata.json"));
+
+  // The bytes on disk carry the gzip magic, so another engine can read them.
+  ICEBERG_UNWRAP_OR_FAIL(auto raw, io_->ReadFile(written_location, std::nullopt));
+  ASSERT_GE(raw.size(), 2u);
+  EXPECT_EQ(static_cast<unsigned char>(raw[0]), 0x1f);
+  EXPECT_EQ(static_cast<unsigned char>(raw[1]), 0x8b);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto metadata_read,
+                         TableMetadataUtil::Read(*io_, written_location));
+  EXPECT_EQ(*metadata_read, metadata);
+}
+
 TEST_F(MetadataIOTest, WriteMetadataWithBase) {
   TableMetadata base = PrepareMetadata();
 

@@ -27,6 +27,7 @@
 namespace iceberg {
 
 class ZlibImpl;
+class ZlibDeflateImpl;
 
 class GZipDecompressor {
  public:
@@ -40,6 +41,21 @@ class GZipDecompressor {
 
  private:
   std::unique_ptr<ZlibImpl> zlib_impl_;
+};
+
+/// \brief Compresses data into the gzip format read by GZipDecompressor.
+class GZipCompressor {
+ public:
+  GZipCompressor();
+
+  ~GZipCompressor();
+
+  Status Init();
+
+  Result<std::string> Compress(const std::string& data);
+
+ private:
+  std::unique_ptr<ZlibDeflateImpl> zlib_impl_;
 };
 
 }  // namespace iceberg
