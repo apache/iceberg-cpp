@@ -2526,11 +2526,13 @@ Result<std::shared_ptr<FileScanTask>> FileScanTaskFromJson(const nlohmann::json&
     ICEBERG_ASSIGN_OR_RAISE(residual_filter, ExpressionFromJson(filter_json));
   }
 
-  ICEBERG_ASSIGN_OR_RAISE(auto task, FileScanTask::MakeSplit(
-    std::make_shared<DataFile>(std::move(data_file)), start, length,
-    std::move(delete_files), std::move(residual_filter)));
-
-  return std::move(task);
+  auto task = FileScanTask::MakeSplit(std::make_shared<DataFile>(std::move(data_file)),
+                                      start, length, std::move(delete_files),
+                                      std::move(residual_filter));
+  if (!task) {
+    return JsonParseError("Invalid FileScanTask range: {}", task.error().message);
+  }
+  return std::move(task.value());
 }
 
 }  // namespace iceberg
