@@ -20,7 +20,6 @@
 #pragma once
 
 #include <cstddef>
-#include <functional>
 #include <memory>
 #include <optional>
 #include <utility>
@@ -40,50 +39,36 @@
 namespace iceberg::internal {
 
 /// \brief Arrow stream backed by a metadata-table row iterator.
-template <typename Row>
-class MetadataTableRowsStream {
+template <typename Row, typename AppendRow>
+class MetadataTableRowsStream : public Stream<ArrowArray> {
  public:
-  using AppendRow = std::function<Status(ArrowRowBuilder&, const Row&)>;
-
   static Result<std::unique_ptr<MetadataTableRowsStream>> Make(
-      const Schema& schema, std::unique_ptr<Stream<Row>> rows, AppendRow append_row) {
+      const iceberg::Schema& schema, std::unique_ptr<Stream<Row>> rows,
+      AppendRow append_row) {
+    ICEBERG_PRECHECK(rows != nullptr, "Metadata table row source cannot be null");
+    if constexpr (requires { static_cast<bool>(append_row); }) {
+      ICEBERG_PRECHECK(static_cast<bool>(append_row),
+                       "Metadata table row callback cannot be empty");
+    }
     ArrowSchema arrow_schema{};
     ICEBERG_RETURN_UNEXPECTED(ToArrowSchema(schema, &arrow_schema));
     return std::unique_ptr<MetadataTableRowsStream>(new MetadataTableRowsStream(
         std::move(rows), std::move(append_row), std::move(arrow_schema)));
   }
 
-  ~MetadataTableRowsStream() {
-    auto status = Close();
-    static_cast<void>(status);
+  ~MetadataTableRowsStream() override {
+    if (arrow_schema_.release != nullptr) {
+      ArrowSchemaRelease(&arrow_schema_);
+    }
   }
 
   Status Close() {
     rows_.reset();
-    append_row_ = nullptr;
+    append_row_.reset();
     if (arrow_schema_.release != nullptr) {
       ArrowSchemaRelease(&arrow_schema_);
     }
     return {};
-  }
-
-  Result<std::optional<ArrowArray>> Next() {
-    ICEBERG_PRECHECK(arrow_schema_.release != nullptr,
-                     "Cannot read from a closed metadata table stream");
-    ICEBERG_ASSIGN_OR_RAISE(auto builder, ArrowRowBuilder::Make(&arrow_schema_));
-    while (builder.num_rows() < MetadataTable::kBatchSize) {
-      ICEBERG_ASSIGN_OR_RAISE(auto row, rows_->Next());
-      if (!row.has_value()) {
-        break;
-      }
-      ICEBERG_RETURN_UNEXPECTED(append_row_(builder, *row));
-    }
-    if (builder.num_rows() == 0) {
-      return std::nullopt;
-    }
-
-    ICEBERG_ASSIGN_OR_RAISE(auto array, std::move(builder).Finish());
-    return array;
   }
 
   Result<ArrowSchema> Schema() {
@@ -95,6 +80,27 @@ class MetadataTableRowsStream {
     return schema_copy;
   }
 
+ protected:
+  Result<std::optional<ArrowArray>> NextImpl() override {
+    ICEBERG_PRECHECK(rows_ != nullptr, "Cannot read from a closed metadata table stream");
+    // Check for exhaustion before allocating a builder, including after a partial batch.
+    ICEBERG_ASSIGN_OR_RAISE(auto row, rows_->Next());
+    if (!row.has_value()) {
+      return std::nullopt;
+    }
+    ICEBERG_ASSIGN_OR_RAISE(auto builder, ArrowRowBuilder::Make(&arrow_schema_));
+    ICEBERG_RETURN_UNEXPECTED((*append_row_)(builder, *row));
+    while (builder.num_rows() < MetadataTable::kBatchSize) {
+      ICEBERG_ASSIGN_OR_RAISE(auto next_row, rows_->Next());
+      if (!next_row.has_value()) {
+        break;
+      }
+      ICEBERG_RETURN_UNEXPECTED((*append_row_)(builder, *next_row));
+    }
+    ICEBERG_ASSIGN_OR_RAISE(auto array, std::move(builder).Finish());
+    return array;
+  }
+
  private:
   MetadataTableRowsStream(std::unique_ptr<Stream<Row>> rows, AppendRow append_row,
                           ArrowSchema arrow_schema)
@@ -103,7 +109,7 @@ class MetadataTableRowsStream {
         arrow_schema_(std::move(arrow_schema)) {}
 
   std::unique_ptr<Stream<Row>> rows_;
-  AppendRow append_row_;
+  std::optional<AppendRow> append_row_;
   ArrowSchema arrow_schema_{};
 };
 
@@ -111,11 +117,9 @@ template <typename Row, typename AppendRow>
 Result<ArrowArrayStream> MakeMetadataTableStream(const Schema& schema,
                                                  std::unique_ptr<Stream<Row>> rows,
                                                  AppendRow append_row) {
+  using RowsStream = MetadataTableRowsStream<Row, AppendRow>;
   ICEBERG_ASSIGN_OR_RAISE(
-      auto stream,
-      MetadataTableRowsStream<Row>::Make(
-          schema, std::move(rows),
-          typename MetadataTableRowsStream<Row>::AppendRow(std::move(append_row))));
+      auto stream, RowsStream::Make(schema, std::move(rows), std::move(append_row)));
   return MakeArrowArrayStream(std::move(stream));
 }
 

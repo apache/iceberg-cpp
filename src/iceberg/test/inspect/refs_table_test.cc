@@ -21,6 +21,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
 #include <unordered_map>
 #include <utility>
@@ -29,16 +30,19 @@
 #include <arrow/array.h>
 #include <arrow/c/bridge.h>
 #include <arrow/record_batch.h>
+#include <arrow/type.h>
 #include <gtest/gtest.h>
 
 #include "iceberg/constants.h"
 #include "iceberg/inspect/metadata_table.h"
+#include "iceberg/schema.h"
+#include "iceberg/schema_field.h"
 #include "iceberg/snapshot.h"
 #include "iceberg/table.h"
-#include "iceberg/table_identifier.h"
+#include "iceberg/table_metadata.h"
+#include "iceberg/test/inspect/metadata_table_test_base.h"
 #include "iceberg/test/matchers.h"
-#include "iceberg/test/metadata_table_test_base.h"
-#include "iceberg/util/macros.h"
+#include "iceberg/type.h"
 
 namespace iceberg {
 namespace {
@@ -46,17 +50,9 @@ namespace {
 class RefsTableTest : public MetadataTableTestBase,
                       public ::testing::WithParamInterface<int8_t> {
  protected:
-  Result<std::shared_ptr<Table>> MakeTable(
-      std::vector<std::shared_ptr<Snapshot>> snapshots, int64_t current_snapshot_id,
-      std::unordered_map<std::string, std::shared_ptr<SnapshotRef>> refs = {}) {
-    auto metadata = std::make_shared<TableMetadata>(*metadata_);
-    metadata->format_version = GetParam();
-    metadata->snapshots = std::move(snapshots);
-    metadata->current_snapshot_id = current_snapshot_id;
-    metadata->refs = std::move(refs);
-    return Table::Make(
-        TableIdentifier{.ns = Namespace{.levels = {"db"}}, .name = "table"},
-        std::move(metadata), "s3://bucket/metadata.json", io_, catalog_);
+  void SetUp() override {
+    MetadataTableTestBase::SetUp();
+    metadata_->format_version = GetParam();
   }
 };
 
@@ -69,22 +65,11 @@ TEST_P(RefsTableTest, ScansBranchesAndTagsAsRefs) {
   refs.emplace("dev", std::move(dev_ref));
   refs.emplace("release", std::move(release_ref));
 
-  auto first = std::make_shared<Snapshot>(Snapshot{
-      .snapshot_id = 1,
-      .sequence_number = 1,
-      .timestamp_ms = TimePointMsFromUnixMs(1000),
-      .manifest_list = "unused-1.avro",
-  });
-  auto second = std::make_shared<Snapshot>(Snapshot{
-      .snapshot_id = 2,
-      .parent_snapshot_id = 1,
-      .sequence_number = 2,
-      .timestamp_ms = TimePointMsFromUnixMs(2000),
-      .manifest_list = "unused-2.avro",
-  });
-  ICEBERG_UNWRAP_OR_FAIL(auto table, MakeTable({first, second}, 2, std::move(refs)));
-
-  ICEBERG_UNWRAP_OR_FAIL(auto refs_table, MetadataTable::Make<RefsTable>(table));
+  auto [first, second] = MakeTestSnapshots();
+  metadata_->snapshots = {first, second};
+  metadata_->current_snapshot_id = 2;
+  metadata_->refs = std::move(refs);
+  ICEBERG_UNWRAP_OR_FAIL(auto refs_table, MetadataTable::Make<RefsTable>(table_));
   EXPECT_EQ(refs_table->kind(), MetadataTable::Kind::kRefs);
   EXPECT_FALSE(refs_table->supports_time_travel());
   Schema expected_schema({
@@ -100,6 +85,13 @@ TEST_P(RefsTableTest, ScansBranchesAndTagsAsRefs) {
   ICEBERG_UNWRAP_OR_FAIL(auto batches, ReadAllBatches(std::move(stream)));
   ASSERT_EQ(batches.size(), 1);
   ASSERT_EQ(batches[0]->num_rows(), 3);
+  ASSERT_EQ(batches[0]->num_columns(), 6);
+  ASSERT_EQ(batches[0]->column(0)->type_id(), ::arrow::Type::STRING);
+  ASSERT_EQ(batches[0]->column(1)->type_id(), ::arrow::Type::STRING);
+  ASSERT_EQ(batches[0]->column(2)->type_id(), ::arrow::Type::INT64);
+  ASSERT_EQ(batches[0]->column(3)->type_id(), ::arrow::Type::INT64);
+  ASSERT_EQ(batches[0]->column(4)->type_id(), ::arrow::Type::INT32);
+  ASSERT_EQ(batches[0]->column(5)->type_id(), ::arrow::Type::INT64);
   auto names = std::static_pointer_cast<::arrow::StringArray>(batches[0]->column(0));
   auto types = std::static_pointer_cast<::arrow::StringArray>(batches[0]->column(1));
   auto ids = std::static_pointer_cast<::arrow::Int64Array>(batches[0]->column(2));
@@ -129,14 +121,49 @@ TEST_P(RefsTableTest, ScansBranchesAndTagsAsRefs) {
 }
 
 TEST_P(RefsTableTest, ScanEmpty) {
-  ICEBERG_UNWRAP_OR_FAIL(auto table, MakeTable({}, kInvalidSnapshotId));
-  ICEBERG_UNWRAP_OR_FAIL(auto metadata_table, MetadataTable::Make<RefsTable>(table));
+  ICEBERG_UNWRAP_OR_FAIL(auto metadata_table, MetadataTable::Make<RefsTable>(table_));
   ICEBERG_UNWRAP_OR_FAIL(auto stream, metadata_table->Scan());
   ICEBERG_UNWRAP_OR_FAIL(auto batches, ReadAllBatches(std::move(stream)));
   EXPECT_TRUE(batches.empty());
 }
 
-INSTANTIATE_TEST_SUITE_P(FormatVersions, RefsTableTest, ::testing::Values(2, 3));
+TEST_P(RefsTableTest, ScansRefsAcrossBatchBoundary) {
+  for (int64_t i = 0; i < MetadataTable::kBatchSize + 1; ++i) {
+    ICEBERG_UNWRAP_OR_FAIL(auto ref, SnapshotRef::MakeTag(i + 1));
+    metadata_->refs.emplace("tag-" + std::to_string(i), std::move(ref));
+  }
+  ICEBERG_UNWRAP_OR_FAIL(auto refs_table, RefsTable::Make(table_));
+  ICEBERG_UNWRAP_OR_FAIL(auto stream, refs_table->Scan());
+  ICEBERG_UNWRAP_OR_FAIL(auto batches, ReadAllBatches(std::move(stream)));
+  ASSERT_EQ(batches.size(), 2);
+  EXPECT_EQ(batches[0]->num_rows(), MetadataTable::kBatchSize);
+  EXPECT_EQ(batches[1]->num_rows(), 1);
+  std::string previous;
+  for (const auto& batch : batches) {
+    ASSERT_EQ(batch->num_columns(), 6);
+    ASSERT_EQ(batch->column(0)->type_id(), ::arrow::Type::STRING);
+    auto names = std::static_pointer_cast<::arrow::StringArray>(batch->column(0));
+    for (int64_t i = 0; i < batch->num_rows(); ++i) {
+      auto name = names->GetString(i);
+      EXPECT_LT(previous, name);
+      previous = std::move(name);
+    }
+  }
+}
+
+TEST(RefsTableConstructionTest, RejectsNullTable) {
+  EXPECT_THAT(RefsTable::Make(nullptr), IsError(ErrorKind::kInvalidArgument));
+}
+
+TEST_P(RefsTableTest, RejectsNullReferenceMetadata) {
+  metadata_->refs.emplace("broken", nullptr);
+  ICEBERG_UNWRAP_OR_FAIL(auto refs_table, RefsTable::Make(table_));
+  EXPECT_THAT(refs_table->Scan(),
+              ::testing::AllOf(IsError(ErrorKind::kInvalid),
+                               HasErrorMessage("Snapshot reference 'broken' is null")));
+}
+
+INSTANTIATE_TEST_SUITE_P(FormatVersions, RefsTableTest, ::testing::Values(1, 2, 3));
 
 }  // namespace
 }  // namespace iceberg

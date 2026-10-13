@@ -20,10 +20,12 @@
 #include "iceberg/inspect/refs_table.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "iceberg/arrow_row_builder_internal.h"
@@ -90,20 +92,31 @@ Result<std::unique_ptr<RefsTable>> RefsTable::Make(std::shared_ptr<Table> table)
 
 Result<ArrowArrayStream> RefsTable::Scan() {
   std::vector<RefRow> rows;
-  for (const auto& [name, ref] : source_table()->metadata()->refs) {
-    ICEBERG_PRECHECK(ref != nullptr, "Snapshot reference '{}' is null", name);
+  const auto& refs = source_table()->metadata()->refs;
+  rows.reserve(refs.size());
+  for (const auto& [name, ref] : refs) {
+    if (ref == nullptr) {
+      return Invalid("Snapshot reference '{}' is null", name);
+    }
+    const auto* branch = std::get_if<SnapshotRef::Branch>(&ref->retention);
     RefRow row{.name = name,
-               .type = ref->type() == SnapshotRefType::kBranch ? "BRANCH" : "TAG",
+               .type = branch != nullptr ? "BRANCH" : "TAG",
                .snapshot_id = ref->snapshot_id,
-               .max_ref_age_ms = ref->max_ref_age_ms()};
-    if (const auto* branch = std::get_if<SnapshotRef::Branch>(&ref->retention)) {
+               .max_ref_age_ms =
+                   branch != nullptr
+                       ? branch->max_ref_age_ms
+                       : std::get<SnapshotRef::Tag>(ref->retention).max_ref_age_ms};
+    if (branch != nullptr) {
       row.min_snapshots_to_keep = branch->min_snapshots_to_keep;
       row.max_snapshot_age_ms = branch->max_snapshot_age_ms;
     }
     rows.push_back(std::move(row));
   }
   std::ranges::sort(rows, {}, &RefRow::name);
-  return internal::MakeMetadataTableStream(*schema(), std::move(rows), AppendRef);
+  return internal::MakeMetadataTableStream(
+      *schema(), std::move(rows), [](ArrowRowBuilder& builder, const RefRow& ref) {
+        return AppendRef(builder, ref);
+      });
 }
 
 }  // namespace iceberg
