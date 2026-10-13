@@ -456,6 +456,31 @@ TEST(RoaringPositionBitmapTest, TestSerializeDeserializeAllContainerBitmap) {
   AssertEqualContent(copy, expected_positions);
 }
 
+TEST(RoaringPositionBitmapTest, TestDeserializeRejectsStructurallyInvalidBitmap) {
+  auto append_le = [](std::string& out, uint64_t value, int bytes) {
+    for (int i = 0; i < bytes; ++i) {
+      out.push_back(static_cast<char>((value >> (8 * i)) & 0xFF));
+    }
+  };
+
+  std::string blob;
+  append_le(blob, 1, 8);  // one bitmap
+  append_le(blob, 0, 4);  // key 0
+
+  // Portable roaring without run containers: one bitset container whose header
+  // claims cardinality 4097 while all 65536 bits are actually set.
+  append_le(blob, 12346, 4);              // SERIAL_COOKIE_NO_RUNCONTAINER
+  append_le(blob, 1, 4);                  // container count
+  append_le(blob, 0, 2);                  // container key
+  append_le(blob, 4096, 2);               // cardinality - 1
+  append_le(blob, 8 + 4 + 4 + 4 + 4, 4);  // data offset (unused by readSafe)
+  blob.append(8192, '\xFF');
+
+  auto result = RoaringPositionBitmap::Deserialize(blob);
+  ASSERT_THAT(result, IsError(ErrorKind::kInvalidArgument));
+  ASSERT_THAT(result, HasErrorMessage("Invalid bitmap at key 0"));
+}
+
 TEST(RoaringPositionBitmapTest, TestForEach) {
   RoaringPositionBitmap bitmap;
   bitmap.Add(30L);

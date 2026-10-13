@@ -251,6 +251,17 @@ Result<RoaringPositionBitmap> RoaringPositionBitmap::Deserialize(std::string_vie
     } catch (const std::exception& e) {
       return InvalidArgument("Failed to deserialize bitmap at key {}: {}", key, e.what());
     }
+
+    // readSafe does not verify structural invariants; an invalid bitmap can cause
+    // out-of-bounds access in later merge/serialize, so validate here.
+    const char* invalid_reason = nullptr;
+    if (!roaring::api::roaring_bitmap_internal_validate(&bitmap.roaring,
+                                                        &invalid_reason)) {
+      return InvalidArgument(
+          "Invalid bitmap at key {}: {}", key,
+          invalid_reason != nullptr ? invalid_reason : "unknown reason");
+    }
+
     size_t bitmap_size = bitmap.getSizeInBytes(/*portable=*/true);
     ICEBERG_PRECHECK(
         bitmap_size <= remaining,
