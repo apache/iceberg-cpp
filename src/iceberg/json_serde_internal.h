@@ -474,8 +474,4 @@ ICEBERG_EXPORT Result<nlohmann::json> ToJson(
 ICEBERG_EXPORT Result<std::shared_ptr<FileScanTask>> FileScanTaskFromJson(
     const nlohmann::json& json);
 
-/// Rejects `start != 0 || length != file_size_in_bytes`.
-ICEBERG_EXPORT Status CheckFileScanTaskNotSplit(int64_t start, int64_t length,
-                                                int64_t file_size_in_bytes);
-
 }  // namespace iceberg

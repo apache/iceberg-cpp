@@ -18,6 +18,7 @@
  */
 
 #include <array>
+#include <limits>
 #include <memory>
 #include <optional>
 #include <string>
@@ -1803,29 +1804,92 @@ TEST_F(FileScanTaskJsonTest, RequiresJavaCoreFields) {
   }
 }
 
-TEST_F(FileScanTaskJsonTest, RejectsSplitTasksUsingExactOrCondition) {
+TEST_F(FileScanTaskJsonTest, RoundTripsValidRanges) {
   struct Case {
     int64_t start;
     int64_t length;
-    bool supported;
+    bool is_split;
   };
-  for (const auto& test_case : {Case{.start = 0, .length = 10, .supported = true},
-                                Case{.start = 1, .length = 10, .supported = false},
-                                Case{.start = 0, .length = 9, .supported = false}}) {
+  for (const auto& test_case : {Case{.start = 0, .length = 10, .is_split = false},
+                                Case{.start = 0, .length = 9, .is_split = true},
+                                Case{.start = 4, .length = 6, .is_split = true}}) {
     SCOPED_TRACE(testing::Message()
                  << "start=" << test_case.start << ", length=" << test_case.length);
     auto json = JavaGolden();
     json["start"] = test_case.start;
     json["length"] = test_case.length;
+    json["residual-filter"] = R"({"type":"gt","term":"id","value":5})"_json;
+
+    ICEBERG_UNWRAP_OR_FAIL(auto task, FileScanTaskFromJson(json));
+    EXPECT_EQ(task->start(), test_case.start);
+    EXPECT_EQ(task->length(), test_case.length);
+    EXPECT_EQ(task->is_split(), test_case.is_split);
+    ASSERT_NE(task->data_file(), nullptr);
+    EXPECT_EQ(*task->data_file(), DataFileForTask());
+    ASSERT_EQ(task->delete_files().size(), 1U);
+    ASSERT_NE(task->delete_files()[0], nullptr);
+    EXPECT_EQ(*task->delete_files()[0], DeleteFileForTask());
+    ASSERT_NE(task->residual_filter(), nullptr);
+    ICEBERG_UNWRAP_OR_FAIL(auto residual, ToJson(*task->residual_filter()));
+    EXPECT_EQ(residual, json["residual-filter"]);
+
+    ICEBERG_UNWRAP_OR_FAIL(auto serialized, ToJson(*task, specs_, schema_));
+    EXPECT_EQ(serialized, json);
+    ICEBERG_UNWRAP_OR_FAIL(auto reparsed, FileScanTaskFromJson(serialized));
+    EXPECT_EQ(reparsed->start(), test_case.start);
+    EXPECT_EQ(reparsed->length(), test_case.length);
+    EXPECT_EQ(reparsed->is_split(), test_case.is_split);
+  }
+}
+
+TEST_F(FileScanTaskJsonTest, RejectsInvalidRanges) {
+  struct Case {
+    int64_t file_size;
+    int64_t start;
+    int64_t length;
+  };
+  constexpr auto kMax = std::numeric_limits<int64_t>::max();
+  for (const auto& test_case :
+       {Case{10, 1, 10},             // Extends beyond the file.
+        Case{10, 11, 1},             // Starts beyond the file.
+        Case{10, -1, 1},             // Negative start.
+        Case{10, 0, -1},             // Negative length.
+        Case{10, 0, 0},              // Empty range in a nonempty file.
+        Case{10, 10, 0},             // Empty range at EOF.
+        Case{0, 0, 1},               // Nonempty range in an empty file.
+        Case{-1, 0, 0},              // Negative file size.
+        Case{kMax, kMax - 1, 2}}) {  // End would overflow int64_t.
+    SCOPED_TRACE(testing::Message()
+                 << "file_size=" << test_case.file_size << ", start=" << test_case.start
+                 << ", length=" << test_case.length);
+    auto json = JavaGolden();
+    json["data-file"]["file-size-in-bytes"] = test_case.file_size;
+    json["start"] = test_case.start;
+    json["length"] = test_case.length;
 
     auto result = FileScanTaskFromJson(json);
-    if (test_case.supported) {
-      EXPECT_THAT(result, IsOk());
-    } else {
-      EXPECT_THAT(result, IsError(ErrorKind::kNotSupported));
-      EXPECT_THAT(result, HasErrorMessage("Split FileScanTask is not supported"));
-    }
+    EXPECT_THAT(result, IsError(ErrorKind::kJsonParseError));
+    EXPECT_THAT(result, HasErrorMessage("Invalid FileScanTask range"));
   }
+}
+
+TEST_F(FileScanTaskJsonTest, RoundTripsEmptyWholeFile) {
+  auto json = JavaGolden();
+  json["data-file"]["file-size-in-bytes"] = 0;
+  json["data-file"]["record-count"] = 0;
+  json["data-file"].erase("lower-bounds");
+  json["data-file"].erase("upper-bounds");
+  json.erase("delete-files");
+  json["start"] = 0;
+  json["length"] = 0;
+
+  ICEBERG_UNWRAP_OR_FAIL(auto task, FileScanTaskFromJson(json));
+  EXPECT_EQ(task->start(), 0);
+  EXPECT_EQ(task->length(), 0);
+  EXPECT_FALSE(task->is_split());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto serialized, ToJson(*task, specs_, schema_));
+  EXPECT_EQ(serialized, json);
 }
 
 TEST_F(FileScanTaskJsonTest, RejectsFractionalIntegerFields) {

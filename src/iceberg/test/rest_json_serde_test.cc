@@ -2187,7 +2187,7 @@ TEST(FileScanTasksFromJsonTest, RejectsNullOrMissingRangeEndpoint) {
   json[0]["length"] = nullptr;
   auto null_result = FileScanTasksFromJson(json, {}, UnpartitionedSpecs(), Schema({}, 0));
   EXPECT_THAT(null_result, IsError(ErrorKind::kJsonParseError));
-  EXPECT_THAT(null_result, HasErrorMessage("'start' must be an integer"));
+  EXPECT_THAT(null_result, HasErrorMessage("Missing 'start'"));
 }
 
 TEST(FileScanTasksFromJsonTest, RejectsInvalidRangeIntegers) {

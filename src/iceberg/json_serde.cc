@@ -2423,8 +2423,8 @@ Result<nlohmann::json> ToJson(
   }
   json[kSpec] = ToJson(*spec_it->second);
   json[kDataFile] = std::move(data_file_json);
-  json[kStart] = 0;
-  json[kLength] = task.data_file()->file_size_in_bytes;
+  json[kStart] = task.start();
+  json[kLength] = task.length();
 
   nlohmann::json delete_files_json = nlohmann::json::array();
   for (const auto& delete_file : task.delete_files()) {
@@ -2455,17 +2455,6 @@ Result<nlohmann::json> ToJson(
     json[kResidualFilter] = std::move(residual_json);
   }
   return json;
-}
-
-Status CheckFileScanTaskNotSplit(int64_t start, int64_t length,
-                                 int64_t file_size_in_bytes) {
-  if (start != 0 || length != file_size_in_bytes) {
-    return NotSupported(
-        "Split FileScanTask is not supported: start={}, length={}, "
-        "file-size-in-bytes={}",
-        start, length, file_size_in_bytes);
-  }
-  return {};
 }
 
 Result<std::shared_ptr<FileScanTask>> FileScanTaskFromJson(const nlohmann::json& json) {
@@ -2510,8 +2499,6 @@ Result<std::shared_ptr<FileScanTask>> FileScanTaskFromJson(const nlohmann::json&
 
   ICEBERG_ASSIGN_OR_RAISE(auto start, GetJsonInteger<int64_t>(json, kStart));
   ICEBERG_ASSIGN_OR_RAISE(auto length, GetJsonInteger<int64_t>(json, kLength));
-  ICEBERG_RETURN_UNEXPECTED(
-      CheckFileScanTaskNotSplit(start, length, data_file.file_size_in_bytes));
 
   std::vector<std::shared_ptr<DataFile>> delete_files;
   if (json.contains(kDeleteFiles)) {
@@ -2539,9 +2526,11 @@ Result<std::shared_ptr<FileScanTask>> FileScanTaskFromJson(const nlohmann::json&
     ICEBERG_ASSIGN_OR_RAISE(residual_filter, ExpressionFromJson(filter_json));
   }
 
-  return std::make_shared<FileScanTask>(std::make_shared<DataFile>(std::move(data_file)),
-                                        std::move(delete_files),
-                                        std::move(residual_filter));
+  ICEBERG_ASSIGN_OR_RAISE(auto task, FileScanTask::MakeSplit(
+    std::make_shared<DataFile>(std::move(data_file)), start, length,
+    std::move(delete_files), std::move(residual_filter)));
+
+  return std::move(task);
 }
 
 }  // namespace iceberg

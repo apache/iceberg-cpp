@@ -114,20 +114,6 @@ constexpr std::string_view kLength = "length";
 constexpr std::string_view kMapKeys = "keys";
 constexpr std::string_view kMapValues = "values";
 
-// Reject values above INT64_MAX; get<int64_t>() would wrap them to negative.
-Result<int64_t> GetRangeValue(const nlohmann::json& json, std::string_view key) {
-  const auto& value = json.at(key);
-  if (!value.is_number_integer()) {
-    return JsonParseError("'{}' must be an integer, but is {}", key, value.type_name());
-  }
-  if (value.is_number_unsigned() &&
-      value.get<uint64_t>() >
-          static_cast<uint64_t>(std::numeric_limits<int64_t>::max())) {
-    return JsonParseError("'{}' integer is out of range: {}", key, SafeDumpJson(value));
-  }
-  return value.get<int64_t>();
-}
-
 Result<nlohmann::json> StorageCredentialToJson(const StorageCredential& credential) {
   ICEBERG_RETURN_UNEXPECTED(credential.Validate());
   nlohmann::json json;
@@ -195,8 +181,8 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> FileScanTasksFromJson(
     int64_t start = 0;
     int64_t length = data_file.file_size_in_bytes;
     if (has_start) {
-      ICEBERG_ASSIGN_OR_RAISE(start, GetRangeValue(task_json, kStart));
-      ICEBERG_ASSIGN_OR_RAISE(length, GetRangeValue(task_json, kLength));
+      ICEBERG_ASSIGN_OR_RAISE(start, GetJsonInteger<int64_t>(task_json, kStart));
+      ICEBERG_ASSIGN_OR_RAISE(length, GetJsonInteger<int64_t>(task_json, kLength));
     }
     // FIXME: REST scan-task DataFile JSON currently carries first-row-id,
     // but not the manifest-entry data sequence number. Until the REST API exposes
