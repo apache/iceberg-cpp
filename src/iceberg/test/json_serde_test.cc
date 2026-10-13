@@ -1850,15 +1850,24 @@ TEST_F(FileScanTaskJsonTest, RejectsInvalidRanges) {
   };
   constexpr auto kMax = std::numeric_limits<int64_t>::max();
   for (const auto& test_case :
-       {Case{10, 1, 10},             // Extends beyond the file.
-        Case{10, 11, 1},             // Starts beyond the file.
-        Case{10, -1, 1},             // Negative start.
-        Case{10, 0, -1},             // Negative length.
-        Case{10, 0, 0},              // Empty range in a nonempty file.
-        Case{10, 10, 0},             // Empty range at EOF.
-        Case{0, 0, 1},               // Nonempty range in an empty file.
-        Case{-1, 0, 0},              // Negative file size.
-        Case{kMax, kMax - 1, 2}}) {  // End would overflow int64_t.
+       {// Extends beyond the file.
+        Case{.file_size = 10, .start = 1, .length = 10},
+        // Starts beyond the file.
+        Case{.file_size = 10, .start = 11, .length = 1},
+        // Negative start.
+        Case{.file_size = 10, .start = -1, .length = 1},
+        // Negative length.
+        Case{.file_size = 10, .start = 0, .length = -1},
+        // Empty range in a nonempty file.
+        Case{.file_size = 10, .start = 0, .length = 0},
+        // Empty range at EOF.
+        Case{.file_size = 10, .start = 10, .length = 0},
+        // Nonempty range in an empty file.
+        Case{.file_size = 0, .start = 0, .length = 1},
+        // Negative file size.
+        Case{.file_size = -1, .start = 0, .length = 0},
+        // End would overflow int64_t.
+        Case{.file_size = kMax, .start = kMax - 1, .length = 2}}) {
     SCOPED_TRACE(testing::Message()
                  << "file_size=" << test_case.file_size << ", start=" << test_case.start
                  << ", length=" << test_case.length);
