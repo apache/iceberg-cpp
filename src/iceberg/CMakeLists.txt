@@ -371,6 +371,16 @@ if(ICEBERG_BUILD_BUNDLE)
     endforeach()
   endif()
 
+  # The S3 FileIO signs with its own AWS credentials provider.
+  if(ICEBERG_S3)
+    list(APPEND ICEBERG_BUNDLE_STATIC_BUILD_INTERFACE_LIBS aws-cpp-sdk-core)
+    list(APPEND ICEBERG_BUNDLE_SHARED_BUILD_INTERFACE_LIBS aws-cpp-sdk-core)
+    if(NOT ICEBERG_AWSSDK_BUNDLED)
+      list(APPEND ICEBERG_BUNDLE_STATIC_INSTALL_INTERFACE_LIBS aws-cpp-sdk-core)
+      list(APPEND ICEBERG_BUNDLE_SHARED_INSTALL_INTERFACE_LIBS aws-cpp-sdk-core)
+    endif()
+  endif()
+
   add_iceberg_lib(iceberg_bundle
                   SOURCES
                   ${ICEBERG_BUNDLE_SOURCES}

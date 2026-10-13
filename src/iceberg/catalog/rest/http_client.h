@@ -19,8 +19,10 @@
 
 #pragma once
 
+#include <chrono>
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
 #include <unordered_map>
 
@@ -80,10 +82,14 @@ class ICEBERG_REST_EXPORT HttpClient {
   HttpClient& operator=(HttpClient&&) = delete;
 
   /// \brief Sends a GET request.
+  ///
+  /// \param timeout Limit on the whole request, after which it fails with an
+  ///        IOError; nullopt for none.
   virtual Result<HttpResponse> Get(
       const std::string& path, const std::unordered_map<std::string, std::string>& params,
       const std::unordered_map<std::string, std::string>& headers,
-      const ErrorHandler& error_handler, auth::AuthSession& session);
+      const ErrorHandler& error_handler, auth::AuthSession& session,
+      std::optional<std::chrono::milliseconds> timeout);
 
   /// \brief Sends a POST request.
   virtual Result<HttpResponse> Post(

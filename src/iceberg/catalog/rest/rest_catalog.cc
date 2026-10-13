@@ -19,6 +19,7 @@
 
 #include "iceberg/catalog/rest/rest_catalog.h"
 
+#include <chrono>
 #include <memory>
 #include <mutex>
 #include <optional>
@@ -69,6 +70,10 @@ namespace iceberg::rest {
 
 namespace {
 
+// Bounds a credential refresh, which runs on the path of a file operation. The
+// FileIO keeps its current credentials, or fails once they have expired.
+constexpr auto kLoadCredentialsTimeout = std::chrono::seconds(10);
+
 class RestStorageCredentialProvider final : public StorageCredentialProvider {
  public:
   RestStorageCredentialProvider(std::shared_ptr<HttpClient> client,
@@ -83,9 +88,10 @@ class RestStorageCredentialProvider final : public StorageCredentialProvider {
   Result<std::vector<StorageCredential>> Load() override {
     // The provider can be shared by several FileIOs; keep fetches serialized.
     std::lock_guard lock(mutex_);
-    ICEBERG_ASSIGN_OR_RAISE(const auto response,
-                            client_->Get(path_, params_, /*headers=*/{},
-                                         *TableErrorHandler::Instance(), *session_));
+    ICEBERG_ASSIGN_OR_RAISE(
+        const auto response,
+        client_->Get(path_, params_, /*headers=*/{}, *TableErrorHandler::Instance(),
+                     *session_, kLoadCredentialsTimeout));
     // Parse errors can contain credential data; return a fixed message.
     auto json = FromJsonString(response.body());
     if (!json.has_value()) {
@@ -147,7 +153,8 @@ Result<CatalogConfig> FetchServerConfig(HttpClient& client, const ResourcePaths&
 
   ICEBERG_ASSIGN_OR_RAISE(const auto response,
                           client.Get(config_path, params, /*headers=*/{},
-                                     *ConfigErrorHandler::Instance(), session));
+                                     *ConfigErrorHandler::Instance(), session,
+                                     /*timeout=*/std::nullopt));
   ICEBERG_ASSIGN_OR_RAISE(auto json, FromJsonString(response.body()));
   return CatalogConfigFromJson(json);
 }
@@ -650,7 +657,8 @@ Result<std::vector<Namespace>> RestCatalog::ListNamespaces(
     }
     ICEBERG_ASSIGN_OR_RAISE(const auto response,
                             client_->Get(path, params, /*headers=*/{},
-                                         *NamespaceErrorHandler::Instance(), session));
+                                         *NamespaceErrorHandler::Instance(), session,
+                                         /*timeout=*/std::nullopt));
     ICEBERG_ASSIGN_OR_RAISE(auto json, FromJsonString(response.body()));
     ICEBERG_ASSIGN_OR_RAISE(auto list_response, ListNamespacesResponseFromJson(json));
     result.insert(result.end(), list_response.namespaces.begin(),
@@ -684,7 +692,8 @@ Result<std::unordered_map<std::string, std::string>> RestCatalog::GetNamespacePr
   ICEBERG_ASSIGN_OR_RAISE(auto path, paths_->Namespace_(ns));
   ICEBERG_ASSIGN_OR_RAISE(const auto response,
                           client_->Get(path, /*params=*/{}, /*headers=*/{},
-                                       *NamespaceErrorHandler::Instance(), session));
+                                       *NamespaceErrorHandler::Instance(), session,
+                                       /*timeout=*/std::nullopt));
   ICEBERG_ASSIGN_OR_RAISE(auto json, FromJsonString(response.body()));
   ICEBERG_ASSIGN_OR_RAISE(auto get_response, GetNamespaceResponseFromJson(json));
   return get_response.properties;
@@ -743,7 +752,8 @@ Result<std::vector<TableIdentifier>> RestCatalog::ListTables(
     }
     ICEBERG_ASSIGN_OR_RAISE(const auto response,
                             client_->Get(path, params, /*headers=*/{},
-                                         *TableErrorHandler::Instance(), session));
+                                         *TableErrorHandler::Instance(), session,
+                                         /*timeout=*/std::nullopt));
     ICEBERG_ASSIGN_OR_RAISE(auto json, FromJsonString(response.body()));
     ICEBERG_ASSIGN_OR_RAISE(auto list_response, ListTablesResponseFromJson(json));
     result.insert(result.end(), list_response.identifiers.begin(),
@@ -938,9 +948,10 @@ Result<LoadTableResult> RestCatalog::LoadTableInternal(const TableIdentifier& id
     params["snapshots"] = "all";
   }
 
-  ICEBERG_ASSIGN_OR_RAISE(const auto response,
-                          client_->Get(path, params, /*headers=*/{},
-                                       *TableErrorHandler::Instance(), session));
+  ICEBERG_ASSIGN_OR_RAISE(
+      const auto response,
+      client_->Get(path, params, /*headers=*/{}, *TableErrorHandler::Instance(), session,
+                   /*timeout=*/std::nullopt));
   ICEBERG_ASSIGN_OR_RAISE(auto json, FromJsonString(response.body()));
   return LoadTableResultFromJson(json);
 }

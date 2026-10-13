@@ -328,6 +328,7 @@ if(ICEBERG_BUILD_REST)
                         catalog_properties_test.cc
                         error_handlers_test.cc
                         endpoint_test.cc
+                        http_client_test.cc
                         rest_catalog_unit_test.cc
                         rest_file_io_test.cc
                         rest_json_serde_test.cc

@@ -22,6 +22,7 @@
 #include <atomic>
 #include <chrono>
 #include <memory>
+#include <optional>
 #include <print>
 #include <string>
 #include <thread>
@@ -404,7 +405,8 @@ TEST_F(RestCatalogIntegrationTest, FetchServerConfigDirect) {
 
   ICEBERG_UNWRAP_OR_FAIL(const auto response,
                          client.Get(config_url, {}, /*headers=*/{},
-                                    *DefaultErrorHandler::Instance(), *noop_session));
+                                    *DefaultErrorHandler::Instance(), *noop_session,
+                                    /*timeout=*/std::nullopt));
   ICEBERG_UNWRAP_OR_FAIL(auto json, FromJsonString(response.body()));
 
   EXPECT_TRUE(json.contains("defaults"));

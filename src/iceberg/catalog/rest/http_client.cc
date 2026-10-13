@@ -152,6 +152,10 @@ Status HandleFailureResponse(const cpr::Response& response,
   if (IsSuccessful(response.status_code)) {
     return {};
   }
+  // No response to hand the error handler.
+  if (response.error.code == cpr::ErrorCode::OPERATION_TIMEDOUT) {
+    return IOError("HTTP request timed out: {}", response.error.message);
+  }
   auto parse_result = error_handler.ParseResponse(
       static_cast<uint32_t>(response.status_code), response.text);
   const ErrorResponse final_error =
@@ -176,13 +180,16 @@ HttpClient::~HttpClient() = default;
 Result<HttpResponse> HttpClient::Get(
     const std::string& path, const std::unordered_map<std::string, std::string>& params,
     const std::unordered_map<std::string, std::string>& headers,
-    const ErrorHandler& error_handler, auth::AuthSession& session) {
+    const ErrorHandler& error_handler, auth::AuthSession& session,
+    std::optional<std::chrono::milliseconds> timeout) {
   ICEBERG_ASSIGN_OR_RAISE(auto url, AppendQueryString(path, params));
   ICEBERG_ASSIGN_OR_RAISE(auto authenticated,
                           AuthenticateRequest(session, HttpMethod::kGet, std::move(url),
                                               MergeHeaders(default_headers_, headers)));
-  cpr::Response response = cpr::Get(cpr::Url{authenticated.url},
-                                    ToCprHeader(authenticated), *connection_pool_);
+  // Zero leaves the request unbounded.
+  cpr::Response response =
+      cpr::Get(cpr::Url{authenticated.url}, ToCprHeader(authenticated), *connection_pool_,
+               cpr::Timeout{timeout.value_or(std::chrono::milliseconds::zero())});
 
   ICEBERG_RETURN_UNEXPECTED(HandleFailureResponse(response, error_handler));
   HttpResponse http_response;

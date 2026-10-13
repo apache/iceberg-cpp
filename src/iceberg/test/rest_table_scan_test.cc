@@ -20,6 +20,7 @@
 #include "iceberg/catalog/rest/rest_table_scan.h"
 
 #include <array>
+#include <chrono>
 #include <memory>
 #include <optional>
 #include <string>
@@ -114,7 +115,8 @@ class MockHttpClient : public HttpClient {
               (const std::string& path,
                (const std::unordered_map<std::string, std::string>&)params,
                (const std::unordered_map<std::string, std::string>&)headers,
-               const ErrorHandler& error_handler, auth::AuthSession& session),
+               const ErrorHandler& error_handler, auth::AuthSession& session,
+               std::optional<std::chrono::milliseconds> timeout),
               (override));
 
   MOCK_METHOD(Result<HttpResponse>, Post,
@@ -604,7 +606,7 @@ TEST_F(RestTableScanTest, PlanFilesStreamPollNumRetriesZero) {
       R"({"status":"submitted","plan-id":"plan-no-retry"})";
   EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
       .WillOnce(Return(HttpResponse(200, std::string(kSubmittedBody))));
-  EXPECT_CALL(*mock_client_, Get(_, _, _, _, _))
+  EXPECT_CALL(*mock_client_, Get(_, _, _, _, _, _))
       .WillOnce(Return(HttpResponse(200, std::string(kSubmittedBody))));
   EXPECT_CALL(*mock_client_, Delete(_, _, _, _, _))
       .WillOnce(Return(HttpResponse(200, "{}")));
@@ -649,7 +651,7 @@ TEST_F(RestTableScanTest, CancelCalledOnFetchPlanningResultGetError) {
 
   EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
       .WillOnce(Return(HttpResponse(200, std::string(kSubmittedBody))));
-  EXPECT_CALL(*mock_client_, Get(_, _, _, _, _))
+  EXPECT_CALL(*mock_client_, Get(_, _, _, _, _, _))
       .WillOnce(Return(IOError("network failure")));
   EXPECT_CALL(*mock_client_, Delete(_, _, _, _, _))
       .WillOnce(Return(IOError("cancel failure")));
@@ -968,7 +970,7 @@ TEST_P(RestScanResidualTest, PreservesFilteringAndDeleteFiles) {
   if (submitted) {
     completed.erase("plan-id");
     EXPECT_CALL(*mock_client_,
-                Get(::testing::EndsWith("/plan/residual-plan"), _, _, _, _))
+                Get(::testing::EndsWith("/plan/residual-plan"), _, _, _, _, _))
         .WillOnce(Return(HttpResponse(200, completed.dump())));
   }
   if (fetch_token) {
@@ -1084,7 +1086,7 @@ TEST_P(RestScanRegressionTest, MissingPollingEndpointCancelsSubmittedPlan) {
   EXPECT_CALL(*mock_client_, Post(::testing::EndsWith("/plan"), _, _, _, _))
       .WillOnce(Return(
           HttpResponse(200, R"({"status":"submitted","plan-id":"missing-poll"})")));
-  EXPECT_CALL(*mock_client_, Get(_, _, _, _, _)).Times(0);
+  EXPECT_CALL(*mock_client_, Get(_, _, _, _, _, _)).Times(0);
   EXPECT_CALL(*mock_client_,
               Delete(::testing::EndsWith("/plan/missing-poll"), _, _, _, _))
       .WillOnce(Return(HttpResponse(204, "")));
@@ -1164,10 +1166,10 @@ class RestScanStreamTest : public RestTableScanTest,
         .WillOnce(Return(HttpResponse(200, initial.dump())));
     if (GetParam()) {
       completed.erase("plan-id");
-      EXPECT_CALL(*mock_client_, Get(::testing::EndsWith("/plan/stream"), _, _, _, _))
+      EXPECT_CALL(*mock_client_, Get(::testing::EndsWith("/plan/stream"), _, _, _, _, _))
           .WillOnce(Return(HttpResponse(200, completed.dump())));
     } else {
-      EXPECT_CALL(*mock_client_, Get(_, _, _, _, _)).Times(0);
+      EXPECT_CALL(*mock_client_, Get(_, _, _, _, _, _)).Times(0);
     }
   }
 };
@@ -1237,10 +1239,10 @@ TEST_P(RestScanRegressionTest, EmptyCompletedPlan) {
     EXPECT_CALL(*mock_client_, Post(::testing::EndsWith("/plan"), _, _, _, _))
         .WillOnce(Return(HttpResponse(200, initial)));
     if (submitted) {
-      EXPECT_CALL(*mock_client_, Get(::testing::EndsWith("/plan/empty"), _, _, _, _))
+      EXPECT_CALL(*mock_client_, Get(::testing::EndsWith("/plan/empty"), _, _, _, _, _))
           .WillOnce(Return(HttpResponse(200, R"({"status":"completed"})")));
     } else {
-      EXPECT_CALL(*mock_client_, Get(_, _, _, _, _)).Times(0);
+      EXPECT_CALL(*mock_client_, Get(_, _, _, _, _, _)).Times(0);
     }
     EXPECT_CALL(*mock_client_, Delete(_, _, _, _, _)).Times(0);
     ICEBERG_UNWRAP_OR_FAIL(auto tasks, PlanScan(GetParam(), MakeContext(), [](auto&) {}));
@@ -1254,7 +1256,7 @@ TEST_P(RestScanRegressionTest, FailedPlanReturnsError) {
       .WillOnce(Return(HttpResponse(
           200,
           R"({"status":"failed","error":{"message":"server error","type":"ServerError","code":500}})")));
-  EXPECT_CALL(*mock_client_, Get(_, _, _, _, _)).Times(0);
+  EXPECT_CALL(*mock_client_, Get(_, _, _, _, _, _)).Times(0);
   EXPECT_CALL(*mock_client_, Delete(_, _, _, _, _)).Times(0);
   EXPECT_THAT(
       PlanScan(GetParam(), MakeContext(), [](auto&) {}),
@@ -1303,7 +1305,7 @@ TEST_P(RestScanRegressionTest, InvalidPlanResponseCancelsKnownId) {
     SCOPED_TRACE(test_case.body);
     EXPECT_CALL(*mock_client_, Post(::testing::EndsWith("/plan"), _, _, _, _))
         .WillOnce(Return(HttpResponse(200, test_case.body)));
-    EXPECT_CALL(*mock_client_, Get(_, _, _, _, _)).Times(0);
+    EXPECT_CALL(*mock_client_, Get(_, _, _, _, _, _)).Times(0);
     if (test_case.cancel) {
       EXPECT_CALL(*mock_client_, Delete(::testing::EndsWith("/plan/invalid"), _, _, _, _))
           .WillOnce(Return(HttpResponse(204, "")));

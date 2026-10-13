@@ -22,10 +22,12 @@
 #include <atomic>
 #include <barrier>
 #include <chrono>
+#include <condition_variable>
 #include <cstdlib>
 #include <future>
 #include <iostream>
 #include <memory>
+#include <mutex>
 #include <optional>
 #include <span>
 #include <stdexcept>
@@ -157,10 +159,37 @@ class ArrowS3FileIOTest : public ::testing::Test {
   std::optional<std::string> base_uri_;
 };
 
-bool HasWarning(const CapturingLogger& logger) {
+bool HasWarning(const CapturingLogger& logger, std::string_view substring = {}) {
   const auto records = logger.records();
-  return std::ranges::any_of(
-      records, [](const LogMessage& record) { return record.level == LogLevel::kWarn; });
+  return std::ranges::any_of(records, [substring](const LogMessage& record) {
+    return record.level == LogLevel::kWarn &&
+           record.message.find(substring) != std::string::npos;
+  });
+}
+
+class MockStorageCredentialProvider : public StorageCredentialProvider {
+ public:
+  MOCK_METHOD((Result<std::vector<StorageCredential>>), Load, (), (override));
+};
+
+constexpr auto kOutlastsAShortenedBackoff = std::chrono::milliseconds(1200);
+
+std::string ExpiresAtMs(std::chrono::milliseconds valid_for) {
+  return std::to_string(
+      std::chrono::duration_cast<std::chrono::milliseconds>(
+          (std::chrono::system_clock::now() + valid_for).time_since_epoch())
+          .count());
+}
+
+std::vector<StorageCredential> ExpiringCredentials(std::chrono::milliseconds valid_for,
+                                                   std::string_view access_key,
+                                                   std::string prefix = "s3") {
+  return {{.prefix = std::move(prefix),
+           .config = {{std::string(S3Properties::kAccessKeyId), std::string(access_key)},
+                      {std::string(S3Properties::kSecretAccessKey), "secret"},
+                      {std::string(S3Properties::kSessionToken), "token"},
+                      {std::string(S3Properties::kSessionTokenExpiresAtMs),
+                       ExpiresAtMs(valid_for)}}}};
 }
 
 Status CheckReadWrite(FileIO& io, const std::string& object_uri,
@@ -510,6 +539,449 @@ TEST_F(ArrowS3FileIOTest, WarnsWhenNoCredentialApplies) {
   EXPECT_TRUE(HasWarning(*logger));
 }
 
+TEST_F(ArrowS3FileIOTest, RefreshesCredentialsCloseToExpiry) {
+  auto result = MakeS3FileIO({});
+  ASSERT_THAT(result, IsOk());
+  auto* credentialed = result.value()->AsSupportsStorageCredentials();
+  ASSERT_NE(credentialed, nullptr);
+
+  const auto refreshed = ExpiringCredentials(std::chrono::hours(1), "refreshed-key");
+  int refresh_calls = 0;
+  auto provider = std::make_shared<MockStorageCredentialProvider>();
+  EXPECT_CALL(*provider, Load())
+      .WillRepeatedly([&]() -> Result<std::vector<StorageCredential>> {
+        ++refresh_calls;
+        return refreshed;
+      });
+  ASSERT_THAT(credentialed->InitializeStorageCredentials(
+                  ExpiringCredentials(std::chrono::minutes(1), "expiring-key"), provider),
+              IsOk());
+  EXPECT_EQ(refresh_calls, 0);
+
+  EXPECT_THAT(result.value()->NewInputFile("s3://bucket/key"), IsOk());
+  EXPECT_EQ(refresh_calls, 1);
+  EXPECT_EQ(credentialed->credentials(), refreshed);
+
+  EXPECT_THAT(result.value()->NewInputFile("s3://bucket/key"), IsOk());
+  EXPECT_EQ(refresh_calls, 1);
+}
+
+TEST_F(ArrowS3FileIOTest, DoesNotRefreshCredentialsThatAreNotCloseToExpiry) {
+  auto result = MakeS3FileIO({});
+  ASSERT_THAT(result, IsOk());
+  auto* credentialed = result.value()->AsSupportsStorageCredentials();
+  ASSERT_NE(credentialed, nullptr);
+
+  int refresh_calls = 0;
+  auto provider = std::make_shared<MockStorageCredentialProvider>();
+  EXPECT_CALL(*provider, Load())
+      .WillRepeatedly([&]() -> Result<std::vector<StorageCredential>> {
+        ++refresh_calls;
+        return std::vector<StorageCredential>{};
+      });
+
+  ASSERT_THAT(credentialed->InitializeStorageCredentials(
+                  ExpiringCredentials(std::chrono::hours(1), "access-key"), provider),
+              IsOk());
+  EXPECT_THAT(result.value()->NewInputFile("s3://bucket/key"), IsOk());
+  EXPECT_EQ(refresh_calls, 0);
+
+  const std::vector<StorageCredential> static_credentials = {
+      {.prefix = "s3",
+       .config = {{std::string(S3Properties::kAccessKeyId), "access-key"},
+                  {std::string(S3Properties::kSecretAccessKey), "secret"}}}};
+  ASSERT_THAT(credentialed->SetStorageCredentials(static_credentials), IsOk());
+  EXPECT_THAT(result.value()->NewInputFile("s3://bucket/key"), IsOk());
+  EXPECT_EQ(refresh_calls, 0);
+}
+
+TEST_F(ArrowS3FileIOTest, KeepsProviderWhenCredentialsAreUpdated) {
+  ICEBERG_UNWRAP_OR_FAIL(auto io, MakeS3FileIO({}));
+  auto* credentialed = io->AsSupportsStorageCredentials();
+  ASSERT_NE(credentialed, nullptr);
+
+  const auto refreshed = ExpiringCredentials(std::chrono::hours(2), "refreshed-key");
+  auto provider = std::make_shared<MockStorageCredentialProvider>();
+  EXPECT_CALL(*provider, Load()).WillOnce(::testing::Return(refreshed));
+  ASSERT_THAT(credentialed->InitializeStorageCredentials(
+                  ExpiringCredentials(std::chrono::hours(1), "initial-key"), provider),
+              IsOk());
+  ASSERT_THAT(credentialed->SetStorageCredentials(
+                  ExpiringCredentials(std::chrono::minutes(1), "expiring-key")),
+              IsOk());
+
+  EXPECT_THAT(io->NewInputFile("s3://bucket/key"), IsOk());
+  EXPECT_EQ(credentialed->credentials(), refreshed);
+}
+
+TEST_F(ArrowS3FileIOTest, FailedInitializationDoesNotInstallProvider) {
+  ICEBERG_UNWRAP_OR_FAIL(auto io, MakeS3FileIO({}));
+  auto* credentialed = io->AsSupportsStorageCredentials();
+  ASSERT_NE(credentialed, nullptr);
+
+  const auto initial = ExpiringCredentials(std::chrono::minutes(1), "initial-key");
+  ASSERT_THAT(credentialed->InitializeStorageCredentials(initial, nullptr), IsOk());
+  auto invalid = initial;
+  invalid.front().prefix.clear();
+  auto provider = std::make_shared<MockStorageCredentialProvider>();
+  EXPECT_CALL(*provider, Load()).Times(0);
+  EXPECT_THAT(credentialed->InitializeStorageCredentials(invalid, provider),
+              IsError(ErrorKind::kValidationFailed));
+
+  EXPECT_THAT(io->NewInputFile("s3://bucket/key"), IsOk());
+  EXPECT_EQ(credentialed->credentials(), initial);
+}
+
+TEST_F(ArrowS3FileIOTest, RefreshesOnceWhenOperationsRaceForIt) {
+  auto result = MakeS3FileIO({});
+  ASSERT_THAT(result, IsOk());
+  auto* credentialed = result.value()->AsSupportsStorageCredentials();
+  ASSERT_NE(credentialed, nullptr);
+
+  std::atomic<int> refresh_calls = 0;
+  auto provider = std::make_shared<MockStorageCredentialProvider>();
+  EXPECT_CALL(*provider, Load())
+      .WillRepeatedly([&]() -> Result<std::vector<StorageCredential>> {
+        ++refresh_calls;
+        return ExpiringCredentials(std::chrono::hours(1), "refreshed-key");
+      });
+  ASSERT_THAT(credentialed->InitializeStorageCredentials(
+                  ExpiringCredentials(std::chrono::minutes(1), "expiring-key"), provider),
+              IsOk());
+
+  constexpr int kThreads = 8;
+  std::atomic<int> failures = 0;
+  std::vector<std::thread> threads;
+  threads.reserve(kThreads);
+  for (int i = 0; i < kThreads; ++i) {
+    threads.emplace_back([&] {
+      for (int op = 0; op < 4; ++op) {
+        if (!result.value()->NewInputFile("s3://bucket/key").has_value()) {
+          ++failures;
+        }
+      }
+    });
+  }
+  for (auto& thread : threads) {
+    thread.join();
+  }
+
+  EXPECT_EQ(failures, 0);
+  EXPECT_EQ(refresh_calls, 1);
+}
+
+TEST_F(ArrowS3FileIOTest, RefreshesOnceWhenCredentialsHaveExpired) {
+  auto result = MakeS3FileIO({});
+  ASSERT_THAT(result, IsOk());
+  auto* credentialed = result.value()->AsSupportsStorageCredentials();
+  ASSERT_NE(credentialed, nullptr);
+
+  std::mutex mutex;
+  std::condition_variable cv;
+  bool refresh_started = false;
+  bool release_refresh = false;
+  std::atomic<int> refresh_calls = 0;
+
+  auto provider = std::make_shared<MockStorageCredentialProvider>();
+  EXPECT_CALL(*provider, Load())
+      .WillRepeatedly([&]() -> Result<std::vector<StorageCredential>> {
+        ++refresh_calls;
+        std::unique_lock lock(mutex);
+        refresh_started = true;
+        cv.notify_all();
+        cv.wait(lock, [&] { return release_refresh; });
+        return ExpiringCredentials(std::chrono::hours(1), "refreshed-key");
+      });
+  ASSERT_THAT(credentialed->InitializeStorageCredentials(
+                  ExpiringCredentials(-std::chrono::minutes(1), "expired-key"), provider),
+              IsOk());
+
+  std::thread winner(
+      [&] { EXPECT_THAT(result.value()->NewInputFile("s3://bucket/key"), IsOk()); });
+  {
+    std::unique_lock lock(mutex);
+    cv.wait(lock, [&] { return refresh_started; });
+  }
+
+  bool loser_ready = false;
+  std::thread loser([&] {
+    {
+      std::lock_guard lock(mutex);
+      loser_ready = true;
+    }
+    cv.notify_all();
+    EXPECT_THAT(result.value()->NewInputFile("s3://bucket/key"), IsOk());
+  });
+  {
+    std::unique_lock lock(mutex);
+    cv.wait(lock, [&] { return loser_ready; });
+    release_refresh = true;
+  }
+  cv.notify_all();
+  winner.join();
+  loser.join();
+
+  EXPECT_EQ(refresh_calls, 1);
+  EXPECT_THAT(credentialed->credentials(), ::testing::Not(::testing::IsEmpty()));
+}
+
+TEST_F(ArrowS3FileIOTest, RefreshDoesNotUndoCredentialsInstalledWhileItRan) {
+  auto result = MakeS3FileIO({});
+  ASSERT_THAT(result, IsOk());
+  auto* credentialed = result.value()->AsSupportsStorageCredentials();
+  ASSERT_NE(credentialed, nullptr);
+
+  std::mutex mutex;
+  std::condition_variable cv;
+  bool refresh_started = false;
+  bool release_refresh = false;
+
+  auto provider = std::make_shared<MockStorageCredentialProvider>();
+  EXPECT_CALL(*provider, Load())
+      .WillRepeatedly([&]() -> Result<std::vector<StorageCredential>> {
+        std::unique_lock lock(mutex);
+        refresh_started = true;
+        cv.notify_all();
+        cv.wait(lock, [&] { return release_refresh; });
+        return ExpiringCredentials(std::chrono::hours(1), "fetched-by-refresh");
+      });
+  ASSERT_THAT(credentialed->InitializeStorageCredentials(
+                  ExpiringCredentials(std::chrono::minutes(1), "expiring-key"), provider),
+              IsOk());
+
+  std::thread operation(
+      [&] { EXPECT_THAT(result.value()->NewInputFile("s3://bucket/key"), IsOk()); });
+
+  const auto installed =
+      ExpiringCredentials(std::chrono::hours(2), "installed-meanwhile");
+  {
+    std::unique_lock lock(mutex);
+    cv.wait(lock, [&] { return refresh_started; });
+  }
+  auto install_status = credentialed->SetStorageCredentials(installed);
+  {
+    std::lock_guard lock(mutex);
+    release_refresh = true;
+  }
+  cv.notify_all();
+  operation.join();
+
+  ASSERT_THAT(install_status, IsOk());
+  EXPECT_EQ(credentialed->credentials(), installed);
+}
+
+TEST_F(ArrowS3FileIOTest, RefreshesSessionCredentialsWithoutAUsableExpiry) {
+  for (std::string_view expiry : {"", "not-a-number"}) {
+    SCOPED_TRACE(expiry);
+    auto result = MakeS3FileIO({});
+    ASSERT_THAT(result, IsOk());
+    auto* credentialed = result.value()->AsSupportsStorageCredentials();
+    ASSERT_NE(credentialed, nullptr);
+
+    int refresh_calls = 0;
+    auto provider = std::make_shared<MockStorageCredentialProvider>();
+    EXPECT_CALL(*provider, Load())
+        .WillRepeatedly([&]() -> Result<std::vector<StorageCredential>> {
+          ++refresh_calls;
+          return ExpiringCredentials(std::chrono::hours(1), "refreshed-key");
+        });
+
+    auto logger = std::make_shared<CapturingLogger>();
+    ScopedDefaultLogger scoped(logger);
+    std::unordered_map<std::string, std::string> config = {
+        {std::string(S3Properties::kAccessKeyId), "access-key"},
+        {std::string(S3Properties::kSecretAccessKey), "secret"},
+        {std::string(S3Properties::kSessionToken), "token"}};
+    if (!expiry.empty()) {
+      config[std::string(S3Properties::kSessionTokenExpiresAtMs)] = std::string(expiry);
+    }
+    ASSERT_THAT(credentialed->InitializeStorageCredentials(
+                    {{.prefix = "s3", .config = std::move(config)}}, provider),
+                IsOk());
+    EXPECT_TRUE(HasWarning(*logger, "session token"));
+
+    EXPECT_THAT(result.value()->NewInputFile("s3://bucket/key"), IsOk());
+    EXPECT_EQ(refresh_calls, 1);
+  }
+}
+
+TEST_F(ArrowS3FileIOTest, BacksOffWhenReplacementsAlsoLackAnExpiry) {
+  auto result = MakeS3FileIO({});
+  ASSERT_THAT(result, IsOk());
+  auto* credentialed = result.value()->AsSupportsStorageCredentials();
+  ASSERT_NE(credentialed, nullptr);
+
+  const std::vector<StorageCredential> undatable = {
+      {.prefix = "s3",
+       .config = {{std::string(S3Properties::kAccessKeyId), "access-key"},
+                  {std::string(S3Properties::kSecretAccessKey), "secret"},
+                  {std::string(S3Properties::kSessionToken), "token"}}}};
+  int refresh_calls = 0;
+  auto provider = std::make_shared<MockStorageCredentialProvider>();
+  EXPECT_CALL(*provider, Load())
+      .WillRepeatedly([&]() -> Result<std::vector<StorageCredential>> {
+        ++refresh_calls;
+        return undatable;
+      });
+  ASSERT_THAT(credentialed->InitializeStorageCredentials(undatable, provider), IsOk());
+
+  EXPECT_THAT(result.value()->NewInputFile("s3://bucket/key"), IsOk());
+  ASSERT_EQ(refresh_calls, 1);
+
+  std::this_thread::sleep_for(kOutlastsAShortenedBackoff);
+  EXPECT_THAT(result.value()->NewInputFile("s3://bucket/key"), IsOk());
+  EXPECT_EQ(refresh_calls, 1);
+}
+
+TEST_F(ArrowS3FileIOTest, IgnoresUnparseableExpiry) {
+  auto result = MakeS3FileIO({});
+  ASSERT_THAT(result, IsOk());
+  auto* credentialed = result.value()->AsSupportsStorageCredentials();
+  ASSERT_NE(credentialed, nullptr);
+
+  int refresh_calls = 0;
+  auto provider = std::make_shared<MockStorageCredentialProvider>();
+  EXPECT_CALL(*provider, Load())
+      .WillRepeatedly([&]() -> Result<std::vector<StorageCredential>> {
+        ++refresh_calls;
+        return std::vector<StorageCredential>{};
+      });
+
+  auto logger = std::make_shared<CapturingLogger>();
+  ScopedDefaultLogger scoped(logger);
+  std::unordered_map<std::string, std::string> config = {
+      {std::string(S3Properties::kAccessKeyId), "access-key"},
+      {std::string(S3Properties::kSecretAccessKey), "secret"},
+      {std::string(S3Properties::kSessionTokenExpiresAtMs), "not-a-number"}};
+  const std::vector<StorageCredential> credentials = {
+      {.prefix = "s3", .config = std::move(config)}};
+  ASSERT_THAT(credentialed->InitializeStorageCredentials(credentials, provider), IsOk());
+  EXPECT_EQ(credentialed->credentials(), credentials);
+
+  EXPECT_THAT(result.value()->NewInputFile("s3://bucket/key"), IsOk());
+  EXPECT_EQ(refresh_calls, 0);
+}
+
+TEST_F(ArrowS3FileIOTest, BacksOffWhenTheReplacementIsAlsoCloseToExpiry) {
+  auto result = MakeS3FileIO({});
+  ASSERT_THAT(result, IsOk());
+  auto* credentialed = result.value()->AsSupportsStorageCredentials();
+  ASSERT_NE(credentialed, nullptr);
+
+  int refresh_calls = 0;
+  auto provider = std::make_shared<MockStorageCredentialProvider>();
+  EXPECT_CALL(*provider, Load())
+      .WillRepeatedly([&]() -> Result<std::vector<StorageCredential>> {
+        ++refresh_calls;
+        return ExpiringCredentials(std::chrono::minutes(1), "short-lived-key");
+      });
+  ASSERT_THAT(credentialed->InitializeStorageCredentials(
+                  ExpiringCredentials(std::chrono::minutes(1), "expiring-key"), provider),
+              IsOk());
+
+  for (int i = 0; i < 3; ++i) {
+    EXPECT_THAT(result.value()->NewInputFile("s3://bucket/key"), IsOk());
+  }
+  EXPECT_EQ(refresh_calls, 1);
+}
+
+TEST_F(ArrowS3FileIOTest, KeepsCredentialsWhenRefreshFails) {
+  auto result = MakeS3FileIO({});
+  ASSERT_THAT(result, IsOk());
+  auto* credentialed = result.value()->AsSupportsStorageCredentials();
+  ASSERT_NE(credentialed, nullptr);
+
+  int refresh_calls = 0;
+  auto provider = std::make_shared<MockStorageCredentialProvider>();
+  EXPECT_CALL(*provider, Load())
+      .WillRepeatedly([&]() -> Result<std::vector<StorageCredential>> {
+        ++refresh_calls;
+        return NotFound("catalog unreachable");
+      });
+  const auto expiring = ExpiringCredentials(std::chrono::minutes(1), "expiring-key");
+  ASSERT_THAT(credentialed->InitializeStorageCredentials(expiring, provider), IsOk());
+
+  auto logger = std::make_shared<CapturingLogger>();
+  ScopedDefaultLogger scoped(logger);
+  EXPECT_THAT(result.value()->NewInputFile("s3://bucket/key"), IsOk());
+  EXPECT_EQ(credentialed->credentials(), expiring);
+  EXPECT_TRUE(HasWarning(*logger, "Failed to refresh"));
+
+  EXPECT_THAT(result.value()->NewInputFile("s3://bucket/key"), IsOk());
+  EXPECT_EQ(refresh_calls, 1);
+}
+
+TEST_F(ArrowS3FileIOTest, KeepsCredentialsWhenTheReplacementIsUnusable) {
+  struct Case {
+    std::string_view name;
+    std::optional<std::string> expires_at_ms;
+  };
+  const std::vector<Case> cases = {
+      {.name = "expired", .expires_at_ms = ExpiresAtMs(-std::chrono::minutes(1))},
+      {.name = "no expiry", .expires_at_ms = std::nullopt},
+      {.name = "unparseable expiry", .expires_at_ms = "not-a-number"}};
+  for (const auto& test_case : cases) {
+    SCOPED_TRACE(test_case.name);
+    ICEBERG_UNWRAP_OR_FAIL(auto io, MakeS3FileIO({}));
+    auto* credentialed = io->AsSupportsStorageCredentials();
+    ASSERT_NE(credentialed, nullptr);
+
+    std::unordered_map<std::string, std::string> config = {
+        {std::string(S3Properties::kAccessKeyId), "unusable-key"},
+        {std::string(S3Properties::kSecretAccessKey), "secret"},
+        {std::string(S3Properties::kSessionToken), "token"}};
+    if (test_case.expires_at_ms.has_value()) {
+      config[std::string(S3Properties::kSessionTokenExpiresAtMs)] =
+          *test_case.expires_at_ms;
+    }
+    const std::vector<StorageCredential> unusable = {
+        {.prefix = "s3", .config = std::move(config)}};
+    int refresh_calls = 0;
+    auto provider = std::make_shared<MockStorageCredentialProvider>();
+    EXPECT_CALL(*provider, Load())
+        .WillRepeatedly([&]() -> Result<std::vector<StorageCredential>> {
+          ++refresh_calls;
+          return unusable;
+        });
+    const auto expiring = ExpiringCredentials(std::chrono::minutes(1), "expiring-key");
+    ASSERT_THAT(credentialed->InitializeStorageCredentials(expiring, provider), IsOk());
+
+    auto logger = std::make_shared<CapturingLogger>();
+    ScopedDefaultLogger scoped(logger);
+    EXPECT_THAT(io->NewInputFile("s3://bucket/key"), IsOk());
+    EXPECT_EQ(credentialed->credentials(), expiring);
+    EXPECT_TRUE(HasWarning(*logger, "Failed to refresh"));
+
+    // Rejected like any failed refresh, so it is not asked for again at once.
+    EXPECT_THAT(io->NewInputFile("s3://bucket/key"), IsOk());
+    EXPECT_EQ(refresh_calls, 1);
+  }
+}
+
+TEST_F(ArrowS3FileIOTest, FailsOnceCredentialsHaveExpiredAndCannotBeRefreshed) {
+  ICEBERG_UNWRAP_OR_FAIL(auto io, MakeS3FileIO({}));
+  auto* credentialed = io->AsSupportsStorageCredentials();
+  ASSERT_NE(credentialed, nullptr);
+
+  auto provider = std::make_shared<MockStorageCredentialProvider>();
+  EXPECT_CALL(*provider, Load()).WillOnce([]() -> Result<std::vector<StorageCredential>> {
+    return NotFound("catalog unreachable");
+  });
+  ASSERT_THAT(
+      credentialed->InitializeStorageCredentials(
+          ExpiringCredentials(-std::chrono::minutes(1), "expired-key", "s3://bucket/"),
+          provider),
+      IsOk());
+
+  EXPECT_THAT(io->NewInputFile("s3://bucket/key"), IsError(ErrorKind::kTokenExpired));
+  EXPECT_THAT(io->NewOutputFile("s3://bucket/key"), IsError(ErrorKind::kTokenExpired));
+  EXPECT_THAT(io->DeleteFile("s3://bucket/key"), IsError(ErrorKind::kTokenExpired));
+  EXPECT_THAT(io->DeleteFiles({"s3://bucket/key"}),
+              HasErrorMessage("Failed to delete 1 of 1 files"));
+  // Locations outside the vended prefix keep the default credentials.
+  EXPECT_THAT(io->NewInputFile("s3://other-bucket/key"), IsOk());
+}
+
 TEST_F(ArrowS3FileIOTest, OperationsSurviveConcurrentCredentialInstalls) {
   auto result = MakeS3FileIO({});
   ASSERT_THAT(result, IsOk());
@@ -640,6 +1112,80 @@ TEST_F(ArrowS3FileIOTest, LongestCredentialPrefix) {
               IsOk());
   EXPECT_THAT(CheckReadWrite(*io, object_uri, "hello s3 with vended credentials"),
               IsOk());
+}
+
+TEST_F(ArrowS3FileIOTest, RefreshReachesHandlesOpenedBeforeIt) {
+  if (!HasIntegrationEnv()) {
+    GTEST_SKIP() << "Set ICEBERG_TEST_S3_URI to enable S3 IO test";
+  }
+
+  auto properties = PropertiesFromEnv();
+  const auto access_key = properties.find(std::string(S3Properties::kAccessKeyId));
+  const auto secret_key = properties.find(std::string(S3Properties::kSecretAccessKey));
+  if (access_key == properties.end() || secret_key == properties.end()) {
+    GTEST_SKIP() << "Set AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY to enable "
+                    "credential refresh test";
+  }
+
+  // A refresh that changes only keys keeps the S3 client, and the handle's own
+  // request runs it. One that changes a setting replaces the client, which a
+  // request cannot do, so a file operation runs it. Either way the handle
+  // opened before it, still on the first client, must sign with the new keys.
+  struct Case {
+    std::string_view name;
+    std::unordered_map<std::string, std::string> refreshed_settings;
+    bool file_operation_refreshes;
+  };
+  const std::vector<Case> cases = {
+      {.name = "keys only", .refreshed_settings = {}, .file_operation_refreshes = false},
+      {.name = "new client",
+       .refreshed_settings = {{std::string(S3Properties::kConnectTimeoutMs), "5000"}},
+       .file_operation_refreshes = true}};
+  for (const auto& test_case : cases) {
+    SCOPED_TRACE(test_case.name);
+    ICEBERG_UNWRAP_OR_FAIL(auto io, MakeS3FileIO(properties));
+    auto* credentialed = io->AsSupportsStorageCredentials();
+    ASSERT_NE(credentialed, nullptr);
+
+    const auto prefix = ObjectUri("refresh_in_place/");
+    const auto uri = prefix + "object";
+    constexpr std::string_view kContent = "read with keys refreshed after it was opened";
+    ASSERT_THAT(io->WriteFile(uri, kContent), IsOk());
+
+    // The vended keys are bad, and fall due for refresh just after the handle
+    // is opened. Only the refreshed keys can read the object.
+    constexpr auto kDueIn = std::chrono::seconds(2);
+    auto refreshed_config = test_case.refreshed_settings;
+    refreshed_config.insert(*access_key);
+    refreshed_config.insert(*secret_key);
+    const std::vector<StorageCredential> refreshed = {
+        {.prefix = prefix, .config = std::move(refreshed_config)}};
+    auto provider = std::make_shared<MockStorageCredentialProvider>();
+    EXPECT_CALL(*provider, Load()).WillOnce(::testing::Return(refreshed));
+    ASSERT_THAT(
+        credentialed->InitializeStorageCredentials(
+            {{.prefix = prefix,
+              .config = {{std::string(S3Properties::kAccessKeyId), "bad-access-key"},
+                         {std::string(S3Properties::kSecretAccessKey), "bad-secret"},
+                         {std::string(S3Properties::kSessionToken), "bad-token"},
+                         {std::string(S3Properties::kSessionTokenExpiresAtMs),
+                          ExpiresAtMs(std::chrono::minutes(5) + kDueIn)}}}},
+            provider),
+        IsOk());
+    ICEBERG_UNWRAP_OR_FAIL(auto file, io->NewInputFile(uri, kContent.size()));
+
+    std::this_thread::sleep_for(kDueIn + std::chrono::seconds(1));
+    if (test_case.file_operation_refreshes) {
+      ASSERT_THAT(io->NewInputFile(uri), IsOk());
+    }
+    ICEBERG_UNWRAP_OR_FAIL(auto stream, file->Open());
+    std::string read(kContent.size(), '\0');
+    EXPECT_THAT(stream->ReadFully(0, std::as_writable_bytes(std::span(read))), IsOk());
+    EXPECT_EQ(read, kContent);
+    EXPECT_THAT(stream->Close(), IsOk());
+    EXPECT_EQ(credentialed->credentials(), refreshed);
+    EXPECT_THAT(io->DeleteFile(uri), IsOk());
+  }
 }
 
 TEST_F(ArrowS3FileIOTest, DeleteFilesAttemptsEveryFile) {
