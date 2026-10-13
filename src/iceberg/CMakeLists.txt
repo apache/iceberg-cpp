@@ -62,7 +62,6 @@ set(ICEBERG_SOURCES
     inspect/metadata_table.cc
     inspect/metadata_table_util_internal.cc
     inspect/partitions_table.cc
-    inspect/refs_table.cc
     inspect/snapshots_table.cc
     inheritable_metadata.cc
     json_serde.cc

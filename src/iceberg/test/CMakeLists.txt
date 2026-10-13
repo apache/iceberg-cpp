@@ -196,7 +196,6 @@ if(ICEBERG_BUILD_BUNDLE)
                    inspect/manifests_table_test.cc
                    inspect/metadata_table_test.cc
                    inspect/partitions_table_test.cc
-                   inspect/refs_table_test.cc
                    inspect/snapshots_table_test.cc)
 
   add_iceberg_test(eval_expr_test

@@ -83,7 +83,6 @@
 #include "iceberg/inspect/manifests_table.h"
 #include "iceberg/inspect/metadata_table.h"
 #include "iceberg/inspect/partitions_table.h"
-#include "iceberg/inspect/refs_table.h"
 #include "iceberg/inspect/snapshots_table.h"
 #include "iceberg/location_provider.h"
 #include "iceberg/logging/cerr_logger.h"

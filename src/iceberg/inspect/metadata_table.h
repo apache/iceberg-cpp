@@ -43,7 +43,6 @@ class ICEBERG_EXPORT MetadataTable {
   enum class Kind {
     kSnapshots,
     kHistory,
-    kRefs,
     kFiles,
     kPartitions,
     kManifests,
