@@ -63,6 +63,36 @@ Result<int64_t> RowGroupStart(const ::parquet::RowGroupMetaData& row_group,
   return start;
 }
 
+Result<int64_t> RowGroupMidpoint(const ::parquet::RowGroupMetaData& row_group,
+                                 int64_t file_size) {
+  ICEBERG_ASSIGN_OR_RAISE(auto start, RowGroupStart(row_group, file_size));
+  // The row group's pages are contiguous from its start, so its size is bounded by the
+  // rest of the file. This bound also keeps the sum below from overflowing.
+  const int64_t max_size = file_size - start;
+  // Arrow reports an omitted row-group size as 0. Like parquet-java, fall back to the
+  // sum of the column chunk sizes.
+  int64_t size = row_group.total_compressed_size();
+  if (size == 0) {
+    for (int i = 0; i < row_group.num_columns(); ++i) {
+      const int64_t column_size = row_group.ColumnChunk(i)->total_compressed_size();
+      if (column_size < 0 || column_size > max_size - size) {
+        return Invalid(
+            "Cannot split a Parquet row group with invalid column {} compressed size {} "
+            "(start {}, file size {})",
+            i, column_size, start, file_size);
+      }
+      size += column_size;
+    }
+  }
+  if (size < 0 || size > max_size) {
+    return Invalid(
+        "Cannot split a Parquet row group with invalid compressed size {} "
+        "(start {}, file size {})",
+        size, start, file_size);
+  }
+  return start + size / 2;
+}
+
 namespace {
 
 // Forward declaration

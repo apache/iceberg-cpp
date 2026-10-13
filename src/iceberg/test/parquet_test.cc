@@ -217,6 +217,23 @@ TEST(ParquetSplitTest, CanonicalStartRejectsMissingOrOutOfFilePages) {
               HasErrorMessage("without columns"));
 }
 
+TEST(ParquetSplitTest, MidpointAddsHalfTheRowGroupSize) {
+  // Each column chunk is 10 bytes, so the row group is 20 bytes from its start at 80.
+  auto metadata = MakeMetadataWithPageOffsets({{100, 80}, {50, 40}});
+  ASSERT_EQ(metadata->RowGroup(0)->total_compressed_size(), 20);
+  EXPECT_THAT(RowGroupMidpoint(*metadata->RowGroup(0), 200), HasValue(::testing::Eq(90)));
+  // The size may reach, but not pass, the end of the file.
+  EXPECT_THAT(RowGroupMidpoint(*metadata->RowGroup(0), 100), HasValue(::testing::Eq(90)));
+  EXPECT_THAT(RowGroupMidpoint(*metadata->RowGroup(0), 99),
+              HasErrorMessage("invalid compressed size 20"));
+}
+
+TEST(ParquetSplitTest, MidpointRejectsInvalidStart) {
+  auto metadata = MakeMetadataWithPageOffsets({{0, std::nullopt}});
+  EXPECT_THAT(RowGroupMidpoint(*metadata->RowGroup(0), 200),
+              HasErrorMessage("starting page 0"));
+}
+
 class ParquetReaderTest : public TempFileTestBase {
  protected:
   static void SetUpTestSuite() { parquet::RegisterAll(); }
@@ -929,18 +946,24 @@ TEST_F(ParquetReaderTest, ReadRenamedLargeListColumnWithArrowSchema) {
 TEST_F(ParquetReaderTest, ReadSplit) {
   CreateSplitParquetFile();
 
-  // Read split offsets
+  // Read row-group starts and midpoints
   auto io = internal::checked_cast<arrow::ArrowFileSystemFileIO&>(*file_io_);
   auto input_stream = io.fs()->OpenInputFile(temp_parquet_file_).ValueOrDie();
   auto metadata = ::parquet::ReadMetaData(input_stream);
-  std::vector<size_t> split_offsets;
+  const int64_t file_size = input_stream->GetSize().ValueOrDie();
+  std::vector<size_t> starts;
+  std::vector<size_t> midpoints;
   for (int i = 0; i < metadata->num_row_groups(); ++i) {
     auto column = metadata->RowGroup(i)->ColumnChunk(0);
     ASSERT_TRUE(column->has_dictionary_page());
     ASSERT_LT(column->dictionary_page_offset(), column->data_page_offset());
-    split_offsets.push_back(static_cast<size_t>(column->dictionary_page_offset()));
+    starts.push_back(static_cast<size_t>(column->dictionary_page_offset()));
+    ICEBERG_UNWRAP_OR_FAIL(auto midpoint,
+                           RowGroupMidpoint(*metadata->RowGroup(i), file_size));
+    ASSERT_GT(static_cast<size_t>(midpoint), starts.back());
+    midpoints.push_back(static_cast<size_t>(midpoint));
   }
-  ASSERT_EQ(split_offsets.size(), 2);
+  ASSERT_EQ(starts.size(), 2);
 
   auto schema = std::make_shared<Schema>(std::vector<SchemaField>{
       SchemaField::MakeRequired(1, "id", int32()),
@@ -949,12 +972,15 @@ TEST_F(ParquetReaderTest, ReadSplit) {
 
   std::vector<Split> splits = {
       {.offset = 0, .length = std::numeric_limits<size_t>::max()},
-      {.offset = split_offsets[0], .length = split_offsets[1] - split_offsets[0]},
-      {.offset = split_offsets[1], .length = 1},
-      {.offset = split_offsets[1] + 1, .length = std::numeric_limits<size_t>::max()},
-      {.offset = 0, .length = split_offsets[0]},
-      {.offset = split_offsets[0] + 1, .length = split_offsets[1] - split_offsets[0]},
-      {.offset = split_offsets[0], .length = 0},
+      {.offset = starts[0], .length = starts[1] - starts[0]},
+      {.offset = midpoints[1], .length = 1},
+      {.offset = midpoints[1] + 1, .length = std::numeric_limits<size_t>::max()},
+      {.offset = 0, .length = midpoints[0]},
+      {.offset = midpoints[0] + 1, .length = midpoints[1] - midpoints[0]},
+      {.offset = starts[0], .length = 0},
+      // A row group belongs to the split containing its midpoint, not its start.
+      {.offset = starts[1], .length = 1},
+      {.offset = starts[0] + 1, .length = midpoints[0] - starts[0]},
   };
   std::vector<std::string> expected_json = {
       R"([[1, 0], [2, 1], [3, 2]])",
@@ -964,6 +990,8 @@ TEST_F(ParquetReaderTest, ReadSplit) {
       "",
       R"([[3, 2]])",
       "",
+      "",
+      R"([[1, 0], [2, 1]])",
   };
 
   ReaderProperties reader_properties;
@@ -995,6 +1023,11 @@ TEST_F(ParquetReaderTest, ReadSplitWithoutDictionaryPages) {
   auto metadata = ::parquet::ReadMetaData(input);
   auto column = metadata->RowGroup(1)->ColumnChunk(0);
   ASSERT_FALSE(column->has_dictionary_page());
+  const int64_t file_size = input->GetSize().ValueOrDie();
+  EXPECT_THAT(RowGroupStart(*metadata->RowGroup(1), file_size),
+              HasValue(::testing::Eq(column->data_page_offset())));
+  ICEBERG_UNWRAP_OR_FAIL(auto midpoint,
+                         RowGroupMidpoint(*metadata->RowGroup(1), file_size));
   auto schema = std::make_shared<Schema>(std::vector<SchemaField>{
       SchemaField::MakeRequired(1, "id", int32()), MetadataColumns::kRowPosition});
   ICEBERG_UNWRAP_OR_FAIL(
@@ -1002,8 +1035,7 @@ TEST_F(ParquetReaderTest, ReadSplitWithoutDictionaryPages) {
       ReaderFactoryRegistry::Open(
           FileFormatType::kParquet,
           {.path = temp_parquet_file_,
-           .split = Split{.offset = static_cast<size_t>(column->data_page_offset()),
-                          .length = 1},
+           .split = Split{.offset = static_cast<size_t>(midpoint), .length = 1},
            .io = file_io_,
            .projection = schema}));
   ASSERT_NO_FATAL_FAILURE(VerifyNextBatch(*reader, R"([[3, 2]])"));
@@ -1098,14 +1130,15 @@ TEST_F(ParquetReaderTest, ReadSplitWithNonmonotonicRowGroupStarts) {
   ASSERT_NO_FATAL_FAILURE(VerifyExhausted(*reader));
 
   ICEBERG_UNWRAP_OR_FAIL(
-      auto tail,
-      ReaderFactoryRegistry::Open(FileFormatType::kParquet,
-                                  {.path = temp_parquet_file_,
-                                   .split = Split{.offset = last_start, .length = 1},
-                                   .io = file_io_,
-                                   .projection = schema,
-                                   .first_row_id = 100,
-                                   .data_sequence_number = 7}));
+      auto tail, ReaderFactoryRegistry::Open(
+                     FileFormatType::kParquet,
+                     {.path = temp_parquet_file_,
+                      .split = Split{.offset = last_start,
+                                     .length = std::numeric_limits<size_t>::max()},
+                      .io = file_io_,
+                      .projection = schema,
+                      .first_row_id = 100,
+                      .data_sequence_number = 7}));
   ASSERT_NO_FATAL_FAILURE(VerifyNextBatch(*tail, R"([[3, 1, 101, 7]])"));
   ASSERT_NO_FATAL_FAILURE(VerifyExhausted(*tail));
 }

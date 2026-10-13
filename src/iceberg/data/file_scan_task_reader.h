@@ -69,7 +69,7 @@ class ICEBERG_DATA_EXPORT FileScanTaskReader {
   /// \brief Open a task and return an Arrow C stream for its projected live rows.
   ///
   /// Partial tasks are supported for Parquet, with each row group assigned to the
-  /// half-open range containing its first column's starting page. Row positions and
+  /// half-open range containing its midpoint, as in Java Iceberg. Row positions and
   /// inherited row IDs remain relative to the whole file. Other formats require
   /// whole-file tasks. The task and its shared data/delete-file metadata must not be
   /// mutated while the stream uses them.
