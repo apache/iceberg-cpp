@@ -24,9 +24,11 @@
 
 #include <concepts>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <variant>
+#include <vector>
 
 #include "iceberg/arrow_c_data.h"
 #include "iceberg/iceberg_export.h"
@@ -35,6 +37,19 @@
 #include "iceberg/util/timepoint.h"
 
 namespace iceberg {
+
+/// \brief Column selection for a metadata table scan.
+struct ColumnSelection {
+  /// \brief Names of the columns to return.
+  ///
+  /// Nested names are dot-concatenated. Columns are returned in schema order, and
+  /// names that match no column are ignored. std::nullopt or a list containing `*`
+  /// returns all columns. An empty list returns rows without columns.
+  std::optional<std::vector<std::string>> names;
+
+  /// \brief Whether names are matched case-sensitively.
+  bool case_sensitive = true;
+};
 
 /// \brief Base interface for an Iceberg metadata table.
 class ICEBERG_EXPORT MetadataTable {
@@ -73,14 +88,29 @@ class ICEBERG_EXPORT MetadataTable {
   /// \brief Return whether this metadata table supports time travel.
   virtual bool supports_time_travel() const noexcept;
 
-  /// \brief Scan the metadata table without time travel.
+  /// \brief Scan all columns of the metadata table without time travel.
   ///
   /// The caller owns the returned stream and must invoke its `release` callback
   /// when the stream is no longer needed.
-  virtual Result<ArrowArrayStream> Scan() = 0;
+  Result<ArrowArrayStream> Scan();
+
+  /// \brief Scan the selected columns of the metadata table without time travel.
+  ///
+  /// The caller owns the returned stream and must invoke its `release` callback
+  /// when the stream is no longer needed.
+  ///
+  /// \param columns Names of the columns to return.
+  /// \return An Arrow stream containing the selected columns, or an error.
+  Result<ArrowArrayStream> Scan(const ColumnSelection& columns);
 
  protected:
   explicit MetadataTable(std::shared_ptr<Table> source_table);
+
+  /// \brief Implement a scan that returns the columns of a projected schema.
+  ///
+  /// \param projected_schema Projection of schema() with the columns to return. It
+  /// is only valid during this call.
+  virtual Result<ArrowArrayStream> ScanProjection(const Schema& projected_schema) = 0;
 
  private:
   std::shared_ptr<Table> source_table_;
@@ -110,21 +140,36 @@ class ICEBERG_EXPORT TimeTravelMetadataTable : public MetadataTable {
   /// \brief Return true because this interface supports time travel.
   bool supports_time_travel() const noexcept final;
 
-  /// \brief Scan using the current snapshot on the main branch.
-  Result<ArrowArrayStream> Scan() final;
+  // Scans without a snapshot selection read the current snapshot on the main branch.
+  using MetadataTable::Scan;
 
-  /// \brief Scan using the requested snapshot selection.
+  /// \brief Scan all columns using the requested snapshot selection.
   ///
   /// \param snapshot_selection Snapshot ID, timestamp, and optional ref selection.
   /// \return An Arrow stream containing the metadata table rows, or an error.
   Result<ArrowArrayStream> Scan(const SnapshotSelection& snapshot_selection);
 
+  /// \brief Scan the selected columns using the requested snapshot selection.
+  ///
+  /// \param snapshot_selection Snapshot ID, timestamp, and optional ref selection.
+  /// \param columns Names of the columns to return.
+  /// \return An Arrow stream containing the selected columns, or an error.
+  Result<ArrowArrayStream> Scan(const SnapshotSelection& snapshot_selection,
+                                const ColumnSelection& columns);
+
  protected:
   explicit TimeTravelMetadataTable(std::shared_ptr<Table> source_table);
 
+  /// \brief Scan the current snapshot on the main branch.
+  Result<ArrowArrayStream> ScanProjection(const Schema& projected_schema) final;
+
   /// \brief Implement a scan for the requested snapshot selection.
+  ///
+  /// \param snapshot_selection Snapshot ID, timestamp, and optional ref selection.
+  /// \param projected_schema Projection of schema() with the columns to return. It
+  /// is only valid during this call.
   virtual Result<ArrowArrayStream> ScanSnapshot(
-      const SnapshotSelection& snapshot_selection) = 0;
+      const SnapshotSelection& snapshot_selection, const Schema& projected_schema) = 0;
 };
 
 }  // namespace iceberg

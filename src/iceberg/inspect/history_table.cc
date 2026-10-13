@@ -50,7 +50,8 @@ Result<std::unique_ptr<HistoryTable>> HistoryTable::Make(std::shared_ptr<Table> 
   return std::unique_ptr<HistoryTable>(new HistoryTable(std::move(table)));
 }
 
-Result<ArrowArrayStream> HistoryTable::Scan() {
+Result<ArrowArrayStream> HistoryTable::ScanProjection(
+    const Schema& /*projected_schema*/) {
   return NotSupported("Scan is not supported for the history table");
 }
 

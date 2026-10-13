@@ -22,7 +22,23 @@
 #include <memory>
 #include <utility>
 
+#include "iceberg/schema.h"
+#include "iceberg/util/macros.h"
+
 namespace iceberg {
+namespace {
+
+Result<std::shared_ptr<Schema>> SelectColumns(const std::shared_ptr<Schema>& schema,
+                                              const ColumnSelection& columns) {
+  if (!columns.names.has_value()) {
+    return schema;
+  }
+  ICEBERG_ASSIGN_OR_RAISE(auto projected_schema,
+                          schema->Select(*columns.names, columns.case_sensitive));
+  return std::shared_ptr<Schema>(std::move(projected_schema));
+}
+
+}  // namespace
 
 MetadataTable::MetadataTable(std::shared_ptr<Table> source_table)
     : source_table_(std::move(source_table)) {}
@@ -35,6 +51,13 @@ const std::shared_ptr<Table>& MetadataTable::source_table() const {
   return source_table_;
 }
 
+Result<ArrowArrayStream> MetadataTable::Scan() { return ScanProjection(*schema()); }
+
+Result<ArrowArrayStream> MetadataTable::Scan(const ColumnSelection& columns) {
+  ICEBERG_ASSIGN_OR_RAISE(auto projected_schema, SelectColumns(schema(), columns));
+  return ScanProjection(*projected_schema);
+}
+
 TimeTravelMetadataTable::TimeTravelMetadataTable(std::shared_ptr<Table> source_table)
     : MetadataTable(std::move(source_table)) {}
 
@@ -42,13 +65,20 @@ TimeTravelMetadataTable::~TimeTravelMetadataTable() = default;
 
 bool TimeTravelMetadataTable::supports_time_travel() const noexcept { return true; }
 
-Result<ArrowArrayStream> TimeTravelMetadataTable::Scan() {
-  return ScanSnapshot(SnapshotSelection{});
+Result<ArrowArrayStream> TimeTravelMetadataTable::Scan(
+    const SnapshotSelection& snapshot_selection) {
+  return ScanSnapshot(snapshot_selection, *schema());
 }
 
 Result<ArrowArrayStream> TimeTravelMetadataTable::Scan(
-    const SnapshotSelection& snapshot_selection) {
-  return ScanSnapshot(snapshot_selection);
+    const SnapshotSelection& snapshot_selection, const ColumnSelection& columns) {
+  ICEBERG_ASSIGN_OR_RAISE(auto projected_schema, SelectColumns(schema(), columns));
+  return ScanSnapshot(snapshot_selection, *projected_schema);
+}
+
+Result<ArrowArrayStream> TimeTravelMetadataTable::ScanProjection(
+    const Schema& projected_schema) {
+  return ScanSnapshot(SnapshotSelection{}, projected_schema);
 }
 
 }  // namespace iceberg
