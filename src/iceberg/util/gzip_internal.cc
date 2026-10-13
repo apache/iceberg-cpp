@@ -124,7 +124,7 @@ class ZlibDeflateImpl {
       stream_.avail_out = static_cast<uInt>(out_buffer.size());
       stream_.next_out = reinterpret_cast<Bytef*>(out_buffer.data());
       ret = deflate(&stream_, Z_FINISH);
-      if (ret != Z_OK && ret != Z_STREAM_END && ret != Z_BUF_ERROR) {
+      if (ret != Z_OK && ret != Z_STREAM_END) {
         return CompressError("deflate failed, result:{}", ret);
       }
       result.append(out_buffer.data(), out_buffer.size() - stream_.avail_out);
