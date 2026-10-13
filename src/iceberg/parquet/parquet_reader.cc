@@ -334,6 +334,7 @@ class ParquetReader::Impl {
       }
       ICEBERG_ARROW_RETURN_NOT_OK(context_->record_batch_reader_->Close());
       ICEBERG_ASSIGN_OR_RAISE(context_->record_batch_reader_, OpenNextRowGroupRange());
+      ConsumeRowGroupRange();
     }
 
     std::shared_ptr<::arrow::Int64Array> row_positions;
@@ -453,6 +454,8 @@ class ParquetReader::Impl {
     return {};
   }
 
+  // Open the next range without consuming it, so a caller that fails afterwards can
+  // retry it. Call ConsumeRowGroupRange() once the reader is installed.
   Result<std::unique_ptr<::arrow::RecordBatchReader>> OpenNextRowGroupRange() {
     if (next_row_group_range_ == row_group_ranges_.size()) {
       return std::make_unique<EmptyRecordBatchReader>();
@@ -463,13 +466,20 @@ class ParquetReader::Impl {
     ICEBERG_ARROW_ASSIGN_OR_RETURN(
         auto batch_reader, reader_->GetRecordBatchReader(
                                row_group_indices, SelectedColumnIndices(projection_)));
-    metadata_context_.next_file_pos = range.first_row_position;
-    ++next_row_group_range_;
     return batch_reader;
   }
 
+  void ConsumeRowGroupRange() {
+    if (next_row_group_range_ == row_group_ranges_.size()) {
+      return;
+    }
+    metadata_context_.next_file_pos =
+        row_group_ranges_[next_row_group_range_].first_row_position;
+    ++next_row_group_range_;
+  }
+
   Status InitReadContext() {
-    // Build locally so a failure leaves context_ unset.
+    // Build locally so a failure leaves context_ unset and the first range unconsumed.
     auto context = std::make_unique<ReadContext>();
     ICEBERG_ASSIGN_OR_RAISE(context->record_batch_reader_, OpenNextRowGroupRange());
 
@@ -505,6 +515,7 @@ class ParquetReader::Impl {
         context->output_arrow_schema_, context->record_batch_reader_->schema(),
         projection_, use_large_list_);
     context_ = std::move(context);
+    ConsumeRowGroupRange();
     return {};
   }
 
