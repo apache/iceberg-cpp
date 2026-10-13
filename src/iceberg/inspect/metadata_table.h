@@ -43,6 +43,7 @@ class ICEBERG_EXPORT MetadataTable {
   enum class Kind {
     kSnapshots,
     kHistory,
+    kRefs,
   };
 
   /// \brief Maximum number of rows emitted in each Arrow batch.

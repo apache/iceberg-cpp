@@ -279,6 +279,7 @@ class PositionDeleteIndex;
 /// \brief Metadata tables.
 class HistoryTable;
 class MetadataTable;
+class RefsTable;
 class SnapshotsTable;
 
 /// \brief Table encryption

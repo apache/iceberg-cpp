@@ -191,6 +191,7 @@ if(ICEBERG_BUILD_BUNDLE)
   add_iceberg_test(metadata_table_test
                    USE_BUNDLE
                    SOURCES
+                   inspect/refs_table_test.cc
                    history_table_test.cc
                    metadata_table_test.cc
                    snapshots_table_test.cc)
