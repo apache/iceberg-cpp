@@ -93,7 +93,8 @@ Table::Table(TableIdentifier identifier, std::shared_ptr<TableMetadata> metadata
       catalog_(std::move(catalog)),
       reporter_(std::move(reporter)),
       metadata_cache_(std::make_unique<TableMetadataCache>(metadata_.get())),
-      labels_(std::move(labels)) {}
+      labels_(labels.empty() ? nullptr
+                             : std::make_unique<const Labels>(std::move(labels))) {}
 
 const std::string& Table::uuid() const { return metadata_->table_uuid; }
 
@@ -167,7 +168,13 @@ const std::shared_ptr<Catalog>& Table::catalog() const { return catalog_; }
 
 const std::shared_ptr<MetricsReporter>& Table::reporter() const { return reporter_; }
 
-const Labels& Table::labels() const { return labels_; }
+const Labels& Table::labels() const {
+  if (labels_) {
+    return *labels_;
+  }
+  static const Labels kEmpty;
+  return kEmpty;
+}
 
 Result<std::unique_ptr<LocationProvider>> Table::location_provider() const {
   return LocationProvider::Make(metadata_->location, metadata_->properties);

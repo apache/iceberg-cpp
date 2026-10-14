@@ -39,6 +39,8 @@
 #include "iceberg/catalog/rest/types.h"
 #include "iceberg/file_io.h"
 #include "iceberg/file_io_registry.h"
+#include "iceberg/labels.h"
+#include "iceberg/schema.h"
 #include "iceberg/storage_credential.h"
 #include "iceberg/table.h"
 #include "iceberg/table_identifier.h"
@@ -213,6 +215,76 @@ class RestCatalogLoadTableTest : public ::testing::Test {
   std::unordered_set<Endpoint> all_plan_endpoints_;
   std::unordered_set<Endpoint> no_plan_endpoint_set_;
 };
+
+class RestCatalogLabelsTest : public RestCatalogLoadTableTest,
+                              public ::testing::WithParamInterface<bool> {
+ protected:
+  std::string LabelsResponse() const {
+    auto response = nlohmann::json::parse(kLoadTableDefaultResponse);
+    response["config"]["scan-planning-mode"] = GetParam() ? "server" : "client";
+    response["labels"] = nlohmann::json::parse(
+        R"({"object-labels":{"owner":"team-a"},"fields":[{"field-id":1,"labels":{"classification":"pii"}}]})");
+    return response.dump();
+  }
+
+  Result<std::shared_ptr<Catalog>> MakeLabelsCatalog() {
+    auto endpoints = all_plan_endpoints_;
+    endpoints.insert(Endpoint::CreateTable());
+    endpoints.insert(Endpoint::RegisterTable());
+    ICEBERG_ASSIGN_OR_RAISE(auto catalog, MakeCatalog(endpoints));
+    return catalog->AsCatalog();
+  }
+
+  void CheckLabels(const std::shared_ptr<Table>& table) const {
+    ASSERT_NE(table, nullptr);
+    EXPECT_EQ(table->labels(), labels_);
+    EXPECT_EQ(std::dynamic_pointer_cast<RestTable>(table) != nullptr, GetParam());
+  }
+
+  const Labels labels_{
+      .object_labels = {{"owner", "team-a"}},
+      .fields = {{.field_id = 1, .labels = {{"classification", "pii"}}}}};
+};
+
+TEST_P(RestCatalogLabelsTest, LoadExposesLabels) {
+  EXPECT_CALL(*mock_client_, Get(::testing::EndsWith("/tables/my_table"), _, _, _, _))
+      .WillOnce(Return(HttpResponse(200, LabelsResponse())));
+  ICEBERG_UNWRAP_OR_FAIL(auto catalog, MakeLabelsCatalog());
+  ICEBERG_UNWRAP_OR_FAIL(auto table, catalog->LoadTable(identifier_));
+
+  CheckLabels(table);
+}
+
+TEST_P(RestCatalogLabelsTest, CreateExposesLabels) {
+  EXPECT_CALL(*mock_client_,
+              Post(::testing::EndsWith("/namespaces/default/tables"), _, _, _, _))
+      .WillOnce(Return(HttpResponse(200, LabelsResponse())));
+  ICEBERG_UNWRAP_OR_FAIL(auto catalog, MakeLabelsCatalog());
+  auto schema = std::make_shared<Schema>(
+      std::vector<SchemaField>{SchemaField::MakeRequired(1, "id", int32())}, 1);
+  ICEBERG_UNWRAP_OR_FAIL(auto table,
+                         catalog->CreateTable(identifier_, schema, /*spec=*/nullptr,
+                                              /*order=*/nullptr, /*location=*/"",
+                                              /*properties=*/{}));
+
+  CheckLabels(table);
+}
+
+TEST_P(RestCatalogLabelsTest, RegisterExposesLabels) {
+  EXPECT_CALL(*mock_client_,
+              Post(::testing::EndsWith("/namespaces/default/register"), _, _, _, _))
+      .WillOnce(Return(HttpResponse(200, LabelsResponse())));
+  ICEBERG_UNWRAP_OR_FAIL(auto catalog, MakeLabelsCatalog());
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto table, catalog->RegisterTable(identifier_, "s3://bucket/metadata/v1.json"));
+
+  CheckLabels(table);
+}
+
+INSTANTIATE_TEST_SUITE_P(PlanningModes, RestCatalogLabelsTest, ::testing::Bool(),
+                         [](const ::testing::TestParamInfo<bool>& info) {
+                           return info.param ? "Server" : "Client";
+                         });
 
 TEST_F(RestCatalogLoadTableTest, InitializationPropagatesClientFactoryErrors) {
   auto config = RestCatalogProperties::FromMap(

@@ -29,6 +29,7 @@
 #include "iceberg/test/matchers.h"
 #include "iceberg/test/mock_catalog.h"
 #include "iceberg/test/mock_io.h"
+#include "iceberg/transaction.h"
 
 namespace iceberg {
 
@@ -175,27 +176,72 @@ class TableLabelsTest : public ::testing::Test {
   std::shared_ptr<TableMetadata> metadata_;
 };
 
-TEST_F(TableLabelsTest, ExposesProvidedLabels) {
+TEST_F(TableLabelsTest, EmptyLabelsShareFallback) {
   ICEBERG_UNWRAP_OR_FAIL(
-      auto table, Table::Make(ident_, metadata_, "s3://bucket/meta.json", io_, catalog_,
-                              /*full_name=*/"", /*reporter=*/nullptr, labels_));
+      auto first, Table::Make(ident_, metadata_, "s3://bucket/meta.json", io_, catalog_));
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto second, Table::Make(ident_, metadata_, "s3://bucket/meta.json", io_, catalog_,
+                               /*full_name=*/"", /*reporter=*/nullptr, Labels{}));
 
-  EXPECT_EQ(table->labels(), labels_);
+  EXPECT_TRUE(first->labels().empty());
+  EXPECT_TRUE(second->labels().empty());
+  EXPECT_EQ(&first->labels(), &second->labels());
 }
 
-TEST_F(TableLabelsTest, RefreshKeepsLabels) {
+TEST_F(TableLabelsTest, ExposesProvidedLabels) {
+  for (const auto& labels : {labels_, Labels{.object_labels = {{"owner", "team-a"}}},
+                             Labels{.fields = {{.field_id = 1}}}}) {
+    ICEBERG_UNWRAP_OR_FAIL(
+        auto table, Table::Make(ident_, metadata_, "s3://bucket/meta.json", io_, catalog_,
+                                /*full_name=*/"", /*reporter=*/nullptr, labels));
+
+    EXPECT_EQ(table->labels(), labels);
+  }
+}
+
+class TableLabelsRefreshTest : public TableLabelsTest,
+                               public ::testing::WithParamInterface<bool> {};
+
+TEST_P(TableLabelsRefreshTest, RefreshKeepsLabels) {
+  const std::string metadata_location =
+      GetParam() ? "s3://bucket/meta2.json" : "s3://bucket/meta.json";
+  const Labels changed_labels{
+      .object_labels = {{"owner", "team-b"}},
+      .fields = {{.field_id = 1, .labels = {{"classification", "public"}}}}};
+  for (const auto& refreshed_labels : {Labels{}, changed_labels}) {
+    SCOPED_TRACE(refreshed_labels.empty() ? "Absent labels" : "Changed labels");
+    ICEBERG_UNWRAP_OR_FAIL(
+        auto table, Table::Make(ident_, metadata_, "s3://bucket/meta.json", io_, catalog_,
+                                /*full_name=*/"", /*reporter=*/nullptr, labels_));
+    ICEBERG_UNWRAP_OR_FAIL(
+        auto refreshed,
+        Table::Make(ident_, metadata_, metadata_location, io_, catalog_,
+                    /*full_name=*/"", /*reporter=*/nullptr, refreshed_labels));
+    EXPECT_CALL(*catalog_, LoadTable(::testing::_))
+        .WillOnce(::testing::Return(refreshed));
+
+    ASSERT_THAT(table->Refresh(), IsOk());
+
+    EXPECT_EQ(table->metadata_file_location(), metadata_location);
+    EXPECT_EQ(table->labels(), labels_);
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(MetadataLocation, TableLabelsRefreshTest, ::testing::Bool(),
+                         [](const ::testing::TestParamInfo<bool>& info) {
+                           return info.param ? "Changed" : "Unchanged";
+                         });
+
+TEST_F(TableLabelsTest, EmptyTransactionKeepsLabels) {
   ICEBERG_UNWRAP_OR_FAIL(
       auto table, Table::Make(ident_, metadata_, "s3://bucket/meta.json", io_, catalog_,
                               /*full_name=*/"", /*reporter=*/nullptr, labels_));
-  ICEBERG_UNWRAP_OR_FAIL(
-      auto refreshed,
-      Table::Make(ident_, metadata_, "s3://bucket/meta2.json", io_, catalog_));
-  EXPECT_CALL(*catalog_, LoadTable(::testing::_)).WillOnce(::testing::Return(refreshed));
+  EXPECT_CALL(*catalog_, UpdateTable(::testing::_, ::testing::_, ::testing::_)).Times(0);
+  ICEBERG_UNWRAP_OR_FAIL(auto transaction, table->NewTransaction());
+  ICEBERG_UNWRAP_OR_FAIL(auto committed, transaction->Commit());
 
-  ASSERT_THAT(table->Refresh(), IsOk());
-
-  EXPECT_EQ(table->metadata_file_location(), "s3://bucket/meta2.json");
-  EXPECT_EQ(table->labels(), labels_);
+  ASSERT_EQ(committed, table);
+  EXPECT_EQ(committed->labels(), labels_);
 }
 
 TEST(StaticTableTest, NewMutatingOperationsAreNotSupported) {

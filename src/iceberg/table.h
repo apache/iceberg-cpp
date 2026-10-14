@@ -134,9 +134,8 @@ class ICEBERG_EXPORT Table : public std::enable_shared_from_this<Table> {
 
   /// \brief Returns the catalog-provided labels for this table.
   ///
-  /// Labels come only from the catalog's load, create or register response and are fixed
-  /// for the life of this table: Refresh() does not update them, and a table returned by
-  /// Transaction::Commit() has none. Load the table again to get current labels.
+  /// Labels are supplied at construction and are not updated by Refresh().
+  /// Reload the table to obtain current catalog labels.
   const Labels& labels() const;
 
   /// \brief Returns a LocationProvider for this table
@@ -235,7 +234,7 @@ class ICEBERG_EXPORT Table : public std::enable_shared_from_this<Table> {
   std::shared_ptr<Catalog> catalog_;
   std::shared_ptr<MetricsReporter> reporter_;
   std::unique_ptr<class TableMetadataCache> metadata_cache_;
-  const Labels labels_;
+  const std::unique_ptr<const Labels> labels_;
 };
 
 /// \brief A table created by stage-create and not yet committed.
