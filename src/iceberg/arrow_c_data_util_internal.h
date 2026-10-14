@@ -31,6 +31,7 @@
 #include <vector>
 
 #include "iceberg/arrow_c_data.h"
+#include "iceberg/iceberg_bundle_export.h"
 #include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
@@ -256,10 +257,10 @@ namespace arrow {
 /// preserved. Structs, lists, and maps are aligned recursively.
 ///
 /// `input_batch` is consumed even when alignment fails.
-ICEBERG_EXPORT Result<ArrowArray> AlignBatchForWrite(ArrowArray* input_batch,
-                                                     const Schema& input_schema,
-                                                     const Schema& write_schema,
-                                                     ::arrow::MemoryPool* pool);
+ICEBERG_BUNDLE_EXPORT Result<ArrowArray> AlignBatchForWrite(ArrowArray* input_batch,
+                                                            const Schema& input_schema,
+                                                            const Schema& write_schema,
+                                                            ::arrow::MemoryPool* pool);
 
 }  // namespace arrow
 
