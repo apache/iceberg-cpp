@@ -36,10 +36,6 @@
 #include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
 
-namespace arrow {
-class MemoryPool;
-}
-
 namespace iceberg {
 
 /// \brief Cached state for ProjectBatch over one input/output schema pair.
@@ -259,8 +255,7 @@ namespace arrow {
 /// `input_batch` is consumed even when alignment fails.
 ICEBERG_BUNDLE_EXPORT Result<ArrowArray> AlignBatchForWrite(ArrowArray* input_batch,
                                                             const Schema& input_schema,
-                                                            const Schema& write_schema,
-                                                            ::arrow::MemoryPool* pool);
+                                                            const Schema& write_schema);
 
 }  // namespace arrow
 

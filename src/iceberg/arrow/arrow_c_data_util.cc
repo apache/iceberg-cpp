@@ -32,6 +32,7 @@
 #include <arrow/buffer.h>
 #include <arrow/c/bridge.h>
 #include <arrow/compute/api_vector.h>
+#include <arrow/memory_pool.h>
 #include <arrow/record_batch.h>
 #include <arrow/type.h>
 #include <nanoarrow/nanoarrow.h>
@@ -257,14 +258,12 @@ Result<std::vector<std::shared_ptr<::arrow::Array>>> MaterializeProjection(
 }  // namespace
 
 Result<ArrowArray> AlignBatchForWrite(ArrowArray* input_batch, const Schema& input_schema,
-                                      const Schema& write_schema,
-                                      ::arrow::MemoryPool* pool) {
+                                      const Schema& write_schema) {
   ICEBERG_PRECHECK(input_batch != nullptr, "input_batch must not be null");
   internal::ArrowArrayGuard input_guard(input_batch);
   if (input_schema == write_schema) {
     return std::exchange(*input_batch, ArrowArray{});
   }
-  ICEBERG_PRECHECK(pool != nullptr, "pool must not be null");
 
   ICEBERG_ASSIGN_OR_RAISE(auto input_arrow_schema, ImportIcebergSchema(input_schema));
   ICEBERG_ARROW_ASSIGN_OR_RETURN(
@@ -281,7 +280,7 @@ Result<ArrowArray> AlignBatchForWrite(ArrowArray* input_batch, const Schema& inp
       auto columns,
       MaterializeProjection(projection.fields, input_record_batch->columns(),
                             write_arrow_schema->fields(), input_record_batch->num_rows(),
-                            pool));
+                            ::arrow::default_memory_pool()));
   auto output_record_batch = ::arrow::RecordBatch::Make(
       write_arrow_schema, input_record_batch->num_rows(), std::move(columns));
 

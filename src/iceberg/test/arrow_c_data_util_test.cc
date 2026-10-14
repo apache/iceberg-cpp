@@ -29,7 +29,6 @@
 
 #include <arrow/c/bridge.h>
 #include <arrow/json/from_string.h>
-#include <arrow/memory_pool.h>
 #include <arrow/record_batch.h>
 #include <arrow/type.h>
 #include <gtest/gtest.h>
@@ -131,9 +130,8 @@ Result<std::shared_ptr<::arrow::RecordBatch>> AlignForWrite(
     const ::arrow::RecordBatch& input) {
   ArrowArray c_array;
   ICEBERG_ARROW_RETURN_NOT_OK(::arrow::ExportRecordBatch(input, &c_array));
-  ICEBERG_ASSIGN_OR_RAISE(auto aligned,
-                          arrow::AlignBatchForWrite(&c_array, input_schema, write_schema,
-                                                    ::arrow::default_memory_pool()));
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto aligned, arrow::AlignBatchForWrite(&c_array, input_schema, write_schema));
 
   ArrowSchema c_schema;
   ICEBERG_RETURN_UNEXPECTED(ToArrowSchema(write_schema, &c_schema));
@@ -244,9 +242,8 @@ TEST(AlignBatchForWriteTest, IdenticalSchemasTransferBatchWithoutConversion) {
   ASSERT_TRUE(::arrow::ExportRecordBatch(*input, &c_array).ok());
   auto original = c_array;
 
-  ICEBERG_UNWRAP_OR_FAIL(auto aligned,
-                         arrow::AlignBatchForWrite(&c_array, *input_schema, *write_schema,
-                                                   ::arrow::default_memory_pool()));
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto aligned, arrow::AlignBatchForWrite(&c_array, *input_schema, *write_schema));
   ArrowArrayGuard aligned_guard(&aligned);
   EXPECT_EQ(c_array.release, nullptr);
   EXPECT_EQ(aligned.private_data, original.private_data);

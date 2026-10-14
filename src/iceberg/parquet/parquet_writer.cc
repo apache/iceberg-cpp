@@ -285,9 +285,8 @@ class ParquetWriter::Impl {
   }
 
   Status Write(ArrowArray* array) {
-    ICEBERG_ASSIGN_OR_RAISE(
-        auto aligned_array,
-        arrow::AlignBatchForWrite(array, *input_schema_, *schema_, pool_));
+    ICEBERG_ASSIGN_OR_RAISE(auto aligned_array,
+                            arrow::AlignBatchForWrite(array, *input_schema_, *schema_));
     internal::ArrowArrayGuard aligned_guard(&aligned_array);
     ICEBERG_ARROW_ASSIGN_OR_RETURN(
         auto batch, ::arrow::ImportRecordBatch(&aligned_array, arrow_schema_));

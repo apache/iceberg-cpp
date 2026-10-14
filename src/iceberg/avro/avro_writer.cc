@@ -232,9 +232,8 @@ class AvroWriter::Impl {
   }
 
   Status Write(ArrowArray* data) {
-    ICEBERG_ASSIGN_OR_RAISE(
-        auto aligned_data, arrow::AlignBatchForWrite(data, *input_schema_, *write_schema_,
-                                                     ::arrow::default_memory_pool()));
+    ICEBERG_ASSIGN_OR_RAISE(auto aligned_data, arrow::AlignBatchForWrite(
+                                                   data, *input_schema_, *write_schema_));
     internal::ArrowArrayGuard aligned_guard(&aligned_data);
     ICEBERG_ARROW_ASSIGN_OR_RETURN(
         auto batch, ::arrow::ImportRecordBatch(&aligned_data, arrow_schema_));
