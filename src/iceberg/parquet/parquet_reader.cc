@@ -272,7 +272,7 @@ struct ReadContext {
   std::unique_ptr<::arrow::RecordBatchReader> record_batch_reader_;
   // Produces file row positions in lockstep with `record_batch_reader_`. Only set when
   // the projection needs row positions (_pos or inherited _row_id).
-  // TODO: replace with the Arrow C++ row number virtual column once available.
+  // TODO(advancedxy): use Arrow C++'s row number virtual column once available.
   std::unique_ptr<RowNumberReader> row_number_reader_;
 };
 

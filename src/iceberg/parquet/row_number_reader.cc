@@ -51,7 +51,7 @@ Result<std::unique_ptr<RowNumberReader>> RowNumberReader::Make(
                              num_row_groups);
     }
     if (offsets[row_group] != offsets[row_group + 1]) {
-      ranges.push_back({offsets[row_group], offsets[row_group + 1]});
+      ranges.push_back({.start = offsets[row_group], .end = offsets[row_group + 1]});
     }
   }
 

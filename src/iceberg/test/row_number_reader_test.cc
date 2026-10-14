@@ -189,7 +189,7 @@ TEST(RowNumberReaderTest, AllocationFailureDoesNotAdvance) {
   ASSERT_NO_FATAL_FAILURE(VerifyNextBatch(*reader, 128, expected));
   // The last row group was only partially consumed by the successful retry.
   expected.resize(63);
-  std::iota(expected.begin(), expected.end(), 193);
+  std::ranges::iota(expected, 193);
   ASSERT_NO_FATAL_FAILURE(VerifyNextBatch(*reader, 128, expected));
   ASSERT_NO_FATAL_FAILURE(VerifyNextBatch(*reader, 1, {}));
 }
