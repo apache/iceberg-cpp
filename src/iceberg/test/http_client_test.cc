@@ -135,16 +135,13 @@ TEST(HttpClientTest, GetFailsWhenItsTransferFails) {
     ASSERT_NO_FATAL_FAILURE(Listen(listener));
     const auto url = std::format("http://127.0.0.1:{}/v1/config", listener.port);
 
+    HttpClient client;
+    auto session = auth::AuthSession::MakeDefault({});
     std::thread server(
         [&] { ServeOnce(listener.fd, test_case.response, test_case.end); });
-    // Destroy the client before the join, so no pooled connection lingers.
-    auto response = [&] {
-      HttpClient client;
-      auto session = auth::AuthSession::MakeDefault({});
-      return client.Get(url, /*params=*/{}, /*headers=*/{},
-                        *DefaultErrorHandler::Instance(), *session,
-                        std::chrono::milliseconds(500));
-    }();
+    auto response =
+        client.Get(url, /*params=*/{}, /*headers=*/{}, *DefaultErrorHandler::Instance(),
+                   *session, std::chrono::milliseconds(500));
     server.join();
     EXPECT_THAT(response, IsError(ErrorKind::kIOError));
     EXPECT_THAT(response, HasErrorMessage(test_case.error));
@@ -163,13 +160,12 @@ TEST(HttpClientTest, PostKeepsASuccessfulStatusWhenTheTransferBreaks) {
   ASSERT_NO_FATAL_FAILURE(Listen(listener));
   const auto url = std::format("http://127.0.0.1:{}/v1/commit", listener.port);
 
+  // Outlives the response, which keeps a curl handle in its connection pool.
+  HttpClient client;
+  auto session = auth::AuthSession::MakeDefault({});
   std::thread server([&] { ServeOnce(listener.fd, response_bytes, /*end=*/true); });
-  auto response = [&] {
-    HttpClient client;
-    auto session = auth::AuthSession::MakeDefault({});
-    return client.Post(url, "{}", /*headers=*/{}, *DefaultErrorHandler::Instance(),
-                       *session);
-  }();
+  auto response =
+      client.Post(url, "{}", /*headers=*/{}, *DefaultErrorHandler::Instance(), *session);
   server.join();
   ASSERT_THAT(response, IsOk());
   EXPECT_EQ(response->body(), kBody);
