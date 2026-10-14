@@ -242,9 +242,8 @@ TEST(SchemaUtilTest, ProjectMissingFieldWithWriteDefault) {
                   std::make_shared<const Literal>(Literal::Int(7))),
   });
 
-  auto projection_result = Project(
-      expected_schema, source_schema, /*prune_source=*/false,
-      ProjectionOptions{.default_policy = ProjectionOptions::DefaultPolicy::kWrite});
+  auto projection_result = Project(expected_schema, source_schema, /*prune_source=*/false,
+                                   ProjectionMode::kWrite);
   ASSERT_THAT(projection_result, IsOk());
 
   const auto& projection = *projection_result;
@@ -264,9 +263,8 @@ TEST(SchemaUtilTest, ProjectWritePolicyIgnoresInitialDefault) {
                   /*doc=*/{}, std::make_shared<const Literal>(Literal::String("n/a"))),
   });
 
-  auto projection_result = Project(
-      expected_schema, source_schema, /*prune_source=*/false,
-      ProjectionOptions{.default_policy = ProjectionOptions::DefaultPolicy::kWrite});
+  auto projection_result = Project(expected_schema, source_schema, /*prune_source=*/false,
+                                   ProjectionMode::kWrite);
   ASSERT_THAT(projection_result, IsOk());
   ASSERT_EQ(projection_result->fields[1].kind, FieldProjection::Kind::kNull);
 }
@@ -278,9 +276,8 @@ TEST(SchemaUtilTest, ProjectWritePolicyRejectsMissingRequired) {
       SchemaField::MakeRequired(/*field_id=*/10, "extra", iceberg::string()),
   });
 
-  auto projection_result = Project(
-      expected_schema, source_schema, /*prune_source=*/false,
-      ProjectionOptions{.default_policy = ProjectionOptions::DefaultPolicy::kWrite});
+  auto projection_result = Project(expected_schema, source_schema, /*prune_source=*/false,
+                                   ProjectionMode::kWrite);
   ASSERT_THAT(projection_result, IsError(ErrorKind::kInvalidSchema));
   ASSERT_THAT(projection_result, HasErrorMessage("without a write-default"));
 }
@@ -294,10 +291,8 @@ TEST(SchemaUtilTest, ProjectWritePolicyUnknownSourceProducesNull) {
                   std::make_shared<const Literal>(Literal::Int(7))),
   });
 
-  auto write_projection = Project(
-      expected_schema, source_schema, /*prune_source=*/false,
-      ProjectionOptions{.default_policy = ProjectionOptions::DefaultPolicy::kWrite,
-                        .allow_type_promotion = false});
+  auto write_projection = Project(expected_schema, source_schema, /*prune_source=*/false,
+                                  ProjectionMode::kWrite);
   ASSERT_THAT(write_projection, IsOk());
   ASSERT_EQ(write_projection->fields.size(), 1);
   // A supplied null stays null, even when the field has a write-default.
@@ -309,14 +304,14 @@ TEST(SchemaUtilTest, ProjectWritePolicyUnknownSourceProducesNull) {
   AssertProjectedField(read_projection->fields[0], 0);
 }
 
-TEST(SchemaUtilTest, ProjectWithoutTypePromotion) {
+TEST(SchemaUtilTest, ProjectWriteRejectsTypePromotion) {
   Schema source_schema(
       {SchemaField::MakeRequired(/*field_id=*/1, "id", iceberg::int32())});
   Schema expected_schema(
       {SchemaField::MakeRequired(/*field_id=*/1, "id", iceberg::int64())});
 
   auto projection_result = Project(expected_schema, source_schema, /*prune_source=*/false,
-                                   ProjectionOptions{.allow_type_promotion = false});
+                                   ProjectionMode::kWrite);
   ASSERT_THAT(projection_result, IsError(ErrorKind::kNotSupported));
   ASSERT_THAT(projection_result, HasErrorMessage("type promotion is not allowed"));
 }

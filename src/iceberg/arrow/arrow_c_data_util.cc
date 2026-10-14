@@ -149,7 +149,6 @@ Result<std::shared_ptr<::arrow::Schema>> ImportIcebergSchema(const Schema& schem
   ICEBERG_RETURN_UNEXPECTED(ToArrowSchema(schema, &c_schema));
   internal::ArrowSchemaGuard c_schema_guard(&c_schema);
   ICEBERG_ARROW_ASSIGN_OR_RETURN(auto arrow_schema, ::arrow::ImportSchema(&c_schema));
-  c_schema_guard.Release();
   return arrow_schema;
 }
 
@@ -271,17 +270,13 @@ Result<ArrowArray> AlignBatchForWrite(ArrowArray* input_batch, const Schema& inp
   ICEBERG_ARROW_ASSIGN_OR_RETURN(
       auto input_record_batch,
       ::arrow::ImportRecordBatch(input_batch, input_arrow_schema));
-  input_guard.Release();
 
   ICEBERG_ASSIGN_OR_RAISE(auto write_arrow_schema, ImportIcebergSchema(write_schema));
 
   ICEBERG_RETURN_UNEXPECTED(RejectUnknownInputFields(input_schema, write_schema));
-  ICEBERG_ASSIGN_OR_RAISE(
-      auto projection,
-      Project(
-          write_schema, input_schema, /*prune_source=*/false,
-          ProjectionOptions{.default_policy = ProjectionOptions::DefaultPolicy::kWrite,
-                            .allow_type_promotion = false}));
+  ICEBERG_ASSIGN_OR_RAISE(auto projection,
+                          Project(write_schema, input_schema, /*prune_source=*/false,
+                                  ProjectionMode::kWrite));
   ICEBERG_ASSIGN_OR_RAISE(
       auto columns,
       MaterializeProjection(projection.fields, input_record_batch->columns(),

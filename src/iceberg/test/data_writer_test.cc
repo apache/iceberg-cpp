@@ -167,7 +167,6 @@ TEST_P(DataWriterFormatTest, WriteRowLineage) {
       .format = format,
       .io = file_io_,
       .properties = FormatProperties(format),
-      .input_schema = schema,
   };
 
   ICEBERG_UNWRAP_OR_FAIL(auto writer, DataWriter::Make(options));

@@ -35,8 +35,7 @@ namespace iceberg {
 
 namespace {
 
-Status ValidateSchemaEvolution(const Type& expected_type, const Type& source_type,
-                               bool allow_type_promotion) {
+Status ValidateSchemaEvolution(const Type& expected_type, const Type& source_type) {
   if (expected_type.is_nested()) {
     // Nested type requires identical type ids but their sub-fields are checked
     // recursively and individually.
@@ -52,10 +51,6 @@ Status ValidateSchemaEvolution(const Type& expected_type, const Type& source_typ
   }
   if (source_type.type_id() == TypeId::kUnknown && expected_type.is_primitive()) {
     return {};
-  }
-  if (!allow_type_promotion) {
-    return NotSupported("Cannot project {} as {}: type promotion is not allowed",
-                        source_type, expected_type);
   }
 
   switch (expected_type.type_id()) {
@@ -88,13 +83,11 @@ Status ValidateSchemaEvolution(const Type& expected_type, const Type& source_typ
 }
 
 Result<FieldProjection> ProjectNested(const Type& expected_type, const Type& source_type,
-                                      bool prune_source,
-                                      const ProjectionOptions& options);
+                                      bool prune_source, ProjectionMode mode);
 
 Result<FieldProjection> ProjectField(const SchemaField& expected_field,
                                      const SchemaField& source_field, size_t source_index,
-                                     bool prune_source,
-                                     const ProjectionOptions& options) {
+                                     bool prune_source, ProjectionMode mode) {
   FieldProjection projection;
 
   if (expected_field.type()->type_id() == TypeId::kUnknown) {
@@ -111,9 +104,7 @@ Result<FieldProjection> ProjectField(const SchemaField& expected_field,
                          expected_field.field_id());
   }
   if (source_field.type()->type_id() == TypeId::kUnknown &&
-      (expected_field.type()->is_nested() ||
-       (options.default_policy == ProjectionOptions::DefaultPolicy::kWrite &&
-        expected_field.type()->is_primitive()))) {
+      (expected_field.type()->is_nested() || mode == ProjectionMode::kWrite)) {
     // The write path must materialize nulls with the expected type rather than copy
     // the source's unknown array into a differently typed column.
     projection.kind = FieldProjection::Kind::kNull;
@@ -121,12 +112,17 @@ Result<FieldProjection> ProjectField(const SchemaField& expected_field,
   }
 
   if (expected_field.type()->is_nested()) {
-    ICEBERG_ASSIGN_OR_RAISE(projection,
-                            ProjectNested(*expected_field.type(), *source_field.type(),
-                                          prune_source, options));
+    ICEBERG_ASSIGN_OR_RAISE(
+        projection,
+        ProjectNested(*expected_field.type(), *source_field.type(), prune_source, mode));
+  } else if (mode == ProjectionMode::kWrite) {
+    if (*expected_field.type() != *source_field.type()) {
+      return NotSupported("Cannot project {} as {}: type promotion is not allowed",
+                          *source_field.type(), *expected_field.type());
+    }
   } else {
-    ICEBERG_RETURN_UNEXPECTED(ValidateSchemaEvolution(
-        *expected_field.type(), *source_field.type(), options.allow_type_promotion));
+    ICEBERG_RETURN_UNEXPECTED(
+        ValidateSchemaEvolution(*expected_field.type(), *source_field.type()));
   }
 
   // If `prune_source` is false, all fields will be read so the local index is exactly
@@ -138,8 +134,7 @@ Result<FieldProjection> ProjectField(const SchemaField& expected_field,
 }
 
 Result<FieldProjection> ProjectNested(const Type& expected_type, const Type& source_type,
-                                      bool prune_source,
-                                      const ProjectionOptions& options) {
+                                      bool prune_source, ProjectionMode mode) {
   if (!expected_type.is_nested()) {
     return InvalidSchema("Expected a nested type, but got {}", expected_type);
   }
@@ -179,16 +174,14 @@ Result<FieldProjection> ProjectNested(const Type& expected_type, const Type& sou
     FieldProjection child_projection;
 
     if (auto iter = source_field_map.find(field_id); iter != source_field_map.cend()) {
-      ICEBERG_ASSIGN_OR_RAISE(
-          child_projection,
-          ProjectField(expected_field, *iter->second.field, iter->second.local_index,
-                       prune_source, options));
+      ICEBERG_ASSIGN_OR_RAISE(child_projection,
+                              ProjectField(expected_field, *iter->second.field,
+                                           iter->second.local_index, prune_source, mode));
     } else if (MetadataColumns::IsMetadataColumn(field_id)) {
       child_projection.kind = FieldProjection::Kind::kMetadata;
-    } else if (const auto& default_value =
-                   options.default_policy == ProjectionOptions::DefaultPolicy::kWrite
-                       ? expected_field.write_default()
-                       : expected_field.initial_default();
+    } else if (const auto& default_value = mode == ProjectionMode::kWrite
+                                               ? expected_field.write_default()
+                                               : expected_field.initial_default();
                default_value != nullptr) {
       child_projection.kind = FieldProjection::Kind::kDefault;
       child_projection.from = *default_value;
@@ -196,7 +189,7 @@ Result<FieldProjection> ProjectNested(const Type& expected_type, const Type& sou
       child_projection.kind = FieldProjection::Kind::kNull;
     } else {
       // TODO(gangwu): support constant value
-      if (options.default_policy == ProjectionOptions::DefaultPolicy::kWrite) {
+      if (mode == ProjectionMode::kWrite) {
         return InvalidSchema("Missing required field: {} without a write-default",
                              expected_field.ToString());
       }
@@ -216,10 +209,10 @@ Result<FieldProjection> ProjectNested(const Type& expected_type, const Type& sou
 
 Result<SchemaProjection> Project(const Schema& expected_schema,
                                  const Schema& source_schema, bool prune_source,
-                                 const ProjectionOptions& options) {
+                                 ProjectionMode mode) {
   ICEBERG_ASSIGN_OR_RAISE(
       auto field_projection,
-      ProjectNested(expected_schema, source_schema, prune_source, options));
+      ProjectNested(expected_schema, source_schema, prune_source, mode));
   return SchemaProjection{std::move(field_projection.children)};
 }
 
