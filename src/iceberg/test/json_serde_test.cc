@@ -1882,6 +1882,16 @@ TEST_F(FileScanTaskJsonTest, RejectsInvalidRanges) {
   }
 }
 
+TEST_F(FileScanTaskJsonTest, RejectsSplitOutsideChangedDataFile) {
+  auto data_file = std::make_shared<DataFile>(DataFileForTask());
+  ICEBERG_UNWRAP_OR_FAIL(auto split, FileScanTask::MakeSplit(data_file, 4, 6));
+  data_file->file_size_in_bytes = 9;
+
+  auto result = ToJson(*split, specs_, schema_);
+  EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
+  EXPECT_THAT(result, HasErrorMessage("Invalid FileScanTask range"));
+}
+
 TEST_F(FileScanTaskJsonTest, RoundTripsEmptyWholeFile) {
   auto json = JavaGolden();
   json["data-file"]["file-size-in-bytes"] = 0;

@@ -2408,6 +2408,13 @@ Result<nlohmann::json> ToJson(
   if (task.data_file()->content != DataFile::Content::kData) {
     return ValidationFailed("FileScanTask data-file must have data content");
   }
+  // The shared data file may have changed size; don't write an invalid range.
+  auto range_result =
+      FileScanTask::MakeSplit(task.data_file(), task.start(), task.length());
+  if (!range_result) {
+    return ValidationFailed("Invalid FileScanTask range: {}",
+                            range_result.error().message);
+  }
 
   nlohmann::json json;
   json[kTaskType] = kFileScanTaskType;
