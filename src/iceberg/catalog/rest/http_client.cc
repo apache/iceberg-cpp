@@ -146,15 +146,26 @@ ErrorResponse BuildDefaultErrorResponse(const cpr::Response& response) {
   };
 }
 
+/// \brief Fails a GET whose transfer failed, even after a success status.
+///
+/// Not for writes: one may have taken effect, and a failed commit's files are
+/// cleaned up.
+Status CheckGetTransfer(const cpr::Response& response) {
+  if (response.error.code == cpr::ErrorCode::OPERATION_TIMEDOUT) {
+    return IOError("HTTP request timed out: {}", response.error.message);
+  }
+  if (response.error && IsSuccessful(response.status_code)) {
+    return IOError("HTTP request failed after status {}: {}", response.status_code,
+                   response.error.message);
+  }
+  return {};
+}
+
 /// \brief Handles failure responses by invoking the provided error handler.
 Status HandleFailureResponse(const cpr::Response& response,
                              const ErrorHandler& error_handler) {
   if (IsSuccessful(response.status_code)) {
     return {};
-  }
-  // No response to hand the error handler.
-  if (response.error.code == cpr::ErrorCode::OPERATION_TIMEDOUT) {
-    return IOError("HTTP request timed out: {}", response.error.message);
   }
   auto parse_result = error_handler.ParseResponse(
       static_cast<uint32_t>(response.status_code), response.text);
@@ -191,6 +202,7 @@ Result<HttpResponse> HttpClient::Get(
       cpr::Get(cpr::Url{authenticated.url}, ToCprHeader(authenticated), *connection_pool_,
                cpr::Timeout{timeout.value_or(std::chrono::milliseconds::zero())});
 
+  ICEBERG_RETURN_UNEXPECTED(CheckGetTransfer(response));
   ICEBERG_RETURN_UNEXPECTED(HandleFailureResponse(response, error_handler));
   HttpResponse http_response;
   http_response.impl_ = std::make_unique<HttpResponse::Impl>(std::move(response));

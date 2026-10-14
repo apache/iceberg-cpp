@@ -937,6 +937,14 @@ endif()
 
 if(ICEBERG_BUILD_BUNDLE)
   resolve_arrow_dependency()
+  # An installed Arrow does not export its bundled AWS SDK, which the S3 FileIO
+  # uses directly. Use the system SDK, which must match Arrow's.
+  if(ICEBERG_AWSSDK_BUNDLED AND NOT ARROW_VENDORED)
+    message(STATUS "Using the system AWS SDK, since Arrow is provided")
+    set(ICEBERG_AWSSDK_BUNDLED FALSE)
+    set(ICEBERG_AWSSDK_COMPONENTS core)
+    resolve_aws_sdk_dependency()
+  endif()
   resolve_avro_dependency()
   resolve_zstd_dependency()
 endif()

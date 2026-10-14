@@ -70,8 +70,7 @@ namespace iceberg::rest {
 
 namespace {
 
-// Bounds a credential refresh, which runs on the path of a file operation. The
-// FileIO keeps its current credentials, or fails once they have expired.
+// A refresh runs inline in file operations and S3 requests, so bound it.
 constexpr auto kLoadCredentialsTimeout = std::chrono::seconds(10);
 
 class RestStorageCredentialProvider final : public StorageCredentialProvider {
