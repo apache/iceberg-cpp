@@ -33,7 +33,6 @@ namespace iceberg {
 class DataWriter::Impl {
  public:
   static Result<std::unique_ptr<Impl>> Make(DataWriterOptions options) {
-    ICEBERG_PRECHECK(options.schema != nullptr, "Write schema must not be null");
     WriterOptions writer_options{
         .path = options.path,
         .schema = options.schema,
