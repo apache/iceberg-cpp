@@ -86,7 +86,9 @@ std::shared_ptr<StructType> ManifestEntryAdapterV3::DataFileType(
 
 Status ManifestEntryAdapterV3::Init() {
   ICEBERG_ASSIGN_OR_RAISE(metadata_["schema"], ToJsonString(*current_schema_))
-  ICEBERG_ASSIGN_OR_RAISE(metadata_["partition-spec"], ToJsonString(*partition_spec_));
+  metadata_["schema-id"] = std::to_string(current_schema_->schema_id());
+  ICEBERG_ASSIGN_OR_RAISE(metadata_["partition-spec"],
+                          PartitionFieldsToJsonString(*partition_spec_));
   metadata_["partition-spec-id"] = std::to_string(partition_spec_->spec_id());
   metadata_["format-version"] = "3";
   metadata_["content"] = content_ == ManifestContent::kData ? "data" : "delete";

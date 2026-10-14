@@ -24,11 +24,13 @@
 #include <unordered_map>
 
 #include <gtest/gtest.h>
+#include <nlohmann/json.hpp>
 
 #include "iceberg/arrow/arrow_io_util.h"
 #include "iceberg/avro/avro_register.h"
 #include "iceberg/constants.h"
 #include "iceberg/file_format.h"
+#include "iceberg/file_reader.h"
 #include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/manifest/manifest_list.h"
 #include "iceberg/manifest/manifest_reader.h"
@@ -623,5 +625,89 @@ TEST_F(ManifestWriterVersionsTest, TestV3ManifestRewriteWithInheritance) {
   CheckRewrittenEntry(entries[0], TableMetadata::kInitialSequenceNumber,
                       DataFile::Content::kData, kFirstRowId);
 }
+
+class ManifestWriterHeaderTest : public ManifestWriterVersionsTest,
+                                 public ::testing::WithParamInterface<int8_t> {
+ protected:
+  /// \brief Write a manifest with a single data file and return the key-value
+  /// metadata stored in the header of the written Avro file.
+  std::unordered_map<std::string, std::string> WriteManifestAndReadHeader(
+      std::shared_ptr<PartitionSpec> spec, std::shared_ptr<Schema> schema,
+      PartitionValues partition) {
+    auto data_file = CreateDataFile(kFirstRowId);
+    data_file->partition = std::move(partition);
+
+    const std::string manifest_path = CreateManifestPath();
+    auto writer_result = ManifestWriter::MakeWriter(
+        GetParam(), kSnapshotId, manifest_path, file_io_, std::move(spec),
+        std::move(schema), ManifestContent::kData, kFirstRowId);
+    EXPECT_THAT(writer_result, IsOk());
+    auto writer = std::move(writer_result.value());
+    EXPECT_THAT(writer->WriteAddedEntry(std::move(data_file)), IsOk());
+    EXPECT_THAT(writer->Close(), IsOk());
+
+    auto manifest_result = writer->ToManifestFile();
+    EXPECT_THAT(manifest_result, IsOk());
+
+    auto reader_result = ReaderFactoryRegistry::Open(
+        FileFormatType::kAvro,
+        {.path = manifest_result->manifest_path,
+         .length = static_cast<size_t>(manifest_result->manifest_length),
+         .io = file_io_,
+         .projection = std::make_shared<Schema>(std::vector<SchemaField>{})});
+    EXPECT_THAT(reader_result, IsOk());
+    auto metadata_result = reader_result.value()->Metadata();
+    EXPECT_THAT(metadata_result, IsOk());
+    return std::move(metadata_result.value());
+  }
+};
+
+TEST_P(ManifestWriterHeaderTest, UnpartitionedManifestHeader) {
+  auto metadata = WriteManifestAndReadHeader(PartitionSpec::Unpartitioned(), schema_,
+                                             PartitionValues{});
+
+  // The header holds only the partition fields array, not the spec object.
+  ASSERT_TRUE(metadata.contains("partition-spec"));
+  EXPECT_EQ(metadata.at("partition-spec"), "[]");
+  EXPECT_EQ(metadata.at("partition-spec-id"), "0");
+
+  // The schema ID is a separate header, not only embedded in the schema JSON. It is
+  // optional in v1 and required in v2 and later; it is always written.
+  ASSERT_TRUE(metadata.contains("schema-id"));
+  EXPECT_EQ(metadata.at("schema-id"), std::to_string(Schema::kInitialSchemaId));
+  EXPECT_EQ(metadata.at("format-version"), std::to_string(GetParam()));
+}
+
+TEST_P(ManifestWriterHeaderTest, PartitionedManifestHeader) {
+  constexpr int32_t kSchemaId = 7;
+  constexpr int32_t kSpecId = 3;
+  auto schema = std::make_shared<Schema>(
+      std::vector<SchemaField>(schema_->fields().begin(), schema_->fields().end()),
+      kSchemaId);
+  ICEBERG_UNWRAP_OR_FAIL(
+      std::shared_ptr<PartitionSpec> spec,
+      PartitionSpec::Make(kSpecId,
+                          {PartitionField(3, 1000, "category", Transform::Identity()),
+                           PartitionField(2, 1001, "timestamp_hour", Transform::Hour()),
+                           PartitionField(1, 1002, "id_bucket", Transform::Bucket(16))}));
+
+  auto metadata = WriteManifestAndReadHeader(spec, schema, kPartition);
+
+  ASSERT_TRUE(metadata.contains("partition-spec"));
+  auto partition_fields = nlohmann::json::parse(metadata.at("partition-spec"));
+  EXPECT_EQ(partition_fields, R"([
+    {"name": "category", "transform": "identity", "source-id": 3, "field-id": 1000},
+    {"name": "timestamp_hour", "transform": "hour", "source-id": 2, "field-id": 1001},
+    {"name": "id_bucket", "transform": "bucket[16]", "source-id": 1, "field-id": 1002}
+  ])"_json);
+  EXPECT_EQ(metadata.at("partition-spec-id"), std::to_string(kSpecId));
+
+  ASSERT_TRUE(metadata.contains("schema-id"));
+  EXPECT_EQ(metadata.at("schema-id"), std::to_string(kSchemaId));
+  EXPECT_EQ(nlohmann::json::parse(metadata.at("schema"))["schema-id"], kSchemaId);
+}
+
+INSTANTIATE_TEST_SUITE_P(ManifestWriterHeaderVersions, ManifestWriterHeaderTest,
+                         ::testing::Values(1, 2, 3));
 
 }  // namespace iceberg

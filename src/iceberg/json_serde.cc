@@ -1013,15 +1013,22 @@ nlohmann::json ToJson(const PartitionField& partition_field) {
   return json;
 }
 
-nlohmann::json ToJson(const PartitionSpec& partition_spec) {
-  nlohmann::json json;
-  json[kSpecId] = partition_spec.spec_id();
-
+nlohmann::json PartitionFieldsToJson(const PartitionSpec& partition_spec) {
   nlohmann::json fields_json = nlohmann::json::array();
   for (const auto& field : partition_spec.fields()) {
     fields_json.push_back(ToJson(field));
   }
-  json[kFields] = fields_json;
+  return fields_json;
+}
+
+Result<std::string> PartitionFieldsToJsonString(const PartitionSpec& partition_spec) {
+  return ToJsonString(PartitionFieldsToJson(partition_spec));
+}
+
+nlohmann::json ToJson(const PartitionSpec& partition_spec) {
+  nlohmann::json json;
+  json[kSpecId] = partition_spec.spec_id();
+  json[kFields] = PartitionFieldsToJson(partition_spec);
   return json;
 }
 

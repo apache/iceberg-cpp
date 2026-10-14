@@ -158,6 +158,25 @@ ICEBERG_EXPORT nlohmann::json ToJson(const PartitionField& partition_field);
 ICEBERG_EXPORT Result<std::unique_ptr<PartitionField>> PartitionFieldFromJson(
     const nlohmann::json& json, bool allow_field_id_missing = false);
 
+/// \brief Serializes only the fields of a `PartitionSpec` to a JSON array.
+///
+/// Unlike `ToJson(PartitionSpec)`, the result does not include the spec ID. This is
+/// the representation required for the `partition-spec` key-value metadata of manifest
+/// files. Each `PartitionField` is serialized as described in the
+/// `ToJson(PartitionField)` function.
+///
+/// \param partition_spec The `PartitionSpec` whose fields are to be serialized.
+/// \return A JSON array of the `PartitionField` objects of the `PartitionSpec`.
+ICEBERG_EXPORT nlohmann::json PartitionFieldsToJson(const PartitionSpec& partition_spec);
+
+/// \brief Serializes only the fields of a `PartitionSpec` to a JSON array string.
+///
+/// \param partition_spec The `PartitionSpec` whose fields are to be serialized.
+/// \return A JSON array string of the `PartitionField` objects of the
+/// `PartitionSpec`, as described in `PartitionFieldsToJson(PartitionSpec)`.
+ICEBERG_EXPORT Result<std::string> PartitionFieldsToJsonString(
+    const PartitionSpec& partition_spec);
+
 /// \brief Serializes a `PartitionSpec` object to JSON.
 ///
 /// This function converts a `PartitionSpec` object into a JSON representation.

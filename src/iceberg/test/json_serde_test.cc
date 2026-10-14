@@ -366,6 +366,27 @@ TEST(JsonInternalTest, PartitionSpec) {
   EXPECT_EQ(*spec, *parsed_spec_result.value());
 }
 
+TEST(JsonInternalTest, PartitionFieldsToJson) {
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto spec,
+      PartitionSpec::Make(1, {PartitionField(3, 101, "region", Transform::Identity()),
+                              PartitionField(5, 102, "ts_day", Transform::Day())}));
+  nlohmann::json expected_fields = R"([
+    {"source-id": 3, "field-id": 101, "transform": "identity", "name": "region"},
+    {"source-id": 5, "field-id": 102, "transform": "day", "name": "ts_day"}
+  ])"_json;
+
+  // Only the fields array, as used for the manifest `partition-spec` metadata.
+  EXPECT_EQ(PartitionFieldsToJson(*spec), expected_fields);
+  EXPECT_EQ(PartitionFieldsToJson(*PartitionSpec::Unpartitioned()),
+            nlohmann::json::array());
+
+  // The general serializer still produces the full spec object.
+  EXPECT_EQ(ToJson(*spec), nlohmann::json({{"spec-id", 1}, {"fields", expected_fields}}));
+  EXPECT_EQ(ToJson(*PartitionSpec::Unpartitioned()),
+            R"({"spec-id": 0, "fields": []})"_json);
+}
+
 TEST(JsonInternalTest, SortOrderFromJson) {
   auto identity_transform = Transform::Identity();
   SortField st1(5, identity_transform, SortDirection::kAscending, NullOrder::kFirst);
