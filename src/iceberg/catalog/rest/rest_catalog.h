@@ -32,6 +32,7 @@
 #include "iceberg/catalog/rest/type_fwd.h"
 #include "iceberg/catalog/session_catalog.h"
 #include "iceberg/catalog/session_context.h"
+#include "iceberg/labels.h"
 #include "iceberg/result.h"
 #include "iceberg/storage_credential.h"
 #include "iceberg/type_fwd.h"
@@ -214,7 +215,8 @@ class ICEBERG_REST_EXPORT RestCatalog final
       std::string metadata_location, std::shared_ptr<FileIO> table_io,
       std::shared_ptr<Catalog> table_catalog, std::shared_ptr<MetricsReporter> reporter,
       const std::unordered_map<std::string, std::string>& table_config,
-      std::shared_ptr<auth::AuthSession> table_session, Labels labels = {});
+      std::shared_ptr<auth::AuthSession> table_session,
+      std::unique_ptr<Labels> labels = nullptr);
 
   RestCatalogProperties config_;
   std::shared_ptr<FileIO> file_io_;

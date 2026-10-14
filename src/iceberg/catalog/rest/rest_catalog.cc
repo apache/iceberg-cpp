@@ -47,6 +47,7 @@
 #include "iceberg/catalog/rest/rest_util.h"
 #include "iceberg/catalog/rest/types.h"
 #include "iceberg/json_serde_internal.h"
+#include "iceberg/labels.h"
 #include "iceberg/logging/log_level.h"
 #include "iceberg/logging/log_macros.h"
 #include "iceberg/logging/logger.h"
@@ -984,6 +985,11 @@ Result<std::shared_ptr<Table>> RestCatalog::MakeTableFromLoadResult(
     std::shared_ptr<auth::AuthSession> contextual_session) {
   auto table_config = std::move(result.config);
   auto storage_credentials = std::move(result.storage_credentials);
+  // Labels are usually absent; keep the table free of an empty Labels allocation.
+  std::unique_ptr<Labels> labels;
+  if (!result.labels.empty()) {
+    labels = std::make_unique<Labels>(std::move(result.labels));
+  }
   // Before the FileIO: refreshing its credentials reuses the table session.
   ICEBERG_ASSIGN_OR_RAISE(
       auto table_session,
@@ -997,7 +1003,7 @@ Result<std::shared_ptr<Table>> RestCatalog::MakeTableFromLoadResult(
   return MakeTable(identifier, std::move(result.metadata),
                    std::move(result.metadata_location), std::move(table_io),
                    std::move(table_catalog), std::move(reporter), table_config,
-                   std::move(table_session), std::move(result.labels));
+                   std::move(table_session), std::move(labels));
 }
 
 Result<std::shared_ptr<Table>> RestCatalog::MakeTableFromCommitResponse(
@@ -1012,7 +1018,7 @@ Result<std::shared_ptr<Table>> RestCatalog::MakeTableFromCommitResponse(
   return MakeTable(identifier, std::move(response.metadata),
                    std::move(response.metadata_location), std::move(table_io),
                    std::move(table_catalog), std::move(reporter), table_config,
-                   std::move(table_session));
+                   std::move(table_session), /*labels=*/nullptr);
 }
 
 Result<std::shared_ptr<Table>> RestCatalog::MakeTable(
@@ -1020,7 +1026,7 @@ Result<std::shared_ptr<Table>> RestCatalog::MakeTable(
     std::string metadata_location, std::shared_ptr<FileIO> table_io,
     std::shared_ptr<Catalog> table_catalog, std::shared_ptr<MetricsReporter> reporter,
     const std::unordered_map<std::string, std::string>& table_config,
-    std::shared_ptr<auth::AuthSession> table_session, Labels labels) {
+    std::shared_ptr<auth::AuthSession> table_session, std::unique_ptr<Labels> labels) {
   // Table config overrides client config.
   ICEBERG_ASSIGN_OR_RAISE(auto server_mode,
                           RestCatalogProperties::ScanPlanningModeFrom(table_config));

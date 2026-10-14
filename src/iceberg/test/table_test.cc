@@ -150,12 +150,6 @@ TYPED_TEST(TypedTableTest, NewTransaction) {
   }
 }
 
-TYPED_TEST(TypedTableTest, LabelsDefaultToEmpty) {
-  ICEBERG_UNWRAP_OR_FAIL(auto table, this->MakeTable("test_table"));
-
-  EXPECT_TRUE(table->labels().empty());
-}
-
 class TableLabelsTest : public ::testing::Test {
  protected:
   void SetUp() override {
@@ -176,29 +170,6 @@ class TableLabelsTest : public ::testing::Test {
   std::shared_ptr<TableMetadata> metadata_;
 };
 
-TEST_F(TableLabelsTest, EmptyLabelsShareFallback) {
-  ICEBERG_UNWRAP_OR_FAIL(
-      auto first, Table::Make(ident_, metadata_, "s3://bucket/meta.json", io_, catalog_));
-  ICEBERG_UNWRAP_OR_FAIL(
-      auto second, Table::Make(ident_, metadata_, "s3://bucket/meta.json", io_, catalog_,
-                               /*full_name=*/"", /*reporter=*/nullptr, Labels{}));
-
-  EXPECT_TRUE(first->labels().empty());
-  EXPECT_TRUE(second->labels().empty());
-  EXPECT_EQ(&first->labels(), &second->labels());
-}
-
-TEST_F(TableLabelsTest, ExposesProvidedLabels) {
-  for (const auto& labels : {labels_, Labels{.object_labels = {{"owner", "team-a"}}},
-                             Labels{.fields = {{.field_id = 1}}}}) {
-    ICEBERG_UNWRAP_OR_FAIL(
-        auto table, Table::Make(ident_, metadata_, "s3://bucket/meta.json", io_, catalog_,
-                                /*full_name=*/"", /*reporter=*/nullptr, labels));
-
-    EXPECT_EQ(table->labels(), labels);
-  }
-}
-
 class TableLabelsRefreshTest : public TableLabelsTest,
                                public ::testing::WithParamInterface<bool> {};
 
@@ -212,11 +183,14 @@ TEST_P(TableLabelsRefreshTest, RefreshKeepsLabels) {
     SCOPED_TRACE(refreshed_labels.empty() ? "Absent labels" : "Changed labels");
     ICEBERG_UNWRAP_OR_FAIL(
         auto table, Table::Make(ident_, metadata_, "s3://bucket/meta.json", io_, catalog_,
-                                /*full_name=*/"", /*reporter=*/nullptr, labels_));
+                                /*full_name=*/"", /*reporter=*/nullptr,
+                                std::make_unique<Labels>(labels_)));
     ICEBERG_UNWRAP_OR_FAIL(
-        auto refreshed,
-        Table::Make(ident_, metadata_, metadata_location, io_, catalog_,
-                    /*full_name=*/"", /*reporter=*/nullptr, refreshed_labels));
+        auto refreshed, Table::Make(ident_, metadata_, metadata_location, io_, catalog_,
+                                    /*full_name=*/"", /*reporter=*/nullptr,
+                                    refreshed_labels.empty()
+                                        ? nullptr
+                                        : std::make_unique<Labels>(refreshed_labels)));
     EXPECT_CALL(*catalog_, LoadTable(::testing::_))
         .WillOnce(::testing::Return(refreshed));
 
@@ -235,7 +209,8 @@ INSTANTIATE_TEST_SUITE_P(MetadataLocation, TableLabelsRefreshTest, ::testing::Bo
 TEST_F(TableLabelsTest, EmptyTransactionKeepsLabels) {
   ICEBERG_UNWRAP_OR_FAIL(
       auto table, Table::Make(ident_, metadata_, "s3://bucket/meta.json", io_, catalog_,
-                              /*full_name=*/"", /*reporter=*/nullptr, labels_));
+                              /*full_name=*/"", /*reporter=*/nullptr,
+                              std::make_unique<Labels>(labels_)));
   EXPECT_CALL(*catalog_, UpdateTable(::testing::_, ::testing::_, ::testing::_)).Times(0);
   ICEBERG_UNWRAP_OR_FAIL(auto transaction, table->NewTransaction());
   ICEBERG_UNWRAP_OR_FAIL(auto committed, transaction->Commit());

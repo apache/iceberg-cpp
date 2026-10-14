@@ -51,12 +51,13 @@ class ICEBERG_EXPORT Table : public std::enable_shared_from_this<Table> {
   ///            string representation of identifier when empty.
   /// \param[in] reporter Optional metrics reporter for this table. Defaults to nullptr
   ///            (noop).
-  /// \param[in] labels Catalog-provided labels for this table. Defaults to empty.
+  /// \param[in] labels Labels for this table, or nullptr when it has none.
   static Result<std::shared_ptr<Table>> Make(
       TableIdentifier identifier, std::shared_ptr<TableMetadata> metadata,
       std::string metadata_location, std::shared_ptr<FileIO> io,
       std::shared_ptr<Catalog> catalog, std::string full_name = "",
-      std::shared_ptr<MetricsReporter> reporter = nullptr, Labels labels = {});
+      std::shared_ptr<MetricsReporter> reporter = nullptr,
+      std::unique_ptr<Labels> labels = nullptr);
 
   virtual ~Table();
 
@@ -224,7 +225,8 @@ class ICEBERG_EXPORT Table : public std::enable_shared_from_this<Table> {
   Table(TableIdentifier identifier, std::shared_ptr<TableMetadata> metadata,
         std::string metadata_location, std::shared_ptr<FileIO> io,
         std::shared_ptr<Catalog> catalog, std::string full_name,
-        std::shared_ptr<MetricsReporter> reporter = nullptr, Labels labels = {});
+        std::shared_ptr<MetricsReporter> reporter = nullptr,
+        std::unique_ptr<Labels> labels = nullptr);
 
   const TableIdentifier identifier_;
   const std::string full_name_;

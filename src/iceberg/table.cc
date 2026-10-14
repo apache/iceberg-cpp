@@ -25,6 +25,7 @@
 #include "iceberg/data_table_scan.h"
 #include "iceberg/incremental_append_scan.h"
 #include "iceberg/incremental_changelog_scan.h"
+#include "iceberg/labels.h"
 #include "iceberg/location_provider.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/result.h"
@@ -60,7 +61,7 @@ Result<std::shared_ptr<Table>> Table::Make(
     TableIdentifier identifier, std::shared_ptr<TableMetadata> metadata,
     std::string metadata_location, std::shared_ptr<FileIO> io,
     std::shared_ptr<Catalog> catalog, std::string full_name,
-    std::shared_ptr<MetricsReporter> reporter, Labels labels) {
+    std::shared_ptr<MetricsReporter> reporter, std::unique_ptr<Labels> labels) {
   if (metadata == nullptr) [[unlikely]] {
     return InvalidArgument("Metadata cannot be null");
   }
@@ -84,7 +85,7 @@ Table::~Table() = default;
 Table::Table(TableIdentifier identifier, std::shared_ptr<TableMetadata> metadata,
              std::string metadata_location, std::shared_ptr<FileIO> io,
              std::shared_ptr<Catalog> catalog, std::string full_name,
-             std::shared_ptr<MetricsReporter> reporter, Labels labels)
+             std::shared_ptr<MetricsReporter> reporter, std::unique_ptr<Labels> labels)
     : identifier_(std::move(identifier)),
       full_name_(full_name.empty() ? identifier_.ToString() : std::move(full_name)),
       metadata_(std::move(metadata)),
@@ -93,8 +94,7 @@ Table::Table(TableIdentifier identifier, std::shared_ptr<TableMetadata> metadata
       catalog_(std::move(catalog)),
       reporter_(std::move(reporter)),
       metadata_cache_(std::make_unique<TableMetadataCache>(metadata_.get())),
-      labels_(labels.empty() ? nullptr
-                             : std::make_unique<const Labels>(std::move(labels))) {}
+      labels_(labels && !labels->empty() ? std::move(labels) : nullptr) {}
 
 const std::string& Table::uuid() const { return metadata_->table_uuid; }
 
@@ -308,9 +308,10 @@ Result<std::shared_ptr<StagedTable>> StagedTable::Make(
   if (catalog == nullptr) [[unlikely]] {
     return InvalidArgument("Catalog cannot be null");
   }
-  return std::shared_ptr<StagedTable>(new StagedTable(
-      std::move(identifier), std::move(metadata), std::move(metadata_location),
-      std::move(io), std::move(catalog), std::move(full_name), std::move(reporter)));
+  return std::shared_ptr<StagedTable>(
+      new StagedTable(std::move(identifier), std::move(metadata),
+                      std::move(metadata_location), std::move(io), std::move(catalog),
+                      std::move(full_name), std::move(reporter), /*labels=*/nullptr));
 }
 
 StagedTable::~StagedTable() = default;
@@ -328,9 +329,10 @@ Result<std::shared_ptr<StaticTable>> StaticTable::Make(
   if (io == nullptr) [[unlikely]] {
     return InvalidArgument("FileIO cannot be null");
   }
-  return std::shared_ptr<StaticTable>(new StaticTable(
-      std::move(identifier), std::move(metadata), std::move(metadata_location),
-      std::move(io), /*catalog=*/nullptr, std::move(full_name)));
+  return std::shared_ptr<StaticTable>(
+      new StaticTable(std::move(identifier), std::move(metadata),
+                      std::move(metadata_location), std::move(io), /*catalog=*/nullptr,
+                      std::move(full_name), /*reporter=*/nullptr, /*labels=*/nullptr));
 }
 
 StaticTable::~StaticTable() = default;
