@@ -23,6 +23,7 @@
 #include <zlib.h>
 
 #include <cstring>
+#include <limits>
 #include <memory>
 #include <string>
 #include <vector>
@@ -111,6 +112,9 @@ class ZlibDeflateImpl {
   }
 
   Result<std::string> Compress(const std::string& data) {
+    if (data.size() > std::numeric_limits<uInt>::max()) {
+      return CompressError("Cannot compress {} bytes in a single gzip pass", data.size());
+    }
     if (!initialized_) {
       ICEBERG_RETURN_UNEXPECTED(Init());
     }
