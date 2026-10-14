@@ -285,11 +285,13 @@ class ParquetWriter::Impl {
   }
 
   Status Write(ArrowArray* array) {
-    ICEBERG_ASSIGN_OR_RAISE(auto aligned_array,
-                            arrow::AlignBatchForWrite(array, *input_schema_, *schema_));
-    internal::ArrowArrayGuard aligned_guard(&aligned_array);
-    ICEBERG_ARROW_ASSIGN_OR_RETURN(
-        auto batch, ::arrow::ImportRecordBatch(&aligned_array, arrow_schema_));
+    internal::ArrowArrayGuard array_guard(array);
+    if (*input_schema_ != *schema_) {
+      ICEBERG_ASSIGN_OR_RAISE(*array,
+                              arrow::AlignBatchForWrite(array, *input_schema_, *schema_));
+    }
+    ICEBERG_ARROW_ASSIGN_OR_RETURN(auto batch,
+                                   ::arrow::ImportRecordBatch(array, arrow_schema_));
 
     ICEBERG_ARROW_ASSIGN_OR_RETURN(auto struct_array, batch->ToStructArray());
     FieldMetricsCollector field_metrics_collector(field_metrics_, *metrics_config_,
