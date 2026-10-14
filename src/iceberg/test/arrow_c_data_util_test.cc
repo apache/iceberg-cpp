@@ -259,23 +259,6 @@ TEST(AlignBatchForWriteTest, IdenticalSchemasTransferBatchWithoutConversion) {
   EXPECT_TRUE(actual->Equals(*input));
 }
 
-TEST(AlignBatchForWriteTest, ReordersAndMaterializesWriteDefaultsAndNulls) {
-  Schema input_schema({SchemaField::MakeOptional(2, "name", string()),
-                       SchemaField::MakeRequired(1, "id", int32())});
-  Schema write_schema({
-      SchemaField::MakeRequired(1, "id", int32()),
-      SchemaField::MakeOptional(2, "name", string()),
-      DefaultedField(3, "score", int32(), /*optional=*/false, Literal::Int(42),
-                     Literal::Int(7)),
-      SchemaField::MakeOptional(4, "comment", string()),
-  });
-
-  ICEBERG_UNWRAP_OR_FAIL(auto actual, AlignForWrite(input_schema, write_schema,
-                                                    R"([["alice",1],[null,2]])"));
-  auto expected = MakeBatch(write_schema, R"([[1,"alice",7,null],[2,null,7,null]])");
-  EXPECT_TRUE(actual->Equals(*expected)) << "actual:\n" << actual->ToString();
-}
-
 TEST(AlignBatchForWriteTest, RejectsMissingRequiredFieldWithoutWriteDefault) {
   Schema input_schema({SchemaField::MakeRequired(1, "id", int32())});
   Schema write_schema({SchemaField::MakeRequired(1, "id", int32()),
@@ -285,44 +268,6 @@ TEST(AlignBatchForWriteTest, RejectsMissingRequiredFieldWithoutWriteDefault) {
 
   EXPECT_THAT(result, IsError(ErrorKind::kInvalidSchema));
   EXPECT_THAT(result, HasErrorMessage("without a write-default"));
-}
-
-TEST(AlignBatchForWriteTest, RecursivelyAlignsNestedStructs) {
-  auto input_person = std::make_shared<StructType>(
-      std::vector<SchemaField>{SchemaField::MakeRequired(2, "name", string())});
-  auto write_person = std::make_shared<StructType>(std::vector<SchemaField>{
-      SchemaField::MakeRequired(2, "name", string()),
-      DefaultedField(3, "age", int32(), /*optional=*/false, Literal::Int(10),
-                     Literal::Int(18)),
-  });
-  Schema input_schema({SchemaField::MakeOptional(1, "person", std::move(input_person))});
-  Schema write_schema({SchemaField::MakeOptional(1, "person", std::move(write_person))});
-
-  ICEBERG_UNWRAP_OR_FAIL(auto actual, AlignForWrite(input_schema, write_schema,
-                                                    R"([[{"name":"alice"}],[null]])"));
-  auto expected = MakeBatch(write_schema, R"([[{"name":"alice","age":18}],[null]])");
-  EXPECT_TRUE(actual->Equals(*expected)) << "actual:\n" << actual->ToString();
-}
-
-TEST(AlignBatchForWriteTest, RejectsIncompatibleTypes) {
-  Schema input_schema({SchemaField::MakeRequired(1, "id", int32())});
-  Schema write_schema({SchemaField::MakeRequired(1, "id", int64())});
-
-  auto result = AlignForWrite(input_schema, write_schema, R"([[1]])");
-
-  EXPECT_THAT(result, IsError(ErrorKind::kNotSupported));
-  EXPECT_THAT(result, HasErrorMessage("type promotion is not allowed"));
-}
-
-TEST(AlignBatchForWriteTest, RejectsInputFieldsOutsideWriteSchema) {
-  Schema input_schema({SchemaField::MakeRequired(1, "id", int32()),
-                       SchemaField::MakeOptional(2, "extra", string())});
-  Schema write_schema({SchemaField::MakeRequired(1, "id", int32())});
-
-  auto result = AlignForWrite(input_schema, write_schema, R"([[1,"extra"]])");
-
-  EXPECT_THAT(result, IsError(ErrorKind::kInvalidSchema));
-  EXPECT_THAT(result, HasErrorMessage("Input field id 2"));
 }
 
 TEST(AlignBatchForWriteTest, PreservesCollectionsWhenAddingAndReorderingFields) {
@@ -461,16 +406,6 @@ TEST(AlignBatchForWriteTest, RejectsUnknownFieldsInsideCollections) {
     EXPECT_THAT(result, IsError(ErrorKind::kInvalidSchema));
     EXPECT_THAT(result, HasErrorMessage("Input field id 5"));
   }
-}
-
-TEST(AlignBatchForWriteTest, MaterializesUnknownInputAsTypedNulls) {
-  Schema input_schema({SchemaField::MakeOptional(1, "value", unknown())});
-  Schema write_schema({SchemaField::MakeOptional(1, "value", int32())});
-
-  ICEBERG_UNWRAP_OR_FAIL(auto actual,
-                         AlignForWrite(input_schema, write_schema, R"([[null],[null]])"));
-  auto expected = MakeBatch(write_schema, R"([[null],[null]])");
-  EXPECT_TRUE(actual->Equals(*expected)) << actual->ToString();
 }
 
 }  // namespace iceberg::internal

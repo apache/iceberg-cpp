@@ -46,8 +46,6 @@
 #include "iceberg/file_reader.h"
 #include "iceberg/file_writer.h"
 #include "iceberg/parquet/parquet_register.h"
-#include "iceberg/partition_spec.h"
-#include "iceberg/row/partition_values.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_field.h"
 #include "iceberg/schema_internal.h"
@@ -133,8 +131,6 @@ class WriteDefaultEndToEndTest
     DataWriterOptions options{
         .path = param.path,
         .schema = write_schema,
-        .spec = PartitionSpec::Unpartitioned(),
-        .partition = PartitionValues{},
         .format = param.format,
         .io = file_io_,
         .properties = FormatProperties(param),
@@ -263,17 +259,22 @@ TEST_P(DefaultValueEndToEndTest, WriteEvolveReadFillsInitialDefault) {
 }
 
 TEST_P(WriteDefaultEndToEndTest, MissingColumnUsesWriteDefault) {
-  auto input_schema = std::make_shared<Schema>(
-      std::vector<SchemaField>{SchemaField::MakeRequired(1, "id", int32())});
+  auto input_schema = std::make_shared<Schema>(std::vector<SchemaField>{
+      SchemaField::MakeOptional(2, "name", string()),
+      SchemaField::MakeRequired(1, "id", int32()),
+  });
   auto write_schema = std::make_shared<Schema>(std::vector<SchemaField>{
       SchemaField::MakeRequired(1, "id", int32()),
-      SchemaField(2, "added", int32(), /*optional=*/false, /*doc=*/{},
+      SchemaField::MakeOptional(2, "name", string()),
+      SchemaField(3, "added", int32(), /*optional=*/false, /*doc=*/{},
                   std::make_shared<const Literal>(Literal::Int(42)),
                   std::make_shared<const Literal>(Literal::Int(7))),
+      SchemaField::MakeOptional(4, "comment", string()),
   });
   // This file is written after the column exists, so the missing input column uses
   // write-default (7), not initial-default (42).
-  WriteAndRead(input_schema, write_schema, R"([[1], [2]])", R"([[1, 7], [2, 7]])");
+  WriteAndRead(input_schema, write_schema, R"([["alice", 1], [null, 2]])",
+               R"([[1, "alice", 7, null], [2, null, 7, null]])");
 }
 
 TEST_P(WriteDefaultEndToEndTest, UnknownInputWritesTypedNulls) {
