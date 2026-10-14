@@ -54,6 +54,9 @@ jobs:
         cmake_build_type:
           - Debug
           - RelWithDebInfo
+    env:
+      # ICEBERG_ENCRYPTION defaults to OFF; keep one job building and testing it.
+      ICEBERG_EXTRA_CMAKE_ARGS: "-DICEBERG_ENCRYPTION=ON"
     steps:
       - name: Checkout iceberg-cpp
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -135,6 +138,9 @@ jobs:
     timeout-minutes: 30
     strategy:
       fail-fast: false
+    env:
+      # Covers the Homebrew keg-only OpenSSL lookup, which only runs on macOS.
+      ICEBERG_EXTRA_CMAKE_ARGS: "-DICEBERG_ENCRYPTION=ON"
     steps:
       - name: Checkout iceberg-cpp
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1

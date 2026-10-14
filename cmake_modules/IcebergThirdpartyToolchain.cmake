@@ -178,8 +178,6 @@ macro(resolve_openssl_for_encryption)
     endif()
   endif()
   find_package(OpenSSL REQUIRED)
-  # Remembered for iceberg-config.cmake, so consumers find the same OpenSSL.
-  get_filename_component(ICEBERG_OPENSSL_ROOT_DIR "${OPENSSL_INCLUDE_DIR}" DIRECTORY)
 endmacro()
 
 function(resolve_arrow_dependency)
@@ -211,7 +209,10 @@ function(resolve_arrow_dependency)
   set(ARROW_POSITION_INDEPENDENT_CODE ON)
   set(ARROW_DEPENDENCY_SOURCE "BUNDLED")
   set(ARROW_WITH_ZLIB ON)
-  # zstd is the default Parquet codec of Iceberg (Java and C++).
+  # zstd is the default value of the write.parquet.compression-codec table property,
+  # so a vendored Arrow without it cannot write Iceberg's default Parquet files.
+  # Not required by modular encryption itself; parquet_encryption_test covers the
+  # encrypted-plus-zstd combination to keep the two features verified together.
   set(ARROW_WITH_ZSTD ON)
   if(ICEBERG_S3 AND NOT ICEBERG_AWSSDK_BUNDLED)
     set(AWSSDK_SOURCE "SYSTEM")
@@ -245,19 +246,26 @@ function(resolve_arrow_dependency)
 
   fetchcontent_makeavailable(VendoredArrow)
 
-  # Arrow's Parquet targets do not inherit the OpenSSL include directory when
-  # Arrow is vendored; add it for the Parquet encryption sources. Depending on the
-  # platform and build type, they are compiled in the object library or directly in
-  # the static/shared library. The bundle library links OpenSSL::Crypto.
-  if(ICEBERG_ENCRYPTION)
-    foreach(parquet_target parquet_objlib parquet_static parquet_shared)
-      if(TARGET ${parquet_target})
-        target_include_directories(${parquet_target} PRIVATE ${OPENSSL_INCLUDE_DIR})
-      endif()
-    endforeach()
-  endif()
-
   if(vendoredarrow_SOURCE_DIR)
+    # Arrow's Parquet targets do not inherit the OpenSSL include directory when
+    # Arrow is vendored; add it for the Parquet encryption sources. Depending on the
+    # platform and build type, they are compiled in the object library or directly in
+    # the static/shared library. The bundle library links OpenSSL::Crypto.
+    #
+    # Only vendored targets are touched here. With system Arrow the same names can
+    # be ALIAS targets created by a parent project, and target_include_directories
+    # cannot modify an ALIAS.
+    if(ICEBERG_ENCRYPTION)
+      foreach(parquet_target parquet_objlib parquet_static parquet_shared)
+        if(TARGET ${parquet_target})
+          get_target_property(parquet_target_alias ${parquet_target} ALIASED_TARGET)
+          if(NOT parquet_target_alias)
+            target_include_directories(${parquet_target} PRIVATE ${OPENSSL_INCLUDE_DIR})
+          endif()
+        endif()
+      endforeach()
+    endif()
+
     if(NOT TARGET Arrow::arrow_static)
       add_library(Arrow::arrow_static INTERFACE IMPORTED)
       target_link_libraries(Arrow::arrow_static INTERFACE arrow_static)
@@ -299,9 +307,6 @@ function(resolve_arrow_dependency)
     # Arrow's exported static target interface may reference system libraries
     # (e.g. Threads, OpenSSL, CURL, ZLIB) that consumers need to find.
     list(APPEND ICEBERG_SYSTEM_DEPENDENCIES Threads ZLIB)
-    if(ICEBERG_ENCRYPTION)
-      list(APPEND ICEBERG_SYSTEM_DEPENDENCIES OpenSSL)
-    endif()
     if(ARROW_S3)
       list(APPEND ICEBERG_SYSTEM_DEPENDENCIES OpenSSL CURL)
     endif()
@@ -312,14 +317,17 @@ function(resolve_arrow_dependency)
     list(APPEND ICEBERG_SYSTEM_DEPENDENCIES Arrow Parquet)
   endif()
 
+  # The bundle exports OpenSSL::Crypto in its link interface for both vendored and
+  # system Arrow, so consumers must find OpenSSL in both modes.
+  if(ICEBERG_ENCRYPTION)
+    list(APPEND ICEBERG_SYSTEM_DEPENDENCIES OpenSSL)
+  endif()
+
   set(ICEBERG_SYSTEM_DEPENDENCIES
       ${ICEBERG_SYSTEM_DEPENDENCIES}
       PARENT_SCOPE)
   set(ARROW_VENDORED
       ${ARROW_VENDORED}
-      PARENT_SCOPE)
-  set(ICEBERG_OPENSSL_ROOT_DIR
-      "${ICEBERG_OPENSSL_ROOT_DIR}"
       PARENT_SCOPE)
 endfunction()
 
