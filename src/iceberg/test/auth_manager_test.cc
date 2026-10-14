@@ -788,7 +788,7 @@ TEST(OAuth2SessionTest, InitialTokenIsUsed) {
   ASSERT_THAT(auth_result, IsOk());
   EXPECT_EQ(auth_result.value().headers.at("Authorization"), "Bearer initial-token-123");
 
-  session->Close();
+  ASSERT_THAT(session->Close(), IsOk());
 }
 
 TEST(OAuth2SessionTest, InitTokenExpirationUsesRequestStartTime) {

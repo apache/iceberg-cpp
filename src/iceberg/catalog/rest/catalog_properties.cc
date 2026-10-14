@@ -73,24 +73,4 @@ Result<std::optional<ScanPlanningMode>> RestCatalogProperties::ScanPlanningModeF
   return InvalidArgument("Invalid scan planning mode: '{}'.", it->second);
 }
 
-Result<int64_t> RestCatalogProperties::ScanPlanningPollTimeoutMs() const {
-  const std::string value = Get(kScanPlanningPollTimeoutMs);
-  auto timeout_ms = StringUtils::ParseNumber<int64_t>(value);
-  if (!timeout_ms.has_value() || *timeout_ms <= 0) {
-    return InvalidArgument("Invalid value for {}: {} (must be positive)",
-                           kScanPlanningPollTimeoutMs.key(), value);
-  }
-  return *timeout_ms;
-}
-
-Result<int32_t> RestCatalogProperties::ScanPlanningPollNumRetries() const {
-  const std::string value = Get(kScanPlanningPollNumRetries);
-  auto num_retries = StringUtils::ParseNumber<int32_t>(value);
-  if (!num_retries.has_value() || *num_retries < 0) {
-    return InvalidArgument("Invalid value for {}: {} (must be non-negative)",
-                           kScanPlanningPollNumRetries.key(), value);
-  }
-  return *num_retries;
-}
-
 }  // namespace iceberg::rest

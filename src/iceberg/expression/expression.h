@@ -64,7 +64,7 @@ class ICEBERG_EXPORT Expression : public util::Formattable {
     kMin
   };
 
-  virtual ~Expression() = default;
+  ~Expression() override = default;
 
   /// \brief Returns the operation for an expression node.
   virtual Operation op() const = 0;

@@ -204,6 +204,7 @@ struct ReaderOptions;
 struct WriterOptions;
 struct StorageCredential;
 class FileIO;
+class StorageCredentialProvider;
 class Reader;
 class Writer;
 

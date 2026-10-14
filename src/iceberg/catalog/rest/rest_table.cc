@@ -36,7 +36,7 @@ RestTable::RestTable(TableIdentifier identifier, std::shared_ptr<TableMetadata> 
                      RestScanContext rest_context)
     : Table(std::move(identifier), std::move(metadata), std::move(metadata_location),
             std::move(io), std::move(catalog), std::move(full_name), std::move(reporter)),
-      rest_context_(std::move(rest_context)) {}
+      rest_context_(std::make_shared<const RestScanContext>(std::move(rest_context))) {}
 
 RestTable::~RestTable() = default;
 

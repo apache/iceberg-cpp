@@ -23,8 +23,7 @@
 #include <string>
 
 #include "iceberg/catalog/rest/iceberg_rest_export.h"
-#include "iceberg/catalog/rest/rest_table_scan.h"
-#include "iceberg/metrics/metrics_reporter.h"
+#include "iceberg/catalog/rest/type_fwd.h"
 #include "iceberg/result.h"
 #include "iceberg/table.h"
 #include "iceberg/type_fwd.h"
@@ -60,7 +59,7 @@ class ICEBERG_REST_EXPORT RestTable final : public Table {
             std::shared_ptr<Catalog> catalog, std::string full_name,
             std::shared_ptr<MetricsReporter> reporter, RestScanContext rest_context);
 
-  RestScanContext rest_context_;
+  std::shared_ptr<const RestScanContext> rest_context_;
 };
 
 }  // namespace iceberg::rest

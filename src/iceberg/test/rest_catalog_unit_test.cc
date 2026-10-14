@@ -21,19 +21,22 @@
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
+#include <vector>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
+#include <nlohmann/json.hpp>
 
 #include "iceberg/catalog.h"
 #include "iceberg/catalog/rest/catalog_properties.h"
 #include "iceberg/catalog/rest/endpoint.h"
 #include "iceberg/catalog/rest/error_handlers.h"
 #include "iceberg/catalog/rest/http_client.h"
-#include "iceberg/catalog/rest/resource_paths.h"
+#include "iceberg/catalog/rest/json_serde_internal.h"
 #include "iceberg/catalog/rest/rest_catalog.h"
 #include "iceberg/catalog/rest/rest_table.h"
 #include "iceberg/catalog/rest/rest_table_scan.h"
+#include "iceberg/catalog/rest/types.h"
 #include "iceberg/file_io.h"
 #include "iceberg/file_io_registry.h"
 #include "iceberg/storage_credential.h"
@@ -44,6 +47,8 @@
 #include "iceberg/test/matchers.h"
 
 namespace iceberg::rest {
+
+namespace {
 
 using ::testing::_;
 using ::testing::Return;
@@ -159,18 +164,20 @@ const std::string kCommitTableResponse =
     std::string("{") + std::string(kBaseMetadataJson) + "}";
 
 // --------------------------------------------------------------------------
-// Test fixture: builds a RestCatalog via MakeForTesting so no HTTP calls
-// are made during catalog construction.
+// Use the regular catalog initialization with a mock HTTP client.
 // --------------------------------------------------------------------------
 class RestCatalogLoadTableTest : public ::testing::Test {
  protected:
+  void TearDown() override { installed_provider.reset(); }
+
   void SetUp() override {
     mock_client_ = std::make_shared<MockHttpClient>();
-    file_io_ = std::make_shared<NoOpFileIO>();
-
-    ICEBERG_UNWRAP_OR_FAIL(paths_,
-                           ResourcePaths::Make("http://test-server", /*prefix=*/"",
-                                               /*namespace_separator=*/"%1F"));
+    FileIORegistry::Register(
+        "rest-catalog-unit-test-noop",
+        {.create = [](const std::unordered_map<std::string, std::string>&)
+             -> Result<std::unique_ptr<FileIO>> {
+          return std::make_unique<NoOpFileIO>();
+        }});
 
     identifier_ = TableIdentifier{.ns = Namespace{{"default"}}, .name = "my_table"};
 
@@ -189,52 +196,99 @@ class RestCatalogLoadTableTest : public ::testing::Test {
       std::unordered_map<std::string, std::string> extra_props = {}) {
     std::unordered_map<std::string, std::string> props = std::move(extra_props);
     props["uri"] = "http://test-server";
+    props.try_emplace("io-impl", "rest-catalog-unit-test-noop");
     if (!client_scan_mode.empty()) {
       props["scan-planning-mode"] = client_scan_mode;
     }
-    auto config = RestCatalogProperties::FromMap(props);
-    return RestCatalog::MakeForTesting(std::move(config), file_io_, mock_client_, paths_,
-                                       endpoints);
+    CatalogConfig server_config{.endpoints = {endpoints.begin(), endpoints.end()}};
+    EXPECT_CALL(*mock_client_, Get(::testing::EndsWith("/v1/config"), _, _, _, _))
+        .WillOnce(Return(HttpResponse(200, ToJson(server_config).dump())));
+    auto config = RestCatalogProperties::FromMap(std::move(props));
+    return RestCatalog::Make(config, /*metrics_executor=*/nullptr,
+                             [client = mock_client_](const auto&) { return client; });
   }
 
   std::shared_ptr<MockHttpClient> mock_client_;
-  std::shared_ptr<FileIO> file_io_;
-  std::shared_ptr<ResourcePaths> paths_;
   TableIdentifier identifier_;
   std::unordered_set<Endpoint> all_plan_endpoints_;
   std::unordered_set<Endpoint> no_plan_endpoint_set_;
 };
 
-// --------------------------------------------------------------------------
-// Table config "scan-planning-mode":"server" → LoadTable returns a RestTable.
-// --------------------------------------------------------------------------
-TEST_F(RestCatalogLoadTableTest, TableConfigServerScanReturnsRestTable) {
-  EXPECT_CALL(*mock_client_, Get(_, _, _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, kLoadTableServerScanResponse)));
-
-  ICEBERG_UNWRAP_OR_FAIL(auto catalog, MakeCatalog(all_plan_endpoints_));
-  ICEBERG_UNWRAP_OR_FAIL(auto as_catalog, catalog->AsCatalog());
-  ICEBERG_UNWRAP_OR_FAIL(auto table, as_catalog->LoadTable(identifier_));
-
-  EXPECT_NE(dynamic_cast<RestTable*>(table.get()), nullptr)
-      << "Expected RestTable when server config requests server-side scan planning";
+TEST_F(RestCatalogLoadTableTest, InitializationPropagatesClientFactoryErrors) {
+  auto config = RestCatalogProperties::FromMap(
+      {{"uri", "http://test-server"}, {"io-impl", "rest-catalog-unit-test-noop"}});
+  for (int fail_on_call : {1, 2}) {
+    SCOPED_TRACE(fail_on_call);
+    if (fail_on_call == 1) {
+      EXPECT_CALL(*mock_client_, Get(_, _, _, _, _)).Times(0);
+    } else {
+      EXPECT_CALL(*mock_client_, Get(::testing::EndsWith("/v1/config"), _, _, _, _))
+          .WillOnce(Return(HttpResponse(200, ToJson(CatalogConfig{}).dump())));
+    }
+    int calls = 0;
+    auto result = RestCatalog::Make(
+        config, /*metrics_executor=*/nullptr,
+        [&](const RestCatalogProperties&) -> Result<std::shared_ptr<HttpClient>> {
+          if (++calls == fail_on_call) {
+            return IOError("HTTP client setup failed");
+          }
+          return mock_client_;
+        });
+    ASSERT_THAT(result, IsError(ErrorKind::kIOError));
+    EXPECT_EQ(result.error().message, "HTTP client setup failed");
+    EXPECT_EQ(calls, fail_on_call);
+    ASSERT_TRUE(::testing::Mock::VerifyAndClearExpectations(mock_client_.get()));
+  }
 }
 
-// --------------------------------------------------------------------------
-// Client config "scan-planning-mode":"server", table config absent →
-// LoadTable returns a RestTable.
-// --------------------------------------------------------------------------
-TEST_F(RestCatalogLoadTableTest, ClientConfigServerScanReturnsRestTable) {
-  EXPECT_CALL(*mock_client_, Get(_, _, _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, kLoadTableDefaultResponse)));
+TEST_F(RestCatalogLoadTableTest, InitializationUsesMergedServerConfig) {
+  CatalogConfig server_config{
+      .defaults = {{"header.X-Default", "default"}, {"header.X-Shared", "default"}},
+      .overrides = {{"prefix", "catalog"},
+                    {"snapshot-loading-mode", "REFS"},
+                    {"scan-planning-mode", "server"},
+                    {"header.X-Shared", "server"}},
+      .endpoints = {all_plan_endpoints_.begin(), all_plan_endpoints_.end()}};
+  EXPECT_CALL(
+      *mock_client_,
+      Get(::testing::EndsWith("/v1/config"),
+          ::testing::Contains(::testing::Pair("warehouse", "client-warehouse")), _, _, _))
+      .WillOnce(Return(HttpResponse(200, ToJson(server_config).dump())));
+  EXPECT_CALL(*mock_client_,
+              Get(::testing::EndsWith("/v1/catalog/namespaces/default/tables/my_table"),
+                  ::testing::Contains(::testing::Pair("snapshots", "refs")), _, _, _))
+      .WillOnce(Return(HttpResponse(200, kLoadTableDefaultResponse)));
+  EXPECT_CALL(
+      *mock_client_,
+      Post(::testing::EndsWith("/v1/catalog/namespaces/default/tables/my_table/plan"), _,
+           _, _, _))
+      .WillOnce(Return(HttpResponse(200, R"({"status":"completed"})")));
 
-  ICEBERG_UNWRAP_OR_FAIL(auto catalog,
-                         MakeCatalog(all_plan_endpoints_, /*client_scan_mode=*/"server"));
-  ICEBERG_UNWRAP_OR_FAIL(auto as_catalog, catalog->AsCatalog());
-  ICEBERG_UNWRAP_OR_FAIL(auto table, as_catalog->LoadTable(identifier_));
-
-  EXPECT_NE(dynamic_cast<RestTable*>(table.get()), nullptr)
-      << "Expected RestTable when client config requests server-side scan planning";
+  auto config =
+      RestCatalogProperties::FromMap({{"uri", "http://test-server/"},
+                                      {"warehouse", "client-warehouse"},
+                                      {"io-impl", "rest-catalog-unit-test-noop"},
+                                      {"scan-planning-mode", "client"},
+                                      {"header.X-Shared", "client"}});
+  std::vector<RestCatalogProperties> client_configs;
+  ICEBERG_UNWRAP_OR_FAIL(auto root,
+                         RestCatalog::Make(config, /*metrics_executor=*/nullptr,
+                                           [&](const RestCatalogProperties& properties) {
+                                             client_configs.push_back(properties);
+                                             return mock_client_;
+                                           }));
+  ASSERT_EQ(client_configs.size(), 2);
+  EXPECT_EQ(client_configs[0].ExtractHeaders().at("X-Shared"), "client");
+  EXPECT_FALSE(client_configs[0].ExtractHeaders().contains("X-Default"));
+  EXPECT_EQ(client_configs[1].ExtractHeaders().at("X-Shared"), "server");
+  EXPECT_EQ(client_configs[1].ExtractHeaders().at("X-Default"), "default");
+  EXPECT_EQ(client_configs[1].Get(RestCatalogProperties::kPrefix), "catalog");
+  ICEBERG_UNWRAP_OR_FAIL(auto catalog, root->AsCatalog());
+  ICEBERG_UNWRAP_OR_FAIL(auto table, catalog->LoadTable(identifier_));
+  ICEBERG_UNWRAP_OR_FAIL(auto builder, table->NewScan());
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
+  ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
+  EXPECT_TRUE(tasks.empty());
 }
 
 // --------------------------------------------------------------------------
@@ -243,7 +297,7 @@ TEST_F(RestCatalogLoadTableTest, ClientConfigServerScanReturnsRestTable) {
 // --------------------------------------------------------------------------
 TEST_F(RestCatalogLoadTableTest, ServerScanWithMissingEndpointReturnsNotSupported) {
   EXPECT_CALL(*mock_client_, Get(_, _, _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, kLoadTableServerScanResponse)));
+      .WillOnce(Return(HttpResponse(200, kLoadTableServerScanResponse)));
 
   ICEBERG_UNWRAP_OR_FAIL(auto catalog, MakeCatalog(no_plan_endpoint_set_));
   ICEBERG_UNWRAP_OR_FAIL(auto as_catalog, catalog->AsCatalog());
@@ -253,128 +307,20 @@ TEST_F(RestCatalogLoadTableTest, ServerScanWithMissingEndpointReturnsNotSupporte
 }
 
 // --------------------------------------------------------------------------
-// No scan-planning-mode set anywhere → LoadTable returns a plain Table
-// (not RestTable).
-// --------------------------------------------------------------------------
-TEST_F(RestCatalogLoadTableTest, DefaultScanModeReturnsPlainTable) {
-  EXPECT_CALL(*mock_client_, Get(_, _, _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, kLoadTableDefaultResponse)));
-
-  ICEBERG_UNWRAP_OR_FAIL(auto catalog, MakeCatalog(all_plan_endpoints_));
-  ICEBERG_UNWRAP_OR_FAIL(auto as_catalog, catalog->AsCatalog());
-  ICEBERG_UNWRAP_OR_FAIL(auto table, as_catalog->LoadTable(identifier_));
-
-  EXPECT_EQ(dynamic_cast<RestTable*>(table.get()), nullptr)
-      << "Expected plain Table (not RestTable) when no scan-planning-mode is configured";
-}
-
-// --------------------------------------------------------------------------
-// Committing through a server-planning table returns a RestTable.
-// --------------------------------------------------------------------------
-TEST_F(RestCatalogLoadTableTest, CommitPreservesRestTableFromTableConfig) {
-  EXPECT_CALL(*mock_client_, Get(_, _, _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, kLoadTableServerScanResponse)));
-  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, kCommitTableResponse)));
-
-  ICEBERG_UNWRAP_OR_FAIL(auto catalog, MakeCatalog(all_plan_endpoints_));
-  ICEBERG_UNWRAP_OR_FAIL(auto as_catalog, catalog->AsCatalog());
-  ICEBERG_UNWRAP_OR_FAIL(auto table, as_catalog->LoadTable(identifier_));
-  ICEBERG_UNWRAP_OR_FAIL(auto committed,
-                         table->catalog()->UpdateTable(identifier_, {}, {}));
-
-  EXPECT_NE(dynamic_cast<RestTable*>(committed.get()), nullptr);
-  ICEBERG_UNWRAP_OR_FAIL(auto builder, committed->NewScan());
-  EXPECT_NE(dynamic_cast<RestTableScanBuilder*>(builder.get()), nullptr);
-}
-
-// --------------------------------------------------------------------------
-// Client config "scan-planning-mode":"server" → commit returns a RestTable.
-// --------------------------------------------------------------------------
-TEST_F(RestCatalogLoadTableTest, CommitPreservesRestTableFromClientConfig) {
-  EXPECT_CALL(*mock_client_, Get(_, _, _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, kLoadTableDefaultResponse)));
-  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, kCommitTableResponse)));
-
-  ICEBERG_UNWRAP_OR_FAIL(auto catalog,
-                         MakeCatalog(all_plan_endpoints_, /*client_scan_mode=*/"server"));
-  ICEBERG_UNWRAP_OR_FAIL(auto as_catalog, catalog->AsCatalog());
-  ICEBERG_UNWRAP_OR_FAIL(auto table, as_catalog->LoadTable(identifier_));
-  ICEBERG_UNWRAP_OR_FAIL(auto committed,
-                         table->catalog()->UpdateTable(identifier_, {}, {}));
-
-  EXPECT_NE(dynamic_cast<RestTable*>(committed.get()), nullptr);
-}
-
-// --------------------------------------------------------------------------
-// Default scan mode → commit returns a plain Table.
-// --------------------------------------------------------------------------
-TEST_F(RestCatalogLoadTableTest, CommitWithDefaultScanModeReturnsPlainTable) {
-  EXPECT_CALL(*mock_client_, Get(_, _, _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, kLoadTableDefaultResponse)));
-  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, kCommitTableResponse)));
-
-  ICEBERG_UNWRAP_OR_FAIL(auto catalog, MakeCatalog(all_plan_endpoints_));
-  ICEBERG_UNWRAP_OR_FAIL(auto as_catalog, catalog->AsCatalog());
-  ICEBERG_UNWRAP_OR_FAIL(auto table, as_catalog->LoadTable(identifier_));
-  ICEBERG_UNWRAP_OR_FAIL(auto committed,
-                         table->catalog()->UpdateTable(identifier_, {}, {}));
-
-  EXPECT_EQ(dynamic_cast<RestTable*>(committed.get()), nullptr);
-}
-
-// --------------------------------------------------------------------------
-// Scan-vended credentials get a provider that refreshes via /credentials?planId=.
-// --------------------------------------------------------------------------
-TEST_F(RestCatalogLoadTableTest, ScanCredentialProviderRequestsPlanId) {
-  RegisterCredentialedFileIO();
-  EXPECT_CALL(*mock_client_,
-              Get(::testing::Not(::testing::HasSubstr("/credentials")), _, _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, kLoadTableServerScanResponse)));
-  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
-      .WillOnce(Return(
-          HttpResponse::MakeForTesting(200, std::string(kPlanWithCredentialsResponse))));
-  EXPECT_CALL(*mock_client_,
-              Get(::testing::HasSubstr("/credentials"),
-                  ::testing::Contains(::testing::Pair("planId", "plan-1")), _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(
-          200,
-          R"({"storage-credentials":[{"prefix":"s3://bucket","config":{"k":"v2"}}]})")));
-
-  auto endpoints = all_plan_endpoints_;
-  endpoints.insert(Endpoint::TableCredentials());
-  ICEBERG_UNWRAP_OR_FAIL(auto catalog,
-                         MakeCatalog(endpoints, /*client_scan_mode=*/"",
-                                     {{"io-impl", std::string(kCredentialedFileIO)}}));
-  ICEBERG_UNWRAP_OR_FAIL(auto as_catalog, catalog->AsCatalog());
-  ICEBERG_UNWRAP_OR_FAIL(auto table, as_catalog->LoadTable(identifier_));
-  ICEBERG_UNWRAP_OR_FAIL(auto builder, table->NewScan());
-  ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
-  ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
-
-  ASSERT_NE(installed_provider, nullptr);
-  ICEBERG_UNWRAP_OR_FAIL(auto refreshed, installed_provider->Load());
-  ASSERT_EQ(refreshed.size(), 1);
-  EXPECT_EQ(refreshed[0].config.at("k"), "v2");
-}
-
-// --------------------------------------------------------------------------
 // A completed plan without a plan-id refreshes credentials without planId.
 // --------------------------------------------------------------------------
 TEST_F(RestCatalogLoadTableTest, ScanCredentialProviderWithoutPlanIdOmitsPlanId) {
   RegisterCredentialedFileIO();
   EXPECT_CALL(*mock_client_,
               Get(::testing::Not(::testing::HasSubstr("/credentials")), _, _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, kLoadTableServerScanResponse)));
+      .WillOnce(Return(HttpResponse(200, kLoadTableServerScanResponse)));
   EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(
+      .WillOnce(Return(HttpResponse(
           200,
           R"({"status":"completed","storage-credentials":[{"prefix":"s3://bucket","config":{"k":"v"}}]})")));
   EXPECT_CALL(*mock_client_,
               Get(::testing::HasSubstr("/credentials"), ::testing::IsEmpty(), _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(
+      .WillOnce(Return(HttpResponse(
           200,
           R"({"storage-credentials":[{"prefix":"s3://bucket","config":{"k":"v2"}}]})")));
 
@@ -401,10 +347,9 @@ TEST_F(RestCatalogLoadTableTest,
        ScanCredentialsWithoutCredentialsEndpointHaveNoProvider) {
   RegisterCredentialedFileIO();
   EXPECT_CALL(*mock_client_, Get(_, _, _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, kLoadTableServerScanResponse)));
+      .WillOnce(Return(HttpResponse(200, kLoadTableServerScanResponse)));
   EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
-      .WillOnce(Return(
-          HttpResponse::MakeForTesting(200, std::string(kPlanWithCredentialsResponse))));
+      .WillOnce(Return(HttpResponse(200, std::string(kPlanWithCredentialsResponse))));
 
   ICEBERG_UNWRAP_OR_FAIL(auto catalog,
                          MakeCatalog(all_plan_endpoints_, /*client_scan_mode=*/"",
@@ -416,6 +361,131 @@ TEST_F(RestCatalogLoadTableTest,
   ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
 
   EXPECT_EQ(installed_provider, nullptr);
+  auto* credentialed = scan->io()->AsSupportsStorageCredentials();
+  ASSERT_NE(credentialed, nullptr);
+  ASSERT_EQ(credentialed->credentials().size(), 1);
+  EXPECT_EQ(credentialed->credentials()[0].config.at("k"), "v");
 }
+
+struct PlanningModeCase {
+  std::string client;
+  std::string table;
+  bool server;
+};
+
+class RestCatalogPlanningModeTest
+    : public RestCatalogLoadTableTest,
+      public ::testing::WithParamInterface<PlanningModeCase> {};
+
+TEST_P(RestCatalogPlanningModeTest, LoadAndCommitKeepTheEffectivePlanningMode) {
+  const auto& config = GetParam();
+  auto response = nlohmann::json::parse(kLoadTableDefaultResponse);
+  if (!config.table.empty()) response["config"]["scan-planning-mode"] = config.table;
+  EXPECT_CALL(*mock_client_, Get(::testing::EndsWith("/tables/my_table"), _, _, _, _))
+      .WillOnce(Return(HttpResponse(200, response.dump())));
+  EXPECT_CALL(*mock_client_, Post(::testing::EndsWith("/tables/my_table"), _, _, _, _))
+      .WillOnce(Return(HttpResponse(200, kCommitTableResponse)));
+  EXPECT_CALL(*mock_client_, Post(::testing::EndsWith("/plan"), _, _, _, _))
+      .Times(config.server ? 2 : 0)
+      .WillRepeatedly([](auto&&...) -> Result<HttpResponse> {
+        return HttpResponse(200, R"({"status":"completed"})");
+      });
+
+  ICEBERG_UNWRAP_OR_FAIL(auto catalog, MakeCatalog(all_plan_endpoints_, config.client));
+  ICEBERG_UNWRAP_OR_FAIL(auto as_catalog, catalog->AsCatalog());
+  ICEBERG_UNWRAP_OR_FAIL(auto table, as_catalog->LoadTable(identifier_));
+  ICEBERG_UNWRAP_OR_FAIL(auto committed,
+                         table->catalog()->UpdateTable(identifier_, {}, {}));
+  for (const auto& current : {table, committed}) {
+    ICEBERG_UNWRAP_OR_FAIL(auto builder, current->NewScan());
+    ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
+    ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
+    EXPECT_TRUE(tasks.empty());
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    PlanningModes, RestCatalogPlanningModeTest,
+    ::testing::Values(
+        PlanningModeCase{.client = "", .table = "", .server = false},
+        PlanningModeCase{.client = "server", .table = "", .server = true},
+        PlanningModeCase{.client = "", .table = "server", .server = true},
+        PlanningModeCase{.client = "server", .table = "client", .server = false},
+        PlanningModeCase{.client = "client", .table = "server", .server = true}));
+
+class RestCatalogScanLifetimeTest : public RestCatalogLoadTableTest,
+                                    public ::testing::WithParamInterface<bool> {};
+
+TEST_P(RestCatalogScanLifetimeTest, ScanKeepsCredentialRefreshAlive) {
+  RegisterCredentialedFileIO();
+  auto response = nlohmann::json::parse(kLoadTableServerScanResponse);
+  auto& metadata = response["metadata"];
+  metadata["current-snapshot-id"] = 200;
+  metadata["last-sequence-number"] = 2;
+  metadata["snapshots"] =
+      nlohmann::json::array({{{"snapshot-id", 100},
+                              {"sequence-number", 1},
+                              {"timestamp-ms", 1},
+                              {"manifest-list", "s3://bucket/manifests-1.avro"},
+                              {"schema-id", 1}},
+                             {{"snapshot-id", 200},
+                              {"parent-snapshot-id", 100},
+                              {"sequence-number", 2},
+                              {"timestamp-ms", 2},
+                              {"manifest-list", "s3://bucket/manifests-2.avro"},
+                              {"schema-id", 1}}});
+  EXPECT_CALL(*mock_client_, Get(::testing::EndsWith("/tables/my_table"), _, _, _, _))
+      .WillOnce(Return(HttpResponse(200, response.dump())));
+  EXPECT_CALL(*mock_client_, Post(::testing::EndsWith("/plan"), _, _, _, _))
+      .WillOnce(Return(HttpResponse(200, std::string(kPlanWithCredentialsResponse))));
+  EXPECT_CALL(*mock_client_,
+              Get(::testing::EndsWith("/credentials"),
+                  ::testing::Contains(::testing::Pair("planId", "plan-1")), _, _, _))
+      .WillOnce(Return(HttpResponse(
+          200,
+          R"({"storage-credentials":[{"prefix":"s3://bucket","config":{"k":"v2"}}]})")));
+
+  auto endpoints = all_plan_endpoints_;
+  endpoints.insert(Endpoint::TableCredentials());
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto catalog,
+      MakeCatalog(endpoints, "", {{"io-impl", std::string(kCredentialedFileIO)}}));
+  std::weak_ptr<RestCatalog> weak_catalog = catalog;
+  ICEBERG_UNWRAP_OR_FAIL(auto as_catalog, catalog->AsCatalog());
+  ICEBERG_UNWRAP_OR_FAIL(auto table, as_catalog->LoadTable(identifier_));
+  auto exercise = [&](auto& builder) {
+    ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
+    builder.reset();
+    table.reset();
+    as_catalog.reset();
+    catalog.reset();
+    EXPECT_FALSE(weak_catalog.expired());
+
+    ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
+    ASSERT_NE(installed_provider, nullptr);
+    auto* credentialed = scan->io()->AsSupportsStorageCredentials();
+    ASSERT_NE(credentialed, nullptr);
+    ASSERT_EQ(credentialed->credentials().size(), 1);
+    EXPECT_EQ(credentialed->credentials()[0].config.at("k"), "v");
+    ICEBERG_UNWRAP_OR_FAIL(auto refreshed, installed_provider->Load());
+    ASSERT_EQ(refreshed.size(), 1);
+    EXPECT_EQ(refreshed[0].config.at("k"), "v2");
+
+    scan.reset();
+    EXPECT_TRUE(weak_catalog.expired());
+  };
+  if (GetParam()) {
+    ICEBERG_UNWRAP_OR_FAIL(auto builder, table->NewIncrementalAppendScan());
+    builder->FromSnapshot(100);
+    exercise(builder);
+  } else {
+    ICEBERG_UNWRAP_OR_FAIL(auto builder, table->NewScan());
+    exercise(builder);
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(ScanModes, RestCatalogScanLifetimeTest, ::testing::Bool());
+
+}  // namespace
 
 }  // namespace iceberg::rest

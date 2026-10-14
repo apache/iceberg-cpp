@@ -19,6 +19,7 @@
 
 #pragma once
 
+#include <functional>
 #include <memory>
 #include <optional>
 #include <string>
@@ -52,19 +53,18 @@ class ICEBERG_REST_EXPORT RestCatalog final
   RestCatalog(RestCatalog&&) = delete;
   RestCatalog& operator=(RestCatalog&&) = delete;
 
+  using ClientFactory =
+      std::function<Result<std::shared_ptr<HttpClient>>(const RestCatalogProperties&)>;
+
   /// \brief Create a RestCatalog instance.
   /// \param metrics_executor Optional non-owning executor for asynchronous REST metrics.
   /// It must outlive the catalog and all tables created by it. When null, REST metrics
   /// are reported synchronously.
+  /// \param client_factory Optional HTTP client factory, called with the initial config
+  /// and then the merged server config. When empty, uses the default HTTP client.
   static Result<std::shared_ptr<RestCatalog>> Make(const RestCatalogProperties& config,
-                                                   Executor* metrics_executor = nullptr);
-
-  /// \brief Test-only factory that constructs a RestCatalog with pre-built dependencies,
-  /// bypassing the FetchServerConfig HTTP exchange performed by Make().
-  static Result<std::shared_ptr<RestCatalog>> MakeForTesting(
-      RestCatalogProperties config, std::shared_ptr<FileIO> file_io,
-      std::shared_ptr<HttpClient> client, std::shared_ptr<ResourcePaths> paths,
-      std::unordered_set<Endpoint> endpoints);
+                                                   Executor* metrics_executor = nullptr,
+                                                   ClientFactory client_factory = {});
 
   std::string_view name() const override;
 
@@ -81,8 +81,10 @@ class ICEBERG_REST_EXPORT RestCatalog final
               std::unordered_set<Endpoint> endpoints,
               std::unique_ptr<auth::AuthManager> auth_manager,
               std::shared_ptr<auth::AuthSession> catalog_session,
-              SnapshotMode snapshot_mode, SessionContext default_context,
-              std::shared_ptr<MetricsReporter> reporter, Executor* metrics_executor);
+              SnapshotMode snapshot_mode,
+              std::optional<ScanPlanningMode> client_scan_planning_mode,
+              SessionContext default_context, std::shared_ptr<MetricsReporter> reporter,
+              Executor* metrics_executor);
 
   Result<std::shared_ptr<auth::AuthSession>> ContextualAuthSession(
       const SessionContext& context);
@@ -100,8 +102,8 @@ class ICEBERG_REST_EXPORT RestCatalog final
 
   /// \brief Build a provider for this table's vended credentials.
   ///
-  /// Returns nullptr when the catalog does not serve LoadCredentials.
-  std::shared_ptr<StorageCredentialProvider> MakeStorageCredentialProvider(
+  /// Returns a null provider when the catalog does not serve LoadCredentials.
+  Result<std::shared_ptr<StorageCredentialProvider>> MakeStorageCredentialProvider(
       const TableIdentifier& identifier, std::shared_ptr<auth::AuthSession> table_session,
       std::optional<std::string> plan_id = std::nullopt) const;
 
@@ -223,6 +225,7 @@ class ICEBERG_REST_EXPORT RestCatalog final
   std::unique_ptr<auth::AuthManager> auth_manager_;
   std::shared_ptr<auth::AuthSession> catalog_session_;
   SnapshotMode snapshot_mode_;
+  std::optional<ScanPlanningMode> client_scan_planning_mode_;
   SessionContext default_context_;
   std::weak_ptr<Catalog> default_catalog_;
   std::shared_ptr<MetricsReporter> reporter_;

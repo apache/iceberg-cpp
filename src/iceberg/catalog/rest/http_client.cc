@@ -50,6 +50,14 @@ class HttpResponse::Impl {
 };
 
 HttpResponse::HttpResponse() = default;
+
+HttpResponse::HttpResponse(int32_t status_code, std::string body) {
+  cpr::Response cpr_response;
+  cpr_response.status_code = status_code;
+  cpr_response.text = std::move(body);
+  impl_ = std::make_unique<HttpResponse::Impl>(std::move(cpr_response));
+}
+
 HttpResponse::~HttpResponse() = default;
 HttpResponse::HttpResponse(HttpResponse&&) noexcept = default;
 HttpResponse& HttpResponse::operator=(HttpResponse&&) noexcept = default;
@@ -60,15 +68,6 @@ std::string HttpResponse::body() const { return impl_->body(); }
 
 std::unordered_map<std::string, std::string> HttpResponse::headers() const {
   return impl_->headers();
-}
-
-HttpResponse HttpResponse::MakeForTesting(int32_t status_code, std::string body) {
-  cpr::Response cpr_response;
-  cpr_response.status_code = status_code;
-  cpr_response.text = std::move(body);
-  HttpResponse response;
-  response.impl_ = std::make_unique<HttpResponse::Impl>(std::move(cpr_response));
-  return response;
 }
 
 namespace {

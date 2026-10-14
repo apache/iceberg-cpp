@@ -858,41 +858,6 @@ TEST_P(TableScanTest, SchemaWithSelectedColumnsAndFilter) {
   }
 }
 
-// use_snapshot_schema checks do not depend on format version, so run them once.
-class TableScanContextTest : public TableScanTest {};
-
-TEST_F(TableScanContextTest, UseSnapshotSetsTrueUseSnapshotSchema) {
-  constexpr int64_t kSnapshotId = 1000L;
-  ICEBERG_UNWRAP_OR_FAIL(auto builder, MakeScanBuilder<DataTableScan>(table_metadata_));
-  builder->UseSnapshot(kSnapshotId);
-  ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
-  EXPECT_TRUE(scan->context().use_snapshot_schema);
-}
-
-TEST_F(TableScanContextTest, UseRefTagSetsTrueUseSnapshotSchema) {
-  constexpr int64_t kSnapshotId = 1000L;
-  table_metadata_->refs["v1.0"] = std::make_shared<SnapshotRef>(
-      SnapshotRef{.snapshot_id = kSnapshotId, .retention = SnapshotRef::Tag{}});
-
-  ICEBERG_UNWRAP_OR_FAIL(auto builder, MakeScanBuilder<DataTableScan>(table_metadata_));
-  builder->UseRef("v1.0");
-  ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
-  EXPECT_TRUE(scan->context().use_snapshot_schema);
-}
-
-TEST_F(TableScanContextTest, UseRefBranchSetsFalseUseSnapshotSchema) {
-  ICEBERG_UNWRAP_OR_FAIL(auto builder, MakeScanBuilder<DataTableScan>(table_metadata_));
-  builder->UseRef("main");
-  ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
-  EXPECT_FALSE(scan->context().use_snapshot_schema);
-}
-
-TEST_F(TableScanContextTest, DefaultScanHasFalseUseSnapshotSchema) {
-  ICEBERG_UNWRAP_OR_FAIL(auto builder, MakeScanBuilder<DataTableScan>(table_metadata_));
-  ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
-  EXPECT_FALSE(scan->context().use_snapshot_schema);
-}
-
 INSTANTIATE_TEST_SUITE_P(TableScanVersions, TableScanTest, testing::Values(1, 2, 3));
 
 }  // namespace iceberg

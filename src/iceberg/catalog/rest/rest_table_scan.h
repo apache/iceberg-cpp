@@ -30,11 +30,10 @@
 
 #include "iceberg/catalog/rest/endpoint.h"
 #include "iceberg/catalog/rest/iceberg_rest_export.h"
+#include "iceberg/catalog/rest/type_fwd.h"
 #include "iceberg/data_table_scan.h"
 #include "iceberg/incremental_append_scan.h"
-#include "iceberg/metrics/metrics_reporter.h"
 #include "iceberg/result.h"
-#include "iceberg/storage_credential.h"
 #include "iceberg/table_identifier.h"
 #include "iceberg/table_scan.h"
 #include "iceberg/type_fwd.h"
@@ -44,14 +43,7 @@
 
 namespace iceberg::rest {
 
-class HttpClient;
-class ResourcePaths;
-
-namespace auth {
-class AuthSession;
-}  // namespace auth
-
-/// \brief HTTP context shared between RestTable and REST scan classes.
+/// \brief REST table context shared by its builders, scans and task streams.
 struct ICEBERG_REST_EXPORT RestScanContext {
   std::shared_ptr<HttpClient> client;
   std::shared_ptr<ResourcePaths> paths;
@@ -64,7 +56,9 @@ struct ICEBERG_REST_EXPORT RestScanContext {
   /// Table-level config merged with catalog_config for scan-scoped FileIO creation.
   std::unordered_map<std::string, std::string> table_config;
   /// Builds a plan-scoped provider for refreshing vended credentials; may be empty.
-  std::function<std::shared_ptr<StorageCredentialProvider>(const std::string& plan_id)>
+  /// A null provider means credential refresh is unavailable.
+  std::function<Result<std::shared_ptr<StorageCredentialProvider>>(
+      const std::string& plan_id)>
       credential_provider_factory;
 };
 
@@ -75,10 +69,12 @@ class ICEBERG_REST_EXPORT RestTableScan : public DataTableScan {
  public:
   ~RestTableScan() override = default;
 
+  /// \brief Create a point-in-time scan. Incremental ranges must use
+  /// RestIncrementalAppendScan.
   static Result<std::unique_ptr<DataTableScan>> Make(
       std::shared_ptr<TableMetadata> metadata, std::shared_ptr<Schema> schema,
       std::shared_ptr<FileIO> io, internal::TableScanContext context,
-      RestScanContext rest_context);
+      std::shared_ptr<const RestScanContext> rest_context);
 
   /// \brief Plans files lazily via the REST scan planning endpoints.
   ///
@@ -94,9 +90,9 @@ class ICEBERG_REST_EXPORT RestTableScan : public DataTableScan {
  private:
   RestTableScan(std::shared_ptr<TableMetadata> metadata, std::shared_ptr<Schema> schema,
                 std::shared_ptr<FileIO> io, internal::TableScanContext context,
-                RestScanContext rest_context);
+                std::shared_ptr<const RestScanContext> rest_context);
 
-  RestScanContext rest_context_;
+  std::shared_ptr<const RestScanContext> rest_context_;
   mutable std::shared_ptr<FileIO> scan_io_;
 };
 
@@ -106,16 +102,19 @@ class ICEBERG_REST_EXPORT RestTableScanBuilder : public DataTableScanBuilder {
   RestTableScanBuilder(std::shared_ptr<TableMetadata> metadata,
                        std::shared_ptr<FileIO> io, std::string table_name,
                        std::shared_ptr<MetricsReporter> metrics_reporter,
-                       RestScanContext rest_context);
+                       std::shared_ptr<const RestScanContext> rest_context);
 
   /// \brief Resolves schema/context via parent logic then creates a RestTableScan.
   Result<std::unique_ptr<DataTableScan>> Build() override;
 
  private:
-  RestScanContext rest_context_;
+  std::shared_ptr<const RestScanContext> rest_context_;
 };
 
 /// \brief An IncrementalAppendScan that delegates PlanFiles() to the REST catalog server.
+///
+/// Scans without an exclusive start snapshot, including an inclusive root snapshot,
+/// return NotSupported.
 ///
 /// IncrementalChangelogScan is not delegated because the REST planTableScan response
 /// only carries FileScanTask objects; reconstructing ChangelogScanTask entries
@@ -128,7 +127,7 @@ class ICEBERG_REST_EXPORT RestIncrementalAppendScan : public IncrementalAppendSc
   static Result<std::unique_ptr<IncrementalAppendScan>> Make(
       std::shared_ptr<TableMetadata> metadata, std::shared_ptr<Schema> schema,
       std::shared_ptr<FileIO> io, internal::TableScanContext context,
-      RestScanContext rest_context);
+      std::shared_ptr<const RestScanContext> rest_context);
 
   using IncrementalAppendScan::PlanFiles;
 
@@ -148,9 +147,9 @@ class ICEBERG_REST_EXPORT RestIncrementalAppendScan : public IncrementalAppendSc
   RestIncrementalAppendScan(std::shared_ptr<TableMetadata> metadata,
                             std::shared_ptr<Schema> schema, std::shared_ptr<FileIO> io,
                             internal::TableScanContext context,
-                            RestScanContext rest_context);
+                            std::shared_ptr<const RestScanContext> rest_context);
 
-  RestScanContext rest_context_;
+  std::shared_ptr<const RestScanContext> rest_context_;
   mutable std::shared_ptr<FileIO> scan_io_;
 };
 
@@ -161,12 +160,12 @@ class ICEBERG_REST_EXPORT RestIncrementalAppendScanBuilder
   RestIncrementalAppendScanBuilder(std::shared_ptr<TableMetadata> metadata,
                                    std::shared_ptr<FileIO> io, std::string table_name,
                                    std::shared_ptr<MetricsReporter> metrics_reporter,
-                                   RestScanContext rest_context);
+                                   std::shared_ptr<const RestScanContext> rest_context);
 
   Result<std::unique_ptr<IncrementalAppendScan>> Build() override;
 
  private:
-  RestScanContext rest_context_;
+  std::shared_ptr<const RestScanContext> rest_context_;
 };
 
 }  // namespace iceberg::rest

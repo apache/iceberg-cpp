@@ -31,7 +31,6 @@
 
 #include <nlohmann/json.hpp>
 
-#include "iceberg/catalog/rest/auth/auth_manager_internal.h"
 #include "iceberg/catalog/rest/auth/auth_managers.h"
 #include "iceberg/catalog/rest/auth/auth_session.h"
 #include "iceberg/catalog/rest/catalog_properties.h"
@@ -44,6 +43,7 @@
 #include "iceberg/catalog/rest/rest_file_io.h"
 #include "iceberg/catalog/rest/rest_metrics_reporter_internal.h"
 #include "iceberg/catalog/rest/rest_table.h"
+#include "iceberg/catalog/rest/rest_table_scan.h"
 #include "iceberg/catalog/rest/rest_util.h"
 #include "iceberg/catalog/rest/types.h"
 #include "iceberg/json_serde_internal.h"
@@ -129,11 +129,10 @@ std::string RestTableName(std::string_view catalog_name,
 }
 
 /// \brief Fetch server configuration from the REST catalog server.
-Result<CatalogConfig> FetchServerConfig(const ResourcePaths& paths,
+Result<CatalogConfig> FetchServerConfig(HttpClient& client, const ResourcePaths& paths,
                                         const RestCatalogProperties& current_config,
                                         auth::AuthSession& session) {
   ICEBERG_ASSIGN_OR_RAISE(auto config_path, paths.Config());
-  HttpClient client(current_config.ExtractHeaders());
 
   // Send the client's warehouse location to the service to keep in sync.
   // This is needed for cases where the warehouse is configured client side, but may
@@ -432,7 +431,14 @@ RestCatalog::~RestCatalog() {
 }
 
 Result<std::shared_ptr<RestCatalog>> RestCatalog::Make(
-    const RestCatalogProperties& config, Executor* metrics_executor) {
+    const RestCatalogProperties& config, Executor* metrics_executor,
+    ClientFactory client_factory) {
+  if (!client_factory) {
+    client_factory = [](const RestCatalogProperties& properties)
+        -> Result<std::shared_ptr<HttpClient>> {
+      return std::make_shared<HttpClient>(properties.ExtractHeaders());
+    };
+  }
   ICEBERG_ASSIGN_OR_RAISE(auto uri, config.Uri());
 
   std::string catalog_name = config.Get(RestCatalogProperties::kName);
@@ -445,11 +451,12 @@ Result<std::shared_ptr<RestCatalog>> RestCatalog::Make(
                           config.Get(RestCatalogProperties::kNamespaceSeparator)));
 
   // Create init session for fetching server configuration
-  auto init_client = std::make_shared<HttpClient>(config.ExtractHeaders());
+  ICEBERG_ASSIGN_OR_RAISE(auto init_client, client_factory(config));
+  ICEBERG_PRECHECK(init_client != nullptr, "HTTP client factory returned null");
   ICEBERG_ASSIGN_OR_RAISE(auto init_session,
                           auth_manager->InitSession(init_client, config.configs()));
   ICEBERG_ASSIGN_OR_RAISE(auto server_config,
-                          FetchServerConfig(*paths, config, *init_session));
+                          FetchServerConfig(*init_client, *paths, config, *init_session));
 
   RestCatalogProperties final_config = RestCatalogProperties::FromMap(
       MergeConfigs(server_config.defaults, config.configs(), server_config.overrides));
@@ -475,8 +482,12 @@ Result<std::shared_ptr<RestCatalog>> RestCatalog::Make(
 
   // Get snapshot loading mode
   ICEBERG_ASSIGN_OR_RAISE(auto snapshot_mode, final_config.SnapshotLoadingMode());
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto client_scan_planning_mode,
+      RestCatalogProperties::ScanPlanningModeFrom(final_config.configs()));
 
-  auto client = std::make_shared<HttpClient>(final_config.ExtractHeaders());
+  ICEBERG_ASSIGN_OR_RAISE(auto client, client_factory(final_config));
+  ICEBERG_PRECHECK(client != nullptr, "HTTP client factory returned null");
   ICEBERG_ASSIGN_OR_RAISE(auto catalog_session,
                           auth_manager->CatalogSession(client, final_config.configs()));
 
@@ -495,23 +506,8 @@ Result<std::shared_ptr<RestCatalog>> RestCatalog::Make(
   return std::shared_ptr<RestCatalog>(new RestCatalog(
       std::move(final_config), std::move(file_io), std::move(client), std::move(paths),
       std::move(endpoints), std::move(auth_manager), std::move(catalog_session),
-      snapshot_mode, std::move(default_context), std::move(reporter), metrics_executor));
-}
-
-Result<std::shared_ptr<RestCatalog>> RestCatalog::MakeForTesting(
-    RestCatalogProperties config, std::shared_ptr<FileIO> file_io,
-    std::shared_ptr<HttpClient> client, std::shared_ptr<ResourcePaths> paths,
-    std::unordered_set<Endpoint> endpoints) {
-  std::string catalog_name = config.Get(RestCatalogProperties::kName);
-  ICEBERG_ASSIGN_OR_RAISE(auto auth_manager,
-                          auth::MakeNoopAuthManager(catalog_name, config.configs()));
-  auto session = auth::AuthSession::MakeDefault({});
-  ICEBERG_ASSIGN_OR_RAISE(auto snapshot_mode, config.SnapshotLoadingMode());
-  return std::shared_ptr<RestCatalog>(
-      new RestCatalog(std::move(config), std::move(file_io), std::move(client),
-                      std::move(paths), std::move(endpoints), std::move(auth_manager),
-                      std::move(session), snapshot_mode, SessionContext::Empty(),
-                      /*reporter=*/nullptr, /*metrics_executor=*/nullptr));
+      snapshot_mode, client_scan_planning_mode, std::move(default_context),
+      std::move(reporter), metrics_executor));
 }
 
 RestCatalog::RestCatalog(RestCatalogProperties config, std::shared_ptr<FileIO> file_io,
@@ -520,7 +516,9 @@ RestCatalog::RestCatalog(RestCatalogProperties config, std::shared_ptr<FileIO> f
                          std::unordered_set<Endpoint> endpoints,
                          std::unique_ptr<auth::AuthManager> auth_manager,
                          std::shared_ptr<auth::AuthSession> catalog_session,
-                         SnapshotMode snapshot_mode, SessionContext default_context,
+                         SnapshotMode snapshot_mode,
+                         std::optional<ScanPlanningMode> client_scan_planning_mode,
+                         SessionContext default_context,
                          std::shared_ptr<MetricsReporter> reporter,
                          Executor* metrics_executor)
     : config_(std::move(config)),
@@ -532,6 +530,7 @@ RestCatalog::RestCatalog(RestCatalogProperties config, std::shared_ptr<FileIO> f
       auth_manager_(std::move(auth_manager)),
       catalog_session_(std::move(catalog_session)),
       snapshot_mode_(snapshot_mode),
+      client_scan_planning_mode_(client_scan_planning_mode),
       default_context_(std::move(default_context)),
       reporter_(std::move(reporter)),
       metrics_executor_(metrics_executor) {
@@ -570,7 +569,8 @@ Result<std::shared_ptr<auth::AuthSession>> RestCatalog::TableAuthSession(
                                      std::move(contextual_session));
 }
 
-std::shared_ptr<StorageCredentialProvider> RestCatalog::MakeStorageCredentialProvider(
+Result<std::shared_ptr<StorageCredentialProvider>>
+RestCatalog::MakeStorageCredentialProvider(
     const TableIdentifier& identifier, std::shared_ptr<auth::AuthSession> table_session,
     std::optional<std::string> plan_id) const {
   if (!supported_endpoints_.contains(Endpoint::TableCredentials())) {
@@ -579,18 +579,10 @@ std::shared_ptr<StorageCredentialProvider> RestCatalog::MakeStorageCredentialPro
         "Catalog does not advertise {}; vended credentials for '{}' will not be "
         "refreshed",
         Endpoint::TableCredentials().ToString(), ToString(identifier));
-    return nullptr;
+    return std::shared_ptr<StorageCredentialProvider>{};
   }
-  auto path = paths_->Credentials(identifier);
-  if (!path.has_value()) {
-    ICEBERG_LOG_WARN(
-        "Cannot build the credentials path for '{}' ({}); its vended credentials "
-        "will not be refreshed",
-        ToString(identifier), path.error().message);
-    return nullptr;
-  }
+  ICEBERG_ASSIGN_OR_RAISE(auto credentials_path, paths_->Credentials(identifier));
   auto client = client_;
-  auto credentials_path = std::move(path.value());
   auto session = std::move(table_session);
   std::unordered_map<std::string, std::string> params;
   if (plan_id.has_value()) {
@@ -610,7 +602,8 @@ Result<std::shared_ptr<FileIO>> RestCatalog::TableFileIO(
     // Only vended credentials expire, so only they need a provider.
     std::shared_ptr<StorageCredentialProvider> provider;
     if (!storage_credentials.empty()) {
-      provider = MakeStorageCredentialProvider(identifier, std::move(table_session));
+      ICEBERG_ASSIGN_OR_RAISE(
+          provider, MakeStorageCredentialProvider(identifier, std::move(table_session)));
     }
     return MakeTableFileIO(config_.configs(), table_config, storage_credentials,
                            std::move(provider));
@@ -1001,20 +994,6 @@ Result<std::shared_ptr<Table>> RestCatalog::MakeTableFromLoadResult(
   auto table_catalog = std::make_shared<TableScopedCatalog>(
       shared_from_this(), context, identifier, table_config, table_session, table_io);
 
-  ICEBERG_ASSIGN_OR_RAISE(auto client_mode,
-                          RestCatalogProperties::ScanPlanningModeFrom(config_.configs()));
-  ICEBERG_ASSIGN_OR_RAISE(auto server_mode,
-                          RestCatalogProperties::ScanPlanningModeFrom(table_config));
-  if (client_mode.has_value() && server_mode.has_value() &&
-      *client_mode != *server_mode) {
-    Log(LogLevel::kWarn,
-        "Scan planning mode mismatch for table {}: client config={}, server config={}. "
-        "Server config will take precedence.",
-        identifier.ToString(),
-        *client_mode == ScanPlanningMode::kClient ? "client" : "server",
-        *server_mode == ScanPlanningMode::kClient ? "client" : "server");
-  }
-
   return MakeTable(identifier, std::move(result.metadata),
                    std::move(result.metadata_location), std::move(table_io),
                    std::move(table_catalog), std::move(reporter), table_config,
@@ -1043,12 +1022,19 @@ Result<std::shared_ptr<Table>> RestCatalog::MakeTable(
     const std::unordered_map<std::string, std::string>& table_config,
     std::shared_ptr<auth::AuthSession> table_session) {
   // Table config overrides client config.
-  ICEBERG_ASSIGN_OR_RAISE(auto client_mode,
-                          RestCatalogProperties::ScanPlanningModeFrom(config_.configs()));
   ICEBERG_ASSIGN_OR_RAISE(auto server_mode,
                           RestCatalogProperties::ScanPlanningModeFrom(table_config));
-  ScanPlanningMode effective_mode =
-      server_mode.value_or(client_mode.value_or(ScanPlanningMode::kClient));
+  if (client_scan_planning_mode_.has_value() && server_mode.has_value() &&
+      *client_scan_planning_mode_ != *server_mode) {
+    Log(LogLevel::kWarn,
+        "Scan planning mode mismatch for table {}: client config={}, server config={}. "
+        "Server config will take precedence.",
+        identifier.ToString(),
+        *client_scan_planning_mode_ == ScanPlanningMode::kClient ? "client" : "server",
+        *server_mode == ScanPlanningMode::kClient ? "client" : "server");
+  }
+  ScanPlanningMode effective_mode = server_mode.value_or(
+      client_scan_planning_mode_.value_or(ScanPlanningMode::kClient));
 
   if (effective_mode == ScanPlanningMode::kServer) {
     if (!supported_endpoints_.contains(Endpoint::PlanTableScan())) {
@@ -1057,13 +1043,10 @@ Result<std::shared_ptr<Table>> RestCatalog::MakeTable(
           "the PlanTableScan endpoint.",
           identifier.ToString());
     }
-    auto credential_provider_factory =
-        [weak_catalog = weak_from_this(), identifier, table_session](
-            const std::string& plan_id) -> std::shared_ptr<StorageCredentialProvider> {
-      auto catalog = weak_catalog.lock();
-      if (catalog == nullptr) {
-        return nullptr;
-      }
+    // Scans can outlive the table; keep its authentication sessions alive too.
+    auto credential_provider_factory = [catalog = shared_from_this(), identifier,
+                                        table_session](const std::string& plan_id)
+        -> Result<std::shared_ptr<StorageCredentialProvider>> {
       // Without a plan id, refresh is table-scoped (no planId query parameter).
       std::optional<std::string> scoped_plan_id;
       if (!plan_id.empty()) {

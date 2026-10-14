@@ -19,11 +19,15 @@
 
 #include "iceberg/catalog/rest/rest_table_scan.h"
 
+#include <array>
 #include <memory>
 #include <optional>
 #include <string>
+#include <tuple>
 #include <unordered_map>
 #include <unordered_set>
+#include <utility>
+#include <vector>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
@@ -35,8 +39,10 @@
 #include "iceberg/catalog/rest/http_client.h"
 #include "iceberg/catalog/rest/resource_paths.h"
 #include "iceberg/catalog/rest/rest_table.h"
+#include "iceberg/catalog/rest/rest_table_scan.h"
 #include "iceberg/constants.h"
 #include "iceberg/expression/expressions.h"
+#include "iceberg/expression/json_serde_internal.h"
 #include "iceberg/expression/literal.h"
 #include "iceberg/file_io.h"
 #include "iceberg/file_io_registry.h"
@@ -53,6 +59,8 @@
 #include "iceberg/type.h"
 
 namespace iceberg::rest {
+
+namespace {
 
 using ::testing::_;
 using ::testing::Return;
@@ -166,10 +174,16 @@ class CredentialedFileIO : public NoOpFileIO, public SupportsStorageCredentials 
 
 constexpr std::string_view kCredentialedFileIO = "rest-table-scan-test-credentialed";
 
-class StaticCredentialProvider : public StorageCredentialProvider {
- public:
-  Result<std::vector<StorageCredential>> Load() override { return {}; }
-};
+nlohmann::json FileTaskJson(const std::string& path) {
+  return {{"data-file",
+           {{"content", "data"},
+            {"file-path", path},
+            {"file-format", "PARQUET"},
+            {"spec-id", 0},
+            {"partition", nlohmann::json::array()},
+            {"file-size-in-bytes", 100},
+            {"record-count", 10}}}};
+}
 
 }  // namespace
 
@@ -178,6 +192,8 @@ class StaticCredentialProvider : public StorageCredentialProvider {
 // --------------------------------------------------------------------------
 class RestTableScanTest : public ::testing::Test {
  protected:
+  void TearDown() override { installed_provider.reset(); }
+
   void SetUp() override {
     schema_ = std::make_shared<Schema>(
         std::vector<SchemaField>{SchemaField::MakeRequired(1, "id", int32()),
@@ -254,7 +270,7 @@ class RestTableScanTest : public ::testing::Test {
 
   Result<std::unique_ptr<DataTableScan>> MakeScan(RestScanContext ctx) {
     return RestTableScan::Make(metadata_, schema_, file_io_, internal::TableScanContext{},
-                               std::move(ctx));
+                               std::make_shared<const RestScanContext>(std::move(ctx)));
   }
 
   std::shared_ptr<Schema> schema_;
@@ -268,114 +284,6 @@ class RestTableScanTest : public ::testing::Test {
 };
 
 // --------------------------------------------------------------------------
-// PlanFiles: server returns COMPLETED immediately, no file scan tasks.
-// --------------------------------------------------------------------------
-TEST_F(RestTableScanTest, PlanFilesCompleted) {
-  constexpr std::string_view kResponseBody = R"({"status":"completed"})";
-  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kResponseBody))));
-
-  ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeScan(MakeContext()));
-  ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
-  EXPECT_TRUE(tasks.empty());
-}
-
-// --------------------------------------------------------------------------
-// PlanFiles: server returns COMPLETED with a non-empty plan-id (still valid).
-// --------------------------------------------------------------------------
-TEST_F(RestTableScanTest, PlanFilesCompletedWithPlanId) {
-  constexpr std::string_view kResponseBody =
-      R"({"status":"completed","plan-id":"plan-abc"})";
-  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kResponseBody))));
-
-  ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeScan(MakeContext()));
-  ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
-  EXPECT_TRUE(tasks.empty());
-}
-
-// --------------------------------------------------------------------------
-// PlanFiles: server returns SUBMITTED → poll returns COMPLETED.
-// --------------------------------------------------------------------------
-TEST_F(RestTableScanTest, PlanFilesSubmittedThenCompleted) {
-  constexpr std::string_view kSubmittedBody =
-      R"({"status":"submitted","plan-id":"plan-poll-1"})";
-  constexpr std::string_view kCompletedBody = R"({"status":"completed"})";
-
-  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kSubmittedBody))));
-  EXPECT_CALL(*mock_client_, Get(_, _, _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kCompletedBody))));
-
-  ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeScan(MakeContext()));
-  ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
-  EXPECT_TRUE(tasks.empty());
-}
-
-// --------------------------------------------------------------------------
-// PlanFiles: server returns FAILED → scan returns IOError.
-// --------------------------------------------------------------------------
-TEST_F(RestTableScanTest, PlanFilesFailed) {
-  constexpr std::string_view kFailedBody =
-      R"({"status":"failed","error":{"message":"server error","type":"ServerError","code":500}})";
-  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kFailedBody))));
-
-  ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeScan(MakeContext()));
-  auto result = scan->PlanFiles();
-  EXPECT_THAT(result, IsError(ErrorKind::kIOError));
-}
-
-// --------------------------------------------------------------------------
-// PlanFiles: PlanTableScan endpoint missing → NotSupported error.
-// --------------------------------------------------------------------------
-TEST_F(RestTableScanTest, PlanFilesEndpointNotSupported) {
-  ICEBERG_UNWRAP_OR_FAIL(auto scan,
-                         MakeScan(MakeContext(std::unordered_set<Endpoint>{})));
-  auto result = scan->PlanFiles();
-  EXPECT_THAT(result, IsError(ErrorKind::kNotSupported));
-}
-
-// --------------------------------------------------------------------------
-// PlanFiles with plan-tasks: server returns COMPLETED with opaque task token,
-// then FetchScanTasks is called and returns no file scan tasks.
-// --------------------------------------------------------------------------
-TEST_F(RestTableScanTest, PlanFilesWithPlanTasks) {
-  constexpr std::string_view kPlanResponse =
-      R"({"status":"completed","plan-id":"plan-1","plan-tasks":["tok-1"]})";
-  // FetchScanTasksResponse requires at least one of plan-tasks or file-scan-tasks
-  // present.
-  constexpr std::string_view kTasksResponse = R"({"file-scan-tasks":[]})";
-
-  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kPlanResponse))))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kTasksResponse))));
-
-  ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeScan(MakeContext()));
-  ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
-  EXPECT_TRUE(tasks.empty());
-}
-
-// --------------------------------------------------------------------------
-// Cancel is called when FetchScanTasks fails after a COMPLETED response that
-// included plan-tasks. This mirrors the Java cancelPlan-on-close behavior.
-// --------------------------------------------------------------------------
-TEST_F(RestTableScanTest, CancelCalledWhenFetchScanTasksFails) {
-  constexpr std::string_view kPlanResponse =
-      R"({"status":"completed","plan-id":"plan-cancel-1","plan-tasks":["tok-a"]})";
-
-  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kPlanResponse))))
-      .WillOnce(Return(IOError("FetchScanTasks failed")));
-  EXPECT_CALL(*mock_client_, Delete(_, _, _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, "{}")));
-
-  ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeScan(MakeContext()));
-  auto result = scan->PlanFiles();
-  EXPECT_THAT(result, IsError(ErrorKind::kIOError));
-}
-
-// --------------------------------------------------------------------------
 // Cancel is a no-op when plan_id is empty (server returned no plan-id).
 // --------------------------------------------------------------------------
 TEST_F(RestTableScanTest, CancelIsNoOpWithEmptyPlanId) {
@@ -383,7 +291,7 @@ TEST_F(RestTableScanTest, CancelIsNoOpWithEmptyPlanId) {
       R"({"status":"completed","plan-tasks":["tok-b"]})";
 
   EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kPlanResponse))))
+      .WillOnce(Return(HttpResponse(200, std::string(kPlanResponse))))
       .WillOnce(Return(IOError("FetchScanTasks failed")));
   EXPECT_CALL(*mock_client_, Delete(_, _, _, _, _)).Times(0);
 
@@ -404,52 +312,13 @@ TEST_F(RestTableScanTest, CancelIsNoOpWhenEndpointNotAdvertised) {
       Endpoint::FetchScanTasks()};
 
   EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kPlanResponse))))
+      .WillOnce(Return(HttpResponse(200, std::string(kPlanResponse))))
       .WillOnce(Return(IOError("FetchScanTasks failed")));
   EXPECT_CALL(*mock_client_, Delete(_, _, _, _, _)).Times(0);
 
   ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeScan(MakeContext(endpoints_without_cancel)));
   auto result = scan->PlanFiles();
   EXPECT_THAT(result, IsError(ErrorKind::kIOError));
-}
-
-// --------------------------------------------------------------------------
-// FetchPlanningResult: FetchPlanningResult endpoint missing → NotSupported.
-// --------------------------------------------------------------------------
-TEST_F(RestTableScanTest, FetchPlanningResultEndpointNotSupported) {
-  constexpr std::string_view kSubmittedBody =
-      R"({"status":"submitted","plan-id":"plan-3"})";
-
-  std::unordered_set<Endpoint> endpoints_without_fetch = {
-      Endpoint::PlanTableScan(), Endpoint::CancelPlanning(), Endpoint::FetchScanTasks()};
-
-  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kSubmittedBody))));
-
-  ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeScan(MakeContext(endpoints_without_fetch)));
-  auto result = scan->PlanFiles();
-  EXPECT_THAT(result, IsError(ErrorKind::kNotSupported));
-}
-
-// --------------------------------------------------------------------------
-// FetchScanTasks: endpoint missing → NotSupported.
-// --------------------------------------------------------------------------
-TEST_F(RestTableScanTest, FetchScanTasksEndpointNotSupported) {
-  constexpr std::string_view kPlanResponse =
-      R"({"status":"completed","plan-id":"plan-4","plan-tasks":["tok-d"]})";
-
-  std::unordered_set<Endpoint> endpoints_without_tasks = {Endpoint::PlanTableScan(),
-                                                          Endpoint::FetchPlanningResult(),
-                                                          Endpoint::CancelPlanning()};
-
-  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kPlanResponse))));
-  EXPECT_CALL(*mock_client_, Delete(_, _, _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, "{}")));
-
-  ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeScan(MakeContext(endpoints_without_tasks)));
-  auto result = scan->PlanFiles();
-  EXPECT_THAT(result, IsError(ErrorKind::kNotSupported));
 }
 
 // --------------------------------------------------------------------------
@@ -465,115 +334,12 @@ TEST_F(RestTableScanTest, UseSnapshotPropagatesUseSnapshotSchemaInContext) {
                    testing::AllOf(JsonBodyHas("snapshot-id", kSnapshotId),
                                   JsonBodyHas("use-snapshot-schema", true)),
                    _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kResponseBody))));
+      .WillOnce(Return(HttpResponse(200, std::string(kResponseBody))));
 
-  RestTableScanBuilder builder(metadata_, file_io_, "test.my_table", nullptr,
-                               MakeContext(std::nullopt));
+  RestTableScanBuilder builder(
+      metadata_, file_io_, "test.my_table", nullptr,
+      std::make_shared<const RestScanContext>(MakeContext(std::nullopt)));
   builder.UseSnapshot(kSnapshotId);
-  ICEBERG_UNWRAP_OR_FAIL(auto scan, builder.Build());
-  ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
-  EXPECT_TRUE(tasks.empty());
-}
-
-// --------------------------------------------------------------------------
-// Default scan: POST body must have "use-snapshot-schema": false and no
-// "snapshot-id" field.
-// --------------------------------------------------------------------------
-TEST_F(RestTableScanTest, DefaultScanDoesNotSetUseSnapshotSchema) {
-  constexpr std::string_view kResponseBody = R"({"status":"completed"})";
-
-  EXPECT_CALL(*mock_client_,
-              Post(_,
-                   testing::AllOf(JsonBodyHas("use-snapshot-schema", false),
-                                  JsonBodyLacks("snapshot-id")),
-                   _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kResponseBody))));
-
-  RestTableScanBuilder builder(metadata_, file_io_, "test.my_table", nullptr,
-                               MakeContext(std::nullopt));
-  ICEBERG_UNWRAP_OR_FAIL(auto scan, builder.Build());
-  ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
-  EXPECT_TRUE(tasks.empty());
-}
-
-// --------------------------------------------------------------------------
-// IncludeColumnStats() columns are sent as stats-fields.
-// --------------------------------------------------------------------------
-TEST_F(RestTableScanTest, IncludeColumnStatsSendsStatsFields) {
-  constexpr std::string_view kResponseBody = R"({"status":"completed"})";
-  EXPECT_CALL(
-      *mock_client_,
-      Post(_, JsonBodyHas("stats-fields", std::vector<std::string>{"id"}), _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kResponseBody))));
-
-  RestTableScanBuilder builder(metadata_, file_io_, "test.my_table", nullptr,
-                               MakeContext());
-  builder.IncludeColumnStats({"id"});
-  ICEBERG_UNWRAP_OR_FAIL(auto scan, builder.Build());
-  ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
-  EXPECT_TRUE(tasks.empty());
-}
-
-// --------------------------------------------------------------------------
-// IncludeColumnStats() with an unknown column → ValidationFailed.
-// --------------------------------------------------------------------------
-TEST_F(RestTableScanTest, IncludeColumnStatsRejectsMissingColumn) {
-  RestTableScanBuilder builder(metadata_, file_io_, "test.my_table", nullptr,
-                               MakeContext());
-  builder.IncludeColumnStats({"missing"});
-  EXPECT_THAT(builder.Build(),
-              ::testing::AllOf(IsError(ErrorKind::kValidationFailed),
-                               HasErrorMessage("Cannot find stats column: missing")));
-}
-
-// --------------------------------------------------------------------------
-// Project() columns are sent as select.
-// --------------------------------------------------------------------------
-TEST_F(RestTableScanTest, ProjectSendsProjectedColumnsAsSelect) {
-  constexpr std::string_view kResponseBody = R"({"status":"completed"})";
-  EXPECT_CALL(*mock_client_,
-              Post(_, JsonBodyHas("select", std::vector<std::string>{"id"}), _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kResponseBody))));
-
-  RestTableScanBuilder builder(metadata_, file_io_, "test.my_table", nullptr,
-                               MakeContext());
-  builder.Project(std::make_shared<Schema>(
-      std::vector<SchemaField>{SchemaField::MakeRequired(1, "id", int32())}));
-  ICEBERG_UNWRAP_OR_FAIL(auto scan, builder.Build());
-  ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
-  EXPECT_TRUE(tasks.empty());
-}
-
-// --------------------------------------------------------------------------
-// Select() sends the selected columns plus filter columns.
-// --------------------------------------------------------------------------
-TEST_F(RestTableScanTest, SelectIncludesFilterColumns) {
-  constexpr std::string_view kResponseBody = R"({"status":"completed"})";
-  EXPECT_CALL(
-      *mock_client_,
-      Post(_, JsonBodyHas("select", std::vector<std::string>{"id", "data"}), _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kResponseBody))));
-
-  RestTableScanBuilder builder(metadata_, file_io_, "test.my_table", nullptr,
-                               MakeContext());
-  builder.Select({"data"}).Filter(Expressions::Equal("id", Literal::Int(1)));
-  ICEBERG_UNWRAP_OR_FAIL(auto scan, builder.Build());
-  ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
-  EXPECT_TRUE(tasks.empty());
-}
-
-// --------------------------------------------------------------------------
-// Case-insensitive Select() sends the schema's column names.
-// --------------------------------------------------------------------------
-TEST_F(RestTableScanTest, SelectResolvesCaseInsensitiveNames) {
-  constexpr std::string_view kResponseBody = R"({"status":"completed"})";
-  EXPECT_CALL(*mock_client_,
-              Post(_, JsonBodyHas("select", std::vector<std::string>{"data"}), _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kResponseBody))));
-
-  RestTableScanBuilder builder(metadata_, file_io_, "test.my_table", nullptr,
-                               MakeContext());
-  builder.CaseSensitive(false).Select({"DATA"});
   ICEBERG_UNWRAP_OR_FAIL(auto scan, builder.Build());
   ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
   EXPECT_TRUE(tasks.empty());
@@ -587,28 +353,11 @@ TEST_F(RestTableScanTest, SelectAllColumnsSendsAllColumns) {
   EXPECT_CALL(
       *mock_client_,
       Post(_, JsonBodyHas("select", std::vector<std::string>{"id", "data"}), _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kResponseBody))));
+      .WillOnce(Return(HttpResponse(200, std::string(kResponseBody))));
 
   RestTableScanBuilder builder(metadata_, file_io_, "test.my_table", nullptr,
-                               MakeContext());
+                               std::make_shared<const RestScanContext>(MakeContext()));
   builder.Select({std::string(Schema::kAllColumns)});
-  ICEBERG_UNWRAP_OR_FAIL(auto scan, builder.Build());
-  ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
-  EXPECT_TRUE(tasks.empty());
-}
-
-// --------------------------------------------------------------------------
-// No projection sends every column.
-// --------------------------------------------------------------------------
-TEST_F(RestTableScanTest, NoProjectionSendsAllColumns) {
-  constexpr std::string_view kResponseBody = R"({"status":"completed"})";
-  EXPECT_CALL(
-      *mock_client_,
-      Post(_, JsonBodyHas("select", std::vector<std::string>{"id", "data"}), _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kResponseBody))));
-
-  RestTableScanBuilder builder(metadata_, file_io_, "test.my_table", nullptr,
-                               MakeContext());
   ICEBERG_UNWRAP_OR_FAIL(auto scan, builder.Build());
   ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
   EXPECT_TRUE(tasks.empty());
@@ -652,10 +401,10 @@ TEST_F(RestTableScanRefSchemaTest, UseRefBranchUsesTableSchema) {
                    testing::AllOf(JsonBodyHas("snapshot-id", kEvolvedSnapshotId),
                                   JsonBodyHas("use-snapshot-schema", false)),
                    _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kResponseBody))));
+      .WillOnce(Return(HttpResponse(200, std::string(kResponseBody))));
 
   RestTableScanBuilder builder(metadata_, file_io_, "test.my_table", nullptr,
-                               MakeContext());
+                               std::make_shared<const RestScanContext>(MakeContext()));
   builder.UseRef("evolved-branch");
   ICEBERG_UNWRAP_OR_FAIL(auto scan, builder.Build());
   ICEBERG_UNWRAP_OR_FAIL(auto scan_schema, scan->schema());
@@ -671,53 +420,16 @@ TEST_F(RestTableScanRefSchemaTest, UseRefTagUsesSnapshotSchema) {
                    testing::AllOf(JsonBodyHas("snapshot-id", kEvolvedSnapshotId),
                                   JsonBodyHas("use-snapshot-schema", true)),
                    _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kResponseBody))));
+      .WillOnce(Return(HttpResponse(200, std::string(kResponseBody))));
 
   RestTableScanBuilder builder(metadata_, file_io_, "test.my_table", nullptr,
-                               MakeContext());
+                               std::make_shared<const RestScanContext>(MakeContext()));
   builder.UseRef("evolved-tag");
   ICEBERG_UNWRAP_OR_FAIL(auto scan, builder.Build());
   ICEBERG_UNWRAP_OR_FAIL(auto scan_schema, scan->schema());
   EXPECT_EQ(scan_schema->schema_id(), evolved_schema_->schema_id());
   ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
   EXPECT_TRUE(tasks.empty());
-}
-
-// --------------------------------------------------------------------------
-// Storage credentials in COMPLETED response: io() returns a
-// credential-scoped IO, not the original table IO.
-// --------------------------------------------------------------------------
-TEST_F(RestTableScanTest, StorageCredentialsInPlanResponseUpdatesEffectiveIO) {
-  constexpr std::string_view kResponseBody = R"({
-    "status": "completed",
-    "storage-credentials": [
-      {"prefix": "s3://bucket/prefix", "config": {"key": "value"}}
-    ]
-  })";
-  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kResponseBody))));
-
-  ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeScan(MakeContext()));
-  ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
-  EXPECT_TRUE(tasks.empty());
-
-  // io() must return a credential-scoped IO without requiring a downcast.
-  EXPECT_NE(scan->io().get(), file_io_.get());
-}
-
-// --------------------------------------------------------------------------
-// No storage credentials: io() falls back to the table's FileIO.
-// --------------------------------------------------------------------------
-TEST_F(RestTableScanTest, NoStorageCredentialsEffectiveIoFallsBackToTableIO) {
-  constexpr std::string_view kResponseBody = R"({"status":"completed"})";
-  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kResponseBody))));
-
-  ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeScan(MakeContext()));
-  ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
-  EXPECT_TRUE(tasks.empty());
-
-  EXPECT_EQ(scan->io().get(), file_io_.get());
 }
 
 // --------------------------------------------------------------------------
@@ -734,143 +446,14 @@ TEST_F(RestTableScanTest, StorageCredentialsInFetchScanTasksResponseAreIgnored) 
   })";
 
   EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kPlanResponse))))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kTasksResponse))));
+      .WillOnce(Return(HttpResponse(200, std::string(kPlanResponse))))
+      .WillOnce(Return(HttpResponse(200, std::string(kTasksResponse))));
 
   ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeScan(MakeContext()));
   ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
   EXPECT_TRUE(tasks.empty());
 
   EXPECT_EQ(scan->io().get(), file_io_.get());
-}
-
-// --------------------------------------------------------------------------
-// RestTable::NewScan returns a RestTableScanBuilder (not a plain builder).
-// --------------------------------------------------------------------------
-TEST_F(RestTableScanTest, RestTableNewScanReturnsRestTableScanBuilder) {
-  ICEBERG_UNWRAP_OR_FAIL(
-      auto table, RestTable::Make(identifier_, metadata_, "/tmp/metadata.json", file_io_,
-                                  /*catalog=*/nullptr, "test.my_table", nullptr,
-                                  MakeContext(std::nullopt)));
-  ICEBERG_UNWRAP_OR_FAIL(auto builder, table->NewScan());
-  auto* typed = dynamic_cast<RestTableScanBuilder*>(builder.get());
-  EXPECT_NE(typed, nullptr);
-}
-
-// ==========================================================================
-// PlanFilesStream tests
-// ==========================================================================
-
-// --------------------------------------------------------------------------
-// PlanFilesStream: COMPLETED immediately, stream yields no tasks.
-// --------------------------------------------------------------------------
-TEST_F(RestTableScanTest, PlanFilesStreamCompleted) {
-  constexpr std::string_view kResponseBody = R"({"status":"completed"})";
-  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kResponseBody))));
-
-  ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeScan(MakeContext()));
-  ICEBERG_UNWRAP_OR_FAIL(auto stream, scan->PlanFilesStream());
-  ICEBERG_UNWRAP_OR_FAIL(auto tasks, stream->ToVector());
-  EXPECT_TRUE(tasks.empty());
-}
-
-// --------------------------------------------------------------------------
-// PlanFilesStream: two plan-task tokens each trigger a separate FetchScanTasks
-// POST, one per token, and the combined task set is returned.
-// --------------------------------------------------------------------------
-TEST_F(RestTableScanTest, PlanFilesStreamFetchesEachTokenSeparately) {
-  constexpr std::string_view kPlanResponse =
-      R"({"status":"completed","plan-id":"plan-stream","plan-tasks":["tok-s1","tok-s2"]})";
-  constexpr std::string_view kTask1Response = R"({
-    "file-scan-tasks": [
-      {"data-file":{"content":"data","file-path":"s3://b/f1.parquet",
-       "file-format":"PARQUET","spec-id":0,"partition":[],"file-size-in-bytes":1,"record-count":1}}
-    ]
-  })";
-  constexpr std::string_view kTask2Response = R"({
-    "file-scan-tasks": [
-      {"data-file":{"content":"data","file-path":"s3://b/f2.parquet",
-       "file-format":"PARQUET","spec-id":0,"partition":[],"file-size-in-bytes":1,"record-count":1}}
-    ]
-  })";
-
-  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kPlanResponse))))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kTask1Response))))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kTask2Response))));
-
-  ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeScan(MakeContext()));
-  ICEBERG_UNWRAP_OR_FAIL(auto stream, scan->PlanFilesStream());
-  ICEBERG_UNWRAP_OR_FAIL(auto tasks, stream->ToVector());
-  ASSERT_EQ(tasks.size(), 2u);
-  EXPECT_EQ(tasks[0]->data_file()->file_path, "s3://b/f1.parquet");
-  EXPECT_EQ(tasks[1]->data_file()->file_path, "s3://b/f2.parquet");
-}
-
-// --------------------------------------------------------------------------
-// PlanFilesStream: the second FetchScanTasks POST is not made until the first
-// token's buffer is exhausted. Verified by counting POST calls between Next()
-// invocations.
-// --------------------------------------------------------------------------
-TEST_F(RestTableScanTest, PlanFilesStreamFetchesTokenOnlyWhenBufferExhausted) {
-  constexpr std::string_view kPlanResponse =
-      R"({"status":"completed","plan-id":"plan-lazy","plan-tasks":["tok-1","tok-2"]})";
-  // tok-1 returns 2 tasks; tok-2 must not be fetched until both are consumed.
-  constexpr std::string_view kTwoTasksResponse = R"({
-    "file-scan-tasks": [
-      {"data-file":{"content":"data","file-path":"s3://b/f1.parquet",
-       "file-format":"PARQUET","spec-id":0,"partition":[],"file-size-in-bytes":1,"record-count":1}},
-      {"data-file":{"content":"data","file-path":"s3://b/f2.parquet",
-       "file-format":"PARQUET","spec-id":0,"partition":[],"file-size-in-bytes":1,"record-count":1}}
-    ]
-  })";
-  constexpr std::string_view kOneTaskResponse = R"({
-    "file-scan-tasks": [
-      {"data-file":{"content":"data","file-path":"s3://b/f3.parquet",
-       "file-format":"PARQUET","spec-id":0,"partition":[],"file-size-in-bytes":1,"record-count":1}}
-    ]
-  })";
-
-  int fetch_count = 0;
-  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kPlanResponse))))
-      .WillOnce([&](auto&&...) -> Result<HttpResponse> {
-        ++fetch_count;
-        return HttpResponse::MakeForTesting(200, std::string(kTwoTasksResponse));
-      })
-      .WillOnce([&](auto&&...) -> Result<HttpResponse> {
-        ++fetch_count;
-        return HttpResponse::MakeForTesting(200, std::string(kOneTaskResponse));
-      });
-
-  ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeScan(MakeContext()));
-  ICEBERG_UNWRAP_OR_FAIL(auto stream, scan->PlanFilesStream());
-
-  // No FetchScanTasks call yet — stream has not been driven.
-  EXPECT_EQ(fetch_count, 0);
-
-  // First Next(): fetches tok-1 (2 tasks buffered), returns f1.
-  ICEBERG_UNWRAP_OR_FAIL(auto t1, stream->Next());
-  ASSERT_TRUE(t1.has_value());
-  EXPECT_EQ(fetch_count, 1);
-  EXPECT_EQ((*t1)->data_file()->file_path, "s3://b/f1.parquet");
-
-  // Second Next(): served from buffer; tok-2 not fetched yet.
-  ICEBERG_UNWRAP_OR_FAIL(auto t2, stream->Next());
-  ASSERT_TRUE(t2.has_value());
-  EXPECT_EQ(fetch_count, 1);
-  EXPECT_EQ((*t2)->data_file()->file_path, "s3://b/f2.parquet");
-
-  // Third Next(): buffer exhausted, fetches tok-2, returns f3.
-  ICEBERG_UNWRAP_OR_FAIL(auto t3, stream->Next());
-  ASSERT_TRUE(t3.has_value());
-  EXPECT_EQ(fetch_count, 2);
-  EXPECT_EQ((*t3)->data_file()->file_path, "s3://b/f3.parquet");
-
-  // Fourth Next(): all tokens consumed, stream terminates.
-  ICEBERG_UNWRAP_OR_FAIL(auto end, stream->Next());
-  EXPECT_FALSE(end.has_value());
 }
 
 // --------------------------------------------------------------------------
@@ -882,10 +465,10 @@ TEST_F(RestTableScanTest, PlanFilesStreamNextReturnsErrorOnFetchFailure) {
       R"({"status":"completed","plan-id":"plan-next-err","plan-tasks":["tok-err"]})";
 
   EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kPlanResponse))))
+      .WillOnce(Return(HttpResponse(200, std::string(kPlanResponse))))
       .WillOnce(Return(IOError("FetchScanTasks network error")));
   EXPECT_CALL(*mock_client_, Delete(_, _, _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, "{}")));
+      .WillOnce(Return(HttpResponse(200, "{}")));
 
   ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeScan(MakeContext()));
   ICEBERG_UNWRAP_OR_FAIL(auto stream, scan->PlanFilesStream());
@@ -908,10 +491,10 @@ TEST_F(RestTableScanTest, PlanFilesStreamCancelAfterPartialConsumption) {
   })";
 
   EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kPlanResponse))))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kTaskResponse))));
+      .WillOnce(Return(HttpResponse(200, std::string(kPlanResponse))))
+      .WillOnce(Return(HttpResponse(200, std::string(kTaskResponse))));
   EXPECT_CALL(*mock_client_, Delete(_, _, _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, "{}")));
+      .WillOnce(Return(HttpResponse(200, "{}")));
 
   ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeScan(MakeContext()));
   {
@@ -920,122 +503,6 @@ TEST_F(RestTableScanTest, PlanFilesStreamCancelAfterPartialConsumption) {
     ICEBERG_UNWRAP_OR_FAIL(auto task, stream->Next());
     ASSERT_TRUE(task.has_value());
     // Destroy stream here — tok-p2 is still pending, so destructor calls DELETE.
-  }
-}
-
-// --------------------------------------------------------------------------
-// PlanFilesStream: stream destroyed with no Next() calls at all →
-// DELETE /plan called by the destructor.
-// --------------------------------------------------------------------------
-TEST_F(RestTableScanTest, PlanFilesStreamCancelOnNoConsumption) {
-  constexpr std::string_view kPlanResponse =
-      R"({"status":"completed","plan-id":"plan-never-consumed","plan-tasks":["tok-p1"]})";
-
-  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kPlanResponse))));
-  EXPECT_CALL(*mock_client_, Delete(_, _, _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, "{}")));
-
-  ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeScan(MakeContext()));
-  {
-    ICEBERG_UNWRAP_OR_FAIL(auto stream, scan->PlanFilesStream());
-    // Destroy without any Next() call — destructor must call DELETE /plan.
-  }
-}
-
-// --------------------------------------------------------------------------
-// PlanFilesStream: SUBMITTED → poll until COMPLETED, stream yields all tasks.
-// --------------------------------------------------------------------------
-TEST_F(RestTableScanTest, PlanFilesStreamSubmittedThenCompleted) {
-  constexpr std::string_view kSubmittedBody =
-      R"({"status":"submitted","plan-id":"plan-poll-stream"})";
-  constexpr std::string_view kCompletedBody = R"({"status":"completed"})";
-
-  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kSubmittedBody))));
-  EXPECT_CALL(*mock_client_, Get(_, _, _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kCompletedBody))));
-
-  ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeScan(MakeContext()));
-  ICEBERG_UNWRAP_OR_FAIL(auto stream, scan->PlanFilesStream());
-  ICEBERG_UNWRAP_OR_FAIL(auto tasks, stream->ToVector());
-  EXPECT_TRUE(tasks.empty());
-}
-
-// --------------------------------------------------------------------------
-// PlanFilesStream: SUBMITTED → COMPLETED with plan tasks; tokens are fetched
-// lazily as the stream is consumed.
-// --------------------------------------------------------------------------
-TEST_F(RestTableScanTest, PlanFilesStreamSubmittedFetchesTokensLazily) {
-  constexpr std::string_view kSubmittedBody =
-      R"({"status":"submitted","plan-id":"plan-poll-lazy"})";
-  constexpr std::string_view kCompletedBody =
-      R"({"status":"completed","plan-tasks":["tok-1","tok-2"]})";
-  constexpr std::string_view kTask1Response = R"({
-    "file-scan-tasks": [
-      {"data-file":{"content":"data","file-path":"s3://b/f1.parquet",
-       "file-format":"PARQUET","spec-id":0,"partition":[],"file-size-in-bytes":1,"record-count":1}}
-    ]
-  })";
-  constexpr std::string_view kTask2Response = R"({
-    "file-scan-tasks": [
-      {"data-file":{"content":"data","file-path":"s3://b/f2.parquet",
-       "file-format":"PARQUET","spec-id":0,"partition":[],"file-size-in-bytes":1,"record-count":1}}
-    ]
-  })";
-
-  int fetch_count = 0;
-  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kSubmittedBody))))
-      .WillOnce([&](auto&&...) -> Result<HttpResponse> {
-        ++fetch_count;
-        return HttpResponse::MakeForTesting(200, std::string(kTask1Response));
-      })
-      .WillOnce([&](auto&&...) -> Result<HttpResponse> {
-        ++fetch_count;
-        return HttpResponse::MakeForTesting(200, std::string(kTask2Response));
-      });
-  EXPECT_CALL(*mock_client_, Get(_, _, _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kCompletedBody))));
-
-  ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeScan(MakeContext()));
-  ICEBERG_UNWRAP_OR_FAIL(auto stream, scan->PlanFilesStream());
-  EXPECT_EQ(fetch_count, 0);
-
-  ICEBERG_UNWRAP_OR_FAIL(auto t1, stream->Next());
-  ASSERT_TRUE(t1.has_value());
-  EXPECT_EQ(fetch_count, 1);
-  EXPECT_EQ((*t1)->data_file()->file_path, "s3://b/f1.parquet");
-
-  ICEBERG_UNWRAP_OR_FAIL(auto t2, stream->Next());
-  ASSERT_TRUE(t2.has_value());
-  EXPECT_EQ(fetch_count, 2);
-  EXPECT_EQ((*t2)->data_file()->file_path, "s3://b/f2.parquet");
-
-  ICEBERG_UNWRAP_OR_FAIL(auto end, stream->Next());
-  EXPECT_FALSE(end.has_value());
-}
-
-// --------------------------------------------------------------------------
-// PlanFilesStream: SUBMITTED → COMPLETED, stream destroyed with no Next() calls
-// → DELETE /plan called by the destructor.
-// --------------------------------------------------------------------------
-TEST_F(RestTableScanTest, PlanFilesStreamSubmittedCancelOnNoConsumption) {
-  constexpr std::string_view kSubmittedBody =
-      R"({"status":"submitted","plan-id":"plan-poll-partial"})";
-  constexpr std::string_view kCompletedBody =
-      R"({"status":"completed","plan-tasks":["tok-1"]})";
-
-  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kSubmittedBody))));
-  EXPECT_CALL(*mock_client_, Get(_, _, _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kCompletedBody))));
-  EXPECT_CALL(*mock_client_, Delete(_, _, _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, "{}")));
-
-  ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeScan(MakeContext()));
-  {
-    ICEBERG_UNWRAP_OR_FAIL(auto stream, scan->PlanFilesStream());
   }
 }
 
@@ -1061,15 +528,19 @@ TEST_F(RestTableScanTest, PlanFilesStreamFetchesNestedPlanTasksLazily) {
   })";
 
   int fetch_count = 0;
-  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kPlanResponse))))
+  EXPECT_CALL(*mock_client_, Post(::testing::EndsWith("/plan"), _, _, _, _))
+      .WillOnce(Return(HttpResponse(200, std::string(kPlanResponse))));
+  EXPECT_CALL(*mock_client_, Post(::testing::EndsWith("/tasks"),
+                                  JsonBodyHas("plan-task", "tok-1"), _, _, _))
       .WillOnce([&](auto&&...) -> Result<HttpResponse> {
         ++fetch_count;
-        return HttpResponse::MakeForTesting(200, std::string(kTask1Response));
-      })
+        return HttpResponse(200, std::string(kTask1Response));
+      });
+  EXPECT_CALL(*mock_client_, Post(::testing::EndsWith("/tasks"),
+                                  JsonBodyHas("plan-task", "tok-nested"), _, _, _))
       .WillOnce([&](auto&&...) -> Result<HttpResponse> {
         ++fetch_count;
-        return HttpResponse::MakeForTesting(200, std::string(kNestedResponse));
+        return HttpResponse(200, std::string(kNestedResponse));
       });
 
   ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeScan(MakeContext()));
@@ -1108,13 +579,13 @@ TEST_F(RestTableScanTest, PlanFilesStreamIgnoresPlanExecutor) {
     ]
   })";
   EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kPlanResponse))))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kTask1Response))))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kTask2Response))));
+      .WillOnce(Return(HttpResponse(200, std::string(kPlanResponse))))
+      .WillOnce(Return(HttpResponse(200, std::string(kTask1Response))))
+      .WillOnce(Return(HttpResponse(200, std::string(kTask2Response))));
 
   test::ThreadExecutor executor;
   RestTableScanBuilder builder(metadata_, file_io_, "test.my_table", nullptr,
-                               MakeContext());
+                               std::make_shared<const RestScanContext>(MakeContext()));
   builder.PlanWith(executor);
   ICEBERG_UNWRAP_OR_FAIL(auto scan, builder.Build());
   ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
@@ -1126,45 +597,17 @@ TEST_F(RestTableScanTest, PlanFilesStreamIgnoresPlanExecutor) {
 }
 
 // --------------------------------------------------------------------------
-// PlanFilesStream: invalid plan response with a plan-id → DELETE /plan called.
-// --------------------------------------------------------------------------
-TEST_F(RestTableScanTest, PlanFilesStreamInvalidResponseWithPlanIdCancels) {
-  constexpr std::string_view kInvalidBody =
-      R"({"status":"submitted","plan-id":"plan-invalid","plan-tasks":["tok-1"]})";
-  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kInvalidBody))));
-  EXPECT_CALL(*mock_client_, Delete(_, _, _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, "{}")));
-
-  ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeScan(MakeContext()));
-  EXPECT_THAT(scan->PlanFilesStream(), IsError(ErrorKind::kValidationFailed));
-}
-
-// --------------------------------------------------------------------------
-// PlanFilesStream: invalid plan response without a plan-id → no DELETE.
-// --------------------------------------------------------------------------
-TEST_F(RestTableScanTest, PlanFilesStreamInvalidResponseWithoutPlanIdDoesNotCancel) {
-  constexpr std::string_view kInvalidBody = R"({"status":"failed"})";
-  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kInvalidBody))));
-  EXPECT_CALL(*mock_client_, Delete(_, _, _, _, _)).Times(0);
-
-  ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeScan(MakeContext()));
-  EXPECT_THAT(scan->PlanFilesStream(), IsError(ErrorKind::kJsonParseError));
-}
-
-// --------------------------------------------------------------------------
 // poll-num-retries=0: a single GET for a SUBMITTED plan, then cancel.
 // --------------------------------------------------------------------------
 TEST_F(RestTableScanTest, PlanFilesStreamPollNumRetriesZero) {
   constexpr std::string_view kSubmittedBody =
       R"({"status":"submitted","plan-id":"plan-no-retry"})";
   EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kSubmittedBody))));
+      .WillOnce(Return(HttpResponse(200, std::string(kSubmittedBody))));
   EXPECT_CALL(*mock_client_, Get(_, _, _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kSubmittedBody))));
+      .WillOnce(Return(HttpResponse(200, std::string(kSubmittedBody))));
   EXPECT_CALL(*mock_client_, Delete(_, _, _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, "{}")));
+      .WillOnce(Return(HttpResponse(200, "{}")));
 
   auto ctx = MakeContext();
   ctx.catalog_config = {{"rest-scan-planning.poll-num-retries", "0"}};
@@ -1172,48 +615,6 @@ TEST_F(RestTableScanTest, PlanFilesStreamPollNumRetriesZero) {
   EXPECT_THAT(scan->PlanFilesStream(),
               ::testing::AllOf(IsError(ErrorKind::kIOError),
                                HasErrorMessage("exceeded max retries (0)")));
-}
-
-// --------------------------------------------------------------------------
-// Invalid poll-timeout-ms fails before the plan is submitted.
-// --------------------------------------------------------------------------
-TEST_F(RestTableScanTest, PlanFilesStreamInvalidPollTimeoutFailsBeforePlanning) {
-  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _)).Times(0);
-
-  auto ctx = MakeContext();
-  ctx.catalog_config = {{"rest-scan-planning.poll-timeout-ms", "0"}};
-  ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeScan(std::move(ctx)));
-  EXPECT_THAT(scan->PlanFilesStream(), IsError(ErrorKind::kInvalidArgument));
-}
-
-// --------------------------------------------------------------------------
-// Vended credentials in the plan response install a provider scoped to the plan.
-// --------------------------------------------------------------------------
-TEST_F(RestTableScanTest, StorageCredentialsInstallPlanScopedProvider) {
-  constexpr std::string_view kPlanResponse = R"({
-    "status": "completed",
-    "plan-id": "plan-cred",
-    "storage-credentials": [{"prefix": "s3://bucket", "config": {"k": "v"}}]
-  })";
-  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kPlanResponse))));
-  RegisterCredentialedFileIO();
-
-  std::vector<std::string> requested_plan_ids;
-  auto provider = std::make_shared<StaticCredentialProvider>();
-  auto ctx = MakeContext();
-  ctx.catalog_config = {{"io-impl", std::string(kCredentialedFileIO)}};
-  ctx.credential_provider_factory = [&](const std::string& plan_id) {
-    requested_plan_ids.push_back(plan_id);
-    return provider;
-  };
-  ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeScan(std::move(ctx)));
-  ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
-
-  EXPECT_THAT(requested_plan_ids, ::testing::ElementsAre("plan-cred"));
-  EXPECT_EQ(installed_provider, provider);
-  ASSERT_EQ(installed_credentials.size(), 1);
-  EXPECT_EQ(installed_credentials[0].prefix, "s3://bucket");
 }
 
 // --------------------------------------------------------------------------
@@ -1226,7 +627,7 @@ TEST_F(RestTableScanTest, StorageCredentialsWithoutFactoryInstallNoProvider) {
     "storage-credentials": [{"prefix": "s3://bucket", "config": {"k": "v"}}]
   })";
   EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kPlanResponse))));
+      .WillOnce(Return(HttpResponse(200, std::string(kPlanResponse))));
   RegisterCredentialedFileIO();
 
   auto ctx = MakeContext();
@@ -1239,38 +640,6 @@ TEST_F(RestTableScanTest, StorageCredentialsWithoutFactoryInstallNoProvider) {
 }
 
 // --------------------------------------------------------------------------
-// PlanFilesStream: FAILED → stream returns an error.
-// --------------------------------------------------------------------------
-TEST_F(RestTableScanTest, PlanFilesStreamFailed) {
-  constexpr std::string_view kFailedBody =
-      R"({"status":"failed","error":{"message":"server error","type":"ServerError","code":500}})";
-  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kFailedBody))));
-
-  ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeScan(MakeContext()));
-  auto result = scan->PlanFilesStream();
-  EXPECT_THAT(result, IsError(ErrorKind::kIOError));
-}
-
-// --------------------------------------------------------------------------
-// PlanFilesStream: FAILED with plan-id is an invalid response → DELETE /plan
-// called before returning the error.
-// --------------------------------------------------------------------------
-TEST_F(RestTableScanTest, PlanFilesStreamFailedWithPlanIdCancels) {
-  constexpr std::string_view kFailedBody =
-      R"({"status":"failed","plan-id":"plan-fail-stream","error":{"message":"server error","type":"ServerError","code":500}})";
-
-  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kFailedBody))));
-  EXPECT_CALL(*mock_client_, Delete(_, _, _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, "{}")));
-
-  ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeScan(MakeContext()));
-  auto result = scan->PlanFilesStream();
-  EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
-}
-
-// --------------------------------------------------------------------------
 // FetchPlanningResult: GET fails after SUBMITTED → DELETE /plan called before
 // returning the error (tests the FetchPlanningResult error-path cancel fix).
 // --------------------------------------------------------------------------
@@ -1279,46 +648,16 @@ TEST_F(RestTableScanTest, CancelCalledOnFetchPlanningResultGetError) {
       R"({"status":"submitted","plan-id":"plan-fetch-err"})";
 
   EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kSubmittedBody))));
+      .WillOnce(Return(HttpResponse(200, std::string(kSubmittedBody))));
   EXPECT_CALL(*mock_client_, Get(_, _, _, _, _))
       .WillOnce(Return(IOError("network failure")));
   EXPECT_CALL(*mock_client_, Delete(_, _, _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, "{}")));
+      .WillOnce(Return(IOError("cancel failure")));
 
   ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeScan(MakeContext()));
   auto result = scan->PlanFiles();
-  EXPECT_THAT(result, IsError(ErrorKind::kIOError));
-}
-
-// --------------------------------------------------------------------------
-// Stale credentials: second PlanFilesStream call resets the scan FileIO so that
-// credentials from the first plan response do not persist into the second.
-// --------------------------------------------------------------------------
-TEST_F(RestTableScanTest, SecondPlanFilesStreamCallClearsStaleCredentials) {
-  constexpr std::string_view kFirstResponse = R"({
-    "status": "completed",
-    "storage-credentials": [
-      {"prefix": "s3://bucket/prefix", "config": {"key": "value"}}
-    ]
-  })";
-  constexpr std::string_view kSecondResponse = R"({"status":"completed"})";
-
-  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kFirstResponse))))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kSecondResponse))));
-
-  ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeScan(MakeContext()));
-
-  // First call: server vends credentials → io() returns a credential-scoped IO.
-  ICEBERG_UNWRAP_OR_FAIL(auto tasks1, scan->PlanFiles());
-  EXPECT_TRUE(tasks1.empty());
-  EXPECT_NE(scan->io().get(), file_io_.get());
-
-  // Second call: no credentials returned → io() must revert to the table IO,
-  // not retain the credentials from the first plan.
-  ICEBERG_UNWRAP_OR_FAIL(auto tasks2, scan->PlanFiles());
-  EXPECT_TRUE(tasks2.empty());
-  EXPECT_EQ(scan->io().get(), file_io_.get());
+  EXPECT_THAT(result, ::testing::AllOf(IsError(ErrorKind::kIOError),
+                                       HasErrorMessage("network failure")));
 }
 
 // ==========================================================================
@@ -1362,7 +701,8 @@ class RestIncrementalAppendScanTest : public RestTableScanTest {
   }
 
   RestIncrementalAppendScanBuilder MakeBuilder(RestScanContext ctx) {
-    return {metadata_, file_io_, "test.my_table", nullptr, std::move(ctx)};
+    return {metadata_, file_io_, "test.my_table", nullptr,
+            std::make_shared<const RestScanContext>(std::move(ctx))};
   }
 
   Result<std::unique_ptr<IncrementalAppendScan>> MakeIncrementalScan(
@@ -1377,79 +717,26 @@ class RestIncrementalAppendScanTest : public RestTableScanTest {
     }
     return builder.Build();
   }
+
+  template <typename Configure>
+  Result<std::vector<std::shared_ptr<FileScanTask>>> PlanScan(bool incremental,
+                                                              RestScanContext ctx,
+                                                              Configure configure) {
+    auto plan = [&](auto& builder) -> Result<std::vector<std::shared_ptr<FileScanTask>>> {
+      configure(builder);
+      ICEBERG_ASSIGN_OR_RAISE(auto scan, builder.Build());
+      return scan->PlanFiles();
+    };
+    if (incremental) {
+      auto builder = MakeBuilder(std::move(ctx));
+      builder.FromSnapshot(kRootId);
+      return plan(builder);
+    }
+    RestTableScanBuilder builder(metadata_, file_io_, "test.my_table", nullptr,
+                                 std::make_shared<const RestScanContext>(std::move(ctx)));
+    return plan(builder);
+  }
 };
-
-// --------------------------------------------------------------------------
-// PlanFiles: server returns COMPLETED immediately, no tasks.
-// --------------------------------------------------------------------------
-TEST_F(RestIncrementalAppendScanTest, PlanFilesCompleted) {
-  constexpr std::string_view kResponseBody = R"({"status":"completed"})";
-  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kResponseBody))));
-
-  ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeIncrementalScan(MakeContext()));
-  ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
-  EXPECT_TRUE(tasks.empty());
-}
-
-// --------------------------------------------------------------------------
-// PlanFiles: COMPLETED with a plan-task token; FetchScanTasks is called.
-// --------------------------------------------------------------------------
-TEST_F(RestIncrementalAppendScanTest, PlanFilesWithPlanTasks) {
-  constexpr std::string_view kPlanResponse =
-      R"({"status":"completed","plan-id":"incr-plan-1","plan-tasks":["tok-incr-1"]})";
-  constexpr std::string_view kTasksResponse = R"({"file-scan-tasks":[]})";
-
-  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kPlanResponse))))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kTasksResponse))));
-
-  ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeIncrementalScan(MakeContext()));
-  ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
-  EXPECT_TRUE(tasks.empty());
-}
-
-// --------------------------------------------------------------------------
-// PlanFiles: SUBMITTED → poll → COMPLETED.
-// --------------------------------------------------------------------------
-TEST_F(RestIncrementalAppendScanTest, PlanFilesSubmittedThenCompleted) {
-  constexpr std::string_view kSubmittedBody =
-      R"({"status":"submitted","plan-id":"incr-poll-1"})";
-  constexpr std::string_view kCompletedBody = R"({"status":"completed"})";
-
-  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kSubmittedBody))));
-  EXPECT_CALL(*mock_client_, Get(_, _, _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kCompletedBody))));
-
-  ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeIncrementalScan(MakeContext()));
-  ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
-  EXPECT_TRUE(tasks.empty());
-}
-
-// --------------------------------------------------------------------------
-// PlanFiles: FAILED → IOError.
-// --------------------------------------------------------------------------
-TEST_F(RestIncrementalAppendScanTest, PlanFilesFailed) {
-  constexpr std::string_view kFailedBody =
-      R"({"status":"failed","error":{"message":"server error","type":"ServerError","code":500}})";
-  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kFailedBody))));
-
-  ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeIncrementalScan(MakeContext()));
-  auto result = scan->PlanFiles();
-  EXPECT_THAT(result, IsError(ErrorKind::kIOError));
-}
-
-// --------------------------------------------------------------------------
-// PlanFiles: PlanTableScan endpoint missing → NotSupported.
-// --------------------------------------------------------------------------
-TEST_F(RestIncrementalAppendScanTest, PlanFilesEndpointNotSupported) {
-  ICEBERG_UNWRAP_OR_FAIL(
-      auto scan, MakeIncrementalScan(MakeContext(std::unordered_set<Endpoint>{})));
-  auto result = scan->PlanFiles();
-  EXPECT_THAT(result, IsError(ErrorKind::kNotSupported));
-}
 
 // --------------------------------------------------------------------------
 // No current snapshot → PlanFiles returns empty without calling the server.
@@ -1474,10 +761,10 @@ TEST_F(RestIncrementalAppendScanTest, PlanFilesEmptyWhenNoCurrentSnapshot) {
 
   EXPECT_CALL(*mock_client_, Post(_, _, _, _, _)).Times(0);
 
-  // Use Make() directly to bypass builder validation that requires a snapshot.
-  ICEBERG_UNWRAP_OR_FAIL(auto scan, RestIncrementalAppendScan::Make(
-                                        empty_metadata, schema_, file_io_,
-                                        internal::TableScanContext{}, MakeContext()));
+  RestIncrementalAppendScanBuilder builder(
+      empty_metadata, file_io_, "test.my_table", nullptr,
+      std::make_shared<const RestScanContext>(MakeContext()));
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, builder.Build());
   ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
   EXPECT_TRUE(tasks.empty());
 }
@@ -1493,7 +780,7 @@ TEST_F(RestIncrementalAppendScanTest, PlanFilesSendsResolvedRange) {
                                   JsonBodyHas("end-snapshot-id", kMainHeadId),
                                   JsonBodyHas("use-snapshot-schema", true)),
                    _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kResponseBody))));
+      .WillOnce(Return(HttpResponse(200, std::string(kResponseBody))));
 
   ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeIncrementalScan(MakeContext()));
   ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
@@ -1510,7 +797,7 @@ TEST_F(RestIncrementalAppendScanTest, PlanFilesWithExplicitToSnapshotId) {
                    testing::AllOf(JsonBodyHas("start-snapshot-id", kRootId),
                                   JsonBodyHas("end-snapshot-id", kMiddleId)),
                    _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kResponseBody))));
+      .WillOnce(Return(HttpResponse(200, std::string(kResponseBody))));
 
   ICEBERG_UNWRAP_OR_FAIL(auto scan,
                          MakeIncrementalScan(MakeContext(), kRootId,
@@ -1529,7 +816,7 @@ TEST_F(RestIncrementalAppendScanTest, PlanFilesWithFromSnapshotIdExclusive) {
                    testing::AllOf(JsonBodyHas("start-snapshot-id", kMiddleId),
                                   JsonBodyHas("end-snapshot-id", kMainHeadId)),
                    _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kResponseBody))));
+      .WillOnce(Return(HttpResponse(200, std::string(kResponseBody))));
 
   ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeIncrementalScan(MakeContext(), kMiddleId,
                                                         /*from_inclusive=*/false));
@@ -1547,7 +834,7 @@ TEST_F(RestIncrementalAppendScanTest, PlanFilesWithFromSnapshotIdInclusiveWithPa
                    testing::AllOf(JsonBodyHas("start-snapshot-id", kRootId),
                                   JsonBodyHas("end-snapshot-id", kMainHeadId)),
                    _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kResponseBody))));
+      .WillOnce(Return(HttpResponse(200, std::string(kResponseBody))));
 
   ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeIncrementalScan(MakeContext(), kMiddleId,
                                                         /*from_inclusive=*/true));
@@ -1589,7 +876,7 @@ TEST_F(RestIncrementalAppendScanTest, UseBranchWithoutToSnapshotUsesBranchHead) 
                    testing::AllOf(JsonBodyHas("start-snapshot-id", kRootId),
                                   JsonBodyHas("end-snapshot-id", kBranchHeadId)),
                    _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kResponseBody))));
+      .WillOnce(Return(HttpResponse(200, std::string(kResponseBody))));
 
   auto builder = MakeBuilder(MakeContext());
   builder.FromSnapshot(kRootId).UseBranch(std::string(kBranch));
@@ -1608,7 +895,7 @@ TEST_F(RestIncrementalAppendScanTest, UseBranchWithToSnapshotOnBranch) {
                    testing::AllOf(JsonBodyHas("start-snapshot-id", kRootId),
                                   JsonBodyHas("end-snapshot-id", kMiddleId)),
                    _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kResponseBody))));
+      .WillOnce(Return(HttpResponse(200, std::string(kResponseBody))));
 
   auto builder = MakeBuilder(MakeContext());
   builder.FromSnapshot(kRootId).ToSnapshot(kMiddleId).UseBranch(std::string(kBranch));
@@ -1643,187 +930,466 @@ TEST_F(RestIncrementalAppendScanTest, RejectsFromSnapshotNotAncestorOfEnd) {
   EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
 }
 
-// --------------------------------------------------------------------------
-// IncludeColumnStats() columns are sent as stats-fields.
-// --------------------------------------------------------------------------
-TEST_F(RestIncrementalAppendScanTest, IncludeColumnStatsSendsStatsFields) {
-  constexpr std::string_view kResponseBody = R"({"status":"completed"})";
+// Exercise residual handling for both scan types and each response path.
+class RestScanResidualTest
+    : public RestIncrementalAppendScanTest,
+      public ::testing::WithParamInterface<std::tuple<bool, bool, bool, bool, bool>> {};
+
+TEST_P(RestScanResidualTest, PreservesFilteringAndDeleteFiles) {
+  const auto [incremental, submitted, fetch_token, server_residual, ignore_residuals] =
+      GetParam();
+  auto filter = Expressions::GreaterThan("id", Literal::Int(10));
+  auto residual = Expressions::GreaterThan("id", Literal::Int(20));
+  ICEBERG_UNWRAP_OR_FAIL(auto filter_json, iceberg::ToJson(*filter));
+  ICEBERG_UNWRAP_OR_FAIL(auto residual_json, iceberg::ToJson(*residual));
+
+  auto task = FileTaskJson("s3://bucket/data.parquet");
+  task["delete-file-references"] = {0};
+  if (server_residual) task["residual-filter"] = residual_json;
+  auto delete_file = FileTaskJson("s3://bucket/delete.parquet")["data-file"];
+  delete_file["content"] = "position-deletes";
+  nlohmann::json tasks_response = {
+      {"file-scan-tasks", nlohmann::json::array({task})},
+      {"delete-files", nlohmann::json::array({delete_file})}};
+  auto completed =
+      fetch_token ? nlohmann::json{{"plan-tasks", {"residual-token"}}} : tasks_response;
+  completed["status"] = "completed";
+  completed["plan-id"] = "residual-plan";
+  auto initial =
+      submitted ? nlohmann::json{{"status", "submitted"}, {"plan-id", "residual-plan"}}
+                : completed;
+  EXPECT_CALL(*mock_client_,
+              Post(::testing::EndsWith("/plan"),
+                   ::testing::AllOf(
+                       JsonBodyHas("filter", filter_json),
+                       JsonBodyHas("select", std::vector<std::string>{"id", "data"})),
+                   _, _, _))
+      .WillOnce(Return(HttpResponse(200, initial.dump())));
+  if (submitted) {
+    completed.erase("plan-id");
+    EXPECT_CALL(*mock_client_,
+                Get(::testing::EndsWith("/plan/residual-plan"), _, _, _, _))
+        .WillOnce(Return(HttpResponse(200, completed.dump())));
+  }
+  if (fetch_token) {
+    EXPECT_CALL(*mock_client_, Post(::testing::EndsWith("/tasks"),
+                                    JsonBodyHas("plan-task", "residual-token"), _, _, _))
+        .WillOnce(Return(HttpResponse(200, tasks_response.dump())));
+  }
+  EXPECT_CALL(*mock_client_, Delete(_, _, _, _, _)).Times(0);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto tasks,
+                         PlanScan(incremental, MakeContext(), [&](auto& builder) {
+                           builder.Select({"data"}).Filter(filter);
+                           if (ignore_residuals) builder.IgnoreResiduals();
+                         }));
+  ASSERT_EQ(tasks.size(), 1);
+  EXPECT_EQ(tasks[0]->data_file()->file_path, "s3://bucket/data.parquet");
+  ASSERT_EQ(tasks[0]->delete_files().size(), 1);
+  EXPECT_EQ(tasks[0]->delete_files()[0]->file_path, "s3://bucket/delete.parquet");
+  ASSERT_NE(tasks[0]->residual_filter(), nullptr);
+  if (ignore_residuals) {
+    EXPECT_EQ(tasks[0]->residual_filter()->op(), Expression::Operation::kTrue);
+  } else {
+    ICEBERG_UNWRAP_OR_FAIL(auto actual, iceberg::ToJson(*tasks[0]->residual_filter()));
+    EXPECT_EQ(actual, server_residual ? residual_json : filter_json);
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(ScanModes, RestScanResidualTest,
+                         ::testing::Combine(::testing::Bool(), ::testing::Bool(),
+                                            ::testing::Bool(), ::testing::Bool(),
+                                            ::testing::Bool()));
+
+class RestScanRegressionTest : public RestIncrementalAppendScanTest,
+                               public ::testing::WithParamInterface<bool> {};
+
+TEST_P(RestScanRegressionTest, NoFilterProducesTrueResidual) {
+  nlohmann::json response = {
+      {"status", "completed"},
+      {"file-scan-tasks",
+       nlohmann::json::array({FileTaskJson("s3://bucket/data.parquet")})}};
   EXPECT_CALL(
       *mock_client_,
-      Post(_, JsonBodyHas("stats-fields", std::vector<std::string>{"id"}), _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kResponseBody))));
+      Post(::testing::EndsWith("/plan"),
+           ::testing::AllOf(JsonBodyHas("select", std::vector<std::string>{"id", "data"}),
+                            JsonBodyHas("use-snapshot-schema", GetParam()),
+                            JsonBodyLacks("snapshot-id")),
+           _, _, _))
+      .WillOnce(Return(HttpResponse(200, response.dump())));
+  ICEBERG_UNWRAP_OR_FAIL(auto tasks, PlanScan(GetParam(), MakeContext(), [](auto&) {}));
+  ASSERT_EQ(tasks.size(), 1);
+  ASSERT_NE(tasks[0]->residual_filter(), nullptr);
+  EXPECT_EQ(tasks[0]->residual_filter()->op(), Expression::Operation::kTrue);
+}
 
-  auto builder = MakeBuilder(MakeContext());
-  builder.FromSnapshot(kRootId).IncludeColumnStats({"id"});
-  ICEBERG_UNWRAP_OR_FAIL(auto scan, builder.Build());
-  ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
+TEST_P(RestScanRegressionTest, AllColumnStatsIncludeUnprojectedColumns) {
+  EXPECT_CALL(
+      *mock_client_,
+      Post(::testing::EndsWith("/plan"),
+           ::testing::AllOf(
+               JsonBodyHas("select", std::vector<std::string>{"data"}),
+               JsonBodyHas("stats-fields", std::vector<std::string>{"id", "data"})),
+           _, _, _))
+      .WillOnce(Return(HttpResponse(200, R"({"status":"completed"})")));
+  ICEBERG_UNWRAP_OR_FAIL(auto tasks,
+                         PlanScan(GetParam(), MakeContext(), [](auto& builder) {
+                           builder.Select({"data"}).IncludeColumnStats();
+                         }));
   EXPECT_TRUE(tasks.empty());
 }
 
-// --------------------------------------------------------------------------
-// IncludeColumnStats() with an unknown column → ValidationFailed.
-// --------------------------------------------------------------------------
-TEST_F(RestIncrementalAppendScanTest, IncludeColumnStatsRejectsMissingColumn) {
-  auto builder = MakeBuilder(MakeContext());
-  builder.FromSnapshot(kRootId).IncludeColumnStats({"missing"});
-  EXPECT_THAT(builder.Build(),
+TEST_P(RestScanRegressionTest, InvalidPollingConfigFailsBeforePlanning) {
+  struct PropertyCase {
+    std::string_view key;
+    std::string_view value;
+    std::string_view error;
+  };
+  const std::array<PropertyCase, 7> cases{{{.key = "rest-scan-planning.poll-timeout-ms",
+                                            .value = "0",
+                                            .error = "must be positive"},
+                                           {.key = "rest-scan-planning.poll-timeout-ms",
+                                            .value = "-1",
+                                            .error = "must be positive"},
+                                           {.key = "rest-scan-planning.poll-timeout-ms",
+                                            .value = "abc",
+                                            .error = "invalid argument"},
+                                           {.key = "rest-scan-planning.poll-timeout-ms",
+                                            .value = "9223372036854775808",
+                                            .error = "out of range"},
+                                           {.key = "rest-scan-planning.poll-num-retries",
+                                            .value = "-1",
+                                            .error = "must be non-negative"},
+                                           {.key = "rest-scan-planning.poll-num-retries",
+                                            .value = "abc",
+                                            .error = "invalid argument"},
+                                           {.key = "rest-scan-planning.poll-num-retries",
+                                            .value = "2147483648",
+                                            .error = "out of range"}}};
+  for (const auto& [key, value, error] : cases) {
+    SCOPED_TRACE(std::string(key) + "=" + std::string(value));
+    auto ctx = MakeContext();
+    ctx.catalog_config = {{std::string(key), std::string(value)}};
+    EXPECT_CALL(*mock_client_, Post(_, _, _, _, _)).Times(0);
+    EXPECT_THAT(
+        PlanScan(GetParam(), std::move(ctx), [](auto&) {}),
+        ::testing::AllOf(IsError(ErrorKind::kInvalidArgument), HasErrorMessage(error)));
+    ASSERT_TRUE(::testing::Mock::VerifyAndClearExpectations(mock_client_.get()));
+  }
+}
+
+TEST_P(RestScanRegressionTest, MissingPollingEndpointCancelsSubmittedPlan) {
+  auto ctx = MakeContext();
+  ctx.supported_endpoints.erase(Endpoint::FetchPlanningResult());
+  EXPECT_CALL(*mock_client_, Post(::testing::EndsWith("/plan"), _, _, _, _))
+      .WillOnce(Return(
+          HttpResponse(200, R"({"status":"submitted","plan-id":"missing-poll"})")));
+  EXPECT_CALL(*mock_client_, Get(_, _, _, _, _)).Times(0);
+  EXPECT_CALL(*mock_client_,
+              Delete(::testing::EndsWith("/plan/missing-poll"), _, _, _, _))
+      .WillOnce(Return(HttpResponse(204, "")));
+  EXPECT_THAT(PlanScan(GetParam(), std::move(ctx), [](auto&) {}),
+              IsError(ErrorKind::kNotSupported));
+}
+
+TEST_P(RestScanRegressionTest, LongContinuationChain) {
+  constexpr int kPages = 2048;
+  EXPECT_CALL(*mock_client_, Post(::testing::EndsWith("/plan"), _, _, _, _))
+      .WillOnce(Return(HttpResponse(
+          200, R"({"status":"completed","plan-id":"pages","plan-tasks":["0"]})")));
+  int next_page = 0;
+  EXPECT_CALL(*mock_client_, Post(::testing::EndsWith("/tasks"), _, _, _, _))
+      .Times(kPages)
+      .WillRepeatedly([&](const std::string&, const std::string& body,
+                          auto&&...) -> Result<HttpResponse> {
+        EXPECT_EQ(nlohmann::json::parse(body).at("plan-task"), std::to_string(next_page));
+        auto task = FileTaskJson("s3://bucket/" + std::to_string(next_page) + ".parquet");
+        nlohmann::json response = {
+            {"file-scan-tasks", nlohmann::json::array({std::move(task)})}};
+        if (++next_page < kPages) {
+          response["plan-tasks"] = {std::to_string(next_page)};
+        }
+        return HttpResponse(200, response.dump());
+      });
+  EXPECT_CALL(*mock_client_, Delete(_, _, _, _, _)).Times(0);
+
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto table, RestTable::Make(identifier_, metadata_, "/tmp/metadata.json", file_io_,
+                                  nullptr, "test.my_table", nullptr, MakeContext()));
+  auto plan = [&]() -> Result<std::vector<std::shared_ptr<FileScanTask>>> {
+    if (GetParam()) {
+      ICEBERG_ASSIGN_OR_RAISE(auto builder, table->NewIncrementalAppendScan());
+      builder->FromSnapshot(kRootId);
+      ICEBERG_ASSIGN_OR_RAISE(auto scan, builder->Build());
+      return scan->PlanFiles();
+    }
+    ICEBERG_ASSIGN_OR_RAISE(auto builder, table->NewScan());
+    ICEBERG_ASSIGN_OR_RAISE(auto scan, builder->Build());
+    ICEBERG_ASSIGN_OR_RAISE(auto stream, scan->PlanFilesStream());
+    scan.reset();
+    table.reset();
+    return stream->ToVector();
+  };
+  ICEBERG_UNWRAP_OR_FAIL(auto tasks, plan());
+  ASSERT_EQ(tasks.size(), kPages);
+  for (int i = 0; i < kPages; ++i) {
+    EXPECT_EQ(tasks[i]->data_file()->file_path,
+              "s3://bucket/" + std::to_string(i) + ".parquet");
+  }
+}
+
+TEST_P(RestScanRegressionTest, TaskFetchFailureCancelsPlan) {
+  EXPECT_CALL(*mock_client_, Post(::testing::EndsWith("/plan"), _, _, _, _))
+      .WillOnce(Return(HttpResponse(
+          200, R"({"status":"completed","plan-id":"failed-page","plan-tasks":["0"]})")));
+  EXPECT_CALL(*mock_client_,
+              Post(::testing::EndsWith("/tasks"), JsonBodyHas("plan-task", "0"), _, _, _))
+      .WillOnce(Return(IOError("task fetch failed")));
+  EXPECT_CALL(*mock_client_, Delete(::testing::EndsWith("/plan/failed-page"), _, _, _, _))
+      .WillOnce(Return(HttpResponse(204, "")));
+  EXPECT_THAT(PlanScan(GetParam(), MakeContext(), [](auto&) {}),
+              IsError(ErrorKind::kIOError));
+}
+
+class RestScanStreamTest : public RestTableScanTest,
+                           public ::testing::WithParamInterface<bool> {
+ protected:
+  void ExpectPlan(nlohmann::json completed) {
+    completed["status"] = "completed";
+    completed["plan-id"] = "stream";
+    auto initial = GetParam()
+                       ? nlohmann::json{{"status", "submitted"}, {"plan-id", "stream"}}
+                       : completed;
+    EXPECT_CALL(*mock_client_, Post(::testing::EndsWith("/plan"), _, _, _, _))
+        .WillOnce(Return(HttpResponse(200, initial.dump())));
+    if (GetParam()) {
+      completed.erase("plan-id");
+      EXPECT_CALL(*mock_client_, Get(::testing::EndsWith("/plan/stream"), _, _, _, _))
+          .WillOnce(Return(HttpResponse(200, completed.dump())));
+    } else {
+      EXPECT_CALL(*mock_client_, Get(_, _, _, _, _)).Times(0);
+    }
+  }
+};
+
+TEST_P(RestScanStreamTest, FetchesOnlyWhenBufferIsExhausted) {
+  ExpectPlan(
+      {{"file-scan-tasks", nlohmann::json::array({FileTaskJson("s3://b/0.parquet")})},
+       {"plan-tasks", {"first", "second"}}});
+  int fetch_count = 0;
+  EXPECT_CALL(*mock_client_, Post(::testing::EndsWith("/tasks"),
+                                  JsonBodyHas("plan-task", "first"), _, _, _))
+      .WillOnce([&](auto&&...) -> Result<HttpResponse> {
+        EXPECT_EQ(fetch_count++, 0);
+        return HttpResponse(200, R"({"plan-tasks":["third"]})");
+      });
+  EXPECT_CALL(*mock_client_, Post(::testing::EndsWith("/tasks"),
+                                  JsonBodyHas("plan-task", "second"), _, _, _))
+      .WillOnce([&](auto&&...) -> Result<HttpResponse> {
+        EXPECT_EQ(fetch_count++, 1);
+        nlohmann::json response = {
+            {"file-scan-tasks",
+             nlohmann::json::array(
+                 {FileTaskJson("s3://b/1.parquet"), FileTaskJson("s3://b/2.parquet")})}};
+        return HttpResponse(200, response.dump());
+      });
+  EXPECT_CALL(*mock_client_, Post(::testing::EndsWith("/tasks"),
+                                  JsonBodyHas("plan-task", "third"), _, _, _))
+      .WillOnce([&](auto&&...) -> Result<HttpResponse> {
+        EXPECT_EQ(fetch_count++, 2);
+        nlohmann::json response = {
+            {"file-scan-tasks",
+             nlohmann::json::array({FileTaskJson("s3://b/3.parquet")})}};
+        return HttpResponse(200, response.dump());
+      });
+  EXPECT_CALL(*mock_client_, Delete(_, _, _, _, _)).Times(0);
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeScan(MakeContext()));
+  ICEBERG_UNWRAP_OR_FAIL(auto stream, scan->PlanFilesStream());
+  EXPECT_EQ(fetch_count, 0);
+  for (int i = 0; i <= 3; ++i) {
+    ICEBERG_UNWRAP_OR_FAIL(auto task, stream->Next());
+    ASSERT_TRUE(task.has_value());
+    EXPECT_EQ((*task)->data_file()->file_path,
+              "s3://b/" + std::to_string(i) + ".parquet");
+    EXPECT_EQ(fetch_count, i == 0 ? 0 : (i <= 2 ? 2 : 3));
+  }
+  ICEBERG_UNWRAP_OR_FAIL(auto end, stream->Next());
+  EXPECT_FALSE(end.has_value());
+}
+
+TEST_P(RestScanStreamTest, UnconsumedPlanIsCancelled) {
+  ExpectPlan({{"plan-tasks", {"pending"}}});
+  EXPECT_CALL(*mock_client_, Post(::testing::EndsWith("/tasks"), _, _, _, _)).Times(0);
+  EXPECT_CALL(*mock_client_, Delete(::testing::EndsWith("/plan/stream"), _, _, _, _))
+      .WillOnce(Return(HttpResponse(204, "")));
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeScan(MakeContext()));
+  ICEBERG_UNWRAP_OR_FAIL(auto stream, scan->PlanFilesStream());
+  stream.reset();
+}
+
+INSTANTIATE_TEST_SUITE_P(PlanningResponses, RestScanStreamTest, ::testing::Bool());
+
+TEST_P(RestScanRegressionTest, EmptyCompletedPlan) {
+  for (bool submitted : {false, true}) {
+    SCOPED_TRACE(submitted);
+    std::string initial = submitted ? R"({"status":"submitted","plan-id":"empty"})"
+                                    : R"({"status":"completed"})";
+    EXPECT_CALL(*mock_client_, Post(::testing::EndsWith("/plan"), _, _, _, _))
+        .WillOnce(Return(HttpResponse(200, initial)));
+    if (submitted) {
+      EXPECT_CALL(*mock_client_, Get(::testing::EndsWith("/plan/empty"), _, _, _, _))
+          .WillOnce(Return(HttpResponse(200, R"({"status":"completed"})")));
+    } else {
+      EXPECT_CALL(*mock_client_, Get(_, _, _, _, _)).Times(0);
+    }
+    EXPECT_CALL(*mock_client_, Delete(_, _, _, _, _)).Times(0);
+    ICEBERG_UNWRAP_OR_FAIL(auto tasks, PlanScan(GetParam(), MakeContext(), [](auto&) {}));
+    EXPECT_TRUE(tasks.empty());
+    ASSERT_TRUE(::testing::Mock::VerifyAndClearExpectations(mock_client_.get()));
+  }
+}
+
+TEST_P(RestScanRegressionTest, FailedPlanReturnsError) {
+  EXPECT_CALL(*mock_client_, Post(::testing::EndsWith("/plan"), _, _, _, _))
+      .WillOnce(Return(HttpResponse(
+          200,
+          R"({"status":"failed","error":{"message":"server error","type":"ServerError","code":500}})")));
+  EXPECT_CALL(*mock_client_, Get(_, _, _, _, _)).Times(0);
+  EXPECT_CALL(*mock_client_, Delete(_, _, _, _, _)).Times(0);
+  EXPECT_THAT(
+      PlanScan(GetParam(), MakeContext(), [](auto&) {}),
+      ::testing::AllOf(IsError(ErrorKind::kIOError), HasErrorMessage("server error")));
+}
+
+TEST_P(RestScanRegressionTest, MissingPlanningEndpointDoesNotSendRequest) {
+  auto ctx = MakeContext();
+  ctx.supported_endpoints.erase(Endpoint::PlanTableScan());
+  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _)).Times(0);
+  EXPECT_THAT(PlanScan(GetParam(), std::move(ctx), [](auto&) {}),
+              IsError(ErrorKind::kNotSupported));
+}
+
+TEST_P(RestScanRegressionTest, MissingTaskEndpointCancelsPlan) {
+  auto ctx = MakeContext();
+  ctx.supported_endpoints.erase(Endpoint::FetchScanTasks());
+  EXPECT_CALL(*mock_client_, Post(::testing::EndsWith("/plan"), _, _, _, _))
+      .WillOnce(Return(HttpResponse(
+          200,
+          R"({"status":"completed","plan-id":"no-tasks","plan-tasks":["pending"]})")));
+  EXPECT_CALL(*mock_client_, Delete(::testing::EndsWith("/plan/no-tasks"), _, _, _, _))
+      .WillOnce(Return(HttpResponse(204, "")));
+  EXPECT_THAT(PlanScan(GetParam(), std::move(ctx), [](auto&) {}),
+              IsError(ErrorKind::kNotSupported));
+}
+
+TEST_P(RestScanRegressionTest, InvalidPlanResponseCancelsKnownId) {
+  struct Case {
+    std::string body;
+    ErrorKind error;
+    bool cancel;
+  };
+  const std::array<Case, 3> cases{
+      {{.body = R"({"status":"submitted","plan-id":"invalid","plan-tasks":["token"]})",
+        .error = ErrorKind::kValidationFailed,
+        .cancel = true},
+       {.body =
+            R"({"status":"failed","plan-id":"invalid","error":{"message":"error","type":"ServerError","code":500}})",
+        .error = ErrorKind::kValidationFailed,
+        .cancel = true},
+       {.body = R"({"status":"failed"})",
+        .error = ErrorKind::kJsonParseError,
+        .cancel = false}}};
+  for (const auto& test_case : cases) {
+    SCOPED_TRACE(test_case.body);
+    EXPECT_CALL(*mock_client_, Post(::testing::EndsWith("/plan"), _, _, _, _))
+        .WillOnce(Return(HttpResponse(200, test_case.body)));
+    EXPECT_CALL(*mock_client_, Get(_, _, _, _, _)).Times(0);
+    if (test_case.cancel) {
+      EXPECT_CALL(*mock_client_, Delete(::testing::EndsWith("/plan/invalid"), _, _, _, _))
+          .WillOnce(Return(HttpResponse(204, "")));
+    } else {
+      EXPECT_CALL(*mock_client_, Delete(_, _, _, _, _)).Times(0);
+    }
+    EXPECT_THAT(PlanScan(GetParam(), MakeContext(), [](auto&) {}),
+                IsError(test_case.error));
+    ASSERT_TRUE(::testing::Mock::VerifyAndClearExpectations(mock_client_.get()));
+  }
+}
+
+TEST_P(RestScanRegressionTest, RequestedColumnStatsAreSent) {
+  EXPECT_CALL(*mock_client_,
+              Post(::testing::EndsWith("/plan"),
+                   JsonBodyHas("stats-fields", std::vector<std::string>{"id"}), _, _, _))
+      .WillOnce(Return(HttpResponse(200, R"({"status":"completed"})")));
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto tasks, PlanScan(GetParam(), MakeContext(),
+                           [](auto& builder) { builder.IncludeColumnStats({"id"}); }));
+  EXPECT_TRUE(tasks.empty());
+}
+
+TEST_P(RestScanRegressionTest, UnknownStatsColumnFailsBeforePlanning) {
+  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _)).Times(0);
+  EXPECT_THAT(PlanScan(GetParam(), MakeContext(),
+                       [](auto& builder) { builder.IncludeColumnStats({"missing"}); }),
               ::testing::AllOf(IsError(ErrorKind::kValidationFailed),
                                HasErrorMessage("Cannot find stats column: missing")));
 }
 
-// --------------------------------------------------------------------------
-// Project() columns are sent as select.
-// --------------------------------------------------------------------------
-TEST_F(RestIncrementalAppendScanTest, ProjectSendsProjectedColumnsAsSelect) {
-  constexpr std::string_view kResponseBody = R"({"status":"completed"})";
+TEST_P(RestScanRegressionTest, ProjectUsesTheProjectedSchema) {
   EXPECT_CALL(*mock_client_,
-              Post(_, JsonBodyHas("select", std::vector<std::string>{"id"}), _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kResponseBody))));
-
-  auto builder = MakeBuilder(MakeContext());
-  builder.FromSnapshot(kRootId).Project(std::make_shared<Schema>(
-      std::vector<SchemaField>{SchemaField::MakeRequired(1, "id", int32())}));
-  ICEBERG_UNWRAP_OR_FAIL(auto scan, builder.Build());
-  ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
-  EXPECT_TRUE(tasks.empty());
-}
-
-// --------------------------------------------------------------------------
-// PlanFiles: FAILED with plan-id is an invalid response → DELETE /plan called
-// before returning the error.
-// --------------------------------------------------------------------------
-TEST_F(RestIncrementalAppendScanTest, PlanFilesFailedWithPlanIdCancels) {
-  constexpr std::string_view kFailedBody =
-      R"({"status":"failed","plan-id":"plan-fail-incr","error":{"message":"server error","type":"ServerError","code":500}})";
-
-  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kFailedBody))));
-  EXPECT_CALL(*mock_client_, Delete(_, _, _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, "{}")));
-
-  ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeIncrementalScan(MakeContext()));
-  auto result = scan->PlanFiles();
-  EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
-}
-
-// --------------------------------------------------------------------------
-// PlanFiles: invalid plan response with a plan-id → DELETE /plan called.
-// --------------------------------------------------------------------------
-TEST_F(RestIncrementalAppendScanTest, PlanFilesInvalidResponseWithPlanIdCancels) {
-  constexpr std::string_view kInvalidBody =
-      R"({"status":"submitted","plan-id":"plan-invalid-incr","plan-tasks":["tok-1"]})";
-  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kInvalidBody))));
-  EXPECT_CALL(*mock_client_, Delete(_, _, _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, "{}")));
-
-  ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeIncrementalScan(MakeContext()));
-  EXPECT_THAT(scan->PlanFiles(), IsError(ErrorKind::kValidationFailed));
-}
-
-// --------------------------------------------------------------------------
-// Stale credentials: second PlanFiles call resets scan_io_ so that credentials
-// from the first plan response do not persist into the second.
-// --------------------------------------------------------------------------
-TEST_F(RestIncrementalAppendScanTest, SecondPlanFilesCallClearsStaleCredentials) {
-  constexpr std::string_view kFirstResponse = R"({
-    "status": "completed",
-    "storage-credentials": [
-      {"prefix": "s3://bucket/prefix", "config": {"key": "value"}}
-    ]
-  })";
-  constexpr std::string_view kSecondResponse = R"({"status":"completed"})";
-
-  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kFirstResponse))))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kSecondResponse))));
-
-  ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeIncrementalScan(MakeContext()));
-
-  // First call: server vends credentials.
-  ICEBERG_UNWRAP_OR_FAIL(auto tasks1, scan->PlanFiles());
-  EXPECT_TRUE(tasks1.empty());
-  EXPECT_NE(scan->io().get(), file_io_.get());
-
-  // Second call: no credentials. Verifies scan_io_ was cleared so stale
-  // credentials from the first plan do not bleed into the second request.
-  ICEBERG_UNWRAP_OR_FAIL(auto tasks2, scan->PlanFiles());
-  EXPECT_TRUE(tasks2.empty());
-  EXPECT_EQ(scan->io().get(), file_io_.get());
-}
-
-// --------------------------------------------------------------------------
-// Storage credentials in COMPLETED response: io() returns a credential-scoped IO.
-// --------------------------------------------------------------------------
-TEST_F(RestIncrementalAppendScanTest,
-       StorageCredentialsInPlanResponseUpdatesEffectiveIO) {
-  constexpr std::string_view kResponseBody = R"({
-    "status": "completed",
-    "storage-credentials": [
-      {"prefix": "s3://bucket/prefix", "config": {"key": "value"}}
-    ]
-  })";
-  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kResponseBody))));
-
-  ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeIncrementalScan(MakeContext()));
-  ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
-  EXPECT_TRUE(tasks.empty());
-  EXPECT_NE(scan->io().get(), file_io_.get());
-}
-
-// --------------------------------------------------------------------------
-// No storage credentials: io() falls back to the table's FileIO.
-// --------------------------------------------------------------------------
-TEST_F(RestIncrementalAppendScanTest, NoStorageCredentialsEffectiveIoFallsBackToTableIO) {
-  constexpr std::string_view kResponseBody = R"({"status":"completed"})";
-  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kResponseBody))));
-
-  ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeIncrementalScan(MakeContext()));
-  ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
-  EXPECT_TRUE(tasks.empty());
-  EXPECT_EQ(scan->io().get(), file_io_.get());
-}
-
-// --------------------------------------------------------------------------
-// Storage credentials in a FetchScanTasks response are ignored.
-// --------------------------------------------------------------------------
-TEST_F(RestIncrementalAppendScanTest,
-       StorageCredentialsInFetchScanTasksResponseAreIgnored) {
-  constexpr std::string_view kPlanResponse =
-      R"({"status":"completed","plan-id":"incr-plan-1","plan-tasks":["tok-incr-1"]})";
-  constexpr std::string_view kTasksResponse = R"({
-    "file-scan-tasks": [],
-    "storage-credentials": [
-      {"prefix": "s3://bucket/prefix", "config": {"key": "value"}}
-    ]
-  })";
-  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kPlanResponse))))
-      .WillOnce(Return(HttpResponse::MakeForTesting(200, std::string(kTasksResponse))));
-
-  ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeIncrementalScan(MakeContext()));
-  ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
-  EXPECT_TRUE(tasks.empty());
-  EXPECT_EQ(scan->io().get(), file_io_.get());
-}
-
-// ==========================================================================
-// RestTable::NewIncrementalAppendScan
-// ==========================================================================
-
-// --------------------------------------------------------------------------
-// RestTable::NewIncrementalAppendScan returns a RestIncrementalAppendScanBuilder.
-// --------------------------------------------------------------------------
-TEST_F(RestTableScanTest, RestTableNewIncrementalAppendScanReturnsRestBuilder) {
+              Post(::testing::EndsWith("/plan"),
+                   JsonBodyHas("select", std::vector<std::string>{"id"}), _, _, _))
+      .WillOnce(Return(HttpResponse(200, R"({"status":"completed"})")));
   ICEBERG_UNWRAP_OR_FAIL(
-      auto table, RestTable::Make(identifier_, metadata_, "/tmp/metadata.json", file_io_,
-                                  /*catalog=*/nullptr, "test.my_table", nullptr,
-                                  MakeContext(std::nullopt)));
-  ICEBERG_UNWRAP_OR_FAIL(auto builder, table->NewIncrementalAppendScan());
-  auto* typed = dynamic_cast<RestIncrementalAppendScanBuilder*>(builder.get());
-  EXPECT_NE(typed, nullptr);
+      auto tasks, PlanScan(GetParam(), MakeContext(), [](auto& builder) {
+        builder.Project(std::make_shared<Schema>(
+            std::vector<SchemaField>{SchemaField::MakeRequired(1, "id", int32())}));
+      }));
+  EXPECT_TRUE(tasks.empty());
 }
+
+TEST_P(RestScanRegressionTest, SelectResolvesCaseInsensitiveNames) {
+  EXPECT_CALL(*mock_client_,
+              Post(::testing::EndsWith("/plan"),
+                   JsonBodyHas("select", std::vector<std::string>{"id"}), _, _, _))
+      .WillOnce(Return(HttpResponse(200, R"({"status":"completed"})")));
+  ICEBERG_UNWRAP_OR_FAIL(auto tasks,
+                         PlanScan(GetParam(), MakeContext(), [](auto& builder) {
+                           builder.CaseSensitive(false).Select({"ID"});
+                         }));
+  EXPECT_TRUE(tasks.empty());
+}
+
+TEST_P(RestScanRegressionTest, ReplanningDropsOldCredentials) {
+  EXPECT_CALL(*mock_client_, Post(::testing::EndsWith("/plan"), _, _, _, _))
+      .WillOnce(Return(HttpResponse(
+          200,
+          R"({"status":"completed","storage-credentials":[{"prefix":"s3://bucket","config":{"key":"value"}}]})")))
+      .WillOnce(Return(HttpResponse(200, R"({"status":"completed"})")));
+  auto exercise = [&](auto& builder) {
+    ICEBERG_UNWRAP_OR_FAIL(auto scan, builder.Build());
+    EXPECT_EQ(scan->io(), file_io_);
+    ICEBERG_UNWRAP_OR_FAIL(auto first, scan->PlanFiles());
+    auto* credentialed = scan->io()->AsSupportsStorageCredentials();
+    ASSERT_NE(credentialed, nullptr);
+    ASSERT_EQ(credentialed->credentials().size(), 1);
+    EXPECT_EQ(credentialed->credentials()[0].prefix, "s3://bucket");
+    ICEBERG_UNWRAP_OR_FAIL(auto second, scan->PlanFiles());
+    EXPECT_EQ(scan->io(), file_io_);
+  };
+  if (GetParam()) {
+    auto builder = MakeBuilder(MakeContext());
+    builder.FromSnapshot(kRootId);
+    exercise(builder);
+  } else {
+    RestTableScanBuilder builder(metadata_, file_io_, "test.my_table", nullptr,
+                                 std::make_shared<const RestScanContext>(MakeContext()));
+    exercise(builder);
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(ScanModes, RestScanRegressionTest, ::testing::Bool());
+
+}  // namespace
 
 }  // namespace iceberg::rest

@@ -347,7 +347,6 @@ Status ScanTaskFieldsFromJson(
         FileScanTasksFromJson(file_scan_tasks_json, response.delete_files,
                               partition_specs_by_id, schema));
   }
-
   return {};
 }
 
@@ -844,6 +843,8 @@ Result<nlohmann::json> ToJson(const PlanTableScanRequest& request) {
   if (request.snapshot_id.has_value()) {
     json[kSnapshotId] = request.snapshot_id.value();
   }
+  // FIXME: Preserve explicit empty projections as select: []; omitting select
+  // means the default projection. Java currently has the same issue.
   if (!request.select.empty()) {
     json[kSelect] = request.select;
   }

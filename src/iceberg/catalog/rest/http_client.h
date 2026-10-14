@@ -45,6 +45,7 @@ namespace iceberg::rest {
 class ICEBERG_REST_EXPORT HttpResponse {
  public:
   HttpResponse();
+  HttpResponse(int32_t status_code, std::string body);
   ~HttpResponse();
 
   HttpResponse(const HttpResponse&) = delete;
@@ -60,9 +61,6 @@ class ICEBERG_REST_EXPORT HttpResponse {
 
   /// \brief Get the headers of the response as a map.
   std::unordered_map<std::string, std::string> headers() const;
-
-  /// \brief Create a response for use in unit tests.
-  static HttpResponse MakeForTesting(int32_t status_code, std::string body);
 
  private:
   friend class HttpClient;
