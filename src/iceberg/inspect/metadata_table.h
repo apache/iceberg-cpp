@@ -44,7 +44,8 @@ struct ColumnSelection {
   ///
   /// Nested names are dot-concatenated. Columns are returned in schema order, and
   /// names that match no column are ignored. std::nullopt or a list containing `*`
-  /// returns all columns. An empty list returns rows without columns.
+  /// returns all columns. An empty list returns rows without columns. Selecting a
+  /// map's value returns the whole map; selecting only its key is an error.
   std::optional<std::vector<std::string>> names;
 
   /// \brief Whether names are matched case-sensitively.
@@ -99,9 +100,12 @@ class ICEBERG_EXPORT MetadataTable {
   /// The caller owns the returned stream and must invoke its `release` callback
   /// when the stream is no longer needed.
   ///
+  /// This is not a Scan() overload so that `Scan({})` on a TimeTravelMetadataTable
+  /// still resolves to Scan(const SnapshotSelection&).
+  ///
   /// \param columns Names of the columns to return.
   /// \return An Arrow stream containing the selected columns, or an error.
-  Result<ArrowArrayStream> Scan(const ColumnSelection& columns);
+  Result<ArrowArrayStream> ScanColumns(const ColumnSelection& columns);
 
  protected:
   explicit MetadataTable(std::shared_ptr<Table> source_table);
@@ -142,6 +146,7 @@ class ICEBERG_EXPORT TimeTravelMetadataTable : public MetadataTable {
 
   // Scans without a snapshot selection read the current snapshot on the main branch.
   using MetadataTable::Scan;
+  using MetadataTable::ScanColumns;
 
   /// \brief Scan all columns using the requested snapshot selection.
   ///
@@ -154,8 +159,8 @@ class ICEBERG_EXPORT TimeTravelMetadataTable : public MetadataTable {
   /// \param snapshot_selection Snapshot ID, timestamp, and optional ref selection.
   /// \param columns Names of the columns to return.
   /// \return An Arrow stream containing the selected columns, or an error.
-  Result<ArrowArrayStream> Scan(const SnapshotSelection& snapshot_selection,
-                                const ColumnSelection& columns);
+  Result<ArrowArrayStream> ScanColumns(const SnapshotSelection& snapshot_selection,
+                                       const ColumnSelection& columns);
 
  protected:
   explicit TimeTravelMetadataTable(std::shared_ptr<Table> source_table);

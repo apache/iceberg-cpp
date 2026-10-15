@@ -126,7 +126,7 @@ TEST_F(MetadataTableTest, TimeTravelScanSelectsColumns) {
   EXPECT_TRUE(std::holds_alternative<std::monostate>(table.scanned_snapshot().snapshot));
   EXPECT_THAT(table.scanned_columns(), ::testing::ElementsAre("id", "name"));
 
-  EXPECT_THAT(table.Scan(name_only), IsError(ErrorKind::kNotSupported));
+  EXPECT_THAT(table.ScanColumns(name_only), IsError(ErrorKind::kNotSupported));
   EXPECT_TRUE(std::holds_alternative<std::monostate>(table.scanned_snapshot().snapshot));
   EXPECT_THAT(table.scanned_columns(), ::testing::ElementsAre("name"));
 
@@ -136,14 +136,19 @@ TEST_F(MetadataTableTest, TimeTravelScanSelectsColumns) {
   EXPECT_EQ(table.scanned_snapshot().ref_name, "dev");
   EXPECT_THAT(table.scanned_columns(), ::testing::ElementsAre("id", "name"));
 
-  EXPECT_THAT(table.Scan(snapshot_one, name_only), IsError(ErrorKind::kNotSupported));
+  EXPECT_THAT(table.ScanColumns(snapshot_one, name_only),
+              IsError(ErrorKind::kNotSupported));
   EXPECT_EQ(table.scanned_snapshot().snapshot, snapshot_one.snapshot);
   EXPECT_THAT(table.scanned_columns(), ::testing::ElementsAre("name"));
+
+  EXPECT_THAT(table.Scan({}), IsError(ErrorKind::kNotSupported));
+  EXPECT_TRUE(std::holds_alternative<std::monostate>(table.scanned_snapshot().snapshot));
+  EXPECT_THAT(table.scanned_columns(), ::testing::ElementsAre("id", "name"));
 }
 
 TEST_F(MetadataTableTest, HistoryTableScanWithColumnsIsNotSupported) {
   ICEBERG_UNWRAP_OR_FAIL(auto history_table, MetadataTable::Make<HistoryTable>(table_));
-  EXPECT_THAT(history_table->Scan(
+  EXPECT_THAT(history_table->ScanColumns(
                   ColumnSelection{.names = std::vector<std::string>{"snapshot_id"}}),
               IsError(ErrorKind::kNotSupported));
 }

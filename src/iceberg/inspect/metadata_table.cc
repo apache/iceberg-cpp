@@ -53,7 +53,7 @@ const std::shared_ptr<Table>& MetadataTable::source_table() const {
 
 Result<ArrowArrayStream> MetadataTable::Scan() { return ScanProjection(*schema()); }
 
-Result<ArrowArrayStream> MetadataTable::Scan(const ColumnSelection& columns) {
+Result<ArrowArrayStream> MetadataTable::ScanColumns(const ColumnSelection& columns) {
   ICEBERG_ASSIGN_OR_RAISE(auto projected_schema, SelectColumns(schema(), columns));
   return ScanProjection(*projected_schema);
 }
@@ -70,7 +70,7 @@ Result<ArrowArrayStream> TimeTravelMetadataTable::Scan(
   return ScanSnapshot(snapshot_selection, *schema());
 }
 
-Result<ArrowArrayStream> TimeTravelMetadataTable::Scan(
+Result<ArrowArrayStream> TimeTravelMetadataTable::ScanColumns(
     const SnapshotSelection& snapshot_selection, const ColumnSelection& columns) {
   ICEBERG_ASSIGN_OR_RAISE(auto projected_schema, SelectColumns(schema(), columns));
   return ScanSnapshot(snapshot_selection, *projected_schema);
