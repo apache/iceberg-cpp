@@ -33,6 +33,7 @@
 #include "iceberg/expression/json_serde_internal.h"
 #include "iceberg/file_format.h"
 #include "iceberg/json_serde_internal.h"
+#include "iceberg/labels.h"
 #include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/schema.h"
@@ -72,6 +73,10 @@ constexpr std::string_view kDestination = "destination";
 constexpr std::string_view kMetadata = "metadata";
 constexpr std::string_view kConfig = "config";
 constexpr std::string_view kStorageCredentials = "storage-credentials";
+constexpr std::string_view kLabels = "labels";
+constexpr std::string_view kObjectLabels = "object-labels";
+constexpr std::string_view kFields = "fields";
+constexpr std::string_view kFieldId = "field-id";
 constexpr std::string_view kPrefix = "prefix";
 constexpr std::string_view kIdentifiers = "identifiers";
 constexpr std::string_view kOverrides = "overrides";
@@ -110,6 +115,8 @@ constexpr std::string_view kDeleteFileReferences = "delete-file-references";
 constexpr std::string_view kResidualFilter = "residual-filter";
 constexpr std::string_view kStart = "start";
 constexpr std::string_view kLength = "length";
+constexpr std::string_view kMapKeys = "keys";
+constexpr std::string_view kMapValues = "values";
 
 Result<nlohmann::json> StorageCredentialToJson(const StorageCredential& credential) {
   ICEBERG_RETURN_UNEXPECTED(credential.Validate());
@@ -128,8 +135,7 @@ Result<StorageCredential> StorageCredentialFromJson(const nlohmann::json& json) 
   return credential;
 }
 
-/// \brief Reads the optional `storage-credentials` array shared by the
-/// LoadTable and LoadCredentials responses.
+/// \brief Reads the optional `storage-credentials` array.
 Result<std::vector<StorageCredential>> StorageCredentialsFromJson(
     const nlohmann::json& json) {
   std::vector<StorageCredential> credentials;
@@ -145,6 +151,21 @@ Result<std::vector<StorageCredential>> StorageCredentialsFromJson(
     credentials.push_back(std::move(credential));
   }
   return credentials;
+}
+
+/// \brief Writes `storage-credentials` to json if any are present.
+Status StorageCredentialsToJson(const std::vector<StorageCredential>& credentials,
+                                nlohmann::json& json) {
+  if (credentials.empty()) {
+    return {};
+  }
+  nlohmann::json creds_json = nlohmann::json::array();
+  for (const auto& cred : credentials) {
+    ICEBERG_ASSIGN_OR_RAISE(auto entry, StorageCredentialToJson(cred));
+    creds_json.push_back(std::move(entry));
+  }
+  json[kStorageCredentials] = std::move(creds_json);
+  return {};
 }
 }  // namespace
 
@@ -168,14 +189,19 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> FileScanTasksFromJson(
     ICEBERG_ASSIGN_OR_RAISE(auto data_file_json,
                             GetJsonValue<nlohmann::json>(task_json, kDataFile));
     ICEBERG_ASSIGN_OR_RAISE(
-        auto data_file,
-        iceberg::DataFileFromJson(data_file_json, partition_spec_by_id, schema));
-    ICEBERG_ASSIGN_OR_RAISE(auto start, GetJsonIntegerOrDefault(task_json, kStart, 0));
-    ICEBERG_ASSIGN_OR_RAISE(
-        auto length,
-        GetJsonIntegerOrDefault(task_json, kLength, data_file.file_size_in_bytes));
-    ICEBERG_RETURN_UNEXPECTED(
-        CheckFileScanTaskNotSplit(start, length, data_file.file_size_in_bytes));
+        auto data_file, DataFileFromJson(data_file_json, partition_spec_by_id, schema));
+    // Neither field means the whole file. Only one field is ambiguous.
+    const bool has_start = task_json.contains(kStart);
+    const bool has_length = task_json.contains(kLength);
+    if (has_start != has_length) {
+      return JsonParseError("'start' and 'length' must be provided together");
+    }
+    int64_t start = 0;
+    int64_t length = data_file.file_size_in_bytes;
+    if (has_start) {
+      ICEBERG_ASSIGN_OR_RAISE(start, GetJsonInteger<int64_t>(task_json, kStart));
+      ICEBERG_ASSIGN_OR_RAISE(length, GetJsonInteger<int64_t>(task_json, kLength));
+    }
     // FIXME: REST scan-task DataFile JSON currently carries first-row-id,
     // but not the manifest-entry data sequence number. Until the REST API exposes
     // it, REST-planned tasks cannot inherit _last_updated_sequence_number.
@@ -203,9 +229,13 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> FileScanTasksFromJson(
       ICEBERG_ASSIGN_OR_RAISE(residual_filter, ExpressionFromJson(filter_json));
     }
 
-    file_scan_tasks.push_back(std::make_shared<FileScanTask>(
-        std::make_shared<DataFile>(std::move(data_file)), std::move(task_delete_files),
-        std::move(residual_filter)));
+    auto task = FileScanTask::MakeSplit(std::make_shared<DataFile>(std::move(data_file)),
+                                        start, length, std::move(task_delete_files),
+                                        std::move(residual_filter));
+    if (!task) {
+      return JsonParseError("Invalid FileScanTask range: {}", task.error().message);
+    }
+    file_scan_tasks.push_back(std::move(task.value()));
   }
   return file_scan_tasks;
 }
@@ -253,10 +283,19 @@ Result<nlohmann::json> ScanTaskFieldsToJson(
       if (!task) continue;
       nlohmann::json task_json;
       if (task->data_file()) {
+        // The shared data file may have changed size; don't write an invalid range.
+        auto range_result =
+            FileScanTask::MakeSplit(task->data_file(), task->start(), task->length());
+        if (!range_result) {
+          return ValidationFailed("Invalid FileScanTask range: {}",
+                                  range_result.error().message);
+        }
         ICEBERG_ASSIGN_OR_RAISE(
             auto data_file_json,
             iceberg::ToJson(*task->data_file(), partition_specs_by_id, schema));
         task_json[kDataFile] = std::move(data_file_json);
+        task_json[kStart] = task->start();
+        task_json[kLength] = task->length();
       }
       if (!task->delete_files().empty()) {
         std::vector<int32_t> refs;
@@ -474,6 +513,59 @@ Result<RenameTableRequest> RenameTableRequestFromJson(const nlohmann::json& json
   return request;
 }
 
+nlohmann::json ToJson(const FieldLabel& field_label) {
+  nlohmann::json json;
+  json[kFieldId] = field_label.field_id;
+  json[kLabels] = field_label.labels;
+  return json;
+}
+
+Result<FieldLabel> FieldLabelFromJson(const nlohmann::json& json) {
+  if (!json.is_object()) {
+    return JsonParseError("Cannot parse field label from non-object: {}",
+                          SafeDumpJson(json));
+  }
+  FieldLabel field_label;
+  ICEBERG_ASSIGN_OR_RAISE(field_label.field_id, GetJsonInteger<int32_t>(json, kFieldId));
+  ICEBERG_ASSIGN_OR_RAISE(field_label.labels,
+                          GetJsonValue<decltype(field_label.labels)>(json, kLabels));
+  return field_label;
+}
+
+nlohmann::json ToJson(const Labels& labels) {
+  nlohmann::json json = nlohmann::json::object();
+  if (!labels.object_labels.empty()) {
+    json[kObjectLabels] = labels.object_labels;
+  }
+  if (!labels.fields.empty()) {
+    nlohmann::json fields = nlohmann::json::array();
+    for (const auto& field_label : labels.fields) {
+      fields.push_back(ToJson(field_label));
+    }
+    json[kFields] = std::move(fields);
+  }
+  return json;
+}
+
+// A non-object value is treated as absent labels rather than failing the load.
+Result<Labels> LabelsFromJson(const nlohmann::json& json) {
+  Labels labels;
+  ICEBERG_ASSIGN_OR_RAISE(
+      labels.object_labels,
+      GetJsonValueOrDefault<decltype(labels.object_labels)>(json, kObjectLabels));
+  if (auto it = json.find(kFields); it != json.end() && !it->is_null()) {
+    if (!it->is_array()) {
+      return JsonParseError("Cannot parse '{}' from non-array: {}", kFields,
+                            SafeDumpJson(*it));
+    }
+    for (const auto& entry : *it) {
+      ICEBERG_ASSIGN_OR_RAISE(auto field_label, FieldLabelFromJson(entry));
+      labels.fields.push_back(std::move(field_label));
+    }
+  }
+  return labels;
+}
+
 // LoadTableResult (used by CreateTableResponse, LoadTableResponse)
 Result<nlohmann::json> ToJson(const LoadTableResult& result) {
   nlohmann::json json;
@@ -488,6 +580,9 @@ Result<nlohmann::json> ToJson(const LoadTableResult& result) {
     }
     json[kStorageCredentials] = std::move(creds);
   }
+  if (!result.labels.empty()) {
+    json[kLabels] = ToJson(result.labels);
+  }
   return json;
 }
 
@@ -501,6 +596,9 @@ Result<LoadTableResult> LoadTableResultFromJson(const nlohmann::json& json) {
   ICEBERG_ASSIGN_OR_RAISE(result.config,
                           GetJsonValueOrDefault<decltype(result.config)>(json, kConfig));
   ICEBERG_ASSIGN_OR_RAISE(result.storage_credentials, StorageCredentialsFromJson(json));
+  if (auto it = json.find(kLabels); it != json.end() && !it->is_null()) {
+    ICEBERG_ASSIGN_OR_RAISE(result.labels, LabelsFromJson(*it));
+  }
   ICEBERG_RETURN_UNEXPECTED(result.Validate());
   return result;
 }
@@ -829,6 +927,8 @@ Result<nlohmann::json> ToJson(const PlanTableScanRequest& request) {
   if (request.snapshot_id.has_value()) {
     json[kSnapshotId] = request.snapshot_id.value();
   }
+  // FIXME: Preserve explicit empty projections as select: []; omitting select
+  // means the default projection. Java currently has the same issue.
   if (!request.select.empty()) {
     json[kSelect] = request.select;
   }
@@ -884,6 +984,7 @@ Result<PlanTableScanResponse> PlanTableScanResponseFromJson(
   }
   ICEBERG_RETURN_UNEXPECTED(
       ScanTaskFieldsFromJson(json, response, partition_specs_by_id, schema));
+  ICEBERG_ASSIGN_OR_RAISE(response.storage_credentials, StorageCredentialsFromJson(json));
   ICEBERG_RETURN_UNEXPECTED(response.Validate());
   return response;
 }
@@ -895,6 +996,7 @@ Result<nlohmann::json> ToJson(
     const Schema& schema) {
   ICEBERG_ASSIGN_OR_RAISE(nlohmann::json json,
                           ScanTaskFieldsToJson(response, partition_specs_by_id, schema));
+  ICEBERG_RETURN_UNEXPECTED(StorageCredentialsToJson(response.storage_credentials, json));
   json[kPlanStatus] = ToString(response.plan_status);
   if (!response.plan_id.empty()) {
     json[kPlanId] = response.plan_id;
@@ -921,6 +1023,7 @@ Result<FetchPlanningResultResponse> FetchPlanningResultResponseFromJson(
   }
   ICEBERG_RETURN_UNEXPECTED(
       ScanTaskFieldsFromJson(json, response, partition_specs_by_id, schema));
+  ICEBERG_ASSIGN_OR_RAISE(response.storage_credentials, StorageCredentialsFromJson(json));
   ICEBERG_RETURN_UNEXPECTED(response.Validate());
   return response;
 }
@@ -932,6 +1035,7 @@ Result<nlohmann::json> ToJson(
     const Schema& schema) {
   ICEBERG_ASSIGN_OR_RAISE(nlohmann::json json,
                           ScanTaskFieldsToJson(response, partition_specs_by_id, schema));
+  ICEBERG_RETURN_UNEXPECTED(StorageCredentialsToJson(response.storage_credentials, json));
   json[kPlanStatus] = ToString(response.plan_status);
   if (response.error.has_value()) {
     json[kError] = ToJson(*response.error)[kError];
@@ -983,5 +1087,7 @@ ICEBERG_DEFINE_FROM_JSON(CommitTableResponse)
 ICEBERG_DEFINE_FROM_JSON(OAuthTokenResponse)
 ICEBERG_DEFINE_FROM_JSON(PlanTableScanRequest)
 ICEBERG_DEFINE_FROM_JSON(FetchScanTasksRequest)
+ICEBERG_DEFINE_FROM_JSON(FieldLabel)
+ICEBERG_DEFINE_FROM_JSON(Labels)
 
 }  // namespace iceberg::rest

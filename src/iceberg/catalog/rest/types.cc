@@ -87,7 +87,7 @@ bool CreateTableRequest::operator==(const CreateTableRequest& other) const {
 
 bool LoadTableResult::operator==(const LoadTableResult& other) const {
   if (metadata_location != other.metadata_location || config != other.config ||
-      storage_credentials != other.storage_credentials) {
+      storage_credentials != other.storage_credentials || labels != other.labels) {
     return false;
   }
 
@@ -192,6 +192,7 @@ bool FileScanTaskEqual(const std::shared_ptr<FileScanTask>& lhs,
     return false;
   }
   return SharedPtrEqual(lhs->data_file(), rhs->data_file()) &&
+         lhs->start() == rhs->start() && lhs->length() == rhs->length() &&
          SharedPtrVectorEqual(lhs->delete_files(), rhs->delete_files()) &&
          ExpressionPtrEqual(lhs->residual_filter(), rhs->residual_filter());
 }
@@ -229,13 +230,14 @@ bool HasNonEmptyFileScanTasks(const Response& response) {
 
 bool PlanTableScanResponse::operator==(const PlanTableScanResponse& other) const {
   return ScanTaskFieldsEqual(*this, other) && plan_status == other.plan_status &&
-         plan_id == other.plan_id && error == other.error;
+         plan_id == other.plan_id && error == other.error &&
+         storage_credentials == other.storage_credentials;
 }
 
 bool FetchPlanningResultResponse::operator==(
     const FetchPlanningResultResponse& other) const {
   return ScanTaskFieldsEqual(*this, other) && plan_status == other.plan_status &&
-         error == other.error;
+         error == other.error && storage_credentials == other.storage_credentials;
 }
 
 bool FetchScanTasksRequest::operator==(const FetchScanTasksRequest& other) const {

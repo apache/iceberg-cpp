@@ -455,8 +455,8 @@ ICEBERG_EXPORT Result<DataFile> DataFileFromJson(
 /// - `schema` (required): schema used by this task
 /// - `spec` (required): partition spec used by this task
 /// - `data-file` (required): ContentFile JSON
-/// - `start` (required): always 0 because split tasks are unsupported
-/// - `length` (required): always the data file size
+/// - `start` (required): inclusive byte offset where the task starts
+/// - `length` (required): number of bytes in the task range
 /// - `delete-files` (optional on input; omitted when the task has no delete files):
 ///   array of ContentFile JSON
 /// - `residual-filter` (optional): Expression JSON
@@ -469,13 +469,10 @@ ICEBERG_EXPORT Result<nlohmann::json> ToJson(
 /// \brief Deserializes a self-contained FileScanTask JSON object.
 ///
 /// Reads the embedded schema and partition spec. Rejects REST
-/// `delete-file-references` and byte-range splits (`start` != 0 or `length` != file
-/// size). Both range fields are required, matching Java core.
+/// `delete-file-references`. Both range fields are required, matching Java core.
+/// Valid ranges are preserved. C++ additionally rejects negative, out-of-file,
+/// and empty partial ranges; an empty range is valid only for a zero-byte file.
 ICEBERG_EXPORT Result<std::shared_ptr<FileScanTask>> FileScanTaskFromJson(
     const nlohmann::json& json);
-
-/// Rejects `start != 0 || length != file_size_in_bytes`.
-ICEBERG_EXPORT Status CheckFileScanTaskNotSplit(int64_t start, int64_t length,
-                                                int64_t file_size_in_bytes);
 
 }  // namespace iceberg

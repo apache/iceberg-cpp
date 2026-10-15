@@ -104,7 +104,7 @@ jobs:
       - name: Install dependencies on Ubuntu
         if: ${{ startsWith(matrix.os, 'ubuntu') }}
         shell: bash
-        run: sudo apt-get update && sudo apt-get install -y libcurl4-openssl-dev
+        run: sudo apt-get update && sudo apt-get install -y libcurl4-openssl-dev libssl-dev
 
       - name: Verify
         run: |

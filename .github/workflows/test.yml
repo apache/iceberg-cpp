@@ -53,10 +53,10 @@ jobs:
       matrix:
         include:
           - cmake_build_type: Debug
-            extra_cmake_args: "-DICEBERG_CXX20_COMPAT=ON"
+            extra_cmake_args: "-DICEBERG_CXX20_COMPAT=ON -DICEBERG_ENCRYPTION=ON"
             api_mode: C++20 Compat
           - cmake_build_type: RelWithDebInfo
-            extra_cmake_args: ""
+            extra_cmake_args: "-DICEBERG_ENCRYPTION=ON"
             api_mode: C++23
     steps:
       - name: Checkout iceberg-cpp
@@ -65,7 +65,7 @@ jobs:
           persist-credentials: false
       - name: Install dependencies
         shell: bash
-        run: sudo apt-get update && sudo apt-get install -y libcurl4-openssl-dev
+        run: sudo apt-get update && sudo apt-get install -y libcurl4-openssl-dev libssl-dev
       - name: Set up sccache
         uses: ./.github/actions/setup-sccache
         with:
@@ -130,7 +130,7 @@ jobs:
           persist-credentials: false
       - name: Install dependencies
         shell: bash
-        run: sudo apt-get update && sudo apt-get install -y libcurl4-openssl-dev
+        run: sudo apt-get update && sudo apt-get install -y libcurl4-openssl-dev libssl-dev
       - name: Restore sccache cache
         uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
@@ -179,7 +179,8 @@ jobs:
       - name: Build Iceberg
         shell: bash
         env:
-          ICEBERG_EXTRA_CMAKE_ARGS: "-DICEBERG_CXX20_COMPAT=ON"
+          # Enables the Homebrew keg-only OpenSSL lookup, which only runs on macOS.
+          ICEBERG_EXTRA_CMAKE_ARGS: "-DICEBERG_CXX20_COMPAT=ON -DICEBERG_ENCRYPTION=ON"
         run: |
           ci/scripts/build_iceberg.sh \
             --source-dir "$(pwd)" \
@@ -231,7 +232,7 @@ jobs:
         if: ${{ steps.vcpkg-cache.outputs.cache-hit != 'true' }}
         shell: pwsh
         run: |
-          vcpkg install zlib:x64-windows nlohmann-json:x64-windows nanoarrow:x64-windows roaring:x64-windows cpr:x64-windows
+          vcpkg install zlib:x64-windows nlohmann-json:x64-windows nanoarrow:x64-windows roaring:x64-windows cpr:x64-windows openssl:x64-windows
       - name: Set up sccache
         uses: ./.github/actions/setup-sccache
         with:
@@ -239,7 +240,7 @@ jobs:
       - name: Build Iceberg
         shell: pwsh
         env:
-          ICEBERG_EXTRA_CMAKE_ARGS: "-DICEBERG_CXX20_COMPAT=ON"
+          ICEBERG_EXTRA_CMAKE_ARGS: "-DICEBERG_CXX20_COMPAT=ON -DICEBERG_ENCRYPTION=ON"
         run: |
           $ErrorActionPreference = "Stop"
           bash -lc '

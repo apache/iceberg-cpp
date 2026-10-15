@@ -31,6 +31,7 @@
 
 #include "iceberg/metrics/counter.h"
 #include "iceberg/metrics/metrics_reporters.h"
+#include "iceberg/test/matchers.h"
 
 namespace iceberg {
 
@@ -75,7 +76,7 @@ TEST(CustomMetricsReporterTest, RegisterAndLoad) {
   ASSERT_NE(reporter, nullptr);
 
   ScanReport scan_report{.table_name = "test.table"};
-  reporter->Report(scan_report);
+  ASSERT_THAT(reporter->Report(scan_report), IsOk());
 
   EXPECT_EQ(reporter->reports().size(), 1);
   EXPECT_EQ(GetReportType(reporter->reports()[0]), MetricsReportType::kScanReport);
@@ -163,7 +164,7 @@ class CollectorTest : public ::testing::TestWithParam<CollectorParam> {};
 TEST_P(CollectorTest, CollectsAndPreservesReport) {
   const auto& param = GetParam();
   CollectingMetricsReporter reporter;
-  reporter.Report(param.report);
+  ASSERT_THAT(reporter.Report(param.report), IsOk());
 
   ASSERT_EQ(reporter.reports().size(), 1);
   EXPECT_EQ(GetReportType(reporter.reports()[0]), param.expected_type);
@@ -228,7 +229,7 @@ TEST(CombineTest, FlattenNestedComposite) {
     EXPECT_EQ(dynamic_cast<CompositeMetricsReporter*>(r.get()), nullptr);
   }
 
-  abc->Report(CommitReport{.table_name = "db.t2"});
+  ASSERT_THAT(abc->Report(CommitReport{.table_name = "db.t2"}), IsOk());
   EXPECT_EQ(a->reports().size(), 1u);
   EXPECT_EQ(b->reports().size(), 1u);
   EXPECT_EQ(c->reports().size(), 1u);
@@ -246,7 +247,7 @@ TEST(CombineTest, DeduplicateByIdentity) {
   ASSERT_NE(composite, nullptr);
   EXPECT_EQ(composite->Reporters().size(), 2u);
 
-  result->Report(ScanReport{});
+  ASSERT_THAT(result->Report(ScanReport{}), IsOk());
   EXPECT_EQ(a->reports().size(), 1u);
   EXPECT_EQ(b->reports().size(), 1u);  // delivered once, not twice
 }

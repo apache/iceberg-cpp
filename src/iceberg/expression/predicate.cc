@@ -25,11 +25,13 @@
 #include "iceberg/expression/expressions.h"
 #include "iceberg/expression/literal.h"
 #include "iceberg/result.h"
+#include "iceberg/schema.h"
 #include "iceberg/transform.h"
 #include "iceberg/type.h"
 #include "iceberg/util/checked_cast.h"
 #include "iceberg/util/formatter_internal.h"
 #include "iceberg/util/macros.h"
+#include "iceberg/util/type_util.h"
 
 namespace iceberg {
 
@@ -230,7 +232,7 @@ Result<std::shared_ptr<Expression>> UnboundPredicateImpl<B>::Bind(
   ICEBERG_ASSIGN_OR_RAISE(auto bound_term, BASE::term()->Bind(schema, case_sensitive));
 
   if (values_.empty()) {
-    return BindUnaryOperation(std::move(bound_term));
+    return BindUnaryOperation(schema, std::move(bound_term));
   }
 
   if (BASE::op() == Expression::Operation::kIn ||
@@ -257,30 +259,63 @@ bool StartsWith(const Literal& lhs, const Literal& rhs) {
   return false;
 }
 
+/// \brief Returns true if all ancestors of the field with the given ID are required.
+///
+/// A required field can still produce null values if it is nested in an optional struct,
+/// list, or map.
+Result<bool> AllAncestorsAreRequired(const Schema& schema, int32_t field_id) {
+  auto id_to_parent = IndexParents(schema);
+  auto parent_it = id_to_parent.find(field_id);
+  while (parent_it != id_to_parent.end()) {
+    ICEBERG_ASSIGN_OR_RAISE(auto parent, schema.FindFieldById(parent_it->second));
+    if (!parent.has_value()) {
+      return InvalidSchema("Cannot find parent field {} of field {}", parent_it->second,
+                           field_id);
+    }
+    if (parent.value().get().optional()) {
+      return false;
+    }
+    parent_it = id_to_parent.find(parent_it->second);
+  }
+  return true;
+}
+
 }  // namespace
 
 template <typename B>
 Result<std::shared_ptr<Expression>> UnboundPredicateImpl<B>::BindUnaryOperation(
-    std::shared_ptr<B> bound_term) const {
+    const Schema& schema, std::shared_ptr<B> bound_term) const {
   switch (BASE::op()) {
-    case Expression::Operation::kIsNull:
+    case Expression::Operation::kIsNull: {
       if (!bound_term->MayProduceNull()) {
-        return Expressions::AlwaysFalse();
+        ICEBERG_ASSIGN_OR_RAISE(
+            bool all_ancestors_required,
+            AllAncestorsAreRequired(schema, bound_term->reference()->field_id()));
+        if (all_ancestors_required) {
+          return Expressions::AlwaysFalse();
+        }
       }
       if (bound_term->type()->type_id() == TypeId::kUnknown) {
         return Expressions::AlwaysTrue();
       }
       return BoundUnaryPredicate::Make(Expression::Operation::kIsNull,
                                        std::move(bound_term));
-    case Expression::Operation::kNotNull:
+    }
+    case Expression::Operation::kNotNull: {
       if (!bound_term->MayProduceNull()) {
-        return Expressions::AlwaysTrue();
+        ICEBERG_ASSIGN_OR_RAISE(
+            bool all_ancestors_required,
+            AllAncestorsAreRequired(schema, bound_term->reference()->field_id()));
+        if (all_ancestors_required) {
+          return Expressions::AlwaysTrue();
+        }
       }
       if (bound_term->type()->type_id() == TypeId::kUnknown) {
         return Expressions::AlwaysFalse();
       }
       return BoundUnaryPredicate::Make(Expression::Operation::kNotNull,
                                        std::move(bound_term));
+    }
     case Expression::Operation::kIsNan:
     case Expression::Operation::kNotNan:
       if (!IsFloatingType(bound_term->type()->type_id())) {

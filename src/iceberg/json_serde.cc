@@ -748,6 +748,7 @@ nlohmann::json ToJson(const Snapshot& snapshot) {
   if (snapshot.first_row_id.has_value()) {
     SetOptionalField(json, kAddedRows, snapshot.added_rows);
   }
+  SetOptionalField(json, kKeyId, snapshot.key_id);
   return json;
 }
 
@@ -1170,11 +1171,13 @@ Result<std::unique_ptr<Snapshot>> SnapshotFromJson(const nlohmann::json& json) {
   }
 
   ICEBERG_ASSIGN_OR_RAISE(auto schema_id, GetJsonValueOptional<int32_t>(json, kSchemaId));
+  ICEBERG_ASSIGN_OR_RAISE(auto key_id, GetJsonValueOptional<std::string>(json, kKeyId));
 
   return std::make_unique<Snapshot>(
       snapshot_id, parent_snapshot_id,
       sequence_number.value_or(TableMetadata::kInitialSequenceNumber), timestamp_ms,
-      manifest_list, std::move(summary), schema_id, first_row_id, added_rows);
+      manifest_list, std::move(summary), schema_id, first_row_id, added_rows,
+      std::move(key_id));
 }
 
 nlohmann::json ToJson(const BlobMetadata& blob_metadata) {
@@ -2408,6 +2411,13 @@ Result<nlohmann::json> ToJson(
   if (task.data_file()->content != DataFile::Content::kData) {
     return ValidationFailed("FileScanTask data-file must have data content");
   }
+  // The shared data file may have changed size; don't write an invalid range.
+  auto range_result =
+      FileScanTask::MakeSplit(task.data_file(), task.start(), task.length());
+  if (!range_result) {
+    return ValidationFailed("Invalid FileScanTask range: {}",
+                            range_result.error().message);
+  }
 
   nlohmann::json json;
   json[kTaskType] = kFileScanTaskType;
@@ -2423,8 +2433,8 @@ Result<nlohmann::json> ToJson(
   }
   json[kSpec] = ToJson(*spec_it->second);
   json[kDataFile] = std::move(data_file_json);
-  json[kStart] = 0;
-  json[kLength] = task.data_file()->file_size_in_bytes;
+  json[kStart] = task.start();
+  json[kLength] = task.length();
 
   nlohmann::json delete_files_json = nlohmann::json::array();
   for (const auto& delete_file : task.delete_files()) {
@@ -2455,17 +2465,6 @@ Result<nlohmann::json> ToJson(
     json[kResidualFilter] = std::move(residual_json);
   }
   return json;
-}
-
-Status CheckFileScanTaskNotSplit(int64_t start, int64_t length,
-                                 int64_t file_size_in_bytes) {
-  if (start != 0 || length != file_size_in_bytes) {
-    return NotSupported(
-        "Split FileScanTask is not supported: start={}, length={}, "
-        "file-size-in-bytes={}",
-        start, length, file_size_in_bytes);
-  }
-  return {};
 }
 
 Result<std::shared_ptr<FileScanTask>> FileScanTaskFromJson(const nlohmann::json& json) {
@@ -2510,8 +2509,6 @@ Result<std::shared_ptr<FileScanTask>> FileScanTaskFromJson(const nlohmann::json&
 
   ICEBERG_ASSIGN_OR_RAISE(auto start, GetJsonInteger<int64_t>(json, kStart));
   ICEBERG_ASSIGN_OR_RAISE(auto length, GetJsonInteger<int64_t>(json, kLength));
-  ICEBERG_RETURN_UNEXPECTED(
-      CheckFileScanTaskNotSplit(start, length, data_file.file_size_in_bytes));
 
   std::vector<std::shared_ptr<DataFile>> delete_files;
   if (json.contains(kDeleteFiles)) {
@@ -2539,9 +2536,13 @@ Result<std::shared_ptr<FileScanTask>> FileScanTaskFromJson(const nlohmann::json&
     ICEBERG_ASSIGN_OR_RAISE(residual_filter, ExpressionFromJson(filter_json));
   }
 
-  return std::make_shared<FileScanTask>(std::make_shared<DataFile>(std::move(data_file)),
-                                        std::move(delete_files),
-                                        std::move(residual_filter));
+  auto task = FileScanTask::MakeSplit(std::make_shared<DataFile>(std::move(data_file)),
+                                      start, length, std::move(delete_files),
+                                      std::move(residual_filter));
+  if (!task) {
+    return JsonParseError("Invalid FileScanTask range: {}", task.error().message);
+  }
+  return std::move(task.value());
 }
 
 }  // namespace iceberg

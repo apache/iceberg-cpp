@@ -127,7 +127,7 @@ class PruneColumnVisitor {
 };
 
 /// \brief Visitor for getting projected field IDs.
-class GetProjectedIdsVisitor {
+class ICEBERG_EXPORT GetProjectedIdsVisitor {
  public:
   explicit GetProjectedIdsVisitor(bool include_struct_ids = false);
 

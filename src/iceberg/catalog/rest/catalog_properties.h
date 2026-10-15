@@ -19,6 +19,7 @@
 
 #pragma once
 
+#include <cstdint>
 #include <string>
 #include <unordered_map>
 
@@ -33,6 +34,9 @@ namespace iceberg::rest {
 
 /// \brief Snapshot loading mode for REST catalog.
 enum class SnapshotMode : uint8_t { kAll, kRefs };
+
+/// \brief Scan planning mode for REST catalog.
+enum class ScanPlanningMode : uint8_t { kClient, kServer };
 
 /// \brief Configuration class for a REST Catalog.
 class ICEBERG_REST_EXPORT RestCatalogProperties
@@ -58,6 +62,14 @@ class ICEBERG_REST_EXPORT RestCatalogProperties
   /// \brief Whether to report metrics to the REST catalog server (default: true).
   inline static Entry<std::string> kMetricsReportingEnabled{
       "rest-metrics-reporting-enabled", "true"};
+  /// \brief The scan planning mode (client or server).
+  inline static Entry<std::string> kScanPlanningMode{"scan-planning-mode", "client"};
+  /// \brief Maximum time to wait for a submitted scan plan, in milliseconds.
+  inline static Entry<int64_t> kScanPlanningPollTimeoutMs{
+      "rest-scan-planning.poll-timeout-ms", 300000};
+  /// \brief Extra polls after the first fetch of a submitted scan plan.
+  inline static Entry<int32_t> kScanPlanningPollNumRetries{
+      "rest-scan-planning.poll-num-retries", 10};
   /// \brief The prefix for HTTP headers.
   inline static constexpr std::string_view kHeaderPrefix = "header.";
 
@@ -80,6 +92,11 @@ class ICEBERG_REST_EXPORT RestCatalogProperties
   ///         "REFS", or an error if the value is invalid. Parsing is
   ///         case-insensitive to match Java behavior.
   Result<SnapshotMode> SnapshotLoadingMode() const;
+
+  /// \brief Get the scan planning mode from the given config map, returning
+  ///        std::nullopt if the key is absent.
+  static Result<std::optional<ScanPlanningMode>> ScanPlanningModeFrom(
+      const std::unordered_map<std::string, std::string>& config);
 };
 
 }  // namespace iceberg::rest

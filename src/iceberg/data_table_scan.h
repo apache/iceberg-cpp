@@ -54,7 +54,7 @@ class ICEBERG_EXPORT DataTableScan : public TableScan {
   /// can outlive this scan. An executor configured through PlanWith() is borrowed and
   /// must remain alive until the stream is destroyed, as later Next() calls may submit
   /// work to it.
-  Result<FileScanTaskStreamPtr> PlanFilesStream() const;
+  virtual Result<FileScanTaskStreamPtr> PlanFilesStream() const;
 
  protected:
   using TableScan::TableScan;

@@ -60,7 +60,7 @@ jobs:
         shell: bash
         run: |
           sudo apt-get update
-          sudo apt-get install -y libcurl4-openssl-dev libsqlite3-dev libpq-dev default-libmysqlclient-dev
+          sudo apt-get install -y libcurl4-openssl-dev libssl-dev libsqlite3-dev libpq-dev default-libmysqlclient-dev
       - name: Set up sccache
         uses: ./.github/actions/setup-sccache
         with:

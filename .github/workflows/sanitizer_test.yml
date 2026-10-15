@@ -51,7 +51,7 @@ jobs:
           persist-credentials: false
       - name: Install dependencies
         shell: bash
-        run: sudo apt-get update && sudo apt-get install -y libcurl4-openssl-dev
+        run: sudo apt-get update && sudo apt-get install -y libcurl4-openssl-dev libssl-dev
       - name: Set up sccache
         uses: ./.github/actions/setup-sccache
         with:

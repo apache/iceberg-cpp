@@ -422,6 +422,11 @@ Result<std::shared_ptr<Table>> InMemoryCatalog::CreateTable(
     const std::string& location,
     const std::unordered_map<std::string, std::string>& properties) {
   std::unique_lock lock(mutex_);
+  ICEBERG_ASSIGN_OR_RAISE(auto namespace_exists,
+                          root_namespace_->NamespaceExists(identifier.ns));
+  if (!namespace_exists) {
+    return NoSuchNamespace("Table namespace does not exist: {}", identifier.ns);
+  }
   if (root_namespace_->TableExists(identifier).value_or(false)) {
     return AlreadyExists("Table already exists: {}", identifier);
   }
@@ -609,7 +614,9 @@ Result<std::shared_ptr<Table>> InMemoryCatalog::RegisterTable(
                           TableMetadataUtil::Read(*file_io_, metadata_file_location));
 
   std::unique_lock lock(mutex_);
-  if (!root_namespace_->NamespaceExists(identifier.ns)) {
+  ICEBERG_ASSIGN_OR_RAISE(auto namespace_exists,
+                          root_namespace_->NamespaceExists(identifier.ns));
+  if (!namespace_exists) {
     return NoSuchNamespace("Table namespace does not exist: {}", identifier.ns);
   }
   if (!root_namespace_->RegisterTable(identifier, metadata_file_location)) {

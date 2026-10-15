@@ -22,12 +22,14 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include "iceberg/labels.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_field.h"
 #include "iceberg/table_metadata.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/test/mock_catalog.h"
 #include "iceberg/test/mock_io.h"
+#include "iceberg/transaction.h"
 
 namespace iceberg {
 
@@ -146,6 +148,75 @@ TYPED_TEST(TypedTableTest, NewTransaction) {
   } else {
     EXPECT_THAT(table->NewTransaction(), IsError(ErrorKind::kNotSupported));
   }
+}
+
+class TableLabelsTest : public ::testing::Test {
+ protected:
+  void SetUp() override {
+    io_ = std::make_shared<MockFileIO>();
+    catalog_ = std::make_shared<MockCatalog>();
+    auto schema = std::make_shared<Schema>(
+        std::vector<SchemaField>{SchemaField::MakeRequired(1, "id", int64())}, 1);
+    metadata_ = std::make_shared<TableMetadata>(
+        TableMetadata{.format_version = 2, .schemas = {schema}, .current_schema_id = 1});
+  }
+
+  const TableIdentifier ident_{.ns = Namespace{.levels = {"db"}}, .name = "t"};
+  const Labels labels_{
+      .object_labels = {{"owner", "team-a"}},
+      .fields = {{.field_id = 1, .labels = {{"classification", "pii"}}}}};
+  std::shared_ptr<MockFileIO> io_;
+  std::shared_ptr<MockCatalog> catalog_;
+  std::shared_ptr<TableMetadata> metadata_;
+};
+
+class TableLabelsRefreshTest : public TableLabelsTest,
+                               public ::testing::WithParamInterface<bool> {};
+
+TEST_P(TableLabelsRefreshTest, RefreshKeepsLabels) {
+  const std::string metadata_location =
+      GetParam() ? "s3://bucket/meta2.json" : "s3://bucket/meta.json";
+  const Labels changed_labels{
+      .object_labels = {{"owner", "team-b"}},
+      .fields = {{.field_id = 1, .labels = {{"classification", "public"}}}}};
+  for (const auto& refreshed_labels : {Labels{}, changed_labels}) {
+    SCOPED_TRACE(refreshed_labels.empty() ? "Absent labels" : "Changed labels");
+    ICEBERG_UNWRAP_OR_FAIL(
+        auto table, Table::Make(ident_, metadata_, "s3://bucket/meta.json", io_, catalog_,
+                                /*full_name=*/"", /*reporter=*/nullptr,
+                                std::make_unique<Labels>(labels_)));
+    ICEBERG_UNWRAP_OR_FAIL(
+        auto refreshed, Table::Make(ident_, metadata_, metadata_location, io_, catalog_,
+                                    /*full_name=*/"", /*reporter=*/nullptr,
+                                    refreshed_labels.empty()
+                                        ? nullptr
+                                        : std::make_unique<Labels>(refreshed_labels)));
+    EXPECT_CALL(*catalog_, LoadTable(::testing::_))
+        .WillOnce(::testing::Return(refreshed));
+
+    ASSERT_THAT(table->Refresh(), IsOk());
+
+    EXPECT_EQ(table->metadata_file_location(), metadata_location);
+    EXPECT_EQ(table->labels(), labels_);
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(MetadataLocation, TableLabelsRefreshTest, ::testing::Bool(),
+                         [](const ::testing::TestParamInfo<bool>& info) {
+                           return info.param ? "Changed" : "Unchanged";
+                         });
+
+TEST_F(TableLabelsTest, EmptyTransactionKeepsLabels) {
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto table, Table::Make(ident_, metadata_, "s3://bucket/meta.json", io_, catalog_,
+                              /*full_name=*/"", /*reporter=*/nullptr,
+                              std::make_unique<Labels>(labels_)));
+  EXPECT_CALL(*catalog_, UpdateTable(::testing::_, ::testing::_, ::testing::_)).Times(0);
+  ICEBERG_UNWRAP_OR_FAIL(auto transaction, table->NewTransaction());
+  ICEBERG_UNWRAP_OR_FAIL(auto committed, transaction->Commit());
+
+  ASSERT_EQ(committed, table);
+  EXPECT_EQ(committed->labels(), labels_);
 }
 
 TEST(StaticTableTest, NewMutatingOperationsAreNotSupported) {

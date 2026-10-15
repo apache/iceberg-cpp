@@ -1042,6 +1042,23 @@ TEST_P(AvroWriterTest, WritePrimitiveTypes) {
   VerifyWrittenData(test_data);
 }
 
+TEST_P(AvroWriterTest, WriteDecimalFixedWidths) {
+  auto schema = std::make_shared<Schema>(
+      std::vector<SchemaField>{SchemaField::MakeRequired(1, "tiny", decimal(1, 0)),
+                               SchemaField::MakeRequired(2, "narrow", decimal(3, 0)),
+                               SchemaField::MakeRequired(3, "wide", decimal(38, 0)),
+                               SchemaField::MakeRequired(4, "sentinel", int32()),
+                               SchemaField::MakeOptional(5, "optional", decimal(10, 2))});
+  const std::string data = R"([
+    ["0", "127", "99999999999999999999999999999999999999", 7, "10.01"],
+    ["1", "128", "0", 8, null],
+    ["-1", "-128", "-99999999999999999999999999999999999999", 9, "-20.02"],
+    ["0", "-129", "1", 10, "0.00"]
+  ])";
+  ASSERT_NO_FATAL_FAILURE(WriteAvroFile(schema, data));
+  ASSERT_NO_FATAL_FAILURE(VerifyWrittenData(data));
+}
+
 TEST_P(AvroWriterTest, WriteUuidType) {
   auto schema = std::make_shared<iceberg::Schema>(std::vector<SchemaField>{
       SchemaField::MakeRequired(1, "uuid_col", iceberg::uuid())});

@@ -87,7 +87,7 @@ jobs:
       - name: Install dependencies on Ubuntu
         if: ${{ startsWith(matrix.runs-on, 'ubuntu') }}
         shell: bash
-        run: sudo apt-get update && sudo apt-get install -y libcurl4-openssl-dev libjitterentropy3-dev
+        run: sudo apt-get update && sudo apt-get install -y libcurl4-openssl-dev libssl-dev libjitterentropy3-dev
       - name: Cache vcpkg packages
         if: ${{ startsWith(matrix.runs-on, 'ubuntu') && matrix.bundle_awssdk == 'OFF' }}
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0

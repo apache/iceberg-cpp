@@ -37,6 +37,8 @@
 #include "iceberg/snapshot.h"
 #include "iceberg/table.h"
 #include "iceberg/table_metadata.h"
+#include "iceberg/util/content_file_util.h"
+#include "iceberg/util/int128.h"
 #include "iceberg/util/macros.h"
 #include "iceberg/util/snapshot_util.h"
 #include "iceberg/util/timepoint.h"
@@ -179,11 +181,78 @@ FileScanTask::FileScanTask(std::shared_ptr<DataFile> data_file,
   ICEBERG_DCHECK(data_file_ != nullptr, "Data file cannot be null for FileScanTask");
 }
 
-int64_t FileScanTask::size_bytes() const { return data_file_->file_size_in_bytes; }
+FileScanTask::FileScanTask(std::shared_ptr<DataFile> data_file,
+                           std::vector<std::shared_ptr<DataFile>> delete_files,
+                           std::shared_ptr<Expression> residual_filter, Range range)
+    : FileScanTask(std::move(data_file), std::move(delete_files),
+                   std::move(residual_filter)) {
+  range_ = range;
+}
+
+Result<std::shared_ptr<FileScanTask>> FileScanTask::MakeSplit(
+    std::shared_ptr<DataFile> data_file, int64_t start, int64_t length,
+    std::vector<std::shared_ptr<DataFile>> delete_files,
+    std::shared_ptr<Expression> filter) {
+  if (data_file == nullptr) {
+    return InvalidArgument("Cannot create a file scan task without a data file");
+  }
+
+  const int64_t file_size = data_file->file_size_in_bytes;
+  if (file_size < 0) {
+    return InvalidArgument("Cannot split file {} with negative size {}",
+                           data_file->file_path, file_size);
+  }
+  if (start < 0 || start > file_size) {
+    return InvalidArgument("Split start {} is outside file {} of size {}", start,
+                           data_file->file_path, file_size);
+  }
+  // Subtraction is safe after validating start, even when file_size is INT64_MAX.
+  if (length < 0 || length > file_size - start) {
+    return InvalidArgument("Split length {} from start {} is outside file {} of size {}",
+                           length, start, data_file->file_path, file_size);
+  }
+  // A full-file range is a whole-file task (is_split() is false). This is also the
+  // only valid empty range: [0, 0) of an empty file.
+  if (start == 0 && length == file_size) {
+    return std::make_shared<FileScanTask>(std::move(data_file), std::move(delete_files),
+                                          std::move(filter));
+  }
+  if (length == 0) {
+    return InvalidArgument("A partial split of file {} must have positive length",
+                           data_file->file_path);
+  }
+
+  return std::shared_ptr<FileScanTask>(
+      new FileScanTask(std::move(data_file), std::move(delete_files), std::move(filter),
+                       Range{.start = start, .length = length, .file_size = file_size}));
+}
+
+int64_t FileScanTask::length() const {
+  return range_ ? range_->length : data_file_->file_size_in_bytes;
+}
+
+int64_t FileScanTask::size_bytes() const { return length(); }
 
 int32_t FileScanTask::files_count() const { return 1; }
 
-int64_t FileScanTask::estimated_row_count() const { return data_file_->record_count; }
+int64_t FileScanTask::estimated_row_count() const {
+  if (!range_) {
+    return data_file_->record_count;
+  }
+
+  const int64_t record_count = data_file_->record_count;
+  if (record_count <= 0) {
+    return 0;
+  }
+
+  // floor(end * rows / size) - floor(start * rows / size), so splits that cover
+  // the file sum exactly to record_count. int128 avoids overflow.
+  const auto end = static_cast<int128_t>(range_->start) + range_->length;
+  const auto count_at_end = end * record_count / range_->file_size;
+  const auto count_at_start =
+      static_cast<int128_t>(range_->start) * record_count / range_->file_size;
+  return static_cast<int64_t>(count_at_end - count_at_start);
+}
 
 // ChangelogScanTask implementation
 
@@ -316,6 +385,7 @@ TableScanBuilder<ScanType>& TableScanBuilder<ScanType>::UseSnapshot(int64_t snap
                         context_.snapshot_id.value());
   ICEBERG_BUILDER_ASSIGN_OR_RETURN(std::ignore, metadata_->SnapshotById(snapshot_id));
   context_.snapshot_id = snapshot_id;
+  context_.use_snapshot_schema = true;
   return *this;
 }
 
@@ -323,6 +393,7 @@ template <typename ScanType>
 TableScanBuilder<ScanType>& TableScanBuilder<ScanType>::UseRef(const std::string& ref) {
   if (ref == SnapshotRef::kMainBranch) {
     context_.snapshot_id.reset();
+    context_.use_snapshot_schema = false;
     return *this;
   }
 
@@ -335,6 +406,7 @@ TableScanBuilder<ScanType>& TableScanBuilder<ScanType>::UseRef(const std::string
   const int64_t snapshot_id = iter->second->snapshot_id;
   ICEBERG_BUILDER_ASSIGN_OR_RETURN(std::ignore, metadata_->SnapshotById(snapshot_id));
   context_.snapshot_id = snapshot_id;
+  context_.use_snapshot_schema = (iter->second->type() == SnapshotRefType::kTag);
 
   return *this;
 }
@@ -434,7 +506,7 @@ template <typename ScanType>
 Result<std::reference_wrapper<const std::shared_ptr<Schema>>>
 TableScanBuilder<ScanType>::ResolveSnapshotSchema() {
   if (snapshot_schema_ == nullptr) {
-    if (context_.snapshot_id.has_value()) {
+    if (context_.snapshot_id.has_value() && context_.use_snapshot_schema) {
       ICEBERG_ASSIGN_OR_RAISE(auto snapshot,
                               metadata_->SnapshotById(*context_.snapshot_id));
       int32_t schema_id = snapshot->schema_id.value_or(Schema::kInitialSchemaId);

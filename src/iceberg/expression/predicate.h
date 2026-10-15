@@ -150,7 +150,7 @@ class ICEBERG_EXPORT UnboundPredicateImpl : public UnboundPredicate,
                        std::vector<Literal> values);
 
   Result<std::shared_ptr<Expression>> BindUnaryOperation(
-      std::shared_ptr<B> bound_term) const;
+      const Schema& schema, std::shared_ptr<B> bound_term) const;
   Result<std::shared_ptr<Expression>> BindLiteralOperation(
       std::shared_ptr<B> bound_term) const;
   Result<std::shared_ptr<Expression>> BindInOperation(

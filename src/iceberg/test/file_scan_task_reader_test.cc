@@ -409,6 +409,25 @@ TEST_F(FileScanTaskReaderTest, OpenWithoutDeletesReadsProjectedSchema) {
       VerifyStream(&stream, R"([[1, "Foo"], [2, "Bar"], [3, "Baz"]])"));
 }
 
+TEST_F(FileScanTaskReaderTest, RejectsPartialTaskUntilRangeReadsAreSupported) {
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto data_file,
+      MakeDataFile(table_schema_,
+                   R"([[1, "Foo", "blue"], [2, "Bar", "red"], [3, "Baz", "green"]])"));
+  ICEBERG_UNWRAP_OR_FAIL(auto task, FileScanTask::MakeSplit(data_file, 0, 1));
+
+  FileScanTaskReader::Options options{
+      .io = file_io_,
+      .table_schema = table_schema_,
+      .schemas = {table_schema_},
+      .projected_schema = projected_schema_,
+  };
+  ICEBERG_UNWRAP_OR_FAIL(auto reader, FileScanTaskReader::Make(std::move(options)));
+  auto result = reader->Open(*task);
+  EXPECT_THAT(result, IsError(ErrorKind::kNotSupported));
+  EXPECT_THAT(result, HasErrorMessage("Reading a partial FileScanTask"));
+}
+
 TEST_F(FileScanTaskReaderTest, ReadLastUpdatedFromDataSeq) {
   ICEBERG_UNWRAP_OR_FAIL(
       auto data_file,
