@@ -89,9 +89,8 @@ std::string DirsFromHash(int32_t hash) {
 }
 
 std::string ComputeHash(std::string_view file_name) {
-  int32_t hash_value = 0;
-  MurmurHash3_x86_32(file_name.data(), file_name.size(), 0, &hash_value);
-  return DirsFromHash(hash_value);
+  return DirsFromHash(
+      static_cast<int32_t>(MurmurHash3_x86_32(file_name.data(), file_name.size(), 0)));
 }
 
 }  // namespace

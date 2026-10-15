@@ -144,6 +144,10 @@ TEST_F(LocationProviderTest, HashInjection) {
 
   auto location_d = provider->NewDataLocation("d");
   EXPECT_THAT(location_d, testing::EndsWith("/data/1001/0001/0100/01110011/d"));
+
+  auto location_file = provider->NewDataLocation("test.parquet");
+  EXPECT_THAT(location_file,
+              testing::EndsWith("/data/0110/1010/0011/11101000/test.parquet"));
 }
 
 }  // namespace iceberg

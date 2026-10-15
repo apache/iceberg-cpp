@@ -19,16 +19,25 @@
 
 #include "iceberg/util/bucket_util.h"
 
+#include <array>
 #include <chrono>
+#include <cstdint>
+#include <limits>
+#include <numeric>
+#include <type_traits>
 
 #include <gtest/gtest.h>
 
 #include "iceberg/expression/literal.h"
 #include "iceberg/test/temporal_test_helper.h"
 #include "iceberg/util/decimal.h"
+#include "iceberg/util/murmurhash3_internal.h"
 #include "iceberg/util/uuid.h"
 
 namespace iceberg {
+
+static_assert(std::is_convertible_v<decltype(&MurmurHash3_x86_32),
+                                    uint32_t (*)(const void*, size_t, uint32_t)>);
 
 // The following tests are from
 // https://iceberg.apache.org/spec/#appendix-b-32-bit-hash-requirements
@@ -36,6 +45,9 @@ TEST(BucketUtilsTest, HashHelper) {
   // int and long
   EXPECT_EQ(BucketUtils::HashInt(34), 2017239379);
   EXPECT_EQ(BucketUtils::HashLong(34L), 2017239379);
+  const auto bucket = BucketUtils::BucketIndex(Literal::Int(34), 100);
+  ASSERT_TRUE(bucket.has_value());
+  EXPECT_EQ(*bucket, 79);
 
   // decimal hash
   auto decimal = Decimal::FromString("14.20");
@@ -106,6 +118,79 @@ TEST(BucketUtilsTest, HashHelper) {
   // fixed & binary
   std::vector<uint8_t> fixed = {0, 1, 2, 3};
   EXPECT_EQ(BucketUtils::HashBytes(fixed), -188683207);
+}
+
+TEST(BucketUtilsTest, BucketByteLiterals) {
+  struct BucketCase {
+    Literal literal;
+    int32_t bucket;
+  };
+  const std::array<BucketCase, 3> cases = {{
+      {.literal = Literal::String("iceberg"), .bucket = 89},
+      {.literal = Literal::Binary({0, 1, 2, 3}), .bucket = 41},
+      {.literal = Literal::Fixed({0, 1, 2, 3}), .bucket = 41},
+  }};
+  for (const auto& test : cases) {
+    const auto bucket = BucketUtils::BucketIndex(test.literal, 100);
+    ASSERT_TRUE(bucket.has_value());
+    EXPECT_EQ(*bucket, test.bucket);
+  }
+}
+
+TEST(BucketUtilsTest, CanonicalLittleEndianBlocks) {
+  constexpr size_t kMaxLength = 33;
+  constexpr size_t kAlignment = alignof(uint64_t);
+  struct HashCase {
+    size_t length;
+    uint32_t hash;
+  };
+  constexpr std::array<HashCase, 14> cases = {{
+      {.length = 0, .hash = 0x00000000u},
+      {.length = 1, .hash = 0x514e28b7u},
+      {.length = 2, .hash = 0x70e1a2c0u},
+      {.length = 3, .hash = 0x51d4d0d7u},
+      {.length = 4, .hash = 0xf4c0ec39u},
+      {.length = 5, .hash = 0xcca4dccbu},
+      {.length = 6, .hash = 0x901cc302u},
+      {.length = 7, .hash = 0x8d7e4914u},
+      {.length = 8, .hash = 0xd161d673u},
+      {.length = 15, .hash = 0x5bd6952du},
+      {.length = 16, .hash = 0x191573ddu},
+      {.length = 17, .hash = 0xcbe58dc6u},
+      {.length = 32, .hash = 0xcac37638u},
+      {.length = kMaxLength, .hash = 0x5460867au},
+  }};
+  for (const auto& test : cases) {
+    SCOPED_TRACE(test.length);
+    for (size_t offset = 0; offset < kAlignment; ++offset) {
+      SCOPED_TRACE(offset);
+      alignas(uint64_t) std::array<uint8_t, kMaxLength + kAlignment - 1> input{};
+      std::iota(input.begin() + offset, input.begin() + offset + test.length, uint8_t{0});
+      EXPECT_EQ(static_cast<uint32_t>(
+                    BucketUtils::HashBytes({input.data() + offset, test.length})),
+                test.hash);
+    }
+  }
+}
+
+TEST(BucketUtilsTest, HashLongMatchesCanonicalBytes) {
+  constexpr std::array<int64_t, 9> values = {0,
+                                             34,
+                                             -1,
+                                             std::numeric_limits<int32_t>::min(),
+                                             std::numeric_limits<int32_t>::max(),
+                                             std::numeric_limits<int64_t>::min(),
+                                             std::numeric_limits<int64_t>::max(),
+                                             0x0123456789abcdefLL,
+                                             static_cast<int64_t>(0xfedcba9876543210ULL)};
+  for (const auto value : values) {
+    SCOPED_TRACE(value);
+    std::array<uint8_t, sizeof(value)> bytes{};
+    for (size_t i = 0; i < bytes.size(); ++i) {
+      bytes[i] = static_cast<uint8_t>(static_cast<uint64_t>(value) >> (i * 8));
+    }
+    EXPECT_EQ(BucketUtils::HashLong(value), BucketUtils::HashBytes(bytes));
+  }
 }
 
 TEST(BucketUtilsTest, BucketTimestampNanosMatchesMicros) {

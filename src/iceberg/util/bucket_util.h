@@ -51,17 +51,17 @@ class ICEBERG_EXPORT BucketUtils {
   /// \brief Hash a byte array using MurmurHash3 and return a 32-bit hash value.
   /// \param bytes The input byte array to hash.
   /// \return A 32-bit hash value.
-  /// \throws IcebergError if `bytes.size()` exceeds `INT32_MAX`. MurmurHash3 takes a
-  ///     signed 32-bit length, and the bucket transform is only defined for byte
-  ///     sequences up to that size, so longer inputs are rejected rather than
-  ///     truncated. Java cannot produce such a value because its arrays are
-  ///     int-indexed, so nothing iceberg-java could hash is rejected here.
+  /// \throws IcebergError if `bytes.size()` exceeds `INT32_MAX`. This limit keeps
+  ///     bucket inputs compatible with Java's int-indexed arrays; the underlying
+  ///     MurmurHash3 implementation accepts `size_t` lengths.
   static int32_t HashBytes(std::span<const uint8_t> bytes);
 
   /// \brief Compute the bucket index for a given literal and number of buckets.
   /// \param literal The input literal to hash.
   /// \param num_buckets The number of buckets to hash into.
   /// \return (murmur3_x86_32_hash(literal) & Integer.MAX_VALUE) % num_buckets
+  /// \retval InvalidArgument if num_buckets is not positive or the literal's byte
+  ///     length exceeds `INT32_MAX`; see HashBytes.
   static Result<int32_t> BucketIndex(const Literal& literal, int32_t num_buckets);
 };
 
