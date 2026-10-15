@@ -19,6 +19,12 @@
 
 #pragma once
 
+#include <cstddef>
+#include <functional>
+#include <unordered_map>
+#include <utility>
+#include <vector>
+
 #include <arrow/array/builder_base.h>
 #include <avro/Decoder.hh>
 #include <avro/Node.hh>
@@ -41,9 +47,17 @@ struct DecodeContext {
   // Scratch buffer for binary/fixed/uuid/decimal data (reused across rows)
   std::vector<uint8_t> bytes_scratch;
   // Cache for avro field index to projection index mapping
-  // Key: pointer to projections array (identifies struct schema)
+  // Key: {projections array, Avro record node}; empty structs share a null data()
   // Value: vector mapping avro field index -> projection index (-1 if not projected)
-  std::unordered_map<const FieldProjection*, std::vector<int>> avro_to_projection_cache;
+  using ProjectionCacheKey = std::pair<const FieldProjection*, const ::avro::Node*>;
+  struct ProjectionCacheKeyHash {
+    size_t operator()(const ProjectionCacheKey& key) const noexcept {
+      return std::hash<const FieldProjection*>{}(key.first) * 31 +
+             std::hash<const ::avro::Node*>{}(key.second);
+    }
+  };
+  std::unordered_map<ProjectionCacheKey, std::vector<int>, ProjectionCacheKeyHash>
+      avro_to_projection_cache;
 };
 
 /// \brief Directly decode Avro data to Arrow array builders without GenericDatum

@@ -18,6 +18,7 @@
  */
 
 #include <array>
+#include <format>
 #include <initializer_list>
 #include <optional>
 #include <sstream>
@@ -396,6 +397,54 @@ TEST_F(AvroReaderTest, ReadWithBatchSize) {
 
   ASSERT_NO_FATAL_FAILURE(VerifyNextBatch(*reader, R"([[1], [2]])"));
   ASSERT_NO_FATAL_FAILURE(VerifyNextBatch(*reader, R"([[3]])"));
+  ASSERT_NO_FATAL_FAILURE(VerifyExhausted(*reader));
+}
+
+TEST_F(AvroReaderTest, ProjectEmptyStructsOfDifferentWidths) {
+  auto make_struct = [](int32_t first_id, int count) {
+    std::vector<SchemaField> fields;
+    for (int i = 0; i < count; ++i) {
+      fields.push_back(SchemaField::MakeRequired(first_id + i, std::format("f{}", i),
+                                                 std::make_shared<IntType>()));
+    }
+    return std::make_shared<StructType>(std::move(fields));
+  };
+  auto write_schema = std::make_shared<Schema>(
+      std::vector<SchemaField>{SchemaField::MakeRequired(1, "narrow", make_struct(10, 1)),
+                               SchemaField::MakeRequired(2, "wide", make_struct(20, 6))});
+
+  ArrowSchema arrow_c_schema;
+  ASSERT_THAT(ToArrowSchema(*write_schema, &arrow_c_schema), IsOk());
+  auto arrow_schema = ::arrow::ImportType(&arrow_c_schema).ValueOrDie();
+  auto array =
+      ::arrow::json::ArrayFromJSONString(
+          arrow_schema, R"([[[1], [1, 2, 3, 4, 5, 6]], [[7], [7, 8, 9, 10, 11, 12]]])")
+          .ValueOrDie();
+  struct ArrowArray arrow_array;
+  ASSERT_TRUE(::arrow::ExportArray(*array, &arrow_array).ok());
+
+  auto writer_result = WriterFactoryRegistry::Open(
+      FileFormatType::kAvro,
+      {.path = temp_avro_file_, .schema = write_schema, .io = file_io_});
+  ASSERT_THAT(writer_result, IsOk());
+  auto writer = std::move(writer_result.value());
+  ASSERT_THAT(writer->Write(&arrow_array), IsOk());
+  ASSERT_THAT(writer->Close(), IsOk());
+
+  auto read_schema = std::make_shared<Schema>(
+      std::vector<SchemaField>{SchemaField::MakeRequired(1, "narrow", make_struct(10, 0)),
+                               SchemaField::MakeRequired(2, "wide", make_struct(20, 0))});
+  ReaderProperties reader_properties;
+  reader_properties.Set(ReaderProperties::kAvroSkipDatum, true);
+  auto reader_result = ReaderFactoryRegistry::Open(
+      FileFormatType::kAvro, {.path = temp_avro_file_,
+                              .io = file_io_,
+                              .projection = read_schema,
+                              .properties = std::move(reader_properties)});
+  ASSERT_THAT(reader_result, IsOk());
+  auto reader = std::move(reader_result.value());
+
+  ASSERT_NO_FATAL_FAILURE(VerifyNextBatch(*reader, R"([[[], []], [[], []]])"));
   ASSERT_NO_FATAL_FAILURE(VerifyExhausted(*reader));
 }
 
