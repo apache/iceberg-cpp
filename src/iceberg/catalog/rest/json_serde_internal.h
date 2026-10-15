@@ -60,6 +60,8 @@ ICEBERG_DECLARE_JSON_SERDE(ListTablesResponse)
 ICEBERG_DECLARE_JSON_SERDE(RegisterTableRequest)
 ICEBERG_DECLARE_JSON_SERDE(RenameTableRequest)
 ICEBERG_DECLARE_JSON_SERDE(OAuthTokenResponse)
+ICEBERG_DECLARE_JSON_SERDE(FieldLabel)
+ICEBERG_DECLARE_JSON_SERDE(Labels)
 
 #undef ICEBERG_DECLARE_JSON_SERDE
 
@@ -138,18 +140,6 @@ ICEBERG_REST_EXPORT Result<FetchScanTasksRequest> FetchScanTasksRequestFromJson(
 template <>
 ICEBERG_REST_EXPORT Result<FetchScanTasksRequest> FromJson(const nlohmann::json& json);
 ICEBERG_REST_EXPORT nlohmann::json ToJson(const FetchScanTasksRequest& request);
-
-ICEBERG_REST_EXPORT Result<nlohmann::json> ToJson(
-    const DataFile& df,
-    const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>&
-        partition_specs_by_id,
-    const Schema& schema);
-
-ICEBERG_REST_EXPORT Result<DataFile> DataFileFromJson(
-    const nlohmann::json& json,
-    const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>&
-        partition_spec_by_id,
-    const Schema& schema);
 
 ICEBERG_REST_EXPORT Result<std::vector<std::shared_ptr<FileScanTask>>>
 FileScanTasksFromJson(const nlohmann::json& json,

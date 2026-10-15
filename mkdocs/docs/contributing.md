@@ -66,6 +66,21 @@ To run all hooks manually on the entire codebase:
 pre-commit run -a
 ```
 
+### Public Header Compatibility
+
+Public headers must compile as C++20; the library itself builds as C++23. After
+adding, moving, or removing a public header, regenerate the public-header list:
+
+```bash
+python ci/scripts/generate_public_headers.py
+```
+
+The script updates `src/iceberg/cpp20_compatibility_internal.h` and exits nonzero,
+so include the generated change and rerun `pre-commit`. The
+`generate-public-headers` hook performs the same step automatically. When adding a
+module or install directory, also update the component mapping in
+`ci/scripts/generate_public_headers.py`.
+
 ### Dev Containers
 
 We provide Dev Container templates for VS Code:

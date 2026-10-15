@@ -27,6 +27,7 @@
 #include <utility>
 #include <variant>
 
+#include "iceberg/compat/unreachable.h"
 #include "iceberg/expression/literal.h"
 #include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
@@ -80,7 +81,7 @@ ICEBERG_EXPORT constexpr std::string_view TransformTypeToString(TransformType ty
     case TransformType::kVoid:
       return "void";
   }
-  std::unreachable();
+  ::iceberg::unreachable();
 }
 
 /// \brief Represents a transform used in partitioning or sorting in Iceberg.

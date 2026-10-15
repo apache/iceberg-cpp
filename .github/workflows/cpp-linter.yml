@@ -103,6 +103,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         # need '-fno-builtin-std-forward_like', see https://github.com/llvm/llvm-project/issues/101614
+        # cpp20_compatibility_test.cc is ignored: it asserts it is compiled as C++20,
+        # which the global '-std=c++23' below would override. The build enforces it.
         run: |
           cpp-linter \
             --style='' \
@@ -111,7 +113,7 @@ jobs:
             --files-changed-only=true \
             --lines-changed-only=true \
             --thread-comments=true \
-            --ignore='build|cmake_modules|ci|src/iceberg/catalog/hive/gen-cpp' \
+            --ignore='build|cmake_modules|ci|src/iceberg/catalog/hive/gen-cpp|src/iceberg/test/cpp20_compatibility_test.cc' \
             --database=build \
             --verbosity=debug \
             --extra-arg='-std=c++23' \

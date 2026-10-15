@@ -19,10 +19,14 @@
 
 #pragma once
 
+#include <cstddef>
+#include <cstdint>
 #include <memory>
+#include <vector>
 
 #include <arrow/array/builder_base.h>
 #include <arrow/scalar.h>
+#include <arrow/util/decimal.h>
 #include <avro/GenericDatum.hh>
 
 #include "iceberg/arrow/metadata_column_util_internal.h"
@@ -82,6 +86,11 @@ Status AppendDatumToBuilder(const ::avro::NodePtr& avro_node,
                             const Schema& projected_schema,
                             const arrow::MetadataColumnContext& metadata_context,
                             ::arrow::ArrayBuilder* array_builder);
+
+/// \brief Encode a decimal as exactly `fixed_size` big-endian signed bytes.
+/// Sign-extends smaller values and rejects values that cannot fit the fixed width.
+Status EncodeDecimalToFixed(const ::arrow::Decimal128& value, size_t fixed_size,
+                            std::vector<uint8_t>* bytes);
 
 /// \brief Extract an Avro datum from an Arrow array.
 ///

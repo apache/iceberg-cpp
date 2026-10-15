@@ -65,8 +65,9 @@ UpdateSortOrder& UpdateSortOrder::AddSortField(const std::shared_ptr<Term>& term
     sort_fields_.emplace_back(bound_term->reference()->field_id(),
                               unbound_transform->transform(), direction, null_order);
   } else {
-    return AddError(ErrorKind::kNotSupported, "Not supported unbound term: {}",
-                    static_cast<int>(term->kind()));
+    AddError(ErrorKind::kNotSupported, "Not supported unbound term: {}",
+             static_cast<int>(term->kind()));
+    return *this;
   }
 
   return *this;

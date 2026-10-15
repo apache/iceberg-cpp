@@ -39,7 +39,8 @@ class PredicateTest : public ::testing::Test {
                                  SchemaField::MakeRequired(3, "age", int32()),
                                  SchemaField::MakeOptional(4, "salary", float64()),
                                  SchemaField::MakeRequired(5, "active", boolean()),
-                                 SchemaField::MakeRequired(6, "age2", int32())},
+                                 SchemaField::MakeRequired(6, "age2", int32()),
+                                 SchemaField::MakeOptional(7, "always_null", unknown())},
         /*schema_id=*/0);
   }
 
@@ -363,6 +364,63 @@ TEST_F(PredicateTest, UnboundPredicateBindUnary) {
 
   auto bound_is_null = bound_is_null_result.value();
   EXPECT_EQ(bound_is_null->op(), Expression::Operation::kFalse);
+}
+
+TEST_F(PredicateTest, UnboundPredicateBindUnaryWithUnknownType) {
+  // Test IS NULL on unknown type field - should return AlwaysTrue
+  auto is_null_unknown = Expressions::IsNull("always_null");  // always_null is unknown
+  auto bound_is_null_result = is_null_unknown->Bind(*schema_, /*case_sensitive=*/true);
+  ASSERT_THAT(bound_is_null_result, IsOk());
+
+  auto bound_is_null = bound_is_null_result.value();
+  EXPECT_EQ(bound_is_null->op(), Expression::Operation::kTrue);
+
+  // Test NOT NULL on unknown type field - should return AlwaysFalse
+  auto not_null_unknown = Expressions::NotNull("always_null");
+  auto bound_not_null_result = not_null_unknown->Bind(*schema_, /*case_sensitive=*/true);
+  ASSERT_THAT(bound_not_null_result, IsOk());
+
+  auto bound_not_null = bound_not_null_result.value();
+  EXPECT_EQ(bound_not_null->op(), Expression::Operation::kFalse);
+}
+
+TEST_F(PredicateTest, UnboundPredicateBindUnaryWithNestedStructs) {
+  // A required field nested in an optional struct can still produce null values
+  auto nested_schema = std::make_shared<Schema>(
+      std::vector<SchemaField>{
+          SchemaField::MakeOptional(1, "optional_parent",
+                                    std::make_shared<StructType>(std::vector<SchemaField>{
+                                        SchemaField::MakeRequired(2, "leaf", int32())})),
+          SchemaField::MakeRequired(3, "required_parent",
+                                    std::make_shared<StructType>(std::vector<SchemaField>{
+                                        SchemaField::MakeRequired(4, "leaf", int32())})),
+      },
+      /*schema_id=*/0);
+
+  auto is_null_optional_parent = Expressions::IsNull("optional_parent.leaf");
+  auto bound_is_null_optional =
+      is_null_optional_parent->Bind(*nested_schema, /*case_sensitive=*/true);
+  ASSERT_THAT(bound_is_null_optional, IsOk());
+  EXPECT_EQ(bound_is_null_optional.value()->op(), Expression::Operation::kIsNull);
+
+  auto not_null_optional_parent = Expressions::NotNull("optional_parent.leaf");
+  auto bound_not_null_optional =
+      not_null_optional_parent->Bind(*nested_schema, /*case_sensitive=*/true);
+  ASSERT_THAT(bound_not_null_optional, IsOk());
+  EXPECT_EQ(bound_not_null_optional.value()->op(), Expression::Operation::kNotNull);
+
+  // A required field with required ancestors can never produce null values
+  auto is_null_required_parent = Expressions::IsNull("required_parent.leaf");
+  auto bound_is_null_required =
+      is_null_required_parent->Bind(*nested_schema, /*case_sensitive=*/true);
+  ASSERT_THAT(bound_is_null_required, IsOk());
+  EXPECT_EQ(bound_is_null_required.value()->op(), Expression::Operation::kFalse);
+
+  auto not_null_required_parent = Expressions::NotNull("required_parent.leaf");
+  auto bound_not_null_required =
+      not_null_required_parent->Bind(*nested_schema, /*case_sensitive=*/true);
+  ASSERT_THAT(bound_not_null_required, IsOk());
+  EXPECT_EQ(bound_not_null_required.value()->op(), Expression::Operation::kTrue);
 }
 
 TEST_F(PredicateTest, UnboundPredicateBindLiteral) {

@@ -319,6 +319,43 @@ TEST_P(TestManifestReader, TestManifestReaderWithPartitionMetadata) {
   EXPECT_EQ(read_entry.data_file->partition.values()[0], Literal::Int(0));
 }
 
+TEST_P(TestManifestReader, DecimalPartitionValuesRoundTrip) {
+  schema_ = std::make_shared<Schema>(
+      std::vector<SchemaField>{SchemaField::MakeRequired(3, "amount", decimal(38, 2))});
+  ICEBERG_UNWRAP_OR_FAIL(
+      spec_,
+      PartitionSpec::Make(0, {PartitionField(3, 1000, "amount", Transform::Identity())}));
+
+  const int128_t large = (static_cast<int128_t>(1) << 80) + 123;
+  const std::vector<Literal> values{
+      Literal::Decimal(123, 38, 2),   Literal::Decimal(-456, 38, 2),
+      Literal::Decimal(large, 38, 2), Literal::Decimal(-large, 38, 2),
+      Literal::Decimal(0, 38, 2),     Literal::Null(decimal(38, 2))};
+  std::vector<ManifestEntry> entries;
+  for (size_t index = 0; index < values.size(); ++index) {
+    entries.push_back(MakeEntry(ManifestStatus::kAdded, 1000L,
+                                MakeDataFile(std::format("decimal-{}.parquet", index),
+                                             PartitionValues({values[index]}))));
+  }
+  auto manifest = WriteManifest(GetParam(), 1000L, entries);
+  ICEBERG_UNWRAP_OR_FAIL(auto reader,
+                         ManifestReader::Make(manifest, file_io_, schema_, spec_));
+  ICEBERG_UNWRAP_OR_FAIL(auto read_entries, reader->Entries());
+
+  ASSERT_EQ(read_entries.size(), values.size());
+  for (size_t index = 0; index < values.size(); ++index) {
+    ASSERT_NE(read_entries[index].data_file, nullptr);
+    const auto& partition = read_entries[index].data_file->partition;
+    ASSERT_EQ(partition.num_fields(), 1);
+    if (values[index].IsNull()) {
+      EXPECT_TRUE(partition.values()[0].IsNull());
+    } else {
+      EXPECT_EQ(partition.values()[0], values[index]);
+    }
+    EXPECT_EQ(*partition.values()[0].type(), *decimal(38, 2));
+  }
+}
+
 TEST_P(TestManifestReader, NullPartitionValuePreservedPositionallyAcrossRows) {
   auto version = GetParam();
 

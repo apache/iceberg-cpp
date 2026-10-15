@@ -126,7 +126,15 @@ jobs:
         shell: bash
         env:
           CMAKE_TOOLCHAIN_FILE: ${{ startsWith(matrix.runs-on, 'ubuntu') && matrix.bundle_awssdk == 'OFF' && '/usr/local/share/vcpkg/scripts/buildsystems/vcpkg.cmake' || '' }}
-        run: ci/scripts/build_iceberg.sh "$(pwd)" OFF ON ${{ matrix.s3 }} ${{ matrix.sigv4 }} ${{ matrix.bundle_awssdk }}
+        run: |
+          ci/scripts/build_iceberg.sh \
+            --source-dir "$(pwd)" \
+            --build-type Debug \
+            --sccache ON \
+            --rest-integration-tests OFF \
+            --s3 ${{ matrix.s3 }} \
+            --sigv4 ${{ matrix.sigv4 }} \
+            --bundle-awssdk ${{ matrix.bundle_awssdk }}
       - name: Save sccache
         if: always()
         uses: ./.github/actions/save-sccache

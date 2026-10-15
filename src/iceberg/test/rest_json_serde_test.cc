@@ -19,7 +19,9 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 #include <gmock/gmock.h>
@@ -30,6 +32,8 @@
 #include "iceberg/catalog/rest/types.h"
 #include "iceberg/expression/expressions.h"
 #include "iceberg/file_format.h"
+#include "iceberg/json_serde_internal.h"
+#include "iceberg/labels.h"
 #include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/result.h"
@@ -80,6 +84,11 @@ static std::shared_ptr<TableMetadata> MakeSimpleTableMetadata() {
       .partition_statistics = {},
       .next_row_id = 0,
   });
+}
+
+std::string LoadTableJsonWithLabels(std::string_view labels) {
+  return std::string(R"({"labels":)") + std::string(labels) +
+         R"(,"metadata":{"format-version":2,"table-uuid":"test-uuid-1234","location":"s3://bucket/test","last-sequence-number":0,"last-updated-ms":0,"last-column-id":1,"schemas":[{"type":"struct","schema-id":1,"fields":[{"id":1,"name":"id","type":"int","required":true}]}],"current-schema-id":1,"partition-specs":[{"spec-id":0,"fields":[]}],"default-spec-id":0,"last-partition-id":0,"sort-orders":[{"order-id":0,"fields":[]}],"default-sort-order-id":0,"properties":{}}})";
 }
 
 std::string LoadTableJsonWithCredentials(std::string_view storage_credentials) {
@@ -1133,7 +1142,15 @@ INSTANTIATE_TEST_SUITE_P(
                                           .config = {{"s3.access-key-id", "AKIAtest"},
                                                      {"s3.secret-access-key", "secret"},
                                                      {"s3.session-token", "token"},
-                                                     {"client.region", "us-east-1"}}}}}}),
+                                                     {"client.region", "us-east-1"}}}}}},
+        LoadTableResultParam{
+            .test_name = "WithLabels",
+            .expected_json_str =
+                R"({"labels":{"fields":[{"field-id":1,"labels":{"classification":"pii"}}],"object-labels":{"owner":"team-a"}},"metadata":{"current-schema-id":1,"current-snapshot-id":null,"default-sort-order-id":0,"default-spec-id":0,"format-version":2,"last-column-id":1,"last-partition-id":0,"last-sequence-number":0,"last-updated-ms":0,"location":"s3://bucket/test","metadata-log":[],"partition-specs":[{"fields":[],"spec-id":0}],"partition-statistics":[],"properties":{},"refs":{},"schemas":[{"fields":[{"id":1,"name":"id","required":true,"type":"int"}],"schema-id":1,"type":"struct"}],"snapshot-log":[],"snapshots":[],"sort-orders":[{"fields":[],"order-id":0}],"statistics":[],"table-uuid":"test-uuid-1234"}})",
+            .model = {.metadata = MakeSimpleTableMetadata(),
+                      .labels = {.object_labels = {{"owner", "team-a"}},
+                                 .fields = {{.field_id = 1,
+                                             .labels = {{"classification", "pii"}}}}}}}),
     [](const ::testing::TestParamInfo<LoadTableResultParam>& info) {
       return info.param.test_name;
     });
@@ -1162,7 +1179,33 @@ INSTANTIATE_TEST_SUITE_P(
             .json_str =
                 R"({"metadata":{"format-version":2,"table-uuid":"test-uuid-1234","location":"s3://bucket/test","last-sequence-number":0,"last-updated-ms":0,"last-column-id":1,"schemas":[{"type":"struct","schema-id":1,"fields":[{"id":1,"name":"id","type":"int","required":true}]}],"current-schema-id":1,"partition-specs":[{"spec-id":0,"fields":[]}],"default-spec-id":0,"last-partition-id":0,"sort-orders":[{"order-id":0,"fields":[]}],"default-sort-order-id":0,"properties":{}},"config":{"warehouse":"s3://bucket/warehouse"}})",
             .expected_model = {.metadata = MakeSimpleTableMetadata(),
-                               .config = {{"warehouse", "s3://bucket/warehouse"}}}}),
+                               .config = {{"warehouse", "s3://bucket/warehouse"}}}},
+        LoadTableResultDeserializeParam{
+            .test_name = "WithLabels",
+            .json_str = LoadTableJsonWithLabels(
+                R"({"object-labels":{"owner":"team-a"},"fields":[{"field-id":1,"labels":{"classification":"pii"}}]})"),
+            .expected_model = {.metadata = MakeSimpleTableMetadata(),
+                               .labels = {.object_labels = {{"owner", "team-a"}},
+                                          .fields = {{.field_id = 1,
+                                                      .labels = {{"classification",
+                                                                  "pii"}}}}}}},
+        LoadTableResultDeserializeParam{
+            .test_name = "NullLabels",
+            .json_str = LoadTableJsonWithLabels("null"),
+            .expected_model = {.metadata = MakeSimpleTableMetadata()}},
+        LoadTableResultDeserializeParam{
+            .test_name = "EmptyLabels",
+            .json_str = LoadTableJsonWithLabels("{}"),
+            .expected_model = {.metadata = MakeSimpleTableMetadata()}},
+        // Non-object labels are ignored rather than rejected
+        LoadTableResultDeserializeParam{
+            .test_name = "StringLabels",
+            .json_str = LoadTableJsonWithLabels(R"("oops")"),
+            .expected_model = {.metadata = MakeSimpleTableMetadata()}},
+        LoadTableResultDeserializeParam{
+            .test_name = "ArrayLabels",
+            .json_str = LoadTableJsonWithLabels(R"([{"object-labels":{"k":"v"}}])"),
+            .expected_model = {.metadata = MakeSimpleTableMetadata()}}),
     [](const ::testing::TestParamInfo<LoadTableResultDeserializeParam>& info) {
       return info.param.test_name;
     });
@@ -1202,6 +1245,10 @@ INSTANTIATE_TEST_SUITE_P(
             .test_name = "InvalidMetadataContent",
             .invalid_json_str = R"({"metadata":{"format-version":"invalid"}})",
             .expected_error_message = "type must be number, but is string"},
+        LoadTableResultInvalidParam{
+            .test_name = "LabelsFieldsNotArray",
+            .invalid_json_str = LoadTableJsonWithLabels(R"({"fields":"oops"})"),
+            .expected_error_message = "Cannot parse 'fields' from non-array"},
         LoadTableResultInvalidParam{
             .test_name = "CredentialsNotArray",
             .invalid_json_str = LoadTableJsonWithCredentials(R"("oops")"),
@@ -1983,189 +2030,6 @@ INSTANTIATE_TEST_SUITE_P(
       return info.param.test_name;
     });
 
-// --- DataFileFromJson ---
-
-TEST(DataFileFromJsonTest, RequiredFieldsOnly) {
-  auto json = R"({
-    "content": "data",
-    "file-path": "s3://bucket/data/file.parquet",
-    "file-format": "PARQUET",
-    "spec-id": 0,
-    "partition": [],
-    "file-size-in-bytes": 12345,
-    "record-count": 100
-  })"_json;
-
-  auto result = DataFileFromJson(json, UnpartitionedSpecs(), Schema({}, 0));
-  ASSERT_THAT(result, IsOk());
-  const auto& df = result.value();
-  EXPECT_EQ(df.content, DataFile::Content::kData);
-  EXPECT_EQ(df.file_path, "s3://bucket/data/file.parquet");
-  EXPECT_EQ(df.file_format, FileFormatType::kParquet);
-  EXPECT_EQ(df.file_size_in_bytes, 12345);
-  EXPECT_EQ(df.record_count, 100);
-  EXPECT_TRUE(df.column_sizes.empty());
-  EXPECT_FALSE(df.sort_order_id.has_value());
-  EXPECT_EQ(df.partition_spec_id, PartitionSpec::kInitialSpecId);
-  EXPECT_EQ(df.partition.num_fields(), 0);
-}
-
-TEST(DataFileFromJsonTest, LowercaseFormat) {
-  auto json = R"({
-    "content": "data",
-    "file-path": "s3://bucket/data/file.avro",
-    "file-format": "avro",
-    "spec-id": 0,
-    "partition": [],
-    "file-size-in-bytes": 500,
-    "record-count": 10
-  })"_json;
-
-  auto result = DataFileFromJson(json, UnpartitionedSpecs(), Schema({}, 0));
-  ASSERT_THAT(result, IsOk());
-  EXPECT_EQ(result.value().content, DataFile::Content::kData);
-  EXPECT_EQ(result.value().file_format, FileFormatType::kAvro);
-}
-
-TEST(DataFileFromJsonTest, WithOptionalFields) {
-  auto json = R"({
-    "content": "data",
-    "file-path": "s3://bucket/data/file.parquet",
-    "file-format": "PARQUET",
-    "spec-id": 0,
-    "partition": [],
-    "file-size-in-bytes": 12345,
-    "record-count": 100,
-    "column-sizes": {"keys": [1, 2], "values": [1000, 2000]},
-    "value-counts": {"keys": [1, 2], "values": [100, 100]},
-    "null-value-counts": {"keys": [1], "values": [0]},
-    "nan-value-counts": {"keys": [2], "values": [5]},
-    "split-offsets": [0, 4096],
-    "sort-order-id": 0
-  })"_json;
-
-  auto result = DataFileFromJson(json, UnpartitionedSpecs(), Schema({}, 0));
-  ASSERT_THAT(result, IsOk());
-  const auto& df = result.value();
-  EXPECT_EQ(df.partition_spec_id, PartitionSpec::kInitialSpecId);
-  ASSERT_EQ(df.column_sizes.size(), 2U);
-  EXPECT_EQ(df.column_sizes.at(1), 1000);
-  EXPECT_EQ(df.column_sizes.at(2), 2000);
-  ASSERT_EQ(df.value_counts.size(), 2U);
-  EXPECT_EQ(df.value_counts.at(1), 100);
-  ASSERT_EQ(df.null_value_counts.size(), 1U);
-  EXPECT_EQ(df.null_value_counts.at(1), 0);
-  ASSERT_EQ(df.nan_value_counts.size(), 1U);
-  EXPECT_EQ(df.nan_value_counts.at(2), 5);
-  ASSERT_EQ(df.split_offsets.size(), 2U);
-  EXPECT_EQ(df.split_offsets[0], 0);
-  EXPECT_EQ(df.split_offsets[1], 4096);
-  EXPECT_EQ(df.sort_order_id, 0);
-}
-
-TEST(DataFileFromJsonTest, EqualityDeleteFile) {
-  auto json = R"({
-    "content": "equality-deletes",
-    "file-path": "s3://bucket/deletes/eq_delete.parquet",
-    "file-format": "PARQUET",
-    "spec-id": 0,
-    "partition": [],
-    "file-size-in-bytes": 5000,
-    "record-count": 50,
-    "equality-ids": [1, 2]
-  })"_json;
-
-  auto result = DataFileFromJson(json, UnpartitionedSpecs(), Schema({}, 0));
-  ASSERT_THAT(result, IsOk());
-  const auto& df = result.value();
-  EXPECT_EQ(df.content, DataFile::Content::kEqualityDeletes);
-  ASSERT_EQ(df.equality_ids.size(), 2U);
-  EXPECT_EQ(df.equality_ids[0], 1);
-  EXPECT_EQ(df.equality_ids[1], 2);
-}
-
-TEST(DataFileFromJsonTest, PositionDeleteFileWithReferencedDataFile) {
-  auto json = R"({
-    "content": "position-deletes",
-    "file-path": "s3://bucket/deletes/pos_delete.parquet",
-    "file-format": "PARQUET",
-    "spec-id": 0,
-    "partition": [],
-    "file-size-in-bytes": 3000,
-    "record-count": 20,
-    "referenced-data-file": "s3://bucket/data/file.parquet"
-  })"_json;
-
-  auto result = DataFileFromJson(json, UnpartitionedSpecs(), Schema({}, 0));
-  ASSERT_THAT(result, IsOk());
-  const auto& df = result.value();
-  EXPECT_EQ(df.content, DataFile::Content::kPositionDeletes);
-  ASSERT_TRUE(df.referenced_data_file.has_value());
-  EXPECT_EQ(df.referenced_data_file.value(), "s3://bucket/data/file.parquet");
-}
-
-TEST(DataFileFromJsonTest, InvalidContentType) {
-  auto json = R"({
-    "content": "UNKNOWN",
-    "file-path": "s3://bucket/file.parquet",
-    "file-format": "PARQUET",
-    "file-size-in-bytes": 100,
-    "record-count": 10
-  })"_json;
-
-  auto result = DataFileFromJson(json, {}, Schema({}, 0));
-  EXPECT_THAT(result, IsError(ErrorKind::kJsonParseError));
-  EXPECT_THAT(result, HasErrorMessage("Unknown data file content"));
-}
-
-TEST(DataFileFromJsonTest, MissingRequiredField) {
-  auto json = R"({
-    "content": "data",
-    "file-format": "PARQUET",
-    "file-size-in-bytes": 100,
-    "record-count": 10
-  })"_json;
-
-  auto result = DataFileFromJson(json, {}, Schema({}, 0));
-  EXPECT_THAT(result, IsError(ErrorKind::kJsonParseError));
-}
-
-TEST(DataFileFromJsonTest, MissingSpecId) {
-  auto json = R"({
-    "content": "data",
-    "file-path": "s3://bucket/data/file.parquet",
-    "file-format": "PARQUET",
-    "partition": [],
-    "file-size-in-bytes": 100,
-    "record-count": 10
-  })"_json;
-
-  auto result = DataFileFromJson(json, UnpartitionedSpecs(), Schema({}, 0));
-  EXPECT_THAT(result, IsError(ErrorKind::kJsonParseError));
-  EXPECT_THAT(result, HasErrorMessage("Missing 'spec-id'"));
-}
-
-TEST(DataFileFromJsonTest, MissingPartition) {
-  auto json = R"({
-    "content": "data",
-    "file-path": "s3://bucket/data/file.parquet",
-    "file-format": "PARQUET",
-    "spec-id": 0,
-    "file-size-in-bytes": 100,
-    "record-count": 10
-  })"_json;
-
-  auto result = DataFileFromJson(json, UnpartitionedSpecs(), Schema({}, 0));
-  EXPECT_THAT(result, IsError(ErrorKind::kJsonParseError));
-  EXPECT_THAT(result, HasErrorMessage("Missing 'partition'"));
-}
-
-TEST(DataFileFromJsonTest, NotAnObject) {
-  auto result = DataFileFromJson(nlohmann::json::array(), {}, Schema({}, 0));
-  EXPECT_THAT(result, IsError(ErrorKind::kJsonParseError));
-  EXPECT_THAT(result, HasErrorMessage("DataFile must be a JSON object"));
-}
-
 TEST(DataFileRoundtripTest, PartitionedFileRequiresMatchingSpecForSerialization) {
   auto schema = PartitionedSchema();
   auto specs = PartitionedSpecs(schema);
@@ -2179,10 +2043,10 @@ TEST(DataFileRoundtripTest, PartitionedFileRequiresMatchingSpecForSerialization)
   df.file_size_in_bytes = 12345;
   df.record_count = 100;
 
-  ICEBERG_UNWRAP_OR_FAIL(auto json, ToJson(df, specs, schema));
+  ICEBERG_UNWRAP_OR_FAIL(auto json, iceberg::ToJson(df, specs, schema));
   EXPECT_EQ(json["partition"], nlohmann::json::array({34}));
 
-  auto parsed = DataFileFromJson(json, specs, schema);
+  auto parsed = iceberg::DataFileFromJson(json, specs, schema);
   ASSERT_THAT(parsed, IsOk());
   EXPECT_EQ(parsed->partition_spec_id, 1);
   ASSERT_EQ(parsed->partition.num_fields(), 1);
@@ -2224,15 +2088,15 @@ TEST_P(DataFileToJsonInvalidTest, InvalidInput) {
   switch (param.test_case) {
     case DataFileToJsonInvalidCase::kPartitionedSpecWithoutPartitionData: {
       auto schema = PartitionedSchema();
-      result = ToJson(MakeDataFileForSerializationTest(1, PartitionValues{}),
-                      PartitionedSpecs(schema), schema);
+      result = iceberg::ToJson(MakeDataFileForSerializationTest(1, PartitionValues{}),
+                               PartitionedSpecs(schema), schema);
       break;
     }
     case DataFileToJsonInvalidCase::kUnknownSpec: {
       auto schema = PartitionedSchema();
-      result =
-          ToJson(MakeDataFileForSerializationTest(2, PartitionValues({Literal::Int(34)})),
-                 PartitionedSpecs(schema), schema);
+      result = iceberg::ToJson(
+          MakeDataFileForSerializationTest(2, PartitionValues({Literal::Int(34)})),
+          PartitionedSpecs(schema), schema);
       break;
     }
     case DataFileToJsonInvalidCase::kMismatchedSpecId: {
@@ -2240,15 +2104,16 @@ TEST_P(DataFileToJsonInvalidTest, InvalidInput) {
       auto partitioned_specs = PartitionedSpecs(schema);
       auto specs = std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>{
           {2, partitioned_specs.at(1)}};
-      result =
-          ToJson(MakeDataFileForSerializationTest(2, PartitionValues({Literal::Int(34)})),
-                 specs, schema);
+      result = iceberg::ToJson(
+          MakeDataFileForSerializationTest(2, PartitionValues({Literal::Int(34)})), specs,
+          schema);
       break;
     }
     case DataFileToJsonInvalidCase::kMissingSpecId: {
       auto schema = PartitionedSchema();
-      result = ToJson(MakeDataFileForSerializationTest(std::nullopt, PartitionValues{}),
-                      PartitionedSpecs(schema), schema);
+      result = iceberg::ToJson(
+          MakeDataFileForSerializationTest(std::nullopt, PartitionValues{}),
+          PartitionedSpecs(schema), schema);
       break;
     }
   }
@@ -2308,6 +2173,105 @@ TEST(FileScanTasksFromJsonTest, SingleTaskNoDeleteFiles) {
   EXPECT_EQ(task->data_file()->file_path, "s3://bucket/data/file.parquet");
   EXPECT_TRUE(task->delete_files().empty());
   EXPECT_EQ(task->residual_filter(), nullptr);
+}
+
+TEST(FileScanTasksFromJsonTest, AcceptsWholeFileStartAndLength) {
+  auto json = R"([{
+    "data-file": {
+      "content": "data",
+      "file-path": "s3://bucket/data/file.parquet",
+      "file-format": "PARQUET",
+      "spec-id": 0,
+      "partition": [],
+      "file-size-in-bytes": 12345,
+      "record-count": 100
+    },
+    "start": 0,
+    "length": 12345
+  }])"_json;
+
+  EXPECT_THAT(FileScanTasksFromJson(json, {}, UnpartitionedSpecs(), Schema({}, 0)),
+              IsOk());
+}
+
+TEST(FileScanTasksFromJsonTest, NullStartAndLengthUseWholeFileDefaults) {
+  auto json = R"([{
+    "data-file": {
+      "content": "data",
+      "file-path": "s3://bucket/data/file.parquet",
+      "file-format": "PARQUET",
+      "spec-id": 0,
+      "partition": [],
+      "file-size-in-bytes": 12345,
+      "record-count": 100
+    },
+    "start": null,
+    "length": null
+  }])"_json;
+
+  EXPECT_THAT(FileScanTasksFromJson(json, {}, UnpartitionedSpecs(), Schema({}, 0)),
+              IsOk());
+}
+
+TEST(FileScanTasksFromJsonTest, RejectsInvalidRangeIntegers) {
+  auto valid_json = R"([{
+    "data-file": {
+      "content": "data",
+      "file-path": "s3://bucket/data/file.parquet",
+      "file-format": "PARQUET",
+      "spec-id": 0,
+      "partition": [],
+      "file-size-in-bytes": 12345,
+      "record-count": 100
+    },
+    "start": 0,
+    "length": 12345
+  }])"_json;
+
+  for (std::string_view field : {"start", "length"}) {
+    for (const auto& [invalid_value, expected_error] :
+         {std::pair<nlohmann::json, std::string_view>{0.5, "must be an integer"},
+          {true, "must be an integer"},
+          {"0", "must be an integer"},
+          {18446744073709551615ULL, "out of range"}}) {
+      SCOPED_TRACE(testing::Message() << field << "=" << invalid_value.dump());
+      auto json = valid_json;
+      json[0][field] = invalid_value;
+
+      auto result = FileScanTasksFromJson(json, {}, UnpartitionedSpecs(), Schema({}, 0));
+      EXPECT_THAT(result, IsError(ErrorKind::kJsonParseError));
+      EXPECT_THAT(result, HasErrorMessage(field));
+      EXPECT_THAT(result, HasErrorMessage(expected_error));
+    }
+  }
+}
+
+TEST(FileScanTasksFromJsonTest, RejectsSplitTaskWhenEitherRangeFieldDiffers) {
+  auto json = R"([{
+    "data-file": {
+      "content": "data",
+      "file-path": "s3://bucket/data/file.parquet",
+      "file-format": "PARQUET",
+      "spec-id": 0,
+      "partition": [],
+      "file-size-in-bytes": 12345,
+      "record-count": 100
+    },
+    "start": 0,
+    "length": 12345
+  }])"_json;
+
+  for (const auto& [field, value] :
+       {std::pair<std::string_view, int64_t>{"start", 100},
+        std::pair<std::string_view, int64_t>{"length", 200}}) {
+    SCOPED_TRACE(field);
+    auto split_json = json;
+    split_json[0][field] = value;
+    auto result =
+        FileScanTasksFromJson(split_json, {}, UnpartitionedSpecs(), Schema({}, 0));
+    EXPECT_THAT(result, IsError(ErrorKind::kNotSupported));
+    EXPECT_THAT(result, HasErrorMessage("Split FileScanTask is not supported"));
+  }
 }
 
 TEST(FileScanTasksFromJsonTest, RowLineageSequence) {
@@ -2406,10 +2370,11 @@ TEST(DataFileRoundtripTest, RequiredFieldsOnly) {
   df.file_size_in_bytes = 12345;
   df.record_count = 100;
 
-  ICEBERG_UNWRAP_OR_FAIL(auto json, ToJson(df, UnpartitionedSpecs(), Schema({}, 0)));
+  ICEBERG_UNWRAP_OR_FAIL(auto json,
+                         iceberg::ToJson(df, UnpartitionedSpecs(), Schema({}, 0)));
   EXPECT_TRUE(json.contains("partition"));
   EXPECT_EQ(json["partition"], nlohmann::json::array());
-  auto result = DataFileFromJson(json, UnpartitionedSpecs(), Schema({}, 0));
+  auto result = iceberg::DataFileFromJson(json, UnpartitionedSpecs(), Schema({}, 0));
   ASSERT_THAT(result, IsOk());
   EXPECT_EQ(result.value(), df);
 }
@@ -2431,8 +2396,9 @@ TEST(DataFileRoundtripTest, WithOptionalFields) {
   df.sort_order_id = 0;
   df.referenced_data_file = "s3://bucket/data/file.parquet";
 
-  ICEBERG_UNWRAP_OR_FAIL(auto json, ToJson(df, UnpartitionedSpecs(), Schema({}, 0)));
-  auto result = DataFileFromJson(json, UnpartitionedSpecs(), Schema({}, 0));
+  ICEBERG_UNWRAP_OR_FAIL(auto json,
+                         iceberg::ToJson(df, UnpartitionedSpecs(), Schema({}, 0)));
+  auto result = iceberg::DataFileFromJson(json, UnpartitionedSpecs(), Schema({}, 0));
   ASSERT_THAT(result, IsOk());
   EXPECT_EQ(result.value(), df);
 }
@@ -2657,5 +2623,166 @@ TEST(FetchPlanningResultResponseRoundtripTest, FailedWithError) {
   ASSERT_THAT(result2, IsOk());
   EXPECT_EQ(*result, *result2);
 }
+
+DECLARE_ROUNDTRIP_TEST(FieldLabel)
+
+INSTANTIATE_TEST_SUITE_P(
+    FieldLabelCases, FieldLabelTest,
+    ::testing::Values(
+        FieldLabelParam{
+            .test_name = "WithLabels",
+            .expected_json_str =
+                R"({"field-id":1,"labels":{"classification":"pii","owner":"team-a"}})",
+            .model = {.field_id = 1,
+                      .labels = {{"classification", "pii"}, {"owner", "team-a"}}}},
+        // A field label always writes "labels", even when empty
+        FieldLabelParam{.test_name = "EmptyLabels",
+                        .expected_json_str = R"({"field-id":1,"labels":{}})",
+                        .model = {.field_id = 1}},
+        FieldLabelParam{.test_name = "MaxInt32FieldId",
+                        .expected_json_str = R"({"field-id":2147483647,"labels":{}})",
+                        .model = {.field_id = 2147483647}},
+        FieldLabelParam{.test_name = "NegativeFieldId",
+                        .expected_json_str = R"({"field-id":-1,"labels":{"k":"v"}})",
+                        .model = {.field_id = -1, .labels = {{"k", "v"}}}}),
+    [](const ::testing::TestParamInfo<FieldLabelParam>& info) {
+      return info.param.test_name;
+    });
+
+DECLARE_INVALID_TEST(FieldLabel)
+
+INSTANTIATE_TEST_SUITE_P(
+    FieldLabelInvalidCases, FieldLabelInvalidTest,
+    ::testing::Values(
+        FieldLabelInvalidParam{
+            .test_name = "NotObject",
+            .invalid_json_str = R"([])",
+            .expected_error_message = "Cannot parse field label from non-object"},
+        FieldLabelInvalidParam{.test_name = "MissingFieldId",
+                               .invalid_json_str = R"({"labels":{}})",
+                               .expected_error_message = "Missing 'field-id'"},
+        FieldLabelInvalidParam{.test_name = "NullFieldId",
+                               .invalid_json_str = R"({"field-id":null,"labels":{}})",
+                               .expected_error_message = "Missing 'field-id'"},
+        FieldLabelInvalidParam{.test_name = "FloatFieldId",
+                               .invalid_json_str = R"({"field-id":1.5,"labels":{}})",
+                               .expected_error_message = "'field-id' must be an integer"},
+        FieldLabelInvalidParam{.test_name = "BoolFieldId",
+                               .invalid_json_str = R"({"field-id":true,"labels":{}})",
+                               .expected_error_message = "'field-id' must be an integer"},
+        FieldLabelInvalidParam{.test_name = "StringFieldId",
+                               .invalid_json_str = R"({"field-id":"1","labels":{}})",
+                               .expected_error_message = "'field-id' must be an integer"},
+        FieldLabelInvalidParam{
+            .test_name = "FieldIdAboveInt32",
+            .invalid_json_str = R"({"field-id":2147483648,"labels":{}})",
+            .expected_error_message = "'field-id' integer is out of range"},
+        FieldLabelInvalidParam{
+            .test_name = "FieldIdBelowInt32",
+            .invalid_json_str = R"({"field-id":-2147483649,"labels":{}})",
+            .expected_error_message = "'field-id' integer is out of range"},
+        FieldLabelInvalidParam{.test_name = "MissingLabels",
+                               .invalid_json_str = R"({"field-id":1})",
+                               .expected_error_message = "Missing 'labels'"},
+        FieldLabelInvalidParam{.test_name = "NullLabels",
+                               .invalid_json_str = R"({"field-id":1,"labels":null})",
+                               .expected_error_message = "Missing 'labels'"},
+        FieldLabelInvalidParam{.test_name = "LabelsNotObject",
+                               .invalid_json_str = R"({"field-id":1,"labels":"x"})",
+                               .expected_error_message = "type must be object"},
+        FieldLabelInvalidParam{.test_name = "NonStringLabelValue",
+                               .invalid_json_str = R"({"field-id":1,"labels":{"k":1}})",
+                               .expected_error_message = "type must be string"}),
+    [](const ::testing::TestParamInfo<FieldLabelInvalidParam>& info) {
+      return info.param.test_name;
+    });
+
+DECLARE_ROUNDTRIP_TEST(Labels)
+
+INSTANTIATE_TEST_SUITE_P(
+    LabelsCases, LabelsTest,
+    ::testing::Values(
+        LabelsParam{.test_name = "Empty", .expected_json_str = R"({})", .model = {}},
+        LabelsParam{.test_name = "ObjectLabelsOnly",
+                    .expected_json_str = R"({"object-labels":{"owner":"team-a"}})",
+                    .model = {.object_labels = {{"owner", "team-a"}}}},
+        LabelsParam{
+            .test_name = "FieldsOnly",
+            .expected_json_str =
+                R"({"fields":[{"field-id":1,"labels":{"classification":"pii"}},{"field-id":2,"labels":{"unit":"usd"}}]})",
+            .model = {.fields = {{.field_id = 1, .labels = {{"classification", "pii"}}},
+                                 {.field_id = 2, .labels = {{"unit", "usd"}}}}}},
+        LabelsParam{
+            .test_name = "ObjectAndFields",
+            .expected_json_str =
+                R"({"object-labels":{"owner":"team-a"},"fields":[{"field-id":1,"labels":{"classification":"pii"}}]})",
+            .model = {.object_labels = {{"owner", "team-a"}},
+                      .fields = {{.field_id = 1,
+                                  .labels = {{"classification", "pii"}}}}}},
+        // Duplicate field IDs are kept verbatim and in order; no resolution
+        LabelsParam{
+            .test_name = "DuplicateFieldIds",
+            .expected_json_str =
+                R"({"fields":[{"field-id":1,"labels":{"a":"1"}},{"field-id":1,"labels":{"b":"2"}}]})",
+            .model = {.fields = {{.field_id = 1, .labels = {{"a", "1"}}},
+                                 {.field_id = 1, .labels = {{"b", "2"}}}}}}),
+    [](const ::testing::TestParamInfo<LabelsParam>& info) {
+      return info.param.test_name;
+    });
+
+DECLARE_DESERIALIZE_TEST(Labels)
+
+INSTANTIATE_TEST_SUITE_P(
+    LabelsDeserializeCases, LabelsDeserializeTest,
+    ::testing::Values(
+        LabelsDeserializeParam{.test_name = "NullObjectLabels",
+                               .json_str = R"({"object-labels":null})",
+                               .expected_model = {}},
+        LabelsDeserializeParam{.test_name = "NullFields",
+                               .json_str = R"({"fields":null})",
+                               .expected_model = {}},
+        LabelsDeserializeParam{
+            .test_name = "UnknownKeysIgnored",
+            .json_str =
+                R"({"object-labels":{"a":"b"},"future":1,"fields":[{"field-id":2,"labels":{},"extra":true}]})",
+            .expected_model = {.object_labels = {{"a", "b"}},
+                               .fields = {{.field_id = 2}}}}),
+    [](const ::testing::TestParamInfo<LabelsDeserializeParam>& info) {
+      return info.param.test_name;
+    });
+
+DECLARE_INVALID_TEST(Labels)
+
+INSTANTIATE_TEST_SUITE_P(
+    LabelsInvalidCases, LabelsInvalidTest,
+    ::testing::Values(
+        LabelsInvalidParam{.test_name = "ObjectLabelsNotObject",
+                           .invalid_json_str = R"({"object-labels":"x"})",
+                           .expected_error_message = "type must be object"},
+        LabelsInvalidParam{.test_name = "ObjectLabelsNonStringValue",
+                           .invalid_json_str = R"({"object-labels":{"k":1}})",
+                           .expected_error_message = "type must be string"},
+        LabelsInvalidParam{.test_name = "ObjectLabelsNullValue",
+                           .invalid_json_str = R"({"object-labels":{"k":null}})",
+                           .expected_error_message = "type must be string"},
+        LabelsInvalidParam{
+            .test_name = "FieldsNotArray",
+            .invalid_json_str = R"({"fields":{}})",
+            .expected_error_message = "Cannot parse 'fields' from non-array"},
+        LabelsInvalidParam{
+            .test_name = "FieldEntryNotObject",
+            .invalid_json_str = R"({"fields":[1]})",
+            .expected_error_message = "Cannot parse field label from non-object"},
+        LabelsInvalidParam{
+            .test_name = "FieldEntryNull",
+            .invalid_json_str = R"({"fields":[null]})",
+            .expected_error_message = "Cannot parse field label from non-object"},
+        LabelsInvalidParam{
+            .test_name = "FieldEntryInvalidFieldId",
+            .invalid_json_str = R"({"fields":[{"field-id":1.5,"labels":{}}]})",
+            .expected_error_message = "'field-id' must be an integer"}),
+    [](const ::testing::TestParamInfo<LabelsInvalidParam>& info) {
+      return info.param.test_name;
+    });
 
 }  // namespace iceberg::rest

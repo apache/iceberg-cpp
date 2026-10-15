@@ -18,6 +18,7 @@
  */
 
 #include <memory>
+#include <ranges>
 #include <string>
 #include <vector>
 

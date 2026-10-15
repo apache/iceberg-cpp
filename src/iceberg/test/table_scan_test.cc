@@ -27,6 +27,7 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include "iceberg/data_table_scan.h"
 #include "iceberg/expression/expressions.h"
 #include "iceberg/snapshot.h"
 #include "iceberg/table_metadata.h"
@@ -251,6 +252,8 @@ TEST_P(TableScanTest, IncludeColumnStatsUsesFinalSnapshotSchema) {
                .schema_id = evolved_schema->schema_id()}));
   table_metadata_->refs["evolved-branch"] = std::make_shared<SnapshotRef>(
       SnapshotRef{.snapshot_id = kEvolvedSnapshotId, .retention = SnapshotRef::Branch{}});
+  table_metadata_->refs["evolved-tag"] = std::make_shared<SnapshotRef>(
+      SnapshotRef{.snapshot_id = kEvolvedSnapshotId, .retention = SnapshotRef::Tag{}});
 
   {
     ICEBERG_UNWRAP_OR_FAIL(auto builder, MakeScanBuilder<DataTableScan>(table_metadata_));
@@ -267,7 +270,7 @@ TEST_P(TableScanTest, IncludeColumnStatsUsesFinalSnapshotSchema) {
 
   {
     ICEBERG_UNWRAP_OR_FAIL(auto builder, MakeScanBuilder<DataTableScan>(table_metadata_));
-    builder->IncludeColumnStats({"id"}).UseRef("evolved-branch");
+    builder->IncludeColumnStats({"id"}).UseRef("evolved-tag");
     ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
     ICEBERG_UNWRAP_OR_FAIL(auto scan_schema, scan->schema());
 
@@ -276,6 +279,20 @@ TEST_P(TableScanTest, IncludeColumnStatsUsesFinalSnapshotSchema) {
     EXPECT_EQ(stats_fields.size(), 1);
     EXPECT_TRUE(stats_fields.contains(kEvolvedIdFieldId));
     EXPECT_FALSE(stats_fields.contains(kBaseIdFieldId));
+  }
+
+  // Branches use the table schema.
+  {
+    ICEBERG_UNWRAP_OR_FAIL(auto builder, MakeScanBuilder<DataTableScan>(table_metadata_));
+    builder->IncludeColumnStats({"id"}).UseRef("evolved-branch");
+    ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
+    ICEBERG_UNWRAP_OR_FAIL(auto scan_schema, scan->schema());
+
+    EXPECT_EQ(scan_schema->schema_id(), schema_->schema_id());
+    const auto& stats_fields = scan->context().columns_to_keep_stats;
+    EXPECT_EQ(stats_fields.size(), 1);
+    EXPECT_TRUE(stats_fields.contains(kBaseIdFieldId));
+    EXPECT_FALSE(stats_fields.contains(kEvolvedIdFieldId));
   }
 }
 

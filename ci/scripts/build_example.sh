@@ -17,11 +17,73 @@
 # specific language governing permissions and limitations
 # under the License.
 
-set -eux
+usage() {
+    cat <<'EOF'
+Usage: build_example.sh --source-dir DIR [options]
 
-source_dir=${1}
-build_dir=${1}/build
-run_example=${ICEBERG_RUN_EXAMPLE:-OFF}
+Options:
+  --build-type TYPE      CMake build type (default: Debug)
+  --cxx-standard N       C++ standard for the example (default: 23)
+  --run-example ON|OFF   Run the example after building (default: OFF)
+  -h, --help             Show this help
+EOF
+}
+
+require_on_off() {
+    case "${2}" in
+        ON|OFF) ;;
+        *)
+            echo "$1 must be ON or OFF, got '${2:-}'" >&2
+            exit 2
+            ;;
+    esac
+}
+
+set -eu
+
+source_dir=
+build_type=Debug
+cxx_standard=23
+run_example=OFF
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --source-dir)
+            source_dir=${2:-}
+            shift 2
+            ;;
+        --build-type)
+            build_type=${2:-}
+            shift 2
+            ;;
+        --cxx-standard)
+            cxx_standard=${2:-}
+            shift 2
+            ;;
+        --run-example)
+            require_on_off "$1" "${2:-}"
+            run_example=$2
+            shift 2
+            ;;
+        -h|--help)
+            usage
+            exit 0
+            ;;
+        *)
+            echo "Unknown option: $1" >&2
+            usage >&2
+            exit 2
+            ;;
+    esac
+done
+
+if [[ -z "${source_dir}" || -z "${build_type}" || -z "${cxx_standard}" ]]; then
+    usage >&2
+    exit 2
+fi
+
+set -x
+build_dir=${source_dir}/build
 
 # Clean up before configuring. If Windows still holds a just-built exe/dll
 # after the retries, let mkdir fail rather than reuse a half-deleted tree.
@@ -51,8 +113,8 @@ if is_windows; then
     CMAKE_ARGS+=("-DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake")
 fi
 
-build_type="${ICEBERG_BUILD_TYPE:-Debug}"
 CMAKE_ARGS+=("-DCMAKE_BUILD_TYPE=${build_type}")
+CMAKE_ARGS+=("-DICEBERG_EXAMPLE_CXX_STANDARD=${cxx_standard}")
 
 cmake "${CMAKE_ARGS[@]}" ${source_dir}
 cmake --build .

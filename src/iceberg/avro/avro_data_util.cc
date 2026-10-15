@@ -17,6 +17,8 @@
  * under the License.
  */
 
+#include <algorithm>
+#include <bit>
 #include <span>
 
 #include <arrow/array/builder_binary.h>
@@ -669,6 +671,27 @@ constexpr int64_t kValueBranch = 1;
 
 }  // namespace
 
+Status EncodeDecimalToFixed(const ::arrow::Decimal128& value, size_t fixed_size,
+                            std::vector<uint8_t>* bytes) {
+  ICEBERG_PRECHECK(fixed_size > 0, "Avro decimal fixed size must be positive");
+  // Arrow's bytes are native-endian; Avro fixed decimals are big-endian.
+  auto big_endian = value.ToBytes();
+  if constexpr (std::endian::native == std::endian::little) {
+    std::ranges::reverse(big_endian);
+  }
+  const uint8_t padding = (big_endian.front() & 0x80) == 0 ? 0x00 : 0xff;
+  const auto value_size = std::min(fixed_size, big_endian.size());
+  const auto first = big_endian.end() - value_size;
+  // Discard only sign extension, without changing the retained sign bit.
+  ICEBERG_PRECHECK(std::all_of(big_endian.begin(), first,
+                               [padding](uint8_t byte) { return byte == padding; }) &&
+                       ((*first ^ padding) & 0x80) == 0,
+                   "Decimal does not fit Avro fixed size {}", fixed_size);
+  bytes->assign(fixed_size - value_size, padding);
+  bytes->insert(bytes->end(), first, big_endian.end());
+  return {};
+}
+
 Status ExtractDatumFromArray(const ::arrow::Array& array, int64_t index,
                              ::avro::GenericDatum* datum) {
   if (index < 0 || index >= array.length()) {
@@ -756,12 +779,10 @@ Status ExtractDatumFromArray(const ::arrow::Array& array, int64_t index,
     case ::arrow::Type::DECIMAL128: {
       const auto& decimal_array =
           internal::checked_cast<const ::arrow::Decimal128Array&>(array);
-      std::string_view decimal_value = decimal_array.GetView(index);
       auto& fixed_datum = datum->value<::avro::GenericFixed>();
-      auto& bytes = fixed_datum.value();
-      bytes.assign(decimal_value.begin(), decimal_value.end());
-      std::ranges::reverse(bytes);
-      return {};
+      return EncodeDecimalToFixed(::arrow::Decimal128(decimal_array.GetValue(index)),
+                                  fixed_datum.schema()->fixedSize(),
+                                  &fixed_datum.value());
     }
 
     case ::arrow::Type::DATE32: {

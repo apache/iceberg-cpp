@@ -528,6 +528,39 @@ TEST_F(ParquetReaderTest, RoundTripWithGenericFileIO) {
   ASSERT_TRUE(out->Equals(*array));
 }
 
+TEST_F(ParquetReaderTest, ReadSmallDecimalsWithStoredArrowSchema) {
+  auto schema = std::make_shared<Schema>(std::vector<SchemaField>{
+      SchemaField::MakeRequired(1, "value", decimal(20, 2)),
+  });
+  for (const auto& type : {::arrow::decimal32(9, 2), ::arrow::decimal64(18, 2)}) {
+    SCOPED_TRACE(type->ToString());
+    auto arrow_schema = ::arrow::schema(
+        {::arrow::field("value", type, /*nullable=*/false,
+                        ::arrow::key_value_metadata({"PARQUET:field_id"}, {"1"}))});
+    auto values = ::arrow::json::ArrayFromJSONString(type, R"(["-1.23", "0.00", "4.56"])")
+                      .ValueOrDie();
+    auto table = ::arrow::Table::Make(arrow_schema, {values});
+    auto& io = internal::checked_cast<arrow::ArrowFileSystemFileIO&>(*file_io_);
+    auto output = io.fs()->OpenOutputStream(temp_parquet_file_).ValueOrDie();
+    ASSERT_TRUE(::parquet::arrow::WriteTable(
+                    *table, ::arrow::default_memory_pool(), output, table->num_rows(),
+                    ::parquet::WriterProperties::Builder()
+                        .enable_store_decimal_as_integer()
+                        ->build(),
+                    ::parquet::ArrowWriterProperties::Builder().store_schema()->build())
+                    .ok());
+    ASSERT_TRUE(output->Close().ok());
+
+    auto reader = ReaderFactoryRegistry::Open(
+        FileFormatType::kParquet,
+        {.path = temp_parquet_file_, .io = file_io_, .projection = schema});
+    ASSERT_THAT(reader, IsOk());
+    ASSERT_NO_FATAL_FAILURE(
+        VerifyNextBatch(**reader, R"([["-1.23"], ["0.00"], ["4.56"]])"));
+    ASSERT_NO_FATAL_FAILURE(VerifyExhausted(**reader));
+  }
+}
+
 TEST_F(ParquetReaderTest, ReadReorderedFieldsWithNulls) {
   CreateSimpleParquetFile();
 

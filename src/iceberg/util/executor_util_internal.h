@@ -229,7 +229,7 @@ auto ParallelCollect(OptionalExecutor executor, Args&&... args) {
 
   auto status = std::move(group).Run();
   if (!status.has_value()) {
-    return Result<result_type>(std::unexpected<Error>(status.error()));
+    return Result<result_type>(::iceberg::unexpected<Error>(status.error()));
   }
 
   return Result<result_type>(reduce_all(indices{}));

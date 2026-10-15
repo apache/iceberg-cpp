@@ -29,7 +29,7 @@
 
 #define ICEBERG_RETURN_UNEXPECTED(expr)                       \
   if (auto&& result_name = expr; !result_name) [[unlikely]] { \
-    return std::unexpected<Error>(result_name.error());       \
+    return iceberg::unexpected<Error>(result_name.error());   \
   }
 
 #define ICEBERG_ASSIGN_OR_RAISE_IMPL(result_name, lhs, rexpr) \

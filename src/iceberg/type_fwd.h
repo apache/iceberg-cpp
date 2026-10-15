@@ -204,6 +204,7 @@ struct ReaderOptions;
 struct WriterOptions;
 struct StorageCredential;
 class FileIO;
+class StorageCredentialProvider;
 class Reader;
 class Writer;
 
@@ -240,6 +241,8 @@ class CommitMetrics;
 /// \brief Table.
 class Table;
 class TableProperties;
+struct FieldLabel;
+struct Labels;
 
 /// \brief Table update.
 class TableMetadataBuilder;
@@ -250,6 +253,7 @@ class Transaction;
 class TransactionContext;
 
 /// \brief Update family.
+class CherryPickOperation;
 class DeleteFiles;
 class ExpireSnapshots;
 class FastAppend;

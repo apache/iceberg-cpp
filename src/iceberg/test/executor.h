@@ -45,7 +45,7 @@ class ThreadExecutor final : public Executor {
   Status Submit(ExecutorTask task) override {
     submit_count_.fetch_add(1, std::memory_order_relaxed);
     if (!submit_status_.has_value()) {
-      return std::unexpected(submit_status_.error());
+      return ::iceberg::unexpected(submit_status_.error());
     }
     threads_.emplace_back(std::move(task));
     return {};

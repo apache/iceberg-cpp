@@ -23,6 +23,9 @@
 #include <concepts>
 #include <cstdint>
 #include <cstring>
+#include <type_traits>
+
+#include "iceberg/compat/byte_swap.h"
 
 /// \file iceberg/util/endian.h
 /// \brief Endianness conversion utilities
@@ -40,14 +43,15 @@ constexpr T ByteSwap(T value) {
   if constexpr (sizeof(T) <= 1) {
     return value;
   } else if constexpr (std::is_integral_v<T>) {
-    return std::byteswap(value);
+    return static_cast<T>(
+        internal::ByteSwapUnsigned(static_cast<std::make_unsigned_t<T>>(value)));
   } else if constexpr (std::is_floating_point_v<T>) {
     if constexpr (sizeof(T) == sizeof(uint16_t)) {
-      return std::bit_cast<T>(std::byteswap(std::bit_cast<uint16_t>(value)));
+      return std::bit_cast<T>(internal::ByteSwapUnsigned(std::bit_cast<uint16_t>(value)));
     } else if constexpr (sizeof(T) == sizeof(uint32_t)) {
-      return std::bit_cast<T>(std::byteswap(std::bit_cast<uint32_t>(value)));
+      return std::bit_cast<T>(internal::ByteSwapUnsigned(std::bit_cast<uint32_t>(value)));
     } else if constexpr (sizeof(T) == sizeof(uint64_t)) {
-      return std::bit_cast<T>(std::byteswap(std::bit_cast<uint64_t>(value)));
+      return std::bit_cast<T>(internal::ByteSwapUnsigned(std::bit_cast<uint64_t>(value)));
     } else {
       static_assert(sizeof(T) == 0,
                     "Unsupported floating-point size for endian conversion.");

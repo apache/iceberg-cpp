@@ -32,12 +32,12 @@
 namespace iceberg {
 
 // Shorthand to return for a NotFound error.
-#define ICEBERG_ACTION_FOR_NOT_FOUND(result, action)   \
-  if (!result.has_value()) [[unlikely]] {              \
-    if (result.error().kind == ErrorKind::kNotFound) { \
-      action;                                          \
-    }                                                  \
-    return std::unexpected<Error>(result.error());     \
+#define ICEBERG_ACTION_FOR_NOT_FOUND(result, action)     \
+  if (!result.has_value()) [[unlikely]] {                \
+    if (result.error().kind == ErrorKind::kNotFound) {   \
+      action;                                            \
+    }                                                    \
+    return ::iceberg::unexpected<Error>(result.error()); \
   }
 
 Result<std::vector<std::shared_ptr<Snapshot>>> SnapshotUtil::AncestorsOf(
@@ -66,9 +66,11 @@ Result<bool> SnapshotUtil::IsAncestorOf(const Table& table,
 
 Result<bool> SnapshotUtil::IsAncestorOf(const TableMetadata& metadata,
                                         int64_t ancestor_snapshot_id) {
-  ICEBERG_ASSIGN_OR_RAISE(auto current, metadata.Snapshot());
-  ICEBERG_CHECK(current != nullptr, "Current snapshot is null");
-  return IsAncestorOf(metadata, current->snapshot_id, ancestor_snapshot_id);
+  // An empty current state has no ancestors.
+  if (metadata.current_snapshot_id == kInvalidSnapshotId) {
+    return false;
+  }
+  return IsAncestorOf(metadata, metadata.current_snapshot_id, ancestor_snapshot_id);
 }
 
 Result<bool> SnapshotUtil::IsAncestorOf(const Table& table, int64_t snapshot_id,
@@ -428,7 +430,7 @@ Result<std::shared_ptr<Snapshot>> SnapshotUtil::OptionalLatestSnapshot(
         if (error.kind == ErrorKind::kNotFound) {
           return nullptr;
         }
-        return std::unexpected<Error>(error);
+        return ::iceberg::unexpected<Error>(error);
       });
 }
 

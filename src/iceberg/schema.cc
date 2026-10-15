@@ -357,7 +357,18 @@ Result<std::unique_ptr<StructLikeAccessor>> Schema::GetAccessorById(
     if (!field.has_value()) {
       return NotFound("Cannot get accessor for field id: {}", field_id);
     }
-    return std::make_unique<StructLikeAccessor>(field.value().get().type(), it->second);
+    std::vector<bool> is_optional;
+    is_optional.reserve(it->second.size());
+    const StructType* current = this;
+    for (size_t i = 0; i < it->second.size(); ++i) {
+      const auto& field_at_position = current->fields()[it->second[i]];
+      is_optional.push_back(field_at_position.optional());
+      if (i + 1 < it->second.size()) {
+        current = static_cast<const StructType*>(field_at_position.type().get());
+      }
+    }
+    return std::make_unique<StructLikeAccessor>(field.value().get().type(), it->second,
+                                                std::move(is_optional));
   }
   return NotFound("Cannot get accessor for field id: {}", field_id);
 }

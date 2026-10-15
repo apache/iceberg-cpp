@@ -28,6 +28,7 @@ struct ErrorResponse;
 struct CommitTableResponse;
 struct LoadTableResult;
 struct OAuthTokenResponse;
+struct RestScanContext;
 
 class Endpoint;
 class ErrorHandler;

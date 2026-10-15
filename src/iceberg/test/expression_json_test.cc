@@ -577,4 +577,31 @@ INSTANTIATE_TEST_SUITE_P(
       return info.param.name;
     });
 
+// A non-string "type" node must produce a parse error, not an uncaught
+// nlohmann type_error escaping the Result contract.
+TEST(ExpressionJsonTest, NonStringTypeIsParseError) {
+  EXPECT_THAT(ExpressionFromJson(R"({"type": 42, "term": "a"})"_json),
+              IsError(ErrorKind::kJsonParseError));
+  EXPECT_THAT(ExpressionFromJson(R"({"type": 42, "left": true, "right": true})"_json),
+              IsError(ErrorKind::kJsonParseError));
+  EXPECT_THAT(LiteralFromJson(R"({"type": 42, "value": 1})"_json),
+              IsError(ErrorKind::kJsonParseError));
+
+  // A reference wrapper with a non-string term is likewise a parse error.
+  EXPECT_THAT(
+      ExpressionFromJson(
+          R"({"type":"eq","term":{"type":"reference","term":42},"value":1})"_json),
+      IsError(ErrorKind::kJsonParseError));
+
+  // A non-string "type" on a predicate's term node, routed through the
+  // transform-term check and then the named-reference parser.
+  EXPECT_THAT(
+      ExpressionFromJson(R"({"type":"eq","term":{"type":42,"term":"x"},"value":1})"_json),
+      IsError(ErrorKind::kJsonParseError));
+
+  // A non-string "type" on the type-aware LiteralFromJson overload.
+  EXPECT_THAT(LiteralFromJson(R"({"type":42,"value":1})"_json, int32().get()),
+              IsError(ErrorKind::kJsonParseError));
+}
+
 }  // namespace iceberg

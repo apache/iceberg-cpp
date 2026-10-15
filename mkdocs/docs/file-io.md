@@ -66,6 +66,7 @@ each file location's scheme.
 | `client.region` | `us-east-1` | Region to sign requests for |
 | `s3.endpoint` | `https://127.0.0.1:9000` | Endpoint to use instead of the AWS one. When absent, the `AWS_ENDPOINT_URL_S3` / `AWS_ENDPOINT_URL` environment variables are consulted |
 | `s3.path-style-access` | `true` | Address buckets as a path (`endpoint/bucket`) instead of a virtual host (`bucket.endpoint`). Only takes effect together with a custom endpoint |
+| `s3.delete.num-threads` | `8` | Maximum worker tasks per `DeleteFiles` call; defaults to the hardware thread count. Requires a delete executor |
 
 The following keys are specific to iceberg-cpp; they are not part of the Java
 Iceberg or REST specification property set:
@@ -79,6 +80,29 @@ Iceberg or REST specification property set:
 Without credentials, the AWS default credential chain is used, which covers
 environment variables, the shared configuration file, and the various role and
 identity providers.
+
+### Bulk deletion
+
+S3 `DeleteFiles` attempts each file and returns the failure count, including
+exceptions thrown by a delete. Deletion is sequential by default. To enable
+concurrency, call `iceberg::arrow::InitializeS3FileIODeleteExecutor(executor)`
+from `iceberg/arrow/arrow_io_util.h` before the first delete. The application
+owns the executor; the setting applies to direct and registry-created FileIOs.
+
+Initialization is permanent. Repeating the same pointer is allowed, but changing
+it returns an error. The first delete freezes the default `nullptr` if no executor
+was initialized. Keep the executor alive until the last delete finishes, and do
+not start more deletes after destroying it.
+
+`s3.delete.num-threads` limits workers within one call, not across concurrent
+calls. The shared executor controls total concurrency; this property does not
+create or resize a thread pool. Workers share the file list, so task and future
+storage is bounded by the configured parallelism.
+
+`DeleteFiles` waits for accepted work before returning, even when submission
+fails or throws. A submission failure is returned without deleting on the caller.
+The executor must make progress while callers wait; do not call `DeleteFiles`
+from its workers unless it supports nested blocking work.
 
 ### S3-compatible storage
 

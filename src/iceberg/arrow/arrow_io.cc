@@ -337,8 +337,8 @@ class ArrowSeekableInputStream : public SeekableInputStream {
       auto read_result = input_->ReadAt(position + bytes_read, remaining, data);
       if (!read_result.ok()) {
         read_status =
-            std::unexpected<Error>{{.kind = ToErrorKind(read_result.status()),
-                                    .message = read_result.status().ToString()}};
+            ::iceberg::unexpected<Error>{{.kind = ToErrorKind(read_result.status()),
+                                          .message = read_result.status().ToString()}};
         break;
       }
       auto read = read_result.ValueOrDie();
@@ -498,7 +498,7 @@ Result<std::string> ArrowFileSystemFileIO::ResolvePath(const std::string& file_l
   // scheme-less key (substring keeps a Windows drive letter's ':' that host() drops).
   if (auto parsed = ::arrow::util::Uri::FromString(file_location); !parsed.ok()) {
     const auto& status = parsed.status();
-    return std::unexpected<Error>{
+    return ::iceberg::unexpected<Error>{
         {.kind = ToErrorKind(status), .message = status.ToString()}};
   }
   std::string bucket_key = file_location.substr(pos + 3);

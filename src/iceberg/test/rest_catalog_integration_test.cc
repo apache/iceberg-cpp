@@ -168,7 +168,7 @@ class RestCatalogIntegrationTest : public ::testing::Test {
     ICEBERG_ASSIGN_OR_RAISE(auto catalog, CreateCatalog());
     auto status = catalog->CreateNamespace(ns, {});
     if (!status.has_value()) {
-      return std::unexpected(status.error());
+      return ::iceberg::unexpected(status.error());
     }
     return catalog;
   }

@@ -28,6 +28,7 @@
 #include <utility>
 #include <variant>
 
+#include "iceberg/compat/unreachable.h"
 #include "iceberg/iceberg_export.h"
 #include "iceberg/metrics/commit_report.h"
 #include "iceberg/metrics/scan_report.h"
@@ -49,7 +50,7 @@ ICEBERG_EXPORT constexpr std::string_view ToString(MetricsReportType type) noexc
     case MetricsReportType::kCommitReport:
       return "commit";
   }
-  std::unreachable();
+  ::iceberg::unreachable();
 }
 
 /// \brief A metrics report, which can be either a ScanReport or CommitReport.

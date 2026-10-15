@@ -35,7 +35,7 @@ Status AggregateTaskErrors(std::vector<Error> errors) {
     return {};
   }
   if (errors.size() == 1) {
-    return std::unexpected(std::move(errors.front()));
+    return ::iceberg::unexpected(std::move(errors.front()));
   }
 
   ErrorKind kind = errors.front().kind;
@@ -43,7 +43,7 @@ Status AggregateTaskErrors(std::vector<Error> errors) {
   for (const auto& error : errors) {
     message += std::format("\n  - {}", error.message);
   }
-  return std::unexpected(Error{.kind = kind, .message = std::move(message)});
+  return ::iceberg::unexpected(Error{.kind = kind, .message = std::move(message)});
 }
 
 Result<std::future<Status>> SubmitTask(Executor& executor, FnOnce<Status()> task) {

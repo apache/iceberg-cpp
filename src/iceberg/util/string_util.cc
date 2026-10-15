@@ -24,6 +24,7 @@
 #include <array>
 #include <cstddef>
 #include <cstdint>
+#include <ranges>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -71,6 +72,11 @@ std::string StringUtils::ToLower(std::string_view str) {
     offset += consumed;
   }
   return result;
+}
+
+std::string StringUtils::ToUpper(std::string_view str) {
+  return str | std::ranges::views::transform(ToUpperAscii) |
+         std::ranges::to<std::string>();
 }
 
 Result<std::vector<uint8_t>> StringUtils::HexStringToBytes(std::string_view hex) {

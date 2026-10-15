@@ -25,6 +25,7 @@
 #include <arrow/type.h>
 #include <avro/Specific.hh>
 
+#include "iceberg/avro/avro_data_util_internal.h"
 #include "iceberg/avro/avro_direct_encoder_internal.h"
 #include "iceberg/type.h"
 #include "iceberg/util/checked_cast.h"
@@ -194,10 +195,9 @@ Status EncodeArrowToAvro(const ::avro::NodePtr& avro_node, ::avro::Encoder& enco
       if (avro_node->logicalType().type() == ::avro::LogicalType::DECIMAL) {
         const auto& decimal_array =
             internal::checked_cast<const ::arrow::Decimal128Array&>(array);
-        std::string_view decimal_value = decimal_array.GetView(row_index);
-        ctx.bytes_scratch.assign(decimal_value.begin(), decimal_value.end());
-        // Arrow Decimal128 bytes are in little-endian order, Avro requires big-endian
-        std::ranges::reverse(ctx.bytes_scratch);
+        ICEBERG_RETURN_UNEXPECTED(
+            EncodeDecimalToFixed(::arrow::Decimal128(decimal_array.GetValue(row_index)),
+                                 avro_node->fixedSize(), &ctx.bytes_scratch));
         encoder.encodeFixed(ctx.bytes_scratch.data(), ctx.bytes_scratch.size());
         return {};
       }

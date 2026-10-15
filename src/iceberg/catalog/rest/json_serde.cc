@@ -33,6 +33,7 @@
 #include "iceberg/expression/json_serde_internal.h"
 #include "iceberg/file_format.h"
 #include "iceberg/json_serde_internal.h"
+#include "iceberg/labels.h"
 #include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/schema.h"
@@ -72,6 +73,10 @@ constexpr std::string_view kDestination = "destination";
 constexpr std::string_view kMetadata = "metadata";
 constexpr std::string_view kConfig = "config";
 constexpr std::string_view kStorageCredentials = "storage-credentials";
+constexpr std::string_view kLabels = "labels";
+constexpr std::string_view kObjectLabels = "object-labels";
+constexpr std::string_view kFields = "fields";
+constexpr std::string_view kFieldId = "field-id";
 constexpr std::string_view kPrefix = "prefix";
 constexpr std::string_view kIdentifiers = "identifiers";
 constexpr std::string_view kOverrides = "overrides";
@@ -105,35 +110,11 @@ constexpr std::string_view kEndSnapshotId = "end-snapshot-id";
 constexpr std::string_view kStatsFields = "stats-fields";
 constexpr std::string_view kMinRowsRequested = "min-rows-requested";
 constexpr std::string_view kPlanTask = "plan-task";
-constexpr std::string_view kContent = "content";
-constexpr std::string_view kContentData = "data";
-constexpr std::string_view kContentPositionDeletes = "position-deletes";
-constexpr std::string_view kContentEqualityDeletes = "equality-deletes";
-constexpr std::string_view kFilePath = "file-path";
-constexpr std::string_view kFileFormat = "file-format";
-constexpr std::string_view kSpecId = "spec-id";
-constexpr std::string_view kPartition = "partition";
-constexpr std::string_view kRecordCount = "record-count";
-constexpr std::string_view kFileSizeInBytes = "file-size-in-bytes";
-constexpr std::string_view kColumnSizes = "column-sizes";
-constexpr std::string_view kValueCounts = "value-counts";
-constexpr std::string_view kNullValueCounts = "null-value-counts";
-constexpr std::string_view kNanValueCounts = "nan-value-counts";
-constexpr std::string_view kLowerBounds = "lower-bounds";
-constexpr std::string_view kUpperBounds = "upper-bounds";
-constexpr std::string_view kKeyMetadata = "key-metadata";
-constexpr std::string_view kSplitOffsets = "split-offsets";
-constexpr std::string_view kEqualityIds = "equality-ids";
-constexpr std::string_view kSortOrderId = "sort-order-id";
-constexpr std::string_view kFirstRowId = "first-row-id";
-constexpr std::string_view kReferencedDataFile = "referenced-data-file";
-constexpr std::string_view kContentOffset = "content-offset";
-constexpr std::string_view kContentSizeInBytes = "content-size-in-bytes";
 constexpr std::string_view kDataFile = "data-file";
 constexpr std::string_view kDeleteFileReferences = "delete-file-references";
 constexpr std::string_view kResidualFilter = "residual-filter";
-constexpr std::string_view kMapKeys = "keys";
-constexpr std::string_view kMapValues = "values";
+constexpr std::string_view kStart = "start";
+constexpr std::string_view kLength = "length";
 
 Result<nlohmann::json> StorageCredentialToJson(const StorageCredential& credential) {
   ICEBERG_RETURN_UNEXPECTED(credential.Validate());
@@ -152,8 +133,7 @@ Result<StorageCredential> StorageCredentialFromJson(const nlohmann::json& json) 
   return credential;
 }
 
-/// \brief Reads the optional `storage-credentials` array shared by the
-/// LoadTable and LoadCredentials responses.
+/// \brief Reads the optional `storage-credentials` array.
 Result<std::vector<StorageCredential>> StorageCredentialsFromJson(
     const nlohmann::json& json) {
   std::vector<StorageCredential> credentials;
@@ -171,155 +151,21 @@ Result<std::vector<StorageCredential>> StorageCredentialsFromJson(
   return credentials;
 }
 
-template <typename Value>
-Result<std::map<int32_t, Value>> KeyValueMapFromJson(const nlohmann::json& json,
-                                                     std::string_view key) {
-  std::map<int32_t, Value> result;
-  if (!json.contains(key) || json.at(key).is_null()) {
-    return result;
+/// \brief Writes `storage-credentials` to json if any are present.
+Status StorageCredentialsToJson(const std::vector<StorageCredential>& credentials,
+                                nlohmann::json& json) {
+  if (credentials.empty()) {
+    return {};
   }
-
-  ICEBERG_ASSIGN_OR_RAISE(auto map_json, GetJsonValue<nlohmann::json>(json, key));
-  ICEBERG_ASSIGN_OR_RAISE(auto keys,
-                          GetJsonValue<std::vector<int32_t>>(map_json, kMapKeys));
-  ICEBERG_ASSIGN_OR_RAISE(auto values,
-                          GetJsonValue<std::vector<Value>>(map_json, kMapValues));
-  if (keys.size() != values.size()) {
-    return JsonParseError("'{}' map keys and values have different lengths", key);
+  nlohmann::json creds_json = nlohmann::json::array();
+  for (const auto& cred : credentials) {
+    ICEBERG_ASSIGN_OR_RAISE(auto entry, StorageCredentialToJson(cred));
+    creds_json.push_back(std::move(entry));
   }
-
-  for (size_t i = 0; i < keys.size(); ++i) {
-    result[keys[i]] = std::move(values[i]);
-  }
-  return result;
+  json[kStorageCredentials] = std::move(creds_json);
+  return {};
 }
-
-template <typename Value>
-void SetKeyValueMap(nlohmann::json& json, std::string_view key,
-                    const std::map<int32_t, Value>& map) {
-  if (map.empty()) {
-    return;
-  }
-
-  std::vector<int32_t> keys;
-  std::vector<Value> values;
-  keys.reserve(map.size());
-  values.reserve(map.size());
-  for (const auto& [field_id, value] : map) {
-    keys.push_back(field_id);
-    values.push_back(value);
-  }
-  json[key] = {{kMapKeys, std::move(keys)}, {kMapValues, std::move(values)}};
-}
-
 }  // namespace
-
-Result<DataFile> DataFileFromJson(
-    const nlohmann::json& json,
-    const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>&
-        partition_spec_by_id,
-    const Schema& schema) {
-  if (!json.is_object()) {
-    return JsonParseError("DataFile must be a JSON object: {}", SafeDumpJson(json));
-  }
-  DataFile data_file;
-
-  ICEBERG_ASSIGN_OR_RAISE(auto content_str, GetJsonValue<std::string>(json, kContent));
-  if (content_str == kContentData) {
-    data_file.content = DataFile::Content::kData;
-  } else if (content_str == kContentPositionDeletes) {
-    data_file.content = DataFile::Content::kPositionDeletes;
-  } else if (content_str == kContentEqualityDeletes) {
-    data_file.content = DataFile::Content::kEqualityDeletes;
-  } else {
-    return JsonParseError("Unknown data file content: {}", content_str);
-  }
-
-  ICEBERG_ASSIGN_OR_RAISE(data_file.file_path,
-                          GetJsonValue<std::string>(json, kFilePath));
-  ICEBERG_ASSIGN_OR_RAISE(auto format_str, GetJsonValue<std::string>(json, kFileFormat));
-  ICEBERG_ASSIGN_OR_RAISE(data_file.file_format, FileFormatTypeFromString(format_str));
-
-  ICEBERG_ASSIGN_OR_RAISE(auto spec_id, GetJsonValue<int32_t>(json, kSpecId));
-  data_file.partition_spec_id = spec_id;
-
-  ICEBERG_ASSIGN_OR_RAISE(auto partition_vals,
-                          GetJsonValue<nlohmann::json>(json, kPartition));
-  if (!partition_vals.is_array()) {
-    return JsonParseError("PartitionValues must be a JSON array: {}",
-                          SafeDumpJson(partition_vals));
-  }
-  std::vector<Literal> literals;
-  auto it = partition_spec_by_id.find(spec_id);
-  if (it == partition_spec_by_id.end()) {
-    return JsonParseError("Invalid partition spec id: {}", spec_id);
-  }
-  ICEBERG_ASSIGN_OR_RAISE(auto struct_type, it->second->PartitionType(schema));
-  auto fields = struct_type->fields();
-  if (partition_vals.size() != fields.size()) {
-    return JsonParseError("Invalid partition data size: expected = {}, actual = {}",
-                          fields.size(), partition_vals.size());
-  }
-  for (size_t pos = 0; pos < fields.size(); ++pos) {
-    ICEBERG_ASSIGN_OR_RAISE(
-        auto literal, LiteralFromJson(partition_vals[pos], fields[pos].type().get()));
-    literals.push_back(std::move(literal));
-  }
-  data_file.partition = PartitionValues(std::move(literals));
-
-  ICEBERG_ASSIGN_OR_RAISE(data_file.record_count,
-                          GetJsonValue<int64_t>(json, kRecordCount));
-  ICEBERG_ASSIGN_OR_RAISE(data_file.file_size_in_bytes,
-                          GetJsonValue<int64_t>(json, kFileSizeInBytes));
-
-  ICEBERG_ASSIGN_OR_RAISE(data_file.column_sizes,
-                          KeyValueMapFromJson<int64_t>(json, kColumnSizes));
-  ICEBERG_ASSIGN_OR_RAISE(data_file.value_counts,
-                          KeyValueMapFromJson<int64_t>(json, kValueCounts));
-  ICEBERG_ASSIGN_OR_RAISE(data_file.null_value_counts,
-                          KeyValueMapFromJson<int64_t>(json, kNullValueCounts));
-  ICEBERG_ASSIGN_OR_RAISE(data_file.nan_value_counts,
-                          KeyValueMapFromJson<int64_t>(json, kNanValueCounts));
-  ICEBERG_ASSIGN_OR_RAISE(data_file.lower_bounds,
-                          KeyValueMapFromJson<std::vector<uint8_t>>(json, kLowerBounds));
-  ICEBERG_ASSIGN_OR_RAISE(data_file.upper_bounds,
-                          KeyValueMapFromJson<std::vector<uint8_t>>(json, kUpperBounds));
-
-  if (json.contains(kKeyMetadata) && !json.at(kKeyMetadata).is_null()) {
-    ICEBERG_ASSIGN_OR_RAISE(data_file.key_metadata,
-                            GetJsonValue<std::vector<uint8_t>>(json, kKeyMetadata));
-  }
-  if (json.contains(kSplitOffsets) && !json.at(kSplitOffsets).is_null()) {
-    ICEBERG_ASSIGN_OR_RAISE(data_file.split_offsets,
-                            GetJsonValue<std::vector<int64_t>>(json, kSplitOffsets));
-  }
-  if (json.contains(kEqualityIds) && !json.at(kEqualityIds).is_null()) {
-    ICEBERG_ASSIGN_OR_RAISE(data_file.equality_ids,
-                            GetJsonValue<std::vector<int32_t>>(json, kEqualityIds));
-  }
-  if (json.contains(kSortOrderId) && !json.at(kSortOrderId).is_null()) {
-    ICEBERG_ASSIGN_OR_RAISE(data_file.sort_order_id,
-                            GetJsonValue<int32_t>(json, kSortOrderId));
-  }
-  if (json.contains(kFirstRowId) && !json.at(kFirstRowId).is_null()) {
-    ICEBERG_ASSIGN_OR_RAISE(data_file.first_row_id,
-                            GetJsonValue<int64_t>(json, kFirstRowId));
-  }
-  if (json.contains(kReferencedDataFile) && !json.at(kReferencedDataFile).is_null()) {
-    ICEBERG_ASSIGN_OR_RAISE(data_file.referenced_data_file,
-                            GetJsonValue<std::string>(json, kReferencedDataFile));
-  }
-  if (json.contains(kContentOffset) && !json.at(kContentOffset).is_null()) {
-    ICEBERG_ASSIGN_OR_RAISE(data_file.content_offset,
-                            GetJsonValue<int64_t>(json, kContentOffset));
-  }
-  if (json.contains(kContentSizeInBytes) && !json.at(kContentSizeInBytes).is_null()) {
-    ICEBERG_ASSIGN_OR_RAISE(data_file.content_size_in_bytes,
-                            GetJsonValue<int64_t>(json, kContentSizeInBytes));
-  }
-
-  return data_file;
-}
 
 Result<std::vector<std::shared_ptr<FileScanTask>>> FileScanTasksFromJson(
     const nlohmann::json& json,
@@ -341,7 +187,14 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> FileScanTasksFromJson(
     ICEBERG_ASSIGN_OR_RAISE(auto data_file_json,
                             GetJsonValue<nlohmann::json>(task_json, kDataFile));
     ICEBERG_ASSIGN_OR_RAISE(
-        auto data_file, DataFileFromJson(data_file_json, partition_spec_by_id, schema));
+        auto data_file,
+        iceberg::DataFileFromJson(data_file_json, partition_spec_by_id, schema));
+    ICEBERG_ASSIGN_OR_RAISE(auto start, GetJsonIntegerOrDefault(task_json, kStart, 0));
+    ICEBERG_ASSIGN_OR_RAISE(
+        auto length,
+        GetJsonIntegerOrDefault(task_json, kLength, data_file.file_size_in_bytes));
+    ICEBERG_RETURN_UNEXPECTED(
+        CheckFileScanTaskNotSplit(start, length, data_file.file_size_in_bytes));
     // FIXME: REST scan-task DataFile JSON currently carries first-row-id,
     // but not the manifest-entry data sequence number. Until the REST API exposes
     // it, REST-planned tasks cannot inherit _last_updated_sequence_number.
@@ -374,99 +227,6 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> FileScanTasksFromJson(
         std::move(residual_filter)));
   }
   return file_scan_tasks;
-}
-
-Result<nlohmann::json> DataFileToJsonUnchecked(const DataFile& data_file) {
-  nlohmann::json json;
-  switch (data_file.content) {
-    case DataFile::Content::kData:
-      json[kContent] = kContentData;
-      break;
-    case DataFile::Content::kPositionDeletes:
-      json[kContent] = kContentPositionDeletes;
-      break;
-    case DataFile::Content::kEqualityDeletes:
-      json[kContent] = kContentEqualityDeletes;
-      break;
-  }
-  json[kFilePath] = data_file.file_path;
-  json[kFileFormat] = ToString(data_file.file_format);
-
-  if (!data_file.partition_spec_id.has_value()) {
-    return ValidationFailed("Cannot serialize REST content file without 'spec-id'");
-  }
-  json[kSpecId] = data_file.partition_spec_id.value();
-
-  nlohmann::json partition_json = nlohmann::json::array();
-  for (const auto& literal : data_file.partition.values()) {
-    ICEBERG_ASSIGN_OR_RAISE(auto lit_json, iceberg::ToJson(literal));
-    partition_json.push_back(std::move(lit_json));
-  }
-  json[kPartition] = std::move(partition_json);
-
-  json[kRecordCount] = data_file.record_count;
-  json[kFileSizeInBytes] = data_file.file_size_in_bytes;
-
-  SetKeyValueMap(json, kColumnSizes, data_file.column_sizes);
-  SetKeyValueMap(json, kValueCounts, data_file.value_counts);
-  SetKeyValueMap(json, kNullValueCounts, data_file.null_value_counts);
-  SetKeyValueMap(json, kNanValueCounts, data_file.nan_value_counts);
-  SetKeyValueMap(json, kLowerBounds, data_file.lower_bounds);
-  SetKeyValueMap(json, kUpperBounds, data_file.upper_bounds);
-
-  if (!data_file.key_metadata.empty()) {
-    json[kKeyMetadata] = data_file.key_metadata;
-  }
-  if (!data_file.split_offsets.empty()) {
-    json[kSplitOffsets] = data_file.split_offsets;
-  }
-  if (!data_file.equality_ids.empty()) {
-    json[kEqualityIds] = data_file.equality_ids;
-  }
-  if (data_file.sort_order_id.has_value()) {
-    json[kSortOrderId] = data_file.sort_order_id.value();
-  }
-  if (data_file.first_row_id.has_value()) {
-    json[kFirstRowId] = data_file.first_row_id.value();
-  }
-  if (data_file.referenced_data_file.has_value()) {
-    json[kReferencedDataFile] = data_file.referenced_data_file.value();
-  }
-  if (data_file.content_offset.has_value()) {
-    json[kContentOffset] = data_file.content_offset.value();
-  }
-  if (data_file.content_size_in_bytes.has_value()) {
-    json[kContentSizeInBytes] = data_file.content_size_in_bytes.value();
-  }
-
-  return json;
-}
-
-Result<nlohmann::json> ToJson(
-    const DataFile& data_file,
-    const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>&
-        partition_specs_by_id,
-    const Schema& schema) {
-  if (!data_file.partition_spec_id.has_value()) {
-    return ValidationFailed("Invalid partition spec id from content file: null");
-  }
-  auto it = partition_specs_by_id.find(data_file.partition_spec_id.value());
-  if (it == partition_specs_by_id.end() || !it->second) {
-    return ValidationFailed("Invalid partition spec: null");
-  }
-  if (data_file.partition_spec_id.value() != it->second->spec_id()) {
-    return ValidationFailed(
-        "Invalid partition spec id from content file: expected = {}, actual = {}",
-        it->second->spec_id(), data_file.partition_spec_id.value());
-  }
-  ICEBERG_ASSIGN_OR_RAISE(auto partition_type, it->second->PartitionType(schema));
-  if (data_file.partition.num_fields() != partition_type->fields().size()) {
-    return ValidationFailed(
-        "Invalid partition data from content file: expected = {}, actual = {}",
-        partition_type->fields().empty() ? "unpartitioned" : "partitioned",
-        data_file.partition.num_fields() == 0 ? "unpartitioned" : "partitioned");
-  }
-  return DataFileToJsonUnchecked(data_file);
 }
 
 namespace {
@@ -514,7 +274,7 @@ Result<nlohmann::json> ScanTaskFieldsToJson(
       if (task->data_file()) {
         ICEBERG_ASSIGN_OR_RAISE(
             auto data_file_json,
-            ToJson(*task->data_file(), partition_specs_by_id, schema));
+            iceberg::ToJson(*task->data_file(), partition_specs_by_id, schema));
         task_json[kDataFile] = std::move(data_file_json);
       }
       if (!task->delete_files().empty()) {
@@ -540,7 +300,8 @@ Result<nlohmann::json> ScanTaskFieldsToJson(
   }
   nlohmann::json delete_files_json = nlohmann::json::array();
   for (const auto& file : delete_files) {
-    ICEBERG_ASSIGN_OR_RAISE(auto df_json, ToJson(*file, partition_specs_by_id, schema));
+    ICEBERG_ASSIGN_OR_RAISE(auto df_json,
+                            iceberg::ToJson(*file, partition_specs_by_id, schema));
     delete_files_json.push_back(std::move(df_json));
   }
   if (!delete_files_json.empty()) {
@@ -576,8 +337,9 @@ Status ScanTaskFieldsFromJson(
                           SafeDumpJson(delete_files_json));
   }
   for (const auto& entry_json : delete_files_json) {
-    ICEBERG_ASSIGN_OR_RAISE(auto delete_file,
-                            DataFileFromJson(entry_json, partition_specs_by_id, schema));
+    ICEBERG_ASSIGN_OR_RAISE(
+        auto delete_file,
+        iceberg::DataFileFromJson(entry_json, partition_specs_by_id, schema));
     response.delete_files.push_back(std::make_shared<DataFile>(std::move(delete_file)));
   }
 
@@ -731,6 +493,59 @@ Result<RenameTableRequest> RenameTableRequestFromJson(const nlohmann::json& json
   return request;
 }
 
+nlohmann::json ToJson(const FieldLabel& field_label) {
+  nlohmann::json json;
+  json[kFieldId] = field_label.field_id;
+  json[kLabels] = field_label.labels;
+  return json;
+}
+
+Result<FieldLabel> FieldLabelFromJson(const nlohmann::json& json) {
+  if (!json.is_object()) {
+    return JsonParseError("Cannot parse field label from non-object: {}",
+                          SafeDumpJson(json));
+  }
+  FieldLabel field_label;
+  ICEBERG_ASSIGN_OR_RAISE(field_label.field_id, GetJsonInteger<int32_t>(json, kFieldId));
+  ICEBERG_ASSIGN_OR_RAISE(field_label.labels,
+                          GetJsonValue<decltype(field_label.labels)>(json, kLabels));
+  return field_label;
+}
+
+nlohmann::json ToJson(const Labels& labels) {
+  nlohmann::json json = nlohmann::json::object();
+  if (!labels.object_labels.empty()) {
+    json[kObjectLabels] = labels.object_labels;
+  }
+  if (!labels.fields.empty()) {
+    nlohmann::json fields = nlohmann::json::array();
+    for (const auto& field_label : labels.fields) {
+      fields.push_back(ToJson(field_label));
+    }
+    json[kFields] = std::move(fields);
+  }
+  return json;
+}
+
+// A non-object value is treated as absent labels rather than failing the load.
+Result<Labels> LabelsFromJson(const nlohmann::json& json) {
+  Labels labels;
+  ICEBERG_ASSIGN_OR_RAISE(
+      labels.object_labels,
+      GetJsonValueOrDefault<decltype(labels.object_labels)>(json, kObjectLabels));
+  if (auto it = json.find(kFields); it != json.end() && !it->is_null()) {
+    if (!it->is_array()) {
+      return JsonParseError("Cannot parse '{}' from non-array: {}", kFields,
+                            SafeDumpJson(*it));
+    }
+    for (const auto& entry : *it) {
+      ICEBERG_ASSIGN_OR_RAISE(auto field_label, FieldLabelFromJson(entry));
+      labels.fields.push_back(std::move(field_label));
+    }
+  }
+  return labels;
+}
+
 // LoadTableResult (used by CreateTableResponse, LoadTableResponse)
 Result<nlohmann::json> ToJson(const LoadTableResult& result) {
   nlohmann::json json;
@@ -745,6 +560,9 @@ Result<nlohmann::json> ToJson(const LoadTableResult& result) {
     }
     json[kStorageCredentials] = std::move(creds);
   }
+  if (!result.labels.empty()) {
+    json[kLabels] = ToJson(result.labels);
+  }
   return json;
 }
 
@@ -758,6 +576,9 @@ Result<LoadTableResult> LoadTableResultFromJson(const nlohmann::json& json) {
   ICEBERG_ASSIGN_OR_RAISE(result.config,
                           GetJsonValueOrDefault<decltype(result.config)>(json, kConfig));
   ICEBERG_ASSIGN_OR_RAISE(result.storage_credentials, StorageCredentialsFromJson(json));
+  if (auto it = json.find(kLabels); it != json.end() && !it->is_null()) {
+    ICEBERG_ASSIGN_OR_RAISE(result.labels, LabelsFromJson(*it));
+  }
   ICEBERG_RETURN_UNEXPECTED(result.Validate());
   return result;
 }
@@ -1086,6 +907,8 @@ Result<nlohmann::json> ToJson(const PlanTableScanRequest& request) {
   if (request.snapshot_id.has_value()) {
     json[kSnapshotId] = request.snapshot_id.value();
   }
+  // FIXME: Preserve explicit empty projections as select: []; omitting select
+  // means the default projection. Java currently has the same issue.
   if (!request.select.empty()) {
     json[kSelect] = request.select;
   }
@@ -1141,6 +964,7 @@ Result<PlanTableScanResponse> PlanTableScanResponseFromJson(
   }
   ICEBERG_RETURN_UNEXPECTED(
       ScanTaskFieldsFromJson(json, response, partition_specs_by_id, schema));
+  ICEBERG_ASSIGN_OR_RAISE(response.storage_credentials, StorageCredentialsFromJson(json));
   ICEBERG_RETURN_UNEXPECTED(response.Validate());
   return response;
 }
@@ -1152,6 +976,7 @@ Result<nlohmann::json> ToJson(
     const Schema& schema) {
   ICEBERG_ASSIGN_OR_RAISE(nlohmann::json json,
                           ScanTaskFieldsToJson(response, partition_specs_by_id, schema));
+  ICEBERG_RETURN_UNEXPECTED(StorageCredentialsToJson(response.storage_credentials, json));
   json[kPlanStatus] = ToString(response.plan_status);
   if (!response.plan_id.empty()) {
     json[kPlanId] = response.plan_id;
@@ -1178,6 +1003,7 @@ Result<FetchPlanningResultResponse> FetchPlanningResultResponseFromJson(
   }
   ICEBERG_RETURN_UNEXPECTED(
       ScanTaskFieldsFromJson(json, response, partition_specs_by_id, schema));
+  ICEBERG_ASSIGN_OR_RAISE(response.storage_credentials, StorageCredentialsFromJson(json));
   ICEBERG_RETURN_UNEXPECTED(response.Validate());
   return response;
 }
@@ -1189,6 +1015,7 @@ Result<nlohmann::json> ToJson(
     const Schema& schema) {
   ICEBERG_ASSIGN_OR_RAISE(nlohmann::json json,
                           ScanTaskFieldsToJson(response, partition_specs_by_id, schema));
+  ICEBERG_RETURN_UNEXPECTED(StorageCredentialsToJson(response.storage_credentials, json));
   json[kPlanStatus] = ToString(response.plan_status);
   if (response.error.has_value()) {
     json[kError] = ToJson(*response.error)[kError];
@@ -1240,5 +1067,7 @@ ICEBERG_DEFINE_FROM_JSON(CommitTableResponse)
 ICEBERG_DEFINE_FROM_JSON(OAuthTokenResponse)
 ICEBERG_DEFINE_FROM_JSON(PlanTableScanRequest)
 ICEBERG_DEFINE_FROM_JSON(FetchScanTasksRequest)
+ICEBERG_DEFINE_FROM_JSON(FieldLabel)
+ICEBERG_DEFINE_FROM_JSON(Labels)
 
 }  // namespace iceberg::rest

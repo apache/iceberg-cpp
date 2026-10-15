@@ -178,6 +178,7 @@ class ICEBERG_EXPORT ManifestGroup : public ErrorCollector {
       const CreateTasksFunction& create_tasks);
 
  private:
+  class PlanningContext;
   class FilePlanningStream;
 
   struct StatsProjection {
@@ -191,10 +192,10 @@ class ICEBERG_EXPORT ManifestGroup : public ErrorCollector {
                 DeleteFileIndex::Builder&& delete_index_builder);
 
   Result<std::unordered_map<int32_t, std::vector<ManifestEntry>>> ReadEntries(
-      const std::vector<std::string>& columns);
+      PlanningContext& context);
 
-  Result<std::unique_ptr<ManifestReader>> MakeReader(const ManifestFile& manifest,
-                                                     std::vector<std::string> columns);
+  Result<std::unique_ptr<ManifestReader>> MakeReader(
+      const ManifestFile& manifest, const std::vector<std::string>& columns);
 
   StatsProjection PrepareStatsProjection(bool has_equality_deletes) const;
 

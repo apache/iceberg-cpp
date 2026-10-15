@@ -21,6 +21,7 @@
 #include <ranges>
 #include <vector>
 
+#include <arrow/array/builder_decimal.h>
 #include <arrow/array/builder_nested.h>
 #include <arrow/array/builder_primitive.h>
 #include <arrow/c/bridge.h>
@@ -31,11 +32,14 @@
 #include <avro/Compiler.hh>
 #include <avro/Generic.hh>
 #include <avro/Node.hh>
+#include <avro/Specific.hh>
+#include <avro/Stream.hh>
 #include <avro/Types.hh>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
 #include "iceberg/avro/avro_data_util_internal.h"
+#include "iceberg/avro/avro_direct_encoder_internal.h"
 #include "iceberg/avro/avro_schema_util_internal.h"
 #include "iceberg/expression/literal.h"
 #include "iceberg/schema.h"
@@ -43,8 +47,143 @@
 #include "iceberg/schema_util.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/type.h"
+#include "iceberg/util/string_util.h"
 
 namespace iceberg::avro {
+
+class AvroDecimalEncodingTest : public ::testing::TestWithParam<bool> {};
+
+TEST_P(AvroDecimalEncodingTest, FixedWidthBigEndianBytes) {
+  struct TestCase {
+    int32_t precision;
+    std::string unscaled;
+    std::string expected_hex;
+  };
+  const std::vector<TestCase> cases{
+      {.precision = 1, .unscaled = "0", .expected_hex = "00"},
+      {.precision = 1, .unscaled = "1", .expected_hex = "01"},
+      {.precision = 1, .unscaled = "-1", .expected_hex = "ff"},
+      {.precision = 2, .unscaled = "99", .expected_hex = "63"},
+      {.precision = 2, .unscaled = "-99", .expected_hex = "9d"},
+      {.precision = 3, .unscaled = "127", .expected_hex = "007f"},
+      {.precision = 3, .unscaled = "128", .expected_hex = "0080"},
+      {.precision = 3, .unscaled = "-128", .expected_hex = "ff80"},
+      {.precision = 3, .unscaled = "-129", .expected_hex = "ff7f"},
+      {.precision = 5, .unscaled = "32767", .expected_hex = "007fff"},
+      {.precision = 5, .unscaled = "32768", .expected_hex = "008000"},
+      {.precision = 5, .unscaled = "-32768", .expected_hex = "ff8000"},
+      {.precision = 5, .unscaled = "-32769", .expected_hex = "ff7fff"},
+      {.precision = 10, .unscaled = "1001", .expected_hex = "00000003e9"},
+      {.precision = 10, .unscaled = "-1001", .expected_hex = "fffffffc17"},
+      {.precision = 38,
+       .unscaled = "0",
+       .expected_hex = "00000000000000000000000000000000"},
+      {.precision = 38,
+       .unscaled = "1",
+       .expected_hex = "00000000000000000000000000000001"},
+      {.precision = 38,
+       .unscaled = "-1",
+       .expected_hex = "ffffffffffffffffffffffffffffffff"},
+      {.precision = 38,
+       .unscaled = "128",
+       .expected_hex = "00000000000000000000000000000080"},
+      {.precision = 38,
+       .unscaled = "-129",
+       .expected_hex = "ffffffffffffffffffffffffffffff7f"},
+      {.precision = 38,
+       .unscaled = "1208925819614629174706299",
+       .expected_hex = "0000000000010000000000000000007b"},
+      {.precision = 38,
+       .unscaled = "-1208925819614629174706299",
+       .expected_hex = "fffffffffffeffffffffffffffffff85"},
+      {.precision = 38,
+       .unscaled = "99999999999999999999999999999999999999",
+       .expected_hex = "4b3b4ca85a86c47a098a223fffffffff"},
+      {.precision = 38,
+       .unscaled = "-99999999999999999999999999999999999999",
+       .expected_hex = "b4c4b357a5793b85f675ddc000000001"},
+  };
+  for (const auto& test : cases) {
+    SCOPED_TRACE(test.unscaled);
+    auto type = decimal(test.precision, 0);
+    ::avro::NodePtr node;
+    ASSERT_THAT(ToAvroNodeVisitor{}.Visit(*type, &node), IsOk());
+    ICEBERG_UNWRAP_OR_FAIL(auto expected,
+                           StringUtils::HexStringToBytes(test.expected_hex));
+    ASSERT_EQ(node->fixedSize(), expected.size());
+    ::arrow::Decimal128Builder builder(::arrow::decimal128(test.precision, 0),
+                                       ::arrow::default_memory_pool());
+    ASSERT_TRUE(builder.Append(::arrow::Decimal128(test.unscaled)).ok());
+    auto array = builder.Finish().ValueOrDie();
+    auto stream = ::avro::memoryOutputStream();
+    auto encoder = ::avro::binaryEncoder();
+    encoder->init(*stream);
+    if (GetParam()) {
+      EncodeContext context;
+      ASSERT_THAT(EncodeArrowToAvro(node, *encoder, *type, *array, 0, context), IsOk());
+    } else {
+      ::avro::GenericDatum datum(node);
+      ASSERT_THAT(ExtractDatumFromArray(*array, 0, &datum), IsOk());
+      EXPECT_EQ(datum.value<::avro::GenericFixed>().value(), expected);
+      ::avro::encode(*encoder, datum);
+    }
+    encoder->flush();
+    EXPECT_EQ(*::avro::snapshot(*stream), expected);
+  }
+}
+
+TEST_P(AvroDecimalEncodingTest, RejectsFixedWidthOverflow) {
+  auto type = decimal(2, 0);
+  ::avro::NodePtr node;
+  ASSERT_THAT(ToAvroNodeVisitor{}.Visit(*type, &node), IsOk());
+  ASSERT_EQ(node->fixedSize(), 1);
+  // Arrow's builder accepts these invalid values; do not silently truncate them.
+  for (const auto& unscaled : {"128", "-129", "256", "-257"}) {
+    SCOPED_TRACE(unscaled);
+    ::arrow::Decimal128Builder builder(::arrow::decimal128(2, 0),
+                                       ::arrow::default_memory_pool());
+    ASSERT_TRUE(builder.Append(::arrow::Decimal128(std::string(unscaled))).ok());
+    auto array = builder.Finish().ValueOrDie();
+    auto stream = ::avro::memoryOutputStream();
+    auto encoder = ::avro::binaryEncoder();
+    encoder->init(*stream);
+    if (GetParam()) {
+      EncodeContext context;
+      EXPECT_THAT(EncodeArrowToAvro(node, *encoder, *type, *array, 0, context),
+                  IsError(ErrorKind::kInvalidArgument));
+    } else {
+      ::avro::GenericDatum datum(node);
+      EXPECT_THAT(ExtractDatumFromArray(*array, 0, &datum),
+                  IsError(ErrorKind::kInvalidArgument));
+    }
+    encoder->flush();
+    EXPECT_TRUE(::avro::snapshot(*stream)->empty());
+  }
+}
+
+TEST(AvroDecimalFixedTest, SignedBoundariesAndPadding) {
+  std::vector<uint8_t> bytes;
+  ASSERT_THAT(EncodeDecimalToFixed(::arrow::Decimal128(127), 1, &bytes), IsOk());
+  EXPECT_EQ(bytes, (std::vector<uint8_t>{0x7f}));
+  ASSERT_THAT(EncodeDecimalToFixed(::arrow::Decimal128(-128), 1, &bytes), IsOk());
+  EXPECT_EQ(bytes, (std::vector<uint8_t>{0x80}));
+  ASSERT_THAT(EncodeDecimalToFixed(::arrow::Decimal128(1), 17, &bytes), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto positive, StringUtils::HexStringToBytes("0000000000000000000000000000000001"));
+  EXPECT_EQ(bytes, positive);
+  ASSERT_THAT(EncodeDecimalToFixed(::arrow::Decimal128(-1), 17, &bytes), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto negative, StringUtils::HexStringToBytes("ffffffffffffffffffffffffffffffffff"));
+  EXPECT_EQ(bytes, negative);
+  EXPECT_THAT(EncodeDecimalToFixed(::arrow::Decimal128(0), 0, &bytes),
+              IsError(ErrorKind::kInvalidArgument));
+}
+
+INSTANTIATE_TEST_SUITE_P(WriterBackends, AvroDecimalEncodingTest,
+                         ::testing::Values(true, false),
+                         [](const ::testing::TestParamInfo<bool>& info) {
+                           return info.param ? "DirectEncoder" : "GenericDatum";
+                         });
 
 /// \brief Test case structure for parameterized primitive type tests
 struct AppendDatumParam {

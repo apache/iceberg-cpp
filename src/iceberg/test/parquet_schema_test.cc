@@ -861,6 +861,51 @@ TEST(ParquetSchemaProjectionTest, ProjectDecimalType) {
   ASSERT_PROJECTED_FIELD(projection.fields[0], 0);
 }
 
+TEST(ParquetSchemaProjectionTest, ProjectSmallDecimalTypes) {
+  struct TestCase {
+    ::parquet::Type::type physical_type;
+    int32_t precision;
+    ::arrow::Type::type arrow_type;
+  };
+  const std::array cases = {
+      TestCase{.physical_type = ::parquet::Type::INT32,
+               .precision = 9,
+               .arrow_type = ::arrow::Type::DECIMAL32},
+      TestCase{.physical_type = ::parquet::Type::INT64,
+               .precision = 18,
+               .arrow_type = ::arrow::Type::DECIMAL64},
+  };
+  auto properties = ::parquet::default_arrow_reader_properties();
+  properties.set_smallest_decimal_enabled(true);
+
+  for (const auto& test_case : cases) {
+    SCOPED_TRACE(test_case.precision);
+    auto node = ::parquet::schema::PrimitiveNode::Make(
+        "value", ::parquet::Repetition::REQUIRED,
+        ::parquet::LogicalType::Decimal(test_case.precision, 2), test_case.physical_type,
+        /*primitive_length=*/-1, /*field_id=*/1);
+    ::parquet::SchemaDescriptor descriptor;
+    descriptor.Init(MakeGroupNode("iceberg_schema", {node}));
+    ::parquet::arrow::SchemaManifest manifest;
+    ASSERT_TRUE(::parquet::arrow::SchemaManifest::Make(
+                    &descriptor, /*key_value_metadata=*/nullptr, properties, &manifest)
+                    .ok());
+    ASSERT_EQ(manifest.schema_fields[0].field->type()->id(), test_case.arrow_type);
+
+    auto project_decimal = [&](int32_t precision, int32_t scale) {
+      return Project(
+          Schema({SchemaField::MakeRequired(1, "value", decimal(precision, scale))}),
+          manifest);
+    };
+    EXPECT_THAT(project_decimal(test_case.precision, 2), IsOk());
+    EXPECT_THAT(project_decimal(test_case.precision + 1, 2), IsOk());
+    EXPECT_THAT(project_decimal(test_case.precision - 1, 2),
+                IsError(ErrorKind::kInvalidSchema));
+    EXPECT_THAT(project_decimal(test_case.precision, 3),
+                IsError(ErrorKind::kInvalidSchema));
+  }
+}
+
 TEST(ParquetSchemaProjectionTest, ProjectDecimalIncompatible) {
   Schema expected_schema({
       SchemaField::MakeRequired(/*field_id=*/1, "value", iceberg::decimal(18, 3)),

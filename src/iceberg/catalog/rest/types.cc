@@ -87,7 +87,7 @@ bool CreateTableRequest::operator==(const CreateTableRequest& other) const {
 
 bool LoadTableResult::operator==(const LoadTableResult& other) const {
   if (metadata_location != other.metadata_location || config != other.config ||
-      storage_credentials != other.storage_credentials) {
+      storage_credentials != other.storage_credentials || labels != other.labels) {
     return false;
   }
 
@@ -229,13 +229,14 @@ bool HasNonEmptyFileScanTasks(const Response& response) {
 
 bool PlanTableScanResponse::operator==(const PlanTableScanResponse& other) const {
   return ScanTaskFieldsEqual(*this, other) && plan_status == other.plan_status &&
-         plan_id == other.plan_id && error == other.error;
+         plan_id == other.plan_id && error == other.error &&
+         storage_credentials == other.storage_credentials;
 }
 
 bool FetchPlanningResultResponse::operator==(
     const FetchPlanningResultResponse& other) const {
   return ScanTaskFieldsEqual(*this, other) && plan_status == other.plan_status &&
-         error == other.error;
+         error == other.error && storage_credentials == other.storage_credentials;
 }
 
 bool FetchScanTasksRequest::operator==(const FetchScanTasksRequest& other) const {

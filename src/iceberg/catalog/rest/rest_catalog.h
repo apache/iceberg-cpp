@@ -19,7 +19,9 @@
 
 #pragma once
 
+#include <functional>
 #include <memory>
+#include <optional>
 #include <string>
 #include <unordered_set>
 
@@ -30,6 +32,7 @@
 #include "iceberg/catalog/rest/type_fwd.h"
 #include "iceberg/catalog/session_catalog.h"
 #include "iceberg/catalog/session_context.h"
+#include "iceberg/labels.h"
 #include "iceberg/result.h"
 #include "iceberg/storage_credential.h"
 #include "iceberg/type_fwd.h"
@@ -51,12 +54,18 @@ class ICEBERG_REST_EXPORT RestCatalog final
   RestCatalog(RestCatalog&&) = delete;
   RestCatalog& operator=(RestCatalog&&) = delete;
 
+  using ClientFactory =
+      std::function<Result<std::shared_ptr<HttpClient>>(const RestCatalogProperties&)>;
+
   /// \brief Create a RestCatalog instance.
   /// \param metrics_executor Optional non-owning executor for asynchronous REST metrics.
   /// It must outlive the catalog and all tables created by it. When null, REST metrics
   /// are reported synchronously.
+  /// \param client_factory Optional HTTP client factory, called with the initial config
+  /// and then the merged server config. When empty, uses the default HTTP client.
   static Result<std::shared_ptr<RestCatalog>> Make(const RestCatalogProperties& config,
-                                                   Executor* metrics_executor = nullptr);
+                                                   Executor* metrics_executor = nullptr,
+                                                   ClientFactory client_factory = {});
 
   std::string_view name() const override;
 
@@ -69,12 +78,14 @@ class ICEBERG_REST_EXPORT RestCatalog final
   class TableScopedCatalog;
 
   RestCatalog(RestCatalogProperties config, std::shared_ptr<FileIO> file_io,
-              std::shared_ptr<HttpClient> client, std::unique_ptr<ResourcePaths> paths,
+              std::shared_ptr<HttpClient> client, std::shared_ptr<ResourcePaths> paths,
               std::unordered_set<Endpoint> endpoints,
               std::unique_ptr<auth::AuthManager> auth_manager,
               std::shared_ptr<auth::AuthSession> catalog_session,
-              SnapshotMode snapshot_mode, SessionContext default_context,
-              std::shared_ptr<MetricsReporter> reporter, Executor* metrics_executor);
+              SnapshotMode snapshot_mode,
+              std::optional<ScanPlanningMode> client_scan_planning_mode,
+              SessionContext default_context, std::shared_ptr<MetricsReporter> reporter,
+              Executor* metrics_executor);
 
   Result<std::shared_ptr<auth::AuthSession>> ContextualAuthSession(
       const SessionContext& context);
@@ -92,10 +103,10 @@ class ICEBERG_REST_EXPORT RestCatalog final
 
   /// \brief Build a provider for this table's vended credentials.
   ///
-  /// Returns nullptr when the catalog does not serve LoadCredentials.
-  std::shared_ptr<StorageCredentialProvider> MakeStorageCredentialProvider(
-      const TableIdentifier& identifier,
-      std::shared_ptr<auth::AuthSession> table_session) const;
+  /// Returns a null provider when the catalog does not serve LoadCredentials.
+  Result<std::shared_ptr<StorageCredentialProvider>> MakeStorageCredentialProvider(
+      const TableIdentifier& identifier, std::shared_ptr<auth::AuthSession> table_session,
+      std::optional<std::string> plan_id = std::nullopt) const;
 
   Result<std::vector<Namespace>> ListNamespaces(const Namespace& ns,
                                                 auth::AuthSession& session) const;
@@ -198,15 +209,25 @@ class ICEBERG_REST_EXPORT RestCatalog final
       const std::unordered_map<std::string, std::string>& table_config,
       std::shared_ptr<auth::AuthSession> table_session, std::shared_ptr<FileIO> table_io);
 
+  /// \brief Returns a RestTable when scan planning mode is server, else a Table.
+  Result<std::shared_ptr<Table>> MakeTable(
+      const TableIdentifier& identifier, std::shared_ptr<TableMetadata> metadata,
+      std::string metadata_location, std::shared_ptr<FileIO> table_io,
+      std::shared_ptr<Catalog> table_catalog, std::shared_ptr<MetricsReporter> reporter,
+      const std::unordered_map<std::string, std::string>& table_config,
+      std::shared_ptr<auth::AuthSession> table_session,
+      std::unique_ptr<Labels> labels = nullptr);
+
   RestCatalogProperties config_;
   std::shared_ptr<FileIO> file_io_;
   std::shared_ptr<HttpClient> client_;
-  std::unique_ptr<ResourcePaths> paths_;
+  std::shared_ptr<ResourcePaths> paths_;
   std::string name_;
   std::unordered_set<Endpoint> supported_endpoints_;
   std::unique_ptr<auth::AuthManager> auth_manager_;
   std::shared_ptr<auth::AuthSession> catalog_session_;
   SnapshotMode snapshot_mode_;
+  std::optional<ScanPlanningMode> client_scan_planning_mode_;
   SessionContext default_context_;
   std::weak_ptr<Catalog> default_catalog_;
   std::shared_ptr<MetricsReporter> reporter_;

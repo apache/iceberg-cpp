@@ -823,7 +823,7 @@ MergingSnapshotUpdate::MergeDVs() {
   auto merged_files = DVUtil::MergeAndWriteDVs(groups, output_path, ctx_->table->io());
   if (!merged_files) {
     std::ignore = DeleteFile(output_path);
-    return std::unexpected<Error>(std::move(merged_files.error()));
+    return ::iceberg::unexpected<Error>(std::move(merged_files.error()));
   }
 
   std::unordered_map<std::string, std::shared_ptr<DataFile>> merged_by_ref;

@@ -26,6 +26,7 @@ set(ICEBERG_SOURCES
     catalog/memory/in_memory_catalog.cc
     catalog/session_catalog.cc
     catalog/session_context.cc
+    data_table_scan.cc
     delete_file_index.cc
     deletes/dv_util.cc
     deletes/dv_writer.cc
@@ -53,6 +54,8 @@ set(ICEBERG_SOURCES
     file_reader.cc
     file_writer.cc
     geospatial.cc
+    incremental_append_scan.cc
+    incremental_changelog_scan.cc
     inspect/history_table.cc
     inspect/metadata_table.cc
     inspect/snapshots_table.cc
@@ -119,6 +122,7 @@ set(ICEBERG_SOURCES
     transform.cc
     transform_function.cc
     type.cc
+    update/cherry_pick_operation.cc
     update/delete_files.cc
     update/expire_snapshots.cc
     update/fast_append.cc
@@ -282,6 +286,7 @@ install(FILES "${CMAKE_CURRENT_BINARY_DIR}/version.h"
         DESTINATION "${ICEBERG_INSTALL_INCLUDEDIR}/iceberg")
 
 add_subdirectory(catalog)
+add_subdirectory(compat)
 add_subdirectory(data)
 add_subdirectory(deletes)
 add_subdirectory(encryption)

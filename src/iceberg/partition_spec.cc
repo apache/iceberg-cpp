@@ -82,13 +82,9 @@ Result<std::unique_ptr<StructType>> PartitionSpec::PartitionType(
   for (const auto& partition_field : fields_) {
     ICEBERG_ASSIGN_OR_RAISE(auto source_field,
                             schema.FindFieldById(partition_field.source_id()));
-    std::shared_ptr<Type> result_type;
-    if (source_field.has_value()) {
-      auto source_field_type = source_field.value().get().type();
-      result_type = partition_field.transform()->ResultType(std::move(source_field_type));
-    } else {
-      result_type = unknown();
-    }
+    // Fixed-result transforms retain their type after the source column is dropped.
+    auto source_type = source_field.has_value() ? source_field->get().type() : unknown();
+    auto result_type = partition_field.transform()->ResultType(source_type);
 
     partition_fields.emplace_back(partition_field.field_id(),
                                   std::string(partition_field.name()),
