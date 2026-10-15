@@ -1146,6 +1146,45 @@ TEST_F(ArrowS3FileIOTest, RefreshReachesHandlesOpenedBeforeIt) {
   }
 }
 
+TEST_F(ArrowS3FileIOTest, HandleKeepsItsKeysOnceTheFileIOIsGone) {
+  if (!HasIntegrationEnv()) {
+    GTEST_SKIP() << "Set ICEBERG_TEST_S3_URI to enable S3 IO test";
+  }
+
+  auto properties = PropertiesFromEnv();
+  const auto access_key = properties.find(std::string(S3Properties::kAccessKeyId));
+  const auto secret_key = properties.find(std::string(S3Properties::kSecretAccessKey));
+  if (access_key == properties.end() || secret_key == properties.end()) {
+    GTEST_SKIP() << "Set AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY to enable "
+                    "credential install test";
+  }
+
+  ICEBERG_UNWRAP_OR_FAIL(auto io, MakeS3FileIO(properties));
+  auto* credentialed = io->AsSupportsStorageCredentials();
+  ASSERT_NE(credentialed, nullptr);
+
+  const auto prefix = ObjectUri("install_then_release/");
+  const auto uri = prefix + "object";
+  constexpr std::string_view kContent = "read after its FileIO is gone";
+  ASSERT_THAT(io->WriteFile(uri, kContent), IsOk());
+
+  // Working keys replace bad ones with the same settings. Building their client
+  // must not leave it with the bad keys once the FileIO cannot supply new ones.
+  ASSERT_THAT(credentialed->SetStorageCredentials(
+                  {{.prefix = prefix, .config = BadS3Credentials()}}),
+              IsOk());
+  ASSERT_THAT(credentialed->SetStorageCredentials(
+                  {{.prefix = prefix, .config = {*access_key, *secret_key}}}),
+              IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto file, io->NewInputFile(uri, kContent.size()));
+  io.reset();
+
+  EXPECT_THAT(ReadAll(*file, kContent.size()),
+              HasValue(::testing::Eq(std::string(kContent))));
+  ICEBERG_UNWRAP_OR_FAIL(auto cleanup, MakeS3FileIO(properties));
+  EXPECT_THAT(cleanup->DeleteFile(uri), IsOk());
+}
+
 TEST_F(ArrowS3FileIOTest, RequestWaitsForARefreshUnderWayOnceExpired) {
   if (!HasIntegrationEnv()) {
     GTEST_SKIP() << "Set ICEBERG_TEST_S3_URI to enable S3 IO test";

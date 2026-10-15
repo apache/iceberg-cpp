@@ -546,16 +546,24 @@ class KeySource {
 // (e.g. another endpoint) are never used; the last keys stay instead.
 class VendedCredentialsProvider final : public Aws::Auth::AWSCredentialsProvider {
  public:
-  VendedCredentialsProvider(std::shared_ptr<KeySource> source, std::string prefix,
+  VendedCredentialsProvider(std::shared_ptr<KeySource> source,
+                            std::shared_ptr<const std::atomic<bool>> installed,
+                            std::string prefix,
                             std::unordered_map<std::string, std::string> settings,
                             Aws::Auth::AWSCredentials credentials)
       : source_(std::move(source)),
+        installed_(std::move(installed)),
         prefix_(std::move(prefix)),
         settings_(std::move(settings)),
         credentials_(std::move(credentials)) {}
 
   Aws::Auth::AWSCredentials GetAWSCredentials() override {
-    auto current = source_->KeysFor(prefix_, settings_);
+    std::optional<Aws::Auth::AWSCredentials> current;
+    // The SDK also asks while building the client, when the FileIO still holds
+    // the keys its install replaces.
+    if (installed_->load()) {
+      current = source_->KeysFor(prefix_, settings_);
+    }
     std::lock_guard lock(mutex_);
     if (current.has_value()) {
       credentials_ = std::move(current).value();
@@ -565,6 +573,8 @@ class VendedCredentialsProvider final : public Aws::Auth::AWSCredentialsProvider
 
  private:
   const std::shared_ptr<KeySource> source_;
+  // Set once the client's keys are installed.
+  const std::shared_ptr<const std::atomic<bool>> installed_;
   const std::string prefix_;
   const std::unordered_map<std::string, std::string> settings_;
   std::mutex mutex_;
@@ -626,13 +636,15 @@ class ArrowS3FileIO final : public FileIO, public SupportsStorageCredentials {
       const DelegatesByPrefix& by_prefix, const ExpiriesByPrefix& expiries,
       std::string_view location);
 
-  /// \brief Build a delegate for each credential this FileIO can serve.
+  /// \brief Build a delegate for each credential this FileIO can serve. Their
+  /// clients take this FileIO's keys once `installed` is set.
   ///
   /// Runs without holding `mutex_`: building an S3 client can block (without
   /// static keys the AWS SDK may wait on the EC2 metadata service), which would
   /// stall every concurrent operation. Reads no mutable member state.
   Result<DelegatesByPrefix> BuildDelegates(
-      const std::vector<StorageCredential>& storage_credentials) const;
+      const std::vector<StorageCredential>& storage_credentials,
+      const std::shared_ptr<const std::atomic<bool>>& installed) const;
 
   /// \brief Swap in credentials and, unless null, delegates, handing back the
   /// retired ones. A refresh keeps the layout, so the delegates stay.
@@ -687,23 +699,27 @@ class ArrowS3FileIO final : public FileIO, public SupportsStorageCredentials {
 Status ArrowS3FileIO::InitializeStorageCredentials(
     const std::vector<StorageCredential>& storage_credentials,
     std::shared_ptr<StorageCredentialProvider> provider) {
-  ICEBERG_ASSIGN_OR_RAISE(auto delegates, BuildDelegates(storage_credentials));
+  auto installed = std::make_shared<std::atomic<bool>>(false);
+  ICEBERG_ASSIGN_OR_RAISE(auto delegates, BuildDelegates(storage_credentials, installed));
   auto credentials = storage_credentials;
   {
     std::unique_lock lock(mutex_);
     provider_.swap(provider);
     InstallCredentials(credentials, &delegates);
+    installed->store(true);
   }
   return {};
 }
 
 Status ArrowS3FileIO::SetStorageCredentials(
     const std::vector<StorageCredential>& storage_credentials) {
-  ICEBERG_ASSIGN_OR_RAISE(auto delegates, BuildDelegates(storage_credentials));
+  auto installed = std::make_shared<std::atomic<bool>>(false);
+  ICEBERG_ASSIGN_OR_RAISE(auto delegates, BuildDelegates(storage_credentials, installed));
   auto credentials = storage_credentials;
   {
     std::unique_lock lock(mutex_);
     InstallCredentials(credentials, &delegates);
+    installed->store(true);
   }
   // `credentials` and `delegates` now hold the retired generation and destruct
   // here, outside the lock.
@@ -711,7 +727,8 @@ Status ArrowS3FileIO::SetStorageCredentials(
 }
 
 Result<ArrowS3FileIO::DelegatesByPrefix> ArrowS3FileIO::BuildDelegates(
-    const std::vector<StorageCredential>& storage_credentials) const {
+    const std::vector<StorageCredential>& storage_credentials,
+    const std::shared_ptr<const std::atomic<bool>>& installed) const {
   DelegatesByPrefix delegates;
   delegates.reserve(storage_credentials.size());
   for (const auto& credential : storage_credentials) {
@@ -727,8 +744,9 @@ Result<ArrowS3FileIO::DelegatesByPrefix> ArrowS3FileIO::BuildDelegates(
     std::shared_ptr<VendedCredentialsProvider> keys;
     // Signs with what ConfigureS3Options would, defaults included.
     if (HasKeys(properties)) {
-      keys = std::make_shared<VendedCredentialsProvider>(
-          key_source_, prefix, SettingsOf(properties), AwsCredentialsOf(properties));
+      keys = std::make_shared<VendedCredentialsProvider>(key_source_, installed, prefix,
+                                                         SettingsOf(properties),
+                                                         AwsCredentialsOf(properties));
     }
     ICEBERG_ASSIGN_OR_RAISE(auto fs, BuildArrowS3FileSystem(properties, std::move(keys)));
     delegates.emplace_back(std::move(prefix),
