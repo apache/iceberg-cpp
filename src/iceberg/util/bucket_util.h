@@ -62,8 +62,6 @@ class ICEBERG_EXPORT BucketUtils {
   /// \param literal The input literal to hash.
   /// \param num_buckets The number of buckets to hash into.
   /// \return (murmur3_x86_32_hash(literal) & Integer.MAX_VALUE) % num_buckets
-  /// \throws IcebergError if the literal is a string, binary, or fixed value whose
-  ///     byte length exceeds `INT32_MAX`; see HashBytes.
   static Result<int32_t> BucketIndex(const Literal& literal, int32_t num_buckets);
 };
 

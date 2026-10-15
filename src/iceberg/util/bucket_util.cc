@@ -20,11 +20,11 @@
 #include "iceberg/util/bucket_util.h"
 
 #include <limits>
+#include <optional>
 #include <utility>
 
 #include "iceberg/exception.h"
 #include "iceberg/expression/literal.h"
-#include "iceberg/util/bucket_util_internal.h"
 #include "iceberg/util/endian.h"
 #include "iceberg/util/murmurhash3_internal.h"
 #include "iceberg/util/temporal_util.h"
@@ -32,6 +32,29 @@
 namespace iceberg {
 
 namespace {
+
+/// MurmurHash3_x86_32 takes a signed 32-bit length. Iceberg's bucket transform is
+/// defined on byte sequences of at most 2^31 - 1 bytes (Java arrays are int-indexed),
+/// and longer inputs would wrap the length negative and make the hash loop read far
+/// outside the buffer, so they are rejected instead.
+constexpr size_t kMaxHashBytes = static_cast<size_t>(std::numeric_limits<int32_t>::max());
+
+/// \brief Returns the number of bytes `HashLiteral` will hash for `literal`.
+///
+/// Returns `std::nullopt` for values hashed as fixed-width integers, which have no
+/// length limit.
+std::optional<size_t> HashedByteSize(const Literal& literal) {
+  switch (literal.type()->type_id()) {
+    case TypeId::kString:
+      return std::get<std::string>(literal.value()).size();
+    case TypeId::kBinary:
+    case TypeId::kFixed:
+      return std::get<std::vector<uint8_t>>(literal.value()).size();
+    default:
+      return std::nullopt;
+  }
+}
+
 template <TypeId type_id>
 int32_t HashLiteral(const Literal& literal) {
   std::unreachable();
@@ -113,28 +136,15 @@ int32_t HashLiteral<TypeId::kFixed>(const Literal& literal) {
 }  // namespace
 
 int32_t BucketUtils::HashBytes(std::span<const uint8_t> bytes) {
-  return internal::HashBytes(bytes.data(), bytes.size());
-}
-
-namespace internal {
-
-int32_t HashBytes(const uint8_t* data, size_t len) {
-  // MurmurHash3_x86_32 takes a signed 32-bit length. Passing a larger size_t
-  // would wrap it negative and make the hash loop read far outside `data`
-  // (and silently hash the wrong prefix for even larger inputs). Iceberg's
-  // bucket transform is defined on byte sequences of at most 2^31 - 1 bytes
-  // (Java arrays), so reject anything longer before narrowing.
   ICEBERG_CHECK_OR_DIE(
-      len <= static_cast<size_t>(std::numeric_limits<int32_t>::max()),
+      bytes.size() <= kMaxHashBytes,
       "BucketUtils::HashBytes: input length {} exceeds the maximum supported "
       "length {}",
-      len, std::numeric_limits<int32_t>::max());
+      bytes.size(), kMaxHashBytes);
   int32_t hash_value = 0;
-  MurmurHash3_x86_32(data, static_cast<int>(len), 0, &hash_value);
+  MurmurHash3_x86_32(bytes.data(), static_cast<int>(bytes.size()), 0, &hash_value);
   return hash_value;
 }
-
-}  // namespace internal
 
 int32_t BucketUtils::HashLong(int64_t value) {
   int32_t hash_value = 0;
@@ -155,6 +165,16 @@ Result<int32_t> BucketUtils::BucketIndex(const Literal& literal, int32_t num_buc
 
   if (literal.IsAboveMax() || literal.IsBelowMin()) [[unlikely]] {
     return NotSupported("Cannot compute bucket index for {}", literal.ToString());
+  }
+
+  // HashBytes rejects oversized inputs by throwing, but this function reports failures
+  // through its Result, so check the length up front.
+  if (auto byte_size = HashedByteSize(literal);
+      byte_size.has_value() && *byte_size > kMaxHashBytes) [[unlikely]] {
+    return InvalidArgument(
+        "Cannot compute bucket index for {}: value of {} bytes exceeds the maximum "
+        "supported length {}",
+        literal.type()->ToString(), *byte_size, kMaxHashBytes);
   }
 
   int32_t hash_value = 0;
