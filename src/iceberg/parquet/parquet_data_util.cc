@@ -47,6 +47,16 @@ Result<std::shared_ptr<::arrow::Array>> ProjectNestedArray(
     const arrow::MetadataColumnContext& metadata_context,
     const std::shared_ptr<::arrow::Int64Array>& row_positions, ::arrow::MemoryPool* pool);
 
+// The reader currently supplies row positions only for top-level projection.
+Result<std::shared_ptr<::arrow::Array>> ProjectNestedArray(
+    const std::shared_ptr<::arrow::Array>& array,
+    const std::shared_ptr<::arrow::DataType>& output_arrow_type,
+    const NestedType& nested_type, std::span<const FieldProjection> projections,
+    const arrow::MetadataColumnContext& metadata_context, ::arrow::MemoryPool* pool) {
+  return ProjectNestedArray(array, output_arrow_type, nested_type, projections,
+                            metadata_context, /*row_positions=*/nullptr, pool);
+}
+
 /// \brief Create a null array of the given type and length.
 Result<std::shared_ptr<::arrow::Array>> MakeNullArray(
     const std::shared_ptr<::arrow::DataType>& type, int64_t length,
@@ -142,6 +152,9 @@ Result<std::shared_ptr<::arrow::Array>> ProjectStructArray(
         "Inconsistent number of fields ({}) and number of output fields ({})",
         struct_type.fields().size(), output_struct_type->num_fields());
   }
+  ICEBERG_PRECHECK(
+      row_positions != nullptr || !NeedsRowPositions(struct_type, metadata_context),
+      "Row positions are required to project _pos or inherit _row_id");
 
   std::vector<std::shared_ptr<::arrow::Array>> projected_arrays;
   projected_arrays.reserve(projections.size());
@@ -164,12 +177,10 @@ Result<std::shared_ptr<::arrow::Array>> ProjectStructArray(
       if (projected_field.type()->is_nested()) {
         const auto& nested_type =
             internal::checked_cast<const NestedType&>(*projected_field.type());
-        // Metadata columns belong to top-level rows; nested fields need no positions.
         ICEBERG_ASSIGN_OR_RAISE(
             projected_array,
             ProjectNestedArray(parquet_array, output_arrow_type, nested_type,
-                               field_projection.children, metadata_context,
-                               /*row_positions=*/nullptr, pool));
+                               field_projection.children, metadata_context, pool));
       } else if (MetadataColumns::IsRowLineageColumn(projected_field.field_id())) {
         ICEBERG_ASSIGN_OR_RAISE(
             projected_array,
@@ -255,12 +266,10 @@ Result<std::shared_ptr<::arrow::Array>> ProjectListArrayImpl(
   } else if (element_field.type()->is_nested()) {
     const auto& nested_type =
         internal::checked_cast<const NestedType&>(*element_field.type());
-    // Metadata columns belong to top-level rows; list elements need no positions.
     ICEBERG_ASSIGN_OR_RAISE(
         projected_values,
         ProjectNestedArray(list_array->values(), output_element_type, nested_type,
-                           element_projection.children, metadata_context,
-                           /*row_positions=*/nullptr, pool));
+                           element_projection.children, metadata_context, pool));
   } else {
     ICEBERG_ASSIGN_OR_RAISE(
         projected_values,
@@ -316,12 +325,10 @@ Result<std::shared_ptr<::arrow::Array>> ProjectMapArray(
                           ToString(key_projection.kind));
   } else if (key_type->is_nested()) {
     const auto& nested_type = internal::checked_cast<const NestedType&>(*key_type);
-    // Metadata columns belong to top-level rows; map keys need no positions.
     ICEBERG_ASSIGN_OR_RAISE(
         projected_keys,
         ProjectNestedArray(map_array->keys(), output_map_type->key_type(), nested_type,
-                           key_projection.children, metadata_context,
-                           /*row_positions=*/nullptr, pool));
+                           key_projection.children, metadata_context, pool));
   } else {
     ICEBERG_ASSIGN_OR_RAISE(
         projected_keys,
@@ -339,12 +346,10 @@ Result<std::shared_ptr<::arrow::Array>> ProjectMapArray(
                           ToString(value_projection.kind));
   } else if (value_type->is_nested()) {
     const auto& nested_type = internal::checked_cast<const NestedType&>(*value_type);
-    // Metadata columns belong to top-level rows; map values need no positions.
     ICEBERG_ASSIGN_OR_RAISE(
         projected_items,
         ProjectNestedArray(map_array->items(), output_map_type->item_type(), nested_type,
-                           value_projection.children, metadata_context,
-                           /*row_positions=*/nullptr, pool));
+                           value_projection.children, metadata_context, pool));
   } else {
     ICEBERG_ASSIGN_OR_RAISE(
         projected_items,
@@ -419,9 +424,9 @@ Result<std::shared_ptr<::arrow::Array>> ProjectNestedArray(
 
 }  // namespace
 
-bool NeedsRowPositions(const Schema& read_schema,
+bool NeedsRowPositions(const StructType& struct_type,
                        const arrow::MetadataColumnContext& metadata_context) {
-  return std::ranges::any_of(read_schema.fields(), [&](const SchemaField& field) {
+  return std::ranges::any_of(struct_type.fields(), [&](const SchemaField& field) {
     return field.field_id() == MetadataColumns::kFilePositionColumnId ||
            (field.field_id() == MetadataColumns::kRowIdColumnId &&
             metadata_context.first_row_id.has_value());
@@ -435,15 +440,13 @@ Result<std::shared_ptr<::arrow::RecordBatch>> ProjectRecordBatch(
     const arrow::MetadataColumnContext& metadata_context,
     const std::shared_ptr<::arrow::Int64Array>& row_positions,
     ::arrow::MemoryPool* pool) {
-  if (row_positions == nullptr && NeedsRowPositions(projected_schema, metadata_context)) {
-    return InvalidArgument(
-        "Row positions are required to project _pos or inherit _row_id");
-  }
-  if (row_positions != nullptr && (row_positions->length() != record_batch->num_rows() ||
-                                   row_positions->null_count() != 0)) {
-    return InvalidArgument("Expected {} non-null row positions",
-                           record_batch->num_rows());
-  }
+  ICEBERG_PRECHECK(
+      row_positions != nullptr || !NeedsRowPositions(projected_schema, metadata_context),
+      "Row positions are required to project _pos or inherit _row_id");
+  ICEBERG_PRECHECK(
+      row_positions == nullptr || (row_positions->length() == record_batch->num_rows() &&
+                                   row_positions->null_count() == 0),
+      "Expected {} non-null row positions", record_batch->num_rows());
   auto array = std::make_shared<::arrow::StructArray>(
       ::arrow::struct_(record_batch->schema()->fields()), record_batch->num_rows(),
       record_batch->columns());

@@ -26,8 +26,8 @@
 
 namespace iceberg::parquet {
 
-/// \brief Whether the schema projects _pos, or _row_id with a known first_row_id.
-bool NeedsRowPositions(const Schema& read_schema,
+/// \brief Whether direct fields need positions for _pos or inherited _row_id.
+bool NeedsRowPositions(const StructType& struct_type,
                        const arrow::MetadataColumnContext& metadata_context);
 
 /// \brief Convert record batch read from a Parquet file to projected Iceberg Schema.
@@ -38,6 +38,7 @@ bool NeedsRowPositions(const Schema& read_schema,
 /// \param projection The projection from projected Iceberg schema to the record batch.
 /// \param metadata_context The file-level constants for populating metadata columns.
 /// \param row_positions Optional file row positions for _pos and inherited _row_id.
+/// Currently available only to top-level fields.
 /// Required when NeedsRowPositions(projected_schema, metadata_context) is true.
 /// When non-null, must contain one non-null value per row in record_batch.
 /// \param pool The arrow memory pool.

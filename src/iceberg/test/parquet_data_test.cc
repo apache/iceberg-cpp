@@ -160,6 +160,34 @@ TEST(ProjectRecordBatchTest, RowPositionsRequiredForPhysicalRowIdInheritance) {
       IsError(ErrorKind::kInvalidArgument));
 }
 
+TEST(ProjectRecordBatchTest, NestedMetadataRequiresRowPositions) {
+  auto id_field = SchemaField::MakeRequired(2, "id", int32());
+  Schema source_schema({SchemaField::MakeRequired(
+      1, "nested", std::make_shared<StructType>(std::vector<SchemaField>{id_field}))});
+  auto nested_type = ::arrow::struct_({::arrow::field("id", ::arrow::int32(), false)});
+  auto input = RecordBatchFromJson(
+      ::arrow::schema({::arrow::field("nested", nested_type, false)}), "[[[10]]]");
+
+  for (const auto& field : {MetadataColumns::kRowPosition, MetadataColumns::kRowId}) {
+    SCOPED_TRACE(field.name());
+    Schema projected_schema({SchemaField::MakeRequired(
+        1, "nested",
+        std::make_shared<StructType>(std::vector<SchemaField>{id_field, field}))});
+    ICEBERG_UNWRAP_OR_FAIL(auto projection, Project(projected_schema, source_schema,
+                                                    /*prune_source=*/false));
+    auto output_type = ::arrow::struct_(
+        {::arrow::field("id", ::arrow::int32(), false),
+         ::arrow::field(std::string(field.name()), ::arrow::int64(), field.optional())});
+    auto output_schema = ::arrow::schema({::arrow::field("nested", output_type, false)});
+    // Query engines are expected to project these metadata columns at the top level.
+    // Construct a nested projection deliberately to exercise the check.
+    EXPECT_THAT(ProjectRecordBatch(input, output_schema, projected_schema, projection,
+                                   {.first_row_id = 100}, nullptr,
+                                   ::arrow::default_memory_pool()),
+                IsError(ErrorKind::kInvalidArgument));
+  }
+}
+
 TEST(ProjectRecordBatchTest, LineageWithoutRowPositions) {
   Schema data_schema({SchemaField::MakeRequired(1, "id", int32())});
   Schema lineage_schema({SchemaField::MakeRequired(1, "id", int32()),
