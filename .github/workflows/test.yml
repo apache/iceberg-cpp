@@ -240,7 +240,7 @@ jobs:
       - name: Build Iceberg
         shell: pwsh
         env:
-          ICEBERG_EXTRA_CMAKE_ARGS: "-DICEBERG_CXX20_COMPAT=ON"
+          ICEBERG_EXTRA_CMAKE_ARGS: "-DICEBERG_CXX20_COMPAT=ON -DICEBERG_ENCRYPTION=ON"
         run: |
           $ErrorActionPreference = "Stop"
           bash -lc '
