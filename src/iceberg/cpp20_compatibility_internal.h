@@ -49,6 +49,7 @@
 #include "iceberg/deletes/position_delete_range_consumer.h"
 #include "iceberg/deletes/roaring_position_bitmap.h"
 #include "iceberg/encryption/encrypted_key.h"
+#include "iceberg/encryption/standard_key_metadata.h"
 #include "iceberg/exception.h"
 #include "iceberg/expression/aggregate.h"
 #include "iceberg/expression/binder.h"
