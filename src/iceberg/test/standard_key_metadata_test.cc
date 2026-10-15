@@ -127,6 +127,13 @@ TEST(StandardKeyMetadataTest, InvalidInput) {
   long_varint.insert(long_varint.end(), 10, 0x80);
   long_varint.push_back(0x01);
   EXPECT_THAT(StandardKeyMetadata::Parse(long_varint), IsError(ErrorKind::kInvalid));
+  // Union index encoded in six bytes: a valid long but not a valid int, so
+  // Java's readIndex rejects it even though it decodes to branch zero. The
+  // trailing 0x00 is a well-formed file_length branch, so the record is
+  // otherwise complete and only the index encoding makes it invalid.
+  EXPECT_THAT(StandardKeyMetadata::Parse(std::vector<uint8_t>{
+                  1, 0x02, 9, 0x80, 0x80, 0x80, 0x80, 0x80, 0x00, 0x00}),
+              IsError(ErrorKind::kInvalid));
 }
 
 }  // namespace iceberg

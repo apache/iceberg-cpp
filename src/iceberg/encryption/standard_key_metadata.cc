@@ -66,6 +66,27 @@ class Decoder {
     return static_cast<int64_t>((n >> 1) ^ -(n & 1));
   }
 
+  /// \brief Read a zig-zag varint, limited to the five bytes of an Avro int.
+  Result<int32_t> ReadInt() {
+    uint32_t n = 0;
+    int shift = 0;
+    while (true) {
+      if (pos_ >= buffer_.size()) {
+        return Invalid("Truncated key metadata");
+      }
+      if (shift > 28) {
+        return Invalid("Invalid int varint in key metadata");
+      }
+      uint8_t b = buffer_[pos_++];
+      n |= static_cast<uint32_t>(b & 0x7F) << shift;
+      if ((b & 0x80) == 0) {
+        break;
+      }
+      shift += 7;
+    }
+    return static_cast<int32_t>((n >> 1) ^ -(n & 1));
+  }
+
   Result<std::vector<uint8_t>> ReadBytes() {
     ICEBERG_ASSIGN_OR_RAISE(auto length, ReadLong());
     if (length < 0 || std::cmp_greater(length, buffer_.size() - pos_)) {
@@ -77,8 +98,11 @@ class Decoder {
   }
 
   /// \brief Read the branch index of a ["null", T] union; true if T is present.
+  ///
+  /// Avro encodes the branch index as an int, so this rejects the longer
+  /// encodings that ReadLong accepts, as Java's readIndex does.
   Result<bool> ReadOptionalBranch() {
-    ICEBERG_ASSIGN_OR_RAISE(auto branch, ReadLong());
+    ICEBERG_ASSIGN_OR_RAISE(auto branch, ReadInt());
     if (branch != 0 && branch != 1) {
       return Invalid("Invalid union branch in key metadata: {}", branch);
     }
