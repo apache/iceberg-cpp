@@ -23,7 +23,6 @@
 #include <memory>
 #include <optional>
 #include <utility>
-#include <vector>
 
 #include "iceberg/arrow_c_data_guard_internal.h"
 #include "iceberg/arrow_c_data_util_internal.h"
@@ -41,7 +40,7 @@ namespace {
 
 ReaderOptions MakeReaderOptions(const FileScanTask& task, std::shared_ptr<FileIO> io,
                                 std::shared_ptr<Schema> projection,
-                                std::shared_ptr<Expression> filter,
+                                std::shared_ptr<Expression> filter, bool case_sensitive,
                                 std::shared_ptr<NameMapping> name_mapping,
                                 ReaderProperties properties,
                                 std::optional<int64_t> first_row_id,
@@ -57,6 +56,7 @@ ReaderOptions MakeReaderOptions(const FileScanTask& task, std::shared_ptr<FileIO
       .io = std::move(io),
       .projection = std::move(projection),
       .filter = std::move(filter),
+      .case_sensitive = case_sensitive,
       .name_mapping = std::move(name_mapping),
       .first_row_id = first_row_id,
       .data_sequence_number = data_sequence_number,
@@ -188,9 +188,11 @@ class FileScanTaskReader::Impl {
       }
     }
 
+    auto filter = task.residual_filter();
+
     if (task.delete_files().empty()) {
       auto options = MakeReaderOptions(
-          task, io_, projected_schema_, task.residual_filter(), name_mapping_,
+          task, io_, projected_schema_, filter, case_sensitive_, name_mapping_,
           properties_, data_file->first_row_id, data_file->data_sequence_number);
       ICEBERG_ASSIGN_OR_RAISE(
           auto reader, ReaderFactoryRegistry::Open(data_file->file_format, options));
@@ -215,7 +217,7 @@ class FileScanTaskReader::Impl {
                             ProjectionContext::Make(*required_schema, *projected_schema_,
                                                     project_batch_function));
 
-    auto options = MakeReaderOptions(task, io_, required_schema, task.residual_filter(),
+    auto options = MakeReaderOptions(task, io_, required_schema, filter, case_sensitive_,
                                      name_mapping_, properties_, data_file->first_row_id,
                                      data_file->data_sequence_number);
     ICEBERG_ASSIGN_OR_RAISE(auto reader,
@@ -233,6 +235,7 @@ class FileScanTaskReader::Impl {
       : io_(std::move(options.io)),
         schemas_(std::move(options.schemas)),
         projected_schema_(std::move(options.projected_schema)),
+        case_sensitive_(options.case_sensitive),
         name_mapping_(std::move(options.name_mapping)),
         properties_(ReaderProperties::FromMap(options.properties)),
         field_lookup_(std::move(field_lookup)),
@@ -241,6 +244,7 @@ class FileScanTaskReader::Impl {
   std::shared_ptr<FileIO> io_;
   std::vector<std::shared_ptr<Schema>> schemas_;
   std::shared_ptr<Schema> projected_schema_;
+  bool case_sensitive_;
   std::shared_ptr<NameMapping> name_mapping_;
   ReaderProperties properties_;
   DeleteFilter::FieldLookup field_lookup_;

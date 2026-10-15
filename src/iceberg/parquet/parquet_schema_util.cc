@@ -343,8 +343,6 @@ Status ValidateGeospatialParquetType(const Type& expected_type,
 
 }  // namespace
 
-namespace {
-
 Status ValidateParquetTypeCompatibility(
     const Type& expected_type, const ::parquet::arrow::SchemaField& parquet_field) {
   const auto& arrow_type = parquet_field.field->type();
@@ -501,8 +499,6 @@ Status ValidateParquetTypeCompatibility(
   return InvalidSchema("Cannot read Iceberg type: {} from Parquet type: {}",
                        expected_type, arrow_type->ToString());
 }
-
-}  // namespace
 
 namespace {
 
