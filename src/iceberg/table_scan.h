@@ -119,8 +119,6 @@ class ICEBERG_EXPORT FileScanTask : public ScanTask {
   struct Range {
     int64_t start;
     int64_t length;
-    // Size when the range was validated. Always positive, so safe to divide by.
-    int64_t file_size;
   };
 
   FileScanTask(std::shared_ptr<DataFile> data_file,

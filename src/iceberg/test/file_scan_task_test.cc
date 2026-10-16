@@ -155,6 +155,23 @@ TEST(FileScanTaskRangeTest, RowEstimateDoesNotOverflow) {
   EXPECT_EQ(last->estimated_row_count(), 1);
 }
 
+TEST(FileScanTaskRangeTest, RowEstimateHandlesChangedFileSize) {
+  auto data_file = std::make_shared<DataFile>();
+  data_file->file_path = "test.parquet";
+  data_file->file_size_in_bytes = 100;
+  data_file->record_count = 7;
+  ICEBERG_UNWRAP_OR_FAIL(auto split, FileScanTask::MakeSplit(data_file, 0, 40));
+
+  data_file->file_size_in_bytes = 200;
+  EXPECT_EQ(split->estimated_row_count(), 1);
+
+  data_file->file_size_in_bytes = 0;
+  EXPECT_EQ(split->estimated_row_count(), 0);
+
+  data_file->file_size_in_bytes = -1;
+  EXPECT_EQ(split->estimated_row_count(), 0);
+}
+
 class FileScanTaskTest : public TempFileTestBase {
  protected:
   static void SetUpTestSuite() { parquet::RegisterAll(); }
