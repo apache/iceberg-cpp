@@ -234,9 +234,10 @@ function(resolve_arrow_dependency)
   endif()
 
   # FetchContent sets arrow_SOURCE_DIR to the tarball root (SOURCE_SUBDIR is cpp)
-  # and older CMake (e.g. 3.28) does not override it in project(arrow), so Arrow
-  # looks for thirdparty/versions.txt outside cpp/. Patch Arrow to use
-  # ARROW_SOURCE_DIR instead. See https://github.com/apache/iceberg-cpp/issues/1028.
+  # and on CMake < 3.30 project(arrow) only sets it as a cache variable, so the
+  # normal variable takes precedence and Arrow looks for thirdparty/versions.txt
+  # outside cpp/ (see CMP0180). Patch Arrow to use ARROW_SOURCE_DIR instead.
+  # See https://github.com/apache/iceberg-cpp/issues/1028.
   # TODO: remove once the upstream Arrow fix is released.
   set(ARROW_PATCH_COMMAND)
   find_program(PATCH patch)
@@ -248,11 +249,10 @@ function(resolve_arrow_dependency)
       set(ARROW_PATCH_COMMAND ${GIT} apply)
     endif()
   endif()
-  if(NOT ARROW_PATCH_COMMAND)
-    message(FATAL_ERROR "patch or git is required to build the vendored Arrow")
+  if(ARROW_PATCH_COMMAND)
+    list(APPEND ARROW_PATCH_COMMAND
+         ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/arrow-thirdparty-dir.patch)
   endif()
-  list(APPEND ARROW_PATCH_COMMAND
-       ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/arrow-thirdparty-dir.patch)
 
   fetchcontent_declare(Arrow
                        ${FC_DECLARE_COMMON_OPTIONS}
