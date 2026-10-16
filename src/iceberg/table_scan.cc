@@ -242,7 +242,9 @@ int64_t FileScanTask::estimated_row_count() const {
 
   const int64_t record_count = data_file_->record_count;
   const int64_t file_size = data_file_->file_size_in_bytes;
-  if (record_count <= 0 || file_size <= 0) {
+  if (record_count <= 0 || file_size <= 0 || range_->start > file_size ||
+      range_->length > file_size - range_->start) {
+    // Shared metadata may have changed since MakeSplit validated the range.
     return 0;
   }
 
