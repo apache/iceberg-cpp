@@ -31,6 +31,8 @@
 
 namespace iceberg {
 
+// The builder macros name Iceberg symbols with their full namespace, so builders outside
+// namespace iceberg can use them.
 #define ICEBERG_BUILDER_RETURN_IF_ERROR(result)                 \
   if (auto&& result_name = result; !result_name) [[unlikely]] { \
     errors_.emplace_back(std::move(result_name.error()));       \
@@ -49,7 +51,7 @@ namespace iceberg {
 #define ICEBERG_BUILDER_ASSIGN_OR_RETURN_WITH_ERROR_IMPL(result_name, lhs, rexpr, ...) \
   auto&& result_name = (rexpr);                                                        \
   if (!result_name) [[unlikely]] {                                                     \
-    AddError(ErrorKind::kInvalidArgument, __VA_ARGS__);                                \
+    AddError(::iceberg::ErrorKind::kInvalidArgument, __VA_ARGS__);                     \
     return *this;                                                                      \
   }                                                                                    \
   lhs = std::move(result_name.value());
@@ -58,12 +60,12 @@ namespace iceberg {
   ICEBERG_BUILDER_ASSIGN_OR_RETURN_WITH_ERROR_IMPL(                  \
       ICEBERG_ASSIGN_OR_RAISE_NAME(result_, __COUNTER__), lhs, rexpr, __VA_ARGS__)
 
-#define ICEBERG_BUILDER_CHECK(expr, ...)                  \
-  do {                                                    \
-    if (!(expr)) [[unlikely]] {                           \
-      AddError(ErrorKind::kInvalidArgument, __VA_ARGS__); \
-      return *this;                                       \
-    }                                                     \
+#define ICEBERG_BUILDER_CHECK(expr, ...)                             \
+  do {                                                               \
+    if (!(expr)) [[unlikely]] {                                      \
+      AddError(::iceberg::ErrorKind::kInvalidArgument, __VA_ARGS__); \
+      return *this;                                                  \
+    }                                                                \
   } while (false)
 
 /// \brief Base class for collecting errors in the builder pattern.
