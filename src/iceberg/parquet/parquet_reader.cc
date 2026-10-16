@@ -420,10 +420,9 @@ class ParquetReader::Impl {
       auto row_group = metadata->RowGroup(i);
       if (split_.has_value()) {
         auto row_group_offset = row_group->file_offset();
-        if (std::cmp_greater_equal(row_group_offset, split_->offset + split_->length)) {
-          break;
-        }
-        if (std::cmp_less(row_group_offset, split_->offset)) {
+        bool selected = std::cmp_greater_equal(row_group_offset, split_->offset) &&
+                        std::cmp_less(row_group_offset, split_->offset + split_->length);
+        if (!selected) {
           continue;
         }
       }
