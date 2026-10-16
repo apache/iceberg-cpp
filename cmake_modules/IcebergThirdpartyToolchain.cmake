@@ -233,14 +233,33 @@ function(resolve_arrow_dependency)
         "https://archive.apache.org/dist/thrift/0.22.0/thrift-0.22.0.tar.gz")
   endif()
 
+  # FetchContent sets arrow_SOURCE_DIR to the tarball root (SOURCE_SUBDIR is cpp)
+  # and older CMake (e.g. 3.28) does not override it in project(arrow), so Arrow
+  # looks for thirdparty/versions.txt outside cpp/. Patch Arrow to use
+  # ARROW_SOURCE_DIR instead. See https://github.com/apache/iceberg-cpp/issues/1028.
+  # TODO: remove once the upstream Arrow fix is released.
+  set(ARROW_PATCH_COMMAND)
+  find_program(PATCH patch)
+  if(PATCH)
+    set(ARROW_PATCH_COMMAND ${PATCH} -p1 -i)
+  else()
+    find_program(GIT git)
+    if(GIT)
+      set(ARROW_PATCH_COMMAND ${GIT} apply)
+    endif()
+  endif()
+  if(NOT ARROW_PATCH_COMMAND)
+    message(FATAL_ERROR "patch or git is required to build the vendored Arrow")
+  endif()
+  list(APPEND ARROW_PATCH_COMMAND
+       ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/arrow-thirdparty-dir.patch)
+
   fetchcontent_declare(Arrow
                        ${FC_DECLARE_COMMON_OPTIONS}
                        URL ${ARROW_SOURCE_URL}
                        URL_HASH "SHA256=${ICEBERG_ARROW_BUILD_SHA256_CHECKSUM}"
-                       SOURCE_SUBDIR
-                       cpp
-                       FIND_PACKAGE_ARGS
-                       CONFIG)
+                       PATCH_COMMAND ${ARROW_PATCH_COMMAND} SOURCE_SUBDIR cpp
+                                     FIND_PACKAGE_ARGS CONFIG)
 
   fetchcontent_makeavailable(Arrow)
 
