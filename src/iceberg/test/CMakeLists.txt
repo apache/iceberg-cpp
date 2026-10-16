@@ -228,6 +228,10 @@ if(ICEBERG_BUILD_BUNDLE)
     target_sources(parquet_test PRIVATE parquet_encryption_test.cc)
   endif()
 
+  if(ICEBERG_ENCRYPTION)
+    add_iceberg_test(crypto_test USE_BUNDLE SOURCES aes_gcm_test.cc)
+  endif()
+
   add_iceberg_test(scan_test
                    USE_BUNDLE
                    SOURCES
@@ -408,6 +412,10 @@ if(ICEBERG_CXX20_COMPAT)
     )
     target_compile_definitions(cpp20_compatibility_test
                                PRIVATE ICEBERG_PUBLIC_HEADERS_BUNDLE)
+    if(ICEBERG_ENCRYPTION)
+      target_compile_definitions(cpp20_compatibility_test
+                                 PRIVATE ICEBERG_PUBLIC_HEADERS_ENCRYPTION)
+    endif()
   endif()
   if(ICEBERG_BUILD_REST)
     target_link_libraries(cpp20_compatibility_test

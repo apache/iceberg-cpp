@@ -51,6 +51,13 @@ OPTIONAL_COMPONENTS = [
     ("iceberg/parquet", "ICEBERG_PUBLIC_HEADERS_BUNDLE"),
 ]
 
+# Individual headers of an optional component that lives in a directory which is
+# otherwise always built. iceberg/encryption holds both the metadata types, which are
+# part of core, and the crypto implementation, which needs ICEBERG_ENCRYPTION.
+OPTIONAL_HEADERS = {
+    "iceberg/encryption/aes_gcm_stream.h": "ICEBERG_PUBLIC_HEADERS_ENCRYPTION",
+}
+
 INSTALL_CALL = re.compile(r"iceberg_install_all_headers\(\s*([^\s)]+)")
 
 LICENSE = """\
@@ -75,7 +82,9 @@ LICENSE = """\
 """
 
 
-def component_of(install_path: str) -> str | None:
+def component_of(install_path: str, header_path: str | None = None) -> str | None:
+    if header_path is not None and header_path in OPTIONAL_HEADERS:
+        return OPTIONAL_HEADERS[header_path]
     for prefix, macro in OPTIONAL_COMPONENTS:
         if install_path == prefix or install_path.startswith(prefix + "/"):
             return macro
@@ -89,8 +98,9 @@ def collect_public_headers() -> dict[str | None, list[str]]:
             for header in cmake_file.parent.iterdir():
                 if header.suffix != ".h" or "internal" in header.name:
                     continue
-                headers.setdefault(component_of(install_path), []).append(
-                    f"{install_path}/{header.name}"
+                header_path = f"{install_path}/{header.name}"
+                headers.setdefault(component_of(install_path, header_path), []).append(
+                    header_path
                 )
     return headers
 
@@ -107,7 +117,8 @@ def render(headers: dict[str | None, list[str]]) -> str:
         "",
     ]
     lines += [f'#include "{h}"' for h in sorted(headers.get(None, []))]
-    for macro in sorted({m for _, m in OPTIONAL_COMPONENTS}):
+    optional_macros = {m for _, m in OPTIONAL_COMPONENTS} | set(OPTIONAL_HEADERS.values())
+    for macro in sorted(optional_macros):
         if macro not in headers:
             continue
         lines += ["", f"#ifdef {macro}"]

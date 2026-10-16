@@ -326,6 +326,11 @@ if(ICEBERG_BUILD_BUNDLE)
       parquet/parquet_writer.cc
       parquet/row_number_reader.cc)
 
+  if(ICEBERG_ENCRYPTION)
+    list(APPEND ICEBERG_BUNDLE_SOURCES encryption/aes_gcm_internal.cc
+         encryption/aes_gcm_stream.cc)
+  endif()
+
   # Libraries to link with exported libiceberg_bundle.{so,a}.
   set(ICEBERG_BUNDLE_STATIC_BUILD_INTERFACE_LIBS)
   set(ICEBERG_BUNDLE_SHARED_BUILD_INTERFACE_LIBS)
