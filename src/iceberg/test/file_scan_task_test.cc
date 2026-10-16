@@ -165,6 +165,17 @@ TEST(FileScanTaskRangeTest, RowEstimateHandlesChangedFileSize) {
   data_file->file_size_in_bytes = 200;
   EXPECT_EQ(split->estimated_row_count(), 1);
 
+  data_file->file_size_in_bytes = 40;
+  EXPECT_EQ(split->estimated_row_count(), 7);
+
+  data_file->file_size_in_bytes = 39;
+  EXPECT_EQ(split->estimated_row_count(), 0);
+
+  // An invalidated range must not produce an estimate larger than INT64_MAX.
+  data_file->file_size_in_bytes = 1;
+  data_file->record_count = std::numeric_limits<int64_t>::max();
+  EXPECT_EQ(split->estimated_row_count(), 0);
+
   data_file->file_size_in_bytes = 0;
   EXPECT_EQ(split->estimated_row_count(), 0);
 

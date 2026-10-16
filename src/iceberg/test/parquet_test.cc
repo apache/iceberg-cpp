@@ -1272,9 +1272,9 @@ TEST_F(ParquetReaderTest, ReadSplitWithNonmonotonicRowGroupStarts) {
                                    .projection = schema,
                                    .first_row_id = 100,
                                    .data_sequence_number = 7}));
-  // A batch must not span the skipped row group, or generated positions would be wrong.
-  ASSERT_NO_FATAL_FAILURE(VerifyNextBatch(*reader, R"([[1, 0, 100, 7]])"));
-  ASSERT_NO_FATAL_FAILURE(VerifyNextBatch(*reader, R"([[2, 2, 102, 7]])"));
+  // A batch can span skipped row groups while keeping absolute positions and lineage.
+  ASSERT_NO_FATAL_FAILURE(
+      VerifyNextBatch(*reader, R"([[1, 0, 100, 7], [2, 2, 102, 7]])"));
   ASSERT_NO_FATAL_FAILURE(VerifyExhausted(*reader));
 
   ICEBERG_UNWRAP_OR_FAIL(
@@ -1289,6 +1289,39 @@ TEST_F(ParquetReaderTest, ReadSplitWithNonmonotonicRowGroupStarts) {
                       .data_sequence_number = 7}));
   ASSERT_NO_FATAL_FAILURE(VerifyNextBatch(*tail, R"([[3, 1, 101, 7]])"));
   ASSERT_NO_FATAL_FAILURE(VerifyExhausted(*tail));
+}
+
+TEST_F(ParquetReaderTest, ReadMetadataOnlySplitWithNonmonotonicRowGroups) {
+  ASSERT_NO_FATAL_FAILURE(CreateSplitParquetFile(/*row_group_size=*/1));
+  ASSERT_NO_FATAL_FAILURE(ReorderRowGroups({0, 2, 1}));
+  ICEBERG_UNWRAP_OR_FAIL(auto input,
+                         arrow::OpenArrowInputStream(file_io_, temp_parquet_file_));
+  auto metadata = ::parquet::ReadMetaData(input);
+  auto last_start = static_cast<size_t>(
+      metadata->RowGroup(1)->ColumnChunk(0)->dictionary_page_offset());
+  auto schema = std::make_shared<Schema>(
+      std::vector<SchemaField>{MetadataColumns::kRowPosition, MetadataColumns::kRowId,
+                               MetadataColumns::kLastUpdatedSequenceNumber});
+
+  for (int64_t batch_size : {1, 100}) {
+    SCOPED_TRACE(batch_size);
+    ReaderProperties properties;
+    properties.Set(ReaderProperties::kBatchSize, batch_size);
+    ICEBERG_UNWRAP_OR_FAIL(
+        auto reader,
+        ReaderFactoryRegistry::Open(FileFormatType::kParquet,
+                                    {.path = temp_parquet_file_,
+                                     .split = Split{.offset = 0, .length = last_start},
+                                     .io = file_io_,
+                                     .projection = schema,
+                                     .first_row_id = 100,
+                                     .data_sequence_number = 7,
+                                     .properties = properties}));
+    // Arrow emits one batch per row group when no physical columns are read.
+    ASSERT_NO_FATAL_FAILURE(VerifyNextBatch(*reader, R"([[0, 100, 7]])"));
+    ASSERT_NO_FATAL_FAILURE(VerifyNextBatch(*reader, R"([[2, 102, 7]])"));
+    ASSERT_NO_FATAL_FAILURE(VerifyExhausted(*reader));
+  }
 }
 
 TEST_F(ParquetReaderTest, ReadMetadataColumns) {
