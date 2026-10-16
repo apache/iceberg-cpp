@@ -224,7 +224,7 @@ Result<std::shared_ptr<FileScanTask>> FileScanTask::MakeSplit(
 
   return std::shared_ptr<FileScanTask>(
       new FileScanTask(std::move(data_file), std::move(delete_files), std::move(filter),
-                       Range{.start = start, .length = length, .file_size = file_size}));
+                       Range{.start = start, .length = length}));
 }
 
 int64_t FileScanTask::length() const {
@@ -241,16 +241,17 @@ int64_t FileScanTask::estimated_row_count() const {
   }
 
   const int64_t record_count = data_file_->record_count;
-  if (record_count <= 0) {
+  const int64_t file_size = data_file_->file_size_in_bytes;
+  if (record_count <= 0 || file_size <= 0) {
     return 0;
   }
 
   // floor(end * rows / size) - floor(start * rows / size), so splits that cover
   // the file sum exactly to record_count. int128 avoids overflow.
   const auto end = static_cast<int128_t>(range_->start) + range_->length;
-  const auto count_at_end = end * record_count / range_->file_size;
+  const auto count_at_end = end * record_count / file_size;
   const auto count_at_start =
-      static_cast<int128_t>(range_->start) * record_count / range_->file_size;
+      static_cast<int128_t>(range_->start) * record_count / file_size;
   return static_cast<int64_t>(count_at_end - count_at_start);
 }
 
