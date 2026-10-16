@@ -133,6 +133,11 @@ class ZlibDeflateImpl {
       }
       result.append(out_buffer.data(), out_buffer.size() - stream_.avail_out);
     } while (ret != Z_STREAM_END);
+    // Rewind the stream so the next Compress() starts a fresh gzip member.
+    ret = deflateReset(&stream_);
+    if (ret != Z_OK) {
+      return CompressError("deflateReset failed, result:{}", ret);
+    }
     return result;
   }
 

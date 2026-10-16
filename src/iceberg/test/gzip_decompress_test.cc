@@ -114,4 +114,23 @@ TEST_F(GZipTest, GZipCompressorEmptyInput) {
   EXPECT_TRUE(decompressed.empty());
 }
 
+TEST_F(GZipTest, GZipCompressorReused) {
+  // One compressor can compress several payloads; each call yields a complete,
+  // independent gzip stream.
+  GZipCompressor compressor;
+  ASSERT_THAT(compressor.Init(), IsOk());
+
+  for (const auto& payload : {GenerateRandomString(1024), GenerateRandomString(2048)}) {
+    ICEBERG_UNWRAP_OR_FAIL(auto compressed, compressor.Compress(payload));
+    ASSERT_GE(compressed.size(), 2u);
+    EXPECT_EQ(static_cast<unsigned char>(compressed[0]), 0x1f);
+    EXPECT_EQ(static_cast<unsigned char>(compressed[1]), 0x8b);
+
+    GZipDecompressor decompressor;
+    ASSERT_THAT(decompressor.Init(), IsOk());
+    ICEBERG_UNWRAP_OR_FAIL(auto decompressed, decompressor.Decompress(compressed));
+    EXPECT_EQ(decompressed, payload);
+  }
+}
+
 }  // namespace iceberg
