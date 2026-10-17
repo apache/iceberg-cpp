@@ -42,10 +42,11 @@ class ICEBERG_EXPORT SnapshotsTable : public MetadataTable {
 
   const std::shared_ptr<Schema>& schema() const override;
 
+ protected:
   /// \brief Scan all snapshots as rows.
   ///
   /// The snapshots table always returns every known snapshot.
-  Result<ArrowArrayStream> Scan() override;
+  Result<ArrowArrayStream> ScanProjection(const Schema& projected_schema) override;
 
  private:
   explicit SnapshotsTable(std::shared_ptr<Table> table);
