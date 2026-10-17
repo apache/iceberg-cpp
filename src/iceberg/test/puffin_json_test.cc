@@ -198,4 +198,12 @@ TEST(PuffinJsonTest, FileMetadataFromInvalidString) {
               IsError(ErrorKind::kJsonParseError));
 }
 
+TEST(PuffinJsonTest, FileMetadataRejectsDeeplyNestedJson) {
+  const std::string json = R"({"blobs":[],"properties":)" + std::string(100'000, '[') +
+                           std::string(100'000, ']') + "}";
+  auto result = FileMetadataFromJsonString(json);
+  EXPECT_THAT(result, IsError(ErrorKind::kJsonParseError));
+  EXPECT_THAT(result, HasErrorMessage("nesting depth"));
+}
+
 }  // namespace iceberg::puffin

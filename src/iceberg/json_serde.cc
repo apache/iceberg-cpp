@@ -1703,6 +1703,7 @@ Result<nlohmann::json> FromJsonString(const std::string& json_string) {
   if (json.is_discarded()) [[unlikely]] {
     return JsonParseError("Failed to parse JSON string: {}", json_string);
   }
+  ICEBERG_RETURN_UNEXPECTED(CheckJsonNestingDepth(json));
   return json;
 }
 

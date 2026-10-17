@@ -118,6 +118,7 @@ Result<FileMetadata> FileMetadataFromJsonString(std::string_view json_string) {
   }
   try {
     auto json = nlohmann::json::parse(json_string);
+    ICEBERG_RETURN_UNEXPECTED(CheckJsonNestingDepth(json));
     return FileMetadataFromJson(json);
   } catch (const nlohmann::json::parse_error& e) {
     return JsonParseError("Failed to parse JSON: {}", e.what());

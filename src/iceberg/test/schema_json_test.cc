@@ -17,6 +17,8 @@
  * under the License.
  */
 
+#include <cstddef>
+#include <format>
 #include <memory>
 #include <string>
 
@@ -30,6 +32,11 @@
 #include "iceberg/schema_field.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/type.h"
+#include "iceberg/util/json_util_internal.h"
+
+#ifndef _WIN32
+#  include <pthread.h>
+#endif
 
 namespace iceberg {
 
@@ -379,4 +386,97 @@ TEST(SchemaJsonTest, IdentifierFieldIds) {
   ASSERT_EQ(json_multi_identifiers_out, json_multi_identifiers);
 }
 
+namespace {
+
+std::string NestedArrayJson(int32_t depth) {
+  return std::string(depth, '[') + std::string(depth, ']');
+}
+
+std::string NestedObjectJson(int32_t depth) {
+  std::string json;
+  for (int32_t i = 0; i < depth; ++i) {
+    json += R"({"a":)";
+  }
+  json += "1";
+  json += std::string(depth, '}');
+  return json;
+}
+
+/// \brief A schema with one field whose type is `list_depth` nested lists of int.
+/// The resulting JSON document nests objects and arrays `list_depth + 3` deep.
+std::string NestedListSchemaJson(int32_t list_depth) {
+  std::string json =
+      R"({"type":"struct","schema-id":0,"fields":[{"id":1,"name":"f","required":true,"type":)";
+  for (int32_t i = 0; i < list_depth; ++i) {
+    json += std::format(
+        R"({{"type":"list","element-id":{},"element-required":true,"element":)", i + 2);
+  }
+  json += R"("int")";
+  json += std::string(list_depth, '}');
+  json += "}]}";
+  return json;
+}
+
+}  // namespace
+
+TEST(JsonNestingDepthTest, RejectsDeeplyNestedDocuments) {
+  for (const auto& json : {NestedArrayJson(100'000), NestedObjectJson(100'000)}) {
+    auto result = FromJsonString(json);
+    EXPECT_THAT(result, IsError(ErrorKind::kJsonParseError));
+    EXPECT_THAT(result, HasErrorMessage("nesting depth"));
+  }
+}
+
+TEST(JsonNestingDepthTest, AcceptsDocumentAtTheLimit) {
+  EXPECT_THAT(FromJsonString(NestedArrayJson(kMaxJsonNestingDepth)), IsOk());
+  EXPECT_THAT(FromJsonString(NestedObjectJson(kMaxJsonNestingDepth)), IsOk());
+  EXPECT_THAT(FromJsonString(NestedArrayJson(kMaxJsonNestingDepth + 1)),
+              IsError(ErrorKind::kJsonParseError));
+  EXPECT_THAT(FromJsonString(NestedObjectJson(kMaxJsonNestingDepth + 1)),
+              IsError(ErrorKind::kJsonParseError));
+}
+
+TEST(JsonNestingDepthTest, RejectsDeeplyNestedSchema) {
+  auto result = FromJsonString(NestedListSchemaJson(100'000));
+  EXPECT_THAT(result, IsError(ErrorKind::kJsonParseError));
+  EXPECT_THAT(result, HasErrorMessage("nesting depth"));
+}
+
+// The recursive type parser, schema validation and destruction must fit in an
+// 8 MiB stack (the default main-thread stack on Linux and macOS) for the
+// deepest schema the depth check lets through.
+TEST(JsonNestingDepthTest, SchemaAtTheLimitParsesOn8MiBStack) {
+#ifdef _WIN32
+  GTEST_SKIP() << "Explicit thread stack size is only set up for POSIX";
+#else
+  struct Context {
+    std::string json;
+    bool parsed = false;
+    bool valid = false;
+  } context{.json = NestedListSchemaJson(kMaxJsonNestingDepth - 3)};
+
+  auto run = [](void* arg) -> void* {
+    auto* ctx = static_cast<Context*>(arg);
+    auto document = FromJsonString(ctx->json);
+    if (!document.has_value()) {
+      return nullptr;
+    }
+    auto schema = SchemaFromJson(*document);
+    ctx->parsed = schema.has_value();
+    ctx->valid = ctx->parsed && (*schema)->Validate(/*format_version=*/2).has_value();
+    return nullptr;
+  };
+
+  pthread_attr_t attr;
+  ASSERT_EQ(pthread_attr_init(&attr), 0);
+  ASSERT_EQ(pthread_attr_setstacksize(&attr, size_t{8} * 1024 * 1024), 0);
+  pthread_t thread;
+  ASSERT_EQ(pthread_create(&thread, &attr, run, &context), 0);
+  pthread_attr_destroy(&attr);
+  ASSERT_EQ(pthread_join(thread, nullptr), 0);
+
+  EXPECT_TRUE(context.parsed);
+  EXPECT_TRUE(context.valid);
+#endif
+}
 }  // namespace iceberg

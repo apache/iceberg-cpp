@@ -20,9 +20,12 @@
 #pragma once
 
 #include <concepts>
+#include <cstdint>
 #include <format>
 #include <limits>
 #include <optional>
+#include <utility>
+#include <vector>
 
 #include <nlohmann/json.hpp>
 
@@ -55,6 +58,39 @@ inline void SetOptionalStringField(nlohmann::json& json, std::string_view key,
   if (!value.empty()) {
     json[key] = value;
   }
+}
+
+/// \brief Maximum nesting depth of objects and arrays accepted in a JSON
+/// document, matching the default limit of Jackson's StreamReadConstraints.
+///
+/// Documents at this depth are parsed by recursive code. A schema nested close
+/// to the limit fits in an 8 MiB stack, but may not fit in a much smaller one
+/// (e.g. the 512 KiB default for secondary threads on macOS).
+inline constexpr int32_t kMaxJsonNestingDepth = 1000;
+
+/// \brief Check that a JSON document does not nest objects and arrays deeper
+/// than max_depth.
+///
+/// The document is walked iteratively, so arbitrarily deep input is handled
+/// without recursion. Callers that hand parsed documents to recursive code
+/// (type, name-mapping and expression parsers) must run this check first.
+inline Status CheckJsonNestingDepth(const nlohmann::json& json,
+                                    int32_t max_depth = kMaxJsonNestingDepth) {
+  std::vector<std::pair<const nlohmann::json*, int32_t>> pending{{&json, 1}};
+  while (!pending.empty()) {
+    auto [node, depth] = pending.back();
+    pending.pop_back();
+    if (!node->is_structured()) {
+      continue;
+    }
+    if (depth > max_depth) {
+      return JsonParseError("JSON nesting depth exceeds the maximum of {}", max_depth);
+    }
+    for (const auto& child : *node) {
+      pending.emplace_back(&child, depth + 1);
+    }
+  }
+  return {};
 }
 
 inline std::string SafeDumpJson(const nlohmann::json& json) {
