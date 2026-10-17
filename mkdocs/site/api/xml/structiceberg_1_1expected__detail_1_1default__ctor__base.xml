@@ -1,0 +1,169 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1expected__detail_1_1default__ctor__base" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::expected_detail::default_ctor_base</compoundname>
+    <derivedcompoundref refid="classiceberg_1_1expected" prot="private" virt="non-virtual">iceberg::expected&lt; T &gt;</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1expected" prot="private" virt="non-virtual">iceberg::expected&lt; T, E &gt;</derivedcompoundref>
+    <templateparamlist>
+      <param>
+        <type>class T</type>
+      </param>
+      <param>
+        <type>class E</type>
+      </param>
+      <param>
+        <type>bool</type>
+        <declname>Enable</declname>
+        <defname>Enable</defname>
+        <defval>is_default_constructible_or_void_v&lt;T&gt;</defval>
+      </param>
+    </templateparamlist>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structiceberg_1_1expected__detail_1_1default__ctor__base_1a1bf695bb4f0673e831f75e384a3ff45d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::expected_detail::default_ctor_base&lt; T, E, Enable &gt;::~default_ctor_base</definition>
+        <argsstring>()=default</argsstring>
+        <name>~default_ctor_base</name>
+        <qualifiedname>iceberg::expected_detail::default_ctor_base::~default_ctor_base</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/compat/expected.h" line="1164" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1expected__detail_1_1default__ctor__base_1afb2f35ee1db01f6a70902487c674e41b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::expected_detail::default_ctor_base&lt; T, E, Enable &gt;::default_ctor_base</definition>
+        <argsstring>()=default</argsstring>
+        <name>default_ctor_base</name>
+        <qualifiedname>iceberg::expected_detail::default_ctor_base::default_ctor_base</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/compat/expected.h" line="1165" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1expected__detail_1_1default__ctor__base_1a9eae15dd9143b48ca46c4390aa68ebb0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::expected_detail::default_ctor_base&lt; T, E, Enable &gt;::default_ctor_base</definition>
+        <argsstring>(default_ctor_base const &amp;)=default</argsstring>
+        <name>default_ctor_base</name>
+        <qualifiedname>iceberg::expected_detail::default_ctor_base::default_ctor_base</qualifiedname>
+        <param>
+          <type><ref refid="structiceberg_1_1expected__detail_1_1default__ctor__base" kindref="compound">default_ctor_base</ref> const &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/compat/expected.h" line="1166" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1expected__detail_1_1default__ctor__base_1afd2b33d7e298f0e523d3fdc50dc58b43" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::expected_detail::default_ctor_base&lt; T, E, Enable &gt;::default_ctor_base</definition>
+        <argsstring>(default_ctor_base &amp;&amp;)=default</argsstring>
+        <name>default_ctor_base</name>
+        <qualifiedname>iceberg::expected_detail::default_ctor_base::default_ctor_base</qualifiedname>
+        <param>
+          <type><ref refid="structiceberg_1_1expected__detail_1_1default__ctor__base" kindref="compound">default_ctor_base</ref> &amp;&amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/compat/expected.h" line="1167" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1expected__detail_1_1default__ctor__base_1ac9527cbfa8fea304e75bd7b46a0855f7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="structiceberg_1_1expected__detail_1_1default__ctor__base" kindref="compound">default_ctor_base</ref> &amp;</type>
+        <definition>default_ctor_base &amp; iceberg::expected_detail::default_ctor_base&lt; T, E, Enable &gt;::operator=</definition>
+        <argsstring>(default_ctor_base const &amp;)=default</argsstring>
+        <name>operator=</name>
+        <qualifiedname>iceberg::expected_detail::default_ctor_base::operator=</qualifiedname>
+        <param>
+          <type><ref refid="structiceberg_1_1expected__detail_1_1default__ctor__base" kindref="compound">default_ctor_base</ref> const &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/compat/expected.h" line="1168" column="21"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1expected__detail_1_1default__ctor__base_1a23442372df71ec6d54d38a46f7472fa2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="structiceberg_1_1expected__detail_1_1default__ctor__base" kindref="compound">default_ctor_base</ref> &amp;</type>
+        <definition>default_ctor_base &amp; iceberg::expected_detail::default_ctor_base&lt; T, E, Enable &gt;::operator=</definition>
+        <argsstring>(default_ctor_base &amp;&amp;)=default</argsstring>
+        <name>operator=</name>
+        <qualifiedname>iceberg::expected_detail::default_ctor_base::operator=</qualifiedname>
+        <param>
+          <type><ref refid="structiceberg_1_1expected__detail_1_1default__ctor__base" kindref="compound">default_ctor_base</ref> &amp;&amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/compat/expected.h" line="1169" column="21"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1expected__detail_1_1default__ctor__base_1aba030620708ed6852125f1371dda9d74" prot="public" static="no" constexpr="yes" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type>constexpr</type>
+        <definition>constexpr iceberg::expected_detail::default_ctor_base&lt; T, E, Enable &gt;::default_ctor_base</definition>
+        <argsstring>(default_constructor_tag)</argsstring>
+        <name>default_ctor_base</name>
+        <qualifiedname>iceberg::expected_detail::default_ctor_base::default_ctor_base</qualifiedname>
+        <param>
+          <type><ref refid="structiceberg_1_1expected__detail_1_1default__constructor__tag" kindref="compound">default_constructor_tag</ref></type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/compat/expected.h" line="1171" column="22" bodyfile="iceberg/compat/expected.h" bodystart="1171" bodyend="1171"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>iceberg::expected&lt; T &gt;</label>
+        <link refid="classiceberg_1_1expected"/>
+        <childnode refid="1" relation="private-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>iceberg::expected&lt; T, E &gt;</label>
+        <link refid="classiceberg_1_1expected"/>
+        <childnode refid="1" relation="private-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::expected_detail::default_ctor_base&lt; T, E, Enable &gt;</label>
+        <link refid="structiceberg_1_1expected__detail_1_1default__ctor__base"/>
+      </node>
+    </inheritancegraph>
+    <location file="iceberg/compat/expected.h" line="1163" column="1" bodyfile="iceberg/compat/expected.h" bodystart="1163" bodyend="1172"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1expected__detail_1_1default__ctor__base_1afb2f35ee1db01f6a70902487c674e41b" prot="public" virt="non-virtual"><scope>iceberg::expected_detail::default_ctor_base</scope><name>default_ctor_base</name></member>
+      <member refid="structiceberg_1_1expected__detail_1_1default__ctor__base_1a9eae15dd9143b48ca46c4390aa68ebb0" prot="public" virt="non-virtual"><scope>iceberg::expected_detail::default_ctor_base</scope><name>default_ctor_base</name></member>
+      <member refid="structiceberg_1_1expected__detail_1_1default__ctor__base_1afd2b33d7e298f0e523d3fdc50dc58b43" prot="public" virt="non-virtual"><scope>iceberg::expected_detail::default_ctor_base</scope><name>default_ctor_base</name></member>
+      <member refid="structiceberg_1_1expected__detail_1_1default__ctor__base_1aba030620708ed6852125f1371dda9d74" prot="public" virt="non-virtual"><scope>iceberg::expected_detail::default_ctor_base</scope><name>default_ctor_base</name></member>
+      <member refid="structiceberg_1_1expected__detail_1_1default__ctor__base_1ac9527cbfa8fea304e75bd7b46a0855f7" prot="public" virt="non-virtual"><scope>iceberg::expected_detail::default_ctor_base</scope><name>operator=</name></member>
+      <member refid="structiceberg_1_1expected__detail_1_1default__ctor__base_1a23442372df71ec6d54d38a46f7472fa2" prot="public" virt="non-virtual"><scope>iceberg::expected_detail::default_ctor_base</scope><name>operator=</name></member>
+      <member refid="structiceberg_1_1expected__detail_1_1default__ctor__base_1a1bf695bb4f0673e831f75e384a3ff45d" prot="public" virt="non-virtual"><scope>iceberg::expected_detail::default_ctor_base</scope><name>~default_ctor_base</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

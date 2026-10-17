@@ -1,0 +1,160 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1FnOnce_3_01R_07Args_8_8_8_08_4" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::FnOnce&lt; R(Args...)&gt;</compoundname>
+    <innerclass refid="structiceberg_1_1FnOnce_3_01R_07Args_8_8_8_08_4_1_1Impl" prot="private">iceberg::FnOnce&lt; R(Args...)&gt;::Impl</innerclass>
+    <innerclass refid="structiceberg_1_1FnOnce_3_01R_07Args_8_8_8_08_4_1_1ImplFor" prot="private">iceberg::FnOnce&lt; R(Args...)&gt;::ImplFor</innerclass>
+    <templateparamlist>
+      <param>
+        <type>typename R</type>
+      </param>
+      <param>
+        <type>typename...</type>
+        <declname>Args</declname>
+        <defname>Args</defname>
+      </param>
+    </templateparamlist>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1FnOnce_3_01R_07Args_8_8_8_08_4_1a2006571394079099ac5d8935a4b100cc" prot="private" static="no" mutable="no">
+        <type>std::unique_ptr&lt; Impl &gt;</type>
+        <definition>std::unique_ptr&lt;Impl&gt; iceberg::FnOnce&lt; R(Args...)&gt;::impl_</definition>
+        <argsstring></argsstring>
+        <name>impl_</name>
+        <qualifiedname>iceberg::FnOnce&lt; R(Args...)&gt;::impl_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/functional.h" line="82" column="19" bodyfile="iceberg/util/functional.h" bodystart="82" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1FnOnce_3_01R_07Args_8_8_8_08_4_1a9a3b2288f02deee59a0d834408ac55eb" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename Fn</type>
+          </param>
+        </templateparamlist>
+        <type></type>
+        <definition>iceberg::FnOnce&lt; R(Args...)&gt;::FnOnce</definition>
+        <argsstring>(Fn &amp;&amp;fn)</argsstring>
+        <name>FnOnce</name>
+        <qualifiedname>iceberg::FnOnce&lt; R(Args...)&gt;::FnOnce</qualifiedname>
+        <param>
+          <type>Fn &amp;&amp;</type>
+          <declname>fn</declname>
+        </param>
+    <requiresclause>(!std::same_as&lt;std::remove_cvref_t&lt;Fn&gt;, FnOnce&gt; &amp;&amp; internal::RvalueInvocable&lt;R, Fn, Args...&gt;)    </requiresclause>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/functional.h" line="56" column="12" bodyfile="iceberg/util/functional.h" bodystart="56" bodyend="56"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1FnOnce_3_01R_07Args_8_8_8_08_4_1a9cd7ed5009d124a86c93acd3320b559f" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::FnOnce&lt; R(Args...)&gt;::FnOnce</definition>
+        <argsstring>(FnOnce &amp;&amp;) noexcept=default</argsstring>
+        <name>FnOnce</name>
+        <qualifiedname>iceberg::FnOnce&lt; R(Args...)&gt;::FnOnce</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1FnOnce" kindref="compound">FnOnce</ref> &amp;&amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/functional.h" line="58" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1FnOnce_3_01R_07Args_8_8_8_08_4_1a51e92c65e0c516ab059e93f1a3d46ad2" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1FnOnce" kindref="compound">FnOnce</ref> &amp;</type>
+        <definition>FnOnce &amp; iceberg::FnOnce&lt; R(Args...)&gt;::operator=</definition>
+        <argsstring>(FnOnce &amp;&amp;) noexcept=default</argsstring>
+        <name>operator=</name>
+        <qualifiedname>iceberg::FnOnce&lt; R(Args...)&gt;::operator=</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1FnOnce" kindref="compound">FnOnce</ref> &amp;&amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/functional.h" line="59" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1FnOnce_3_01R_07Args_8_8_8_08_4_1a67afb857be1169c4a11bb2df093c9e5c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::FnOnce&lt; R(Args...)&gt;::FnOnce</definition>
+        <argsstring>(const FnOnce &amp;)=delete</argsstring>
+        <name>FnOnce</name>
+        <qualifiedname>iceberg::FnOnce&lt; R(Args...)&gt;::FnOnce</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1FnOnce" kindref="compound">FnOnce</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/functional.h" line="60" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1FnOnce_3_01R_07Args_8_8_8_08_4_1a4b7d69117292c5f765f5f860977133bd" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1FnOnce" kindref="compound">FnOnce</ref> &amp;</type>
+        <definition>FnOnce &amp; iceberg::FnOnce&lt; R(Args...)&gt;::operator=</definition>
+        <argsstring>(const FnOnce &amp;)=delete</argsstring>
+        <name>operator=</name>
+        <qualifiedname>iceberg::FnOnce&lt; R(Args...)&gt;::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1FnOnce" kindref="compound">FnOnce</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/functional.h" line="61" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1FnOnce_3_01R_07Args_8_8_8_08_4_1a2596cdf81a5add394bac7fd78159dcd0" prot="public" static="no" const="no" explicit="no" inline="yes" refqual="rvalue" virt="non-virtual">
+        <type>R</type>
+        <definition>R iceberg::FnOnce&lt; R(Args...)&gt;::operator()</definition>
+        <argsstring>(Args... args) &amp;&amp;</argsstring>
+        <name>operator()</name>
+        <qualifiedname>iceberg::FnOnce&lt; R(Args...)&gt;::operator()</qualifiedname>
+        <param>
+          <type>Args...</type>
+          <declname>args</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/functional.h" line="63" column="5" bodyfile="iceberg/util/functional.h" bodystart="63" bodyend="65"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/util/functional.h" line="51" column="1" bodyfile="iceberg/util/functional.h" bodystart="51" bodyend="83"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1FnOnce_3_01R_07Args_8_8_8_08_4_1a9a3b2288f02deee59a0d834408ac55eb" prot="public" virt="non-virtual"><scope>iceberg::FnOnce&lt; R(Args...)&gt;</scope><name>FnOnce</name></member>
+      <member refid="classiceberg_1_1FnOnce_3_01R_07Args_8_8_8_08_4_1a9cd7ed5009d124a86c93acd3320b559f" prot="public" virt="non-virtual"><scope>iceberg::FnOnce&lt; R(Args...)&gt;</scope><name>FnOnce</name></member>
+      <member refid="classiceberg_1_1FnOnce_3_01R_07Args_8_8_8_08_4_1a67afb857be1169c4a11bb2df093c9e5c" prot="public" virt="non-virtual"><scope>iceberg::FnOnce&lt; R(Args...)&gt;</scope><name>FnOnce</name></member>
+      <member refid="classiceberg_1_1FnOnce_3_01R_07Args_8_8_8_08_4_1a2006571394079099ac5d8935a4b100cc" prot="private" virt="non-virtual"><scope>iceberg::FnOnce&lt; R(Args...)&gt;</scope><name>impl_</name></member>
+      <member refid="classiceberg_1_1FnOnce_3_01R_07Args_8_8_8_08_4_1a2596cdf81a5add394bac7fd78159dcd0" prot="public" virt="non-virtual"><scope>iceberg::FnOnce&lt; R(Args...)&gt;</scope><name>operator()</name></member>
+      <member refid="classiceberg_1_1FnOnce_3_01R_07Args_8_8_8_08_4_1a51e92c65e0c516ab059e93f1a3d46ad2" prot="public" virt="non-virtual"><scope>iceberg::FnOnce&lt; R(Args...)&gt;</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1FnOnce_3_01R_07Args_8_8_8_08_4_1a4b7d69117292c5f765f5f860977133bd" prot="public" virt="non-virtual"><scope>iceberg::FnOnce&lt; R(Args...)&gt;</scope><name>operator=</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

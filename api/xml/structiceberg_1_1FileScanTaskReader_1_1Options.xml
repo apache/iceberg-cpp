@@ -1,0 +1,257 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1FileScanTaskReader_1_1Options" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::FileScanTaskReader::Options</compoundname>
+    <includes refid="file__scan__task__reader_8h" local="no">file_scan_task_reader.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1FileScanTaskReader_1_1Options_1aac8b57f4669e4dcd0a62f61a3d1ba1f4" prot="public" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;FileIO&gt; iceberg::FileScanTaskReader::Options::io</definition>
+        <argsstring></argsstring>
+        <name>io</name>
+        <qualifiedname>iceberg::FileScanTaskReader::Options::io</qualifiedname>
+        <briefdescription>
+<para><ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> instance for reading data and delete files. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/file_scan_task_reader.h" line="50" column="21" bodyfile="iceberg/data/file_scan_task_reader.h" bodystart="50" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1FileScanTaskReader_1_1Options_1a904c85055745341d4dcef628e1e66e7f" prot="public" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Schema&gt; iceberg::FileScanTaskReader::Options::table_schema</definition>
+        <argsstring></argsstring>
+        <name>table_schema</name>
+        <qualifiedname>iceberg::FileScanTaskReader::Options::table_schema</qualifiedname>
+        <briefdescription>
+<para>The table schema. Used as the primary field lookup for delete file resolution. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/file_scan_task_reader.h" line="52" column="21" bodyfile="iceberg/data/file_scan_task_reader.h" bodystart="52" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1FileScanTaskReader_1_1Options_1aaa6a107b0b6952aafb4f2a1de701ae5c" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt; &gt;</type>
+        <definition>std::vector&lt;std::shared_ptr&lt;Schema&gt; &gt; iceberg::FileScanTaskReader::Options::schemas</definition>
+        <argsstring></argsstring>
+        <name>schemas</name>
+        <qualifiedname>iceberg::FileScanTaskReader::Options::schemas</qualifiedname>
+        <briefdescription>
+<para>Optional list of historical table schemas for field lookup. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/file_scan_task_reader.h" line="54" column="17" bodyfile="iceberg/data/file_scan_task_reader.h" bodystart="54" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1FileScanTaskReader_1_1Options_1a07fc7c34e0484ecec603e835d2ad8792" prot="public" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Schema&gt; iceberg::FileScanTaskReader::Options::projected_schema</definition>
+        <argsstring></argsstring>
+        <name>projected_schema</name>
+        <qualifiedname>iceberg::FileScanTaskReader::Options::projected_schema</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>The output schema for the returned <ref refid="structArrowArrayStream" kindref="compound">ArrowArrayStream</ref>. Must be a projection of table_schema. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/file_scan_task_reader.h" line="57" column="21" bodyfile="iceberg/data/file_scan_task_reader.h" bodystart="57" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1FileScanTaskReader_1_1Options_1a764208b60c3d864db5c2448942318582" prot="public" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1NameMapping" kindref="compound">NameMapping</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;NameMapping&gt; iceberg::FileScanTaskReader::Options::name_mapping</definition>
+        <argsstring></argsstring>
+        <name>name_mapping</name>
+        <qualifiedname>iceberg::FileScanTaskReader::Options::name_mapping</qualifiedname>
+        <briefdescription>
+<para>Optional name mapping for files written without field IDs. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/file_scan_task_reader.h" line="59" column="21" bodyfile="iceberg/data/file_scan_task_reader.h" bodystart="59" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1FileScanTaskReader_1_1Options_1abfbb4ef4e9b10a03cc7c45cae02d4e4b" prot="public" static="no" mutable="no">
+        <type>std::unordered_map&lt; std::string, std::string &gt;</type>
+        <definition>std::unordered_map&lt;std::string, std::string&gt; iceberg::FileScanTaskReader::Options::properties</definition>
+        <argsstring></argsstring>
+        <name>properties</name>
+        <qualifiedname>iceberg::FileScanTaskReader::Options::properties</qualifiedname>
+        <briefdescription>
+<para>Format-specific or implementation-specific options for data readers. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/file_scan_task_reader.h" line="61" column="24" bodyfile="iceberg/data/file_scan_task_reader.h" bodystart="61" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para><ref refid="structiceberg_1_1FileScanTaskReader_1_1Options" kindref="compound">Options</ref> shared by all tasks opened by this reader. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="12">
+        <label>iceberg::Lazy&lt; InitFieldById &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="14">
+        <label>iceberg::Lazy&lt; InitFieldByLowerCaseName &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="13">
+        <label>iceberg::Lazy&lt; InitFieldByName &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="3">
+        <label>iceberg::FileIO</label>
+        <link refid="classiceberg_1_1FileIO"/>
+      </node>
+      <node id="1">
+        <label>iceberg::FileScanTaskReader::Options</label>
+        <link refid="structiceberg_1_1FileScanTaskReader_1_1Options"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>io</edgelabel>
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>projected_schema</edgelabel>
+          <edgelabel>table_schema</edgelabel>
+        </childnode>
+        <childnode refid="17" relation="usage">
+          <edgelabel>schemas</edgelabel>
+        </childnode>
+        <childnode refid="18" relation="usage">
+          <edgelabel>name_mapping</edgelabel>
+        </childnode>
+        <childnode refid="20" relation="usage">
+          <edgelabel>properties</edgelabel>
+        </childnode>
+      </node>
+      <node id="19">
+        <label>iceberg::NameMapping</label>
+        <link refid="classiceberg_1_1NameMapping"/>
+      </node>
+      <node id="7">
+        <label>iceberg::NestedType</label>
+        <link refid="classiceberg_1_1NestedType"/>
+        <childnode refid="8" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>iceberg::Schema</label>
+        <link refid="classiceberg_1_1Schema"/>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+        <childnode refid="15" relation="usage">
+          <edgelabel>kAllColumns</edgelabel>
+        </childnode>
+      </node>
+      <node id="11">
+        <label>iceberg::SchemaField</label>
+        <link refid="classiceberg_1_1SchemaField"/>
+        <childnode refid="9" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>iceberg::StructType</label>
+        <link refid="classiceberg_1_1StructType"/>
+        <childnode refid="7" relation="public-inheritance">
+        </childnode>
+        <childnode refid="10" relation="usage">
+          <edgelabel>fields_</edgelabel>
+        </childnode>
+        <childnode refid="12" relation="usage">
+          <edgelabel>field_by_id_</edgelabel>
+        </childnode>
+        <childnode refid="13" relation="usage">
+          <edgelabel>field_by_name_</edgelabel>
+        </childnode>
+        <childnode refid="14" relation="usage">
+          <edgelabel>field_by_lowercase_name_</edgelabel>
+        </childnode>
+      </node>
+      <node id="8">
+        <label>iceberg::Type</label>
+        <link refid="classiceberg_1_1Type"/>
+        <childnode refid="9" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+      <node id="2">
+        <label>std::shared_ptr&lt; iceberg::FileIO &gt;</label>
+        <childnode refid="3" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="18">
+        <label>std::shared_ptr&lt; iceberg::NameMapping &gt;</label>
+        <childnode refid="19" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>std::shared_ptr&lt; iceberg::Schema &gt;</label>
+        <childnode refid="5" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="22">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="16">
+        <label>std::basic_string_view&lt; Char &gt;</label>
+      </node>
+      <node id="21">
+        <label>std::string</label>
+        <childnode refid="22" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="15">
+        <label>std::string_view</label>
+        <childnode refid="16" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="20">
+        <label>std::unordered_map&lt; std::string, std::string &gt;</label>
+        <childnode refid="21" relation="usage">
+          <edgelabel>elements</edgelabel>
+          <edgelabel>keys</edgelabel>
+        </childnode>
+      </node>
+      <node id="10">
+        <label>std::vector&lt; iceberg::SchemaField &gt;</label>
+        <childnode refid="11" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="17">
+        <label>std::vector&lt; std::shared_ptr&lt; iceberg::Schema &gt; &gt;</label>
+        <childnode refid="4" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/data/file_scan_task_reader.h" line="48" column="3" bodyfile="iceberg/data/file_scan_task_reader.h" bodystart="48" bodyend="62"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1FileScanTaskReader_1_1Options_1aac8b57f4669e4dcd0a62f61a3d1ba1f4" prot="public" virt="non-virtual"><scope>iceberg::FileScanTaskReader::Options</scope><name>io</name></member>
+      <member refid="structiceberg_1_1FileScanTaskReader_1_1Options_1a764208b60c3d864db5c2448942318582" prot="public" virt="non-virtual"><scope>iceberg::FileScanTaskReader::Options</scope><name>name_mapping</name></member>
+      <member refid="structiceberg_1_1FileScanTaskReader_1_1Options_1a07fc7c34e0484ecec603e835d2ad8792" prot="public" virt="non-virtual"><scope>iceberg::FileScanTaskReader::Options</scope><name>projected_schema</name></member>
+      <member refid="structiceberg_1_1FileScanTaskReader_1_1Options_1abfbb4ef4e9b10a03cc7c45cae02d4e4b" prot="public" virt="non-virtual"><scope>iceberg::FileScanTaskReader::Options</scope><name>properties</name></member>
+      <member refid="structiceberg_1_1FileScanTaskReader_1_1Options_1aaa6a107b0b6952aafb4f2a1de701ae5c" prot="public" virt="non-virtual"><scope>iceberg::FileScanTaskReader::Options</scope><name>schemas</name></member>
+      <member refid="structiceberg_1_1FileScanTaskReader_1_1Options_1a904c85055745341d4dcef628e1e66e7f" prot="public" virt="non-virtual"><scope>iceberg::FileScanTaskReader::Options</scope><name>table_schema</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>
