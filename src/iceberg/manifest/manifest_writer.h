@@ -39,6 +39,8 @@ namespace iceberg {
 /// \brief Write manifest entries to a manifest file.
 class ICEBERG_EXPORT ManifestWriter {
  public:
+  /// Close the underlying output on destruction. Call Close() explicitly to flush
+  /// all entries and report write or close errors before committing the manifest.
   ~ManifestWriter();
 
   /// \brief Write the entry that all its fields are populated correctly.

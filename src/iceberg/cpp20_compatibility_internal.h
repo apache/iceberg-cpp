@@ -154,6 +154,7 @@
 #include "iceberg/update/pending_update.h"
 #include "iceberg/update/replace_partitions.h"
 #include "iceberg/update/rewrite_files.h"
+#include "iceberg/update/rewrite_manifests.h"
 #include "iceberg/update/row_delta.h"
 #include "iceberg/update/set_snapshot.h"
 #include "iceberg/update/snapshot_manager.h"
