@@ -34,9 +34,9 @@
 #include "iceberg/catalog/rest/auth/auth_properties.h"
 #include "iceberg/catalog/rest/auth/auth_session.h"
 #include "iceberg/catalog/rest/auth/oauth2_util.h"
-#include "iceberg/catalog/rest/auth/token_refresh_scheduler.h"
 #include "iceberg/catalog/rest/http_client.h"
 #include "iceberg/util/macros.h"
+#include "iceberg/util/scheduled_executor_internal.h"
 
 namespace iceberg::rest::auth::internal {
 
@@ -68,6 +68,7 @@ class OAuth2Session final : public AuthSession,
     std::string scope;
     std::unordered_map<std::string, std::string> optional_oauth_params;
     bool keep_refreshed;
+    ::iceberg::internal::ScheduledExecutor* scheduler;
   };
 
   static Result<std::shared_ptr<OAuth2Session>> Make(
@@ -118,10 +119,10 @@ class OAuth2Session final : public AuthSession,
     if (!closed_.compare_exchange_strong(expected, true)) {
       return {};
     }
-    TokenRefreshScheduler::Instance().Cancel(scheduled_task_id_.exchange(0));
+    scheduled_task_.Cancel();
     std::unique_lock lock(refresh_mutex_);
     refresh_cv_.wait(lock, [this] { return active_refresh_count_ == 0; });
-    TokenRefreshScheduler::Instance().Cancel(scheduled_task_id_.exchange(0));
+    scheduled_task_.Cancel();
     return {};
   }
 
@@ -182,7 +183,7 @@ class OAuth2Session final : public AuthSession,
       const OAuthTokenResponse& token_response,
       std::optional<std::chrono::steady_clock::time_point> token_request_started_at) {
     UpdateTokenState(token_response, token_request_started_at);
-    if (config_.keep_refreshed &&
+    if (config_.keep_refreshed && config_.scheduler != nullptr &&
         expires_at_ != std::chrono::steady_clock::time_point{}) {
       ScheduleRefresh();
     }
@@ -218,28 +219,28 @@ class OAuth2Session final : public AuthSession,
           std::min(std::chrono::duration_cast<std::chrono::milliseconds>(backoff * 2),
                    kMaxBackoff);
       std::weak_ptr<OAuth2Session> weak_self = shared_from_this();
-      auto retry_id = TokenRefreshScheduler::Instance().Schedule(
-          backoff, [weak_self = std::move(weak_self), next_attempt = attempt + 1,
-                    next_backoff, refresh_started_at] {
+      auto retry_task = config_.scheduler->Schedule(
+          backoff,
+          ExecutorTask([weak_self = std::move(weak_self), next_attempt = attempt + 1,
+                        next_backoff, refresh_started_at] {
             if (auto self = weak_self.lock()) {
               self->DoRefreshAttempt(next_attempt, next_backoff, refresh_started_at);
             }
-          });
-      scheduled_task_id_.store(retry_id);
+          }));
+      scheduled_task_ = std::move(retry_task);
     }
   }
 
   void ScheduleRefresh() {
-    if (!config_.keep_refreshed || closed_.load()) return;
+    if (!config_.keep_refreshed || config_.scheduler == nullptr || closed_.load()) return;
     auto delay = CalculateRefreshDelay();
     if (delay < std::chrono::milliseconds::zero()) return;
 
     std::weak_ptr<OAuth2Session> weak_self = shared_from_this();
-    auto new_id = TokenRefreshScheduler::Instance().Schedule(
-        delay, [weak_self = std::move(weak_self)] {
+    scheduled_task_ = config_.scheduler->Schedule(
+        delay, ExecutorTask([weak_self = std::move(weak_self)] {
           if (auto self = weak_self.lock()) self->DoRefresh();
-        });
-    scheduled_task_id_.store(new_id);
+        }));
   }
 
   std::chrono::milliseconds CalculateRefreshDelay() const {
@@ -264,7 +265,7 @@ class OAuth2Session final : public AuthSession,
   Config config_;
   AuthProperties refresh_properties_;
   std::shared_ptr<HttpClient> client_;
-  std::atomic<uint64_t> scheduled_task_id_{0};
+  ::iceberg::internal::ScheduledTask scheduled_task_;
   std::atomic<bool> closed_{false};
   std::mutex refresh_mutex_;
   std::condition_variable refresh_cv_;
@@ -277,6 +278,7 @@ Result<std::shared_ptr<AuthSession>> MakeOAuth2Session(
     const std::string& scope, bool keep_refreshed,
     const std::unordered_map<std::string, std::string>& optional_oauth_params,
     std::shared_ptr<HttpClient> client,
-    std::optional<std::chrono::steady_clock::time_point> token_request_started_at);
+    std::optional<std::chrono::steady_clock::time_point> token_request_started_at,
+    ::iceberg::internal::ScheduledExecutor* scheduler = nullptr);
 
 }  // namespace iceberg::rest::auth::internal

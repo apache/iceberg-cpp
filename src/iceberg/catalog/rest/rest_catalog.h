@@ -63,9 +63,13 @@ class ICEBERG_REST_EXPORT RestCatalog final
   /// are reported synchronously.
   /// \param client_factory Optional HTTP client factory, called with the initial config
   /// and then the merged server config. When empty, uses the default HTTP client.
+  /// \param auth_executor Optional non-owning executor for OAuth2 token refresh. When
+  /// null, background token refresh is disabled. When non-null, it must outlive the
+  /// catalog and all authentication sessions created by it.
   static Result<std::shared_ptr<RestCatalog>> Make(const RestCatalogProperties& config,
                                                    Executor* metrics_executor = nullptr,
-                                                   ClientFactory client_factory = {});
+                                                   ClientFactory client_factory = {},
+                                                   Executor* auth_executor = nullptr);
 
   std::string_view name() const override;
 

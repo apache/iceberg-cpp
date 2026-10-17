@@ -30,7 +30,6 @@
 #include "iceberg/catalog/rest/auth/auth_properties.h"
 #include "iceberg/catalog/rest/auth/auth_session_internal.h"
 #include "iceberg/catalog/rest/auth/oauth2_util.h"
-#include "iceberg/catalog/rest/auth/token_refresh_scheduler.h"
 #include "iceberg/catalog/rest/http_client.h"
 #include "iceberg/util/macros.h"
 
@@ -79,7 +78,8 @@ Result<std::shared_ptr<AuthSession>> internal::MakeOAuth2Session(
     const std::string& scope, bool keep_refreshed,
     const std::unordered_map<std::string, std::string>& optional_oauth_params,
     std::shared_ptr<HttpClient> client,
-    std::optional<std::chrono::steady_clock::time_point> token_request_started_at) {
+    std::optional<std::chrono::steady_clock::time_point> token_request_started_at,
+    ::iceberg::internal::ScheduledExecutor* scheduler) {
   internal::OAuth2Session::Config config{
       .token_endpoint = token_endpoint,
       .client_id = client_id,
@@ -87,6 +87,7 @@ Result<std::shared_ptr<AuthSession>> internal::MakeOAuth2Session(
       .scope = scope,
       .optional_oauth_params = optional_oauth_params,
       .keep_refreshed = keep_refreshed,
+      .scheduler = scheduler,
   };
   ICEBERG_ASSIGN_OR_RAISE(auto session, internal::OAuth2Session::Make(
                                             initial_token, std::move(config),

@@ -155,6 +155,7 @@ set(ICEBERG_SOURCES
     util/murmurhash3_internal.cc
     util/property_util.cc
     util/retry_util.cc
+    util/scheduled_executor.cc
     util/snapshot_util.cc
     util/string_util.cc
     util/struct_like_set.cc

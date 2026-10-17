@@ -38,7 +38,6 @@
 #include "iceberg/catalog/rest/auth/auth_session.h"
 #include "iceberg/catalog/rest/auth/auth_session_internal.h"
 #include "iceberg/catalog/rest/auth/oauth2_util.h"
-#include "iceberg/catalog/rest/auth/token_refresh_scheduler.h"
 #include "iceberg/catalog/rest/catalog_properties.h"
 #include "iceberg/catalog/rest/error_handlers.h"
 #include "iceberg/catalog/rest/http_client.h"
@@ -46,8 +45,10 @@
 #include "iceberg/catalog/session_context.h"
 #include "iceberg/json_serde_internal.h"
 #include "iceberg/table_identifier.h"
+#include "iceberg/test/executor.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/util/base64.h"
+#include "iceberg/util/scheduled_executor_internal.h"
 
 namespace iceberg::rest::auth {
 
@@ -692,22 +693,23 @@ TEST_F(AuthManagerTest, ExpiresAtMillisInvalidTokensReturnNullopt) {
   }
 }
 
-// ---- TokenRefreshScheduler tests ----
+// ---- ScheduledExecutor tests ----
 
 // Verifies that a scheduled task fires after the specified delay
-TEST(TokenRefreshSchedulerTest, ScheduleFiresAfterDelay) {
-  TokenRefreshScheduler scheduler;
+TEST(ScheduledExecutorTest, ScheduleFiresAfterDelay) {
+  test::ThreadExecutor executor;
+  ::iceberg::internal::ScheduledExecutor scheduler(executor);
   std::mutex mutex;
   std::condition_variable cv;
   bool fired = false;
 
-  scheduler.Schedule(std::chrono::milliseconds(50), [&] {
-    {
-      std::lock_guard lock(mutex);
-      fired = true;
-    }
-    cv.notify_one();
-  });
+  scheduler.Schedule(std::chrono::milliseconds(50), ExecutorTask([&] {
+                       {
+                         std::lock_guard lock(mutex);
+                         fired = true;
+                       }
+                       cv.notify_one();
+                     }));
 
   {
     std::unique_lock lock(mutex);
@@ -718,15 +720,16 @@ TEST(TokenRefreshSchedulerTest, ScheduleFiresAfterDelay) {
 }
 
 // Verifies that cancelling a task prevents it from executing
-TEST(TokenRefreshSchedulerTest, CancelPreventsExecution) {
-  TokenRefreshScheduler scheduler;
+TEST(ScheduledExecutorTest, CancelPreventsExecution) {
+  test::ThreadExecutor executor;
+  ::iceberg::internal::ScheduledExecutor scheduler(executor);
   std::atomic<bool> fired{false};
 
-  auto handle =
-      scheduler.Schedule(std::chrono::milliseconds(100), [&] { fired.store(true); });
+  auto handle = scheduler.Schedule(std::chrono::milliseconds(100),
+                                   ExecutorTask([&] { fired.store(true); }));
 
   // Cancel before it fires
-  scheduler.Cancel(handle);
+  handle.Cancel();
 
   // Wait past the scheduled time
   std::this_thread::sleep_for(std::chrono::milliseconds(200));
@@ -736,11 +739,13 @@ TEST(TokenRefreshSchedulerTest, CancelPreventsExecution) {
 }
 
 // Verifies that shutdown with pending tasks does not crash
-TEST(TokenRefreshSchedulerTest, ShutdownWithPendingTasks) {
-  TokenRefreshScheduler scheduler;
+TEST(ScheduledExecutorTest, ShutdownWithPendingTasks) {
+  test::ThreadExecutor executor;
+  ::iceberg::internal::ScheduledExecutor scheduler(executor);
   std::atomic<bool> fired{false};
 
-  scheduler.Schedule(std::chrono::milliseconds(5000), [&] { fired.store(true); });
+  scheduler.Schedule(std::chrono::milliseconds(5000),
+                     ExecutorTask([&] { fired.store(true); }));
 
   // Shutdown immediately — should not crash and task should not fire
   scheduler.Shutdown();
@@ -750,20 +755,22 @@ TEST(TokenRefreshSchedulerTest, ShutdownWithPendingTasks) {
 }
 
 // Verifies that Schedule after shutdown returns invalid handle (0)
-TEST(TokenRefreshSchedulerTest, ScheduleAfterShutdownIsNoop) {
-  TokenRefreshScheduler scheduler;
+TEST(ScheduledExecutorTest, ScheduleAfterShutdownIsNoop) {
+  test::ThreadExecutor executor;
+  ::iceberg::internal::ScheduledExecutor scheduler(executor);
   scheduler.Shutdown();
 
-  auto handle = scheduler.Schedule(std::chrono::milliseconds(10), [] {});
-  EXPECT_EQ(0u, handle);
+  auto handle = scheduler.Schedule(std::chrono::milliseconds(10), ExecutorTask([] {}));
+  EXPECT_FALSE(handle.valid());
 }
 
 // Verifies that cancelling an invalid handle does not crash
-TEST(TokenRefreshSchedulerTest, CancelInvalidHandleIsNoop) {
-  TokenRefreshScheduler scheduler;
+TEST(ScheduledExecutorTest, CancelInvalidHandleIsNoop) {
+  test::ThreadExecutor executor;
+  ::iceberg::internal::ScheduledExecutor scheduler(executor);
   // Should not crash
-  scheduler.Cancel(0);
-  scheduler.Cancel(999);
+  ::iceberg::internal::ScheduledTask handle;
+  handle.Cancel();
   scheduler.Shutdown();
 }
 
