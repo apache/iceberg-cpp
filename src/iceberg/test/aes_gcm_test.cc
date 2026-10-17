@@ -20,6 +20,7 @@
 #include <cstring>
 #include <filesystem>
 #include <fstream>
+#include <limits>
 #include <span>
 #include <string>
 #include <string_view>
@@ -234,7 +235,8 @@ TEST_F(AesGcmStreamTest, RoundTripAcrossBlocks) {
     int64_t stored = Write(path, plain, key, aad, /*chunk=*/333331);
     size_t blocks = size == 0 ? 1 : (size + kBlock - 1) / kBlock;
     EXPECT_EQ(stored, static_cast<int64_t>(8 + size + blocks * 28));
-    EXPECT_EQ(AesGcmStream::PlaintextLength(stored), static_cast<int64_t>(size));
+    ICEBERG_UNWRAP_OR_FAIL(auto plain_size, AesGcmStream::PlaintextLength(stored));
+    EXPECT_EQ(plain_size, static_cast<int64_t>(size));
 
     auto file = Open(path, key, aad, stored);
     ICEBERG_UNWRAP_OR_FAIL(auto read, ReadAll(*file));
@@ -279,6 +281,42 @@ TEST_F(AesGcmStreamTest, DetectsTampering) {
   EXPECT_THAT(Open(path, key, aad, 36)->Open(), IsError(ErrorKind::kInvalid));
   // Shorter than an empty stream
   EXPECT_THAT(Open(path, key, aad, 35)->Open(), IsError(ErrorKind::kInvalid));
+}
+
+TEST_F(AesGcmStreamTest, RejectsInvalidEncryptedLength) {
+  constexpr int64_t kHeader = AesGcmStream::kHeaderLength;
+  constexpr int64_t kCipherBlock = AesGcmStream::kCipherBlockSize;
+  constexpr int64_t kOverhead = AesGcmStream::kNonceLength + AesGcmStream::kGcmTagLength;
+
+  // Shorter than an empty stream
+  EXPECT_THAT(AesGcmStream::PlaintextLength(-1), IsError(ErrorKind::kInvalid));
+  EXPECT_THAT(AesGcmStream::PlaintextLength(0), IsError(ErrorKind::kInvalid));
+  EXPECT_THAT(AesGcmStream::PlaintextLength(AesGcmStream::kMinStreamLength - 1),
+              IsError(ErrorKind::kInvalid));
+  EXPECT_THAT(AesGcmStream::PlaintextLength(AesGcmStream::kMinStreamLength),
+              HasValue(::testing::Eq(0)));
+
+  // A last block too short to hold a nonce and a tag
+  EXPECT_THAT(AesGcmStream::PlaintextLength(kHeader + kCipherBlock + kOverhead - 1),
+              IsError(ErrorKind::kInvalid));
+  EXPECT_THAT(AesGcmStream::PlaintextLength(kHeader + kCipherBlock + kOverhead),
+              HasValue(::testing::Eq(AesGcmStream::kPlainBlockSize)));
+
+  // More blocks than the int32 block index in the block AAD can address. The check
+  // must happen here rather than when a block is decrypted, so that a caller asking
+  // only for the size never sees a length it could not read back.
+  constexpr int64_t kMaxBlocks = std::numeric_limits<int32_t>::max();
+  EXPECT_THAT(AesGcmStream::PlaintextLength(kHeader + kMaxBlocks * kCipherBlock),
+              HasValue(::testing::Eq(kMaxBlocks * AesGcmStream::kPlainBlockSize)));
+  EXPECT_THAT(AesGcmStream::PlaintextLength(kHeader + kMaxBlocks * kCipherBlock + 1),
+              IsError(ErrorKind::kInvalid));
+
+  // Both Size() and Open() reject it, rather than Open() alone
+  auto path = CreateNewTempFilePath();
+  Write(path, TestBytes(10, 5), kDataKey, kAadPrefix);
+  auto file = Open(path, kDataKey, kAadPrefix, kHeader + kMaxBlocks * kCipherBlock + 1);
+  EXPECT_THAT(file->Size(), IsError(ErrorKind::kInvalid));
+  EXPECT_THAT(file->Open(), IsError(ErrorKind::kInvalid));
 }
 
 }  // namespace iceberg

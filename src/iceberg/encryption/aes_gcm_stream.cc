@@ -62,21 +62,23 @@ std::array<std::byte, AesGcmStream::kHeaderLength> HeaderBytes() {
 
 class AesGcmInputStream : public SeekableInputStream {
  public:
+  /// \brief Construct over an encrypted length already accepted by
+  /// AesGcmStream::PlaintextLength, which bounds the block count.
   AesGcmInputStream(std::unique_ptr<SeekableInputStream> source,
                     std::unique_ptr<AesGcmCipher> cipher, std::vector<uint8_t> aad_prefix,
-                    int64_t encrypted_length)
+                    int64_t encrypted_length, int64_t plain_size)
       : source_(std::move(source)),
         cipher_(std::move(cipher)),
         aad_prefix_(std::move(aad_prefix)),
         cipher_block_(kCipherBlock),
-        plain_block_(kPlainBlock) {
+        plain_block_(kPlainBlock),
+        plain_size_(plain_size) {
     int64_t stream_length = encrypted_length - AesGcmStream::kHeaderLength;
     int64_t num_full_blocks = stream_length / kCipherBlock;
     int64_t last_bytes = stream_length - num_full_blocks * kCipherBlock;
     bool full_blocks_only = last_bytes == 0;
     num_blocks_ = full_blocks_only ? num_full_blocks : num_full_blocks + 1;
     last_cipher_block_size_ = full_blocks_only ? kCipherBlock : last_bytes;
-    plain_size_ = AesGcmStream::PlaintextLength(encrypted_length);
   }
 
   Status ValidateHeader() {
@@ -93,9 +95,6 @@ class AesGcmInputStream : public SeekableInputStream {
     if (plain_block_size != static_cast<uint32_t>(AesGcmStream::kPlainBlockSize)) {
       return Invalid("Invalid GCM stream: block size {} != {}", plain_block_size,
                      AesGcmStream::kPlainBlockSize);
-    }
-    if (last_cipher_block_size_ < kBlockOverhead) {
-      return Invalid("Invalid GCM stream: truncated last block");
     }
     return {};
   }
@@ -146,9 +145,7 @@ class AesGcmInputStream : public SeekableInputStream {
     if (block_index == current_block_index_) {
       return {};
     }
-    if (block_index > std::numeric_limits<int32_t>::max()) {
-      return Invalid("GCM stream block index overflow");
-    }
+    // num_blocks_ is bounded by int32 max at construction, so the cast below is safe.
     int64_t size =
         block_index == num_blocks_ - 1 ? last_cipher_block_size_ : kCipherBlock;
     auto cipher_block = std::span(cipher_block_).first(size);
@@ -282,15 +279,28 @@ class AesGcmOutputStream : public PositionOutputStream {
 
 }  // namespace
 
-int64_t AesGcmStream::PlaintextLength(int64_t encrypted_length) {
-  int64_t stream_length = encrypted_length - kHeaderLength;
-  if (stream_length <= 0) {
-    return 0;
+Result<int64_t> AesGcmStream::PlaintextLength(int64_t encrypted_length) {
+  if (encrypted_length < kMinStreamLength) {
+    return Invalid(
+        "Invalid encrypted stream: {} is shorter than the minimum possible stream "
+        "length {}",
+        encrypted_length, kMinStreamLength);
   }
+  int64_t stream_length = encrypted_length - kHeaderLength;
   int64_t num_full_blocks = stream_length / kCipherBlockSize;
   int64_t last_bytes = stream_length - num_full_blocks * kCipherBlockSize;
+  int64_t num_blocks = last_bytes == 0 ? num_full_blocks : num_full_blocks + 1;
+  // Block AAD carries the block index as an int32, so Java bounds the block count
+  // with Math.toIntExact. Reject here rather than when the block is decrypted.
+  if (num_blocks > std::numeric_limits<int32_t>::max()) {
+    return Invalid("Invalid encrypted stream: {} bytes exceeds the maximum of {} blocks",
+                   encrypted_length, std::numeric_limits<int32_t>::max());
+  }
+  if (last_bytes != 0 && last_bytes < kNonceLength + kGcmTagLength) {
+    return Invalid("Invalid GCM stream: truncated last block");
+  }
   int64_t last_plain = last_bytes == 0 ? 0 : last_bytes - kNonceLength - kGcmTagLength;
-  return num_full_blocks * kPlainBlockSize + std::max<int64_t>(last_plain, 0);
+  return num_full_blocks * kPlainBlockSize + last_plain;
 }
 
 AesGcmInputFile::AesGcmInputFile(std::unique_ptr<InputFile> source,
@@ -307,15 +317,12 @@ Result<int64_t> AesGcmInputFile::Size() const {
 }
 
 Result<std::unique_ptr<SeekableInputStream>> AesGcmInputFile::Open() {
-  if (encrypted_length_ < AesGcmStream::kMinStreamLength) {
-    return Invalid(
-        "Invalid encrypted stream: {} is shorter than the minimum possible stream length",
-        encrypted_length_);
-  }
+  ICEBERG_ASSIGN_OR_RAISE(auto plain_size,
+                          AesGcmStream::PlaintextLength(encrypted_length_));
   ICEBERG_ASSIGN_OR_RAISE(auto cipher, AesGcmCipher::Make(key_));
   ICEBERG_ASSIGN_OR_RAISE(auto source, source_->Open());
-  auto stream = std::make_unique<AesGcmInputStream>(std::move(source), std::move(cipher),
-                                                    aad_prefix_, encrypted_length_);
+  auto stream = std::make_unique<AesGcmInputStream>(
+      std::move(source), std::move(cipher), aad_prefix_, encrypted_length_, plain_size);
   ICEBERG_RETURN_UNEXPECTED(stream->ValidateHeader());
   return stream;
 }
