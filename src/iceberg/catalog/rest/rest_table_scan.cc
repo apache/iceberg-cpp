@@ -205,8 +205,7 @@ Result<FetchPlanningResultResponse> FetchPlanningResult(
   for (int32_t retry = 0; retry <= poll_config.max_retries; ++retry) {
     ICEBERG_ASSIGN_OR_RAISE(auto response,
                             ctx.client->Get(path, /*params=*/{}, /*headers=*/{},
-                                            *PlanErrorHandler::Instance(), *ctx.session,
-                                            /*timeout=*/std::nullopt));
+                                            *PlanErrorHandler::Instance(), *ctx.session));
     ICEBERG_ASSIGN_OR_RAISE(auto json, FromJsonString(response.body()));
     ICEBERG_ASSIGN_OR_RAISE(auto result,
                             FetchPlanningResultResponseFromJson(json, specs, schema));

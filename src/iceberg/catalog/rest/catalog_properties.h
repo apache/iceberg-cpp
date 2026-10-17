@@ -72,6 +72,11 @@ class ICEBERG_REST_EXPORT RestCatalogProperties
       "rest-scan-planning.poll-num-retries", 10};
   /// \brief The prefix for HTTP headers.
   inline static constexpr std::string_view kHeaderPrefix = "header.";
+  /// \brief HTTP connection timeout in milliseconds, matching Java REST clients.
+  inline static Entry<int64_t> kClientConnectionTimeoutMs{
+      "rest.client.connection-timeout-ms", 0};
+  /// \brief HTTP socket/read timeout in milliseconds, matching Java REST clients.
+  inline static Entry<int64_t> kClientSocketTimeoutMs{"rest.client.socket-timeout-ms", 0};
 
   /// \brief Create a default RestCatalogProperties instance.
   static RestCatalogProperties default_properties();

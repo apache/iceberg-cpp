@@ -37,6 +37,7 @@
 #include <gtest/gtest.h>
 
 #include "iceberg/file_io.h"
+#include "iceberg/storage_credential.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg {
@@ -254,6 +255,11 @@ class MockFileIO : public FileIO {
   }
 
   std::shared_ptr<FileMap> files_ = std::make_shared<FileMap>();
+};
+
+class MockStorageCredentialProvider : public StorageCredentialProvider {
+ public:
+  MOCK_METHOD((Result<std::vector<StorageCredential>>), Load, (), (override));
 };
 
 }  // namespace iceberg

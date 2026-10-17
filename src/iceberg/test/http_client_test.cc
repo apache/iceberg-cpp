@@ -135,22 +135,21 @@ TEST(HttpClientTest, GetFailsWhenItsTransferFails) {
     ASSERT_NO_FATAL_FAILURE(Listen(listener));
     const auto url = std::format("http://127.0.0.1:{}/v1/config", listener.port);
 
-    HttpClient client;
+    HttpClient client({}, {}, std::chrono::milliseconds(500));
     auto session = auth::AuthSession::MakeDefault({});
     std::thread server(
         [&] { ServeOnce(listener.fd, test_case.response, test_case.end); });
-    auto response =
-        client.Get(url, /*params=*/{}, /*headers=*/{}, *DefaultErrorHandler::Instance(),
-                   *session, std::chrono::milliseconds(500));
+    auto response = client.Get(url, /*params=*/{}, /*headers=*/{},
+                               *DefaultErrorHandler::Instance(), *session);
     server.join();
     EXPECT_THAT(response, IsError(ErrorKind::kIOError));
     EXPECT_THAT(response, HasErrorMessage(test_case.error));
   }
 }
 
-TEST(HttpClientTest, PostKeepsASuccessfulStatusWhenTheTransferBreaks) {
-  // A write that got its status may have taken effect, so it must not fail.
-  // Here the body arrives but its final chunk does not.
+TEST(HttpClientTest, PostReportsTransferFailureAfterSuccessfulStatus) {
+  // A write that got its status may have taken effect, so the caller must treat
+  // the result as unknown rather than retrying or cleaning up automatically.
   constexpr std::string_view kBody = R"({"metadata-location":"s3://bucket/m.json"})";
   const auto response_bytes = std::format(
       "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\n"
@@ -167,8 +166,8 @@ TEST(HttpClientTest, PostKeepsASuccessfulStatusWhenTheTransferBreaks) {
   auto response =
       client.Post(url, "{}", /*headers=*/{}, *DefaultErrorHandler::Instance(), *session);
   server.join();
-  ASSERT_THAT(response, IsOk());
-  EXPECT_EQ(response->body(), kBody);
+  EXPECT_THAT(response, IsError(ErrorKind::kIOError));
+  EXPECT_THAT(response, HasErrorMessage("failed after status 200"));
 }
 
 #endif

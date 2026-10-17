@@ -57,7 +57,9 @@
 #include "iceberg/test/executor.h"
 #include "iceberg/test/logging_test_helpers.h"
 #include "iceberg/test/matchers.h"
+#include "iceberg/test/mock_io.h"
 #include "iceberg/util/macros.h"
+#include "iceberg/util/timepoint.h"
 
 namespace {
 
@@ -167,16 +169,8 @@ bool HasWarning(const CapturingLogger& logger, std::string_view substring = {}) 
   });
 }
 
-class MockStorageCredentialProvider : public StorageCredentialProvider {
- public:
-  MOCK_METHOD((Result<std::vector<StorageCredential>>), Load, (), (override));
-};
-
 std::string ExpiresAtMs(std::chrono::milliseconds valid_for) {
-  return std::to_string(
-      std::chrono::duration_cast<std::chrono::milliseconds>(
-          (std::chrono::system_clock::now() + valid_for).time_since_epoch())
-          .count());
+  return std::to_string(UnixMsFromTimePointMs(CurrentTimePointMs() + valid_for));
 }
 
 std::vector<StorageCredential> ExpiringCredentials(std::chrono::milliseconds valid_for,
@@ -839,6 +833,34 @@ TEST_F(ArrowS3FileIOTest, KeepsCredentialsWhenTheRefreshFails) {
   }
 }
 
+TEST_F(ArrowS3FileIOTest, RejectsARefreshWithAnInvalidCredential) {
+  // Usable S3 keys do not make up for an invalid credential beside them, even
+  // one this FileIO would skip.
+  const std::vector<StorageCredential> invalid = {
+      {.prefix = "", .config = {{"k", "v"}}},
+      {.prefix = "gs://bucket", .config = {}},
+      {.prefix = "s3://other/", .config = {}}};
+  for (const auto& bad : invalid) {
+    SCOPED_TRACE(bad.prefix);
+    ICEBERG_UNWRAP_OR_FAIL(auto io, MakeS3FileIO({}));
+    auto* credentialed = io->AsSupportsStorageCredentials();
+    ASSERT_NE(credentialed, nullptr);
+
+    auto refreshed = ExpiringCredentials(std::chrono::hours(1), "refreshed-key");
+    refreshed.push_back(bad);
+    auto provider = std::make_shared<MockStorageCredentialProvider>();
+    EXPECT_CALL(*provider, Load()).WillOnce(::testing::Return(refreshed));
+    const auto expiring = ExpiringCredentials(std::chrono::minutes(1), "expiring-key");
+    ASSERT_THAT(credentialed->InitializeStorageCredentials(expiring, provider), IsOk());
+
+    auto logger = std::make_shared<CapturingLogger>();
+    ScopedDefaultLogger scoped(logger);
+    EXPECT_THAT(io->NewInputFile("s3://bucket/key"), IsOk());
+    EXPECT_EQ(credentialed->credentials(), expiring);
+    EXPECT_TRUE(HasWarning(*logger, "Failed to refresh"));
+  }
+}
+
 TEST_F(ArrowS3FileIOTest, AcceptsRefreshedPrefixesInAnotherOrder) {
   ICEBERG_UNWRAP_OR_FAIL(auto io, MakeS3FileIO({}));
   auto* credentialed = io->AsSupportsStorageCredentials();
@@ -858,7 +880,8 @@ TEST_F(ArrowS3FileIOTest, AcceptsRefreshedPrefixesInAnotherOrder) {
   ASSERT_THAT(credentialed->InitializeStorageCredentials(initial, provider), IsOk());
 
   EXPECT_THAT(io->NewInputFile("s3://first/key"), IsOk());
-  EXPECT_EQ(credentialed->credentials(), refreshed);
+  EXPECT_THAT(credentialed->credentials(),
+              ::testing::UnorderedElementsAreArray(refreshed));
 }
 
 TEST_F(ArrowS3FileIOTest, TracksTheExpiryOfTheTokenItSignsWith) {

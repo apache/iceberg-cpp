@@ -17,7 +17,6 @@
  * under the License.
  */
 
-#include <chrono>
 #include <memory>
 #include <optional>
 #include <string>
@@ -68,8 +67,7 @@ class MockHttpClient : public HttpClient {
               (const std::string& path,
                (const std::unordered_map<std::string, std::string>&)params,
                (const std::unordered_map<std::string, std::string>&)headers,
-               const ErrorHandler& error_handler, auth::AuthSession& session,
-               std::optional<std::chrono::milliseconds> timeout),
+               const ErrorHandler& error_handler, auth::AuthSession& session),
               (override));
 
   MOCK_METHOD(Result<HttpResponse>, Post,
@@ -206,7 +204,7 @@ class RestCatalogLoadTableTest : public ::testing::Test {
       props["scan-planning-mode"] = client_scan_mode;
     }
     CatalogConfig server_config{.endpoints = {endpoints.begin(), endpoints.end()}};
-    EXPECT_CALL(*mock_client_, Get(::testing::EndsWith("/v1/config"), _, _, _, _, _))
+    EXPECT_CALL(*mock_client_, Get(::testing::EndsWith("/v1/config"), _, _, _, _))
         .WillOnce(Return(HttpResponse(200, ToJson(server_config).dump())));
     auto config = RestCatalogProperties::FromMap(std::move(props));
     return RestCatalog::Make(config, /*metrics_executor=*/nullptr,
@@ -250,7 +248,7 @@ class RestCatalogLabelsTest : public RestCatalogLoadTableTest,
 };
 
 TEST_P(RestCatalogLabelsTest, LoadExposesLabels) {
-  EXPECT_CALL(*mock_client_, Get(::testing::EndsWith("/tables/my_table"), _, _, _, _, _))
+  EXPECT_CALL(*mock_client_, Get(::testing::EndsWith("/tables/my_table"), _, _, _, _))
       .WillOnce(Return(HttpResponse(200, LabelsResponse())));
   ICEBERG_UNWRAP_OR_FAIL(auto catalog, MakeLabelsCatalog());
   ICEBERG_UNWRAP_OR_FAIL(auto table, catalog->LoadTable(identifier_));
@@ -295,9 +293,9 @@ TEST_F(RestCatalogLoadTableTest, InitializationPropagatesClientFactoryErrors) {
   for (int fail_on_call : {1, 2}) {
     SCOPED_TRACE(fail_on_call);
     if (fail_on_call == 1) {
-      EXPECT_CALL(*mock_client_, Get(_, _, _, _, _, _)).Times(0);
+      EXPECT_CALL(*mock_client_, Get(_, _, _, _, _)).Times(0);
     } else {
-      EXPECT_CALL(*mock_client_, Get(::testing::EndsWith("/v1/config"), _, _, _, _, _))
+      EXPECT_CALL(*mock_client_, Get(::testing::EndsWith("/v1/config"), _, _, _, _))
           .WillOnce(Return(HttpResponse(200, ToJson(CatalogConfig{}).dump())));
     }
     int calls = 0;
@@ -324,14 +322,14 @@ TEST_F(RestCatalogLoadTableTest, InitializationUsesMergedServerConfig) {
                     {"scan-planning-mode", "server"},
                     {"header.X-Shared", "server"}},
       .endpoints = {all_plan_endpoints_.begin(), all_plan_endpoints_.end()}};
-  EXPECT_CALL(*mock_client_,
-              Get(::testing::EndsWith("/v1/config"),
-                  ::testing::Contains(::testing::Pair("warehouse", "client-warehouse")),
-                  _, _, _, _))
+  EXPECT_CALL(
+      *mock_client_,
+      Get(::testing::EndsWith("/v1/config"),
+          ::testing::Contains(::testing::Pair("warehouse", "client-warehouse")), _, _, _))
       .WillOnce(Return(HttpResponse(200, ToJson(server_config).dump())));
   EXPECT_CALL(*mock_client_,
               Get(::testing::EndsWith("/v1/catalog/namespaces/default/tables/my_table"),
-                  ::testing::Contains(::testing::Pair("snapshots", "refs")), _, _, _, _))
+                  ::testing::Contains(::testing::Pair("snapshots", "refs")), _, _, _))
       .WillOnce(Return(HttpResponse(200, kLoadTableDefaultResponse)));
   EXPECT_CALL(
       *mock_client_,
@@ -371,7 +369,7 @@ TEST_F(RestCatalogLoadTableTest, InitializationUsesMergedServerConfig) {
 // LoadTable returns NotSupported.
 // --------------------------------------------------------------------------
 TEST_F(RestCatalogLoadTableTest, ServerScanWithMissingEndpointReturnsNotSupported) {
-  EXPECT_CALL(*mock_client_, Get(_, _, _, _, _, _))
+  EXPECT_CALL(*mock_client_, Get(_, _, _, _, _))
       .WillOnce(Return(HttpResponse(200, kLoadTableServerScanResponse)));
 
   ICEBERG_UNWRAP_OR_FAIL(auto catalog, MakeCatalog(no_plan_endpoint_set_));
@@ -387,14 +385,14 @@ TEST_F(RestCatalogLoadTableTest, ServerScanWithMissingEndpointReturnsNotSupporte
 TEST_F(RestCatalogLoadTableTest, ScanCredentialProviderWithoutPlanIdOmitsPlanId) {
   RegisterCredentialedFileIO();
   EXPECT_CALL(*mock_client_,
-              Get(::testing::Not(::testing::HasSubstr("/credentials")), _, _, _, _, _))
+              Get(::testing::Not(::testing::HasSubstr("/credentials")), _, _, _, _))
       .WillOnce(Return(HttpResponse(200, kLoadTableServerScanResponse)));
   EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
       .WillOnce(Return(HttpResponse(
           200,
           R"({"status":"completed","storage-credentials":[{"prefix":"s3://bucket","config":{"k":"v"}}]})")));
-  EXPECT_CALL(*mock_client_, Get(::testing::HasSubstr("/credentials"),
-                                 ::testing::IsEmpty(), _, _, _, ::testing::Optional(_)))
+  EXPECT_CALL(*mock_client_,
+              Get(::testing::HasSubstr("/credentials"), ::testing::IsEmpty(), _, _, _))
       .WillOnce(Return(HttpResponse(
           200,
           R"({"storage-credentials":[{"prefix":"s3://bucket","config":{"k":"v2"}}]})")));
@@ -421,7 +419,7 @@ TEST_F(RestCatalogLoadTableTest, ScanCredentialProviderWithoutPlanIdOmitsPlanId)
 TEST_F(RestCatalogLoadTableTest,
        ScanCredentialsWithoutCredentialsEndpointHaveNoProvider) {
   RegisterCredentialedFileIO();
-  EXPECT_CALL(*mock_client_, Get(_, _, _, _, _, _))
+  EXPECT_CALL(*mock_client_, Get(_, _, _, _, _))
       .WillOnce(Return(HttpResponse(200, kLoadTableServerScanResponse)));
   EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
       .WillOnce(Return(HttpResponse(200, std::string(kPlanWithCredentialsResponse))));
@@ -456,7 +454,7 @@ TEST_P(RestCatalogPlanningModeTest, LoadAndCommitKeepTheEffectivePlanningMode) {
   const auto& config = GetParam();
   auto response = nlohmann::json::parse(kLoadTableDefaultResponse);
   if (!config.table.empty()) response["config"]["scan-planning-mode"] = config.table;
-  EXPECT_CALL(*mock_client_, Get(::testing::EndsWith("/tables/my_table"), _, _, _, _, _))
+  EXPECT_CALL(*mock_client_, Get(::testing::EndsWith("/tables/my_table"), _, _, _, _))
       .WillOnce(Return(HttpResponse(200, response.dump())));
   EXPECT_CALL(*mock_client_, Post(::testing::EndsWith("/tables/my_table"), _, _, _, _))
       .WillOnce(Return(HttpResponse(200, kCommitTableResponse)));
@@ -509,13 +507,13 @@ TEST_P(RestCatalogScanLifetimeTest, ScanKeepsCredentialRefreshAlive) {
                               {"timestamp-ms", 2},
                               {"manifest-list", "s3://bucket/manifests-2.avro"},
                               {"schema-id", 1}}});
-  EXPECT_CALL(*mock_client_, Get(::testing::EndsWith("/tables/my_table"), _, _, _, _, _))
+  EXPECT_CALL(*mock_client_, Get(::testing::EndsWith("/tables/my_table"), _, _, _, _))
       .WillOnce(Return(HttpResponse(200, response.dump())));
   EXPECT_CALL(*mock_client_, Post(::testing::EndsWith("/plan"), _, _, _, _))
       .WillOnce(Return(HttpResponse(200, std::string(kPlanWithCredentialsResponse))));
-  EXPECT_CALL(*mock_client_, Get(::testing::EndsWith("/credentials"),
-                                 ::testing::Contains(::testing::Pair("planId", "plan-1")),
-                                 _, _, _, ::testing::Optional(_)))
+  EXPECT_CALL(*mock_client_,
+              Get(::testing::EndsWith("/credentials"),
+                  ::testing::Contains(::testing::Pair("planId", "plan-1")), _, _, _))
       .WillOnce(Return(HttpResponse(
           200,
           R"({"storage-credentials":[{"prefix":"s3://bucket","config":{"k":"v2"}}]})")));

@@ -24,7 +24,6 @@
 #include <condition_variable>
 #include <memory>
 #include <mutex>
-#include <optional>
 #include <string>
 #include <thread>
 #include <unordered_map>
@@ -254,8 +253,7 @@ TEST_F(AuthManagerTest, HttpClientRejectsParamsWhenUrlAlreadyHasQuery) {
   auto session = AuthSession::MakeDefault({});
   auto result =
       client_->Get("http://127.0.0.1/v1/config?existing=true", {{"warehouse", "prod"}},
-                   /*headers=*/{}, *rest::DefaultErrorHandler::Instance(), *session,
-                   /*timeout=*/std::nullopt);
+                   /*headers=*/{}, *rest::DefaultErrorHandler::Instance(), *session);
 
   EXPECT_THAT(result, IsError(ErrorKind::kInvalidArgument));
   EXPECT_THAT(result, HasErrorMessage("must not contain a query string"));

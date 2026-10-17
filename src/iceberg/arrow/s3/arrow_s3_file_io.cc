@@ -56,6 +56,7 @@
 #include "iceberg/util/macros.h"
 #include "iceberg/util/property_util.h"
 #include "iceberg/util/string_util.h"
+#include "iceberg/util/timepoint.h"
 
 namespace iceberg::arrow {
 
@@ -299,8 +300,8 @@ Result<::arrow::fs::S3Options> ConfigureS3Options(
 
 namespace {
 
-// `credentials_provider`, if set, signs requests instead of the keys in
-// `properties`.
+// Build an Arrow S3 filesystem. If a provider is supplied, the AWS signer gets
+// access keys from it instead of using the keys in `properties`.
 Result<std::shared_ptr<::arrow::fs::FileSystem>> BuildArrowS3FileSystem(
     const std::unordered_map<std::string, std::string>& properties,
     std::shared_ptr<Aws::Auth::AWSCredentialsProvider> credentials_provider = nullptr) {
@@ -314,195 +315,37 @@ Result<std::shared_ptr<::arrow::fs::FileSystem>> BuildArrowS3FileSystem(
   return std::shared_ptr<::arrow::fs::FileSystem>(std::move(fs));
 }
 
-// Rewrites any alias of `s3://` (any case — routing is case-insensitive) to
-// exactly that, so locations and credential prefixes compare equal. An alias
-// missing from kS3Schemes would silently stop matching its credential.
-std::string CanonicalizeS3Scheme(std::string_view location) {
+// Make the URI scheme lower-case for matching. Keep different schemes, such as
+// `s3` and `oss`, separate because they can use different endpoints and keys.
+std::string NormalizeS3Location(std::string_view location) {
   const auto separator = location.find("://");
   if (separator != std::string_view::npos && IsS3Scheme(location.substr(0, separator))) {
-    return std::string("s3://").append(location.substr(separator + 3));
+    // The scheme matched an ASCII alias, so only ASCII letters change.
+    return StringUtils::ToLower(location.substr(0, separator))
+        .append(location.substr(separator));
   }
   return std::string(location);
 }
 
-// Lead time before expiry, matching Java's VendedCredentialsProvider.
+// Start refreshing five minutes before the earliest token expires.
 constexpr auto kRefreshLeadTime = std::chrono::minutes(5);
 
-// How long to wait after a failed refresh before asking the catalog again.
-constexpr auto kRefreshRetryBackoff = std::chrono::seconds(30);
+// Wait this long before retrying a failed refresh.
+constexpr std::chrono::milliseconds kRefreshRetryBackoff = std::chrono::seconds(30);
 
-// Floor on a backoff shortened to land on the expiry.
-constexpr auto kMinRefreshRetryBackoff = std::chrono::seconds(1);
+// Never use a retry delay shorter than this value.
+constexpr std::chrono::milliseconds kMinRefreshRetryBackoff = std::chrono::seconds(1);
 
-// How long a caller with expired credentials waits for a refresh under way.
+// An expired request waits this long for another request's refresh to finish.
 constexpr auto kExpiredCredentialWait = std::chrono::seconds(10);
 
-// Whether `config` carries an access key pair.
+// Return true when the config has both parts of a static key pair.
 bool HasKeys(const std::unordered_map<std::string, std::string>& config) {
   return FindProperty(config, S3Properties::kAccessKeyId) != nullptr &&
          FindProperty(config, S3Properties::kSecretAccessKey) != nullptr;
 }
 
-// The properties an S3 client for `credential` is built from.
-std::unordered_map<std::string, std::string> PropertiesFor(
-    const std::unordered_map<std::string, std::string>& default_properties,
-    const StorageCredential& credential) {
-  auto properties = default_properties;
-  for (const auto& [key, value] : credential.config) {
-    properties[key] = value;
-  }
-  return properties;
-}
-
-// The client settings in `properties`: everything but the keys.
-std::unordered_map<std::string, std::string> SettingsOf(
-    std::unordered_map<std::string, std::string> properties) {
-  for (const auto key :
-       {S3Properties::kAccessKeyId, S3Properties::kSecretAccessKey,
-        S3Properties::kSessionToken, S3Properties::kSessionTokenExpiresAtMs}) {
-    properties.erase(std::string(key));
-  }
-  return properties;
-}
-
-// When the session token that `properties` sign with expires: nullopt if they
-// sign without one, or an error if the expiry is missing or invalid.
-Result<std::optional<std::chrono::system_clock::time_point>> ExpiryOf(
-    const std::unordered_map<std::string, std::string>& properties,
-    std::string_view prefix) {
-  // Only a nonempty token alongside an access key pair signs requests.
-  const auto* token = FindProperty(properties, S3Properties::kSessionToken);
-  if (!HasKeys(properties) || token == nullptr || token->empty()) {
-    return std::nullopt;
-  }
-  const auto* value = FindProperty(properties, S3Properties::kSessionTokenExpiresAtMs);
-  if (value == nullptr) {
-    return InvalidArgument("Credential \"{}\" has a session token but no \"{}\"", prefix,
-                           S3Properties::kSessionTokenExpiresAtMs);
-  }
-  auto millis = StringUtils::ParseNumber<int64_t>(*value);
-  if (!millis.has_value()) {
-    return InvalidArgument(
-        "Credential \"{}\" has a session token but an unparseable \"{}\" value \"{}\"",
-        prefix, S3Properties::kSessionTokenExpiresAtMs, *value);
-  }
-  // Beyond what the clock can hold, converting would overflow it.
-  constexpr auto kMaxMillis = std::chrono::duration_cast<std::chrono::milliseconds>(
-                                  std::chrono::system_clock::duration::max())
-                                  .count();
-  constexpr auto kMinMillis = std::chrono::duration_cast<std::chrono::milliseconds>(
-                                  std::chrono::system_clock::duration::min())
-                                  .count();
-  if (*millis > kMaxMillis || *millis < kMinMillis) {
-    return InvalidArgument("Credential \"{}\" has an out-of-range \"{}\" value \"{}\"",
-                           prefix, S3Properties::kSessionTokenExpiresAtMs, *value);
-  }
-  return std::chrono::system_clock::time_point(std::chrono::milliseconds(*millis));
-}
-
-// The S3 credentials in effect: the first for each canonical prefix, which is
-// the one its locations match.
-std::vector<const StorageCredential*> S3CredentialsOf(
-    const std::vector<StorageCredential>& credentials) {
-  std::vector<const StorageCredential*> s3_credentials;
-  std::unordered_set<std::string> prefixes;
-  for (const auto& credential : credentials) {
-    if (IsS3CredentialPrefix(credential.prefix) &&
-        prefixes.insert(CanonicalizeS3Scheme(credential.prefix)).second) {
-      s3_credentials.push_back(&credential);
-    }
-  }
-  return s3_credentials;
-}
-
-// When installed credentials need replacing.
-struct CredentialsExpiry {
-  // The earliest expiry known, if any.
-  std::optional<std::chrono::system_clock::time_point> expires_at;
-  // A session token lacks a usable expiry: refresh at once, as Java does, but
-  // do not treat it as expired.
-  bool unknown = false;
-};
-
-CredentialsExpiry ExpiryOf(
-    const std::unordered_map<std::string, std::string>& default_properties,
-    const std::vector<StorageCredential>& credentials) {
-  CredentialsExpiry expiry;
-  for (const auto* credential : S3CredentialsOf(credentials)) {
-    auto expires_at =
-        ExpiryOf(PropertiesFor(default_properties, *credential), credential->prefix);
-    if (!expires_at.has_value()) {
-      ICEBERG_LOG_WARN("{}", expires_at.error().message);
-      expiry.unknown = true;
-    } else if (expires_at->has_value() &&
-               (!expiry.expires_at.has_value() || **expires_at < *expiry.expires_at)) {
-      expiry.expires_at = **expires_at;
-    }
-  }
-  return expiry;
-}
-
-// Known expiries by canonical prefix.
-std::unordered_map<std::string, std::chrono::system_clock::time_point> ExpiriesOf(
-    const std::unordered_map<std::string, std::string>& default_properties,
-    const std::vector<StorageCredential>& credentials) {
-  std::unordered_map<std::string, std::chrono::system_clock::time_point> expiries;
-  for (const auto* credential : S3CredentialsOf(credentials)) {
-    // Invalid expiries are logged on install.
-    if (auto expires_at =
-            ExpiryOf(PropertiesFor(default_properties, *credential), credential->prefix);
-        expires_at.has_value() && expires_at->has_value()) {
-      expiries.emplace(CanonicalizeS3Scheme(credential->prefix), **expires_at);
-    }
-  }
-  return expiries;
-}
-
-// The S3 prefixes `credentials` serve, each with its client settings and
-// whether it signs with keys.
-using Layout =
-    std::unordered_map<std::string,
-                       std::pair<std::unordered_map<std::string, std::string>, bool>>;
-
-Layout LayoutOf(const std::unordered_map<std::string, std::string>& default_properties,
-                const std::vector<StorageCredential>& credentials) {
-  Layout layout;
-  for (const auto* credential : S3CredentialsOf(credentials)) {
-    auto properties = PropertiesFor(default_properties, *credential);
-    const bool keys = HasKeys(properties);
-    layout.try_emplace(CanonicalizeS3Scheme(credential->prefix),
-                       SettingsOf(std::move(properties)), keys);
-  }
-  return layout;
-}
-
-// A refresh may only rotate keys, so the current clients serve it: it must keep
-// the layout of `current`, and its tokens must be usable.
-Status ValidateRefreshed(
-    const std::unordered_map<std::string, std::string>& default_properties,
-    const std::vector<StorageCredential>& current,
-    const std::vector<StorageCredential>& credentials) {
-  for (const auto& credential : credentials) {
-    ICEBERG_RETURN_UNEXPECTED(credential.Validate());
-  }
-  if (LayoutOf(default_properties, credentials) !=
-      LayoutOf(default_properties, current)) {
-    return InvalidArgument(
-        "Refreshed credentials change the S3 prefixes, their settings or keys");
-  }
-  const auto now = std::chrono::system_clock::now();
-  for (const auto* credential : S3CredentialsOf(credentials)) {
-    ICEBERG_ASSIGN_OR_RAISE(
-        auto expires_at,
-        ExpiryOf(PropertiesFor(default_properties, *credential), credential->prefix));
-    if (expires_at.has_value() && *expires_at <= now) {
-      return InvalidArgument("Credential \"{}\" has already expired", credential->prefix);
-    }
-  }
-  return {};
-}
-
-// Requires HasKeys(config).
+// Convert a complete static key pair to the AWS SDK credential object.
 Aws::Auth::AWSCredentials AwsCredentialsOf(
     const std::unordered_map<std::string, std::string>& config) {
   Aws::Auth::AWSCredentials credentials;
@@ -517,53 +360,352 @@ Aws::Auth::AWSCredentials AwsCredentialsOf(
   return credentials;
 }
 
-class ArrowS3FileIO;
-
-// Gives S3 clients their FileIO's current keys. Clients may outlive the
-// FileIO, which detaches on destruction.
-class KeySource {
- public:
-  explicit KeySource(ArrowS3FileIO* io) : io_(io) {}
-
-  void Detach() {
-    std::unique_lock lock(mutex_);
-    io_ = nullptr;
-  }
-
-  /// \brief Refreshes if due, then returns the FileIO's keys for `prefix` and
-  /// `settings`; nullopt if it has none or is gone.
-  std::optional<Aws::Auth::AWSCredentials> KeysFor(
-      std::string_view prefix,
-      const std::unordered_map<std::string, std::string>& settings);
-
- private:
-  std::shared_mutex mutex_;
-  ArrowS3FileIO* io_;
+struct ResolvedCredential {
+  std::string prefix;
+  std::unordered_map<std::string, std::string> properties;
+  // These settings identify the client configuration independently of its
+  // short-lived credentials. They protect a client from receiving keys meant
+  // for a different endpoint, region, or addressing mode.
+  std::unordered_map<std::string, std::string> client_settings;
+  std::optional<Aws::Auth::AWSCredentials> credentials;
 };
 
-// Supplies an S3 client's keys. The AWS SDK asks before each request, so open
-// handles pick up refreshed keys, as in Java. Keys vended with other settings
-// (e.g. another endpoint) are never used; the last keys stay instead.
+// Merge FileIO defaults with one vended credential and derive all values used
+// by the client and refresh store in one pass.
+ResolvedCredential ResolveCredential(
+    const std::unordered_map<std::string, std::string>& default_properties,
+    const StorageCredential& credential) {
+  ResolvedCredential resolved;
+  resolved.prefix = NormalizeS3Location(credential.prefix);
+  resolved.properties = default_properties;
+  for (const auto& [key, value] : credential.config) {
+    resolved.properties[key] = value;
+  }
+  resolved.client_settings = resolved.properties;
+  for (const auto key :
+       {S3Properties::kAccessKeyId, S3Properties::kSecretAccessKey,
+        S3Properties::kSessionToken, S3Properties::kSessionTokenExpiresAtMs}) {
+    resolved.client_settings.erase(std::string(key));
+  }
+  if (HasKeys(resolved.properties)) {
+    resolved.credentials = AwsCredentialsOf(resolved.properties);
+  }
+  return resolved;
+}
+
+// Read the expiry of the token used by these properties. No session token
+// means there is no expiry to track; a bad token expiry is an error.
+Result<std::optional<TimePointMs>> ParseCredentialExpiry(
+    const std::unordered_map<std::string, std::string>& properties,
+    std::string_view prefix) {
+  // Only a non-empty session token paired with access keys needs an expiry.
+  const auto* token = FindProperty(properties, S3Properties::kSessionToken);
+  if (!HasKeys(properties) || token == nullptr || token->empty()) {
+    return std::nullopt;
+  }
+  const auto* value = FindProperty(properties, S3Properties::kSessionTokenExpiresAtMs);
+  if (value == nullptr) {
+    return InvalidArgument(R"(Credential "{}" has a session token but no "{}")", prefix,
+                           S3Properties::kSessionTokenExpiresAtMs);
+  }
+  auto millis = StringUtils::ParseNumber<int64_t>(*value);
+  if (!millis.has_value()) {
+    return InvalidArgument(
+        R"(Credential "{}" has a session token but an unparseable "{}" value "{}")",
+        prefix, S3Properties::kSessionTokenExpiresAtMs, *value);
+  }
+  return TimePointMsFromUnixMs(*millis);
+}
+
+// Keep the first credential for each prefix. This is also the order used when
+// a duplicate prefix is returned by the catalog.
+std::vector<const StorageCredential*> S3CredentialsOf(
+    const std::vector<StorageCredential>& credentials) {
+  std::vector<const StorageCredential*> s3_credentials;
+  std::unordered_set<std::string> prefixes;
+  for (const auto& credential : credentials) {
+    if (IsS3CredentialPrefix(credential.prefix) &&
+        prefixes.insert(NormalizeS3Location(credential.prefix)).second) {
+      s3_credentials.push_back(&credential);
+    }
+  }
+  return s3_credentials;
+}
+
+struct CredentialSlot {
+  std::string prefix;
+  std::unordered_map<std::string, std::string> settings;
+  std::optional<Aws::Auth::AWSCredentials> credentials;
+  std::optional<TimePointMs> expires_at;
+  bool expiry_unknown = false;
+
+  bool ExpiresBy(TimePointMs time) const {
+    return expires_at.has_value() && time >= *expires_at;
+  }
+};
+
+class CredentialStore {
+ public:
+  explicit CredentialStore(
+      std::unordered_map<std::string, std::string> default_properties)
+      : default_properties_(std::move(default_properties)) {}
+
+  ResolvedCredential Resolve(const StorageCredential& credential) const {
+    return ResolveCredential(default_properties_, credential);
+  }
+
+  /// \brief Make `credentials` current, and `provider` too when one is given.
+  void Install(std::vector<StorageCredential> credentials,
+               std::optional<std::shared_ptr<StorageCredentialProvider>> provider) {
+    std::unique_lock lock(mutex_);
+    if (provider.has_value()) {
+      provider_ = std::move(*provider);
+    }
+    InstallLocked(std::move(credentials));
+  }
+
+  std::shared_ptr<CredentialSlot> SlotFor(
+      std::string prefix, std::unordered_map<std::string, std::string> settings,
+      std::optional<Aws::Auth::AWSCredentials> initial_credentials) {
+    std::unique_lock lock(mutex_);
+    return SlotForLocked(std::move(prefix), std::move(settings),
+                         std::move(initial_credentials));
+  }
+
+  std::vector<StorageCredential> credentials() const {
+    std::shared_lock lock(mutex_);
+    return storage_credentials_;
+  }
+
+  bool IsExpired(const std::string& prefix) const {
+    std::shared_lock lock(mutex_);
+    const auto current = current_slots_.find(prefix);
+    return current != current_slots_.end() &&
+           current->second->ExpiresBy(CurrentTimePointMs());
+  }
+
+  void MaybeRefreshCredentials() {
+    // Only one caller loads from the catalog. Other callers keep using the
+    // current keys while they are still valid.
+    {
+      std::shared_lock lock(mutex_);
+      if (!provider_ || !RefreshDue()) {
+        return;
+      }
+    }
+
+    std::unique_lock refresh_lock(refresh_mutex_, std::defer_lock);
+    if (!refresh_lock.try_lock()) {
+      {
+        std::shared_lock lock(mutex_);
+        if (!Expired()) {
+          return;
+        }
+      }
+      if (!refresh_lock.try_lock_for(kExpiredCredentialWait)) {
+        return;
+      }
+    }
+
+    std::shared_ptr<StorageCredentialProvider> provider;
+    uint64_t generation = 0;
+    {
+      std::shared_lock lock(mutex_);
+      if (!provider_ || !RefreshDue()) {
+        return;
+      }
+      provider = provider_;
+      generation = credential_generation_;
+    }
+
+    auto refreshed = provider->Load();
+
+    std::unique_lock lock(mutex_);
+    if (credential_generation_ != generation) {
+      return;  // An install replaced the credentials this refresh started from.
+    }
+    const Status status = refreshed.has_value()
+                              ? ApplyRefreshLocked(*refreshed)
+                              : Status(::iceberg::unexpected<Error>(refreshed.error()));
+    if (status.has_value() && !RefreshDue()) {
+      return;
+    }
+    const auto delay = BackoffDelay();
+    retry_refresh_at_ = std::chrono::steady_clock::now() + delay;
+    if (!status.has_value()) {
+      ICEBERG_LOG_WARN(
+          "Failed to refresh vended storage credentials ({}); keeping the current "
+          "ones and retrying in {}ms",
+          status.error().message, delay.count());
+    }
+  }
+
+  std::optional<Aws::Auth::AWSCredentials> CredentialsFor(const CredentialSlot& slot) {
+    MaybeRefreshCredentials();
+    std::shared_lock lock(mutex_);
+    return slot.credentials;
+  }
+
+ private:
+  void InstallLocked(std::vector<StorageCredential> credentials) {
+    std::unordered_map<std::string, std::shared_ptr<CredentialSlot>> current_slots;
+    for (const auto* credential : S3CredentialsOf(credentials)) {
+      auto resolved = Resolve(*credential);
+      auto parsed_expiry = ParseCredentialExpiry(resolved.properties, credential->prefix);
+      if (!parsed_expiry.has_value()) {
+        ICEBERG_LOG_WARN("{}", parsed_expiry.error().message);
+      }
+      auto slot = SlotForLocked(std::move(resolved.prefix),
+                                std::move(resolved.client_settings), std::nullopt);
+      // Clients from an earlier install may share this slot; they move to these
+      // keys too.
+      slot->credentials = std::move(resolved.credentials);
+      slot->expires_at = parsed_expiry.value_or(std::nullopt);
+      slot->expiry_unknown = !parsed_expiry.has_value();
+      current_slots.emplace(slot->prefix, std::move(slot));
+    }
+    retry_refresh_at_ = {};
+    ++credential_generation_;
+    current_slots_ = std::move(current_slots);
+    storage_credentials_ = std::move(credentials);
+  }
+
+  Status ApplyRefreshLocked(const std::vector<StorageCredential>& credentials) {
+    // Check every credential, skipped ones included, before changing any slot.
+    for (const auto& credential : credentials) {
+      ICEBERG_RETURN_UNEXPECTED(credential.Validate());
+    }
+    bool updated = false;
+    for (const auto* credential : S3CredentialsOf(credentials)) {
+      auto resolved = Resolve(*credential);
+      const auto& prefix = resolved.prefix;
+      const auto current = current_slots_.find(prefix);
+      if (current == current_slots_.end()) {
+        continue;
+      }
+      const auto& settings = resolved.client_settings;
+      const bool has_keys = resolved.credentials.has_value();
+      auto& slot = *current->second;
+      if (slot.settings != settings || slot.credentials.has_value() != has_keys) {
+        ICEBERG_LOG_WARN(
+            "Ignoring refreshed credentials for '{}' because their client settings "
+            "changed",
+            prefix);
+        continue;
+      }
+      auto parsed_expiry = ParseCredentialExpiry(resolved.properties, credential->prefix);
+      if (!parsed_expiry.has_value()) {
+        ICEBERG_LOG_WARN("Ignoring refreshed credentials for '{}': {}", prefix,
+                         parsed_expiry.error().message);
+        continue;
+      }
+      if (parsed_expiry->has_value() && **parsed_expiry <= CurrentTimePointMs()) {
+        ICEBERG_LOG_WARN("Ignoring already expired refreshed credentials for '{}'",
+                         prefix);
+        continue;
+      }
+      slot.credentials = std::move(resolved.credentials);
+      slot.expires_at = *parsed_expiry;
+      slot.expiry_unknown = false;
+      for (auto& installed : storage_credentials_) {
+        if (NormalizeS3Location(installed.prefix) == prefix) {
+          installed = *credential;
+          break;
+        }
+      }
+      updated = true;
+    }
+    if (!updated && !current_slots_.empty()) {
+      return InvalidArgument("Refreshed credentials did not update any active prefix");
+    }
+    ++credential_generation_;
+    return {};
+  }
+
+  std::shared_ptr<CredentialSlot> SlotForLocked(
+      std::string prefix, std::unordered_map<std::string, std::string> settings,
+      std::optional<Aws::Auth::AWSCredentials> initial_credentials) {
+    for (const auto& slot : known_slots_) {
+      if (slot->prefix == prefix && slot->settings == settings) {
+        return slot;
+      }
+    }
+    auto slot = std::make_shared<CredentialSlot>(
+        CredentialSlot{.prefix = std::move(prefix),
+                       .settings = std::move(settings),
+                       .credentials = std::move(initial_credentials)});
+    known_slots_.push_back(slot);
+    return slot;
+  }
+
+  bool RefreshDue() const {
+    if (std::chrono::steady_clock::now() < retry_refresh_at_) {
+      return false;
+    }
+    const auto refresh_by = CurrentTimePointMs() + kRefreshLeadTime;
+    return std::ranges::any_of(current_slots_, [refresh_by](const auto& entry) {
+      return entry.second->expiry_unknown || entry.second->ExpiresBy(refresh_by);
+    });
+  }
+
+  bool Expired() const {
+    const auto now = CurrentTimePointMs();
+    return std::ranges::any_of(current_slots_, [now](const auto& entry) {
+      return entry.second->ExpiresBy(now);
+    });
+  }
+
+  // Retry after kRefreshRetryBackoff, or sooner if a token expires first, but
+  // never sooner than kMinRefreshRetryBackoff.
+  std::chrono::milliseconds BackoffDelay() const {
+    std::optional<TimePointMs> earliest;
+    for (const auto& [_, slot] : current_slots_) {
+      if (slot->expires_at.has_value() &&
+          (!earliest.has_value() || *slot->expires_at < *earliest)) {
+        earliest = slot->expires_at;
+      }
+    }
+    const auto now = CurrentTimePointMs();
+    if (earliest.has_value() && *earliest > now) {
+      return std::clamp<std::chrono::milliseconds>(
+          *earliest - now, kMinRefreshRetryBackoff, kRefreshRetryBackoff);
+    }
+    return kRefreshRetryBackoff;
+  }
+
+  const std::unordered_map<std::string, std::string> default_properties_;
+  mutable std::shared_mutex mutex_;
+  std::vector<StorageCredential> storage_credentials_;
+  std::vector<std::shared_ptr<CredentialSlot>> known_slots_;
+  std::unordered_map<std::string, std::shared_ptr<CredentialSlot>> current_slots_;
+  std::shared_ptr<StorageCredentialProvider> provider_;
+  std::chrono::steady_clock::time_point retry_refresh_at_;
+  uint64_t credential_generation_ = 0;
+  std::timed_mutex refresh_mutex_;
+};
+
+// Supplies one S3 client's keys from its slot in the shared store, which lets
+// clients and handles outlive the FileIO. The last keys seen stay in use while
+// the slot has none, as after the prefix is reinstalled without keys.
 class VendedCredentialsProvider final : public Aws::Auth::AWSCredentialsProvider {
  public:
-  VendedCredentialsProvider(std::shared_ptr<KeySource> source,
+  VendedCredentialsProvider(std::shared_ptr<CredentialStore> store,
                             std::shared_ptr<const std::atomic<bool>> installed,
-                            std::string prefix,
-                            std::unordered_map<std::string, std::string> settings,
+                            std::shared_ptr<CredentialSlot> slot,
                             Aws::Auth::AWSCredentials credentials)
-      : source_(std::move(source)),
+      : store_(std::move(store)),
         installed_(std::move(installed)),
-        prefix_(std::move(prefix)),
-        settings_(std::move(settings)),
+        slot_(std::move(slot)),
         credentials_(std::move(credentials)) {}
 
   Aws::Auth::AWSCredentials GetAWSCredentials() override {
-    std::optional<Aws::Auth::AWSCredentials> current;
-    // The SDK also asks while building the client, when the FileIO still holds
-    // the keys its install replaces.
-    if (installed_->load()) {
-      current = source_->KeysFor(prefix_, settings_);
+    // The SDK also asks while building the client. Until its install, the slot
+    // may hold the keys being replaced, and asking could start their refresh.
+    if (!installed_->load()) {
+      std::lock_guard lock(mutex_);
+      return credentials_;
     }
+    auto current = store_->CredentialsFor(*slot_);
     std::lock_guard lock(mutex_);
     if (current.has_value()) {
       credentials_ = std::move(current).value();
@@ -572,11 +714,10 @@ class VendedCredentialsProvider final : public Aws::Auth::AWSCredentialsProvider
   }
 
  private:
-  const std::shared_ptr<KeySource> source_;
-  // Set once the client's keys are installed.
+  const std::shared_ptr<CredentialStore> store_;
+  // Set once the install that built this client has made its keys current.
   const std::shared_ptr<const std::atomic<bool>> installed_;
-  const std::string prefix_;
-  const std::unordered_map<std::string, std::string> settings_;
+  const std::shared_ptr<CredentialSlot> slot_;
   std::mutex mutex_;
   Aws::Auth::AWSCredentials credentials_;
 };
@@ -587,10 +728,9 @@ class ArrowS3FileIO final : public FileIO, public SupportsStorageCredentials {
                 std::unordered_map<std::string, std::string> default_properties,
                 size_t delete_parallelism)
       : default_file_io_(std::make_shared<ArrowFileSystemFileIO>(std::move(arrow_fs))),
-        default_properties_(std::move(default_properties)),
-        delete_parallelism_(delete_parallelism) {}
-
-  ~ArrowS3FileIO() override { key_source_->Detach(); }
+        delete_parallelism_(delete_parallelism),
+        credential_store_(
+            std::make_shared<CredentialStore>(std::move(default_properties))) {}
 
   Result<std::unique_ptr<InputFile>> NewInputFile(std::string file_location) override;
 
@@ -607,8 +747,7 @@ class ArrowS3FileIO final : public FileIO, public SupportsStorageCredentials {
       const std::vector<StorageCredential>& storage_credentials) override;
 
   std::vector<StorageCredential> credentials() const override {
-    std::shared_lock lock(mutex_);
-    return storage_credentials_;
+    return credential_store_->credentials();
   }
 
   Status InitializeStorageCredentials(
@@ -618,26 +757,22 @@ class ArrowS3FileIO final : public FileIO, public SupportsStorageCredentials {
   SupportsStorageCredentials* AsSupportsStorageCredentials() override { return this; }
 
  private:
-  friend class KeySource;
-
   using DelegatesByPrefix =
       std::vector<std::pair<std::string, std::shared_ptr<ArrowFileSystemFileIO>>>;
-  using ExpiriesByPrefix =
-      std::unordered_map<std::string, std::chrono::system_clock::time_point>;
 
-  /// \brief Delegate serving `location`, pinned by the caller against a
-  /// concurrent credential install.
+  /// \brief Delegate with the longest prefix of `location`, pinned by the caller
+  /// against a concurrent credential install. Fails with TokenExpired once that
+  /// prefix's keys have expired.
   Result<std::shared_ptr<ArrowFileSystemFileIO>> FileIOForPath(std::string_view location);
 
-  /// \brief Longest-prefix match, or `fallback` if none matches. Fails with
-  /// TokenExpired once the matched prefix's keys have expired.
-  static Result<std::shared_ptr<ArrowFileSystemFileIO>> MatchDelegate(
-      const std::shared_ptr<ArrowFileSystemFileIO>& fallback,
-      const DelegatesByPrefix& by_prefix, const ExpiriesByPrefix& expiries,
-      std::string_view location);
+  /// \brief Build delegates for `storage_credentials` and make them current,
+  /// replacing the refresh provider too when one is given.
+  Status InstallStorageCredentials(
+      const std::vector<StorageCredential>& storage_credentials,
+      std::optional<std::shared_ptr<StorageCredentialProvider>> provider);
 
   /// \brief Build a delegate for each credential this FileIO can serve. Their
-  /// clients take this FileIO's keys once `installed` is set.
+  /// clients take keys from the store once `installed` is set.
   ///
   /// Runs without holding `mutex_`: building an S3 client can block (without
   /// static keys the AWS SDK may wait on the EC2 metadata service), which would
@@ -646,83 +781,39 @@ class ArrowS3FileIO final : public FileIO, public SupportsStorageCredentials {
       const std::vector<StorageCredential>& storage_credentials,
       const std::shared_ptr<const std::atomic<bool>>& installed) const;
 
-  /// \brief Swap in credentials and, unless null, delegates, handing back the
-  /// retired ones. A refresh keeps the layout, so the delegates stay.
-  ///
-  /// Callers must hold `mutex_` exclusively and let the returned generation
-  /// destruct only after releasing it: tearing down an S3 client can block on
-  /// in-flight requests, which would stall every operation.
-  void InstallCredentials(std::vector<StorageCredential>& storage_credentials,
-                          DelegatesByPrefix* delegates);
-
-  /// \brief Whether a refresh is due and not backed off. Requires `mutex_`.
-  bool RefreshDue() const;
-
-  /// \brief Whether the installed credentials have expired. Requires `mutex_`.
-  bool Expired() const;
-
-  /// \brief When to retry after a failed refresh; never past the expiry.
-  /// Requires `mutex_`.
-  std::chrono::steady_clock::time_point BackoffUntil() const;
-
-  /// \brief Refresh the credentials if they are close to expiring.
-  ///
-  /// Called before file operations and by S3 clients before each request. A
-  /// refresh only rotates keys and builds no clients, so a request can run it
-  /// or, with expired credentials, wait for one under way. A failure keeps the
-  /// current credentials.
-  void MaybeRefreshCredentials();
-
-  /// \brief The installed keys for `prefix`, if its credential has `settings`.
-  std::optional<Aws::Auth::AWSCredentials> KeysFor(
-      std::string_view prefix,
-      const std::unordered_map<std::string, std::string>& settings) const;
-
   std::shared_ptr<ArrowFileSystemFileIO> default_file_io_;
-  std::unordered_map<std::string, std::string> default_properties_;
   const size_t delete_parallelism_;
-  const std::shared_ptr<KeySource> key_source_ = std::make_shared<KeySource>(this);
+  const std::shared_ptr<CredentialStore> credential_store_;
   // Guards everything below; shared because reads happen per file operation.
   mutable std::shared_mutex mutex_;
-  std::vector<StorageCredential> storage_credentials_;
   DelegatesByPrefix file_io_by_prefix_;
-  ExpiriesByPrefix expiries_by_prefix_;
-  std::shared_ptr<StorageCredentialProvider> provider_;
-  CredentialsExpiry expiry_;
-  std::chrono::steady_clock::time_point retry_refresh_at_;
-  // Bumped on each install so a refresh cannot overwrite newer credentials.
-  uint64_t credential_generation_ = 0;
-  // Serializes refreshes; timed so waits are bounded.
-  std::timed_mutex refresh_mutex_;
 };
 
 Status ArrowS3FileIO::InitializeStorageCredentials(
     const std::vector<StorageCredential>& storage_credentials,
     std::shared_ptr<StorageCredentialProvider> provider) {
-  auto installed = std::make_shared<std::atomic<bool>>(false);
-  ICEBERG_ASSIGN_OR_RAISE(auto delegates, BuildDelegates(storage_credentials, installed));
-  auto credentials = storage_credentials;
-  {
-    std::unique_lock lock(mutex_);
-    provider_.swap(provider);
-    InstallCredentials(credentials, &delegates);
-    installed->store(true);
-  }
-  return {};
+  return InstallStorageCredentials(storage_credentials, std::move(provider));
 }
 
 Status ArrowS3FileIO::SetStorageCredentials(
     const std::vector<StorageCredential>& storage_credentials) {
+  return InstallStorageCredentials(storage_credentials, std::nullopt);
+}
+
+Status ArrowS3FileIO::InstallStorageCredentials(
+    const std::vector<StorageCredential>& storage_credentials,
+    std::optional<std::shared_ptr<StorageCredentialProvider>> provider) {
   auto installed = std::make_shared<std::atomic<bool>>(false);
   ICEBERG_ASSIGN_OR_RAISE(auto delegates, BuildDelegates(storage_credentials, installed));
   auto credentials = storage_credentials;
   {
     std::unique_lock lock(mutex_);
-    InstallCredentials(credentials, &delegates);
+    file_io_by_prefix_.swap(delegates);
+    credential_store_->Install(std::move(credentials), std::move(provider));
     installed->store(true);
   }
-  // `credentials` and `delegates` now hold the retired generation and destruct
-  // here, outside the lock.
+  // `delegates` now holds the retired clients and destructs here, outside the
+  // lock: tearing down an S3 client can block on its in-flight requests.
   return {};
 }
 
@@ -733,28 +824,23 @@ Result<ArrowS3FileIO::DelegatesByPrefix> ArrowS3FileIO::BuildDelegates(
   delegates.reserve(storage_credentials.size());
   for (const auto& credential : storage_credentials) {
     ICEBERG_RETURN_UNEXPECTED(credential.Validate());
-    // A server may vend credentials for several storage systems at once;
-    // non-S3 prefixes are skipped, not rejected (Java S3FileIO filters
-    // credentials by the "s3" prefix).
-    if (!IsS3CredentialPrefix(credential.prefix)) {
-      continue;
-    }
-    auto prefix = CanonicalizeS3Scheme(credential.prefix);
-    const auto properties = PropertiesFor(default_properties_, credential);
+  }
+  for (const auto* credential : S3CredentialsOf(storage_credentials)) {
+    auto resolved = credential_store_->Resolve(*credential);
     std::shared_ptr<VendedCredentialsProvider> keys;
-    // Signs with what ConfigureS3Options would, defaults included.
-    if (HasKeys(properties)) {
-      keys = std::make_shared<VendedCredentialsProvider>(key_source_, installed, prefix,
-                                                         SettingsOf(properties),
-                                                         AwsCredentialsOf(properties));
+    if (resolved.credentials.has_value()) {
+      auto slot = credential_store_->SlotFor(
+          resolved.prefix, std::move(resolved.client_settings), resolved.credentials);
+      keys = std::make_shared<VendedCredentialsProvider>(
+          credential_store_, installed, std::move(slot),
+          *std::move(resolved.credentials));
     }
-    ICEBERG_ASSIGN_OR_RAISE(auto fs, BuildArrowS3FileSystem(properties, std::move(keys)));
-    delegates.emplace_back(std::move(prefix),
+    ICEBERG_ASSIGN_OR_RAISE(auto fs,
+                            BuildArrowS3FileSystem(resolved.properties, std::move(keys)));
+    delegates.emplace_back(std::move(resolved.prefix),
                            std::make_shared<ArrowFileSystemFileIO>(std::move(fs)));
   }
   if (delegates.empty() && !storage_credentials.empty()) {
-    // Silent skipping of every vended credential is hard to diagnose: S3 access
-    // would proceed with the default credentials and fail only at IO time.
     ICEBERG_LOG_WARN(
         "None of the {} vended storage credential(s) has an S3-compatible prefix; "
         "S3 access will use the default credentials",
@@ -763,178 +849,31 @@ Result<ArrowS3FileIO::DelegatesByPrefix> ArrowS3FileIO::BuildDelegates(
   return delegates;
 }
 
-void ArrowS3FileIO::InstallCredentials(
-    std::vector<StorageCredential>& storage_credentials, DelegatesByPrefix* delegates) {
-  if (delegates != nullptr) {
-    file_io_by_prefix_.swap(*delegates);
-  }
-  expiry_ = ExpiryOf(default_properties_, storage_credentials);
-  expiries_by_prefix_ = ExpiriesOf(default_properties_, storage_credentials);
-  retry_refresh_at_ = {};
-  ++credential_generation_;
-  storage_credentials_.swap(storage_credentials);
-}
-
-bool ArrowS3FileIO::RefreshDue() const {
-  return (expiry_.unknown ||
-          (expiry_.expires_at.has_value() &&
-           std::chrono::system_clock::now() + kRefreshLeadTime >= *expiry_.expires_at)) &&
-         std::chrono::steady_clock::now() >= retry_refresh_at_;
-}
-
-bool ArrowS3FileIO::Expired() const {
-  return expiry_.expires_at.has_value() &&
-         std::chrono::system_clock::now() >= *expiry_.expires_at;
-}
-
-std::chrono::steady_clock::time_point ArrowS3FileIO::BackoffUntil() const {
-  auto delay =
-      std::chrono::duration_cast<std::chrono::milliseconds>(kRefreshRetryBackoff);
-  if (expiry_.expires_at.has_value()) {
-    const auto remaining = std::chrono::duration_cast<std::chrono::milliseconds>(
-        *expiry_.expires_at - std::chrono::system_clock::now());
-    // Retry sooner while still valid; once expired, use the full backoff.
-    if (remaining > std::chrono::milliseconds::zero()) {
-      delay = std::clamp(
-          remaining,
-          std::chrono::duration_cast<std::chrono::milliseconds>(kMinRefreshRetryBackoff),
-          delay);
-    }
-  }
-  return std::chrono::steady_clock::now() + delay;
-}
-
-void ArrowS3FileIO::MaybeRefreshCredentials() {
-  {
-    // Fast path.
-    std::shared_lock lock(mutex_);
-    if (!provider_ || !RefreshDue()) {
-      return;
-    }
-  }
-
-  std::unique_lock refresh_lock(refresh_mutex_, std::defer_lock);
-  if (!refresh_lock.try_lock()) {
-    // Another caller is refreshing; keep the current keys unless expired.
-    {
-      std::shared_lock lock(mutex_);
-      if (!Expired()) {
-        return;
-      }
-    }
-    if (!refresh_lock.try_lock_for(kExpiredCredentialWait)) {
-      return;
-    }
-  }
-  std::shared_ptr<StorageCredentialProvider> provider;
-  uint64_t generation = 0;
-  std::vector<StorageCredential> current;
-  {
-    // The previous holder may have just refreshed.
-    std::shared_lock lock(mutex_);
-    if (!provider_ || !RefreshDue()) {
-      return;
-    }
-    provider = provider_;
-    generation = credential_generation_;
-    current = storage_credentials_;
-  }
-
-  // Slow, so done without holding `mutex_`.
-  auto refreshed = provider->Load();
-  Status status;
-  if (refreshed.has_value()) {
-    status = ValidateRefreshed(default_properties_, current, *refreshed);
-  } else {
-    status = ::iceberg::unexpected<Error>(refreshed.error());
-  }
-
-  std::unique_lock lock(mutex_);
-  // Credentials installed meanwhile are newer than what this fetched.
-  const bool superseded = credential_generation_ != generation;
-  if (!status.has_value()) {
-    // Logged even if superseded, so catalog failures stay visible.
-    if (superseded) {
-      ICEBERG_LOG_WARN(
-          "Failed to refresh vended storage credentials ({}); they have since been "
-          "replaced",
-          status.error().message);
-      return;
-    }
-    retry_refresh_at_ = BackoffUntil();
-    ICEBERG_LOG_WARN(
-        "Failed to refresh vended storage credentials ({}); keeping the current "
-        "ones and retrying in {}ms",
-        status.error().message,
-        std::chrono::duration_cast<std::chrono::milliseconds>(
-            retry_refresh_at_ - std::chrono::steady_clock::now())
-            .count());
-    return;
-  }
-  if (superseded) {
-    return;
-  }
-
-  InstallCredentials(*refreshed, /*delegates=*/nullptr);
-  if (RefreshDue()) {
-    // Tokens shorter-lived than the lead time would be due again at once.
-    retry_refresh_at_ = BackoffUntil();
-  }
-}
-
-std::optional<Aws::Auth::AWSCredentials> ArrowS3FileIO::KeysFor(
-    std::string_view prefix,
-    const std::unordered_map<std::string, std::string>& settings) const {
-  std::shared_lock lock(mutex_);
-  for (const auto* credential : S3CredentialsOf(storage_credentials_)) {
-    if (CanonicalizeS3Scheme(credential->prefix) != prefix) {
-      continue;
-    }
-    const auto properties = PropertiesFor(default_properties_, *credential);
-    if (!HasKeys(properties) || SettingsOf(properties) != settings) {
-      return std::nullopt;
-    }
-    return AwsCredentialsOf(properties);
-  }
-  return std::nullopt;
-}
-
-Result<std::shared_ptr<ArrowFileSystemFileIO>> ArrowS3FileIO::MatchDelegate(
-    const std::shared_ptr<ArrowFileSystemFileIO>& fallback,
-    const DelegatesByPrefix& by_prefix, const ExpiriesByPrefix& expiries,
-    std::string_view location) {
-  if (by_prefix.empty()) {
-    return fallback;
-  }
-  const std::string canonical = CanonicalizeS3Scheme(location);
-  auto best = fallback;
-  size_t best_len = 0;
-  const std::string* best_prefix = nullptr;
-  for (const auto& [prefix, file_io] : by_prefix) {
-    if (prefix.size() > best_len && canonical.starts_with(prefix)) {
-      best = file_io;
-      best_len = prefix.size();
-      best_prefix = &prefix;
-    }
-  }
-  if (best_prefix == nullptr) {
-    return fallback;
-  }
-  if (const auto expiry = expiries.find(*best_prefix);
-      expiry != expiries.end() && std::chrono::system_clock::now() >= expiry->second) {
-    return TokenExpired(
-        "Vended credentials for \"{}\" have expired and could not be refreshed",
-        *best_prefix);
-  }
-  return best;
-}
-
 Result<std::shared_ptr<ArrowFileSystemFileIO>> ArrowS3FileIO::FileIOForPath(
     std::string_view location) {
-  MaybeRefreshCredentials();
+  credential_store_->MaybeRefreshCredentials();
   std::shared_lock lock(mutex_);
-  return MatchDelegate(default_file_io_, file_io_by_prefix_, expiries_by_prefix_,
-                       location);
+  if (file_io_by_prefix_.empty()) {
+    return default_file_io_;
+  }
+  const std::string normalized = NormalizeS3Location(location);
+  const DelegatesByPrefix::value_type* best = nullptr;
+  for (const auto& delegate : file_io_by_prefix_) {
+    const auto& prefix = delegate.first;
+    if (prefix.size() > (best != nullptr ? best->first.size() : 0) &&
+        normalized.starts_with(prefix)) {
+      best = &delegate;
+    }
+  }
+  if (best == nullptr) {
+    return default_file_io_;
+  }
+  if (credential_store_->IsExpired(best->first)) {
+    return TokenExpired(
+        "Vended credentials for \"{}\" have expired and could not be refreshed",
+        best->first);
+  }
+  return best->second;
 }
 
 Result<std::unique_ptr<InputFile>> ArrowS3FileIO::NewInputFile(
@@ -967,17 +906,6 @@ Status ArrowS3FileIO::DeleteFiles(const std::vector<std::string>& file_locations
                            ICEBERG_ASSIGN_OR_RAISE(auto file_io, FileIOForPath(location));
                            return file_io->DeleteFile(location);
                          });
-}
-
-std::optional<Aws::Auth::AWSCredentials> KeySource::KeysFor(
-    std::string_view prefix,
-    const std::unordered_map<std::string, std::string>& settings) {
-  std::shared_lock lock(mutex_);
-  if (io_ == nullptr) {
-    return std::nullopt;
-  }
-  io_->MaybeRefreshCredentials();
-  return io_->KeysFor(prefix, settings);
 }
 
 }  // namespace

@@ -40,7 +40,9 @@
 #include "iceberg/catalog/rest/rest_file_io.h"
 #include "iceberg/storage_credential.h"
 #include "iceberg/test/matchers.h"
+#include "iceberg/test/mock_io.h"
 #include "iceberg/test/temp_file_test_base.h"
+#include "iceberg/util/timepoint.h"
 
 namespace iceberg::rest {
 
@@ -67,11 +69,6 @@ TEST_F(RestArrowFileIOTest, ReadsBackWhatItWroteThroughRealLocalFileIO) {
 }
 
 #if ICEBERG_S3_ENABLED
-
-class MockStorageCredentialProvider : public StorageCredentialProvider {
- public:
-  MOCK_METHOD((Result<std::vector<StorageCredential>>), Load, (), (override));
-};
 
 std::optional<std::string> GetEnvIfSet(const char* key) {
   const char* value = std::getenv(key);
@@ -216,9 +213,7 @@ TEST_F(RestArrowFileIOTest, RefreshesCredentialsThroughTheRealS3FileIO) {
     config["s3.session-token"] = *token;
     // A refreshed session token must say when it expires.
     config["s3.session-token-expires-at-ms"] = std::to_string(
-        std::chrono::duration_cast<std::chrono::milliseconds>(
-            (std::chrono::system_clock::now() + std::chrono::hours(1)).time_since_epoch())
-            .count());
+        UnixMsFromTimePointMs(CurrentTimePointMs() + std::chrono::hours(1)));
   }
   if (const auto endpoint = GetEnvIfSet("ICEBERG_TEST_S3_ENDPOINT")) {
     config["s3.endpoint"] = *endpoint;

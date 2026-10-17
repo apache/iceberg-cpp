@@ -61,9 +61,11 @@ struct S3Properties {
   static constexpr std::string_view kDeleteNumThreads = "s3.delete.num-threads";
 };
 
-/// \brief URI schemes served by the Arrow S3 FileIO, lower-case.
+/// \brief URI schemes served by the Arrow S3 FileIO, lower-case. These schemes
+/// share the S3 client implementation but remain distinct when routing
+/// credentials.
 ///
-/// Single source of truth: registration, IsS3Scheme and alias canonicalization
+/// Single source of truth: registration, IsS3Scheme and alias normalization
 /// all derive from this list, so a new alias only has to be added here.
 ///
 /// `oss` is served because the store is S3-compatible; see the FileIO docs.
@@ -91,7 +93,7 @@ inline constexpr bool IsS3Scheme(std::string_view scheme) {
 /// \brief Return whether a storage credential prefix belongs to S3.
 ///
 /// Accepts the bare `s3` prefix (exactly: a case variant would be stored as a
-/// key no canonicalized location can match) or a URI prefix such as
+/// key no normalized location can match) or a URI prefix such as
 /// `s3a://bucket`. Bare aliases such as `oss` are deliberately rejected,
 /// matching Java S3FileIO's credential filter.
 inline constexpr bool IsS3CredentialPrefix(std::string_view prefix) {
