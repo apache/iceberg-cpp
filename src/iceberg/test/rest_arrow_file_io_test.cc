@@ -151,8 +151,8 @@ std::string AsOssUri(std::string_view uri) {
 }
 
 // Resolution, credential matching and real I/O for `oss://`. The credential
-// env vars are scrubbed, so only the vended `s3`-scoped credential matching
-// the canonicalized location can authenticate.
+// env vars are scrubbed, so only the vended `oss`-scoped credential matching
+// the location can authenticate.
 TEST_F(RestArrowFileIOTest, ReadsBackWhatItWroteThroughAnOssLocation) {
   const auto base_uri = GetEnvIfSet("ICEBERG_TEST_S3_URI");
   if (!base_uri.has_value()) {
@@ -179,10 +179,10 @@ TEST_F(RestArrowFileIOTest, ReadsBackWhatItWroteThroughAnOssLocation) {
 
   ScopedScrubbedAwsCredentialEnv scrubbed;
 
-  // Scoped to `s3`, while the data it grants access to is addressed as `oss://`.
+  // The scheme is preserved for routing, while the endpoint is S3-compatible.
   auto io = MakeTableFileIO({{"warehouse", "logical_warehouse_name"}},
                             /*table_config=*/{},
-                            {{.prefix = "s3", .config = std::move(credential_config)}});
+                            {{.prefix = "oss", .config = std::move(credential_config)}});
   ASSERT_THAT(io, IsOk());
 
   auto object_uri = AsOssUri(*base_uri);

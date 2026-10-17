@@ -1322,10 +1322,8 @@ TEST_F(ArrowS3FileIOTest, DeleteFilesAttemptsEveryFile) {
   EXPECT_THAT(io->DeleteFiles({paths[0], paths[2]}), IsOk());
 }
 
-// The credential is vended under the oss spelling and the object addressed as
-// `s3://`, so they only meet through canonicalization — and every other path
-// to authentication is broken. (rest_arrow_file_io_test covers the mirrored
-// direction.)
+// The credential and object use the same S3-compatible scheme. The scheme is
+// preserved for routing, while the underlying endpoint remains S3-compatible.
 TEST_F(ArrowS3FileIOTest, AppliesOssCredentialInRealRoundTrip) {
   if (!HasIntegrationEnv()) {
     GTEST_SKIP() << "Set ICEBERG_TEST_S3_URI to enable S3 IO test";
@@ -1353,15 +1351,13 @@ TEST_F(ArrowS3FileIOTest, AppliesOssCredentialInRealRoundTrip) {
   const auto scheme_end = object_uri.find("://");
   ASSERT_NE(scheme_end, std::string::npos) << "ICEBERG_TEST_S3_URI must carry a scheme";
   // Both spellings are forced, so they cross whatever scheme the env URI uses.
-  const auto oss_spelling = std::string("oss").append(object_uri.substr(scheme_end));
-  const auto oss_prefix =
-      oss_spelling.substr(0, oss_spelling.size() - object_name.size());
-  const auto s3_uri = std::string("s3").append(object_uri.substr(scheme_end));
+  const auto oss_uri = std::string("oss").append(object_uri.substr(scheme_end));
+  const auto oss_prefix = oss_uri.substr(0, oss_uri.size() - object_name.size());
 
   EXPECT_THAT(credentialed->SetStorageCredentials(
                   {{.prefix = oss_prefix, .config = std::move(properties)}}),
               IsOk());
-  EXPECT_THAT(CheckReadWrite(*io, s3_uri, "hello oss with vended credentials"), IsOk());
+  EXPECT_THAT(CheckReadWrite(*io, oss_uri, "hello oss with vended credentials"), IsOk());
 }
 
 TEST_F(ArrowS3FileIOTest, DeleteFilesReachesEveryCredentialPrefix) {
