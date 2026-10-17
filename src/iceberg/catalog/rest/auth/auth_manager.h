@@ -38,6 +38,10 @@ class ICEBERG_REST_EXPORT AuthManager {
  public:
   virtual ~AuthManager() = default;
 
+  /// Configure the borrowed executor used for background authentication refresh.
+  /// The executor must outlive this manager and all sessions it creates.
+  virtual void SetAuthRefreshExecutor(Executor* /*executor*/) {}
+
   /// \brief Create a short-lived session used to contact the configuration endpoint.
   ///
   /// This session is used only during catalog initialization to fetch server

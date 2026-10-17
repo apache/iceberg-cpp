@@ -100,7 +100,9 @@ class ICEBERG_REST_EXPORT AuthSession {
   /// \param client_id OAuth2 client ID for refresh requests.
   /// \param client_secret OAuth2 client secret for re-fetch if refresh fails.
   /// \param scope OAuth2 scope for refresh requests.
-  /// \param keep_refreshed Whether to schedule automatic token refresh.
+  /// \param keep_refreshed Whether to schedule automatic token refresh. Automatic refresh
+  /// is enabled only when the session is created by an auth manager with a refresh
+  /// executor.
   /// \param optional_oauth_params Optional OAuth params (audience, resource) for refresh.
   /// \param client HTTP client for making refresh requests. The session retains
   ///        ownership of the client.

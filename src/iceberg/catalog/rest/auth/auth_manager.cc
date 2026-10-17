@@ -33,6 +33,7 @@
 #include "iceberg/catalog/session_context.h"
 #include "iceberg/util/base64.h"
 #include "iceberg/util/macros.h"
+#include "iceberg/util/scheduled_executor_internal.h"
 
 namespace iceberg::rest::auth {
 
@@ -140,6 +141,15 @@ Result<std::unique_ptr<AuthManager>> MakeBasicAuthManager(
 /// \brief OAuth2 authentication manager.
 class OAuth2Manager : public AuthManager {
  public:
+  OAuth2Manager() = default;
+
+  void SetAuthRefreshExecutor(Executor* executor) override {
+    scheduler_.reset();
+    if (executor != nullptr) {
+      scheduler_ = std::make_unique<::iceberg::internal::ScheduledExecutor>(*executor);
+    }
+  }
+
   Result<std::shared_ptr<AuthSession>> InitSession(
       std::shared_ptr<HttpClient> init_client,
       const std::unordered_map<std::string, std::string>& properties) override {
@@ -181,7 +191,7 @@ class OAuth2Manager : public AuthManager {
       return internal::MakeOAuth2Session(
           *auth_response_, config.oauth2_server_uri(), config.client_id(),
           config.client_secret(), config.scope(), config.keep_refreshed(),
-          config.optional_oauth_params(), refresh_client_, start_time_);
+          config.optional_oauth_params(), refresh_client_, start_time_, scheduler_.get());
     }
 
     // TODO(lishuxu): Honor token-refresh-enabled for catalog bearer tokens, matching
@@ -192,10 +202,7 @@ class OAuth2Manager : public AuthManager {
           .token_type = "bearer",
           .issued_token_type = AuthProperties::kAccessTokenType,
       };
-      return AuthSession::MakeOAuth2(token_response, config.oauth2_server_uri(),
-                                     config.client_id(), config.client_secret(),
-                                     config.scope(), /*keep_refreshed=*/false,
-                                     config.optional_oauth_params(), refresh_client_);
+      return MakeSession(token_response, config, /*keep_refreshed=*/false);
     }
 
     // Fetch a new token using client_credentials grant.
@@ -206,10 +213,7 @@ class OAuth2Manager : public AuthManager {
       ICEBERG_ASSIGN_OR_RAISE(
           token_response,
           OAuth2Util::FetchToken(*refresh_client_, *base_session, config));
-      return AuthSession::MakeOAuth2(token_response, config.oauth2_server_uri(),
-                                     config.client_id(), config.client_secret(),
-                                     config.scope(), config.keep_refreshed(),
-                                     config.optional_oauth_params(), refresh_client_);
+      return MakeSession(token_response, config, config.keep_refreshed());
     }
 
     return MakeSession(AccessTokenResponse(""), config, /*keep_refreshed=*/false);
@@ -259,10 +263,10 @@ class OAuth2Manager : public AuthManager {
       bool keep_refreshed) const {
     ICEBERG_PRECHECK(refresh_client_ != nullptr,
                      "OAuth2 catalog session must be initialized before child sessions");
-    return AuthSession::MakeOAuth2(token_response, config.oauth2_server_uri(),
-                                   config.client_id(), config.client_secret(),
-                                   config.scope(), keep_refreshed,
-                                   config.optional_oauth_params(), refresh_client_);
+    return internal::MakeOAuth2Session(
+        token_response, config.oauth2_server_uri(), config.client_id(),
+        config.client_secret(), config.scope(), keep_refreshed,
+        config.optional_oauth_params(), refresh_client_, std::nullopt, scheduler_.get());
   }
 
   Result<std::shared_ptr<AuthSession>> MaybeCreateChildSession(
@@ -319,12 +323,14 @@ class OAuth2Manager : public AuthManager {
   std::optional<OAuthTokenResponse> auth_response_;
   std::optional<std::chrono::steady_clock::time_point> start_time_;
   std::shared_ptr<HttpClient> refresh_client_;
+  std::unique_ptr<::iceberg::internal::ScheduledExecutor> scheduler_;
 };
 
 Result<std::unique_ptr<AuthManager>> MakeOAuth2Manager(
     [[maybe_unused]] std::string_view name,
     [[maybe_unused]] const std::unordered_map<std::string, std::string>& properties) {
-  return std::make_unique<OAuth2Manager>();
+  std::unique_ptr<AuthManager> manager = std::make_unique<OAuth2Manager>();
+  return manager;
 }
 
 }  // namespace iceberg::rest::auth
