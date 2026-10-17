@@ -28,8 +28,8 @@
 #include "iceberg/inspect/metadata_table.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_field.h"
+#include "iceberg/test/inspect/metadata_table_test_base.h"
 #include "iceberg/test/matchers.h"
-#include "iceberg/test/metadata_table_test_base.h"
 #include "iceberg/type.h"
 
 namespace iceberg {
