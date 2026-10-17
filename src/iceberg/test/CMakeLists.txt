@@ -135,6 +135,7 @@ add_iceberg_test(util_test
                  data_file_set_test.cc
                  decimal_test.cc
                  endian_test.cc
+                 error_macros_test.cc
                  expected_test.cc
                  file_io_test.cc
                  formatter_test.cc

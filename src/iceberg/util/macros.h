@@ -21,15 +21,18 @@
 
 /// \file iceberg/util/macros.h
 /// \brief Define common Iceberg utility macros.
+///
+/// The macros name Iceberg symbols with their full namespace, so code outside namespace
+/// iceberg can use them.
 
 #include <cassert>
 
 #include "iceberg/exception.h"
 #include "iceberg/result.h"
 
-#define ICEBERG_RETURN_UNEXPECTED(expr)                       \
-  if (auto&& result_name = expr; !result_name) [[unlikely]] { \
-    return iceberg::unexpected<Error>(result_name.error());   \
+#define ICEBERG_RETURN_UNEXPECTED(expr)                                  \
+  if (auto&& result_name = expr; !result_name) [[unlikely]] {            \
+    return ::iceberg::unexpected<::iceberg::Error>(result_name.error()); \
   }
 
 #define ICEBERG_ASSIGN_OR_RAISE_IMPL(result_name, lhs, rexpr) \
@@ -49,26 +52,26 @@
 #define ICEBERG_DCHECK(expr, message) assert((expr) && (message))
 
 // Macro for precondition checks, usually used for function arguments
-#define ICEBERG_PRECHECK(expr, ...)        \
-  do {                                     \
-    if (!(expr)) [[unlikely]] {            \
-      return InvalidArgument(__VA_ARGS__); \
-    }                                      \
+#define ICEBERG_PRECHECK(expr, ...)                   \
+  do {                                                \
+    if (!(expr)) [[unlikely]] {                       \
+      return ::iceberg::InvalidArgument(__VA_ARGS__); \
+    }                                                 \
   } while (0)
 
 // Macro for state checks, usually used for unexpected states
-#define ICEBERG_CHECK(expr, ...)            \
-  do {                                      \
-    if (!(expr)) [[unlikely]] {             \
-      return ValidationFailed(__VA_ARGS__); \
-    }                                       \
+#define ICEBERG_CHECK(expr, ...)                       \
+  do {                                                 \
+    if (!(expr)) [[unlikely]] {                        \
+      return ::iceberg::ValidationFailed(__VA_ARGS__); \
+    }                                                  \
   } while (0)
 
-#define ERROR_TO_EXCEPTION(error)                             \
-  if (error.kind == iceberg::ErrorKind::kInvalidExpression) { \
-    throw iceberg::ExpressionError(error.message);            \
-  } else {                                                    \
-    throw iceberg::IcebergError(error.message);               \
+#define ERROR_TO_EXCEPTION(error)                               \
+  if (error.kind == ::iceberg::ErrorKind::kInvalidExpression) { \
+    throw ::iceberg::ExpressionError(error.message);            \
+  } else {                                                      \
+    throw ::iceberg::IcebergError(error.message);               \
   }
 
 #define ICEBERG_THROW_NOT_OK(expr)                            \
