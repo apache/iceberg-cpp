@@ -33,6 +33,7 @@ set(ICEBERG_SOURCES
     deletes/position_delete_index.cc
     deletes/position_delete_range_consumer.cc
     deletes/roaring_position_bitmap.cc
+    encryption/key_management_client.cc
     encryption/standard_key_metadata.cc
     expression/aggregate.cc
     expression/binder.cc
@@ -325,6 +326,14 @@ if(ICEBERG_BUILD_BUNDLE)
       parquet/parquet_schema_util.cc
       parquet/parquet_writer.cc
       parquet/row_number_reader.cc)
+
+  if(ICEBERG_ENCRYPTION)
+    list(APPEND
+         ICEBERG_BUNDLE_SOURCES
+         encryption/aes_gcm_internal.cc
+         encryption/aes_gcm_stream.cc
+         encryption/in_memory_kms.cc)
+  endif()
 
   # Libraries to link with exported libiceberg_bundle.{so,a}.
   set(ICEBERG_BUNDLE_STATIC_BUILD_INTERFACE_LIBS)

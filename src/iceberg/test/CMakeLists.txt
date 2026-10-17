@@ -116,7 +116,7 @@ add_iceberg_test(expression_test
                  residual_evaluator_test.cc
                  strict_metrics_evaluator_test.cc)
 
-add_iceberg_test(encryption_test SOURCES standard_key_metadata_test.cc)
+add_iceberg_test(encryption_test SOURCES kms_test.cc standard_key_metadata_test.cc)
 
 add_iceberg_test(json_serde_test
                  SOURCES
@@ -226,6 +226,10 @@ if(ICEBERG_BUILD_BUNDLE)
                    row_number_reader_test.cc)
   if(ICEBERG_ENCRYPTION)
     target_sources(parquet_test PRIVATE parquet_encryption_test.cc)
+  endif()
+
+  if(ICEBERG_ENCRYPTION)
+    add_iceberg_test(crypto_test USE_BUNDLE SOURCES aes_gcm_test.cc)
   endif()
 
   add_iceberg_test(scan_test
@@ -408,6 +412,10 @@ if(ICEBERG_CXX20_COMPAT)
     )
     target_compile_definitions(cpp20_compatibility_test
                                PRIVATE ICEBERG_PUBLIC_HEADERS_BUNDLE)
+    if(ICEBERG_ENCRYPTION)
+      target_compile_definitions(cpp20_compatibility_test
+                                 PRIVATE ICEBERG_PUBLIC_HEADERS_ENCRYPTION)
+    endif()
   endif()
   if(ICEBERG_BUILD_REST)
     target_link_libraries(cpp20_compatibility_test
