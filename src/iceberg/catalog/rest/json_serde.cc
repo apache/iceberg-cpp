@@ -176,14 +176,16 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> FileScanTasksFromJson(
         partition_spec_by_id,
     const Schema& schema) {
   if (!json.is_array()) {
-    return JsonParseError("Cannot parse file scan tasks from non-array: {}",
-                          SafeDumpJson(json));
+    return JsonParseError(
+        "Cannot parse file scan tasks from non-array (JSON value of type {})",
+        json.type_name());
   }
   std::vector<std::shared_ptr<FileScanTask>> file_scan_tasks;
   for (const auto& task_json : json) {
     if (!task_json.is_object()) {
-      return JsonParseError("Cannot parse file scan task from a non-object: {}",
-                            SafeDumpJson(task_json));
+      return JsonParseError(
+          "Cannot parse file scan task from a non-object (JSON value of type {})",
+          task_json.type_name());
     }
 
     ICEBERG_ASSIGN_OR_RAISE(auto data_file_json,
@@ -353,8 +355,9 @@ Status ScanTaskFieldsFromJson(
                             GetJsonValue<nlohmann::json>(json, kDeleteFiles));
   }
   if (!delete_files_json.is_array()) {
-    return JsonParseError("Cannot parse delete files from non-array: {}",
-                          SafeDumpJson(delete_files_json));
+    return JsonParseError(
+        "Cannot parse delete files from non-array (JSON value of type {})",
+        delete_files_json.type_name());
   }
   for (const auto& entry_json : delete_files_json) {
     ICEBERG_ASSIGN_OR_RAISE(
@@ -522,8 +525,9 @@ nlohmann::json ToJson(const FieldLabel& field_label) {
 
 Result<FieldLabel> FieldLabelFromJson(const nlohmann::json& json) {
   if (!json.is_object()) {
-    return JsonParseError("Cannot parse field label from non-object: {}",
-                          SafeDumpJson(json));
+    return JsonParseError(
+        "Cannot parse field label from non-object (JSON value of type {})",
+        json.type_name());
   }
   FieldLabel field_label;
   ICEBERG_ASSIGN_OR_RAISE(field_label.field_id, GetJsonInteger<int32_t>(json, kFieldId));
@@ -555,8 +559,8 @@ Result<Labels> LabelsFromJson(const nlohmann::json& json) {
       GetJsonValueOrDefault<decltype(labels.object_labels)>(json, kObjectLabels));
   if (auto it = json.find(kFields); it != json.end() && !it->is_null()) {
     if (!it->is_array()) {
-      return JsonParseError("Cannot parse '{}' from non-array: {}", kFields,
-                            SafeDumpJson(*it));
+      return JsonParseError("Cannot parse '{}' from non-array (JSON value of type {})",
+                            kFields, it->type_name());
     }
     for (const auto& entry : *it) {
       ICEBERG_ASSIGN_OR_RAISE(auto field_label, FieldLabelFromJson(entry));
@@ -812,7 +816,7 @@ Result<CommitTableRequest> CommitTableRequestFromJson(const nlohmann::json& json
   if (requirements_json.has_value()) {
     if (!requirements_json->is_array()) {
       return JsonParseError("Expected '{}' to be an array, got {}", kRequirements,
-                            SafeDumpJson(*requirements_json));
+                            requirements_json->type_name());
     }
     for (const auto& req_json : *requirements_json) {
       ICEBERG_ASSIGN_OR_RAISE(auto requirement, TableRequirementFromJson(req_json));
@@ -825,7 +829,7 @@ Result<CommitTableRequest> CommitTableRequestFromJson(const nlohmann::json& json
   if (updates_json.has_value()) {
     if (!updates_json->is_array()) {
       return JsonParseError("Expected '{}' to be an array, got {}", kUpdates,
-                            SafeDumpJson(*updates_json));
+                            updates_json->type_name());
     }
     for (const auto& update_json : *updates_json) {
       ICEBERG_ASSIGN_OR_RAISE(auto update, TableUpdateFromJson(update_json));

@@ -17,6 +17,7 @@
  * under the License.
  */
 
+#include <format>
 #include <limits>
 #include <memory>
 #include <string>
@@ -2947,5 +2948,51 @@ INSTANTIATE_TEST_SUITE_P(
     [](const ::testing::TestParamInfo<LabelsInvalidParam>& info) {
       return info.param.test_name;
     });
+
+// Parse errors describe the offending key and JSON type; they must not
+// reproduce JSON values from the response.
+TEST(ParseErrorMessageTest, LoadTableResultErrorOmitsValues) {
+  constexpr std::string_view kConfigValue = "config-value-1234";
+  constexpr std::string_view kCredentialValue = "credential-value-5678";
+  nlohmann::json without_metadata = {
+      {"metadata-location", "s3://bucket/metadata/v1.json"},
+      {"config", {{"s3.secret-access-key", kConfigValue}}},
+      {"storage-credentials",
+       nlohmann::json::array(
+           {{{"prefix", "s3"}, {"config", {{"s3.session-token", kCredentialValue}}}}})}};
+  nlohmann::json mistyped_metadata = without_metadata;
+  mistyped_metadata["metadata"] = 1;
+
+  for (const auto& json : {without_metadata, mistyped_metadata}) {
+    auto result = LoadTableResultFromJson(json);
+    ASSERT_THAT(result, IsError(ErrorKind::kJsonParseError));
+    EXPECT_THAT(result, HasErrorMessage("metadata"));
+    EXPECT_THAT(result, ::testing::Not(HasErrorMessage(kConfigValue)));
+    EXPECT_THAT(result, ::testing::Not(HasErrorMessage(kCredentialValue)));
+  }
+}
+
+TEST(ParseErrorMessageTest, OAuthTokenResponseErrorOmitsValues) {
+  constexpr std::string_view kAccessToken = "access-token-1234";
+  constexpr std::string_view kRefreshToken = "refresh-token-5678";
+  nlohmann::json json = {{"access_token", kAccessToken},
+                         {"token_type", "bearer"},
+                         {"expires_in", "3600"},
+                         {"refresh_token", kRefreshToken}};
+
+  auto result = OAuthTokenResponseFromJson(json);
+  ASSERT_THAT(result, IsError(ErrorKind::kJsonParseError));
+  EXPECT_THAT(result, HasErrorMessage("'expires_in'"));
+  EXPECT_THAT(result, HasErrorMessage("string"));
+  EXPECT_THAT(result, ::testing::Not(HasErrorMessage(kAccessToken)));
+  EXPECT_THAT(result, ::testing::Not(HasErrorMessage(kRefreshToken)));
+}
+
+TEST(ParseErrorMessageTest, InvalidJsonStringIsNotEchoed) {
+  constexpr std::string_view kValue = "access-token-1234";
+  auto result = FromJsonString(std::format(R"({{"access_token":"{}",)", kValue));
+  ASSERT_THAT(result, IsError(ErrorKind::kJsonParseError));
+  EXPECT_THAT(result, ::testing::Not(HasErrorMessage(kValue)));
+}
 
 }  // namespace iceberg::rest

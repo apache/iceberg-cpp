@@ -57,6 +57,10 @@ inline void SetOptionalStringField(nlohmann::json& json, std::string_view key,
   }
 }
 
+/// \brief Dump a JSON document to a string, ignoring encoding errors.
+///
+/// Not intended for error messages: parse errors describe the offending key
+/// and JSON type instead of reproducing JSON values.
 inline std::string SafeDumpJson(const nlohmann::json& json) {
   return json.dump(/*indent=*/-1, /*indent_char=*/' ', /*ensure_ascii=*/false,
                    nlohmann::detail::error_handler_t::ignore);
@@ -67,7 +71,8 @@ Result<T> GetTypedJsonValue(const nlohmann::json& json) {
   try {
     return json.get<T>();
   } catch (const std::exception& ex) {
-    return JsonParseError("Failed to parse {}: {}", SafeDumpJson(json), ex.what());
+    return JsonParseError("Failed to parse JSON value of type {}: {}", json.type_name(),
+                          ex.what());
   }
 }
 
@@ -76,7 +81,9 @@ Result<T> GetJsonValueImpl(const nlohmann::json& json, std::string_view key) {
   try {
     return json.at(key).get<T>();
   } catch (const std::exception& ex) {
-    return JsonParseError("Failed to parse '{}' from {}: {}", key, SafeDumpJson(json),
+    // Report the key and the JSON type found, not the enclosing document.
+    return JsonParseError("Failed to parse '{}' (JSON value of type {}): {}", key,
+                          json.contains(key) ? json.at(key).type_name() : "missing",
                           ex.what());
   }
 }
@@ -94,7 +101,7 @@ Result<std::optional<T>> GetJsonValueOptional(const nlohmann::json& json,
 template <typename T>
 Result<T> GetJsonValue(const nlohmann::json& json, std::string_view key) {
   if (!json.contains(key) || json.at(key).is_null()) {
-    return JsonParseError("Missing '{}' in {}", key, SafeDumpJson(json));
+    return JsonParseError("Missing '{}' in JSON object", key);
   }
   return GetJsonValueImpl<T>(json, key);
 }
@@ -123,8 +130,7 @@ Result<Integer> IntegerFromJson(const nlohmann::json& json,
   if (json.is_number_unsigned()) {
     const auto value = json.get<uint64_t>();
     if (value > static_cast<uint64_t>(std::numeric_limits<Integer>::max())) {
-      return JsonParseError("{} integer is out of range: {}", description,
-                            SafeDumpJson(json));
+      return JsonParseError("{} integer is out of range", description);
     }
     return static_cast<Integer>(value);
   }
@@ -132,8 +138,7 @@ Result<Integer> IntegerFromJson(const nlohmann::json& json,
   const auto value = json.get<int64_t>();
   if (value < static_cast<int64_t>(std::numeric_limits<Integer>::min()) ||
       value > static_cast<int64_t>(std::numeric_limits<Integer>::max())) {
-    return JsonParseError("{} integer is out of range: {}", description,
-                          SafeDumpJson(json));
+    return JsonParseError("{} integer is out of range", description);
   }
   return static_cast<Integer>(value);
 }
@@ -225,8 +230,8 @@ Result<std::vector<T>> FromJsonList(
   if (json.contains(key)) {
     ICEBERG_ASSIGN_OR_RAISE(auto list_json, GetJsonValue<nlohmann::json>(json, key));
     if (!list_json.is_array()) {
-      return JsonParseError("Cannot parse '{}' from non-array: {}", key,
-                            SafeDumpJson(list_json));
+      return JsonParseError("Cannot parse '{}' from non-array JSON value of type {}", key,
+                            list_json.type_name());
     }
     for (const auto& entry_json : list_json) {
       ICEBERG_ASSIGN_OR_RAISE(auto entry, from_json(entry_json));
@@ -250,8 +255,8 @@ Result<std::vector<std::shared_ptr<T>>> FromJsonList(
   if (json.contains(key)) {
     ICEBERG_ASSIGN_OR_RAISE(auto list_json, GetJsonValue<nlohmann::json>(json, key));
     if (!list_json.is_array()) {
-      return JsonParseError("Cannot parse '{}' from non-array: {}", key,
-                            SafeDumpJson(list_json));
+      return JsonParseError("Cannot parse '{}' from non-array JSON value of type {}", key,
+                            list_json.type_name());
     }
     for (const auto& entry_json : list_json) {
       ICEBERG_ASSIGN_OR_RAISE(auto entry, from_json(entry_json));
@@ -300,16 +305,16 @@ Result<std::unordered_map<std::string, T>> FromJsonMap(
       try {
         return json.get<std::string>();
       } catch (const std::exception& ex) {
-        return JsonParseError("Cannot parse {} to a string value: {}", SafeDumpJson(json),
-                              ex.what());
+        return JsonParseError("Cannot parse JSON value of type {} to a string value: {}",
+                              json.type_name(), ex.what());
       }
     }) {
   std::unordered_map<std::string, T> map{};
   if (json.contains(key)) {
     ICEBERG_ASSIGN_OR_RAISE(auto map_json, GetJsonValue<nlohmann::json>(json, key));
     if (!map_json.is_object()) {
-      return JsonParseError("Cannot parse '{}' from non-object: {}", key,
-                            SafeDumpJson(map_json));
+      return JsonParseError("Cannot parse '{}' from non-object JSON value of type {}",
+                            key, map_json.type_name());
     }
     for (const auto& [key, value] : map_json.items()) {
       ICEBERG_ASSIGN_OR_RAISE(auto entry, from_json(value));

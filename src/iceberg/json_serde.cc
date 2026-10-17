@@ -439,8 +439,9 @@ Result<PartitionValues> PartitionValuesFromJson(const nlohmann::json& json,
     }
   } else {
     return JsonParseError(
-        "Invalid partition data for content file: expected array or object ({})",
-        SafeDumpJson(json));
+        "Invalid partition data for content file: expected array or object (JSON value "
+        "of type {})",
+        json.type_name());
   }
 
   return PartitionValues(std::move(values));
@@ -930,8 +931,9 @@ Status ValidateTimestamptzDefaultIsUtc(const Type& type, const nlohmann::json& v
     return {};
   }
   if (!value.is_string()) {
-    return JsonParseError("Invalid timestamptz default {} for {}: expected a string",
-                          SafeDumpJson(value), type.ToString());
+    return JsonParseError(
+        "Invalid timestamptz default for {}: expected a string (JSON value of type {})",
+        type.ToString(), value.type_name());
   }
   const auto str = value.get<std::string>();
   ICEBERG_ASSIGN_OR_RAISE(bool is_utc, TemporalUtils::IsUtcOffset(str));
@@ -985,7 +987,7 @@ Result<std::unique_ptr<Schema>> SchemaFromJson(const nlohmann::json& json) {
   ICEBERG_ASSIGN_OR_RAISE(auto type, TypeFromJson(json));
 
   if (type->type_id() != TypeId::kStruct) [[unlikely]] {
-    return JsonParseError("Schema must be a struct type, but got {}", SafeDumpJson(json));
+    return JsonParseError("Schema must be a struct type, but got {}", type->ToString());
   }
   auto& struct_type = internal::checked_cast<StructType&>(*type);
 
@@ -1142,12 +1144,13 @@ Result<std::unique_ptr<Snapshot>> SnapshotFromJson(const nlohmann::json& json) {
       //   return JsonParseError("Invalid snapshot summary field: {}", key);
       // }
       if (!value.is_string()) {
-        return JsonParseError("Invalid snapshot summary field value: {}",
-                              SafeDumpJson(value));
+        return JsonParseError(
+            "Invalid snapshot summary field value for '{}' (JSON value of type {})", key,
+            value.type_name());
       }
       if (key == SnapshotSummaryFields::kOperation &&
           !kValidDataOperation.contains(value.get<std::string>())) {
-        return JsonParseError("Invalid snapshot operation: {}", SafeDumpJson(value));
+        return JsonParseError("Invalid snapshot operation in snapshot summary");
       }
       summary[key] = value.get<std::string>();
     }
@@ -1320,8 +1323,9 @@ Result<EncryptedKey> EncryptedKeyFromJson(const nlohmann::json& json) {
   using StringMap = std::unordered_map<std::string, std::string>;
 
   if (!json.is_object()) {
-    return JsonParseError("Invalid encryption key, must be non-null object: {}",
-                          SafeDumpJson(json));
+    return JsonParseError(
+        "Invalid encryption key, must be non-null object (JSON value of type {})",
+        json.type_name());
   }
 
   ICEBERG_ASSIGN_OR_RAISE(auto key_id, GetJsonValue<std::string>(json, kKeyId));
@@ -1445,8 +1449,8 @@ Result<std::shared_ptr<Schema>> ParseSchemas(
     ICEBERG_ASSIGN_OR_RAISE(auto schema_array,
                             GetJsonValue<nlohmann::json>(json, kSchemas));
     if (!schema_array.is_array()) {
-      return JsonParseError("Cannot parse schemas from non-array: {}",
-                            SafeDumpJson(schema_array));
+      return JsonParseError("Cannot parse schemas from non-array (JSON value of type {})",
+                            schema_array.type_name());
     }
 
     ICEBERG_ASSIGN_OR_RAISE(current_schema_id,
@@ -1461,8 +1465,8 @@ Result<std::shared_ptr<Schema>> ParseSchemas(
       schemas.push_back(std::move(schema));
     }
     if (!current_schema) {
-      return JsonParseError("Cannot find schema with {}={} from {}", kCurrentSchemaId,
-                            current_schema_id, SafeDumpJson(schema_array));
+      return JsonParseError("Cannot find schema with {}={}", kCurrentSchemaId,
+                            current_schema_id);
     }
   } else {
     if (format_version != 1) {
@@ -1493,8 +1497,9 @@ Status ParsePartitionSpecs(const nlohmann::json& json, int8_t format_version,
     ICEBERG_ASSIGN_OR_RAISE(auto spec_array,
                             GetJsonValue<nlohmann::json>(json, kPartitionSpecs));
     if (!spec_array.is_array()) {
-      return JsonParseError("Cannot parse partition specs from non-array: {}",
-                            SafeDumpJson(spec_array));
+      return JsonParseError(
+          "Cannot parse partition specs from non-array (JSON value of type {})",
+          spec_array.type_name());
     }
     ICEBERG_ASSIGN_OR_RAISE(default_spec_id,
                             GetJsonInteger<int32_t>(json, kDefaultSpecId));
@@ -1513,8 +1518,9 @@ Status ParsePartitionSpecs(const nlohmann::json& json, int8_t format_version,
     ICEBERG_ASSIGN_OR_RAISE(auto partition_spec_json,
                             GetJsonValue<nlohmann::json>(json, kPartitionSpec));
     if (!partition_spec_json.is_array()) {
-      return JsonParseError("Cannot parse v1 partition spec from non-array: {}",
-                            SafeDumpJson(partition_spec_json));
+      return JsonParseError(
+          "Cannot parse v1 partition spec from non-array (JSON value of type {})",
+          partition_spec_json.type_name());
     }
 
     int32_t next_partition_field_id = PartitionSpec::kLegacyPartitionDataIdStart;
@@ -1581,8 +1587,9 @@ Status ParseSortOrders(const nlohmann::json& json, int8_t format_version,
 
 Result<std::unique_ptr<TableMetadata>> TableMetadataFromJson(const nlohmann::json& json) {
   if (!json.is_object()) {
-    return JsonParseError("Cannot parse metadata from a non-object: {}",
-                          SafeDumpJson(json));
+    return JsonParseError(
+        "Cannot parse metadata from a non-object (JSON value of type {})",
+        json.type_name());
   }
 
   auto table_metadata = std::make_unique<TableMetadata>();
@@ -1701,7 +1708,8 @@ Result<nlohmann::json> FromJsonString(const std::string& json_string) {
   auto json =
       nlohmann::json::parse(json_string, /*cb=*/nullptr, /*allow_exceptions=*/false);
   if (json.is_discarded()) [[unlikely]] {
-    return JsonParseError("Failed to parse JSON string: {}", json_string);
+    // Report the size only, not the raw input.
+    return JsonParseError("Failed to parse JSON string of {} bytes", json_string.size());
   }
   return json;
 }
@@ -1734,8 +1742,8 @@ nlohmann::json ToJson(const MappedField& field) {
 
 Result<MappedField> MappedFieldFromJson(const nlohmann::json& json) {
   if (!json.is_object()) [[unlikely]] {
-    return JsonParseError("Cannot parse non-object mapping field: {}",
-                          SafeDumpJson(json));
+    return JsonParseError("Cannot parse non-object mapping field (JSON value of type {})",
+                          json.type_name());
   }
 
   ICEBERG_ASSIGN_OR_RAISE(std::optional<int32_t> field_id,
@@ -1768,8 +1776,8 @@ nlohmann::json ToJson(const MappedFields& mapped_fields) {
 
 Result<std::unique_ptr<MappedFields>> MappedFieldsFromJson(const nlohmann::json& json) {
   if (!json.is_array()) [[unlikely]] {
-    return JsonParseError("Cannot parse non-array mapping fields: {}",
-                          SafeDumpJson(json));
+    return JsonParseError("Cannot parse non-array mapping fields (JSON value of type {})",
+                          json.type_name());
   }
 
   std::vector<MappedField> fields;
@@ -1822,7 +1830,8 @@ nlohmann::json ToJson(const Namespace& ns) { return ns.levels; }
 
 Result<Namespace> NamespaceFromJson(const nlohmann::json& json) {
   if (!json.is_array()) [[unlikely]] {
-    return JsonParseError("Cannot parse namespace from non-array:{}", SafeDumpJson(json));
+    return JsonParseError("Cannot parse namespace from non-array (JSON value of type {})",
+                          json.type_name());
   }
   Namespace ns;
   ICEBERG_ASSIGN_OR_RAISE(ns.levels, GetTypedJsonValue<std::vector<std::string>>(json));
@@ -2279,7 +2288,8 @@ Result<DataFile> DataFileFromJson(
         partition_spec_by_id,
     const Schema& schema) {
   if (!json.is_object()) {
-    return JsonParseError("DataFile must be a JSON object: {}", SafeDumpJson(json));
+    return JsonParseError("DataFile must be a JSON object (JSON value of type {})",
+                          json.type_name());
   }
   DataFile data_file;
 
@@ -2476,8 +2486,9 @@ Result<nlohmann::json> ToJson(
 
 Result<std::shared_ptr<FileScanTask>> FileScanTaskFromJson(const nlohmann::json& json) {
   if (!json.is_object()) {
-    return JsonParseError("Cannot parse file scan task from a non-object: {}",
-                          SafeDumpJson(json));
+    return JsonParseError(
+        "Cannot parse file scan task from a non-object (JSON value of type {})",
+        json.type_name());
   }
   ICEBERG_ASSIGN_OR_RAISE(auto task_type,
                           GetJsonValueOptional<std::string>(json, kTaskType));
@@ -2522,8 +2533,9 @@ Result<std::shared_ptr<FileScanTask>> FileScanTaskFromJson(const nlohmann::json&
     ICEBERG_ASSIGN_OR_RAISE(auto delete_files_json,
                             GetJsonValue<nlohmann::json>(json, kDeleteFiles));
     if (!delete_files_json.is_array()) {
-      return JsonParseError("Cannot parse delete files from non-array: {}",
-                            SafeDumpJson(delete_files_json));
+      return JsonParseError(
+          "Cannot parse delete files from non-array (JSON value of type {})",
+          delete_files_json.type_name());
     }
     for (const auto& delete_file_json : delete_files_json) {
       ICEBERG_ASSIGN_OR_RAISE(
