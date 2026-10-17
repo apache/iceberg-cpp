@@ -232,6 +232,56 @@ TEST(SchemaUtilTest, ProjectPresentFieldIgnoresInitialDefault) {
   AssertProjectedField(projection_result->fields[0], 0);
 }
 
+TEST(SchemaUtilTest, ProjectWritePolicyIgnoresInitialDefault) {
+  // With the write default source, a field having only `initial-default` behaves as if
+  // it had no default: optional becomes null and required is rejected.
+  Schema source_schema = CreateFlatSchema();
+  Schema expected_schema({
+      SchemaField::MakeRequired(/*field_id=*/1, "id", iceberg::int64()),
+      SchemaField(/*field_id=*/10, "extra", iceberg::string(), /*optional=*/true,
+                  /*doc=*/{}, std::make_shared<const Literal>(Literal::String("n/a"))),
+  });
+
+  auto projection_result = Project(expected_schema, source_schema, /*prune_source=*/false,
+                                   ProjectionMode::kWrite);
+  ASSERT_THAT(projection_result, IsOk());
+  ASSERT_EQ(projection_result->fields[1].kind, FieldProjection::Kind::kNull);
+}
+
+TEST(SchemaUtilTest, ProjectWritePolicyUnknownSourceProducesNull) {
+  Schema source_schema(
+      {SchemaField::MakeOptional(/*field_id=*/1, "value", iceberg::unknown())});
+  Schema expected_schema({
+      SchemaField(/*field_id=*/1, "value", iceberg::int32(), /*optional=*/true,
+                  /*doc=*/{}, /*initial_default=*/nullptr,
+                  std::make_shared<const Literal>(Literal::Int(7))),
+  });
+
+  auto write_projection = Project(expected_schema, source_schema, /*prune_source=*/false,
+                                  ProjectionMode::kWrite);
+  ASSERT_THAT(write_projection, IsOk());
+  ASSERT_EQ(write_projection->fields.size(), 1);
+  // A supplied null stays null, even when the field has a write-default.
+  ASSERT_EQ(write_projection->fields[0].kind, FieldProjection::Kind::kNull);
+
+  auto read_projection = Project(expected_schema, source_schema, /*prune_source=*/false);
+  ASSERT_THAT(read_projection, IsOk());
+  ASSERT_EQ(read_projection->fields.size(), 1);
+  AssertProjectedField(read_projection->fields[0], 0);
+}
+
+TEST(SchemaUtilTest, ProjectWriteRejectsTypePromotion) {
+  Schema source_schema(
+      {SchemaField::MakeRequired(/*field_id=*/1, "id", iceberg::int32())});
+  Schema expected_schema(
+      {SchemaField::MakeRequired(/*field_id=*/1, "id", iceberg::int64())});
+
+  auto projection_result = Project(expected_schema, source_schema, /*prune_source=*/false,
+                                   ProjectionMode::kWrite);
+  ASSERT_THAT(projection_result, IsError(ErrorKind::kNotSupported));
+  ASSERT_THAT(projection_result, HasErrorMessage("type promotion is not allowed"));
+}
+
 TEST(SchemaUtilTest, ProjectMetadataColumn) {
   Schema source_schema = CreateFlatSchema();
   Schema expected_schema({

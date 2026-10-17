@@ -21,6 +21,8 @@
 /// Verifies ProjectBatch behavior across registered implementations.
 
 #include <cstdint>
+#include <memory>
+#include <string>
 #include <string_view>
 #include <utility>
 #include <vector>
@@ -32,13 +34,17 @@
 #include <gtest/gtest.h>
 
 #include "iceberg/arrow/arrow_register.h"
+#include "iceberg/arrow/arrow_status_internal.h"
 #include "iceberg/arrow_c_data_guard_internal.h"
 #include "iceberg/arrow_c_data_util_internal.h"
+#include "iceberg/expression/literal.h"
+#include "iceberg/result.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_field.h"
 #include "iceberg/schema_internal.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/type.h"
+#include "iceberg/util/macros.h"
 
 namespace iceberg::internal {
 
@@ -119,6 +125,35 @@ std::shared_ptr<Schema> MakeFullSchema() {
                                SchemaField::MakeOptional(3, "score", float64())});
 }
 
+Result<std::shared_ptr<::arrow::RecordBatch>> AlignForWrite(
+    const Schema& input_schema, const Schema& write_schema,
+    const ::arrow::RecordBatch& input) {
+  ArrowArray c_array;
+  ICEBERG_ARROW_RETURN_NOT_OK(::arrow::ExportRecordBatch(input, &c_array));
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto aligned, arrow::AlignBatchForWrite(&c_array, input_schema, write_schema));
+
+  ArrowSchema c_schema;
+  ICEBERG_RETURN_UNEXPECTED(ToArrowSchema(write_schema, &c_schema));
+  ICEBERG_ARROW_ASSIGN_OR_RETURN(auto arrow_schema, ::arrow::ImportSchema(&c_schema));
+  ICEBERG_ARROW_ASSIGN_OR_RETURN(auto result,
+                                 ::arrow::ImportRecordBatch(&aligned, arrow_schema));
+  ICEBERG_ARROW_RETURN_NOT_OK(result->ValidateFull());
+  return result;
+}
+
+SchemaField DefaultedField(int32_t id, std::string name, std::shared_ptr<Type> type,
+                           bool optional, Literal initial_default,
+                           Literal write_default) {
+  return {id,
+          std::move(name),
+          std::move(type),
+          optional,
+          {},
+          std::make_shared<const Literal>(std::move(initial_default)),
+          std::make_shared<const Literal>(std::move(write_default))};
+}
+
 }  // namespace
 
 TEST(ProjectBatchTest, ProjectSelectedRowsWithoutColumnProjection) {
@@ -190,5 +225,217 @@ TEST(ProjectBatchTest, ProjectionRejectsNestedPruning) {
 
   EXPECT_THAT(projection, IsError(ErrorKind::kInvalidArgument));
 }
+
+TEST(AlignBatchForWriteTest, IdenticalSchemasTransferBatchWithoutConversion) {
+  auto input_schema = MakeFullSchema();
+  auto write_schema = MakeFullSchema();
+  auto input =
+      MakeBatch(*input_schema, R"([[1,"alice",1.0],[2,null,2.0],[3,"carol",3.0]])")
+          ->Slice(1, 2);
+  ArrowArray c_array;
+  ASSERT_TRUE(::arrow::ExportRecordBatch(*input, &c_array).ok());
+  auto original = c_array;
+
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto aligned, arrow::AlignBatchForWrite(&c_array, *input_schema, *write_schema));
+  ArrowArrayGuard aligned_guard(&aligned);
+  EXPECT_EQ(c_array.release, nullptr);
+  EXPECT_EQ(aligned.private_data, original.private_data);
+  EXPECT_EQ(aligned.release, original.release);
+  EXPECT_EQ(aligned.buffers, original.buffers);
+  EXPECT_EQ(aligned.children, original.children);
+
+  auto actual = ::arrow::ImportRecordBatch(&aligned, input->schema()).ValueOrDie();
+  ASSERT_TRUE(actual->ValidateFull().ok());
+  EXPECT_TRUE(actual->Equals(*input));
+}
+
+struct AlignBatchForWriteParam {
+  std::string name;
+  std::vector<SchemaField> input_fields;
+  std::vector<SchemaField> write_fields;
+  std::string_view input_json;
+  std::string_view expected_json;
+  std::string_view expected_error;
+  int64_t slice_offset = 0;
+};
+
+class AlignBatchForWriteParamTest
+    : public ::testing::TestWithParam<AlignBatchForWriteParam> {};
+
+TEST_P(AlignBatchForWriteParamTest, AlignBatch) {
+  const auto& param = GetParam();
+  Schema input_schema(param.input_fields);
+  Schema write_schema(param.write_fields);
+  auto input = MakeBatch(input_schema, param.input_json)->Slice(param.slice_offset);
+
+  auto result = AlignForWrite(input_schema, write_schema, *input);
+
+  if (!param.expected_error.empty()) {
+    EXPECT_THAT(result, IsError(ErrorKind::kInvalidSchema));
+    EXPECT_THAT(result, HasErrorMessage(param.expected_error));
+    return;
+  }
+  ICEBERG_UNWRAP_OR_FAIL(auto actual, std::move(result));
+  auto expected = MakeBatch(write_schema, param.expected_json);
+  EXPECT_TRUE(actual->Equals(*expected)) << actual->ToString();
+}
+
+std::vector<AlignBatchForWriteParam> WriteAlignmentCases() {
+  std::vector<AlignBatchForWriteParam> cases = {{
+      .name = "MissingRequiredFieldWithoutWriteDefault",
+      .input_fields = {SchemaField::MakeRequired(1, "id", int32())},
+      .write_fields = {SchemaField::MakeRequired(1, "id", int32()),
+                       SchemaField::MakeRequired(2, "required", string())},
+      .input_json = R"([[1]])",
+      .expected_error = "without a write-default",
+  }};
+
+  {
+    auto list_field = SchemaField::MakeOptional(
+        1, "items", list(SchemaField::MakeOptional(2, "element", int32())));
+    auto map_field =
+        SchemaField::MakeOptional(3, "properties",
+                                  map(SchemaField::MakeRequired(4, "key", string()),
+                                      SchemaField::MakeOptional(5, "value", int32())));
+    cases.push_back({
+        .name = "CollectionsWhenAddingAndReorderingFields",
+        .input_fields = {list_field, map_field},
+        .write_fields =
+            {
+                map_field,
+                list_field,
+                DefaultedField(6, "name", string(), /*optional=*/false,
+                               Literal::String("initial"), Literal::String("written")),
+            },
+        .input_json = R"([[[1,2],[["a",3]]],[null,[]],[[],null]])",
+        .expected_json =
+            R"([[[["a",3]],[1,2],"written"],[[],null,"written"],[null,[],"written"]])",
+    });
+  }
+
+  {
+    auto input_item = std::make_shared<StructType>(std::vector<SchemaField>{
+        SchemaField::MakeRequired(4, "name", string()),
+        SchemaField::MakeRequired(5, "score", int32()),
+    });
+    auto write_item = std::make_shared<StructType>(std::vector<SchemaField>{
+        SchemaField::MakeRequired(5, "rating", int32()),
+        SchemaField::MakeRequired(4, "renamed", string()),
+        DefaultedField(11, "age", int32(), /*optional=*/false, Literal::Int(10),
+                       Literal::Int(18)),
+    });
+    auto input_value = std::make_shared<StructType>(std::vector<SchemaField>{
+        SchemaField::MakeRequired(9, "label", string()),
+        SchemaField::MakeRequired(10, "code", int32()),
+    });
+    auto write_value = std::make_shared<StructType>(std::vector<SchemaField>{
+        SchemaField::MakeRequired(10, "code_new", int32()),
+        SchemaField::MakeRequired(9, "title", string()),
+        DefaultedField(12, "flag", boolean(), /*optional=*/false, Literal::Boolean(false),
+                       Literal::Boolean(true)),
+    });
+    auto nested_list = [](std::shared_ptr<Type> element) {
+      return list(SchemaField::MakeOptional(
+          2, "element",
+          list(SchemaField::MakeOptional(3, "element", std::move(element)))));
+    };
+    auto nested_map = [](std::shared_ptr<Type> value) {
+      return map(SchemaField::MakeRequired(7, "key", string()),
+                 SchemaField::MakeOptional(8, "value", std::move(value)));
+    };
+    cases.push_back({
+        .name = "StructsInsideSlicedNestedCollections",
+        .input_fields = {SchemaField::MakeOptional(1, "items", nested_list(input_item)),
+                         SchemaField::MakeOptional(6, "mapping",
+                                                   nested_map(input_value))},
+        .write_fields = {SchemaField::MakeOptional(1, "items", nested_list(write_item)),
+                         SchemaField::MakeOptional(6, "mapping",
+                                                   nested_map(write_value))},
+        .input_json = R"([
+    [[[]],[]],
+    [[[{"name":"alice","score":1},null],[]],
+     [["a",{"label":"bob","code":2}],["b",null]]],
+    [null,null],
+    [[],[]]
+  ])",
+        .expected_json = R"([
+    [[[{"rating":1,"renamed":"alice","age":18},null],[]],
+     [["a",{"code_new":2,"title":"bob","flag":true}],["b",null]]],
+    [null,null],
+    [[],[]]
+  ])",
+        .slice_offset = 1,
+    });
+  }
+
+  {
+    auto input_info = std::make_shared<StructType>(
+        std::vector<SchemaField>{SchemaField::MakeRequired(4, "age", int32())});
+    auto write_info = std::make_shared<StructType>(std::vector<SchemaField>{
+        SchemaField::MakeRequired(4, "age", int32()),
+        DefaultedField(5, "score", int32(), /*optional=*/false, Literal::Int(0),
+                       Literal::Int(99)),
+    });
+    auto input_person = std::make_shared<StructType>(std::vector<SchemaField>{
+        SchemaField::MakeRequired(2, "name", string()),
+        SchemaField::MakeOptional(3, "info", input_info),
+    });
+    auto write_person = std::make_shared<StructType>(std::vector<SchemaField>{
+        SchemaField::MakeOptional(3, "info", write_info),
+        SchemaField::MakeRequired(2, "username", string()),
+        SchemaField::MakeOptional(6, "comment", string()),
+    });
+    cases.push_back({
+        .name = "SlicedStructOffsetsAndParentNulls",
+        .input_fields = {SchemaField::MakeOptional(1, "person", input_person)},
+        .write_fields = {SchemaField::MakeOptional(1, "person", write_person)},
+        .input_json = R"([
+    [{"name":"first","info":{"age":10}}],
+    [null],
+    [{"name":"bob","info":null}],
+    [{"name":"carol","info":{"age":30}}]
+  ])",
+        .expected_json = R"([
+    [null],
+    [{"info":null,"username":"bob","comment":null}],
+    [{"info":{"age":30,"score":99},"username":"carol","comment":null}]
+  ])",
+        .slice_offset = 1,
+    });
+  }
+
+  auto input_struct = std::make_shared<StructType>(std::vector<SchemaField>{
+      SchemaField::MakeRequired(4, "value", int32()),
+      SchemaField::MakeOptional(5, "extra", string()),
+  });
+  auto write_struct = std::make_shared<StructType>(
+      std::vector<SchemaField>{SchemaField::MakeRequired(4, "value", int32())});
+  for (bool use_map : {false, true}) {
+    auto wrap = [use_map](std::shared_ptr<Type> child) -> std::shared_ptr<Type> {
+      if (use_map) {
+        return map(SchemaField::MakeRequired(2, "key", string()),
+                   SchemaField::MakeOptional(3, "value", std::move(child)));
+      }
+      return list(SchemaField::MakeOptional(
+          2, "element", list(SchemaField::MakeOptional(3, "element", std::move(child)))));
+    };
+    cases.push_back({
+        .name = use_map ? "UnknownFieldInsideMap" : "UnknownFieldInsideNestedList",
+        .input_fields = {SchemaField::MakeOptional(1, "items", wrap(input_struct))},
+        .write_fields = {SchemaField::MakeOptional(1, "items", wrap(write_struct))},
+        .input_json = R"([[[]]])",
+        .expected_error = "Input field id 5",
+    });
+  }
+  return cases;
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    WriteAlignment, AlignBatchForWriteParamTest,
+    ::testing::ValuesIn(WriteAlignmentCases()),
+    [](const ::testing::TestParamInfo<AlignBatchForWriteParam>& info) {
+      return info.param.name;
+    });
 
 }  // namespace iceberg::internal

@@ -23,6 +23,8 @@
 #include <memory>
 #include <string>
 #include <string_view>
+#include <unordered_map>
+#include <utility>
 #include <vector>
 
 #include <arrow/array.h>
@@ -38,6 +40,7 @@
 
 #include "iceberg/arrow/arrow_io_internal.h"
 #include "iceberg/avro/avro_register.h"
+#include "iceberg/data/data_writer.h"
 #include "iceberg/expression/literal.h"
 #include "iceberg/file_format.h"
 #include "iceberg/file_reader.h"
@@ -72,6 +75,13 @@ struct DefaultValueEndToEndParam {
   bool avro_skip_datum = true;
 };
 
+struct WriteDefaultEndToEndParam {
+  std::string name;
+  FileFormatType format;
+  std::string path;
+  bool avro_skip_datum = true;
+};
+
 class DefaultValueEndToEndTest
     : public UpdateTestBase,
       public ::testing::WithParamInterface<DefaultValueEndToEndParam> {
@@ -84,6 +94,68 @@ class DefaultValueEndToEndTest
   std::string MetadataResource() const override {
     return "TableMetadataV3ValidMinimal.json";
   }
+};
+
+class WriteDefaultEndToEndTest
+    : public ::testing::TestWithParam<WriteDefaultEndToEndParam> {
+ protected:
+  static void SetUpTestSuite() {
+    parquet::RegisterAll();
+    avro::RegisterAll();
+  }
+
+  void SetUp() override { file_io_ = arrow::ArrowFileSystemFileIO::MakeMockFileIO(); }
+
+  std::shared_ptr<::arrow::Array> CreateArray(const Schema& schema,
+                                              std::string_view json) {
+    ArrowSchema arrow_c_schema;
+    ICEBERG_THROW_NOT_OK(ToArrowSchema(schema, &arrow_c_schema));
+    auto arrow_schema = ::arrow::ImportType(&arrow_c_schema).ValueOrDie();
+    return ::arrow::json::ArrayFromJSONString(::arrow::struct_(arrow_schema->fields()),
+                                              std::string(json))
+        .ValueOrDie();
+  }
+
+  static std::unordered_map<std::string, std::string> FormatProperties(
+      const WriteDefaultEndToEndParam& param) {
+    if (param.format == FileFormatType::kParquet) {
+      return {{"write.parquet.compression-codec", "uncompressed"}};
+    }
+    return {{"write.avro.skip-datum", param.avro_skip_datum ? "true" : "false"}};
+  }
+
+  void WriteAndRead(const std::shared_ptr<Schema>& input_schema,
+                    const std::shared_ptr<Schema>& write_schema,
+                    std::string_view input_json, std::string_view expected_json) {
+    const auto& param = GetParam();
+    DataWriterOptions options{
+        .path = param.path,
+        .schema = write_schema,
+        .format = param.format,
+        .io = file_io_,
+        .properties = FormatProperties(param),
+        .input_schema = input_schema,
+    };
+    ICEBERG_UNWRAP_OR_FAIL(auto writer, DataWriter::Make(options));
+    auto input = CreateArray(*input_schema, input_json);
+    ArrowArray arrow_array;
+    ASSERT_TRUE(::arrow::ExportArray(*input, &arrow_array).ok());
+    ASSERT_THAT(writer->Write(&arrow_array), IsOk());
+    ASSERT_THAT(writer->Close(), IsOk());
+
+    ICEBERG_UNWRAP_OR_FAIL(auto reader, ReaderFactoryRegistry::Open(
+                                            param.format, {.path = param.path,
+                                                           .io = file_io_,
+                                                           .projection = write_schema}));
+    ICEBERG_UNWRAP_OR_FAIL(auto batch, reader->Next());
+    ASSERT_TRUE(batch.has_value());
+    auto expected = CreateArray(*write_schema, expected_json);
+    auto actual = ::arrow::ImportArray(&batch.value(), expected->type()).ValueOrDie();
+    ASSERT_TRUE(actual->Equals(expected))
+        << "actual: " << actual->ToString() << "\nexpected: " << expected->ToString();
+  }
+
+  std::shared_ptr<FileIO> file_io_;
 };
 
 TEST_P(DefaultValueEndToEndTest, WriteEvolveReadFillsInitialDefault) {
@@ -186,6 +258,34 @@ TEST_P(DefaultValueEndToEndTest, WriteEvolveReadFillsInitialDefault) {
   ASSERT_FALSE(next_batch.has_value());
 }
 
+TEST_P(WriteDefaultEndToEndTest, MissingColumnUsesWriteDefault) {
+  auto input_schema = std::make_shared<Schema>(std::vector<SchemaField>{
+      SchemaField::MakeOptional(2, "name", string()),
+      SchemaField::MakeRequired(1, "id", int32()),
+  });
+  auto write_schema = std::make_shared<Schema>(std::vector<SchemaField>{
+      SchemaField::MakeRequired(1, "id", int32()),
+      SchemaField::MakeOptional(2, "name", string()),
+      SchemaField(3, "added", int32(), /*optional=*/false, /*doc=*/{},
+                  std::make_shared<const Literal>(Literal::Int(42)),
+                  std::make_shared<const Literal>(Literal::Int(7))),
+      SchemaField::MakeOptional(4, "comment", string()),
+  });
+  // This file is written after the column exists, so the missing input column uses
+  // write-default (7), not initial-default (42).
+  WriteAndRead(input_schema, write_schema, R"([["alice", 1], [null, 2]])",
+               R"([[1, "alice", 7, null], [2, null, 7, null]])");
+}
+
+TEST_P(WriteDefaultEndToEndTest, UnknownInputWritesTypedNulls) {
+  auto input_schema = std::make_shared<Schema>(
+      std::vector<SchemaField>{SchemaField::MakeOptional(1, "id", unknown())});
+  auto write_schema = std::make_shared<Schema>(
+      std::vector<SchemaField>{SchemaField::MakeOptional(1, "id", int32())});
+
+  WriteAndRead(input_schema, write_schema, R"([[null], [null]])", R"([[null], [null]])");
+}
+
 namespace {
 
 // Two-row column of `json` values at `type`, for the simple cases.
@@ -258,6 +358,18 @@ INSTANTIATE_TEST_SUITE_P(
                                   Literal::UUID(Uuid::FromBytes(kUuidBytes).value()),
                                   UuidRows, /*avro_skip_datum=*/false}),
     [](const ::testing::TestParamInfo<DefaultValueEndToEndParam>& info) {
+      return info.param.name;
+    });
+
+INSTANTIATE_TEST_SUITE_P(
+    Formats, WriteDefaultEndToEndTest,
+    ::testing::Values(
+        WriteDefaultEndToEndParam{"parquet", FileFormatType::kParquet,
+                                  "write-default.parquet"},
+        WriteDefaultEndToEndParam{"avro", FileFormatType::kAvro, "write-default.avro"},
+        WriteDefaultEndToEndParam{"avro_generic_datum", FileFormatType::kAvro,
+                                  "write-default-generic.avro", false}),
+    [](const ::testing::TestParamInfo<WriteDefaultEndToEndParam>& info) {
       return info.param.name;
     });
 
