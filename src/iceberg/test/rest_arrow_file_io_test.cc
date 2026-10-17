@@ -180,9 +180,9 @@ TEST_F(RestArrowFileIOTest, ReadsBackWhatItWroteThroughAnOssLocation) {
   ScopedScrubbedAwsCredentialEnv scrubbed;
 
   // The scheme is preserved for routing, while the endpoint is S3-compatible.
-  auto io = MakeTableFileIO({{"warehouse", "logical_warehouse_name"}},
-                            /*table_config=*/{},
-                            {{.prefix = "oss", .config = std::move(credential_config)}});
+  auto io =
+      MakeTableFileIO({{"warehouse", "logical_warehouse_name"}}, /*table_config=*/{},
+                      {{.prefix = "oss://", .config = std::move(credential_config)}});
   ASSERT_THAT(io, IsOk());
 
   auto object_uri = AsOssUri(*base_uri);
