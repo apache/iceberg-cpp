@@ -20,7 +20,9 @@
 #include "iceberg/parquet/parquet_reader.h"
 
 #include <algorithm>
+#include <limits>
 #include <numeric>
+#include <utility>
 #include <variant>
 #include <vector>
 
@@ -289,7 +291,6 @@ class ParquetReader::Impl {
       return InvalidArgument("Projected schema is required by Parquet reader");
     }
 
-    split_ = options.split;
     read_schema_ = options.projection;
 
     // Prepare reader properties
@@ -310,6 +311,7 @@ class ParquetReader::Impl {
     ICEBERG_ARROW_ASSIGN_OR_RETURN(
         reader_, ::parquet::arrow::FileReader::Make(pool_, std::move(file_reader),
                                                     arrow_reader_properties));
+    ICEBERG_RETURN_UNEXPECTED(PlanRowGroups(options));
 
     // Project read schema onto the Parquet file schema
     ICEBERG_ASSIGN_OR_RAISE(projection_, BuildProjection(reader_.get(), *read_schema_));
@@ -401,42 +403,65 @@ class ParquetReader::Impl {
   }
 
  private:
-  Status InitReadContext() {
-    context_ = std::make_unique<ReadContext>();
-
-    // Row group pruning based on the split
+  Status PlanRowGroups(const ReaderOptions& options) {
     // TODO(gangwu): add row group filtering based on zone map, bloom filter, etc.
     auto metadata = reader_->parquet_reader()->metadata();
-    std::vector<int> row_group_indices;
-    if (split_.has_value()) {
+    if (options.split.has_value()) {
+      const auto& split = *options.split;
+      ICEBERG_ARROW_ASSIGN_OR_RETURN(auto file_size, input_stream_->GetSize());
+      int64_t row_count = 0;
       for (int i = 0; i < metadata->num_row_groups(); ++i) {
-        auto row_group_offset = metadata->RowGroup(i)->file_offset();
-        if (row_group_offset >= split_->offset &&
-            row_group_offset < split_->offset + split_->length) {
-          row_group_indices.push_back(i);
-        } else if (row_group_offset >= split_->offset + split_->length) {
-          break;
+        auto row_group = metadata->RowGroup(i);
+        // Empty row groups have no pages to assign to a split.
+        if (row_group->num_rows() == 0) {
+          continue;
         }
+        // Like Java Iceberg, a split reads the row groups whose midpoints it contains.
+        auto midpoint = RowGroupMidpoint(*row_group, file_size);
+        if (!midpoint.has_value()) {
+          return Invalid(
+              "Cannot read Parquet split {} (start={}, length={}), row "
+              "group {}: {}",
+              options.path, split.offset, split.length, i, midpoint.error().message);
+        }
+        // Subtraction avoids overflow for a caller-supplied unbounded split length.
+        if (std::cmp_greater_equal(*midpoint, split.offset) &&
+            static_cast<uint64_t>(*midpoint) - split.offset < split.length) {
+          row_group_indices_.push_back(i);
+        }
+        if (row_group->num_rows() < 0 ||
+            row_group->num_rows() > std::numeric_limits<int64_t>::max() - row_count) {
+          return Invalid("Invalid Parquet row count in file {}, row group {}",
+                         options.path, i);
+        }
+        row_count += row_group->num_rows();
       }
-    } else {
-      row_group_indices.resize(metadata->num_row_groups());
-      std::iota(row_group_indices.begin(), row_group_indices.end(), 0);  // NOLINT
+    } else if (metadata->num_row_groups() > 0) {
+      row_group_indices_.resize(metadata->num_row_groups());
+      std::iota(row_group_indices_.begin(), row_group_indices_.end(), 0);  // NOLINT
     }
+    return {};
+  }
 
-    // Create the record batch reader
-    if (row_group_indices.empty()) {
-      // None of the row groups are selected, return an empty record batch reader
-      context_->record_batch_reader_ = std::make_unique<EmptyRecordBatchReader>();
+  Status InitReadContext() {
+    // Build locally so initialization can be retried without consuming any rows.
+    auto context = std::make_unique<ReadContext>();
+    if (row_group_indices_.empty()) {
+      context->record_batch_reader_ = std::make_unique<EmptyRecordBatchReader>();
     } else {
-      auto column_indices = SelectedColumnIndices(projection_);
       ICEBERG_ARROW_ASSIGN_OR_RETURN(
-          context_->record_batch_reader_,
-          reader_->GetRecordBatchReader(row_group_indices, column_indices));
+          context->record_batch_reader_,
+          reader_->GetRecordBatchReader(row_group_indices_,
+                                        SelectedColumnIndices(projection_)));
     }
 
     if (NeedsRowPositions(*read_schema_, metadata_context_)) {
-      ICEBERG_ASSIGN_OR_RAISE(context_->row_number_reader_,
-                              RowNumberReader::Make(*metadata, row_group_indices, pool_));
+      auto metadata = reader_->parquet_reader()->metadata();
+      // Share the batch reader's selection so positions remain file-relative even
+      // when a batch spans nonconsecutive row groups.
+      ICEBERG_ASSIGN_OR_RAISE(
+          context->row_number_reader_,
+          RowNumberReader::Make(*metadata, row_group_indices_, pool_));
     }
 
     // Build the output Arrow schema from the projected Iceberg schema. This schema is the
@@ -444,7 +469,7 @@ class ParquetReader::Impl {
     // the schema of the file.
     ArrowSchema arrow_schema;
     ICEBERG_RETURN_UNEXPECTED(ToArrowSchema(*read_schema_, &arrow_schema));
-    ICEBERG_ARROW_ASSIGN_OR_RETURN(context_->output_arrow_schema_,
+    ICEBERG_ARROW_ASSIGN_OR_RETURN(context->output_arrow_schema_,
                                    ::arrow::ImportSchema(&arrow_schema));
 
     // Align the output schema with the arrays the reader actually produces. The reader's
@@ -455,18 +480,18 @@ class ParquetReader::Impl {
     //   3. Mixed list and large_list types in files with stored schemas
     // For each projected field, we use the reader's actual type. For missing fields
     // (columns not in the file), we apply the configured use_large_list preference.
-    context_->output_arrow_schema_ = AlignOutputSchemaToReaderSchema(
-        context_->output_arrow_schema_, context_->record_batch_reader_->schema(),
+    context->output_arrow_schema_ = AlignOutputSchemaToReaderSchema(
+        context->output_arrow_schema_, context->record_batch_reader_->schema(),
         projection_, use_large_list_);
-
+    context_ = std::move(context);
     return {};
   }
 
  private:
   // TODO(gangwu): make memory pool configurable
   ::arrow::MemoryPool* pool_ = ::arrow::default_memory_pool();
-  // The split to read from the Parquet file.
-  std::optional<Split> split_;
+  // Row groups in footer order, shared by the batch and row-number readers.
+  std::vector<int> row_group_indices_;
   // Whether to read list columns as large_list (64-bit offsets).
   bool use_large_list_ = false;
   // Schema to read from the Parquet file.

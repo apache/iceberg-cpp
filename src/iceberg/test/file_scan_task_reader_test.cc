@@ -19,9 +19,12 @@
 
 #include "iceberg/data/file_scan_task_reader.h"
 
+#include <algorithm>
+#include <array>
 #include <memory>
 #include <optional>
 #include <string>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -31,11 +34,13 @@
 #include <arrow/record_batch.h>
 #include <arrow/table.h>
 #include <parquet/arrow/writer.h>
+#include <parquet/file_reader.h>
 #include <parquet/metadata.h>
 #include <parquet/properties.h>
 
 #include "iceberg/arrow/arrow_io_internal.h"
 #include "iceberg/arrow/arrow_register.h"
+#include "iceberg/arrow/arrow_status_internal.h"
 #include "iceberg/arrow_c_data.h"
 #include "iceberg/arrow_c_data_guard_internal.h"
 #include "iceberg/arrow_c_data_util_internal.h"
@@ -56,6 +61,7 @@
 #include "iceberg/schema_internal.h"
 #include "iceberg/table_scan.h"
 #include "iceberg/test/matchers.h"
+#include "iceberg/test/std_io.h"
 #include "iceberg/test/temp_file_test_base.h"
 #include "iceberg/type.h"
 #include "iceberg/util/macros.h"
@@ -119,6 +125,31 @@ class FileScanTaskReaderTest : public TempFileTestBase {
                                  MetadataColumns::kRowId,
                                  MetadataColumns::kLastUpdatedSequenceNumber},
         table_schema_->schema_id());
+  }
+
+  using RowWithPositionAndLineage = std::array<int64_t, 4>;
+
+  Result<std::vector<RowWithPositionAndLineage>> ReadRows(FileScanTaskReader& reader,
+                                                          const FileScanTask& task) {
+    ICEBERG_ASSIGN_OR_RAISE(auto stream, reader.Open(task));
+    ICEBERG_ARROW_ASSIGN_OR_RETURN(auto batches,
+                                   ::arrow::ImportRecordBatchReader(&stream));
+    std::vector<RowWithPositionAndLineage> rows;
+    while (true) {
+      ICEBERG_ARROW_ASSIGN_OR_RETURN(auto batch, batches->Next());
+      if (batch == nullptr) {
+        return rows;
+      }
+      ICEBERG_ARROW_RETURN_NOT_OK(batch->ValidateFull());
+      const auto& ids = static_cast<const ::arrow::Int32Array&>(*batch->column(0));
+      const auto& positions = static_cast<const ::arrow::Int64Array&>(*batch->column(1));
+      const auto& row_ids = static_cast<const ::arrow::Int64Array&>(*batch->column(2));
+      const auto& sequences = static_cast<const ::arrow::Int64Array&>(*batch->column(3));
+      for (int64_t i = 0; i < batch->num_rows(); ++i) {
+        rows.push_back(
+            {ids.Value(i), positions.Value(i), row_ids.Value(i), sequences.Value(i)});
+      }
+    }
   }
 
   Result<ExportedBatch> MakeBatch(const Schema& schema,
@@ -409,7 +440,7 @@ TEST_F(FileScanTaskReaderTest, OpenWithoutDeletesReadsProjectedSchema) {
       VerifyStream(&stream, R"([[1, "Foo"], [2, "Bar"], [3, "Baz"]])"));
 }
 
-TEST_F(FileScanTaskReaderTest, RejectsPartialTaskUntilRangeReadsAreSupported) {
+TEST_F(FileScanTaskReaderTest, RejectsPartialTasksForUnsupportedFormats) {
   ICEBERG_UNWRAP_OR_FAIL(
       auto data_file,
       MakeDataFile(table_schema_,
@@ -423,10 +454,146 @@ TEST_F(FileScanTaskReaderTest, RejectsPartialTaskUntilRangeReadsAreSupported) {
       .projected_schema = projected_schema_,
   };
   ICEBERG_UNWRAP_OR_FAIL(auto reader, FileScanTaskReader::Make(std::move(options)));
-  auto result = reader->Open(*task);
-  EXPECT_THAT(result, IsError(ErrorKind::kNotSupported));
-  EXPECT_THAT(result, HasErrorMessage("Reading a partial FileScanTask"));
+  for (auto format : {FileFormatType::kAvro, FileFormatType::kOrc}) {
+    data_file->file_format = format;
+    auto result = reader->Open(*task);
+    EXPECT_THAT(result, IsError(ErrorKind::kNotSupported));
+    EXPECT_THAT(result,
+                HasErrorMessage("Reading a partial FileScanTask requires Parquet"));
+  }
 }
+
+TEST_F(FileScanTaskReaderTest, RechecksSplitBoundsAfterFileSizeChanges) {
+  ICEBERG_UNWRAP_OR_FAIL(auto data_file,
+                         MakeDataFile(table_schema_, R"([[1, "a", "b"]])", 1));
+  const int64_t file_size = data_file->file_size_in_bytes;
+  ICEBERG_UNWRAP_OR_FAIL(auto task, FileScanTask::MakeSplit(data_file, 4, file_size - 4));
+  ICEBERG_UNWRAP_OR_FAIL(auto reader, FileScanTaskReader::Make({
+                                          .io = file_io_,
+                                          .table_schema = table_schema_,
+                                          .projected_schema = projected_schema_,
+                                      }));
+  for (int64_t size : {file_size - 1, int64_t{3}, int64_t{0}}) {
+    data_file->file_size_in_bytes = size;
+    auto result = reader->Open(*task);
+    EXPECT_THAT(result, IsError(ErrorKind::kInvalidArgument));
+    EXPECT_THAT(result, HasErrorMessage("Task range is outside file"));
+  }
+  data_file->file_size_in_bytes = -1;
+  EXPECT_THAT(reader->Open(*task),
+              HasErrorMessage("Data file size must not be negative"));
+}
+
+TEST_F(FileScanTaskReaderTest, EmptyParquetFileAndSplitReturnNoRows) {
+  ICEBERG_UNWRAP_OR_FAIL(auto data_file, MakeDataFile(table_schema_, "[]", 0));
+  ICEBERG_UNWRAP_OR_FAIL(auto reader, FileScanTaskReader::Make({
+                                          .io = file_io_,
+                                          .table_schema = table_schema_,
+                                          .projected_schema = projected_schema_,
+                                      }));
+  ICEBERG_UNWRAP_OR_FAIL(auto split, FileScanTask::MakeSplit(data_file, 0, 1));
+  for (const auto& task : {std::make_shared<FileScanTask>(data_file), split}) {
+    ICEBERG_UNWRAP_OR_FAIL(auto stream, reader->Open(*task));
+    auto batches = ::arrow::ImportRecordBatchReader(&stream).ValueOrDie();
+    auto batch = batches->Next();
+    ASSERT_TRUE(batch.ok()) << batch.status();
+    ASSERT_EQ(batch.ValueOrDie(), nullptr);
+  }
+}
+
+class FileScanTaskReaderSplitTest
+    : public FileScanTaskReaderTest,
+      public ::testing::WithParamInterface<std::tuple<std::string, int64_t>> {};
+
+TEST_P(FileScanTaskReaderSplitTest, SplitsMatchWholeFileWithAbsolutePositionsAndLineage) {
+  const auto& [delete_kind, batch_size] = GetParam();
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto data_file,
+      MakeDataFile(table_schema_,
+                   std::vector<std::string>{R"([[1, "a", "keep"], [2, "b", "delete"]])",
+                                            R"([[3, "c", "delete"], [4, "d", "delete"]])",
+                                            R"([[5, "e", "keep"], [6, "f", "delete"]])"},
+                   /*record_count=*/6, /*max_row_group_length=*/2));
+  data_file->first_row_id = 100;
+  data_file->data_sequence_number = 7;
+  std::vector<std::shared_ptr<DataFile>> deletes;
+  if (delete_kind == "position" || delete_kind == "mixed") {
+    ICEBERG_UNWRAP_OR_FAIL(
+        auto deletion, MakePositionDeleteFile(CreateNewTempFilePathWithSuffix(".parquet"),
+                                              {1, 2, 3, 5}, data_file->file_path));
+    deletes.push_back(std::move(deletion));
+  }
+  if (delete_kind == "equality" || delete_kind == "mixed") {
+    // The equality field is absent from the output projection.
+    ICEBERG_UNWRAP_OR_FAIL(
+        auto deletion,
+        MakeEqualityDeleteFile(CreateNewTempFilePathWithSuffix(".parquet"), table_schema_,
+                               R"([[0, "", "delete"]])", {3}));
+    deletes.push_back(std::move(deletion));
+  }
+  if (delete_kind == "dv") {
+    ICEBERG_UNWRAP_OR_FAIL(
+        auto deletion, MakeDeletionVectorFile(CreateNewTempFilePathWithSuffix(".puffin"),
+                                              {1, 2, 3, 5}, data_file->file_path));
+    deletes.push_back(std::move(deletion));
+  }
+  auto projection = std::make_shared<Schema>(std::vector<SchemaField>{
+      SchemaField::MakeRequired(1, "id", int32()), MetadataColumns::kRowPosition,
+      MetadataColumns::kRowId, MetadataColumns::kLastUpdatedSequenceNumber});
+  // This FileIO honors the supplied length hint, so a split length passed as the
+  // file length would make the footer unreadable.
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto reader, FileScanTaskReader::Make({
+                       .io = std::make_shared<test::StdFileIO>(),
+                       .table_schema = table_schema_,
+                       .projected_schema = projection,
+                       .properties = {{"read.batch-size", std::to_string(batch_size)}},
+                   }));
+
+  std::vector<RowWithPositionAndLineage> expected;
+  for (int64_t id = 1; id <= 6; ++id) {
+    if (delete_kind == "none" || id == 1 || id == 5) {
+      expected.push_back({id, id - 1, 100 + id - 1, 7});
+    }
+  }
+  ICEBERG_UNWRAP_OR_FAIL(auto whole_rows,
+                         ReadRows(*reader, FileScanTask(data_file, deletes)));
+  ASSERT_EQ(whole_rows, expected);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto input,
+                         arrow::OpenArrowInputStream(file_io_, data_file->file_path));
+  auto metadata = ::parquet::ReadMetaData(input);
+  ASSERT_EQ(metadata->num_row_groups(), 3);
+  std::vector<int64_t> boundaries{0, 1, data_file->file_size_in_bytes};
+  for (int i = 0; i < metadata->num_row_groups(); ++i) {
+    auto column = metadata->RowGroup(i)->ColumnChunk(0);
+    ASSERT_TRUE(column->has_dictionary_page());
+    ASSERT_LT(column->dictionary_page_offset(), column->data_page_offset());
+    // Include exact starts, ranges containing no starts, and boundaries inside groups.
+    boundaries.push_back(column->dictionary_page_offset());
+    boundaries.push_back(column->dictionary_page_offset() + 1);
+    boundaries.push_back(column->data_page_offset());
+  }
+  std::ranges::sort(boundaries);
+  auto duplicates = std::ranges::unique(boundaries);
+  boundaries.erase(duplicates.begin(), duplicates.end());
+  std::vector<RowWithPositionAndLineage> split_rows;
+  for (size_t i = 1; i < boundaries.size(); ++i) {
+    SCOPED_TRACE(i);
+    ICEBERG_UNWRAP_OR_FAIL(
+        auto split, FileScanTask::MakeSplit(data_file, boundaries[i - 1],
+                                            boundaries[i] - boundaries[i - 1], deletes));
+    ICEBERG_UNWRAP_OR_FAIL(auto rows, ReadRows(*reader, *split));
+    split_rows.insert(split_rows.end(), rows.begin(), rows.end());
+  }
+  EXPECT_EQ(split_rows, whole_rows);
+  EXPECT_EQ(split_rows, expected);
+}
+
+INSTANTIATE_TEST_SUITE_P(DeleteKindsAndBatchSizes, FileScanTaskReaderSplitTest,
+                         ::testing::Combine(::testing::Values("none", "position",
+                                                              "equality", "dv", "mixed"),
+                                            ::testing::Values(int64_t{1}, int64_t{100})));
 
 TEST_F(FileScanTaskReaderTest, ReadLastUpdatedFromDataSeq) {
   ICEBERG_UNWRAP_OR_FAIL(

@@ -24,11 +24,26 @@
 #include "iceberg/arrow/metadata_column_util_internal.h"
 #include "iceberg/schema_util.h"
 
+namespace parquet {
+class RowGroupMetaData;
+}  // namespace parquet
+
 namespace iceberg::parquet {
 
 /// \brief Whether direct fields need positions for _pos or inherited _row_id.
 bool NeedsRowPositions(const StructType& struct_type,
                        const arrow::MetadataColumnContext& metadata_context);
+
+/// \brief Return the first column's starting page, matching parquet-mr's
+/// BlockMetaData.getStartingPos(). Reject missing or out-of-file starts.
+Result<int64_t> RowGroupStart(const ::parquet::RowGroupMetaData& row_group,
+                              int64_t file_size);
+
+/// \brief Return the byte offset that assigns a row group to a split: its start plus
+/// half its compressed size, matching parquet-java's range filter used by Java Iceberg.
+/// Reject sizes that are negative or extend past the end of the file.
+Result<int64_t> RowGroupMidpoint(const ::parquet::RowGroupMetaData& row_group,
+                                 int64_t file_size);
 
 /// \brief Convert record batch read from a Parquet file to projected Iceberg Schema.
 ///

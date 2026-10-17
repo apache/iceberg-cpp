@@ -24,6 +24,7 @@
 #include <arrow/compute/api.h>
 #include <arrow/record_batch.h>
 #include <arrow/type.h>
+#include <parquet/metadata.h>
 
 #include "iceberg/arrow/arrow_status_internal.h"
 #include "iceberg/arrow/literal_util_internal.h"
@@ -36,6 +37,61 @@
 #include "iceberg/util/macros.h"
 
 namespace iceberg::parquet {
+
+Result<int64_t> RowGroupStart(const ::parquet::RowGroupMetaData& row_group,
+                              int64_t file_size) {
+  if (row_group.num_columns() == 0) {
+    return Invalid("Cannot split a Parquet row group without columns");
+  }
+  auto column = row_group.ColumnChunk(0);
+  int64_t start = column->data_page_offset();
+  // A dictionary page comes before the data pages. Like parquet-mr, ignore it
+  // unless its offset is positive and earlier.
+  if (column->has_dictionary_page()) {
+    const int64_t dictionary_start = column->dictionary_page_offset();
+    if (dictionary_start > 0 && dictionary_start < start) {
+      start = dictionary_start;
+    }
+  }
+  // Byte 0 is the "PAR1" magic, so no page can start there.
+  if (start <= 0 || start >= file_size) {
+    return Invalid(
+        "Cannot split a Parquet row group with missing or out-of-file "
+        "starting page {} (file size {})",
+        start, file_size);
+  }
+  return start;
+}
+
+Result<int64_t> RowGroupMidpoint(const ::parquet::RowGroupMetaData& row_group,
+                                 int64_t file_size) {
+  ICEBERG_ASSIGN_OR_RAISE(auto start, RowGroupStart(row_group, file_size));
+  // The row group's pages are contiguous from its start, so its size is bounded by the
+  // rest of the file. This bound also keeps the sum below from overflowing.
+  const int64_t max_size = file_size - start;
+  // Arrow reports an omitted row-group size as 0. Like parquet-java, fall back to the
+  // sum of the column chunk sizes.
+  int64_t size = row_group.total_compressed_size();
+  if (size == 0) {
+    for (int i = 0; i < row_group.num_columns(); ++i) {
+      const int64_t column_size = row_group.ColumnChunk(i)->total_compressed_size();
+      if (column_size < 0 || column_size > max_size - size) {
+        return Invalid(
+            "Cannot split a Parquet row group with invalid column {} compressed size {} "
+            "(start {}, file size {})",
+            i, column_size, start, file_size);
+      }
+      size += column_size;
+    }
+  }
+  if (size < 0 || size > max_size) {
+    return Invalid(
+        "Cannot split a Parquet row group with invalid compressed size {} "
+        "(start {}, file size {})",
+        size, start, file_size);
+  }
+  return start + size / 2;
+}
 
 namespace {
 
