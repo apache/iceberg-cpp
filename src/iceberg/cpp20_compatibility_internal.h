@@ -216,6 +216,10 @@
 #  include "iceberg/parquet/parquet_writer.h"
 #endif  // ICEBERG_PUBLIC_HEADERS_BUNDLE
 
+#ifdef ICEBERG_PUBLIC_HEADERS_ENCRYPTION
+#  include "iceberg/encryption/aes_gcm_stream.h"
+#endif  // ICEBERG_PUBLIC_HEADERS_ENCRYPTION
+
 #ifdef ICEBERG_PUBLIC_HEADERS_HIVE
 #  include "iceberg/catalog/hive/hive_catalog.h"
 #  include "iceberg/catalog/hive/hive_catalog_properties.h"
