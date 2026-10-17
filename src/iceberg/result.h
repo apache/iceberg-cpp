@@ -39,6 +39,7 @@ enum class ErrorKind {
   kBadRequest,
   kCommitFailed,
   kCommitStateUnknown,
+  kCompressError,
   kDecompressError,
   kForbidden,
   kInternalServerError,
@@ -106,6 +107,7 @@ DEFINE_ERROR_FUNCTION(AuthenticationFailed)
 DEFINE_ERROR_FUNCTION(BadRequest)
 DEFINE_ERROR_FUNCTION(CommitFailed)
 DEFINE_ERROR_FUNCTION(CommitStateUnknown)
+DEFINE_ERROR_FUNCTION(CompressError)
 DEFINE_ERROR_FUNCTION(DecompressError)
 DEFINE_ERROR_FUNCTION(Forbidden)
 DEFINE_ERROR_FUNCTION(InternalServerError)

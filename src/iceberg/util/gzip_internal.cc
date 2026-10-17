@@ -23,6 +23,7 @@
 #include <zlib.h>
 
 #include <cstring>
+#include <limits>
 #include <memory>
 #include <string>
 #include <vector>
@@ -86,6 +87,65 @@ class ZlibImpl {
   z_stream stream_;
 };
 
+class ZlibDeflateImpl {
+ public:
+  ZlibDeflateImpl() { memset(&stream_, 0, sizeof(stream_)); }
+
+  ~ZlibDeflateImpl() {
+    if (initialized_) {
+      deflateEnd(&stream_);
+    }
+  }
+
+  Status Init() {
+    // Maximum window size, plus the offset that selects a gzip wrapper over
+    // the raw zlib one, so GZipDecompressor's auto-detection accepts it.
+    constexpr int kWindowBits = 15;
+    constexpr int kGzipWrapper = 16;
+    int ret = deflateInit2(&stream_, Z_DEFAULT_COMPRESSION, Z_DEFLATED,
+                           kWindowBits | kGzipWrapper, 8, Z_DEFAULT_STRATEGY);
+    if (ret != Z_OK) {
+      return CompressError("deflateInit2 failed, result:{}", ret);
+    }
+    initialized_ = true;
+    return {};
+  }
+
+  Result<std::string> Compress(const std::string& data) {
+    if (data.size() > std::numeric_limits<uInt>::max()) {
+      return CompressError("Cannot compress {} bytes in a single gzip pass", data.size());
+    }
+    if (!initialized_) {
+      ICEBERG_RETURN_UNEXPECTED(Init());
+    }
+    stream_.avail_in = static_cast<uInt>(data.size());
+    stream_.next_in = reinterpret_cast<Bytef*>(const_cast<char*>(data.data()));
+
+    std::vector<char> out_buffer(32 * 1024);
+    std::string result;
+    int ret = 0;
+    do {
+      stream_.avail_out = static_cast<uInt>(out_buffer.size());
+      stream_.next_out = reinterpret_cast<Bytef*>(out_buffer.data());
+      ret = deflate(&stream_, Z_FINISH);
+      if (ret != Z_OK && ret != Z_STREAM_END) {
+        return CompressError("deflate failed, result:{}", ret);
+      }
+      result.append(out_buffer.data(), out_buffer.size() - stream_.avail_out);
+    } while (ret != Z_STREAM_END);
+    // Rewind the stream so the next Compress() starts a fresh gzip member.
+    ret = deflateReset(&stream_);
+    if (ret != Z_OK) {
+      return CompressError("deflateReset failed, result:{}", ret);
+    }
+    return result;
+  }
+
+ private:
+  bool initialized_ = false;
+  z_stream stream_;
+};
+
 GZipDecompressor::GZipDecompressor() : zlib_impl_(std::make_unique<ZlibImpl>()) {}
 
 GZipDecompressor::~GZipDecompressor() = default;
@@ -94,6 +154,16 @@ Status GZipDecompressor::Init() { return zlib_impl_->Init(); }
 
 Result<std::string> GZipDecompressor::Decompress(const std::string& compressed_data) {
   return zlib_impl_->Decompress(compressed_data);
+}
+
+GZipCompressor::GZipCompressor() : zlib_impl_(std::make_unique<ZlibDeflateImpl>()) {}
+
+GZipCompressor::~GZipCompressor() = default;
+
+Status GZipCompressor::Init() { return zlib_impl_->Init(); }
+
+Result<std::string> GZipCompressor::Compress(const std::string& data) {
+  return zlib_impl_->Compress(data);
 }
 
 }  // namespace iceberg

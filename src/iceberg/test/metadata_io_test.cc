@@ -138,6 +138,53 @@ TEST_F(MetadataIOTest, ReadWriteCompressedMetadata) {
   EXPECT_EQ(*metadata_read, metadata);
 }
 
+TEST_F(MetadataIOTest, CodecFromFileGzMetadataJson) {
+  // Java writers emit gzip-compressed metadata as "<name>.gz.metadata.json";
+  // the codec must be detected from the ".gz" before the metadata suffix.
+  auto result = TableMetadataUtil::Codec::FromFileName("00001-abc.gz.metadata.json");
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(*result, MetadataFileCodecType::kGzip);
+}
+
+TEST_F(MetadataIOTest, CodecFromFilePlainAndLegacyGz) {
+  auto plain = TableMetadataUtil::Codec::FromFileName("00001-abc.metadata.json");
+  ASSERT_TRUE(plain.has_value());
+  EXPECT_EQ(*plain, MetadataFileCodecType::kNone);
+
+  auto legacy_gz = TableMetadataUtil::Codec::FromFileName("00001-abc.metadata.json.gz");
+  ASSERT_TRUE(legacy_gz.has_value());
+  EXPECT_EQ(*legacy_gz, MetadataFileCodecType::kGzip);
+}
+
+TEST_F(MetadataIOTest, CodecFromFileInvalidName) {
+  // Matches Iceberg Java fromFileName: a name without the '.metadata.json'
+  // substring is rejected as not a valid metadata file.
+  EXPECT_THAT(TableMetadataUtil::Codec::FromFileName("foo.txt"),
+              IsError(ErrorKind::kInvalidArgument));
+}
+
+TEST_F(MetadataIOTest, RoundTripGzipCompressedMetadata) {
+  // With metadata compression enabled the writer names the file
+  // "<version>-<uuid>.gz.metadata.json", the same layout Iceberg Java uses.
+  // The payload must really be gzip, and reading it back must decompress it.
+  TableMetadata metadata = PrepareMetadata();
+  metadata.properties.Set(TableProperties::kMetadataCompression, std::string("gzip"));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto written_location,
+                         TableMetadataUtil::Write(*io_, nullptr, "", metadata));
+  EXPECT_THAT(written_location, testing::HasSubstr(".gz.metadata.json"));
+
+  // The bytes on disk carry the gzip magic, so another engine can read them.
+  ICEBERG_UNWRAP_OR_FAIL(auto raw, io_->ReadFile(written_location, std::nullopt));
+  ASSERT_GE(raw.size(), 2u);
+  EXPECT_EQ(static_cast<unsigned char>(raw[0]), 0x1f);
+  EXPECT_EQ(static_cast<unsigned char>(raw[1]), 0x8b);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto metadata_read,
+                         TableMetadataUtil::Read(*io_, written_location));
+  EXPECT_EQ(*metadata_read, metadata);
+}
+
 TEST_F(MetadataIOTest, WriteMetadataWithBase) {
   TableMetadata base = PrepareMetadata();
 

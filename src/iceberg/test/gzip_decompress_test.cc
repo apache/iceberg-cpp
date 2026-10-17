@@ -84,4 +84,53 @@ TEST_F(GZipTest, GZipDecompressedString) {
   ASSERT_EQ(read_data.value(), test_string);
 }
 
+TEST_F(GZipTest, GZipCompressorRoundTrip) {
+  // Larger than the 32 KiB output buffer, so compression needs several passes.
+  auto test_string = GenerateRandomString(100 * 1024);
+
+  GZipCompressor compressor;
+  ASSERT_THAT(compressor.Init(), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto compressed, compressor.Compress(test_string));
+  ASSERT_GE(compressed.size(), 2u);
+  EXPECT_EQ(static_cast<unsigned char>(compressed[0]), 0x1f);
+  EXPECT_EQ(static_cast<unsigned char>(compressed[1]), 0x8b);
+
+  GZipDecompressor decompressor;
+  ASSERT_THAT(decompressor.Init(), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto decompressed, decompressor.Decompress(compressed));
+  EXPECT_EQ(decompressed, test_string);
+}
+
+TEST_F(GZipTest, GZipCompressorEmptyInput) {
+  GZipCompressor compressor;
+  ASSERT_THAT(compressor.Init(), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto compressed, compressor.Compress(""));
+  // An empty payload still yields a complete gzip stream (header and trailer).
+  EXPECT_FALSE(compressed.empty());
+
+  GZipDecompressor decompressor;
+  ASSERT_THAT(decompressor.Init(), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto decompressed, decompressor.Decompress(compressed));
+  EXPECT_TRUE(decompressed.empty());
+}
+
+TEST_F(GZipTest, GZipCompressorReused) {
+  // One compressor can compress several payloads; each call yields a complete,
+  // independent gzip stream.
+  GZipCompressor compressor;
+  ASSERT_THAT(compressor.Init(), IsOk());
+
+  for (const auto& payload : {GenerateRandomString(1024), GenerateRandomString(2048)}) {
+    ICEBERG_UNWRAP_OR_FAIL(auto compressed, compressor.Compress(payload));
+    ASSERT_GE(compressed.size(), 2u);
+    EXPECT_EQ(static_cast<unsigned char>(compressed[0]), 0x1f);
+    EXPECT_EQ(static_cast<unsigned char>(compressed[1]), 0x8b);
+
+    GZipDecompressor decompressor;
+    ASSERT_THAT(decompressor.Init(), IsOk());
+    ICEBERG_UNWRAP_OR_FAIL(auto decompressed, decompressor.Decompress(compressed));
+    EXPECT_EQ(decompressed, payload);
+  }
+}
+
 }  // namespace iceberg

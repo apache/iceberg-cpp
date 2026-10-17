@@ -425,7 +425,7 @@ Result<MetadataFileCodecType> TableMetadataUtil::Codec::FromString(
 
 Result<MetadataFileCodecType> TableMetadataUtil::Codec::FromFileName(
     std::string_view file_name) {
-  auto pos = file_name.find_last_of(kTableMetadataFileSuffix);
+  auto pos = file_name.rfind(kTableMetadataFileSuffix);
   if (pos == std::string::npos) {
     return InvalidArgument("{} is not a valid metadata file", file_name);
   }
@@ -489,8 +489,16 @@ Result<std::string> TableMetadataUtil::Write(FileIO& io, const TableMetadata* ba
 
 Status TableMetadataUtil::Write(FileIO& io, const std::string& location,
                                 const TableMetadata& metadata) {
+  ICEBERG_ASSIGN_OR_RAISE(auto codec_type, Codec::FromFileName(location));
   ICEBERG_ASSIGN_OR_RAISE(auto json, ToJson(metadata));
   ICEBERG_ASSIGN_OR_RAISE(auto json_string, ToJsonString(json));
+
+  if (codec_type == MetadataFileCodecType::kGzip) {
+    auto gzip_compressor = std::make_unique<GZipCompressor>();
+    ICEBERG_RETURN_UNEXPECTED(gzip_compressor->Init());
+    ICEBERG_ASSIGN_OR_RAISE(json_string, gzip_compressor->Compress(json_string));
+  }
+
   return io.WriteFile(location, json_string);
 }
 
