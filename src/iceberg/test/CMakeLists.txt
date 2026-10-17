@@ -193,9 +193,12 @@ if(ICEBERG_BUILD_BUNDLE)
   add_iceberg_test(metadata_table_test
                    USE_BUNDLE
                    SOURCES
-                   history_table_test.cc
-                   metadata_table_test.cc
-                   snapshots_table_test.cc)
+                   inspect/files_table_test.cc
+                   inspect/history_table_test.cc
+                   inspect/manifests_table_test.cc
+                   inspect/metadata_table_test.cc
+                   inspect/partitions_table_test.cc
+                   inspect/snapshots_table_test.cc)
 
   add_iceberg_test(eval_expr_test
                    USE_BUNDLE

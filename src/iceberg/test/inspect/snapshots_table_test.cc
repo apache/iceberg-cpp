@@ -33,8 +33,8 @@
 
 #include "iceberg/constants.h"
 #include "iceberg/inspect/metadata_table.h"
+#include "iceberg/test/inspect/metadata_table_test_base.h"
 #include "iceberg/test/matchers.h"
-#include "iceberg/test/metadata_table_test_base.h"
 
 namespace iceberg {
 namespace {
