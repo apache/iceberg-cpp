@@ -39,6 +39,7 @@
 #include <gtest/gtest.h>
 
 #include "iceberg/avro/avro_data_util_internal.h"
+#include "iceberg/avro/avro_direct_decoder_internal.h"
 #include "iceberg/avro/avro_direct_encoder_internal.h"
 #include "iceberg/avro/avro_schema_util_internal.h"
 #include "iceberg/expression/literal.h"
@@ -1899,6 +1900,55 @@ const std::vector<RoundTripParam> kRoundTripTestCases = {
          ])",
     },
 };
+
+TEST(DirectDecoderTest, ProjectionCacheKeyedPerAvroNodeForEmptyStructs) {
+  auto make_struct = [](int32_t first_id, int count) {
+    std::vector<SchemaField> fields;
+    for (int i = 0; i < count; ++i) {
+      fields.push_back(SchemaField::MakeRequired(first_id + i, "f" + std::to_string(i),
+                                                 std::make_shared<IntType>()));
+    }
+    return std::make_shared<StructType>(std::move(fields));
+  };
+  Schema file_schema({SchemaField::MakeRequired(1, "narrow", make_struct(10, 1)),
+                      SchemaField::MakeRequired(2, "wide", make_struct(20, 6))});
+  Schema read_schema({SchemaField::MakeRequired(1, "narrow", make_struct(10, 0)),
+                      SchemaField::MakeRequired(2, "wide", make_struct(20, 0))});
+
+  ::avro::NodePtr avro_node;
+  ASSERT_THAT(ToAvroNodeVisitor{}.Visit(file_schema, &avro_node), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto projection,
+                         Project(read_schema, avro_node, /*prune_source=*/false));
+
+  auto out = ::avro::memoryOutputStream();
+  auto encoder = ::avro::binaryEncoder();
+  encoder->init(*out);
+  for (int i = 0; i < 7; ++i) {
+    encoder->encodeInt(i);
+  }
+  encoder->flush();
+  auto in = ::avro::memoryInputStream(*out);
+  auto decoder = ::avro::binaryDecoder();
+  decoder->init(*in);
+
+  ArrowSchema arrow_c_schema;
+  ASSERT_THAT(ToArrowSchema(read_schema, &arrow_c_schema), IsOk());
+  auto arrow_schema = ::arrow::ImportSchema(&arrow_c_schema).ValueOrDie();
+  auto builder =
+      ::arrow::MakeBuilder(std::make_shared<::arrow::StructType>(arrow_schema->fields()))
+          .ValueOrDie();
+
+  DecodeContext ctx;
+  ASSERT_THAT(DecodeAvroToBuilder(avro_node, *decoder, projection, read_schema,
+                                  /*metadata_context=*/{}, builder.get(), ctx),
+              IsOk());
+
+  std::vector<size_t> mapping_sizes;
+  for (const auto& [key, mapping] : ctx.avro_to_projection_cache) {
+    mapping_sizes.push_back(mapping.size());
+  }
+  EXPECT_THAT(mapping_sizes, ::testing::UnorderedElementsAre(1, 6, 2));
+}
 
 INSTANTIATE_TEST_SUITE_P(AllTypes, AvroRoundTripConversionTest,
                          ::testing::ValuesIn(kRoundTripTestCases),

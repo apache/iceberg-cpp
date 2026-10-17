@@ -160,7 +160,8 @@ Status DecodeStructToBuilder(const ::avro::NodePtr& avro_node, ::avro::Decoder& 
 
   // Build a map from Avro field index to projection index (cached per struct schema)
   // -1 means the field should be skipped
-  const FieldProjection* cache_key = projections.data();
+  // Empty projections all share one data() pointer, so the Avro node is part of the key.
+  const DecodeContext::ProjectionCacheKey cache_key{projections.data(), avro_node.get()};
   auto cache_it = ctx.avro_to_projection_cache.find(cache_key);
   std::vector<int>* avro_to_projection;
 
@@ -168,18 +169,23 @@ Status DecodeStructToBuilder(const ::avro::NodePtr& avro_node, ::avro::Decoder& 
     // Use cached mapping
     avro_to_projection = &cache_it->second;
   } else {
-    // Build and cache the mapping
-    auto [inserted_it, inserted] = ctx.avro_to_projection_cache.emplace(
-        cache_key, std::vector<int>(avro_node->leaves(), -1));
-    avro_to_projection = &inserted_it->second;
-
+    // Build and validate the mapping before caching so a failure leaves no partial entry
+    std::vector<int> mapping(avro_node->leaves(), -1);
     for (size_t proj_idx = 0; proj_idx < projections.size(); ++proj_idx) {
       const auto& field_projection = projections[proj_idx];
       if (field_projection.kind == FieldProjection::Kind::kProjected) {
         size_t avro_field_index = std::get<size_t>(field_projection.from);
-        (*avro_to_projection)[avro_field_index] = static_cast<int>(proj_idx);
+        if (avro_field_index >= mapping.size()) {
+          return InvalidArgument(
+              "Projected field index {} out of range for Avro record with {} fields",
+              avro_field_index, mapping.size());
+        }
+        mapping[avro_field_index] = static_cast<int>(proj_idx);
       }
     }
+    avro_to_projection =
+        &ctx.avro_to_projection_cache.emplace(cache_key, std::move(mapping))
+             .first->second;
   }
 
   // Read all Avro fields in order (must maintain decoder position)
