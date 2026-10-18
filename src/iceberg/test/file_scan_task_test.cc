@@ -155,7 +155,7 @@ TEST(FileScanTaskRangeTest, RowEstimateDoesNotOverflow) {
   EXPECT_EQ(last->estimated_row_count(), 1);
 }
 
-TEST(FileScanTaskRangeTest, RowEstimatesPreserveSplitTotalAfterFileSizeChanges) {
+TEST(FileScanTaskRangeTest, RowEstimatesAreFixedAtSplitCreation) {
   auto data_file = std::make_shared<DataFile>();
   data_file->file_path = "test.parquet";
   data_file->file_size_in_bytes = 100;
@@ -172,12 +172,26 @@ TEST(FileScanTaskRangeTest, RowEstimatesPreserveSplitTotalAfterFileSizeChanges) 
               data_file->record_count);
   }
 
-  // The captured size also keeps estimates bounded when the row count is large.
-  data_file->record_count = std::numeric_limits<int64_t>::max();
-  EXPECT_GE(first->estimated_row_count(), 0);
-  EXPECT_GE(second->estimated_row_count(), 0);
-  EXPECT_EQ(first->estimated_row_count() + second->estimated_row_count(),
-            data_file->record_count);
+  for (int64_t record_count :
+       {int64_t{0}, int64_t{-1}, std::numeric_limits<int64_t>::max()}) {
+    SCOPED_TRACE(record_count);
+    data_file->record_count = record_count;
+    EXPECT_EQ(first->estimated_row_count(), 2);
+    EXPECT_EQ(second->estimated_row_count(), 5);
+    EXPECT_EQ(first->estimated_row_count() + second->estimated_row_count(), 7);
+  }
+}
+
+TEST(FileScanTaskRangeTest, RowEstimatesHandleNonPositiveRecordCounts) {
+  auto data_file = std::make_shared<DataFile>();
+  data_file->file_size_in_bytes = 100;
+
+  for (int64_t record_count : {0, -1}) {
+    SCOPED_TRACE(record_count);
+    data_file->record_count = record_count;
+    ICEBERG_UNWRAP_OR_FAIL(auto split, FileScanTask::MakeSplit(data_file, 0, 40));
+    EXPECT_EQ(split->estimated_row_count(), 0);
+  }
 }
 
 class FileScanTaskTest : public TempFileTestBase {

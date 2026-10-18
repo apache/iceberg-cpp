@@ -81,9 +81,10 @@ class ICEBERG_EXPORT FileScanTask : public ScanTask {
   /// \brief Make a task for a validated half-open byte range [start, start + length).
   ///
   /// A range covering the entire file is represented as a whole-file task. An empty
-  /// range is valid only for an empty whole file. The data file, delete files, and
-  /// residual filter are shared with the resulting task and must not be mutated
-  /// while a planning or reading stream uses it.
+  /// range is valid only for an empty whole file. Partial tasks retain the row
+  /// estimate calculated at creation. The data file, delete files, and residual
+  /// filter are shared with the resulting task and must not be mutated while a
+  /// planning or reading stream uses it.
   static Result<std::shared_ptr<FileScanTask>> MakeSplit(
       std::shared_ptr<DataFile> data_file, int64_t start, int64_t length,
       std::vector<std::shared_ptr<DataFile>> delete_files = {},
@@ -119,8 +120,7 @@ class ICEBERG_EXPORT FileScanTask : public ScanTask {
   struct Range {
     int64_t start;
     int64_t length;
-    // Use the size at split creation to keep row estimates consistent across splits.
-    int64_t file_size;
+    int64_t estimated_row_count;
   };
 
   FileScanTask(std::shared_ptr<DataFile> data_file,
