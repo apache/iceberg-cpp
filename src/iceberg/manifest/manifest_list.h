@@ -276,6 +276,19 @@ ICEBERG_EXPORT inline constexpr Result<ManifestContent> ManifestContentFromStrin
   return InvalidArgument("Invalid manifest content type: {}", str);
 }
 
+/// \brief Get the relative manifest content type from int
+ICEBERG_EXPORT inline constexpr Result<ManifestContent> ManifestContentFromInt(
+    int32_t content) noexcept {
+  switch (content) {
+    case 0:
+      return ManifestContent::kData;
+    case 1:
+      return ManifestContent::kDeletes;
+    default:
+      return InvalidArgument("Invalid manifest content type: {}", content);
+  }
+}
+
 }  // namespace iceberg
 
 namespace std {

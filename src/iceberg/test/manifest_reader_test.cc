@@ -26,16 +26,21 @@
 #include <string>
 #include <vector>
 
+#include <arrow/array.h>
+#include <arrow/c/bridge.h>
+#include <arrow/json/from_string.h>
 #include <gtest/gtest.h>
 
 #include "iceberg/arrow/arrow_io_util.h"
 #include "iceberg/avro/avro_register.h"
 #include "iceberg/expression/expressions.h"
+#include "iceberg/file_writer.h"
 #include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/manifest/manifest_list.h"
 #include "iceberg/manifest/manifest_writer.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/schema.h"
+#include "iceberg/schema_internal.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/transform.h"
 #include "iceberg/type.h"
@@ -154,6 +159,51 @@ class TestManifestReader : public testing::TestWithParam<int8_t> {
     auto manifest_result = writer->ToManifestFile();
     EXPECT_THAT(manifest_result, IsOk());
     return std::move(manifest_result.value());
+  }
+
+  // Writes manifest entries given as JSON rows of
+  // [status, snapshot_id, [content, file_path, file_format, [partition], record_count,
+  // file_size_in_bytes]], bypassing ManifestWriter validation.
+  ManifestFile WriteRawManifest(const std::string& json_rows) {
+    auto partition_type = spec_->PartitionType(*schema_);
+    EXPECT_THAT(partition_type, IsOk());
+    auto data_file_type = std::make_shared<StructType>(std::vector<SchemaField>{
+        DataFile::kContent, DataFile::kFilePath, DataFile::kFileFormat,
+        SchemaField::MakeRequired(DataFile::kPartitionFieldId, DataFile::kPartitionField,
+                                  std::move(partition_type.value())),
+        DataFile::kRecordCount, DataFile::kFileSize});
+    auto entry_schema = std::make_shared<Schema>(std::vector<SchemaField>{
+        ManifestEntry::kStatus, ManifestEntry::kSnapshotId,
+        SchemaField::MakeRequired(ManifestEntry::kDataFileFieldId,
+                                  ManifestEntry::kDataFileField, data_file_type)});
+
+    ArrowSchema arrow_c_schema;
+    EXPECT_THAT(ToArrowSchema(*entry_schema, &arrow_c_schema), IsOk());
+    auto arrow_schema = ::arrow::ImportType(&arrow_c_schema).ValueOrDie();
+    auto array = ::arrow::json::ArrayFromJSONString(arrow_schema, json_rows).ValueOrDie();
+    ArrowArray arrow_array;
+    EXPECT_TRUE(::arrow::ExportArray(*array, &arrow_array).ok());
+
+    const std::string manifest_path = MakeManifestPath();
+    auto writer_result = WriterFactoryRegistry::Open(
+        FileFormatType::kAvro,
+        {.path = manifest_path, .schema = entry_schema, .io = file_io_});
+    EXPECT_THAT(writer_result, IsOk());
+    auto writer = std::move(writer_result.value());
+    EXPECT_THAT(writer->Write(&arrow_array), IsOk());
+    EXPECT_THAT(writer->Close(), IsOk());
+    auto length = writer->length();
+    EXPECT_THAT(length, IsOk());
+
+    return ManifestFile{
+        .manifest_path = manifest_path,
+        .manifest_length = length.value(),
+        .partition_spec_id = spec_->spec_id(),
+        .content = ManifestContent::kData,
+        .sequence_number = 0,
+        .min_sequence_number = 0,
+        .added_snapshot_id = 1000L,
+    };
   }
 
   std::shared_ptr<FileIO> file_io_;
@@ -627,6 +677,28 @@ TEST_P(TestManifestReader, SelectDistinguishesEmptyAndWildcard) {
   EXPECT_EQ(all_entries.front().data_file->file_path, "/path/to/data.parquet");
   ASSERT_EQ(all_entries.front().data_file->partition.num_fields(), 1);
   EXPECT_EQ(all_entries.front().data_file->partition.values().front(), Literal::Int(3));
+}
+
+TEST_P(TestManifestReader, RejectsInvalidDataFileContent) {
+  auto manifest = WriteRawManifest(
+      R"([[1, 1000, [3, "/path/to/data.parquet", "parquet", [0], 1, 10]]])");
+
+  ICEBERG_UNWRAP_OR_FAIL(auto reader,
+                         ManifestReader::Make(manifest, file_io_, schema_, spec_));
+  auto entries = reader->Entries();
+  EXPECT_THAT(entries, IsError(ErrorKind::kInvalidArgument));
+  EXPECT_THAT(entries, HasErrorMessage("Invalid data file content: 3"));
+}
+
+TEST_P(TestManifestReader, RejectsInvalidEntryStatus) {
+  auto manifest = WriteRawManifest(
+      R"([[7, 1000, [0, "/path/to/data.parquet", "parquet", [0], 1, 10]]])");
+
+  ICEBERG_UNWRAP_OR_FAIL(auto reader,
+                         ManifestReader::Make(manifest, file_io_, schema_, spec_));
+  auto entries = reader->Entries();
+  EXPECT_THAT(entries, IsError(ErrorKind::kInvalidArgument));
+  EXPECT_THAT(entries, HasErrorMessage("Invalid manifest status: 7"));
 }
 
 TEST(ManifestReaderStaticTest, TestShouldDropStats) {

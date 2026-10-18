@@ -133,6 +133,31 @@ Status ParseIntegerField(const ArrowArrayView* array_view, Container& container,
       array_view, container, accessor, std::forward<Args>(args)...);
 }
 
+// Validate integer-encoded enums so out-of-range values from the file never
+// become enum values that no switch handles.
+template <typename FromInt, typename Container, typename Accessor>
+  requires std::ranges::forward_range<Container>
+Status ParseEnumField(FromInt from_int, const ArrowArrayView* array_view,
+                      Container& container, Accessor accessor,
+                      std::string_view field_name, bool required) {
+  auto iter = std::ranges::begin(container);
+  for (int64_t row_idx = 0; row_idx < array_view->length; row_idx++, iter++) {
+    if (!ArrowArrayViewIsNull(array_view, row_idx)) {
+      const auto raw =
+          static_cast<int32_t>(ArrowArrayViewGetIntUnsafe(array_view, row_idx));
+      auto value = std::invoke(from_int, raw);
+      if (!value.has_value()) [[unlikely]] {
+        return InvalidArgument("Field '{}' at row {}: {}", field_name, row_idx,
+                               value.error().message);
+      }
+      std::invoke(accessor, *iter) = std::move(value.value());
+    } else if (required) {
+      return MakeNullError(field_name, row_idx);
+    }
+  }
+  return {};
+}
+
 template <typename... Args>
 Status ParseStringField(Args&&... args) {
   return ParseField(
@@ -322,8 +347,9 @@ Result<std::vector<ManifestFile>> ParseManifestList(ArrowSchema* arrow_schema,
                                                     field_name, required));
         break;
       case ManifestFile::kContentFieldId:
-        ICEBERG_RETURN_UNEXPECTED(ParseIntegerField(
-            field_view, manifest_files, &ManifestFile::content, field_name, required));
+        ICEBERG_RETURN_UNEXPECTED(ParseEnumField(ManifestContentFromInt, field_view,
+                                                 manifest_files, &ManifestFile::content,
+                                                 field_name, required));
         break;
       case ManifestFile::kSequenceNumberFieldId:
         ICEBERG_RETURN_UNEXPECTED(ParseIntegerField(field_view, manifest_files,
@@ -465,9 +491,9 @@ Status ParseDataFile(const std::shared_ptr<StructType>& data_file_schema,
 
     switch (field_id) {
       case DataFile::kContentFieldId:
-        ICEBERG_RETURN_UNEXPECTED(ParseIntegerField(field_view, manifest_entries,
-                                                    proj_data_file(&DataFile::content),
-                                                    field_name, required));
+        ICEBERG_RETURN_UNEXPECTED(
+            ParseEnumField(DataFileContentFromInt, field_view, manifest_entries,
+                           proj_data_file(&DataFile::content), field_name, required));
         break;
       case DataFile::kFilePathFieldId:
         ICEBERG_RETURN_UNEXPECTED(ParseStringField(field_view, manifest_entries,
@@ -638,8 +664,9 @@ Result<std::vector<ManifestEntry>> ParseManifestEntry(
 
     switch (field_id) {
       case ManifestEntry::kStatusFieldId:
-        ICEBERG_RETURN_UNEXPECTED(ParseIntegerField(
-            field_view, manifest_entries, &ManifestEntry::status, field_name, required));
+        ICEBERG_RETURN_UNEXPECTED(ParseEnumField(ManifestStatusFromInt, field_view,
+                                                 manifest_entries, &ManifestEntry::status,
+                                                 field_name, required));
         break;
       case ManifestEntry::kSnapshotIdFieldId:
         ICEBERG_RETURN_UNEXPECTED(ParseIntegerField(field_view, manifest_entries,

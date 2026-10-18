@@ -425,6 +425,39 @@ TEST_F(TestManifestListVersions, TestManifestsWithoutRowStats) {
   EXPECT_FALSE(manifest.first_row_id.has_value());
 }
 
+TEST_F(TestManifestListVersions, RejectsInvalidManifestContent) {
+  auto schema = std::make_shared<Schema>(std::vector<SchemaField>{
+      ManifestFile::kManifestPath,
+      ManifestFile::kManifestLength,
+      ManifestFile::kPartitionSpecId,
+      ManifestFile::kContent,
+      ManifestFile::kAddedSnapshotId,
+  });
+
+  ArrowSchema arrow_c_schema;
+  EXPECT_THAT(ToArrowSchema(*schema, &arrow_c_schema), IsOk());
+  auto arrow_schema = ::arrow::ImportType(&arrow_c_schema).ValueOrDie();
+  auto array = ::arrow::json::ArrayFromJSONString(
+                   arrow_schema, R"([["path/to/manifest.avro", 1024, 1, 5, 100]])")
+                   .ValueOrDie();
+  ArrowArray arrow_array;
+  EXPECT_TRUE(::arrow::ExportArray(*array, &arrow_array).ok());
+
+  std::string manifest_list_path = CreateManifestListPath();
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto writer, WriterFactoryRegistry::Open(
+                       FileFormatType::kAvro,
+                       {.path = manifest_list_path, .schema = schema, .io = file_io_}));
+  EXPECT_THAT(writer->Write(&arrow_array), IsOk());
+  EXPECT_THAT(writer->Close(), IsOk());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto reader,
+                         ManifestListReader::Make(manifest_list_path, file_io_));
+  auto files = reader->Files();
+  EXPECT_THAT(files, IsError(ErrorKind::kInvalidArgument));
+  EXPECT_THAT(files, HasErrorMessage("Invalid manifest content type: 5"));
+}
+
 TEST_F(TestManifestListVersions, TestManifestsPartitionSummary) {
   auto first_summary_lower_bound = Literal::Int(10).Serialize().value();
   auto first_summary_upper_bound = Literal::Int(100).Serialize().value();
