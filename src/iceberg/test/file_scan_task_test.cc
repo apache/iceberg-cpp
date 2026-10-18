@@ -155,32 +155,29 @@ TEST(FileScanTaskRangeTest, RowEstimateDoesNotOverflow) {
   EXPECT_EQ(last->estimated_row_count(), 1);
 }
 
-TEST(FileScanTaskRangeTest, RowEstimateHandlesChangedFileSize) {
+TEST(FileScanTaskRangeTest, RowEstimatesPreserveSplitTotalAfterFileSizeChanges) {
   auto data_file = std::make_shared<DataFile>();
   data_file->file_path = "test.parquet";
   data_file->file_size_in_bytes = 100;
   data_file->record_count = 7;
-  ICEBERG_UNWRAP_OR_FAIL(auto split, FileScanTask::MakeSplit(data_file, 0, 40));
+  ICEBERG_UNWRAP_OR_FAIL(auto first, FileScanTask::MakeSplit(data_file, 0, 40));
+  ICEBERG_UNWRAP_OR_FAIL(auto second, FileScanTask::MakeSplit(data_file, 40, 60));
 
-  data_file->file_size_in_bytes = 200;
-  EXPECT_EQ(split->estimated_row_count(), 1);
+  for (int64_t file_size : {200, 40, 39, 1, 0, -1}) {
+    SCOPED_TRACE(file_size);
+    data_file->file_size_in_bytes = file_size;
+    EXPECT_EQ(first->estimated_row_count(), 2);
+    EXPECT_EQ(second->estimated_row_count(), 5);
+    EXPECT_EQ(first->estimated_row_count() + second->estimated_row_count(),
+              data_file->record_count);
+  }
 
-  data_file->file_size_in_bytes = 40;
-  EXPECT_EQ(split->estimated_row_count(), 7);
-
-  data_file->file_size_in_bytes = 39;
-  EXPECT_EQ(split->estimated_row_count(), 0);
-
-  // An invalidated range must not produce an estimate larger than INT64_MAX.
-  data_file->file_size_in_bytes = 1;
+  // The captured size also keeps estimates bounded when the row count is large.
   data_file->record_count = std::numeric_limits<int64_t>::max();
-  EXPECT_EQ(split->estimated_row_count(), 0);
-
-  data_file->file_size_in_bytes = 0;
-  EXPECT_EQ(split->estimated_row_count(), 0);
-
-  data_file->file_size_in_bytes = -1;
-  EXPECT_EQ(split->estimated_row_count(), 0);
+  EXPECT_GE(first->estimated_row_count(), 0);
+  EXPECT_GE(second->estimated_row_count(), 0);
+  EXPECT_EQ(first->estimated_row_count() + second->estimated_row_count(),
+            data_file->record_count);
 }
 
 class FileScanTaskTest : public TempFileTestBase {
