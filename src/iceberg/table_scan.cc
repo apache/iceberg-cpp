@@ -222,21 +222,9 @@ Result<std::shared_ptr<FileScanTask>> FileScanTask::MakeSplit(
                            data_file->file_path);
   }
 
-  int64_t estimated_row_count = 0;
-  const int64_t record_count = data_file->record_count;
-  if (record_count > 0) {
-    // floor(end * rows / size) - floor(start * rows / size), so splits that cover
-    // the file sum exactly to record_count at creation. int128 avoids overflow.
-    const auto end = static_cast<int128_t>(start) + length;
-    const auto count_at_end = end * record_count / file_size;
-    const auto count_at_start = static_cast<int128_t>(start) * record_count / file_size;
-    estimated_row_count = static_cast<int64_t>(count_at_end - count_at_start);
-  }
-
-  return std::shared_ptr<FileScanTask>(new FileScanTask(
-      std::move(data_file), std::move(delete_files), std::move(filter),
-      Range{
-          .start = start, .length = length, .estimated_row_count = estimated_row_count}));
+  return std::shared_ptr<FileScanTask>(
+      new FileScanTask(std::move(data_file), std::move(delete_files), std::move(filter),
+                       Range{.start = start, .length = length}));
 }
 
 int64_t FileScanTask::length() const {
@@ -248,7 +236,26 @@ int64_t FileScanTask::size_bytes() const { return length(); }
 int32_t FileScanTask::files_count() const { return 1; }
 
 int64_t FileScanTask::estimated_row_count() const {
-  return range_ ? range_->estimated_row_count : data_file_->record_count;
+  if (!range_) {
+    return data_file_->record_count;
+  }
+
+  const int64_t record_count = data_file_->record_count;
+  const int64_t file_size = data_file_->file_size_in_bytes;
+  if (record_count <= 0 || file_size <= 0 || range_->start > file_size ||
+      range_->length > file_size - range_->start) {
+    // Keep arithmetic safe even for tasks invalidated by metadata mutation.
+    return 0;
+  }
+
+  // floor(end * rows / size) - floor(start * rows / size). For non-overlapping
+  // splits covering a file with unchanged metadata, estimates sum to record_count.
+  // int128 avoids overflow.
+  const auto end = static_cast<int128_t>(range_->start) + range_->length;
+  const auto count_at_end = end * record_count / file_size;
+  const auto count_at_start =
+      static_cast<int128_t>(range_->start) * record_count / file_size;
+  return static_cast<int64_t>(count_at_end - count_at_start);
 }
 
 // ChangelogScanTask implementation

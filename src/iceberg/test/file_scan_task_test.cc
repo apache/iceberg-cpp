@@ -64,9 +64,10 @@ TEST(FileScanTaskRangeTest, WholeFileAndEmptyFile) {
   EXPECT_EQ(explicit_whole->length(), 100);
   EXPECT_EQ(explicit_whole->estimated_row_count(), 7);
 
-  data_file->file_size_in_bytes = 0;
-  data_file->record_count = 0;
-  ICEBERG_UNWRAP_OR_FAIL(auto empty, FileScanTask::MakeSplit(data_file, 0, 0));
+  auto empty_file = std::make_shared<DataFile>();
+  empty_file->file_size_in_bytes = 0;
+  empty_file->record_count = 0;
+  ICEBERG_UNWRAP_OR_FAIL(auto empty, FileScanTask::MakeSplit(empty_file, 0, 0));
   EXPECT_FALSE(empty->is_split());
   EXPECT_EQ(empty->start(), 0);
   EXPECT_EQ(empty->length(), 0);
@@ -155,30 +156,19 @@ TEST(FileScanTaskRangeTest, RowEstimateDoesNotOverflow) {
   EXPECT_EQ(last->estimated_row_count(), 1);
 }
 
-TEST(FileScanTaskRangeTest, RowEstimatesAreFixedAtSplitCreation) {
+TEST(FileScanTaskRangeTest, RowEstimateIsBoundedForInvalidatedRanges) {
   auto data_file = std::make_shared<DataFile>();
   data_file->file_path = "test.parquet";
   data_file->file_size_in_bytes = 100;
-  data_file->record_count = 7;
-  ICEBERG_UNWRAP_OR_FAIL(auto first, FileScanTask::MakeSplit(data_file, 0, 40));
-  ICEBERG_UNWRAP_OR_FAIL(auto second, FileScanTask::MakeSplit(data_file, 40, 60));
+  data_file->record_count = std::numeric_limits<int64_t>::max();
+  ICEBERG_UNWRAP_OR_FAIL(auto split, FileScanTask::MakeSplit(data_file, 40, 60));
 
-  for (int64_t file_size : {200, 40, 39, 1, 0, -1}) {
+  // Mutation violates the task's lifetime contract, but the estimate should still
+  // avoid overflow and division by zero when the range is invalidated.
+  for (int64_t file_size : {99, 40, 39, 1, 0, -1}) {
     SCOPED_TRACE(file_size);
     data_file->file_size_in_bytes = file_size;
-    EXPECT_EQ(first->estimated_row_count(), 2);
-    EXPECT_EQ(second->estimated_row_count(), 5);
-    EXPECT_EQ(first->estimated_row_count() + second->estimated_row_count(),
-              data_file->record_count);
-  }
-
-  for (int64_t record_count :
-       {int64_t{0}, int64_t{-1}, std::numeric_limits<int64_t>::max()}) {
-    SCOPED_TRACE(record_count);
-    data_file->record_count = record_count;
-    EXPECT_EQ(first->estimated_row_count(), 2);
-    EXPECT_EQ(second->estimated_row_count(), 5);
-    EXPECT_EQ(first->estimated_row_count() + second->estimated_row_count(), 7);
+    EXPECT_EQ(split->estimated_row_count(), 0);
   }
 }
 

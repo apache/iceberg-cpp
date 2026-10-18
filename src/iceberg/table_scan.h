@@ -72,8 +72,8 @@ class ICEBERG_EXPORT FileScanTask : public ScanTask {
   /// \param data_file The data file to read.
   /// \param delete_files Delete files that apply to this data file.
   /// \param filter Optional residual filter to apply after reading.
-  /// \note The data file, delete files, and residual filter must not be mutated while
-  /// a planning or reading stream uses this task.
+  /// \note The shared data file, delete files, and residual filter must remain
+  /// unchanged for this task's lifetime. Metadata changes require rebuilding tasks.
   explicit FileScanTask(std::shared_ptr<DataFile> data_file,
                         std::vector<std::shared_ptr<DataFile>> delete_files = {},
                         std::shared_ptr<Expression> filter = nullptr);
@@ -81,10 +81,9 @@ class ICEBERG_EXPORT FileScanTask : public ScanTask {
   /// \brief Make a task for a validated half-open byte range [start, start + length).
   ///
   /// A range covering the entire file is represented as a whole-file task. An empty
-  /// range is valid only for an empty whole file. Partial tasks retain the row
-  /// estimate calculated at creation. The data file, delete files, and residual
-  /// filter are shared with the resulting task and must not be mutated while a
-  /// planning or reading stream uses it.
+  /// range is valid only for an empty whole file. The data file, delete files, and
+  /// residual filter are shared with the resulting task and must remain unchanged
+  /// for its lifetime. Metadata changes require rebuilding tasks.
   static Result<std::shared_ptr<FileScanTask>> MakeSplit(
       std::shared_ptr<DataFile> data_file, int64_t start, int64_t length,
       std::vector<std::shared_ptr<DataFile>> delete_files = {},
@@ -93,7 +92,7 @@ class ICEBERG_EXPORT FileScanTask : public ScanTask {
   /// \brief The inclusive byte offset where this task starts, or zero for a whole file.
   int64_t start() const { return range_ ? range_->start : 0; }
 
-  /// \brief The byte length of this task, or the current size of a whole file.
+  /// \brief The byte length of this task, or the size of a whole file.
   int64_t length() const;
 
   /// \brief Whether this task reads a proper subset of its data file.
@@ -113,6 +112,10 @@ class ICEBERG_EXPORT FileScanTask : public ScanTask {
   Kind kind() const override { return Kind::kFileScanTask; }
   int64_t size_bytes() const override;
   int32_t files_count() const override;
+
+  /// \brief The estimated number of rows in this task, prorated by byte range.
+  /// For valid, non-overlapping splits covering a file with unchanged metadata,
+  /// the estimates sum to the file's record_count.
   int64_t estimated_row_count() const override;
 
  private:
@@ -120,7 +123,6 @@ class ICEBERG_EXPORT FileScanTask : public ScanTask {
   struct Range {
     int64_t start;
     int64_t length;
-    int64_t estimated_row_count;
   };
 
   FileScanTask(std::shared_ptr<DataFile> data_file,
