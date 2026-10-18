@@ -312,8 +312,6 @@ TEST(HttpClientTest, PostReportsTransferFailureAfterSuccessfulStatus) {
   EXPECT_THAT(response, HasErrorMessage("failed after status 200"));
 }
 
-// A response owns its data, so it stays readable after a later request reuses
-// its connection pool and after the client is destroyed.
 TEST(HttpClientTest, ResponseOutlivesLaterRequestsAndClient) {
   constexpr std::string_view kBody = R"({"defaults":{}})";
   const auto response_bytes = std::format(

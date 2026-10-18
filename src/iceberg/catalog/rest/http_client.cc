@@ -208,15 +208,13 @@ Result<HttpResponse> HttpResponse::Impl::Make(cpr::Response response,
 }
 
 // libcurl does not support using a connection cache from several threads at once
-// (CURLSHOPT_SHARE(3)), so each request takes a cpr::ConnectionPool that no other
-// request is using, and puts it back afterwards for reuse.
+// (CURLSHOPT_SHARE(3)).
 class HttpClient::ConnectionPools {
  public:
   template <typename Send>
   Result<HttpResponse> Run(const Send& send, const ErrorHandler& error_handler) {
     std::unique_ptr<cpr::ConnectionPool> pool = Acquire();
-    // The cpr::Response owns a curl handle that stays attached to the pool until freed.
-    // Make() takes it by value, so it is freed before the pool is released.
+    // Make() consumes the CPR response, freeing its curl handle before pool reuse.
     Result<HttpResponse> response = HttpResponse::Impl::Make(send(*pool), error_handler);
     Release(std::move(pool));
     return response;

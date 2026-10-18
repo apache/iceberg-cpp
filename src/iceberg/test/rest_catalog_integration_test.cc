@@ -426,13 +426,11 @@ TEST_F(RestCatalogIntegrationTest, FetchServerConfigDirect) {
   }
 }
 
-// RestCatalog uses one HttpClient from several threads (e.g. token refresh, metrics).
-// Without the fix this crashes on some libcurl versions, such as 8.22.0.
+// RestCatalog shares its HttpClient with token refresh and metrics reporting.
 TEST_F(RestCatalogIntegrationTest, ConcurrentHttpClientRequests) {
   constexpr int kThreads = 32;
   constexpr int kRequestsPerThread = 200;
 
-  // Finite timeouts, so a stalled fixture fails the test instead of hanging it.
   HttpClient client({}, std::chrono::seconds(30), std::chrono::seconds(30));
   auto noop_session = auth::AuthSession::MakeDefault({});
   const std::string config_url = std::format("{}/v1/config", CatalogUri());

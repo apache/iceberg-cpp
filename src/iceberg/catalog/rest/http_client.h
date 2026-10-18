@@ -34,11 +34,7 @@
 
 namespace iceberg::rest {
 
-/// \brief A simple wrapper for cpr::Response.
-///
-/// This class encapsulates the details of the underlying cpr library's response,
-/// providing a consistent interface that is independent of the specific network
-/// library used.
+/// \brief HTTP response status, body, and headers.
 class ICEBERG_REST_EXPORT HttpResponse {
  public:
   HttpResponse();
