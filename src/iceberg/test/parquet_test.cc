@@ -420,6 +420,35 @@ class ParquetReaderTest : public TempFileTestBase {
     ASSERT_FALSE(data.value().has_value());
   }
 
+  void VerifyEmptySplitSchema(const std::shared_ptr<Schema>& projection,
+                              const ReaderProperties& properties,
+                              const std::shared_ptr<::arrow::DataType>& expected_type) {
+    ReaderOptions options{.path = temp_parquet_file_,
+                          .io = file_io_,
+                          .projection = projection,
+                          .properties = properties};
+    ICEBERG_UNWRAP_OR_FAIL(
+        auto full_reader, ReaderFactoryRegistry::Open(FileFormatType::kParquet, options));
+    ICEBERG_UNWRAP_OR_FAIL(auto full_c_schema, full_reader->Schema());
+    auto full_schema = ::arrow::ImportSchema(&full_c_schema).ValueOrDie();
+    ASSERT_THAT(full_reader->Close(), IsOk());
+
+    auto& io = internal::checked_cast<arrow::ArrowFileSystemFileIO&>(*file_io_);
+    auto file_info = io.fs()->GetFileInfo(temp_parquet_file_).ValueOrDie();
+    options.split = Split{.offset = static_cast<size_t>(file_info.size()), .length = 1};
+    ICEBERG_UNWRAP_OR_FAIL(
+        auto reader, ReaderFactoryRegistry::Open(FileFormatType::kParquet, options));
+    ICEBERG_UNWRAP_OR_FAIL(auto arrow_c_schema, reader->Schema());
+    auto schema = ::arrow::ImportSchema(&arrow_c_schema).ValueOrDie();
+    EXPECT_TRUE(schema->Equals(*full_schema, /*check_metadata=*/true))
+        << schema->ToString() << " vs " << full_schema->ToString();
+    auto actual_type = ::arrow::struct_(schema->fields());
+    EXPECT_TRUE(actual_type->Equals(expected_type))
+        << actual_type->ToString() << " vs " << expected_type->ToString();
+    ASSERT_NO_FATAL_FAILURE(VerifyExhausted(*reader));
+    ASSERT_THAT(reader->Close(), IsOk());
+  }
+
   std::shared_ptr<FileIO> file_io_;
   std::string temp_parquet_file_;
 };
@@ -856,6 +885,125 @@ TEST_F(ParquetReaderTest, ReadRenamedLargeListColumnWithArrowSchema) {
   ASSERT_TRUE(import_result.ValueOrDie()->ValidateFull().ok());
 
   ASSERT_NO_FATAL_FAILURE(VerifyExhausted(*reader));
+}
+
+TEST_F(ParquetReaderTest, EmptySplitReadsListsAsLargeListWhenRequested) {
+  ASSERT_NO_FATAL_FAILURE(CreateListParquetFile());
+  auto schema =
+      std::make_shared<Schema>(std::vector<SchemaField>{SchemaField::MakeOptional(
+          2, "numbers", list(SchemaField::MakeOptional(101, "element", int32())))});
+
+  for (bool use_large_list : {false, true}) {
+    SCOPED_TRACE(use_large_list);
+    ReaderProperties properties;
+    properties.Set(ReaderProperties::kArrowUseLargeList, use_large_list);
+    auto element = ::arrow::field("element", ::arrow::int32());
+    auto list_type =
+        use_large_list ? ::arrow::large_list(element) : ::arrow::list(element);
+    auto expected_type = ::arrow::struct_({::arrow::field("numbers", list_type)});
+    ASSERT_NO_FATAL_FAILURE(VerifyEmptySplitSchema(schema, properties, expected_type));
+  }
+}
+
+TEST_F(ParquetReaderTest, EmptySplitKeepsStoredListTypes) {
+  ASSERT_NO_FATAL_FAILURE(CreateMixedListParquetFileWithArrowSchema());
+  auto schema = std::make_shared<Schema>(std::vector<SchemaField>{
+      SchemaField::MakeOptional(3, "renamed",
+                                list(SchemaField::MakeOptional(102, "element", int32()))),
+      SchemaField::MakeOptional(
+          2, "small_lists", list(SchemaField::MakeOptional(101, "element", int32())))});
+  auto element = ::arrow::field("element", ::arrow::int32());
+  auto expected_type =
+      ::arrow::struct_({::arrow::field("renamed", ::arrow::large_list(element)),
+                        ::arrow::field("small_lists", ::arrow::list(element))});
+
+  for (bool use_large_list : {false, true}) {
+    SCOPED_TRACE(use_large_list);
+    ReaderProperties properties;
+    properties.Set(ReaderProperties::kArrowUseLargeList, use_large_list);
+    ASSERT_NO_FATAL_FAILURE(VerifyEmptySplitSchema(schema, properties, expected_type));
+  }
+}
+
+TEST_F(ParquetReaderTest, EmptySplitAppliesLargeListToMissingFields) {
+  ASSERT_NO_FATAL_FAILURE(CreateSimpleParquetFile());
+  for (bool include_physical_field : {false, true}) {
+    SCOPED_TRACE(include_physical_field);
+    for (bool use_large_list : {false, true}) {
+      SCOPED_TRACE(use_large_list);
+      auto element = ::arrow::field("element", ::arrow::int32());
+      auto list_type =
+          use_large_list ? ::arrow::large_list(element) : ::arrow::list(element);
+      std::vector<SchemaField> fields{SchemaField::MakeOptional(
+          9, "missing", list(SchemaField::MakeOptional(109, "element", int32())))};
+      ::arrow::FieldVector expected_fields{::arrow::field("missing", list_type)};
+      if (include_physical_field) {
+        fields.push_back(SchemaField::MakeRequired(1, "id", int32()));
+        expected_fields.push_back(::arrow::field("id", ::arrow::int32(), false));
+      }
+      auto schema = std::make_shared<Schema>(std::move(fields));
+      ReaderProperties properties;
+      properties.Set(ReaderProperties::kArrowUseLargeList, use_large_list);
+      ASSERT_NO_FATAL_FAILURE(VerifyEmptySplitSchema(
+          schema, properties, ::arrow::struct_(std::move(expected_fields))));
+    }
+  }
+}
+
+TEST_F(ParquetReaderTest, EmptySplitWithoutPhysicalColumns) {
+  ASSERT_NO_FATAL_FAILURE(CreateSimpleParquetFile());
+  for (const auto& fields : {std::vector<SchemaField>{},
+                             std::vector<SchemaField>{MetadataColumns::kFilePath,
+                                                      MetadataColumns::kRowPosition}}) {
+    SCOPED_TRACE(fields.size());
+    auto schema = std::make_shared<Schema>(fields);
+    ArrowSchema arrow_c_schema;
+    ASSERT_THAT(ToArrowSchema(*schema, &arrow_c_schema), IsOk());
+    auto expected_type = ::arrow::ImportType(&arrow_c_schema).ValueOrDie();
+    ASSERT_NO_FATAL_FAILURE(VerifyEmptySplitSchema(schema, {}, expected_type));
+  }
+}
+
+TEST_F(ParquetReaderTest, EmptySplitKeepsPrunedNestedListTypes) {
+  auto write_schema =
+      std::make_shared<Schema>(std::vector<SchemaField>{SchemaField::MakeOptional(
+          1, "profile",
+          struct_({SchemaField::MakeOptional(2, "ignored", int32()),
+                   SchemaField::MakeOptional(
+                       3, "numbers",
+                       list(SchemaField::MakeOptional(103, "element", int32())))}))});
+  ArrowSchema arrow_c_schema;
+  ASSERT_THAT(ToArrowSchema(*write_schema, &arrow_c_schema), IsOk());
+  auto arrow_type = ::arrow::ImportType(&arrow_c_schema).ValueOrDie();
+  auto array = ::arrow::json::ArrayFromJSONString(
+                   arrow_type, R"([[{"ignored": 1, "numbers": [1, 2]}]])")
+                   .ValueOrDie();
+  WriterProperties writer_properties;
+  writer_properties.Set(WriterProperties::kParquetCompression,
+                        std::string("uncompressed"));
+  ASSERT_THAT(WriteArray(array, {.path = temp_parquet_file_,
+                                 .schema = write_schema,
+                                 .io = file_io_,
+                                 .properties = std::move(writer_properties)}),
+              IsOk());
+
+  auto schema =
+      std::make_shared<Schema>(std::vector<SchemaField>{SchemaField::MakeOptional(
+          1, "profile",
+          struct_({SchemaField::MakeOptional(
+              3, "renamed",
+              list(SchemaField::MakeOptional(103, "element", int32())))}))});
+  for (bool use_large_list : {false, true}) {
+    SCOPED_TRACE(use_large_list);
+    ReaderProperties properties;
+    properties.Set(ReaderProperties::kArrowUseLargeList, use_large_list);
+    auto element = ::arrow::field("element", ::arrow::int32());
+    auto list_type =
+        use_large_list ? ::arrow::large_list(element) : ::arrow::list(element);
+    auto expected_type = ::arrow::struct_({::arrow::field(
+        "profile", ::arrow::struct_({::arrow::field("renamed", list_type)}))});
+    ASSERT_NO_FATAL_FAILURE(VerifyEmptySplitSchema(schema, properties, expected_type));
+  }
 }
 
 TEST_F(ParquetReaderTest, ReadSplit) {

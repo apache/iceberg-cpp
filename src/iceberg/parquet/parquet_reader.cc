@@ -77,19 +77,6 @@ Result<SchemaProjection> BuildProjection(::parquet::arrow::FileReader* reader,
   return projection;
 }
 
-class EmptyRecordBatchReader : public ::arrow::RecordBatchReader {
- public:
-  EmptyRecordBatchReader() = default;
-  ~EmptyRecordBatchReader() override = default;
-
-  std::shared_ptr<::arrow::Schema> schema() const override { return nullptr; }
-
-  ::arrow::Status ReadNext(std::shared_ptr<::arrow::RecordBatch>* batch) override {
-    *batch = nullptr;
-    return ::arrow::Status::OK();
-  }
-};
-
 // forward declaration to unblock cycle dependence.
 std::shared_ptr<::arrow::Field> UseLargeListField(
     const std::shared_ptr<::arrow::Field>& field);
@@ -423,16 +410,11 @@ class ParquetReader::Impl {
       std::iota(row_group_indices.begin(), row_group_indices.end(), 0);  // NOLINT
     }
 
-    // Create the record batch reader
-    if (row_group_indices.empty()) {
-      // None of the row groups are selected, return an empty record batch reader
-      context_->record_batch_reader_ = std::make_unique<EmptyRecordBatchReader>();
-    } else {
-      auto column_indices = SelectedColumnIndices(projection_);
-      ICEBERG_ARROW_ASSIGN_OR_RETURN(
-          context_->record_batch_reader_,
-          reader_->GetRecordBatchReader(row_group_indices, column_indices));
-    }
+    // Create the record batch reader, including for empty splits to preserve the schema.
+    auto column_indices = SelectedColumnIndices(projection_);
+    ICEBERG_ARROW_ASSIGN_OR_RETURN(
+        context_->record_batch_reader_,
+        reader_->GetRecordBatchReader(row_group_indices, column_indices));
 
     if (NeedsRowPositions(*read_schema_, metadata_context_)) {
       ICEBERG_ASSIGN_OR_RAISE(context_->row_number_reader_,
