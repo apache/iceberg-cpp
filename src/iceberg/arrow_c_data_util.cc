@@ -352,8 +352,14 @@ Result<ArrowArray> ProjectBatchNanoarrow(
   internal::ArrowArrayViewGuard input_view_guard(&input_view);
   ICEBERG_NANOARROW_RETURN_UNEXPECTED_WITH_ERROR(
       ArrowArrayViewSetArray(&input_view, &input_batch, &error), error);
+  // FULL validation is required here: the append path below uses
+  // ArrowArrayViewGet{String,Bytes}Unsafe and raw list/map offset arithmetic,
+  // which nanoarrow only documents as memory-safe after FULL validation
+  // (DEFAULT does not check that every offsets-buffer entry is non-decreasing
+  // and in-bounds). This matches the FULL validation already performed on the
+  // equivalent untrusted-batch boundary in manifest_reader.cc.
   ICEBERG_NANOARROW_RETURN_UNEXPECTED_WITH_ERROR(
-      ArrowArrayViewValidate(&input_view, NANOARROW_VALIDATION_LEVEL_DEFAULT, &error),
+      ArrowArrayViewValidate(&input_view, NANOARROW_VALIDATION_LEVEL_FULL, &error),
       error);
 
   ArrowArray output_array;
