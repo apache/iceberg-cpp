@@ -26,6 +26,7 @@
 
 #include "iceberg/constants.h"
 #include "iceberg/metadata_columns.h"
+#include "iceberg/name_mapping.h"
 #include "iceberg/parquet/parquet_schema_util_internal.h"
 #include "iceberg/result.h"
 #include "iceberg/schema_internal.h"
@@ -716,6 +717,52 @@ void CollectColumnIds(const FieldProjection& field_projection,
   }
 }
 
+// Forward declaration
+void ApplyNameMappingToField(const NameMapping& mapping, std::vector<std::string>& names,
+                             ::parquet::arrow::SchemaField* parquet_field);
+
+void ApplyNameMappingToChild(const NameMapping& mapping, std::vector<std::string>& names,
+                             std::string name, ::parquet::arrow::SchemaField* child) {
+  names.push_back(std::move(name));
+  ApplyNameMappingToField(mapping, names, child);
+  names.pop_back();
+}
+
+void ApplyNameMappingToField(const NameMapping& mapping, std::vector<std::string>& names,
+                             ::parquet::arrow::SchemaField* parquet_field) {
+  if (auto mapped_field = mapping.Find(names);
+      mapped_field.has_value() && mapped_field->get().field_id.has_value()) {
+    parquet_field->field =
+        parquet_field->field->WithMergedMetadata(::arrow::key_value_metadata(
+            {std::string(kParquetFieldIdKey)},
+            {std::to_string(mapped_field->get().field_id.value())}));
+  }
+
+  auto& children = parquet_field->children;
+  switch (parquet_field->field->type()->id()) {
+    case ::arrow::Type::STRUCT:
+      for (auto& child : children) {
+        ApplyNameMappingToChild(mapping, names, child.field->name(), &child);
+      }
+      break;
+    case ::arrow::Type::LIST:
+    case ::arrow::Type::LARGE_LIST:
+      if (children.size() == 1) {
+        ApplyNameMappingToChild(mapping, names, "element", &children[0]);
+      }
+      break;
+    case ::arrow::Type::MAP:
+      // The key and value sit under the entries struct, which the name path skips.
+      if (children.size() == 1 && children[0].children.size() == 2) {
+        ApplyNameMappingToChild(mapping, names, "key", &children[0].children[0]);
+        ApplyNameMappingToChild(mapping, names, "value", &children[0].children[1]);
+      }
+      break;
+    default:
+      break;
+  }
+}
+
 }  // namespace
 
 Result<SchemaProjection> Project(const Schema& expected_schema,
@@ -751,6 +798,14 @@ bool HasFieldIds(const ::parquet::schema::NodePtr& node) {
   }
 
   return false;
+}
+
+void ApplyNameMapping(const NameMapping& mapping,
+                      ::parquet::arrow::SchemaManifest* parquet_schema) {
+  std::vector<std::string> names;
+  for (auto& parquet_field : parquet_schema->schema_fields) {
+    ApplyNameMappingToChild(mapping, names, parquet_field.field->name(), &parquet_field);
+  }
 }
 
 Result<std::shared_ptr<::parquet::SchemaDescriptor>> ToParquetSchema(

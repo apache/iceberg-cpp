@@ -26,6 +26,7 @@
 
 #include "iceberg/schema.h"
 #include "iceberg/schema_util.h"
+#include "iceberg/type_fwd.h"
 
 namespace iceberg::parquet {
 
@@ -62,6 +63,16 @@ std::vector<int32_t> SelectedColumnIndices(const SchemaProjection& projection);
 /// \param root_node The root node of the Parquet schema.
 /// \return True if the Parquet schema has field IDs, false otherwise.
 bool HasFieldIds(const ::parquet::schema::NodePtr& root_node);
+
+/// \brief Assign field IDs from a name mapping to a Parquet schema without field IDs.
+///
+/// List elements use "element"; map keys and values use "key" and "value".
+/// Fields without a mapped ID remain unassigned.
+///
+/// \param mapping The name mapping to apply.
+/// \param parquet_schema The Parquet schema to update in place.
+void ApplyNameMapping(const NameMapping& mapping,
+                      ::parquet::arrow::SchemaManifest* parquet_schema);
 
 /// \brief Convert an Iceberg schema to a Parquet schema.
 Result<std::shared_ptr<::parquet::SchemaDescriptor>> ToParquetSchema(

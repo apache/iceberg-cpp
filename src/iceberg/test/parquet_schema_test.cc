@@ -31,6 +31,7 @@
 #include <parquet/types.h>
 
 #include "iceberg/metadata_columns.h"
+#include "iceberg/name_mapping.h"
 #include "iceberg/parquet/parquet_schema_util_internal.h"
 #include "iceberg/schema.h"
 #include "iceberg/test/matchers.h"
@@ -202,6 +203,158 @@ TEST(HasFieldIdsTest, GroupNode) {
                                         })));
 }
 // NOLINTEND(clang-analyzer-cplusplus.NewDeleteLeaks)
+
+TEST(ParquetNameMappingTest, ApplyNameMapping) {
+  Schema expected_schema({
+      SchemaField::MakeOptional(/*field_id=*/1, "id", int64()),
+      SchemaField::MakeOptional(/*field_id=*/2, "name", string()),
+  });
+
+  auto parquet_schema =
+      MakeGroupNode("iceberg_schema", {MakeInt64Node("id"), MakeStringNode("name")});
+  auto schema_manifest = MakeSchemaManifest(parquet_schema);
+  auto mapping = NameMapping::Make({
+      MappedField{.names = {"id"}, .field_id = 1},
+      MappedField{.names = {"name"}, .field_id = 2},
+  });
+
+  ApplyNameMapping(*mapping, &schema_manifest);
+  EXPECT_EQ(schema_manifest.schema_fields[0].field->metadata()->Get(
+                std::string(kParquetFieldIdKey)),
+            "1");
+  EXPECT_EQ(schema_manifest.schema_fields[1].field->metadata()->Get(
+                std::string(kParquetFieldIdKey)),
+            "2");
+
+  auto projection_result = Project(expected_schema, schema_manifest);
+  ASSERT_THAT(projection_result, IsOk());
+
+  const auto& projection = *projection_result;
+  ASSERT_EQ(projection.fields.size(), 2);
+  ASSERT_PROJECTED_FIELD(projection.fields[0], 0);
+  ASSERT_PROJECTED_FIELD(projection.fields[1], 1);
+  ASSERT_EQ(SelectedColumnIndices(projection), std::vector<int32_t>({0, 1}));
+}
+
+TEST(ParquetNameMappingTest, ApplyNameMappingWithAlias) {
+  Schema expected_schema({
+      SchemaField::MakeOptional(/*field_id=*/2, "full_name", string()),
+  });
+
+  auto parquet_schema = MakeGroupNode("iceberg_schema", {MakeStringNode("user_name")});
+  auto schema_manifest = MakeSchemaManifest(parquet_schema);
+  auto mapping = NameMapping::Make({
+      MappedField{.names = {"full_name", "user_name"}, .field_id = 2},
+  });
+
+  ApplyNameMapping(*mapping, &schema_manifest);
+  auto projection_result = Project(expected_schema, schema_manifest);
+  ASSERT_THAT(projection_result, IsOk());
+
+  const auto& projection = *projection_result;
+  ASSERT_EQ(projection.fields.size(), 1);
+  ASSERT_PROJECTED_FIELD(projection.fields[0], 0);
+}
+
+TEST(ParquetNameMappingTest, ApplyNameMappingToNestedFields) {
+  Schema expected_schema({
+      SchemaField::MakeOptional(
+          /*field_id=*/1, "profile",
+          std::make_shared<StructType>(std::vector<SchemaField>{
+              SchemaField::MakeOptional(/*field_id=*/101, "name", string()),
+          })),
+      SchemaField::MakeOptional(
+          /*field_id=*/2, "numbers",
+          std::make_shared<ListType>(SchemaField::MakeOptional(
+              /*field_id=*/201, "element", int32()))),
+      SchemaField::MakeOptional(
+          /*field_id=*/3, "counts",
+          std::make_shared<MapType>(
+              SchemaField::MakeRequired(/*field_id=*/301, "key", string()),
+              SchemaField::MakeOptional(/*field_id=*/302, "value", int32()))),
+  });
+
+  auto parquet_schema = MakeGroupNode(
+      "iceberg_schema",
+      {
+          MakeGroupNode("profile", {MakeStringNode("name")}),
+          MakeListNode("numbers", MakeInt32Node("item")),
+          MakeMapNode("counts",
+                      MakeStringNode("key", /*field_id=*/-1, /*optional=*/false),
+                      MakeInt32Node("value")),
+      });
+  auto mapping = NameMapping::Make({
+      MappedField{.names = {"profile"},
+                  .field_id = 1,
+                  .nested_mapping = MappedFields::Make({
+                      MappedField{.names = {"name"}, .field_id = 101},
+                  })},
+      MappedField{.names = {"numbers"},
+                  .field_id = 2,
+                  .nested_mapping = MappedFields::Make({
+                      MappedField{.names = {"element"}, .field_id = 201},
+                  })},
+      MappedField{.names = {"counts"},
+                  .field_id = 3,
+                  .nested_mapping = MappedFields::Make({
+                      MappedField{.names = {"key"}, .field_id = 301},
+                      MappedField{.names = {"value"}, .field_id = 302},
+                  })},
+  });
+
+  auto schema_manifest = MakeSchemaManifest(parquet_schema);
+  ApplyNameMapping(*mapping, &schema_manifest);
+  auto projection_result = Project(expected_schema, schema_manifest);
+  ASSERT_THAT(projection_result, IsOk());
+
+  const auto& projection = *projection_result;
+  ASSERT_EQ(projection.fields.size(), 3);
+  ASSERT_PROJECTED_FIELD(projection.fields[0], 0);
+  ASSERT_EQ(projection.fields[0].children.size(), 1);
+  ASSERT_PROJECTED_FIELD(projection.fields[0].children[0], 0);
+  ASSERT_PROJECTED_FIELD(projection.fields[1], 1);
+  ASSERT_EQ(projection.fields[1].children.size(), 1);
+  ASSERT_PROJECTED_FIELD(projection.fields[1].children[0], 0);
+  ASSERT_PROJECTED_FIELD(projection.fields[2], 2);
+  ASSERT_EQ(projection.fields[2].children.size(), 2);
+  ASSERT_PROJECTED_FIELD(projection.fields[2].children[0], 0);
+  ASSERT_PROJECTED_FIELD(projection.fields[2].children[1], 1);
+  ASSERT_EQ(SelectedColumnIndices(projection), std::vector<int32_t>({0, 1, 2, 3}));
+}
+
+TEST(ParquetNameMappingTest, ApplyNameMappingWithUnmappedFields) {
+  Schema expected_schema({
+      SchemaField::MakeOptional(/*field_id=*/1, "id", int64()),
+      SchemaField::MakeOptional(/*field_id=*/2, "extra", string()),
+      SchemaField::MakeOptional(/*field_id=*/3, "unassigned", string()),
+  });
+
+  auto parquet_schema = MakeGroupNode(
+      "iceberg_schema",
+      {MakeInt64Node("id"), MakeStringNode("extra"), MakeStringNode("unassigned")});
+  auto schema_manifest = MakeSchemaManifest(parquet_schema);
+  auto mapping = NameMapping::Make({
+      MappedField{.names = {"id"}, .field_id = 1},
+      MappedField{.names = {"unassigned"}, .field_id = std::nullopt},
+  });
+
+  ApplyNameMapping(*mapping, &schema_manifest);
+  for (size_t i = 1; i < schema_manifest.schema_fields.size(); ++i) {
+    const auto& metadata = schema_manifest.schema_fields[i].field->metadata();
+    EXPECT_TRUE(metadata == nullptr ||
+                metadata->FindKey(std::string(kParquetFieldIdKey)) < 0);
+  }
+
+  auto projection_result = Project(expected_schema, schema_manifest);
+  ASSERT_THAT(projection_result, IsOk());
+
+  const auto& projection = *projection_result;
+  ASSERT_EQ(projection.fields.size(), 3);
+  ASSERT_PROJECTED_FIELD(projection.fields[0], 0);
+  ASSERT_PROJECTED_NULL_FIELD(projection.fields[1]);
+  ASSERT_PROJECTED_NULL_FIELD(projection.fields[2]);
+  ASSERT_EQ(SelectedColumnIndices(projection), std::vector<int32_t>({0}));
+}
 
 TEST(ParquetSchemaProjectionTest, ProjectIdenticalSchemas) {
   Schema expected_schema({

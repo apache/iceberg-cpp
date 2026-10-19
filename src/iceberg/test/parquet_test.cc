@@ -49,6 +49,7 @@
 #include "iceberg/file_reader.h"
 #include "iceberg/file_writer.h"
 #include "iceberg/metadata_columns.h"
+#include "iceberg/name_mapping.h"
 #include "iceberg/parquet/parquet_data_util_internal.h"
 #include "iceberg/parquet/parquet_register.h"
 #include "iceberg/result.h"
@@ -265,6 +266,20 @@ class ParquetReaderTest : public TempFileTestBase {
                                    .schema = schema,
                                    .io = file_io_,
                                    .properties = std::move(writer_properties)}));
+  }
+
+  void CreateParquetFileWithoutFieldIds(const std::shared_ptr<::arrow::DataType>& type,
+                                        std::string_view json) {
+    auto array = ::arrow::json::ArrayFromJSONString(type, json).ValueOrDie();
+    auto batch = ::arrow::RecordBatch::FromStructArray(array).ValueOrDie();
+    auto table = ::arrow::Table::FromRecordBatches({batch}).ValueOrDie();
+    auto io = internal::checked_cast<arrow::ArrowFileSystemFileIO&>(*file_io_);
+    auto outfile = io.fs()->OpenOutputStream(temp_parquet_file_).ValueOrDie();
+
+    ASSERT_TRUE(::parquet::arrow::WriteTable(*table, ::arrow::default_memory_pool(),
+                                             outfile, table->num_rows())
+                    .ok());
+    ASSERT_TRUE(outfile->Close().ok());
   }
 
   void CreateListParquetFile() {
@@ -554,6 +569,121 @@ TEST_F(ParquetReaderTest, ReadTwoFields) {
   ASSERT_NO_FATAL_FAILURE(
       VerifyNextBatch(*reader, R"([[1, "Foo"], [2, "Bar"], [3, "Baz"]])"));
   ASSERT_NO_FATAL_FAILURE(VerifyExhausted(*reader));
+}
+
+TEST_F(ParquetReaderTest, ReadWithoutFieldIdsOrNameMapping) {
+  ASSERT_NO_FATAL_FAILURE(CreateParquetFileWithoutFieldIds(
+      ::arrow::struct_({::arrow::field("id", ::arrow::int32())}), R"([[1]])"));
+  auto schema = std::make_shared<Schema>(
+      std::vector<SchemaField>{SchemaField::MakeOptional(1, "id", int32())});
+
+  auto reader_result = ReaderFactoryRegistry::Open(
+      FileFormatType::kParquet,
+      {.path = temp_parquet_file_, .io = file_io_, .projection = schema});
+  ASSERT_THAT(reader_result, IsError(ErrorKind::kInvalidSchema));
+  EXPECT_THAT(reader_result, HasErrorMessage("no field IDs and no name mapping"));
+}
+
+TEST_F(ParquetReaderTest, ReadWithNameMapping) {
+  ASSERT_NO_FATAL_FAILURE(CreateParquetFileWithoutFieldIds(
+      ::arrow::struct_({::arrow::field("id", ::arrow::int32()),
+                        ::arrow::field("name", ::arrow::utf8())}),
+      R"([[1, "Foo"], [2, "Bar"], [3, "Baz"]])"));
+  auto schema = std::make_shared<Schema>(std::vector<SchemaField>{
+      SchemaField::MakeOptional(2, "full_name", string()),
+      SchemaField::MakeOptional(1, "id", int64()),
+      SchemaField::MakeOptional(3, "extra", string()),
+  });
+  auto mapping = NameMapping::Make({
+      MappedField{.names = {"id"}, .field_id = 1},
+      MappedField{.names = {"name", "full_name"}, .field_id = 2},
+  });
+
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto reader, ReaderFactoryRegistry::Open(FileFormatType::kParquet,
+                                               {.path = temp_parquet_file_,
+                                                .io = file_io_,
+                                                .projection = schema,
+                                                .name_mapping = std::move(mapping)}));
+  ASSERT_NO_FATAL_FAILURE(VerifyNextBatch(
+      *reader, R"([["Foo", 1, null], ["Bar", 2, null], ["Baz", 3, null]])"));
+  ASSERT_NO_FATAL_FAILURE(VerifyExhausted(*reader));
+}
+
+TEST_F(ParquetReaderTest, ReadWithFieldIdsAndNameMapping) {
+  CreateSimpleParquetFile();
+  auto schema = std::make_shared<Schema>(std::vector<SchemaField>{
+      SchemaField::MakeRequired(1, "id", int32()),
+      SchemaField::MakeOptional(2, "name", string()),
+  });
+  auto mapping = NameMapping::Make({
+      MappedField{.names = {"id"}, .field_id = 2},
+      MappedField{.names = {"name"}, .field_id = 1},
+  });
+
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto reader, ReaderFactoryRegistry::Open(FileFormatType::kParquet,
+                                               {.path = temp_parquet_file_,
+                                                .io = file_io_,
+                                                .projection = schema,
+                                                .name_mapping = std::move(mapping)}));
+  ASSERT_NO_FATAL_FAILURE(
+      VerifyNextBatch(*reader, R"([[1, "Foo"], [2, "Bar"], [3, "Baz"]])"));
+  ASSERT_NO_FATAL_FAILURE(VerifyExhausted(*reader));
+}
+
+TEST_F(ParquetReaderTest, ReadNestedFieldsWithNameMapping) {
+  auto value_type = ::arrow::struct_({::arrow::field("value", ::arrow::int32())});
+  auto type = ::arrow::struct_({
+      ::arrow::field("profile", value_type),
+      ::arrow::field("numbers", ::arrow::list(::arrow::field("item", value_type))),
+      ::arrow::field("counts", ::arrow::map(::arrow::utf8(), value_type)),
+  });
+  const std::string json = R"([
+    [[1], [[2], null], [["a", [3]], ["b", null]]],
+    [null, [], []],
+    [[null], null, null]
+  ])";
+  ASSERT_NO_FATAL_FAILURE(CreateParquetFileWithoutFieldIds(type, json));
+
+  auto schema = std::make_shared<Schema>(std::vector<SchemaField>{
+      SchemaField::MakeOptional(1, "profile",
+                                std::make_shared<StructType>(std::vector<SchemaField>{
+                                    SchemaField::MakeOptional(101, "value", int64()),
+                                })),
+      SchemaField::MakeOptional(2, "numbers",
+                                std::make_shared<ListType>(SchemaField::MakeOptional(
+                                    201, "element",
+                                    std::make_shared<StructType>(std::vector<SchemaField>{
+                                        SchemaField::MakeOptional(202, "value", int64()),
+                                    })))),
+      SchemaField::MakeOptional(
+          3, "counts",
+          std::make_shared<MapType>(
+              SchemaField::MakeRequired(301, "key", string()),
+              SchemaField::MakeOptional(
+                  302, "value",
+                  std::make_shared<StructType>(std::vector<SchemaField>{
+                      SchemaField::MakeOptional(303, "value", int64()),
+                  })))),
+  });
+  ICEBERG_UNWRAP_OR_FAIL(auto unique_mapping, CreateMapping(*schema));
+  std::shared_ptr<NameMapping> mapping = std::move(unique_mapping);
+
+  for (bool use_large_list : {false, true}) {
+    SCOPED_TRACE(use_large_list);
+    ReaderProperties properties;
+    properties.Set(ReaderProperties::kArrowUseLargeList, use_large_list);
+    ICEBERG_UNWRAP_OR_FAIL(
+        auto reader, ReaderFactoryRegistry::Open(FileFormatType::kParquet,
+                                                 {.path = temp_parquet_file_,
+                                                  .io = file_io_,
+                                                  .projection = schema,
+                                                  .name_mapping = mapping,
+                                                  .properties = std::move(properties)}));
+    ASSERT_NO_FATAL_FAILURE(VerifyNextBatch(*reader, json));
+    ASSERT_NO_FATAL_FAILURE(VerifyExhausted(*reader));
+  }
 }
 
 TEST_F(ParquetReaderTest, ReadMissingFieldsWithDefaults) {

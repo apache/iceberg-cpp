@@ -61,18 +61,22 @@ Result<std::shared_ptr<::arrow::io::RandomAccessFile>> OpenInputStream(
 }
 
 Result<SchemaProjection> BuildProjection(::parquet::arrow::FileReader* reader,
-                                         const Schema& read_schema) {
+                                         const Schema& read_schema,
+                                         const NameMapping* name_mapping) {
   auto metadata = reader->parquet_reader()->metadata();
-
-  if (!HasFieldIds(metadata->schema()->schema_root())) {
-    // TODO(gangwu): apply name mapping to Parquet schema
-    return NotImplemented("Applying name mapping to Parquet schema is not implemented");
-  }
 
   ::parquet::arrow::SchemaManifest schema_manifest;
   ICEBERG_ARROW_RETURN_NOT_OK(::parquet::arrow::SchemaManifest::Make(
       metadata->schema(), metadata->key_value_metadata(), reader->properties(),
       &schema_manifest));
+
+  if (!HasFieldIds(metadata->schema()->schema_root())) {
+    if (name_mapping == nullptr) {
+      return InvalidSchema(
+          "Parquet file schema has no field IDs and no name mapping provided");
+    }
+    ApplyNameMapping(*name_mapping, &schema_manifest);
+  }
 
   // Leverage SchemaManifest to project the schema
   ICEBERG_ASSIGN_OR_RAISE(auto projection, Project(read_schema, schema_manifest));
@@ -269,7 +273,6 @@ struct ReadContext {
 // 1. Make the memory pool configurable
 // 2. Catch ParquetException and convert to Status/Result
 // 3. Add utility to convert Arrow Status/Result to Iceberg Status/Result
-// 4. Check field ids and apply name mapping if needed
 class ParquetReader::Impl {
  public:
   // Open the Parquet reader with the given options
@@ -301,7 +304,8 @@ class ParquetReader::Impl {
     ICEBERG_RETURN_UNEXPECTED(PlanRowGroups(options));
 
     // Project read schema onto the Parquet file schema
-    ICEBERG_ASSIGN_OR_RAISE(projection_, BuildProjection(reader_.get(), *read_schema_));
+    ICEBERG_ASSIGN_OR_RAISE(projection_, BuildProjection(reader_.get(), *read_schema_,
+                                                         options.name_mapping.get()));
     metadata_context_ = {.file_path = options.path,
                          .first_row_id = options.first_row_id,
                          .data_sequence_number = options.data_sequence_number};
