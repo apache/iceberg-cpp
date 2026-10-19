@@ -50,7 +50,7 @@ struct AesGcmStream {
   ///
   /// Returns an error if the length is shorter than an empty stream, implies more
   /// than int32 max blocks, or ends in a block too short to hold a nonce and tag.
-  static Result<int64_t> PlaintextLength(int64_t encrypted_length);
+  ICEBERG_BUNDLE_EXPORT static Result<int64_t> PlaintextLength(int64_t encrypted_length);
 };
 
 /// \brief An InputFile that decrypts an AGS1 file.

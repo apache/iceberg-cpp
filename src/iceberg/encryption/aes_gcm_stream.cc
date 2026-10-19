@@ -99,6 +99,20 @@ class AesGcmInputStream : public SeekableInputStream {
     return {};
   }
 
+  /// \brief Authenticate the sole block of an empty stream.
+  ///
+  /// An empty AGS1 file still carries one empty block with a nonce and a tag, so a
+  /// reader that stops at plain_size_ == 0 would accept a wrong key, a wrong AAD
+  /// prefix, a corrupt tag or a file truncated behind its trusted length. Java
+  /// authenticates the block on the first read; an empty stream is never read from,
+  /// so it is authenticated when the stream is opened.
+  Status ValidateEmptyStream() {
+    if (plain_size_ != 0) {
+      return {};
+    }
+    return DecryptBlock(0);
+  }
+
   Result<int64_t> Position() const override { return position_; }
 
   Status Seek(int64_t position) override {
@@ -126,7 +140,10 @@ class AesGcmInputStream : public SeekableInputStream {
   }
 
   Status ReadFully(int64_t position, std::span<std::byte> out) override {
-    if (position < 0 || position + static_cast<int64_t>(out.size()) > plain_size_) {
+    // The position is bounded before the length is added to it, so that a position
+    // near int64 max does not overflow the range check.
+    if (position < 0 || position > plain_size_ ||
+        std::cmp_greater(out.size(), plain_size_ - position)) {
       return IOError("Cannot read {} bytes at {} from stream of length {}", out.size(),
                      position, plain_size_);
     }
@@ -324,6 +341,7 @@ Result<std::unique_ptr<SeekableInputStream>> AesGcmInputFile::Open() {
   auto stream = std::make_unique<AesGcmInputStream>(
       std::move(source), std::move(cipher), aad_prefix_, encrypted_length_, plain_size);
   ICEBERG_RETURN_UNEXPECTED(stream->ValidateHeader());
+  ICEBERG_RETURN_UNEXPECTED(stream->ValidateEmptyStream());
   return stream;
 }
 

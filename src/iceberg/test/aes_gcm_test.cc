@@ -283,6 +283,60 @@ TEST_F(AesGcmStreamTest, DetectsTampering) {
   EXPECT_THAT(Open(path, key, aad, 35)->Open(), IsError(ErrorKind::kInvalid));
 }
 
+TEST_F(AesGcmStreamTest, AuthenticatesEmptyStream) {
+  auto key = TestBytes(16, 7);
+  auto aad = TestBytes(16, 9);
+  auto path = CreateNewTempFilePath();
+  int64_t stored = Write(path, {}, key, aad);
+  ASSERT_EQ(stored, AesGcmStream::kMinStreamLength);
+
+  // An empty stream still carries one block with a nonce and a tag, so opening it
+  // authenticates that block even though there is no plaintext to read.
+  ICEBERG_UNWRAP_OR_FAIL(auto plain, ReadAll(*Open(path, key, aad, stored)));
+  EXPECT_TRUE(plain.empty());
+
+  // Wrong key or AAD prefix (a file swapped in from another manifest entry)
+  EXPECT_THAT(Open(path, TestBytes(16, 8), aad, stored)->Open(),
+              IsError(ErrorKind::kInvalid));
+  EXPECT_THAT(Open(path, key, TestBytes(16, 10), stored)->Open(),
+              IsError(ErrorKind::kInvalid));
+
+  // Truncated to its header behind a trusted length that says otherwise
+  std::filesystem::resize_file(path, AesGcmStream::kHeaderLength);
+  EXPECT_THAT(Open(path, key, aad, stored)->Open(), IsError(ErrorKind::kIOError));
+
+  // A corrupt tag
+  auto corrupt = WriteRaw(kJavaAgs1Empty);
+  {
+    std::fstream out(corrupt, std::ios::binary | std::ios::in | std::ios::out);
+    out.seekp(static_cast<std::streamoff>(kJavaAgs1Empty.size() - 1));
+    out.put(static_cast<char>(kJavaAgs1Empty.back() ^ 0xFF));
+  }
+  EXPECT_THAT(
+      Open(corrupt, kDataKey, kAadPrefix, static_cast<int64_t>(kJavaAgs1Empty.size()))
+          ->Open(),
+      IsError(ErrorKind::kInvalid));
+}
+
+TEST_F(AesGcmStreamTest, RejectsOutOfRangeReadFully) {
+  auto key = TestBytes(16, 7);
+  auto aad = TestBytes(16, 9);
+  auto path = CreateNewTempFilePath();
+  int64_t stored = Write(path, TestBytes(100, 5), key, aad);
+  ICEBERG_UNWRAP_OR_FAIL(auto stream, Open(path, key, aad, stored)->Open());
+
+  // A position near int64 max must be rejected without overflowing the range check
+  std::vector<std::byte> one(1);
+  EXPECT_THAT(stream->ReadFully(std::numeric_limits<int64_t>::max(), one),
+              IsError(ErrorKind::kIOError));
+  EXPECT_THAT(stream->ReadFully(-1, one), IsError(ErrorKind::kIOError));
+
+  // Reading up to the last byte is allowed; one byte past it is not
+  EXPECT_THAT(stream->ReadFully(99, one), IsOk());
+  EXPECT_THAT(stream->ReadFully(100, one), IsError(ErrorKind::kIOError));
+  EXPECT_THAT(stream->ReadFully(100, std::span<std::byte>{}), IsOk());
+}
+
 TEST_F(AesGcmStreamTest, RejectsInvalidEncryptedLength) {
   constexpr int64_t kHeader = AesGcmStream::kHeaderLength;
   constexpr int64_t kCipherBlock = AesGcmStream::kCipherBlockSize;
