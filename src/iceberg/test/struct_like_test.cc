@@ -22,9 +22,12 @@
 #include <array>
 #include <memory>
 #include <optional>
+#include <string>
 #include <utility>
 #include <vector>
 
+#include <arrow/array.h>
+#include <arrow/buffer.h>
 #include <arrow/c/bridge.h>
 #include <arrow/json/from_string.h>
 #include <arrow/type.h>
@@ -660,6 +663,122 @@ TEST(ArrowArrayStructLike, Accessor) {
     ICEBERG_UNWRAP_OR_FAIL(auto scalar, accessor->Get(*struct_like));
     ASSERT_TRUE(std::holds_alternative<int32_t>(scalar));
     EXPECT_EQ(std::get<int32_t>(scalar), field_id);
+  }
+}
+
+TEST(ArrowArrayStructLike, SlicedStruct) {
+  auto person_type =
+      ::arrow::struct_({::arrow::field("name", ::arrow::utf8(), /*nullable=*/false)});
+  auto root_type = ::arrow::struct_(
+      {::arrow::field("id", ::arrow::int64(), /*nullable=*/false),
+       ::arrow::field("person", person_type, /*nullable=*/false),
+       ::arrow::field("tags", ::arrow::list(::arrow::int32()), /*nullable=*/false)});
+
+  auto arrow_array = ::arrow::json::ArrayFromJSONString(root_type, R"([
+    {"id": 1, "person": {"name": "Alice"}, "tags": [1]},
+    {"id": 2, "person": {"name": "Bob"}, "tags": [2, 3]},
+    {"id": 3, "person": {"name": "Carol"}, "tags": []}])")
+                         .ValueOrDie();
+  auto sliced = arrow_array->Slice(1);
+
+  ArrowSchema c_schema;
+  ArrowArray c_array;
+  internal::ArrowSchemaGuard schema_guard(&c_schema);
+  internal::ArrowArrayGuard array_guard(&c_array);
+  ASSERT_TRUE(::arrow::ExportType(*root_type, &c_schema).ok());
+  ASSERT_TRUE(::arrow::ExportArray(*sliced, &c_array).ok());
+  ASSERT_EQ(c_array.offset, 1);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto struct_like, ArrowArrayStructLike::Make(c_schema, c_array));
+
+  constexpr int64_t kNumRows = 2;
+  std::array<int64_t, kNumRows> ids = {2, 3};
+  std::array<std::string, kNumRows> names = {"Bob", "Carol"};
+  std::array<std::vector<int32_t>, kNumRows> tags = {std::vector<int32_t>{2, 3},
+                                                     std::vector<int32_t>{}};
+
+  for (int64_t i = 0; i < kNumRows; ++i) {
+    ASSERT_THAT(struct_like->Reset(i), IsOk());
+    EXPECT_SCALAR_EQ(struct_like->GetField(0), int64_t, ids[i]);
+
+    ICEBERG_UNWRAP_OR_FAIL(auto person_scalar, struct_like->GetField(1));
+    auto person = std::get<std::shared_ptr<StructLike>>(person_scalar);
+    EXPECT_SCALAR_EQ(person->GetField(0), std::string_view, names[i]);
+
+    ICEBERG_UNWRAP_OR_FAIL(auto tags_scalar, struct_like->GetField(2));
+    auto tags_like = std::get<std::shared_ptr<ArrayLike>>(tags_scalar);
+    ASSERT_EQ(tags_like->size(), tags[i].size());
+    for (size_t j = 0; j < tags[i].size(); ++j) {
+      EXPECT_SCALAR_EQ(tags_like->GetElement(j), int32_t, tags[i][j]);
+    }
+  }
+}
+
+TEST(ArrowArrayStructLike, SlicedList) {
+  auto list_type = ::arrow::list(::arrow::int32());
+  auto arrow_array =
+      ::arrow::json::ArrayFromJSONString(list_type, R"([[1], [2, 3], [4]])").ValueOrDie();
+  auto sliced = arrow_array->Slice(1);
+
+  ArrowSchema c_schema;
+  ArrowArray c_array;
+  internal::ArrowSchemaGuard schema_guard(&c_schema);
+  internal::ArrowArrayGuard array_guard(&c_array);
+  ASSERT_TRUE(::arrow::ExportType(*list_type, &c_schema).ok());
+  ASSERT_TRUE(::arrow::ExportArray(*sliced, &c_array).ok());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto array_like, ArrowArrayArrayLike::Make(c_schema, c_array));
+  ASSERT_EQ(array_like->size(), 2);
+  EXPECT_SCALAR_EQ(array_like->GetElement(0), int32_t, 2);
+  EXPECT_SCALAR_EQ(array_like->GetElement(1), int32_t, 3);
+
+  ASSERT_THAT(array_like->Reset(1), IsOk());
+  ASSERT_EQ(array_like->size(), 1);
+  EXPECT_SCALAR_EQ(array_like->GetElement(0), int32_t, 4);
+}
+
+TEST(ArrowArrayStructLike, SlicedMap) {
+  auto map_type = std::make_shared<::arrow::MapType>(
+      ::arrow::field("key", ::arrow::utf8(), /*nullable=*/false),
+      ::arrow::field("value", ::arrow::int32(), /*nullable=*/false));
+  auto entries_source =
+      ::arrow::json::ArrayFromJSONString(map_type, R"([[["X", 0], ["Foo", 1],
+                                                        ["Bar", 2], ["Baz", 3]]])")
+          .ValueOrDie();
+  auto entries =
+      std::static_pointer_cast<::arrow::MapArray>(entries_source)->values()->Slice(1);
+  auto offsets = ::arrow::Buffer::FromVector(std::vector<int32_t>{0, 0, 2, 3, 3});
+  auto map_data = ::arrow::ArrayData::Make(map_type, /*length=*/4, {nullptr, offsets},
+                                           {entries->data()}, /*null_count=*/0);
+  auto sliced = ::arrow::MakeArray(map_data)->Slice(1);
+  ASSERT_TRUE(sliced->ValidateFull().ok());
+
+  ArrowSchema c_schema;
+  ArrowArray c_array;
+  internal::ArrowSchemaGuard schema_guard(&c_schema);
+  internal::ArrowArrayGuard array_guard(&c_array);
+  ASSERT_TRUE(::arrow::ExportType(*map_type, &c_schema).ok());
+  ASSERT_TRUE(::arrow::ExportArray(*sliced, &c_array).ok());
+  ASSERT_EQ(c_array.offset, 1);
+  ASSERT_EQ(c_array.children[0]->offset, 1);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto map_like, ArrowArrayMapLike::Make(c_schema, c_array));
+
+  constexpr int64_t kNumRows = 3;
+  std::array<std::vector<std::pair<std::string, int32_t>>, kNumRows> expected_maps = {
+      std::vector<std::pair<std::string, int32_t>>{{"Foo", 1}, {"Bar", 2}},
+      std::vector<std::pair<std::string, int32_t>>{{"Baz", 3}},
+      std::vector<std::pair<std::string, int32_t>>{},
+  };
+
+  for (int64_t i = 0; i < kNumRows; ++i) {
+    ASSERT_THAT(map_like->Reset(i), IsOk());
+    const auto& expected_map = expected_maps[i];
+    ASSERT_EQ(map_like->size(), expected_map.size());
+    for (size_t j = 0; j < expected_map.size(); ++j) {
+      EXPECT_SCALAR_EQ(map_like->GetKey(j), std::string_view, expected_map[j].first);
+      EXPECT_SCALAR_EQ(map_like->GetValue(j), int32_t, expected_map[j].second);
+    }
   }
 }
 

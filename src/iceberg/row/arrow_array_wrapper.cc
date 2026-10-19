@@ -134,7 +134,8 @@ class ArrowArrayStructLike::Impl {
     const ArrowArray* child_array = array_.get().children[pos];
     const ArrowArrayView* child_view = array_view_.children[pos];
 
-    return ExtractValue(child_schema, child_array, child_view, row_index_);
+    return ExtractValue(child_schema, child_array, child_view,
+                        array_view_.offset + row_index_);
   }
 
   size_t num_fields() const { return static_cast<size_t>(schema_.n_children); }
@@ -252,8 +253,9 @@ class ArrowArrayArrayLike::Impl {
                              array_.get().length);
     }
 
-    offset_ = ArrowArrayViewListChildOffset(&array_view_, row_index_);
-    length_ = ArrowArrayViewListChildOffset(&array_view_, row_index_ + 1) - offset_;
+    const int64_t row = array_view_.offset + row_index_;
+    offset_ = ArrowArrayViewListChildOffset(&array_view_, row);
+    length_ = ArrowArrayViewListChildOffset(&array_view_, row + 1) - offset_;
     return {};
   }
 
@@ -312,7 +314,7 @@ class ArrowArrayMapLike::Impl {
     const ArrowArrayView* keys_view = array_view_.children[0]->children[0];
 
     return ExtractValue(keys_schema, keys_array, keys_view,
-                        offset_ + static_cast<int64_t>(pos));
+                        EntryIndex(static_cast<int64_t>(pos)));
   }
 
   Result<Scalar> GetValue(size_t pos) const {
@@ -326,7 +328,7 @@ class ArrowArrayMapLike::Impl {
     const ArrowArrayView* values_view = array_view_.children[0]->children[1];
 
     return ExtractValue(values_schema, values_array, values_view,
-                        offset_ + static_cast<int64_t>(pos));
+                        EntryIndex(static_cast<int64_t>(pos)));
   }
 
   size_t size() const { return static_cast<size_t>(length_); }
@@ -365,10 +367,15 @@ class ArrowArrayMapLike::Impl {
     // XXX: ArrowArrayViewListChildOffset does not work for map types.
     // We need to directly access the offsets buffer instead.
     auto* offsets_buffer = array_view_.buffer_views[1].data.as_int32;
-    offset_ = offsets_buffer[row_index_];
-    length_ = offsets_buffer[row_index_ + 1] - offset_;
+    const int64_t row = array_view_.offset + row_index_;
+    offset_ = offsets_buffer[row];
+    length_ = offsets_buffer[row + 1] - offset_;
 
     return {};
+  }
+
+  int64_t EntryIndex(int64_t pos) const {
+    return array_view_.children[0]->offset + offset_ + pos;
   }
 
   ArrowArrayView array_view_;
