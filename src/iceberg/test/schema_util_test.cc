@@ -282,6 +282,44 @@ TEST(SchemaUtilTest, ProjectWriteRejectsTypePromotion) {
   ASSERT_THAT(projection_result, HasErrorMessage("type promotion is not allowed"));
 }
 
+class ProjectWriteNullabilityTest : public ::testing::TestWithParam<TypeId> {};
+
+TEST_P(ProjectWriteNullabilityTest, RejectsOptionalToRequired) {
+  auto make_schema = [this](bool optional) {
+    auto value = SchemaField(1, "value", int32(), optional);
+    std::shared_ptr<Type> nested;
+    switch (GetParam()) {
+      case TypeId::kStruct:
+        nested = std::make_shared<StructType>(std::vector<SchemaField>{value});
+        break;
+      case TypeId::kList:
+        nested = list(value.WithName("element"));
+        break;
+      case TypeId::kMap:
+        nested = map(SchemaField::MakeRequired(2, "key", string()), value);
+        break;
+      default:
+        return Schema({value});
+    }
+    return Schema({SchemaField::MakeOptional(3, "nested", nested)});
+  };
+  auto source_schema = make_schema(/*optional=*/true);
+  auto expected_schema = make_schema(/*optional=*/false);
+
+  auto result = Project(expected_schema, source_schema, /*prune_source=*/false,
+                        ProjectionMode::kWrite);
+  ASSERT_THAT(result, IsError(ErrorKind::kInvalidSchema));
+  EXPECT_THAT(result, HasErrorMessage("should be required, but is optional"));
+  EXPECT_THAT(Project(source_schema, expected_schema, /*prune_source=*/false,
+                      ProjectionMode::kWrite),
+              IsOk());
+  EXPECT_THAT(Project(expected_schema, source_schema, /*prune_source=*/false), IsOk());
+}
+
+INSTANTIATE_TEST_SUITE_P(Fields, ProjectWriteNullabilityTest,
+                         ::testing::Values(TypeId::kInt, TypeId::kStruct, TypeId::kList,
+                                           TypeId::kMap));
+
 TEST(SchemaUtilTest, ProjectMetadataColumn) {
   Schema source_schema = CreateFlatSchema();
   Schema expected_schema({

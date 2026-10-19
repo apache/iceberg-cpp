@@ -90,6 +90,12 @@ Result<FieldProjection> ProjectField(const SchemaField& expected_field,
                                      bool prune_source, ProjectionMode mode) {
   FieldProjection projection;
 
+  if (mode == ProjectionMode::kWrite && source_field.optional() &&
+      !expected_field.optional()) {
+    return InvalidSchema("Field {} should be required, but is optional",
+                         expected_field.ToString());
+  }
+
   if (expected_field.type()->type_id() == TypeId::kUnknown) {
     if (!expected_field.optional()) {
       return InvalidSchema("Cannot project required field with id {} as null",

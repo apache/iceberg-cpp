@@ -39,6 +39,7 @@
 #include <gtest/gtest.h>
 
 #include "iceberg/arrow/arrow_io_internal.h"
+#include "iceberg/arrow_c_data_guard_internal.h"
 #include "iceberg/avro/avro_register.h"
 #include "iceberg/data/data_writer.h"
 #include "iceberg/expression/literal.h"
@@ -284,6 +285,66 @@ TEST_P(WriteDefaultEndToEndTest, UnknownInputWritesTypedNulls) {
       std::vector<SchemaField>{SchemaField::MakeOptional(1, "id", int32())});
 
   WriteAndRead(input_schema, write_schema, R"([[null], [null]])", R"([[null], [null]])");
+}
+
+TEST_P(WriteDefaultEndToEndTest, RejectedBatchIsReleasedOnce) {
+  const auto& param = GetParam();
+  const auto id = SchemaField::MakeRequired(1, "id", int32());
+  const auto added = SchemaField::MakeRequired(2, "added", int32());
+  auto write_schema = std::make_shared<Schema>(std::vector<SchemaField>{id, added});
+  struct TestCase {
+    std::string_view expected_error;
+    std::vector<SchemaField> input_fields;
+    std::string_view input_json;
+  };
+  const std::vector<TestCase> cases = {
+      {.expected_error = "Missing required field",
+       .input_fields = {id},
+       .input_json = R"([[1]])"},
+      {.expected_error = "Input field id 3",
+       .input_fields = {id, added, SchemaField::MakeOptional(3, "extra", int32())},
+       .input_json = R"([[1, 2, 3]])"},
+      {.expected_error = "should be required, but is optional",
+       .input_fields = {SchemaField::MakeOptional(1, "id", int32()), added},
+       .input_json = R"([[null, 2]])"},
+  };
+  for (const auto& test_case : cases) {
+    SCOPED_TRACE(test_case.expected_error);
+    struct ReleaseState {
+      ArrowArray original{};
+      int count = 0;
+    } release_state;
+    auto input_schema = std::make_shared<Schema>(test_case.input_fields);
+    DataWriterOptions options{
+        .path = param.path,
+        .schema = write_schema,
+        .format = param.format,
+        .io = file_io_,
+        .properties = FormatProperties(param),
+        .input_schema = input_schema,
+    };
+    ICEBERG_UNWRAP_OR_FAIL(auto writer, DataWriter::Make(options));
+    auto input = CreateArray(*input_schema, test_case.input_json);
+    ArrowArray arrow_array;
+    ASSERT_TRUE(::arrow::ExportArray(*input, &arrow_array).ok());
+    release_state.original = arrow_array;
+    arrow_array.private_data = &release_state;
+    arrow_array.release = [](ArrowArray* array) {
+      auto* state = static_cast<ReleaseState*>(array->private_data);
+      ++state->count;
+      *array = state->original;
+      array->release(array);
+    };
+    internal::ArrowArrayGuard guard(&arrow_array);
+
+    auto result = writer->Write(&arrow_array);
+    EXPECT_THAT(result, IsError(ErrorKind::kInvalidSchema));
+    EXPECT_THAT(result, HasErrorMessage(test_case.expected_error));
+    EXPECT_EQ(arrow_array.release, nullptr);
+    EXPECT_EQ(release_state.count, 1);
+    ASSERT_THAT(writer->Close(), IsOk());
+    EXPECT_EQ(release_state.count, 1);
+  }
 }
 
 namespace {

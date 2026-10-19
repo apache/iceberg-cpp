@@ -85,7 +85,7 @@ struct ICEBERG_EXPORT SchemaProjection {
 enum class ProjectionMode {
   /// \brief Use initial-default and allow type promotion.
   kRead,
-  /// \brief Use write-default and require matching types.
+  /// \brief Use write-default, require matching types, and reject optional-to-required.
   kWrite,
 };
 
