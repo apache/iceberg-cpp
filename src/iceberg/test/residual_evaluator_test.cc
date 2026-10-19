@@ -35,6 +35,7 @@
 #include "iceberg/test/matchers.h"
 #include "iceberg/transform.h"
 #include "iceberg/type.h"
+#include "iceberg/util/uuid.h"
 
 namespace iceberg {
 
@@ -217,6 +218,80 @@ TEST_F(ResidualEvaluatorTest, CaseInsensitiveIdentityTransformResiduals) {
   PartitionValues partition_data4(Literal::Int(20170817));
   ICEBERG_UNWRAP_OR_FAIL(auto residual4, evaluator->ResidualFor(partition_data4));
   EXPECT_EQ(residual4->op(), Expression::Operation::kFalse);
+}
+
+TEST_F(ResidualEvaluatorTest, ComparisonWithNullValue) {
+  auto schema = std::make_shared<Schema>(
+      std::vector<SchemaField>{SchemaField::MakeOptional(50, "key", int32()),
+                               SchemaField::MakeOptional(51, "value", int32())});
+
+  PartitionField pt_field(50, 1000, "key", Transform::Identity());
+  ICEBERG_UNWRAP_OR_FAIL(auto spec_unique,
+                         PartitionSpec::Make(*schema, 0, {pt_field}, false));
+  auto spec = std::shared_ptr<PartitionSpec>(spec_unique.release());
+
+  // NOT(key < 100) OR value = 5
+  auto expr =
+      Expressions::Or(Expressions::Not(Expressions::LessThan("key", Literal::Int(100))),
+                      Expressions::Equal("value", Literal::Int(5)));
+  ICEBERG_UNWRAP_OR_FAIL(auto evaluator,
+                         ResidualEvaluator::Make(expr, *spec, *schema, true));
+
+  // A null partition value must not satisfy NOT(key < 100); otherwise the residual
+  // folds to true and drops value = 5, disagreeing with Evaluator.
+  PartitionValues null_partition(Literal::Null(int32()));
+  ICEBERG_UNWRAP_OR_FAIL(auto null_residual, evaluator->ResidualFor(null_partition));
+  ASSERT_TRUE(null_residual->is_unbound_predicate());
+  auto unbound = std::dynamic_pointer_cast<UnboundPredicate>(null_residual);
+  ASSERT_NE(unbound, nullptr);
+  EXPECT_EQ(unbound->op(), Expression::Operation::kEq);
+  EXPECT_EQ(unbound->reference()->name(), "value");
+
+  PartitionValues below(Literal::Int(50));
+  ICEBERG_UNWRAP_OR_FAIL(auto below_residual, evaluator->ResidualFor(below));
+  ASSERT_TRUE(below_residual->is_unbound_predicate());
+  EXPECT_EQ(below_residual->op(), Expression::Operation::kEq);
+
+  PartitionValues above(Literal::Int(150));
+  ICEBERG_UNWRAP_OR_FAIL(auto above_residual, evaluator->ResidualFor(above));
+  EXPECT_EQ(above_residual->op(), Expression::Operation::kTrue);
+
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto unpartitioned,
+      ResidualEvaluator::Make(expr, *PartitionSpec::Unpartitioned(), *schema, true));
+  PartitionValues empty_partition;
+  ICEBERG_UNWRAP_OR_FAIL(auto unpartitioned_residual,
+                         unpartitioned->ResidualFor(empty_partition));
+  ASSERT_EQ(unpartitioned_residual->op(), Expression::Operation::kOr);
+  auto unpartitioned_or = std::dynamic_pointer_cast<Or>(unpartitioned_residual);
+  ASSERT_NE(unpartitioned_or, nullptr);
+  EXPECT_EQ(unpartitioned_or->left()->op(), Expression::Operation::kGtEq);
+}
+
+TEST_F(ResidualEvaluatorTest, NotUuidComparison) {
+  auto schema = std::make_shared<Schema>(
+      std::vector<SchemaField>{SchemaField::MakeOptional(50, "key", uuid()),
+                               SchemaField::MakeOptional(51, "value", int32())});
+  PartitionField pt_field(50, 1000, "key", Transform::Identity());
+  ICEBERG_UNWRAP_OR_FAIL(auto spec_unique,
+                         PartitionSpec::Make(*schema, 0, {pt_field}, false));
+  auto spec = std::shared_ptr<PartitionSpec>(spec_unique.release());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto lower,
+                         Uuid::FromString("7fffffff-ffff-ffff-ffff-ffffffffffff"));
+  ICEBERG_UNWRAP_OR_FAIL(auto upper,
+                         Uuid::FromString("80000000-0000-0000-0000-000000000000"));
+  auto expr = Expressions::Not(Expressions::LessThan("key", Literal::UUID(lower)));
+  ICEBERG_UNWRAP_OR_FAIL(auto evaluator,
+                         ResidualEvaluator::Make(expr, *spec, *schema, true));
+
+  PartitionValues above(Literal::UUID(upper));
+  ICEBERG_UNWRAP_OR_FAIL(auto above_residual, evaluator->ResidualFor(above));
+  EXPECT_EQ(above_residual->op(), Expression::Operation::kTrue);
+
+  PartitionValues equal(Literal::UUID(lower));
+  ICEBERG_UNWRAP_OR_FAIL(auto equal_residual, evaluator->ResidualFor(equal));
+  EXPECT_EQ(equal_residual->op(), Expression::Operation::kTrue);
 }
 
 TEST_F(ResidualEvaluatorTest, UnpartitionedResiduals) {

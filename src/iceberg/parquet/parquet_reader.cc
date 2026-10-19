@@ -20,7 +20,7 @@
 #include "iceberg/parquet/parquet_reader.h"
 
 #include <algorithm>
-#include <numeric>
+#include <utility>
 #include <variant>
 #include <vector>
 
@@ -39,7 +39,9 @@
 #include "iceberg/arrow/arrow_io_internal.h"
 #include "iceberg/arrow/arrow_status_internal.h"
 #include "iceberg/arrow/metadata_column_util_internal.h"
+#include "iceberg/expression/binder.h"
 #include "iceberg/parquet/parquet_data_util_internal.h"
+#include "iceberg/parquet/parquet_metrics_row_group_filter_internal.h"
 #include "iceberg/parquet/parquet_register.h"
 #include "iceberg/parquet/parquet_schema_util_internal.h"
 #include "iceberg/parquet/row_number_reader_internal.h"
@@ -67,13 +69,7 @@ Result<SchemaProjection> BuildProjection(::parquet::arrow::FileReader* reader,
     return NotImplemented("Applying name mapping to Parquet schema is not implemented");
   }
 
-  ::parquet::arrow::SchemaManifest schema_manifest;
-  ICEBERG_ARROW_RETURN_NOT_OK(::parquet::arrow::SchemaManifest::Make(
-      metadata->schema(), metadata->key_value_metadata(), reader->properties(),
-      &schema_manifest));
-
-  // Leverage SchemaManifest to project the schema
-  ICEBERG_ASSIGN_OR_RAISE(auto projection, Project(read_schema, schema_manifest));
+  ICEBERG_ASSIGN_OR_RAISE(auto projection, Project(read_schema, reader->manifest()));
   return projection;
 }
 
@@ -278,6 +274,7 @@ class ParquetReader::Impl {
 
     split_ = options.split;
     read_schema_ = options.projection;
+    stats_filter_.reset();
 
     // Prepare reader properties
     ::parquet::ReaderProperties reader_properties(pool_);
@@ -300,6 +297,18 @@ class ParquetReader::Impl {
 
     // Project read schema onto the Parquet file schema
     ICEBERG_ASSIGN_OR_RAISE(projection_, BuildProjection(reader_.get(), *read_schema_));
+    if (options.filter &&
+        options.properties.Get(ReaderProperties::kParquetRowGroupFilter)) {
+      auto filter = options.filter;
+      ICEBERG_ASSIGN_OR_RAISE(auto is_bound, IsBoundVisitor::IsBound(filter));
+      if (!is_bound) {
+        ICEBERG_ASSIGN_OR_RAISE(
+            filter, Binder::Bind(*options.projection, filter, options.case_sensitive));
+      }
+      ICEBERG_ASSIGN_OR_RAISE(stats_filter_, ParquetMetricsRowGroupFilter::Make(
+                                                 filter, *reader_->manifest().descr));
+    }
+
     metadata_context_ = {.file_path = options.path,
                          .first_row_id = options.first_row_id,
                          .data_sequence_number = options.data_sequence_number};
@@ -391,23 +400,27 @@ class ParquetReader::Impl {
   Status InitReadContext() {
     context_ = std::make_unique<ReadContext>();
 
-    // Row group pruning based on the split
-    // TODO(gangwu): add row group filtering based on zone map, bloom filter, etc.
+    // Row group pruning based on the split and zone map
     auto metadata = reader_->parquet_reader()->metadata();
     std::vector<int> row_group_indices;
-    if (split_.has_value()) {
-      for (int i = 0; i < metadata->num_row_groups(); ++i) {
-        auto row_group_offset = metadata->RowGroup(i)->file_offset();
-        if (row_group_offset >= split_->offset &&
-            row_group_offset < split_->offset + split_->length) {
-          row_group_indices.push_back(i);
-        } else if (row_group_offset >= split_->offset + split_->length) {
-          break;
+    for (int i = 0; i < metadata->num_row_groups(); ++i) {
+      auto row_group = metadata->RowGroup(i);
+      if (split_.has_value()) {
+        auto row_group_offset = row_group->file_offset();
+        bool selected = std::cmp_greater_equal(row_group_offset, split_->offset) &&
+                        std::cmp_less(row_group_offset, split_->offset + split_->length);
+        if (!selected) {
+          continue;
         }
       }
-    } else {
-      row_group_indices.resize(metadata->num_row_groups());
-      std::iota(row_group_indices.begin(), row_group_indices.end(), 0);  // NOLINT
+      if (stats_filter_) {
+        ICEBERG_ASSIGN_OR_RAISE(
+            auto should_read, stats_filter_->ShouldRead(reader_->manifest(), *row_group));
+        if (!should_read) {
+          continue;
+        }
+      }
+      row_group_indices.push_back(i);
     }
 
     // Create the record batch reader, including for empty splits to preserve the schema.
@@ -453,6 +466,8 @@ class ParquetReader::Impl {
   bool use_large_list_ = false;
   // Schema to read from the Parquet file.
   std::shared_ptr<::iceberg::Schema> read_schema_;
+  // Footer-statistics filter for row group pruning, if enabled.
+  std::unique_ptr<ParquetMetricsRowGroupFilter> stats_filter_;
   // The projection result to apply to the read schema.
   SchemaProjection projection_;
   // The input stream to read Parquet file.
