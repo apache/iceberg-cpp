@@ -35,6 +35,7 @@
 #include "iceberg/test/matchers.h"
 #include "iceberg/transform.h"
 #include "iceberg/type.h"
+#include "iceberg/util/uuid.h"
 
 namespace iceberg {
 
@@ -265,6 +266,32 @@ TEST_F(ResidualEvaluatorTest, ComparisonWithNullValue) {
   auto unpartitioned_or = std::dynamic_pointer_cast<Or>(unpartitioned_residual);
   ASSERT_NE(unpartitioned_or, nullptr);
   EXPECT_EQ(unpartitioned_or->left()->op(), Expression::Operation::kGtEq);
+}
+
+TEST_F(ResidualEvaluatorTest, NotUuidComparison) {
+  auto schema = std::make_shared<Schema>(
+      std::vector<SchemaField>{SchemaField::MakeOptional(50, "key", uuid()),
+                               SchemaField::MakeOptional(51, "value", int32())});
+  PartitionField pt_field(50, 1000, "key", Transform::Identity());
+  ICEBERG_UNWRAP_OR_FAIL(auto spec_unique,
+                         PartitionSpec::Make(*schema, 0, {pt_field}, false));
+  auto spec = std::shared_ptr<PartitionSpec>(spec_unique.release());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto lower,
+                         Uuid::FromString("7fffffff-ffff-ffff-ffff-ffffffffffff"));
+  ICEBERG_UNWRAP_OR_FAIL(auto upper,
+                         Uuid::FromString("80000000-0000-0000-0000-000000000000"));
+  auto expr = Expressions::Not(Expressions::LessThan("key", Literal::UUID(lower)));
+  ICEBERG_UNWRAP_OR_FAIL(auto evaluator,
+                         ResidualEvaluator::Make(expr, *spec, *schema, true));
+
+  PartitionValues above(Literal::UUID(upper));
+  ICEBERG_UNWRAP_OR_FAIL(auto above_residual, evaluator->ResidualFor(above));
+  EXPECT_EQ(above_residual->op(), Expression::Operation::kTrue);
+
+  PartitionValues equal(Literal::UUID(lower));
+  ICEBERG_UNWRAP_OR_FAIL(auto equal_residual, evaluator->ResidualFor(equal));
+  EXPECT_EQ(equal_residual->op(), Expression::Operation::kTrue);
 }
 
 TEST_F(ResidualEvaluatorTest, UnpartitionedResiduals) {

@@ -560,36 +560,47 @@ TEST_F(ParquetRowGroupFilterTest, PrimitiveComparisonTypes) {
   }
 }
 
-TEST_F(ParquetRowGroupFilterTest, UnorderedUuidBoundsRetainGroups) {
+TEST_F(ParquetRowGroupFilterTest, UuidBoundsUseUnsignedByteOrder) {
   SetKeyType(uuid());
-  ICEBERG_UNWRAP_OR_FAIL(auto lower,
-                         Uuid::FromString("00000000-0000-0000-0000-000000000001"));
-  ICEBERG_UNWRAP_OR_FAIL(auto upper,
-                         Uuid::FromString("00000000-0000-0000-0000-000000000002"));
+  // Group 0 holds UUIDs below 0x80..., group 1 holds UUIDs at or above it. A signed
+  // byte comparison would order group 1 before group 0.
+  std::vector<Uuid> uuids;
+  for (const auto* str :
+       {"00000000-0000-0000-0000-000000000001", "7fffffff-ffff-ffff-ffff-ffffffffffff",
+        "80000000-0000-0000-0000-000000000000", "ffffffff-ffff-ffff-ffff-fffffffffffe"}) {
+    ICEBERG_UNWRAP_OR_FAIL(auto uuid, Uuid::FromString(str));
+    uuids.push_back(uuid);
+  }
   ::arrow::FixedSizeBinaryBuilder keys(::arrow::fixed_size_binary(Uuid::kLength));
-  ASSERT_TRUE(keys.Append(lower.bytes().data()).ok());
-  ASSERT_TRUE(keys.Append(upper.bytes().data()).ok());
+  for (const auto& uuid : uuids) {
+    ASSERT_TRUE(keys.Append(uuid.bytes().data()).ok());
+  }
   auto key_array = ::arrow::ExtensionType::WrapArray(::arrow::extension::uuid(),
                                                      keys.Finish().ValueOrDie());
   auto values =
-      ::arrow::json::ArrayFromJSONString(::arrow::int64(), "[0,1]").ValueOrDie();
+      ::arrow::json::ArrayFromJSONString(::arrow::int64(), "[0,1,2,3]").ValueOrDie();
   ArrowSchema c_schema;
   ASSERT_THAT(ToArrowSchema(*schema_, &c_schema), IsOk());
   auto arrow_schema = ::arrow::ImportSchema(&c_schema).ValueOrDie();
   ASSERT_THAT(Write(::arrow::Table::Make(arrow_schema, {key_array, values})), IsOk());
+  ASSERT_EQ(metadata_->num_row_groups(), 2);
   ASSERT_TRUE(metadata_->RowGroup(0)->ColumnChunk(0)->statistics()->HasMinMax());
 
-  auto options = Options(Expressions::LessThanOrEqual("key", Literal::UUID(upper)));
-  auto predicate = std::dynamic_pointer_cast<BoundPredicate>(options.filter);
-  ASSERT_NE(predicate, nullptr);
-  EXPECT_THAT(predicate->Test(Literal::UUID(upper)), HasValue(testing::Eq(true)));
-  Check(options, {0, 1});
-  Check(Options(Expressions::GreaterThanOrEqual("key", Literal::UUID(lower))), {0, 1});
-  Check(Options(Expressions::LessThan("key", Literal::UUID(upper))), {0, 1});
-  Check(Options(Expressions::GreaterThan("key", Literal::UUID(lower))), {0, 1});
+  const auto& group0_max = uuids[1];
+  const auto& group1_min = uuids[2];
+  Check(Options(Expressions::LessThan("key", Literal::UUID(group1_min))), {0, 1});
+  Check(Options(Expressions::LessThanOrEqual("key", Literal::UUID(group0_max))), {0, 1});
+  Check(Options(Expressions::GreaterThan("key", Literal::UUID(group0_max))), {2, 3});
+  Check(Options(Expressions::GreaterThanOrEqual("key", Literal::UUID(group1_min))),
+        {2, 3});
+  Check(Options(Expressions::Equal("key", Literal::UUID(group1_min))), {2, 3});
+  Check(
+      Options(Expressions::Not(Expressions::LessThan("key", Literal::UUID(group1_min)))),
+      {2, 3});
 }
 
 TEST_F(ParquetRowGroupFilterTest, FloatingPointStatistics) {
+  // TODO: remove this once row group pruning is applied to float/double columns.
   SetKeyType(float64());
   ASSERT_THAT(Write(), IsOk());
   Check(Options(Expressions::Equal("key", Literal::Double(100))), {0, 1, 2, 3, 4, 5});
