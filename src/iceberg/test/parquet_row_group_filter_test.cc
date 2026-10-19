@@ -600,7 +600,8 @@ TEST_F(ParquetRowGroupFilterTest, UuidBoundsUseUnsignedByteOrder) {
 }
 
 TEST_F(ParquetRowGroupFilterTest, FloatingPointStatistics) {
-  // TODO: remove this once row group pruning is applied to float/double columns.
+  // TODO(YinZheng-Sun): remove this once row group pruning is applied to
+  // float/double columns.
   SetKeyType(float64());
   ASSERT_THAT(Write(), IsOk());
   Check(Options(Expressions::Equal("key", Literal::Double(100))), {0, 1, 2, 3, 4, 5});
