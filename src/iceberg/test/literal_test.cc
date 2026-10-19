@@ -414,8 +414,15 @@ TEST(LiteralTest, UuidComparison) {
   auto literal3 = Literal::UUID(uuid3);
 
   EXPECT_EQ(literal1 <=> literal3, std::partial_ordering::equivalent);
-  EXPECT_EQ(literal1 <=> literal2, std::partial_ordering::unordered);
-  EXPECT_EQ(literal2 <=> literal1, std::partial_ordering::unordered);
+  EXPECT_EQ(literal1 <=> literal2, std::partial_ordering::less);
+  EXPECT_EQ(literal2 <=> literal1, std::partial_ordering::greater);
+
+  auto low =
+      Literal::UUID(Uuid::FromString("7fffffff-ffff-ffff-ffff-ffffffffffff").value());
+  auto high =
+      Literal::UUID(Uuid::FromString("80000000-0000-0000-0000-000000000000").value());
+  EXPECT_EQ(low <=> high, std::partial_ordering::less);
+  EXPECT_EQ(high <=> low, std::partial_ordering::greater);
 }
 
 // Parameter struct for literal serialization and deserialization tests

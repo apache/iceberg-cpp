@@ -24,6 +24,7 @@
 #include <cmath>
 #include <concepts>
 #include <cstdint>
+#include <cstring>
 #include <format>
 #include <string>
 #include <string_view>
@@ -710,12 +711,9 @@ std::partial_ordering Literal::operator<=>(const Literal& other) const {
     }
 
     case TypeId::kUuid: {
-      auto& this_val = std::get<Uuid>(value_);
-      auto& other_val = std::get<Uuid>(other.value_);
-      if (this_val == other_val) {
-        return std::partial_ordering::equivalent;
-      }
-      return std::partial_ordering::unordered;
+      auto this_bytes = std::get<Uuid>(value_).bytes();
+      auto other_bytes = std::get<Uuid>(other.value_).bytes();
+      return std::memcmp(this_bytes.data(), other_bytes.data(), Uuid::kLength) <=> 0;
     }
 
     case TypeId::kBinary:
