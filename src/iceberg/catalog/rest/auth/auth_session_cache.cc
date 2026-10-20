@@ -188,17 +188,15 @@ bool AuthSessionCache::IsExpired(const Slot& slot,
     return true;
   }
 
-  // Check 2: Token expiration
-  // Even for refreshable sessions, check token expiration to handle cases where:
-  // - Refresh has permanently failed (after max retries)
-  // - Refresh is delayed or not scheduled
-  // - Token was obtained from external source (table token)
+  // Check 2: Token expiration, for sessions that cannot refresh
+  // Such a session is useless once its token expires, and evicting it is harmless
+  // since stopping its refresh is a no-op. A refreshable session is left alone:
+  // its refresh may still be in flight, and evicting it would stop the refresh
+  // for callers that still hold it.
   auto oauth2 = std::dynamic_pointer_cast<internal::OAuth2Session>(slot.session);
-  if (oauth2) {
+  if (oauth2 && !oauth2->IsRefreshable()) {
     auto expires_at = oauth2->ExpiresAt();
-    if (expires_at.has_value() && now >= *expires_at) {
-      return true;
-    }
+    return expires_at.has_value() && now >= *expires_at;
   }
 
   return false;

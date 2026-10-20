@@ -59,6 +59,43 @@ std::optional<std::pair<std::string, std::string>> FindPreferredTypedToken(
   return std::nullopt;
 }
 
+/// \brief Credential used to create an OAuth2 child session.
+struct ChildCredential {
+  enum class Kind { kToken, kCredential, kTokenExchange };
+
+  Kind kind;
+  std::string value;
+  /// Subject token type; only set for kTokenExchange.
+  std::string token_type;
+};
+
+/// \brief Select the credential for a child session.
+///
+/// The order matches Java: a bearer token, then a client credential (only when
+/// `allow_credential` is true), then a typed token in kTokenPreferenceOrder.
+std::optional<ChildCredential> SelectChildCredential(
+    const std::unordered_map<std::string, std::string>& credentials,
+    bool allow_credential) {
+  if (auto token_it = credentials.find(AuthProperties::kToken.key());
+      token_it != credentials.end()) {
+    return ChildCredential{.kind = ChildCredential::Kind::kToken,
+                           .value = token_it->second};
+  }
+  if (allow_credential) {
+    if (auto credential_it = credentials.find(AuthProperties::kCredential.key());
+        credential_it != credentials.end()) {
+      return ChildCredential{.kind = ChildCredential::Kind::kCredential,
+                             .value = credential_it->second};
+    }
+  }
+  if (auto typed_token = FindPreferredTypedToken(credentials); typed_token.has_value()) {
+    return ChildCredential{.kind = ChildCredential::Kind::kTokenExchange,
+                           .value = std::move(typed_token->second),
+                           .token_type = std::move(typed_token->first)};
+  }
+  return std::nullopt;
+}
+
 std::unordered_map<std::string, std::string> FilterTableSessionProperties(
     const std::unordered_map<std::string, std::string>& properties) {
   std::unordered_map<std::string, std::string> filtered;
@@ -241,25 +278,28 @@ class OAuth2Manager : public AuthManager {
 
   Result<std::shared_ptr<AuthSession>> ContextualSession(
       const SessionContext& context, std::shared_ptr<AuthSession> parent) override {
-    // Use session_id as cache key for contextual sessions
+    auto credential =
+        SelectChildCredential(context.credentials, /*allow_credential=*/true);
+    if (!credential.has_value()) {
+      return parent;
+    }
+    // Contextual sessions are cached by session ID, whatever credential they use.
     std::string cache_key = context.session_id.empty() ? "" : "ctx:" + context.session_id;
-    return MaybeCreateChildSession(context.credentials, /*allow_credential=*/true,
-                                   std::move(parent), cache_key);
+    return GetOrCreateChildSession(*credential, std::move(parent), cache_key);
   }
 
   Result<std::shared_ptr<AuthSession>> TableSession(
       [[maybe_unused]] const TableIdentifier& table,
       const std::unordered_map<std::string, std::string>& properties,
       std::shared_ptr<AuthSession> parent) override {
-    // Use token value as cache key for table sessions
-    auto token_it = properties.find(AuthProperties::kToken.key());
-    std::string cache_key;
-    if (token_it != properties.end() && !token_it->second.empty()) {
-      cache_key = "tbl:" + token_it->second;
+    auto credential = SelectChildCredential(FilterTableSessionProperties(properties),
+                                            /*allow_credential=*/false);
+    if (!credential.has_value()) {
+      return parent;
     }
-    return MaybeCreateChildSession(FilterTableSessionProperties(properties),
-                                   /*allow_credential=*/false, std::move(parent),
-                                   cache_key);
+    // Table sessions are cached by the value of the token they use.
+    std::string cache_key = credential->value.empty() ? "" : "tbl:" + credential->value;
+    return GetOrCreateChildSession(*credential, std::move(parent), cache_key);
   }
 
   Status Close() override {
@@ -302,19 +342,9 @@ class OAuth2Manager : public AuthManager {
                                        token_request_started_at, refresh_executor_);
   }
 
-  Result<std::shared_ptr<AuthSession>> MaybeCreateChildSession(
-      const std::unordered_map<std::string, std::string>& credentials,
-      bool allow_credential, std::shared_ptr<AuthSession> parent,
+  Result<std::shared_ptr<AuthSession>> GetOrCreateChildSession(
+      const ChildCredential& credential, std::shared_ptr<AuthSession> parent,
       const std::string& cache_key) {
-    auto token_it = credentials.find(AuthProperties::kToken.key());
-    auto credential_it = credentials.find(AuthProperties::kCredential.key());
-    auto typed_token = FindPreferredTypedToken(credentials);
-    if (token_it == credentials.end() &&
-        (!allow_credential || credential_it == credentials.end()) &&
-        !typed_token.has_value()) {
-      return parent;
-    }
-
     ICEBERG_PRECHECK(refresh_client_ != nullptr,
                      "OAuth2 catalog session must be initialized before child sessions");
     auto parent_info = parent->OAuth2Info();
@@ -323,47 +353,56 @@ class OAuth2Manager : public AuthManager {
 
     // Use cache if we have a valid cache_key
     if (!cache_key.empty() && session_cache_) {
-      return session_cache_->Get(cache_key,
-                                 [&]() -> Result<std::shared_ptr<AuthSession>> {
-                                   return CreateChildSessionUncached(
-                                       credentials, allow_credential, *parent_info);
-                                 });
+      return session_cache_->Get(
+          cache_key, [&]() -> Result<std::shared_ptr<AuthSession>> {
+            return CreateChildSessionUncached(credential, *parent_info);
+          });
     }
 
     // No cache, create session directly
-    return CreateChildSessionUncached(credentials, allow_credential, *parent_info);
+    return CreateChildSessionUncached(credential, *parent_info);
   }
 
   Result<std::shared_ptr<AuthSession>> CreateChildSessionUncached(
-      const std::unordered_map<std::string, std::string>& credentials,
-      bool allow_credential, const OAuth2SessionInfo& parent_info) {
-    auto token_it = credentials.find(AuthProperties::kToken.key());
-    auto credential_it = credentials.find(AuthProperties::kCredential.key());
-    auto typed_token = FindPreferredTypedToken(credentials);
-
-    if (token_it != credentials.end()) {
-      // Token child session: don't include parent credential in config.
-      // Token-based sessions are not refreshed; when token exchange is enabled,
-      // refresh will use the token itself rather than the parent credential.
-      auto properties = parent_info.optional_oauth_params;
-      properties[AuthProperties::kScope.key()] = parent_info.scope;
-      properties[AuthProperties::kOAuth2ServerUri.key()] = parent_info.oauth2_server_uri;
-      ICEBERG_ASSIGN_OR_RAISE(auto config, AuthProperties::FromProperties(properties));
-      return MakeSession(AccessTokenResponse(token_it->second), config,
-                         /*keep_refreshed=*/false);
+      const ChildCredential& credential, const OAuth2SessionInfo& parent_info) {
+    switch (credential.kind) {
+      case ChildCredential::Kind::kToken:
+        return CreateTokenChildSession(credential.value, parent_info);
+      case ChildCredential::Kind::kCredential:
+        return CreateCredentialChildSession(credential.value, parent_info);
+      case ChildCredential::Kind::kTokenExchange:
+        return CreateTokenExchangeChildSession(credential.value, credential.token_type,
+                                               parent_info);
     }
+    std::unreachable();
+  }
 
-    if (allow_credential && credential_it != credentials.end()) {
-      ICEBERG_ASSIGN_OR_RAISE(auto config,
-                              ChildConfig(parent_info, credential_it->second));
-      // Use parent session headers for FetchToken authentication
-      auto temp_parent = AuthSession::MakeDefault(parent_info.headers);
-      ICEBERG_ASSIGN_OR_RAISE(
-          auto response, OAuth2Util::FetchToken(*refresh_client_, *temp_parent, config));
-      // Credential child sessions use keep_refreshed from catalog level
-      return MakeSession(response, config, keep_refreshed_);
-    }
+  Result<std::shared_ptr<AuthSession>> CreateTokenChildSession(
+      const std::string& token, const OAuth2SessionInfo& parent_info) {
+    // Token child session: don't include parent credential in config.
+    // Token-based sessions are not refreshed; when token exchange is enabled,
+    // refresh will use the token itself rather than the parent credential.
+    auto properties = parent_info.optional_oauth_params;
+    properties[AuthProperties::kScope.key()] = parent_info.scope;
+    properties[AuthProperties::kOAuth2ServerUri.key()] = parent_info.oauth2_server_uri;
+    ICEBERG_ASSIGN_OR_RAISE(auto config, AuthProperties::FromProperties(properties));
+    return MakeSession(AccessTokenResponse(token), config, /*keep_refreshed=*/false);
+  }
 
+  Result<std::shared_ptr<AuthSession>> CreateCredentialChildSession(
+      const std::string& credential, const OAuth2SessionInfo& parent_info) {
+    ICEBERG_ASSIGN_OR_RAISE(auto config, ChildConfig(parent_info, credential));
+    // Use parent session headers for FetchToken authentication
+    auto temp_parent = AuthSession::MakeDefault(parent_info.headers);
+    ICEBERG_ASSIGN_OR_RAISE(
+        auto response, OAuth2Util::FetchToken(*refresh_client_, *temp_parent, config));
+    // Credential child sessions use keep_refreshed from catalog level
+    return MakeSession(response, config, keep_refreshed_);
+  }
+
+  Result<std::shared_ptr<AuthSession>> CreateTokenExchangeChildSession(
+      const std::string& subject_token, const std::string& subject_token_type,
+      const OAuth2SessionInfo& parent_info) {
     std::optional<std::string> actor_token;
     std::optional<std::string> actor_token_type;
     if (!parent_info.token.empty()) {
@@ -374,8 +413,8 @@ class OAuth2Manager : public AuthManager {
     auto temp_parent = AuthSession::MakeDefault(parent_info.headers);
     ICEBERG_ASSIGN_OR_RAISE(
         auto response,
-        OAuth2Util::ExchangeToken(*refresh_client_, *temp_parent, {}, typed_token->second,
-                                  typed_token->first, actor_token, actor_token_type,
+        OAuth2Util::ExchangeToken(*refresh_client_, *temp_parent, {}, subject_token,
+                                  subject_token_type, actor_token, actor_token_type,
                                   parent_info.scope, parent_info.oauth2_server_uri,
                                   parent_info.optional_oauth_params));
     ICEBERG_ASSIGN_OR_RAISE(auto config,

@@ -497,6 +497,29 @@ TEST_F(AuthManagerTest, OAuth2TableTokenCreatesChild) {
   EXPECT_TRUE(info->credential.empty());
 }
 
+TEST_F(AuthManagerTest, OAuth2TableTokenSessionIsCachedByToken) {
+  std::unordered_map<std::string, std::string> properties = {
+      {AuthProperties::kAuthType, "oauth2"},
+  };
+  ICEBERG_UNWRAP_OR_FAIL(auto manager, AuthManagers::Load("test-catalog", properties));
+  ICEBERG_UNWRAP_OR_FAIL(auto parent, manager->CatalogSession(client_, properties));
+  TableIdentifier table{.ns = Namespace{{"db"}}, .name = "table"};
+
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto first,
+      manager->TableSession(table, {{AuthProperties::kToken.key(), "token-a"}}, parent));
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto second,
+      manager->TableSession(table, {{AuthProperties::kToken.key(), "token-a"}}, parent));
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto other,
+      manager->TableSession(table, {{AuthProperties::kToken.key(), "token-b"}}, parent));
+
+  EXPECT_EQ(first, second);
+  EXPECT_NE(first, other);
+  EXPECT_THAT(manager->Close(), IsOk());
+}
+
 TEST_F(AuthManagerTest, OAuth2TableIgnoresCredential) {
   std::unordered_map<std::string, std::string> properties = {
       {AuthProperties::kAuthType, "oauth2"},

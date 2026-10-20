@@ -33,6 +33,8 @@
 
 #include "iceberg/catalog/rest/auth/auth_session.h"
 #include "iceberg/catalog/rest/auth/auth_session_cache_internal.h"
+#include "iceberg/catalog/rest/auth/auth_session_internal.h"
+#include "iceberg/catalog/rest/http_client.h"
 #include "iceberg/test/executor.h"
 #include "iceberg/test/matchers.h"
 
@@ -44,19 +46,25 @@ using internal::AuthSessionCache;
 using namespace std::chrono_literals;
 
 constexpr auto kTimeout = std::chrono::milliseconds(1000);
+constexpr auto kTokenLifetime = std::chrono::seconds(60);
 
+/// Starts at the real steady clock so it is comparable with OAuth2Session::ExpiresAt().
 class FakeClock {
  public:
+  std::chrono::steady_clock::time_point Now() const {
+    return std::chrono::steady_clock::time_point(std::chrono::milliseconds(now_ms_));
+  }
+
   AuthSessionCache::Clock AsClock() {
-    return [this] {
-      return std::chrono::steady_clock::time_point(std::chrono::milliseconds(now_ms_));
-    };
+    return [this] { return Now(); };
   }
 
   void Advance(std::chrono::milliseconds delta) { now_ms_ += delta.count(); }
 
  private:
-  std::atomic<int64_t> now_ms_{0};
+  std::atomic<int64_t> now_ms_{std::chrono::duration_cast<std::chrono::milliseconds>(
+                                   std::chrono::steady_clock::now().time_since_epoch())
+                                   .count()};
 };
 
 class RemovalRecorder {
@@ -104,6 +112,27 @@ AuthSessionCache::Loader CountingLoader(std::atomic<int>& calls) {
   return [&calls]() -> Result<std::shared_ptr<AuthSession>> {
     ++calls;
     return AuthSession::MakeDefault({});
+  };
+}
+
+/// Loads an OAuth2 session whose token expires kTokenLifetime after `clock` reads.
+/// The session refreshes on `refresh_executor` when it is not null.
+AuthSessionCache::Loader OAuth2Loader(std::atomic<int>& calls, const FakeClock& clock,
+                                      Executor* refresh_executor) {
+  return [&calls, &clock, refresh_executor]() -> Result<std::shared_ptr<AuthSession>> {
+    ++calls;
+    OAuthTokenResponse token_response{
+        .access_token = "opaque-token",
+        .token_type = "bearer",
+        .expires_in_secs = kTokenLifetime.count(),
+    };
+    ICEBERG_ASSIGN_OR_RAISE(
+        auto session,
+        internal::OAuth2Session::Make(token_response,
+                                      {.token_endpoint = "http://localhost/oauth/tokens",
+                                       .refresh_executor = refresh_executor},
+                                      std::make_shared<HttpClient>(), clock.Now()));
+    return session;
   };
 }
 
@@ -208,6 +237,46 @@ TEST_F(AuthSessionCacheTest, SweepRemovesOnlyExpiredEntries) {
   EXPECT_THAT(recorder_.removed(), ::testing::ElementsAre(idle));
   ICEBERG_UNWRAP_OR_FAIL(auto still_active, cache->Get("active", CountingLoader(calls)));
   EXPECT_EQ(still_active, active);
+}
+
+TEST_F(AuthSessionCacheTest, NonRefreshableSessionExpiresWithToken) {
+  auto cache = MakeCache(std::chrono::hours(1));
+  std::atomic<int> calls = 0;
+  auto loader = OAuth2Loader(calls, clock_, /*refresh_executor=*/nullptr);
+  ICEBERG_UNWRAP_OR_FAIL(auto first, cache->Get("tenant-a", loader));
+
+  clock_.Advance(kTokenLifetime - 1ms);
+  ICEBERG_UNWRAP_OR_FAIL(auto hit, cache->Get("tenant-a", loader));
+  EXPECT_EQ(hit, first);
+
+  clock_.Advance(1ms);
+  cache->Sweep();
+  EXPECT_EQ(cache->size(), 0);
+  EXPECT_THAT(recorder_.removed(), ::testing::ElementsAre(first));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto reloaded, cache->Get("tenant-a", loader));
+  EXPECT_NE(reloaded, first);
+  EXPECT_EQ(calls, 2);
+}
+
+TEST_F(AuthSessionCacheTest, RefreshableSessionOutlivesToken) {
+  // Must outlive the cache. The refresh is due long after this test ends, so
+  // nothing is submitted.
+  test::MockExecutor executor;
+  EXPECT_CALL(executor, Submit).Times(0);
+  auto cache = MakeCache(std::chrono::hours(1));
+  std::atomic<int> calls = 0;
+  auto loader = OAuth2Loader(calls, clock_, &executor);
+  ICEBERG_UNWRAP_OR_FAIL(auto first, cache->Get("tenant-a", loader));
+
+  // Its refresh may still be in flight; eviction would stop it for other holders.
+  clock_.Advance(kTokenLifetime + 1s);
+  cache->Sweep();
+  ICEBERG_UNWRAP_OR_FAIL(auto hit, cache->Get("tenant-a", loader));
+
+  EXPECT_EQ(hit, first);
+  EXPECT_EQ(calls, 1);
+  EXPECT_TRUE(recorder_.removed().empty());
 }
 
 TEST_F(AuthSessionCacheTest, ConcurrentGetsForSameKeyLoadOnce) {

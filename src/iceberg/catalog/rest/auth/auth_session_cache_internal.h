@@ -43,10 +43,11 @@ namespace iceberg::rest::auth::internal {
 
 /// \brief Caches child auth sessions and expires them after a period of inactivity.
 ///
-/// Entries expire after `session_timeout` without access, and each session that
-/// leaves the cache is handed to the removal listener exactly once. Idle entries
-/// are reclaimed when accessed or when Sweep() runs; StartPeriodicSweep() can
-/// schedule Sweep() to run periodically.
+/// Entries expire after `session_timeout` without access. OAuth2 sessions that
+/// cannot refresh also expire once their token does. Each session that leaves the
+/// cache is handed to the removal listener exactly once. Expired entries are
+/// reclaimed when accessed or when Sweep() runs; StartPeriodicSweep() can schedule
+/// Sweep() to run periodically.
 ///
 /// Thread safety: all public methods are thread-safe. Loaders and the removal
 /// listener are always invoked without holding the cache lock.
