@@ -29,8 +29,6 @@
 #include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
 
-namespace iceberg {
-
 // The builder macros name Iceberg symbols with their full namespace, so builders outside
 // namespace iceberg can use them.
 #define ICEBERG_BUILDER_RETURN_IF_ERROR(result)                 \
@@ -67,6 +65,8 @@ namespace iceberg {
       return *this;                                                  \
     }                                                                \
   } while (false)
+
+namespace iceberg {
 
 /// \brief Base class for collecting errors in the builder pattern.
 ///
