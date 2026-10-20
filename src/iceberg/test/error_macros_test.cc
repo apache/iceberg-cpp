@@ -33,24 +33,30 @@ using ::iceberg::HasValue;
 using ::iceberg::IsError;
 using ::iceberg::IsOk;
 
-iceberg::Result<int> Parse(bool valid) {
+// The macros expand here, in a namespace with its own nested iceberg namespace, so a
+// macro that names iceberg::X instead of ::iceberg::X fails to compile.
+namespace caller {
+
+namespace iceberg {}
+
+::iceberg::Result<int> Parse(bool valid) {
   if (!valid) {
-    return iceberg::InvalidArgument("Invalid input");
+    return ::iceberg::InvalidArgument("Invalid input");
   }
   return 42;
 }
 
-iceberg::Result<int> AddOne(bool valid) {
+::iceberg::Result<int> AddOne(bool valid) {
   ICEBERG_ASSIGN_OR_RAISE(auto value, Parse(valid));
   return value + 1;
 }
 
-iceberg::Status Validate(bool valid) {
+::iceberg::Status Validate(bool valid) {
   ICEBERG_RETURN_UNEXPECTED(Parse(valid));
   return {};
 }
 
-iceberg::Status CheckRange(int value) {
+::iceberg::Status CheckRange(int value) {
   ICEBERG_PRECHECK(value > 0, "Value must be positive, got {}", value);
   ICEBERG_CHECK(value < 100, "Value must be below 100, got {}", value);
   return {};
@@ -61,7 +67,12 @@ int AddOneOrThrow(bool valid) {
   return value + 1;
 }
 
-class TestBuilder : public iceberg::ErrorCollector {
+int CheckPositiveOrDie(int value) {
+  ICEBERG_CHECK_OR_DIE(value > 0, "Value must be positive, got {}", value);
+  return value;
+}
+
+class TestBuilder : public ::iceberg::ErrorCollector {
  public:
   TestBuilder& Set(int value) {
     ICEBERG_BUILDER_CHECK(value > 0, "Value must be positive, got {}", value);
@@ -74,6 +85,15 @@ class TestBuilder : public iceberg::ErrorCollector {
  private:
   int value_ = 0;
 };
+
+}  // namespace caller
+
+using caller::AddOne;
+using caller::AddOneOrThrow;
+using caller::CheckPositiveOrDie;
+using caller::CheckRange;
+using caller::TestBuilder;
+using caller::Validate;
 
 }  // namespace
 
@@ -96,6 +116,11 @@ TEST(ErrorMacrosTest, PrecheckAndCheck) {
 TEST(ErrorMacrosTest, AssignOrThrow) {
   EXPECT_EQ(AddOneOrThrow(true), 43);
   EXPECT_THROW(AddOneOrThrow(false), iceberg::IcebergError);
+}
+
+TEST(ErrorMacrosTest, CheckOrDie) {
+  EXPECT_EQ(CheckPositiveOrDie(1), 1);
+  EXPECT_THROW(CheckPositiveOrDie(0), iceberg::IcebergError);
 }
 
 TEST(ErrorMacrosTest, BuilderMacros) {

@@ -44,11 +44,11 @@ class ICEBERG_EXPORT ExpressionError : public IcebergError {
   explicit ExpressionError(const std::string& what) : IcebergError(what) {}
 };
 
-#define ICEBERG_CHECK_OR_DIE(condition, ...)                 \
-  do {                                                       \
-    if (!(condition)) [[unlikely]] {                         \
-      throw iceberg::IcebergError(std::format(__VA_ARGS__)); \
-    }                                                        \
+#define ICEBERG_CHECK_OR_DIE(condition, ...)                   \
+  do {                                                         \
+    if (!(condition)) [[unlikely]] {                           \
+      throw ::iceberg::IcebergError(std::format(__VA_ARGS__)); \
+    }                                                          \
   } while (0)
 
 }  // namespace iceberg
