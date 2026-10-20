@@ -168,7 +168,10 @@ class TestManifestReader : public testing::TestWithParam<int8_t> {
     auto partition_type = spec_->PartitionType(*schema_);
     EXPECT_THAT(partition_type, IsOk());
     auto data_file_type = std::make_shared<StructType>(std::vector<SchemaField>{
-        DataFile::kContent, DataFile::kFilePath, DataFile::kFileFormat,
+        DataFile::kContent, DataFile::kFilePath,
+        // Written as optional so tests can bypass the writer's own non-null
+        // enforcement and exercise the reader's required-field validation instead.
+        SchemaField::MakeOptional(DataFile::kFileFormatFieldId, "file_format", string()),
         SchemaField::MakeRequired(DataFile::kPartitionFieldId, DataFile::kPartitionField,
                                   std::move(partition_type.value())),
         DataFile::kRecordCount, DataFile::kFileSize});
@@ -699,6 +702,17 @@ TEST_P(TestManifestReader, RejectsInvalidEntryStatus) {
   auto entries = reader->Entries();
   EXPECT_THAT(entries, IsError(ErrorKind::kInvalidArgument));
   EXPECT_THAT(entries, HasErrorMessage("Invalid manifest status: 7"));
+}
+
+TEST_P(TestManifestReader, RejectsNullRequiredFileFormat) {
+  auto manifest =
+      WriteRawManifest(R"([[0, 1000, [0, "/path/to/data.parquet", null, [0], 1, 10]]])");
+
+  ICEBERG_UNWRAP_OR_FAIL(auto reader,
+                         ManifestReader::Make(manifest, file_io_, schema_, spec_));
+  auto entries = reader->Entries();
+  EXPECT_THAT(entries, IsError(ErrorKind::kInvalidArgument));
+  EXPECT_THAT(entries, HasErrorMessage("Required field 'file_format' is null at row 0"));
 }
 
 TEST(ManifestReaderStaticTest, TestShouldDropStats) {

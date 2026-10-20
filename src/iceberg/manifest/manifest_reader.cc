@@ -507,6 +507,8 @@ Status ParseDataFile(const std::shared_ptr<StructType>& data_file_schema,
             std::string_view path_str(value.data, value.size_bytes);
             ICEBERG_ASSIGN_OR_RAISE(manifest_entries[row_idx].data_file->file_format,
                                     FileFormatTypeFromString(path_str));
+          } else if (required) {
+            return MakeNullError(field_name, row_idx);
           }
         }
         break;
