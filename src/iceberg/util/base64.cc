@@ -59,10 +59,8 @@ std::string Base64EncodeWithAlphabet(std::string_view input, std::string_view al
     if (remainder == 2) {
       output[out++] = alphabet[(block >> 6) & 0x3F];
     }
-    if (pad) {
-      while (out < output_size) {
-        output[out++] = '=';
-      }
+    while (out < output_size) {
+      output[out++] = '=';
     }
   }
 
