@@ -30,28 +30,42 @@ namespace {
 // When `pad` is true, the output is padded with '=' to a multiple of 4 characters.
 std::string Base64EncodeWithAlphabet(std::string_view input, std::string_view alphabet,
                                      bool pad) {
-  std::string output;
-  output.reserve((input.size() + 2) / 3 * 4);
+  const size_t full_blocks = input.size() / 3;
+  const size_t remainder = input.size() % 3;
+  const size_t output_size =
+      full_blocks * 4 + (remainder == 0 ? 0 : (pad ? 4 : remainder + 1));
+  std::string output(output_size, '\0');
 
-  uint32_t buffer = 0;
-  int bits_collected = 0;
-  for (unsigned char byte : input) {
-    buffer = (buffer << 8) | byte;
-    bits_collected += 8;
-    while (bits_collected >= 6) {
-      bits_collected -= 6;
-      output.push_back(alphabet[(buffer >> bits_collected) & 0x3F]);
+  const auto* bytes = reinterpret_cast<const uint8_t*>(input.data());
+  size_t out = 0;
+  for (size_t i = 0; i < full_blocks * 3; i += 3) {
+    const uint32_t block = (static_cast<uint32_t>(bytes[i]) << 16) |
+                           (static_cast<uint32_t>(bytes[i + 1]) << 8) |
+                           static_cast<uint32_t>(bytes[i + 2]);
+    output[out++] = alphabet[(block >> 18) & 0x3F];
+    output[out++] = alphabet[(block >> 12) & 0x3F];
+    output[out++] = alphabet[(block >> 6) & 0x3F];
+    output[out++] = alphabet[block & 0x3F];
+  }
+
+  if (remainder > 0) {
+    const size_t i = full_blocks * 3;
+    uint32_t block = static_cast<uint32_t>(bytes[i]) << 16;
+    if (remainder == 2) {
+      block |= static_cast<uint32_t>(bytes[i + 1]) << 8;
+    }
+    output[out++] = alphabet[(block >> 18) & 0x3F];
+    output[out++] = alphabet[(block >> 12) & 0x3F];
+    if (remainder == 2) {
+      output[out++] = alphabet[(block >> 6) & 0x3F];
+    }
+    if (pad) {
+      while (out < output_size) {
+        output[out++] = '=';
+      }
     }
   }
-  if (bits_collected > 0) {
-    // Pad the remaining bits on the right to form the final 6-bit group.
-    output.push_back(alphabet[(buffer << (6 - bits_collected)) & 0x3F]);
-  }
-  if (pad) {
-    while (output.size() % 4 != 0) {
-      output.push_back('=');
-    }
-  }
+
   return output;
 }
 

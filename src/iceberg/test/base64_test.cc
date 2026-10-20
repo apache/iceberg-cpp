@@ -19,6 +19,9 @@
 
 #include "iceberg/util/base64.h"
 
+#include <cstddef>
+#include <string>
+
 #include <gtest/gtest.h>
 
 #include "iceberg/test/matchers.h"
@@ -48,6 +51,27 @@ TEST(Base64Test, Encode) {
   EXPECT_EQ("8J+EgA==", Base64::Encode("\xF0\x9F\x84\x80"));
   // Null byte
   EXPECT_EQ("AA==", Base64::Encode({"\x00", 1}));
+}
+
+TEST(Base64Test, EncodeBinaryAcrossBlockBoundaries) {
+  for (size_t length = 0; length <= 256; ++length) {
+    std::string data(length, '\0');
+    for (size_t i = 0; i < length; ++i) {
+      data[i] = static_cast<char>((i * 73 + length) & 0xFF);
+    }
+
+    const auto encoded = Base64::Encode(data);
+    EXPECT_EQ(((length + 2) / 3) * 4, encoded.size()) << length;
+    ICEBERG_UNWRAP_OR_FAIL(auto decoded, Base64::Decode(encoded));
+    EXPECT_EQ(data, decoded) << length;
+
+    const auto url_encoded = Base64::UrlEncode(data);
+    EXPECT_EQ((length / 3) * 4 + (length % 3 == 0 ? 0 : length % 3 + 1),
+              url_encoded.size())
+        << length;
+    ICEBERG_UNWRAP_OR_FAIL(auto url_decoded, Base64::UrlDecode(url_encoded));
+    EXPECT_EQ(data, url_decoded) << length;
+  }
 }
 
 TEST(Base64Test, Decode) {
