@@ -28,6 +28,7 @@
 #include "iceberg/catalog/rest/iceberg_rest_export.h"
 #include "iceberg/catalog/rest/type_fwd.h"
 #include "iceberg/result.h"
+#include "iceberg/type_fwd.h"
 
 /// \file iceberg/catalog/rest/auth/auth_session.h
 /// \brief Authentication session interface for REST catalog.
@@ -68,13 +69,8 @@ class ICEBERG_REST_EXPORT AuthSession {
   /// \brief Return OAuth2 metadata when this is an OAuth2 session.
   virtual std::optional<OAuth2SessionInfo> OAuth2Info() const { return std::nullopt; }
 
-  /// \brief Close the session and release any resources.
-  ///
-  /// This method is called when the session is no longer needed. For stateful
-  /// sessions (e.g., OAuth2 with token refresh), this should stop any background
-  /// threads and release resources.
-  ///
-  /// \return Status indicating success or failure of closing the session.
+  /// \brief Stop background refresh and release session resources.
+  /// \return Status of the close operation.
   virtual Status Close() { return {}; }
 
   /// \brief Create a session with static headers.
@@ -90,10 +86,8 @@ class ICEBERG_REST_EXPORT AuthSession {
 
   /// \brief Create an OAuth2 session with automatic token refresh.
   ///
-  /// This factory method creates a session that holds an access token and,
-  /// when keep_refreshed is enabled, schedules background refresh based on
-  /// token expiration. Authenticate() uses the latest cached Authorization
-  /// header and does not perform a synchronous token refresh.
+  /// Refreshes expiring tokens in the background when keep_refreshed is true.
+  /// Authenticate() uses the cached token without refreshing it.
   ///
   /// \param initial_token The initial token response from FetchToken().
   /// \param token_endpoint Full URL of the OAuth2 token endpoint for refresh.
@@ -104,13 +98,16 @@ class ICEBERG_REST_EXPORT AuthSession {
   /// \param optional_oauth_params Optional OAuth params (audience, resource) for refresh.
   /// \param client HTTP client for making refresh requests. The session retains
   ///        ownership of the client.
-  /// \return A new session that manages token lifecycle automatically.
+  /// \param auth_executor Borrowed refresh executor; required if keep_refreshed is true.
+  /// Ignored otherwise. Must enqueue asynchronously and outlive the session and its
+  /// tasks.
+  /// \return The session, or InvalidArgument if refresh is enabled without an executor.
   static Result<std::shared_ptr<AuthSession>> MakeOAuth2(
       const OAuthTokenResponse& initial_token, const std::string& token_endpoint,
       const std::string& client_id, const std::string& client_secret,
       const std::string& scope, bool keep_refreshed,
       const std::unordered_map<std::string, std::string>& optional_oauth_params,
-      std::shared_ptr<HttpClient> client);
+      std::shared_ptr<HttpClient> client, Executor* auth_executor = nullptr);
 };
 
 }  // namespace iceberg::rest::auth

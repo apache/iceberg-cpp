@@ -202,18 +202,7 @@ Result<std::string> ReadAll(InputFile& file, size_t length) {
   return content;
 }
 
-class InlineDeleteExecutor : public Executor {
- public:
-  Status Submit(ExecutorTask task) override {
-    ++submissions;
-    std::move(task)();
-    return {};
-  }
-
-  int submissions = 0;
-};
-
-enum class SubmitFailure { kStatus, kException, kAcceptedException };
+enum class SubmitFailure { kStatus, kException };
 
 class FailingDeleteExecutor : public Executor {
  public:
@@ -232,18 +221,11 @@ class FailingDeleteExecutor : public Executor {
 
   Status Submit(ExecutorTask task) override {
     ++submissions_;
-    if (submissions_ == 1 || failure_ == SubmitFailure::kAcceptedException) {
-      const bool first = submissions_ == 1;
-      const bool wait = !first || failure_ != SubmitFailure::kAcceptedException;
-      threads_.emplace_back([this, first, wait, task = std::move(task)]() mutable {
-        if (wait) {
-          release_.wait();
-        }
+    if (submissions_ == 1) {
+      threads_.emplace_back([this, task = std::move(task)]() mutable {
+        release_.wait();
         std::move(task)();
         ++completed;
-        if (first) {
-          first_completed.set_value();
-        }
       });
     }
     if (submissions_ == 2) {
@@ -257,7 +239,6 @@ class FailingDeleteExecutor : public Executor {
   }
 
   std::promise<void> submission_failed;
-  std::promise<void> first_completed;
   std::atomic<int> completed = 0;
 
  private:
@@ -270,7 +251,7 @@ class FailingDeleteExecutor : public Executor {
 }  // namespace
 
 TEST(DeleteExecutorStateTest, InitializationIsImmutable) {
-  InlineDeleteExecutor executor;
+  test::InlineExecutor executor;
   DeleteExecutorState state;
   EXPECT_THAT(state.Initialize(&executor), IsOk());
   EXPECT_THAT(state.Initialize(&executor), IsOk());
@@ -283,8 +264,8 @@ TEST(DeleteExecutorStateTest, InitializationIsImmutable) {
 }
 
 TEST(DeleteExecutorStateTest, ConcurrentInitializationChoosesOneExecutor) {
-  InlineDeleteExecutor first;
-  InlineDeleteExecutor second;
+  test::InlineExecutor first;
+  test::InlineExecutor second;
   DeleteExecutorState state;
   std::barrier start(2);
   std::atomic<int> initialized = 0;
@@ -389,13 +370,11 @@ TEST(BulkDeleteFilesTest, CountsThrownDeletesAndAttemptsRemainingFiles) {
 }
 
 TEST(BulkDeleteFilesTest, DrainsAcceptedTasksWhenSubmissionFails) {
-  for (auto failure : {SubmitFailure::kStatus, SubmitFailure::kException,
-                       SubmitFailure::kAcceptedException}) {
+  for (auto failure : {SubmitFailure::kStatus, SubmitFailure::kException}) {
     SCOPED_TRACE(static_cast<int>(failure));
     std::promise<void> release;
     FailingDeleteExecutor executor(failure, release.get_future().share());
     auto submission_failed = executor.submission_failed.get_future();
-    auto first_completed = executor.first_completed.get_future();
     const std::vector<std::string> paths = {"first", "second", "third"};
     std::atomic<int> attempted = 0;
     auto run = std::async(std::launch::async, [&] {
@@ -410,18 +389,12 @@ TEST(BulkDeleteFilesTest, DrainsAcceptedTasksWhenSubmissionFails) {
       });
     });
     const auto submitted = submission_failed.wait_for(std::chrono::seconds(5));
-    auto first = std::future_status::ready;
-    if (failure == SubmitFailure::kAcceptedException) {
-      // Leave only the last task blocked.
-      first = first_completed.wait_for(std::chrono::seconds(5));
-    }
     const auto returned = run.wait_for(std::chrono::milliseconds(100));
     // Unblock workers before assertions.
     release.set_value();
     auto status = run.get();
     executor.Wait();
     EXPECT_EQ(submitted, std::future_status::ready);
-    EXPECT_EQ(first, std::future_status::ready);
     EXPECT_EQ(returned, std::future_status::timeout);
     EXPECT_THAT(status, HasErrorMessage("executor rejected deletion"));
     EXPECT_THAT(status, HasErrorMessage("failed to delete 1 of 3 files"));
@@ -429,7 +402,7 @@ TEST(BulkDeleteFilesTest, DrainsAcceptedTasksWhenSubmissionFails) {
                 IsError(failure == SubmitFailure::kStatus ? ErrorKind::kServiceUnavailable
                                                           : ErrorKind::kIOError));
     EXPECT_EQ(attempted, 3);
-    EXPECT_EQ(executor.completed, failure == SubmitFailure::kAcceptedException ? 2 : 1);
+    EXPECT_EQ(executor.completed, 1);
   }
 }
 
@@ -448,7 +421,7 @@ TEST(BulkDeleteFilesTest, DoesNotDeleteOnTheCallerWhenSubmissionFails) {
 }
 
 TEST(BulkDeleteFilesTest, EmptyDeleteDoesNotSubmitTasks) {
-  InlineDeleteExecutor executor;
+  test::InlineExecutor executor;
   EXPECT_THAT(BulkDeleteFiles({}, &executor, 3,
                               [](const std::string&) -> Status {
                                 ADD_FAILURE()
@@ -456,7 +429,7 @@ TEST(BulkDeleteFilesTest, EmptyDeleteDoesNotSubmitTasks) {
                                 return {};
                               }),
               IsOk());
-  EXPECT_EQ(executor.submissions, 0);
+  EXPECT_EQ(executor.submit_count(), 0);
 }
 
 TEST_F(ArrowS3FileIOTest, Create) {

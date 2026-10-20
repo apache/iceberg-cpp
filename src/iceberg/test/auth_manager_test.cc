@@ -19,13 +19,14 @@
 
 #include "iceberg/catalog/rest/auth/auth_manager.h"
 
+#include <array>
 #include <atomic>
 #include <chrono>
-#include <condition_variable>
+#include <functional>
+#include <future>
 #include <memory>
-#include <mutex>
+#include <stdexcept>
 #include <string>
-#include <thread>
 #include <unordered_map>
 #include <vector>
 
@@ -38,7 +39,6 @@
 #include "iceberg/catalog/rest/auth/auth_session.h"
 #include "iceberg/catalog/rest/auth/auth_session_internal.h"
 #include "iceberg/catalog/rest/auth/oauth2_util.h"
-#include "iceberg/catalog/rest/auth/token_refresh_scheduler.h"
 #include "iceberg/catalog/rest/catalog_properties.h"
 #include "iceberg/catalog/rest/error_handlers.h"
 #include "iceberg/catalog/rest/http_client.h"
@@ -46,7 +46,9 @@
 #include "iceberg/catalog/session_context.h"
 #include "iceberg/json_serde_internal.h"
 #include "iceberg/table_identifier.h"
+#include "iceberg/test/executor.h"
 #include "iceberg/test/matchers.h"
+#include "iceberg/test/retry.h"
 #include "iceberg/util/base64.h"
 
 namespace iceberg::rest::auth {
@@ -692,102 +694,195 @@ TEST_F(AuthManagerTest, ExpiresAtMillisInvalidTokensReturnNullopt) {
   }
 }
 
-// ---- TokenRefreshScheduler tests ----
-
-// Verifies that a scheduled task fires after the specified delay
-TEST(TokenRefreshSchedulerTest, ScheduleFiresAfterDelay) {
-  TokenRefreshScheduler scheduler;
-  std::mutex mutex;
-  std::condition_variable cv;
-  bool fired = false;
-
-  scheduler.Schedule(std::chrono::milliseconds(50), [&] {
-    {
-      std::lock_guard lock(mutex);
-      fired = true;
-    }
-    cv.notify_one();
-  });
-
-  {
-    std::unique_lock lock(mutex);
-    EXPECT_TRUE(cv.wait_for(lock, std::chrono::seconds(5), [&] { return fired; }));
-  }
-
-  scheduler.Shutdown();
-}
-
-// Verifies that cancelling a task prevents it from executing
-TEST(TokenRefreshSchedulerTest, CancelPreventsExecution) {
-  TokenRefreshScheduler scheduler;
-  std::atomic<bool> fired{false};
-
-  auto handle =
-      scheduler.Schedule(std::chrono::milliseconds(100), [&] { fired.store(true); });
-
-  // Cancel before it fires
-  scheduler.Cancel(handle);
-
-  // Wait past the scheduled time
-  std::this_thread::sleep_for(std::chrono::milliseconds(200));
-  EXPECT_FALSE(fired.load());
-
-  scheduler.Shutdown();
-}
-
-// Verifies that shutdown with pending tasks does not crash
-TEST(TokenRefreshSchedulerTest, ShutdownWithPendingTasks) {
-  TokenRefreshScheduler scheduler;
-  std::atomic<bool> fired{false};
-
-  scheduler.Schedule(std::chrono::milliseconds(5000), [&] { fired.store(true); });
-
-  // Shutdown immediately — should not crash and task should not fire
-  scheduler.Shutdown();
-
-  std::this_thread::sleep_for(std::chrono::milliseconds(50));
-  EXPECT_FALSE(fired.load());
-}
-
-// Verifies that Schedule after shutdown returns invalid handle (0)
-TEST(TokenRefreshSchedulerTest, ScheduleAfterShutdownIsNoop) {
-  TokenRefreshScheduler scheduler;
-  scheduler.Shutdown();
-
-  auto handle = scheduler.Schedule(std::chrono::milliseconds(10), [] {});
-  EXPECT_EQ(0u, handle);
-}
-
-// Verifies that cancelling an invalid handle does not crash
-TEST(TokenRefreshSchedulerTest, CancelInvalidHandleIsNoop) {
-  TokenRefreshScheduler scheduler;
-  // Should not crash
-  scheduler.Cancel(0);
-  scheduler.Cancel(999);
-  scheduler.Shutdown();
-}
-
 // ---- OAuth2Session tests ----
 
-TEST(OAuth2SessionTest, InitialTokenIsUsed) {
-  auto client = std::make_shared<HttpClient>();
-  OAuthTokenResponse token_response;
-  token_response.access_token = "initial-token-123";
-  token_response.token_type = "bearer";
-  token_response.expires_in_secs = 3600;
+namespace {
 
-  // Create session (refresh will fail since there's no real server, but
-  // initial token should work)
-  auto session_result =
-      AuthSession::MakeOAuth2(token_response, "http://localhost/oauth/tokens",
-                              "client_id", "client_secret", "catalog", true, {}, client);
-  ASSERT_THAT(session_result, IsOk());
-  auto session = session_result.value();
+class RefreshHttpClient : public HttpClient {
+ public:
+  Result<HttpResponse> PostForm(const std::string&,
+                                const std::unordered_map<std::string, std::string>&,
+                                const std::unordered_map<std::string, std::string>&,
+                                const ErrorHandler&, AuthSession&) override {
+    ++requests;
+    return response();
+  }
+  std::function<Result<HttpResponse>()> response = [] {
+    return IOError("refresh failed");
+  };
+  std::atomic<int> requests{0};
+};
 
-  auto auth_result = session->Authenticate({});
-  ASSERT_THAT(auth_result, IsOk());
-  EXPECT_EQ(auth_result.value().headers.at("Authorization"), "Bearer initial-token-123");
+using test::MockExecutor;
 
+// Already expired, so the session schedules its first refresh immediately.
+OAuthTokenResponse ExpiredInitialToken() {
+  return {.access_token = "initial", .token_type = "bearer", .expires_in_secs = 0};
+}
+
+Result<std::shared_ptr<AuthSession>> RefreshingSession(
+    const std::shared_ptr<HttpClient>& client, Executor& executor) {
+  return AuthSession::MakeOAuth2(ExpiredInitialToken(), "https://auth.example/token",
+                                 "client", "secret", "catalog", true, {}, client,
+                                 &executor);
+}
+
+}  // namespace
+
+TEST(OAuth2SessionTest, RefreshesAndReschedulesThroughPublicFactory) {
+  MockExecutor executor;
+  std::array<std::promise<ExecutorTask>, 2> queued;
+  int submitted = 0;
+  EXPECT_CALL(executor, Submit).Times(2).WillRepeatedly([&](ExecutorTask task) -> Status {
+    queued.at(submitted++).set_value(std::move(task));
+    return {};
+  });
+  auto client = std::make_shared<RefreshHttpClient>();
+  client->response = [&]() -> Result<HttpResponse> {
+    return HttpResponse(
+        200, client->requests == 1
+                 ? R"({"access_token":"first","token_type":"bearer","expires_in":1})"
+                 : R"({"access_token":"second","token_type":"bearer"})");
+  };
+  ICEBERG_UNWRAP_OR_FAIL(auto session, RefreshingSession(client, executor));
+  for (auto& slot : queued) {
+    auto task = slot.get_future();
+    ASSERT_EQ(task.wait_for(std::chrono::seconds(5)), std::future_status::ready);
+    std::move(task.get())();
+  }
+  ASSERT_THAT(session->Close(), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto request, session->Authenticate({}));
+  EXPECT_EQ(request.headers.at("Authorization"), "Bearer second");
+  EXPECT_EQ(client->requests, 2);
+}
+
+TEST(OAuth2SessionTest, AlreadyExpiredRefreshedTokenBacksOff) {
+  MockExecutor executor;
+  std::promise<ExecutorTask> queued;
+  auto task = queued.get_future();
+  EXPECT_CALL(executor, Submit).WillOnce([&](ExecutorTask work) -> Status {
+    queued.set_value(std::move(work));
+    return {};
+  });
+  auto client = std::make_shared<RefreshHttpClient>();
+  client->response = [&]() -> Result<HttpResponse> {
+    return HttpResponse(
+        200, client->requests == 1
+                 ? R"({"access_token":"stale","token_type":"bearer","expires_in":0})"
+                 : R"({"access_token":"fresh","token_type":"bearer"})");
+  };
+  ICEBERG_UNWRAP_OR_FAIL(auto session, RefreshingSession(client, executor));
+  ASSERT_EQ(task.wait_for(std::chrono::seconds(5)), std::future_status::ready);
+  test::FakeRetryEnvironment fake_retry;
+  ScopedRetryTestHooks hooks(fake_retry.hooks());
+  std::move(task.get())();
+  EXPECT_THAT(fake_retry.sleep_durations(),
+              ::testing::ElementsAre(std::chrono::milliseconds(100)));
+  EXPECT_EQ(client->requests, 2);
+  ICEBERG_UNWRAP_OR_FAIL(auto request, session->Authenticate({}));
+  EXPECT_EQ(request.headers.at("Authorization"), "Bearer fresh");
+  ASSERT_THAT(session->Close(), IsOk());
+}
+
+TEST(OAuth2SessionTest, ThrowingRefreshIsRetried) {
+  MockExecutor executor;
+  std::promise<ExecutorTask> queued;
+  auto task = queued.get_future();
+  EXPECT_CALL(executor, Submit).WillOnce([&](ExecutorTask work) -> Status {
+    queued.set_value(std::move(work));
+    return {};
+  });
+  auto client = std::make_shared<RefreshHttpClient>();
+  client->response = [&]() -> Result<HttpResponse> {
+    if (client->requests == 1) {
+      throw std::runtime_error("HTTP library failure");
+    }
+    return HttpResponse(200, R"({"access_token":"recovered","token_type":"bearer"})");
+  };
+  ICEBERG_UNWRAP_OR_FAIL(auto session, RefreshingSession(client, executor));
+  ASSERT_EQ(task.wait_for(std::chrono::seconds(5)), std::future_status::ready);
+  test::FakeRetryEnvironment fake_retry;
+  ScopedRetryTestHooks hooks(fake_retry.hooks());
+  std::move(task.get())();
+  ICEBERG_UNWRAP_OR_FAIL(auto request, session->Authenticate({}));
+  EXPECT_EQ(request.headers.at("Authorization"), "Bearer recovered");
+  EXPECT_EQ(client->requests, 2);
+  ASSERT_THAT(session->Close(), IsOk());
+}
+
+TEST(OAuth2SessionTest, CloseSkipsAlreadyQueuedRefresh) {
+  MockExecutor executor;
+  std::promise<ExecutorTask> queued;
+  auto task = queued.get_future();
+  EXPECT_CALL(executor, Submit).WillOnce([&](ExecutorTask work) -> Status {
+    queued.set_value(std::move(work));
+    return {};
+  });
+  auto client = std::make_shared<RefreshHttpClient>();
+  ICEBERG_UNWRAP_OR_FAIL(auto session, RefreshingSession(client, executor));
+  ASSERT_EQ(task.wait_for(std::chrono::seconds(5)), std::future_status::ready);
+  ASSERT_THAT(session->Close(), IsOk());
+  std::move(task.get())();
+  EXPECT_EQ(client->requests, 0);
+}
+
+TEST(OAuth2SessionTest, ConcurrentCloseCallsWaitForCurrentHttpRequest) {
+  MockExecutor executor;
+  std::promise<ExecutorTask> queued;
+  auto task = queued.get_future();
+  EXPECT_CALL(executor, Submit).WillOnce([&](ExecutorTask work) -> Status {
+    queued.set_value(std::move(work));
+    return {};
+  });
+  auto client = std::make_shared<RefreshHttpClient>();
+  std::promise<void> entered;
+  std::promise<void> release;
+  auto entered_future = entered.get_future();
+  auto release_future = release.get_future().share();
+  client->response = [&]() -> Result<HttpResponse> {
+    entered.set_value();
+    release_future.wait();
+    // Closing the session must stop retries of this failed request.
+    return IOError("refresh failed during Close");
+  };
+  ICEBERG_UNWRAP_OR_FAIL(auto session, RefreshingSession(client, executor));
+  ASSERT_EQ(task.wait_for(std::chrono::seconds(5)), std::future_status::ready);
+  auto refresh = std::async(std::launch::async, [&] { std::move(task.get())(); });
+  auto entered_status = entered_future.wait_for(std::chrono::seconds(5));
+  if (entered_status != std::future_status::ready) {
+    release.set_value();
+  }
+  ASSERT_EQ(entered_status, std::future_status::ready);
+  auto first = std::async(std::launch::async, [&] { return session->Close(); });
+  auto second = std::async(std::launch::async, [&] { return session->Close(); });
+  EXPECT_EQ(first.wait_for(std::chrono::milliseconds(30)), std::future_status::timeout);
+  EXPECT_EQ(second.wait_for(std::chrono::milliseconds(30)), std::future_status::timeout);
+  release.set_value();
+  refresh.get();
+  ASSERT_THAT(first.get(), IsOk());
+  ASSERT_THAT(second.get(), IsOk());
+  EXPECT_EQ(client->requests, 1);
+}
+
+TEST(OAuth2SessionTest, StopsAfterHttpRetryBudget) {
+  MockExecutor executor;
+  std::promise<ExecutorTask> queued;
+  auto task = queued.get_future();
+  EXPECT_CALL(executor, Submit).WillOnce([&](ExecutorTask work) -> Status {
+    queued.set_value(std::move(work));
+    return {};
+  });
+  auto client = std::make_shared<RefreshHttpClient>();
+  ICEBERG_UNWRAP_OR_FAIL(auto session, RefreshingSession(client, executor));
+  ASSERT_EQ(task.wait_for(std::chrono::seconds(5)), std::future_status::ready);
+  test::FakeRetryEnvironment fake_retry;
+  ScopedRetryTestHooks hooks(fake_retry.hooks());
+  std::move(task.get())();
+  EXPECT_EQ(client->requests, 6);
+  EXPECT_THAT(fake_retry.observed_base_delays_ms(),
+              ::testing::ElementsAre(100, 200, 400, 800, 1600));
+  ICEBERG_UNWRAP_OR_FAIL(auto request, session->Authenticate({}));
+  EXPECT_EQ(request.headers.at("Authorization"), "Bearer initial");
   ASSERT_THAT(session->Close(), IsOk());
 }
 

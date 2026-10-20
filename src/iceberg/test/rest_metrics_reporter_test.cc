@@ -33,6 +33,7 @@
 #include "iceberg/metrics/metrics_reporter.h"
 #include "iceberg/metrics/scan_report.h"
 #include "iceberg/result.h"
+#include "iceberg/test/executor.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/util/executor.h"
 
@@ -40,31 +41,13 @@ namespace iceberg::rest {
 
 namespace {
 
-class ManualExecutor final : public Executor {
- public:
-  Status Submit(ExecutorTask task) override {
-    task_ = std::move(task);
+// A Submit action that keeps the task so the test decides when it runs.
+auto CaptureTask(std::optional<ExecutorTask>& slot) {
+  return [&slot](ExecutorTask task) -> Status {
+    slot.emplace(std::move(task));
     return {};
-  }
-
-  bool HasTask() const { return task_.has_value(); }
-
-  void Run() {
-    auto task = std::move(*task_);
-    task_.reset();
-    std::move(task)();
-  }
-
- private:
-  std::optional<ExecutorTask> task_;
-};
-
-class RejectingExecutor final : public Executor {
- public:
-  Status Submit(ExecutorTask /*task*/) override {
-    return IOError("executor rejected task");
-  }
-};
+  };
+}
 
 }  // namespace
 
@@ -121,7 +104,9 @@ class RestMetricsReporterPayloadTest
       public ::testing::WithParamInterface<ReportTestCase> {};
 
 TEST_F(RestMetricsReporterTest, SuppressesHttpErrors) {
-  ManualExecutor executor;
+  test::MockExecutor executor;
+  std::optional<ExecutorTask> task;
+  EXPECT_CALL(executor, Submit).WillOnce(CaptureTask(task));
   RestMetricsReporter reporter(
       "http://localhost:0/v1/ns/tables/tbl/metrics", session_, &executor,
       [](const std::string&, const std::string&, auth::AuthSession&) {
@@ -129,13 +114,15 @@ TEST_F(RestMetricsReporterTest, SuppressesHttpErrors) {
       });
   MetricsReport report = MakeScanReport();
   EXPECT_THAT(reporter.Report(report), IsOk());
-  ASSERT_TRUE(executor.HasTask());
-  EXPECT_NO_THROW(executor.Run());
+  ASSERT_TRUE(task.has_value());
+  EXPECT_NO_THROW(std::move(*task)());
 }
 
 TEST_P(RestMetricsReporterPayloadTest, PostsSerializedPayloadToConfiguredEndpoint) {
   const auto& test_case = GetParam();
-  ManualExecutor executor;
+  test::MockExecutor executor;
+  std::optional<ExecutorTask> task;
+  EXPECT_CALL(executor, Submit).WillOnce(CaptureTask(task));
   const std::string endpoint = "http://mock-host/v1/ns/tables/tbl/metrics";
 
   std::string captured_path;
@@ -149,8 +136,8 @@ TEST_P(RestMetricsReporterPayloadTest, PostsSerializedPayloadToConfiguredEndpoin
 
   EXPECT_THAT(reporter.Report(test_case.report), IsOk());
   EXPECT_TRUE(captured_path.empty());
-  ASSERT_TRUE(executor.HasTask());
-  executor.Run();
+  ASSERT_TRUE(task.has_value());
+  std::move (*task)();
 
   EXPECT_EQ(captured_path, endpoint);
   auto json = nlohmann::json::parse(captured_body);
@@ -172,7 +159,7 @@ TEST_F(RestMetricsReporterTest, PostsSynchronouslyWithoutExecutor) {
 }
 
 TEST_F(RestMetricsReporterTest, SuppressesExecutorRejection) {
-  RejectingExecutor executor;
+  test::ThreadExecutor executor(IOError("executor rejected task"));
   RestMetricsReporter reporter(
       "http://mock-host/v1/ns/tables/tbl/metrics", session_, &executor,
       [](const std::string&, const std::string&, auth::AuthSession&) {});

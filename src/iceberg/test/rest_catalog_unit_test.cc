@@ -29,6 +29,7 @@
 #include <nlohmann/json.hpp>
 
 #include "iceberg/catalog.h"
+#include "iceberg/catalog/rest/auth/auth_session.h"
 #include "iceberg/catalog/rest/catalog_properties.h"
 #include "iceberg/catalog/rest/endpoint.h"
 #include "iceberg/catalog/rest/error_handlers.h"
@@ -47,6 +48,7 @@
 #include "iceberg/table_identifier.h"
 #include "iceberg/table_requirement.h"
 #include "iceberg/table_update.h"
+#include "iceberg/test/executor.h"
 #include "iceberg/test/matchers.h"
 
 namespace iceberg::rest {
@@ -72,6 +74,13 @@ class MockHttpClient : public HttpClient {
 
   MOCK_METHOD(Result<HttpResponse>, Post,
               (const std::string& path, const std::string& body,
+               (const std::unordered_map<std::string, std::string>&)headers,
+               const ErrorHandler& error_handler, auth::AuthSession& session),
+              (override));
+
+  MOCK_METHOD(Result<HttpResponse>, PostForm,
+              (const std::string& path,
+               (const std::unordered_map<std::string, std::string>&)form_data,
                (const std::unordered_map<std::string, std::string>&)headers,
                const ErrorHandler& error_handler, auth::AuthSession& session),
               (override));
@@ -207,7 +216,7 @@ class RestCatalogLoadTableTest : public ::testing::Test {
     EXPECT_CALL(*mock_client_, Get(::testing::EndsWith("/v1/config"), _, _, _, _))
         .WillOnce(Return(HttpResponse(200, ToJson(server_config).dump())));
     auto config = RestCatalogProperties::FromMap(std::move(props));
-    return RestCatalog::Make(config, /*metrics_executor=*/nullptr,
+    return RestCatalog::Make(config,
                              [client = mock_client_](const auto&) { return client; });
   }
 
@@ -300,8 +309,7 @@ TEST_F(RestCatalogLoadTableTest, InitializationPropagatesClientFactoryErrors) {
     }
     int calls = 0;
     auto result = RestCatalog::Make(
-        config, /*metrics_executor=*/nullptr,
-        [&](const RestCatalogProperties&) -> Result<std::shared_ptr<HttpClient>> {
+        config, [&](const RestCatalogProperties&) -> Result<std::shared_ptr<HttpClient>> {
           if (++calls == fail_on_call) {
             return IOError("HTTP client setup failed");
           }
@@ -310,6 +318,54 @@ TEST_F(RestCatalogLoadTableTest, InitializationPropagatesClientFactoryErrors) {
     ASSERT_THAT(result, IsError(ErrorKind::kIOError));
     EXPECT_EQ(result.error().message, "HTTP client setup failed");
     EXPECT_EQ(calls, fail_on_call);
+    ASSERT_TRUE(::testing::Mock::VerifyAndClearExpectations(mock_client_.get()));
+  }
+}
+
+TEST_F(RestCatalogLoadTableTest, OAuthRefreshRunsOnAuthExecutorWhenEnabled) {
+  for (bool refresh : {false, true}) {
+    SCOPED_TRACE(::testing::Message() << "token-refresh-enabled=" << refresh);
+    test::MockExecutor executor;
+    auto& submits = EXPECT_CALL(executor, Submit).Times(refresh ? 1 : 0);
+    if (refresh) {
+      submits.WillOnce([](ExecutorTask task) -> Status {
+        std::move(task)();
+        return {};
+      });
+    }
+    auto config = RestCatalogProperties::FromMap(
+        {{"uri", "http://test-server"},
+         {"io-impl", "rest-catalog-unit-test-noop"},
+         {"credential", "client:secret"},
+         {"token-refresh-enabled", refresh ? "true" : "false"}});
+    auto& tokens =
+        EXPECT_CALL(*mock_client_, PostForm(_, _, _, _, _)).Times(refresh ? 2 : 1);
+    tokens.WillOnce(Return(HttpResponse(
+        200, R"({"access_token":"initial","token_type":"bearer","expires_in":0})")));
+    if (refresh) {
+      tokens.WillOnce(Return(
+          HttpResponse(200, R"({"access_token":"updated","token_type":"bearer"})")));
+    }
+    EXPECT_CALL(*mock_client_, Get(::testing::EndsWith("/v1/config"), _, _, _, _))
+        .WillOnce(Return(HttpResponse(200, ToJson(CatalogConfig{}).dump())));
+    ICEBERG_UNWRAP_OR_FAIL(
+        auto root,
+        RestCatalog::Make(
+            config, [client = mock_client_](const auto&) { return client; }, &executor));
+
+    // Let any immediately due catalog refresh dispatch first.
+    ASSERT_TRUE(test::WaitForSharedTimer());
+
+    EXPECT_CALL(*mock_client_, Get(::testing::EndsWith("/namespaces"), _, _, _, _))
+        .WillOnce([&](const auto&, const auto&, const auto&, const auto&,
+                      auth::AuthSession& session) -> Result<HttpResponse> {
+          ICEBERG_ASSIGN_OR_RAISE(auto request, session.Authenticate({}));
+          EXPECT_EQ(request.headers.at("Authorization"),
+                    refresh ? "Bearer updated" : "Bearer initial");
+          return HttpResponse(200, R"({"namespaces":[]})");
+        });
+    ICEBERG_UNWRAP_OR_FAIL(auto catalog, root->AsCatalog());
+    ASSERT_THAT(catalog->ListNamespaces({}), IsOk());
     ASSERT_TRUE(::testing::Mock::VerifyAndClearExpectations(mock_client_.get()));
   }
 }
@@ -344,12 +400,11 @@ TEST_F(RestCatalogLoadTableTest, InitializationUsesMergedServerConfig) {
                                       {"scan-planning-mode", "client"},
                                       {"header.X-Shared", "client"}});
   std::vector<RestCatalogProperties> client_configs;
-  ICEBERG_UNWRAP_OR_FAIL(auto root,
-                         RestCatalog::Make(config, /*metrics_executor=*/nullptr,
-                                           [&](const RestCatalogProperties& properties) {
-                                             client_configs.push_back(properties);
-                                             return mock_client_;
-                                           }));
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto root, RestCatalog::Make(config, [&](const RestCatalogProperties& properties) {
+        client_configs.push_back(properties);
+        return mock_client_;
+      }));
   ASSERT_EQ(client_configs.size(), 2);
   EXPECT_EQ(client_configs[0].ExtractHeaders().at("X-Shared"), "client");
   EXPECT_FALSE(client_configs[0].ExtractHeaders().contains("X-Default"));

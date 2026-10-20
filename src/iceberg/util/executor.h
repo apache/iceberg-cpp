@@ -48,6 +48,8 @@ class ICEBERG_EXPORT Executor {
   virtual ~Executor() = default;
 
   /// \brief Schedule a task for execution.
+  /// \note Success means the task was accepted, not that it has finished.
+  /// On an error or exception, the task must not run, including after Submit returns.
   virtual Status Submit(ExecutorTask task) = 0;
 };
 

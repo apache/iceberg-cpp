@@ -124,6 +124,9 @@ add_iceberg_test(json_serde_test
                  metadata_serde_test.cc
                  schema_json_test.cc)
 
+add_iceberg_test(scheduled_executor_test SOURCES scheduled_executor_test.cc)
+set_tests_properties(scheduled_executor_test PROPERTIES TIMEOUT 60)
+
 add_iceberg_test(util_test
                  USE_DATA
                  SOURCES
@@ -337,6 +340,7 @@ if(ICEBERG_BUILD_REST)
                         rest_metrics_reporter_test.cc
                         rest_table_scan_test.cc
                         rest_util_test.cc)
+  set_tests_properties(rest_catalog_test PROPERTIES TIMEOUT 120)
 
   if(ICEBERG_SIGV4)
     add_rest_iceberg_test(sigv4_auth_test SOURCES sigv4_auth_test.cc)

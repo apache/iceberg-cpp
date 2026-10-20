@@ -20,14 +20,39 @@
 #pragma once
 
 #include <atomic>
+#include <chrono>
+#include <future>
 #include <thread>
 #include <utility>
 #include <vector>
 
+#include <gmock/gmock.h>
+
 #include "iceberg/result.h"
 #include "iceberg/util/executor.h"
+#include "iceberg/util/scheduled_executor_internal.h"
 
 namespace iceberg::test {
+
+class MockExecutor : public Executor {
+ public:
+  MOCK_METHOD(Status, Submit, (ExecutorTask task), (override));
+};
+
+/// Runs each task on the submitting thread.
+class InlineExecutor final : public Executor {
+ public:
+  Status Submit(ExecutorTask task) override {
+    submit_count_.fetch_add(1, std::memory_order_relaxed);
+    std::move(task)();
+    return {};
+  }
+
+  int submit_count() const { return submit_count_.load(std::memory_order_relaxed); }
+
+ private:
+  std::atomic<int> submit_count_{0};
+};
 
 class ThreadExecutor final : public Executor {
  public:
@@ -58,5 +83,16 @@ class ThreadExecutor final : public Executor {
   std::atomic<int> submit_count_{0};
   std::vector<std::thread> threads_;
 };
+
+/// Waits until the process-wide ScheduledExecutor timer has dispatched every task due
+/// within `delay` from now. Returns false on timeout.
+inline bool WaitForSharedTimer(std::chrono::milliseconds delay = {}) {
+  InlineExecutor executor;
+  std::promise<void> ran;
+  auto done = ran.get_future();
+  ::iceberg::internal::ScheduledExecutor timer(executor);
+  timer.Schedule(delay, ExecutorTask([&] { ran.set_value(); }));
+  return done.wait_for(std::chrono::seconds(5)) == std::future_status::ready;
+}
 
 }  // namespace iceberg::test

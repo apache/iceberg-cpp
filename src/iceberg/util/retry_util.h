@@ -94,8 +94,8 @@ template <RetryPolicyMode Mode, ErrorKind... Kinds>
 struct RetryPolicy {
   static_assert(Mode != RetryPolicyMode::kNoRetry || sizeof...(Kinds) == 0,
                 "NoRetry must not include error kinds");
-  static_assert(Mode == RetryPolicyMode::kNoRetry || sizeof...(Kinds) > 0,
-                "RetryPolicy must include at least one error kind");
+  static_assert(Mode != RetryPolicyMode::kOnlyRetryOn || sizeof...(Kinds) > 0,
+                "OnlyRetryOn must include at least one error kind");
 
   static constexpr RetryPolicyMode kMode = Mode;
   static constexpr bool kEnabled = Mode != RetryPolicyMode::kNoRetry;
@@ -116,6 +116,7 @@ using NoRetry = RetryPolicy<RetryPolicyMode::kNoRetry>;
 template <ErrorKind... Kinds>
 using OnlyRetryOn = RetryPolicy<RetryPolicyMode::kOnlyRetryOn, Kinds...>;
 
+/// An empty stop list retries all errors.
 template <ErrorKind... Kinds>
 using StopRetryOn = RetryPolicy<RetryPolicyMode::kStopRetryOn, Kinds...>;
 

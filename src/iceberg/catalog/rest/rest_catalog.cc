@@ -447,8 +447,8 @@ RestCatalog::~RestCatalog() {
 }
 
 Result<std::shared_ptr<RestCatalog>> RestCatalog::Make(
-    const RestCatalogProperties& config, Executor* metrics_executor,
-    ClientFactory client_factory) {
+    const RestCatalogProperties& config, ClientFactory client_factory,
+    Executor* auth_executor, Executor* metrics_executor) {
   if (!client_factory) {
     client_factory = [](const RestCatalogProperties& properties)
         -> Result<std::shared_ptr<HttpClient>> {
@@ -467,6 +467,7 @@ Result<std::shared_ptr<RestCatalog>> RestCatalog::Make(
   std::string catalog_name = config.Get(RestCatalogProperties::kName);
   ICEBERG_ASSIGN_OR_RAISE(auto auth_manager,
                           auth::AuthManagers::Load(catalog_name, config.configs()));
+  auth_manager->SetAuthRefreshExecutor(auth_executor);
   ICEBERG_ASSIGN_OR_RAISE(
       auto paths,
       ResourcePaths::Make(std::string(TrimTrailingSlash(uri)),

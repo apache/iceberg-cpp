@@ -379,6 +379,10 @@ SigV4AuthManager::SigV4AuthManager(std::unique_ptr<AuthManager> delegate)
 
 SigV4AuthManager::~SigV4AuthManager() = default;
 
+void SigV4AuthManager::SetAuthRefreshExecutor(Executor* executor) {
+  delegate_->SetAuthRefreshExecutor(executor);
+}
+
 Result<std::shared_ptr<AuthSession>> SigV4AuthManager::InitSession(
     std::shared_ptr<HttpClient> init_client,
     const std::unordered_map<std::string, std::string>& properties) {

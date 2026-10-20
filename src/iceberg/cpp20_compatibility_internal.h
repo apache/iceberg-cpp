@@ -231,7 +231,6 @@
 #  include "iceberg/catalog/rest/auth/auth_properties.h"
 #  include "iceberg/catalog/rest/auth/auth_session.h"
 #  include "iceberg/catalog/rest/auth/oauth2_util.h"
-#  include "iceberg/catalog/rest/auth/token_refresh_scheduler.h"
 #  include "iceberg/catalog/rest/catalog_properties.h"
 #  include "iceberg/catalog/rest/constant.h"
 #  include "iceberg/catalog/rest/endpoint.h"

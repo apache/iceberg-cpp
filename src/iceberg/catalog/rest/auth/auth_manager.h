@@ -97,6 +97,10 @@ class ICEBERG_REST_EXPORT AuthManager {
   ///
   /// \return Status of the close operation.
   virtual Status Close() { return {}; }
+
+  /// \brief Set the borrowed refresh executor before InitSession.
+  /// It must outlive this manager and its sessions. Wrappers must forward this call.
+  virtual void SetAuthRefreshExecutor(Executor* /*executor*/) {}
 };
 
 }  // namespace iceberg::rest::auth

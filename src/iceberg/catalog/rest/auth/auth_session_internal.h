@@ -20,9 +20,9 @@
 #pragma once
 
 #include <algorithm>
-#include <atomic>
 #include <chrono>
 #include <condition_variable>
+#include <exception>
 #include <memory>
 #include <mutex>
 #include <optional>
@@ -34,9 +34,11 @@
 #include "iceberg/catalog/rest/auth/auth_properties.h"
 #include "iceberg/catalog/rest/auth/auth_session.h"
 #include "iceberg/catalog/rest/auth/oauth2_util.h"
-#include "iceberg/catalog/rest/auth/token_refresh_scheduler.h"
 #include "iceberg/catalog/rest/http_client.h"
+#include "iceberg/logging/log_macros.h"
 #include "iceberg/util/macros.h"
+#include "iceberg/util/retry_util.h"
+#include "iceberg/util/scheduled_executor_internal.h"
 
 namespace iceberg::rest::auth::internal {
 
@@ -67,7 +69,8 @@ class OAuth2Session final : public AuthSession,
     std::string client_secret;
     std::string scope;
     std::unordered_map<std::string, std::string> optional_oauth_params;
-    bool keep_refreshed;
+    /// Borrowed executor for background refresh. Null disables refresh.
+    Executor* refresh_executor = nullptr;
   };
 
   static Result<std::shared_ptr<OAuth2Session>> Make(
@@ -111,17 +114,23 @@ class OAuth2Session final : public AuthSession,
                 std::shared_ptr<HttpClient> client)
       : config_(std::move(config)),
         refresh_properties_(std::move(refresh_properties)),
-        client_(std::move(client)) {}
+        client_(std::move(client)) {
+    if (config_.refresh_executor != nullptr) {
+      scheduler_.emplace(*config_.refresh_executor);
+    }
+  }
 
   Status CloseImpl() {
-    bool expected = false;
-    if (!closed_.compare_exchange_strong(expected, true)) {
-      return {};
+    // Stop queued refreshes before shutting down the scheduler.
+    {
+      std::lock_guard lock(refresh_mutex_);
+      closed_ = true;
     }
-    TokenRefreshScheduler::Instance().Cancel(scheduled_task_id_.exchange(0));
+    if (scheduler_) {
+      scheduler_->Shutdown();
+    }
     std::unique_lock lock(refresh_mutex_);
     refresh_cv_.wait(lock, [this] { return active_refresh_count_ == 0; });
-    TokenRefreshScheduler::Instance().Cancel(scheduled_task_id_.exchange(0));
     return {};
   }
 
@@ -143,10 +152,16 @@ class OAuth2Session final : public AuthSession,
    public:
     explicit RefreshAttemptGuard(OAuth2Session& session) : session_(session) {
       std::lock_guard lock(session_.refresh_mutex_);
-      ++session_.active_refresh_count_;
+      active_ = !session_.closed_;
+      if (active_) {
+        ++session_.active_refresh_count_;
+      }
     }
 
     ~RefreshAttemptGuard() {
+      if (!active_) {
+        return;
+      }
       bool notify = false;
       {
         std::lock_guard lock(session_.refresh_mutex_);
@@ -157,8 +172,11 @@ class OAuth2Session final : public AuthSession,
       }
     }
 
+    bool IsActive() const { return active_; }
+
    private:
     OAuth2Session& session_;
+    bool active_ = false;
   };
 
   void UpdateTokenState(const OAuthTokenResponse& token_response,
@@ -182,73 +200,89 @@ class OAuth2Session final : public AuthSession,
       const OAuthTokenResponse& token_response,
       std::optional<std::chrono::steady_clock::time_point> token_request_started_at) {
     UpdateTokenState(token_response, token_request_started_at);
-    if (config_.keep_refreshed &&
-        expires_at_ != std::chrono::steady_clock::time_point{}) {
-      ScheduleRefresh();
-    }
-  }
-
-  void DoRefresh() {
-    DoRefreshAttempt(0, std::chrono::milliseconds(200), std::chrono::steady_clock::now());
-  }
-
-  void DoRefreshAttempt(int attempt, std::chrono::milliseconds backoff,
-                        std::chrono::steady_clock::time_point refresh_started_at) {
-    static constexpr int kMaxRetries = 5;
-    static constexpr auto kMaxBackoff = std::chrono::milliseconds(10'000);
-    RefreshAttemptGuard guard(*this);
-    if (closed_.load()) return;
-
-    auto empty_session = AuthSession::MakeDefault({});
-    // TODO(lishuxu): Honor token-exchange-enabled and refresh via token exchange,
-    // matching Java.
-    auto result = OAuth2Util::FetchToken(*client_, *empty_session, refresh_properties_);
-    if (result.has_value()) {
-      auto& response = result.value();
-      {
-        std::unique_lock lock(mutex_);
-        UpdateTokenState(response, refresh_started_at);
-      }
-      ScheduleRefresh();
+    if (!scheduler_) {
       return;
     }
-
-    if (attempt + 1 < kMaxRetries && !closed_.load()) {
-      auto next_backoff =
-          std::min(std::chrono::duration_cast<std::chrono::milliseconds>(backoff * 2),
-                   kMaxBackoff);
-      std::weak_ptr<OAuth2Session> weak_self = shared_from_this();
-      auto retry_id = TokenRefreshScheduler::Instance().Schedule(
-          backoff, [weak_self = std::move(weak_self), next_attempt = attempt + 1,
-                    next_backoff, refresh_started_at] {
-            if (auto self = weak_self.lock()) {
-              self->DoRefreshAttempt(next_attempt, next_backoff, refresh_started_at);
-            }
-          });
-      scheduled_task_id_.store(retry_id);
+    // Refresh an already-expired initial token immediately.
+    if (auto delay = CalculateRefreshDelay()) {
+      ScheduleRefresh(*delay);
     }
   }
 
-  void ScheduleRefresh() {
-    if (!config_.keep_refreshed || closed_.load()) return;
-    auto delay = CalculateRefreshDelay();
-    if (delay < std::chrono::milliseconds::zero()) return;
+  // Complete one refresh, including HTTP retries, on the executor's worker.
+  std::optional<std::chrono::milliseconds> Refresh() {
+    RefreshAttemptGuard guard(*this);
+    if (!guard.IsActive()) {
+      return std::nullopt;
+    }
 
-    std::weak_ptr<OAuth2Session> weak_self = shared_from_this();
-    auto new_id = TokenRefreshScheduler::Instance().Schedule(
-        delay, [weak_self = std::move(weak_self)] {
-          if (auto self = weak_self.lock()) self->DoRefresh();
-        });
-    scheduled_task_id_.store(new_id);
+    auto result = RetryRunner<retry::StopRetryOn<>>({.num_retries = 5}).Run([this] {
+      return RefreshToken();
+    });
+    if (!result.has_value()) {
+      ICEBERG_LOG_WARN("Failed to refresh OAuth2 token: {}", result.error().message);
+      return std::nullopt;
+    }
+    return *result;
   }
 
-  std::chrono::milliseconds CalculateRefreshDelay() const {
+  Result<std::optional<std::chrono::milliseconds>> RefreshToken() {
+    {
+      std::lock_guard lock(refresh_mutex_);
+      if (closed_) {
+        return std::nullopt;
+      }
+    }
+    try {
+      auto request_started_at = std::chrono::steady_clock::now();
+      auto empty_session = AuthSession::MakeDefault({});
+      // TODO(lishuxu): Honor token-exchange-enabled when refreshing tokens.
+      ICEBERG_ASSIGN_OR_RAISE(
+          auto response,
+          OAuth2Util::FetchToken(*client_, *empty_session, refresh_properties_));
+      {
+        std::unique_lock lock(mutex_);
+        UpdateTokenState(response, request_started_at);
+      }
+      auto delay = CalculateRefreshDelay();
+      if (delay.has_value() && *delay <= std::chrono::milliseconds::zero()) {
+        return TokenExpired("Refreshed OAuth2 token is already expired");
+      }
+      return delay;
+    } catch (const std::exception& e) {
+      return UnknownError("OAuth2 token refresh threw: {}", e.what());
+    } catch (...) {
+      return UnknownError("OAuth2 token refresh threw a non-standard exception");
+    }
+  }
+
+  void ScheduleRefresh(std::chrono::milliseconds delay) {
+    ExecutorTask refresh([weak_self = weak_from_this()] {
+      if (auto self = weak_self.lock()) {
+        if (auto next_delay = self->Refresh()) {
+          self->ScheduleRefresh(*next_delay);
+        }
+      }
+    });
+    ::iceberg::internal::TaskSubmissionCallback on_submission([](Status status) {
+      if (!status.has_value()) {
+        ICEBERG_LOG_WARN("Failed to submit OAuth2 token refresh: {}",
+                         status.error().message);
+      }
+    });
+    scheduler_->Schedule(delay, std::move(refresh), std::move(on_submission));
+  }
+
+  /// Returns nullopt if expiration is unknown.
+  std::optional<std::chrono::milliseconds> CalculateRefreshDelay() const {
     std::shared_lock lock(mutex_);
-    auto now = std::chrono::steady_clock::now();
     if (expires_at_ == std::chrono::steady_clock::time_point{}) {
-      return std::chrono::milliseconds(-1);
+      return std::nullopt;
     }
-    if (expires_at_ <= now) return std::chrono::milliseconds::zero();
+    auto now = std::chrono::steady_clock::now();
+    if (expires_at_ <= now) {
+      return std::chrono::milliseconds::zero();
+    }
     auto expires_in =
         std::chrono::duration_cast<std::chrono::milliseconds>(expires_at_ - now);
     auto refresh_window = std::min(expires_in / 10, std::chrono::milliseconds(300'000));
@@ -264,19 +298,21 @@ class OAuth2Session final : public AuthSession,
   Config config_;
   AuthProperties refresh_properties_;
   std::shared_ptr<HttpClient> client_;
-  std::atomic<uint64_t> scheduled_task_id_{0};
-  std::atomic<bool> closed_{false};
+  bool closed_ = false;
   std::mutex refresh_mutex_;
   std::condition_variable refresh_cv_;
   int active_refresh_count_ = 0;
+  std::optional<::iceberg::internal::ScheduledExecutor> scheduler_;
 };
 
+/// Returns InvalidArgument if keep_refreshed is true without an executor.
 Result<std::shared_ptr<AuthSession>> MakeOAuth2Session(
     const OAuthTokenResponse& initial_token, const std::string& token_endpoint,
     const std::string& client_id, const std::string& client_secret,
     const std::string& scope, bool keep_refreshed,
     const std::unordered_map<std::string, std::string>& optional_oauth_params,
     std::shared_ptr<HttpClient> client,
-    std::optional<std::chrono::steady_clock::time_point> token_request_started_at);
+    std::optional<std::chrono::steady_clock::time_point> token_request_started_at,
+    Executor* refresh_executor);
 
 }  // namespace iceberg::rest::auth::internal

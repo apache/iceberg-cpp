@@ -58,14 +58,19 @@ class ICEBERG_REST_EXPORT RestCatalog final
       std::function<Result<std::shared_ptr<HttpClient>>(const RestCatalogProperties&)>;
 
   /// \brief Create a RestCatalog instance.
+  /// \param client_factory Optional HTTP client factory, called with the initial config
+  /// and then the merged server config. When empty, uses the default HTTP client.
+  /// \param auth_executor Borrowed OAuth2 refresh executor. With OAuth2 credentials,
+  /// token-refresh-enabled=true (default) requires it; null returns InvalidArgument.
+  /// Must enqueue asynchronously and outlive the catalog, its auth sessions and their
+  /// tasks.
   /// \param metrics_executor Optional non-owning executor for asynchronous REST metrics.
   /// It must outlive the catalog and all tables created by it. When null, REST metrics
   /// are reported synchronously.
-  /// \param client_factory Optional HTTP client factory, called with the initial config
-  /// and then the merged server config. When empty, uses the default HTTP client.
   static Result<std::shared_ptr<RestCatalog>> Make(const RestCatalogProperties& config,
-                                                   Executor* metrics_executor = nullptr,
-                                                   ClientFactory client_factory = {});
+                                                   ClientFactory client_factory = {},
+                                                   Executor* auth_executor = nullptr,
+                                                   Executor* metrics_executor = nullptr);
 
   std::string_view name() const override;
 

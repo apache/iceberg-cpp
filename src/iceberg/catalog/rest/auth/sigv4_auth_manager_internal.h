@@ -117,6 +117,8 @@ class ICEBERG_REST_EXPORT SigV4AuthManager : public AuthManager {
   explicit SigV4AuthManager(std::unique_ptr<AuthManager> delegate);
   ~SigV4AuthManager() override;
 
+  void SetAuthRefreshExecutor(Executor* executor) override;
+
   Result<std::shared_ptr<AuthSession>> InitSession(
       std::shared_ptr<HttpClient> init_client,
       const std::unordered_map<std::string, std::string>& properties) override;

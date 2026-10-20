@@ -19,18 +19,13 @@
 
 #include "iceberg/catalog/rest/auth/auth_session.h"
 
-#include <algorithm>
 #include <chrono>
-#include <condition_variable>
 #include <memory>
-#include <mutex>
-#include <shared_mutex>
 #include <utility>
 
 #include "iceberg/catalog/rest/auth/auth_properties.h"
 #include "iceberg/catalog/rest/auth/auth_session_internal.h"
 #include "iceberg/catalog/rest/auth/oauth2_util.h"
-#include "iceberg/catalog/rest/auth/token_refresh_scheduler.h"
 #include "iceberg/catalog/rest/http_client.h"
 #include "iceberg/util/macros.h"
 
@@ -67,10 +62,10 @@ Result<std::shared_ptr<AuthSession>> AuthSession::MakeOAuth2(
     const std::string& client_id, const std::string& client_secret,
     const std::string& scope, bool keep_refreshed,
     const std::unordered_map<std::string, std::string>& optional_oauth_params,
-    std::shared_ptr<HttpClient> client) {
+    std::shared_ptr<HttpClient> client, Executor* auth_executor) {
   return internal::MakeOAuth2Session(
       initial_token, token_endpoint, client_id, client_secret, scope, keep_refreshed,
-      optional_oauth_params, std::move(client), std::nullopt);
+      optional_oauth_params, std::move(client), std::nullopt, auth_executor);
 }
 
 Result<std::shared_ptr<AuthSession>> internal::MakeOAuth2Session(
@@ -79,14 +74,19 @@ Result<std::shared_ptr<AuthSession>> internal::MakeOAuth2Session(
     const std::string& scope, bool keep_refreshed,
     const std::unordered_map<std::string, std::string>& optional_oauth_params,
     std::shared_ptr<HttpClient> client,
-    std::optional<std::chrono::steady_clock::time_point> token_request_started_at) {
+    std::optional<std::chrono::steady_clock::time_point> token_request_started_at,
+    Executor* refresh_executor) {
+  ICEBERG_PRECHECK(!keep_refreshed || refresh_executor != nullptr,
+                   "OAuth2 token refresh is enabled but no auth executor was provided; "
+                   "pass an executor or set {}=false",
+                   AuthProperties::kKeepRefreshed.key());
   internal::OAuth2Session::Config config{
       .token_endpoint = token_endpoint,
       .client_id = client_id,
       .client_secret = client_secret,
       .scope = scope,
       .optional_oauth_params = optional_oauth_params,
-      .keep_refreshed = keep_refreshed,
+      .refresh_executor = keep_refreshed ? refresh_executor : nullptr,
   };
   ICEBERG_ASSIGN_OR_RAISE(auto session, internal::OAuth2Session::Make(
                                             initial_token, std::move(config),

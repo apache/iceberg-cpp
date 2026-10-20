@@ -140,6 +140,10 @@ Result<std::unique_ptr<AuthManager>> MakeBasicAuthManager(
 /// \brief OAuth2 authentication manager.
 class OAuth2Manager : public AuthManager {
  public:
+  void SetAuthRefreshExecutor(Executor* executor) override {
+    refresh_executor_ = executor;
+  }
+
   Result<std::shared_ptr<AuthSession>> InitSession(
       std::shared_ptr<HttpClient> init_client,
       const std::unordered_map<std::string, std::string>& properties) override {
@@ -178,10 +182,7 @@ class OAuth2Manager : public AuthManager {
     refresh_client_ = std::move(shared_client);
     // Reuse the token response and start time from the init phase.
     if (auth_response_.has_value()) {
-      return internal::MakeOAuth2Session(
-          *auth_response_, config.oauth2_server_uri(), config.client_id(),
-          config.client_secret(), config.scope(), config.keep_refreshed(),
-          config.optional_oauth_params(), refresh_client_, start_time_);
+      return MakeSession(*auth_response_, config, config.keep_refreshed(), start_time_);
     }
 
     // TODO(lishuxu): Honor token-refresh-enabled for catalog bearer tokens, matching
@@ -192,10 +193,7 @@ class OAuth2Manager : public AuthManager {
           .token_type = "bearer",
           .issued_token_type = AuthProperties::kAccessTokenType,
       };
-      return AuthSession::MakeOAuth2(token_response, config.oauth2_server_uri(),
-                                     config.client_id(), config.client_secret(),
-                                     config.scope(), /*keep_refreshed=*/false,
-                                     config.optional_oauth_params(), refresh_client_);
+      return MakeSession(token_response, config, /*keep_refreshed=*/false);
     }
 
     // Fetch a new token using client_credentials grant.
@@ -206,10 +204,7 @@ class OAuth2Manager : public AuthManager {
       ICEBERG_ASSIGN_OR_RAISE(
           token_response,
           OAuth2Util::FetchToken(*refresh_client_, *base_session, config));
-      return AuthSession::MakeOAuth2(token_response, config.oauth2_server_uri(),
-                                     config.client_id(), config.client_secret(),
-                                     config.scope(), config.keep_refreshed(),
-                                     config.optional_oauth_params(), refresh_client_);
+      return MakeSession(token_response, config, config.keep_refreshed());
     }
 
     return MakeSession(AccessTokenResponse(""), config, /*keep_refreshed=*/false);
@@ -256,13 +251,16 @@ class OAuth2Manager : public AuthManager {
 
   Result<std::shared_ptr<AuthSession>> MakeSession(
       const OAuthTokenResponse& token_response, const AuthProperties& config,
-      bool keep_refreshed) const {
+      bool keep_refreshed,
+      std::optional<std::chrono::steady_clock::time_point> token_request_started_at =
+          std::nullopt) const {
     ICEBERG_PRECHECK(refresh_client_ != nullptr,
                      "OAuth2 catalog session must be initialized before child sessions");
-    return AuthSession::MakeOAuth2(token_response, config.oauth2_server_uri(),
-                                   config.client_id(), config.client_secret(),
-                                   config.scope(), keep_refreshed,
-                                   config.optional_oauth_params(), refresh_client_);
+    return internal::MakeOAuth2Session(token_response, config.oauth2_server_uri(),
+                                       config.client_id(), config.client_secret(),
+                                       config.scope(), keep_refreshed,
+                                       config.optional_oauth_params(), refresh_client_,
+                                       token_request_started_at, refresh_executor_);
   }
 
   Result<std::shared_ptr<AuthSession>> MaybeCreateChildSession(
@@ -319,6 +317,7 @@ class OAuth2Manager : public AuthManager {
   std::optional<OAuthTokenResponse> auth_response_;
   std::optional<std::chrono::steady_clock::time_point> start_time_;
   std::shared_ptr<HttpClient> refresh_client_;
+  Executor* refresh_executor_ = nullptr;
 };
 
 Result<std::unique_ptr<AuthManager>> MakeOAuth2Manager(
