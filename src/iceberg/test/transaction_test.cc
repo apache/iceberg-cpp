@@ -35,6 +35,7 @@
 #include "iceberg/test/update_test_base.h"
 #include "iceberg/transform.h"
 #include "iceberg/type.h"
+#include "iceberg/update/expire_snapshots.h"
 #include "iceberg/update/fast_append.h"
 #include "iceberg/update/set_snapshot.h"
 #include "iceberg/update/update_properties.h"
@@ -113,6 +114,42 @@ TEST_F(TransactionTest, MultipleUpdatesInTransaction) {
       auto expected_sort_order,
       SortOrder::Make(sort_order->order_id(), std::move(expected_fields)));
   EXPECT_EQ(*sort_order, *expected_sort_order);
+}
+
+class MinimalTransactionTest : public MinimalUpdateTestBase {};
+
+TEST_F(MinimalTransactionTest, ExpireUnusedSchemaThenAddColumn) {
+  // Add a column and drop it again: the current schema goes back to id 0 and
+  // schema 1 is left unused.
+  ICEBERG_UNWRAP_OR_FAIL(auto add_column, table_->NewUpdateSchema());
+  add_column->AddColumn("dropped", int64());
+  ASSERT_THAT(add_column->Commit(), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(table_, catalog_->LoadTable(table_ident_));
+  ICEBERG_UNWRAP_OR_FAIL(auto drop_column, table_->NewUpdateSchema());
+  drop_column->DeleteColumn("dropped");
+  ASSERT_THAT(drop_column->Commit(), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(table_, catalog_->LoadTable(table_ident_));
+  ASSERT_EQ(table_->metadata()->current_schema_id, 0);
+  ASSERT_EQ(table_->metadata()->schemas.size(), 2);
+
+  // Expiring removes schema 1, and the schema change in the same transaction is
+  // assigned the freed id.
+  ICEBERG_UNWRAP_OR_FAIL(auto txn, table_->NewTransaction());
+  ICEBERG_UNWRAP_OR_FAIL(auto expire, txn->NewExpireSnapshots());
+  expire->CleanExpiredMetadata(true);
+  ASSERT_THAT(expire->Commit(), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto update_schema, txn->NewUpdateSchema());
+  update_schema->AddColumn("added", int64());
+  ASSERT_THAT(update_schema->Commit(), IsOk());
+  ASSERT_THAT(txn->Commit(), IsOk());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto reloaded, catalog_->LoadTable(table_ident_));
+  ICEBERG_UNWRAP_OR_FAIL(auto schema, reloaded->schema());
+  EXPECT_EQ(schema->schema_id(), 1);
+  ICEBERG_UNWRAP_OR_FAIL(auto added, schema->FindFieldByName("added"));
+  EXPECT_TRUE(added.has_value());
+  ICEBERG_UNWRAP_OR_FAIL(auto dropped, schema->FindFieldByName("dropped"));
+  EXPECT_FALSE(dropped.has_value());
 }
 
 class TransactionRetryTest : public UpdateTestBase {
