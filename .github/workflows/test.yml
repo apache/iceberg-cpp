@@ -25,12 +25,17 @@ on:
       - '**'
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
-    paths-ignore:
-      - '.asf.yaml'
-      - '.devcontainer/**'
-      - '**/*.md'
-      - 'dev/**'
-      - 'mkdocs/**'
+    paths:
+      # Run for code/build changes and this suite's workflow dependencies.
+      - '**'
+      - '!.asf.yaml'
+      - '!.devcontainer/**'
+      - '!.github/**'
+      - '!**/*.md'
+      - '!dev/**'
+      - '!mkdocs/**'
+      - '.github/workflows/test.yml'
+      - '.github/actions/**'
 
 concurrency:
   group: ${{ github.repository }}-${{ github.head_ref || github.sha }}-${{ github.workflow }}
