@@ -154,9 +154,9 @@ class ICEBERG_EXPORT RowDelta : public MergingSnapshotUpdate {
   /// \return This RowDelta for method chaining.
   RowDelta& ValidateNoConflictingDeleteFiles();
 
+ protected:
   std::string operation() override;
 
- protected:
   Status Validate(const TableMetadata& current_metadata,
                   const std::shared_ptr<Snapshot>& snapshot) override;
 

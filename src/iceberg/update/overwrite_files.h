@@ -177,9 +177,9 @@ class ICEBERG_EXPORT OverwriteFiles : public MergingSnapshotUpdate {
   /// \return This OverwriteFiles for method chaining.
   OverwriteFiles& CaseSensitive(bool case_sensitive);
 
+ protected:
   std::string operation() override;
 
- protected:
   Status Validate(const TableMetadata& current_metadata,
                   const std::shared_ptr<Snapshot>& snapshot) override;
 

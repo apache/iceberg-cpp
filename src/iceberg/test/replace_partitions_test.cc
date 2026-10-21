@@ -247,7 +247,12 @@ class ReplacePartitionsTest : public UpdateTestBase {
 
 TEST_F(ReplacePartitionsTest, OperationIsOverwrite) {
   ICEBERG_UNWRAP_OR_FAIL(auto op, NewReplace());
-  EXPECT_EQ(op->operation(), DataOperation::kOverwrite);
+  op->AddFile(file_a_);
+  ASSERT_THAT(op->Commit(), IsOk());
+  ASSERT_THAT(table_->Refresh(), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto snapshot, table_->current_snapshot());
+  EXPECT_EQ(snapshot->summary.at(SnapshotSummaryFields::kOperation),
+            DataOperation::kOverwrite);
 }
 
 // A replace created from a transaction commits with the rest of the transaction.

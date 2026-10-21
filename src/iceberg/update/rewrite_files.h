@@ -170,9 +170,9 @@ class ICEBERG_EXPORT RewriteFiles : public MergingSnapshotUpdate {
   /// \return this for method chaining
   RewriteFiles& ValidateFromSnapshot(int64_t snapshot_id);
 
+ protected:
   std::string operation() override;
 
- protected:
   Status Validate(const TableMetadata& current_metadata,
                   const std::shared_ptr<Snapshot>& snapshot) override;
 

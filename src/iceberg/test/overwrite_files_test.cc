@@ -167,13 +167,12 @@ TEST_F(OverwriteFilesTest, DeleteAndAddCommit) {
   ICEBERG_UNWRAP_OR_FAIL(auto op, NewOverwrite());
   op->DeleteFile(file_a_);
   op->AddFile(file_b_);
-  const std::string expected_operation = op->operation();
   EXPECT_THAT(op->Commit(), IsOk());
 
   EXPECT_THAT(table_->Refresh(), IsOk());
   ICEBERG_UNWRAP_OR_FAIL(auto snapshot, table_->current_snapshot());
-  EXPECT_EQ(snapshot->summary.at(SnapshotSummaryFields::kOperation), expected_operation);
-  EXPECT_EQ(expected_operation, DataOperation::kOverwrite);
+  EXPECT_EQ(snapshot->summary.at(SnapshotSummaryFields::kOperation),
+            DataOperation::kOverwrite);
   EXPECT_EQ(snapshot->summary.at(SnapshotSummaryFields::kAddedDataFiles), "1");
   EXPECT_EQ(snapshot->summary.at(SnapshotSummaryFields::kDeletedDataFiles), "1");
 }
@@ -196,7 +195,6 @@ TEST_F(OverwriteFilesTest, EmptyCommit) {
   CommitFileA();
 
   ICEBERG_UNWRAP_OR_FAIL(auto op, NewOverwrite());
-  EXPECT_EQ(op->operation(), DataOperation::kOverwrite);
   EXPECT_THAT(op->Commit(), IsOk());
 
   EXPECT_THAT(table_->Refresh(), IsOk());
@@ -283,11 +281,12 @@ TEST_F(OverwriteFilesTest, BulkDeleteCommit) {
   ICEBERG_UNWRAP_OR_FAIL(auto op, NewOverwrite());
   op->DeleteFiles(data_files, delete_files);
   op->AddFile(file_b_);
-  EXPECT_EQ(op->operation(), DataOperation::kOverwrite);
   EXPECT_THAT(op->Commit(), IsOk());
 
   EXPECT_THAT(table_->Refresh(), IsOk());
   ICEBERG_UNWRAP_OR_FAIL(auto snapshot, table_->current_snapshot());
+  EXPECT_EQ(snapshot->summary.at(SnapshotSummaryFields::kOperation),
+            DataOperation::kOverwrite);
   EXPECT_EQ(snapshot->summary.at(SnapshotSummaryFields::kDeletedDataFiles), "1");
   EXPECT_EQ(snapshot->summary.at(SnapshotSummaryFields::kAddedDataFiles), "1");
 }
@@ -623,18 +622,26 @@ TEST_F(OverwriteFilesTest, OperationMatrix) {
 
   int index = 0;
   for (const auto& c : cases) {
+    SCOPED_TRACE("case index " + std::to_string(index));
+    auto file_to_delete =
+        MakeDataFile("/data/tt_del" + std::to_string(index) + ".parquet", 1L);
+    if (c.delete_file || c.row_filter) {
+      CommitFastAppend(file_to_delete);
+    }
     ICEBERG_UNWRAP_OR_FAIL(auto op, NewOverwrite());
     if (c.add) {
       op->AddFile(MakeDataFile("/data/tt_add" + std::to_string(index) + ".parquet", 1L));
     }
     if (c.delete_file) {
-      op->DeleteFile(
-          MakeDataFile("/data/tt_del" + std::to_string(index) + ".parquet", 1L));
+      op->DeleteFile(file_to_delete);
     }
     if (c.row_filter) {
       op->OverwriteByRowFilter(Expressions::Equal("x", Literal::Long(1L)));
     }
-    EXPECT_EQ(op->operation(), c.expected) << "case index " << index;
+    ASSERT_THAT(op->Commit(), IsOk());
+    ASSERT_THAT(table_->Refresh(), IsOk());
+    ICEBERG_UNWRAP_OR_FAIL(auto snapshot, table_->current_snapshot());
+    EXPECT_EQ(snapshot->summary.at(SnapshotSummaryFields::kOperation), c.expected);
     ++index;
   }
 }

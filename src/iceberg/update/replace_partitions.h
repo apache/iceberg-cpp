@@ -114,9 +114,9 @@ class ICEBERG_EXPORT ReplacePartitions : public MergingSnapshotUpdate {
   /// \return Reference to this for method chaining
   ReplacePartitions& ValidateNoConflictingDeletes();
 
+ protected:
   std::string operation() override;
 
- protected:
   Status Validate(const TableMetadata& current_metadata,
                   const std::shared_ptr<Snapshot>& snapshot) override;
 

@@ -88,9 +88,9 @@ class ICEBERG_EXPORT DeleteFiles : public MergingSnapshotUpdate {
   /// \return This DeleteFiles for method chaining.
   DeleteFiles& ValidateFilesExist();
 
+ protected:
   std::string operation() override;
 
- protected:
   Status Validate(const TableMetadata& current_metadata,
                   const std::shared_ptr<Snapshot>& snapshot) override;
 

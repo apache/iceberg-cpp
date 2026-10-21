@@ -66,6 +66,7 @@ class ICEBERG_EXPORT MergeAppend : public MergingSnapshotUpdate {
   /// \return This MergeAppend for method chaining.
   MergeAppend& AppendManifest(const ManifestFile& manifest);
 
+ protected:
   std::string operation() override;
 
  private:
