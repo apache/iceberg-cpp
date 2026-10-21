@@ -58,7 +58,6 @@
 #include "iceberg/test/matchers.h"
 #include "iceberg/test/std_io.h"
 #include "iceberg/test/temp_file_test_base.h"
-#include "iceberg/test/test_resource.h"
 #include "iceberg/type.h"
 #include "iceberg/util/checked_cast.h"
 #include "iceberg/util/macros.h"
@@ -1191,14 +1190,69 @@ TEST_F(ParquetReaderTest, ReadSplitWithoutDictionaryPages) {
 }
 
 TEST_F(ParquetReaderTest, ReadSplitsWithOmittedRowGroupOffsets) {
-  file_io_ = arrow::ArrowFileSystemFileIO::MakeLocalFileIO();
-  temp_parquet_file_ = GetResourcePath("split-without-row-group-offsets.parquet");
+  auto arrow_schema = ::arrow::schema(
+      {::arrow::field("id", ::arrow::int32(), /*nullable=*/false,
+                      ::arrow::KeyValueMetadata::Make({"PARQUET:field_id"}, {"1"}))});
+  auto table = ::arrow::Table::Make(
+      arrow_schema,
+      {::arrow::json::ArrayFromJSONString(::arrow::int32(), "[1, 2, 3, 4, 5, 6]")
+           .ValueOrDie()});
+  ::parquet::WriterProperties::Builder properties_builder;
+  properties_builder.version(::parquet::ParquetVersion::PARQUET_2_6)
+      ->compression(::parquet::Compression::UNCOMPRESSED);
+  auto properties = properties_builder.build();
+  ICEBERG_UNWRAP_OR_FAIL(auto original_output,
+                         arrow::OpenArrowOutputStream(file_io_, temp_parquet_file_));
+  ASSERT_TRUE(::parquet::arrow::WriteTable(*table, ::arrow::default_memory_pool(),
+                                           original_output, /*chunk_size=*/2, properties)
+                  .ok());
+  ASSERT_TRUE(original_output->Close().ok());
+  ICEBERG_UNWRAP_OR_FAIL(auto original_input,
+                         arrow::OpenArrowInputStream(file_io_, temp_parquet_file_));
+  auto original_metadata = ::parquet::ReadMetaData(original_input);
+  auto original_size = original_input->GetSize().ValueOrDie();
+  auto pages = original_input->ReadAt(0, original_size - original_metadata->size() - 8)
+                   .ValueOrDie();
+  ASSERT_TRUE(original_input->Close().ok());
+
+  auto builder =
+      ::parquet::FileMetaDataBuilder::Make(original_metadata->schema(), properties);
+  for (int i = 0; i < original_metadata->num_row_groups(); ++i) {
+    auto original_row_group = original_metadata->RowGroup(i);
+    auto row_group = builder->AppendRowGroup();
+    row_group->set_num_rows(original_row_group->num_rows());
+    for (int j = 0; j < original_row_group->num_columns(); ++j) {
+      auto column = original_row_group->ColumnChunk(j);
+      row_group->NextColumnChunk()->Finish(
+          column->num_values(), column->dictionary_page_offset(),
+          /*index_page_offset=*/0, column->data_page_offset(),
+          column->total_compressed_size(), column->total_uncompressed_size(),
+          column->has_dictionary_page(), /*dictionary_fallback=*/false, {}, {});
+    }
+    // RowGroupMetaDataBuilder::Finish fills in the optional file_offset and
+    // total_compressed_size. Leave them unset to exercise legacy footer handling.
+  }
+  auto rebuilt_metadata = builder->Finish(original_metadata->key_value_metadata());
+  ICEBERG_UNWRAP_OR_FAIL(auto output,
+                         arrow::OpenArrowOutputStream(file_io_, temp_parquet_file_));
+  ASSERT_TRUE(output->Write(pages).ok());
+  ::parquet::WriteFileMetaData(*rebuilt_metadata, output.get());
+  ASSERT_TRUE(output->Close().ok());
+
   ICEBERG_UNWRAP_OR_FAIL(auto input,
                          arrow::OpenArrowInputStream(file_io_, temp_parquet_file_));
   auto metadata = ::parquet::ReadMetaData(input);
+  ASSERT_EQ(metadata->num_columns(), 1);
+  ASSERT_EQ(metadata->num_rows(), 6);
   ASSERT_EQ(metadata->num_row_groups(), 3);
   for (int i = 0; i < metadata->num_row_groups(); ++i) {
-    ASSERT_EQ(metadata->RowGroup(i)->file_offset(), 0);
+    auto row_group = metadata->RowGroup(i);
+    ASSERT_EQ(row_group->num_rows(), 2);
+    ASSERT_EQ(row_group->file_offset(), 0);
+    ASSERT_EQ(row_group->total_compressed_size(), 0);
+    auto column = row_group->ColumnChunk(0);
+    ASSERT_TRUE(column->has_dictionary_page());
+    ASSERT_LT(column->dictionary_page_offset(), column->data_page_offset());
   }
   auto boundary = static_cast<size_t>(
       metadata->RowGroup(1)->ColumnChunk(0)->dictionary_page_offset());

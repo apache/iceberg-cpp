@@ -34,7 +34,7 @@ namespace iceberg::parquet {
 bool NeedsRowPositions(const StructType& struct_type,
                        const arrow::MetadataColumnContext& metadata_context);
 
-/// \brief Return the first column's starting page, matching parquet-mr's
+/// \brief Return the first column's starting page, matching parquet-java's
 /// BlockMetaData.getStartingPos(). Reject missing or out-of-file starts.
 Result<int64_t> RowGroupStart(const ::parquet::RowGroupMetaData& row_group,
                               int64_t file_size);
