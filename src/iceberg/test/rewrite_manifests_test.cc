@@ -28,6 +28,7 @@
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
+#include <utility>
 #include <vector>
 
 #include <gmock/gmock.h>
@@ -57,6 +58,26 @@
 namespace iceberg {
 
 namespace {
+
+class TestRewriteManifests : public RewriteManifests {
+ public:
+  static Result<std::shared_ptr<TestRewriteManifests>> Make(
+      const std::shared_ptr<Table>& table) {
+    ICEBERG_ASSIGN_OR_RAISE(auto ctx,
+                            TransactionContext::Make(table, TransactionKind::kUpdate));
+    return std::shared_ptr<TestRewriteManifests>(
+        new TestRewriteManifests(table->full_name(), std::move(ctx)));
+  }
+
+  Result<std::vector<ManifestFile>> ApplyForTest(
+      const TableMetadata& metadata, const std::shared_ptr<Snapshot>& snapshot) {
+    return RewriteManifests::Apply(metadata, snapshot);
+  }
+
+ private:
+  TestRewriteManifests(std::string table_name, std::shared_ptr<TransactionContext> ctx)
+      : RewriteManifests(std::move(table_name), std::move(ctx)) {}
+};
 
 struct ManifestReadState {
   std::unordered_set<std::string> source_paths;
@@ -1035,9 +1056,10 @@ TEST_P(RewriteManifestsTest, RewriteAfterV2ToV3UpgradeAssignsRowIds) {
 TEST_P(RewriteManifestsTest, RewritesWhenClusterByChangesAfterApply) {
   ASSERT_THAT(AppendFiles({file_a_, file_b_}), IsOk());
   ICEBERG_UNWRAP_OR_FAIL(auto snapshot, table_->current_snapshot());
-  ICEBERG_UNWRAP_OR_FAIL(auto rewrite, table_->NewRewriteManifests());
+  ICEBERG_UNWRAP_OR_FAIL(auto rewrite, TestRewriteManifests::Make(table_));
   rewrite->ClusterBy([](const DataFile&) { return "all"; });
-  ICEBERG_UNWRAP_OR_FAIL(auto prepared, rewrite->Apply(*table_->metadata(), snapshot));
+  ICEBERG_UNWRAP_OR_FAIL(auto prepared,
+                         rewrite->ApplyForTest(*table_->metadata(), snapshot));
   ASSERT_EQ(prepared.size(), 1U);
   EXPECT_TRUE(FileExists(prepared[0].manifest_path));
 
@@ -1061,12 +1083,13 @@ TEST_P(RewriteManifestsTest, RewritesWhenPredicateChangesAfterApply) {
   ICEBERG_UNWRAP_OR_FAIL(auto before, CurrentManifests());
   ASSERT_EQ(before.size(), 2U);
   ICEBERG_UNWRAP_OR_FAIL(auto snapshot, table_->current_snapshot());
-  ICEBERG_UNWRAP_OR_FAIL(auto rewrite, table_->NewRewriteManifests());
+  ICEBERG_UNWRAP_OR_FAIL(auto rewrite, TestRewriteManifests::Make(table_));
   rewrite->ClusterBy([](const DataFile&) { return "all"; });
   rewrite->RewriteIf([path = before[0].manifest_path](const ManifestFile& manifest) {
     return manifest.manifest_path == path;
   });
-  ICEBERG_UNWRAP_OR_FAIL(auto prepared, rewrite->Apply(*table_->metadata(), snapshot));
+  ICEBERG_UNWRAP_OR_FAIL(auto prepared,
+                         rewrite->ApplyForTest(*table_->metadata(), snapshot));
 
   rewrite->RewriteIf([](const ManifestFile&) { return false; });
   ASSERT_THAT(rewrite->Commit(), IsOk());
@@ -1435,19 +1458,32 @@ TEST_P(RewriteManifestsTest, ClosesAndCleansCopiedManifestOnFailure) {
   ICEBERG_UNWRAP_OR_FAIL(auto before, CurrentManifests());
   ASSERT_EQ(before.size(), 1U);
   ICEBERG_UNWRAP_OR_FAIL(
-      auto invalid_manifest,
-      WriteAddedManifest("copy-invalid-entry", {file_a_}, snapshot->snapshot_id));
+      auto added_manifest,
+      WriteAddedManifest("copy-added-entry", {file_a_}, snapshot->snapshot_id));
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto deleted_manifest,
+      WriteDeletedManifest("copy-deleted-entry", {file_a_}, snapshot->snapshot_id));
   // Counts pass AddManifest validation; reading the entries must still reject it.
-  invalid_manifest.added_files_count = 0;
-  invalid_manifest.existing_files_count = 1;
+  added_manifest.added_files_count = 0;
+  added_manifest.existing_files_count = 1;
+  deleted_manifest.deleted_files_count = 0;
+  deleted_manifest.existing_files_count = 1;
+  deleted_manifest.added_snapshot_id = kInvalidSnapshotId;
   ICEBERG_UNWRAP_OR_FAIL(
       auto valid_manifest,
       WriteExistingManifest("copy-close-failure", snapshot->snapshot_id, {file_a_}));
 
   for (bool explicit_transaction : {false, true}) {
-    for (bool invalid_entry : {false, true}) {
-      SCOPED_TRACE(std::format("explicit_transaction={}, invalid_entry={}",
-                               explicit_transaction, invalid_entry));
+    for (const auto& [source, error_message] :
+         {std::pair{&valid_manifest, "Injected rewrite manifest close failure"},
+          std::pair{&added_manifest,
+                    "Invalid manifest entry status: ADDED (allowed status: EXISTING)"},
+          std::pair{
+              &deleted_manifest,
+              "Invalid manifest entry status: DELETED (allowed status: EXISTING)"}}) {
+      const bool invalid_entry = source != &valid_manifest;
+      SCOPED_TRACE(std::format("explicit_transaction={}, error={}", explicit_transaction,
+                               error_message));
       auto state = std::make_shared<ManifestWriteFailureState>();
       state->fail_on_manifest_close = invalid_entry ? 0 : 1;
       BindTableWithFileIO(std::make_shared<ManifestWriteFailureFileIO>(
@@ -1460,14 +1496,11 @@ TEST_P(RewriteManifestsTest, ClosesAndCleansCopiedManifestOnFailure) {
       } else {
         ICEBERG_UNWRAP_OR_FAIL(rewrite, table_->NewRewriteManifests());
       }
-      const auto& source = invalid_entry ? invalid_manifest : valid_manifest;
-      rewrite->DeleteManifest(before[0]).AddManifest(source);
+      rewrite->DeleteManifest(before[0]).AddManifest(*source);
       auto result = rewrite->Commit();
       EXPECT_THAT(result, IsError(invalid_entry ? ErrorKind::kValidationFailed
                                                 : ErrorKind::kIOError));
-      EXPECT_THAT(result, HasErrorMessage(
-                              invalid_entry ? "Cannot add manifest with added files"
-                                            : "Injected rewrite manifest close failure"));
+      EXPECT_THAT(result, HasErrorMessage(error_message));
       if (txn) {
         EXPECT_EQ(txn->state(), TransactionState::kFailed);
       }
@@ -1478,7 +1511,7 @@ TEST_P(RewriteManifestsTest, ClosesAndCleansCopiedManifestOnFailure) {
       EXPECT_TRUE(state->deleted_open_files.empty());
       EXPECT_THAT(state->deleted_files, ::testing::Contains(state->manifest_outputs[0]));
       EXPECT_FALSE(FileExists(state->manifest_outputs[0]));
-      EXPECT_TRUE(FileExists(source.manifest_path));
+      EXPECT_TRUE(FileExists(source->manifest_path));
       ICEBERG_UNWRAP_OR_FAIL(auto after, CurrentManifests());
       EXPECT_EQ(after, before);
     }

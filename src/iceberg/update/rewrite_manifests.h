@@ -91,6 +91,7 @@ class ICEBERG_EXPORT RewriteManifests : public SnapshotUpdate {
   /// be cleaned up on expiry. This update does not delete the original on failure.
   RewriteManifests& AddManifest(const ManifestFile& manifest);
 
+ protected:
   std::string operation() override;
 
   Result<std::vector<ManifestFile>> Apply(
@@ -100,10 +101,10 @@ class ICEBERG_EXPORT RewriteManifests : public SnapshotUpdate {
   void SetSummaryProperty(const std::string& property, const std::string& value) override;
   Status CleanUncommitted(const std::unordered_set<std::string>& committed) override;
 
- private:
   explicit RewriteManifests(std::string table_name,
                             std::shared_ptr<TransactionContext> ctx);
 
+ private:
   bool RequiresRewrite(const std::unordered_set<ManifestFile>& current_manifests) const;
   bool MatchesPredicate(const ManifestFile& manifest) const;
   Status ValidateDeletedManifests(

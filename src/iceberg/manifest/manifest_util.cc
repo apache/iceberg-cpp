@@ -118,10 +118,12 @@ Result<ManifestFile> CopyRewriteManifest(
   for (auto& entry : entries) {
     // A rewritten added manifest may only contain existing entries.
     if (entry.status == ManifestStatus::kAdded) {
-      return ValidationFailed("Cannot add manifest with added files");
+      return ValidationFailed(
+          "Invalid manifest entry status: ADDED (allowed status: EXISTING)");
     }
     if (entry.status == ManifestStatus::kDeleted) {
-      return ValidationFailed("Cannot add manifest with deleted files");
+      return ValidationFailed(
+          "Invalid manifest entry status: DELETED (allowed status: EXISTING)");
     }
     if (source_format_version == 1) {
       // V1 does not persist sequence numbers. Materialize its legacy defaults
