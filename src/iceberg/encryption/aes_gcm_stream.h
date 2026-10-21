@@ -35,6 +35,13 @@
 namespace iceberg {
 
 /// \brief AES GCM Stream format constants.
+///
+/// AGS1 stores the block length in its header. This implementation only reads and
+/// writes 1 MiB blocks, matching Java, rather than supporting other block lengths.
+///
+/// For Java compatibility, an empty file contains one zero-length plaintext block
+/// with a nonce and tag. The AGS1 spec describes a non-empty last block and does not
+/// explicitly define this empty-file representation.
 struct AesGcmStream {
   static constexpr int32_t kPlainBlockSize = 1024 * 1024;
   static constexpr int32_t kNonceLength = 12;

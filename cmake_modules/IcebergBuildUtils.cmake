@@ -275,7 +275,8 @@ endfunction()
 
 function(iceberg_install_all_headers PATH)
   set(options)
-  set(one_value_args)
+  # HEADER_GROUP labels optional headers for ci/scripts/generate_public_headers.py.
+  set(one_value_args HEADER_GROUP)
   set(multi_value_args PATTERN)
   cmake_parse_arguments(ARG
                         "${options}"

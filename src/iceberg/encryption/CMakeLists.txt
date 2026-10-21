@@ -15,4 +15,12 @@
 # specific language governing permissions and limitations
 # under the License.
 
-iceberg_install_all_headers(iceberg/encryption)
+iceberg_install_all_headers(iceberg/encryption PATTERN encrypted_key.h
+                            standard_key_metadata.h)
+if(ICEBERG_BUILD_BUNDLE AND ICEBERG_ENCRYPTION)
+  iceberg_install_all_headers(iceberg/encryption
+                              PATTERN
+                              aes_gcm_stream.h
+                              HEADER_GROUP
+                              ICEBERG_PUBLIC_HEADERS_ENCRYPTION)
+endif()

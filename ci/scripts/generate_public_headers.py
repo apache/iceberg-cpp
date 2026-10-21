@@ -19,20 +19,21 @@
 
 """Regenerate src/iceberg/cpp20_compatibility_internal.h.
 
-The generated header includes every public header, i.e. every header that
-iceberg_install_all_headers() installs: *.h files in a directory whose
-CMakeLists.txt calls it, except those with "internal" in their name. This script
-applies the same rule, so the list never has to be maintained by hand. The
-generate-public-headers pre-commit hook runs it and fails when the checked-in
-header is out of date.
+The generated header covers all possible public headers installed by
+iceberg_install_all_headers(): *.h and *.hpp files matching its PATTERN arguments,
+except those with "internal" in their name. The generate-public-headers pre-commit
+hook runs this script and fails when the checked-in header is out of date.
 
-Headers of optional components are wrapped in a macro that
-cpp20_compatibility_test defines only when that component is built.
+Headers of optional components are grouped by directory or an explicit
+HEADER_GROUP in the installation call. cpp20_compatibility_test defines each
+group's macro only when the corresponding component is built.
 """
 
 from __future__ import annotations
 
+import fnmatch
 import re
+import shlex
 import sys
 from pathlib import Path
 
@@ -51,14 +52,7 @@ OPTIONAL_COMPONENTS = [
     ("iceberg/parquet", "ICEBERG_PUBLIC_HEADERS_BUNDLE"),
 ]
 
-# Individual headers of an optional component that lives in a directory which is
-# otherwise always built. iceberg/encryption holds both the metadata types, which are
-# part of core, and the crypto implementation, which needs ICEBERG_ENCRYPTION.
-OPTIONAL_HEADERS = {
-    "iceberg/encryption/aes_gcm_stream.h": "ICEBERG_PUBLIC_HEADERS_ENCRYPTION",
-}
-
-INSTALL_CALL = re.compile(r"iceberg_install_all_headers\(\s*([^\s)]+)")
+INSTALL_CALL = re.compile(r"iceberg_install_all_headers\((.*?)\)", re.DOTALL)
 
 LICENSE = """\
 /*
@@ -82,9 +76,9 @@ LICENSE = """\
 """
 
 
-def component_of(install_path: str, header_path: str | None = None) -> str | None:
-    if header_path is not None and header_path in OPTIONAL_HEADERS:
-        return OPTIONAL_HEADERS[header_path]
+def component_of(install_path: str, header_group: str | None = None) -> str | None:
+    if header_group:
+        return header_group
     for prefix, macro in OPTIONAL_COMPONENTS:
         if install_path == prefix or install_path.startswith(prefix + "/"):
             return macro
@@ -94,14 +88,29 @@ def component_of(install_path: str, header_path: str | None = None) -> str | Non
 def collect_public_headers() -> dict[str | None, list[str]]:
     headers: dict[str | None, list[str]] = {}
     for cmake_file in sorted(SRC.rglob("CMakeLists.txt")):
-        for install_path in INSTALL_CALL.findall(cmake_file.read_text()):
+        for call in INSTALL_CALL.findall(cmake_file.read_text()):
+            tokens = shlex.split(call, comments=True)
+            if not tokens:
+                continue
+            install_path = tokens[0]
+            try:
+                pattern_start = tokens.index("PATTERN") + 1
+            except ValueError:
+                pattern_start = len(tokens)
+            try:
+                group_start = tokens.index("HEADER_GROUP")
+                header_group = tokens[group_start + 1]
+            except ValueError:
+                group_start = len(tokens)
+                header_group = None
+            patterns = tokens[pattern_start:group_start] or ["*.h", "*.hpp"]
+            group = component_of(install_path, header_group)
             for header in cmake_file.parent.iterdir():
-                if header.suffix != ".h" or "internal" in header.name:
+                if not any(fnmatch.fnmatch(header.name, pattern) for pattern in patterns):
                     continue
-                header_path = f"{install_path}/{header.name}"
-                headers.setdefault(component_of(install_path, header_path), []).append(
-                    header_path
-                )
+                if header.suffix not in {".h", ".hpp"} or "internal" in header.name:
+                    continue
+                headers.setdefault(group, []).append(f"{install_path}/{header.name}")
     return headers
 
 
@@ -117,7 +126,9 @@ def render(headers: dict[str | None, list[str]]) -> str:
         "",
     ]
     lines += [f'#include "{h}"' for h in sorted(headers.get(None, []))]
-    optional_macros = {m for _, m in OPTIONAL_COMPONENTS} | set(OPTIONAL_HEADERS.values())
+    optional_macros = {m for _, m in OPTIONAL_COMPONENTS} | {
+        group for group in headers if group is not None
+    }
     for macro in sorted(optional_macros):
         if macro not in headers:
             continue

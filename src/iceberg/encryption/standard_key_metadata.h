@@ -38,6 +38,10 @@ namespace iceberg {
 /// and (encrypted by a key encryption key) in the table metadata `encryption-keys` for
 /// manifest lists.
 ///
+/// The Iceberg table spec leaves the key metadata representation to the encryption
+/// scheme; it mandates neither this encoding nor AES-GCM. The schema below follows
+/// Java's standard scheme.
+///
 /// The serialized form is compatible with Java's StandardKeyMetadata: a one-byte schema
 /// version (1) followed by an Avro binary encoded record with the fields
 /// `encryption_key: bytes`, `aad_prefix: union{null, bytes}` and

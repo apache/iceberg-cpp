@@ -327,8 +327,7 @@ if(ICEBERG_BUILD_BUNDLE)
       parquet/row_number_reader.cc)
 
   if(ICEBERG_ENCRYPTION)
-    list(APPEND ICEBERG_BUNDLE_SOURCES encryption/aes_gcm_internal.cc
-         encryption/aes_gcm_stream.cc)
+    list(APPEND ICEBERG_BUNDLE_SOURCES encryption/aes_gcm.cc encryption/aes_gcm_stream.cc)
   endif()
 
   # Libraries to link with exported libiceberg_bundle.{so,a}.

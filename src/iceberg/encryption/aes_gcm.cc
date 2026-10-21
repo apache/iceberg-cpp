@@ -17,13 +17,12 @@
  * under the License.
  */
 
-#include "iceberg/encryption/aes_gcm_internal.h"
-
 #include <limits>
 
 #include <openssl/evp.h>
 #include <openssl/rand.h>
 
+#include "iceberg/encryption/aes_gcm_internal.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg::encryption {
@@ -89,13 +88,15 @@ Status AesGcmCipher::Encrypt(std::span<const uint8_t> plaintext,
 
   auto* ctx = Ctx(ctx_);
   int len = 0;
-  if (EVP_EncryptInit_ex(ctx, CipherForKey(key_.size()), nullptr, nullptr, nullptr) !=
+  if (EVP_EncryptInit_ex(ctx, CipherForKey(key_.size()), /*impl=*/nullptr,
+                         /*key=*/nullptr, /*iv=*/nullptr) != 1 ||
+      EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_IVLEN, kNonceLength, /*ptr=*/nullptr) !=
           1 ||
-      EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_IVLEN, kNonceLength, nullptr) != 1 ||
-      EVP_EncryptInit_ex(ctx, nullptr, nullptr, key_.data(), nonce.data()) != 1) {
+      EVP_EncryptInit_ex(ctx, /*cipher=*/nullptr, /*impl=*/nullptr, key_.data(),
+                         nonce.data()) != 1) {
     return IOError("Failed to initialize AES GCM encryption");
   }
-  if (!aad.empty() && EVP_EncryptUpdate(ctx, nullptr, &len, aad.data(),
+  if (!aad.empty() && EVP_EncryptUpdate(ctx, /*out=*/nullptr, &len, aad.data(),
                                         static_cast<int>(aad.size())) != 1) {
     return IOError("Failed to set AES GCM AAD");
   }
@@ -130,13 +131,15 @@ Status AesGcmCipher::Decrypt(std::span<const uint8_t> ciphertext,
 
   auto* ctx = Ctx(ctx_);
   int len = 0;
-  if (EVP_DecryptInit_ex(ctx, CipherForKey(key_.size()), nullptr, nullptr, nullptr) !=
+  if (EVP_DecryptInit_ex(ctx, CipherForKey(key_.size()), /*impl=*/nullptr,
+                         /*key=*/nullptr, /*iv=*/nullptr) != 1 ||
+      EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_IVLEN, kNonceLength, /*ptr=*/nullptr) !=
           1 ||
-      EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_IVLEN, kNonceLength, nullptr) != 1 ||
-      EVP_DecryptInit_ex(ctx, nullptr, nullptr, key_.data(), nonce.data()) != 1) {
+      EVP_DecryptInit_ex(ctx, /*cipher=*/nullptr, /*impl=*/nullptr, key_.data(),
+                         nonce.data()) != 1) {
     return IOError("Failed to initialize AES GCM decryption");
   }
-  if (!aad.empty() && EVP_DecryptUpdate(ctx, nullptr, &len, aad.data(),
+  if (!aad.empty() && EVP_DecryptUpdate(ctx, /*out=*/nullptr, &len, aad.data(),
                                         static_cast<int>(aad.size())) != 1) {
     return IOError("Failed to set AES GCM AAD");
   }
