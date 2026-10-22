@@ -256,20 +256,34 @@ class OAuth2Session final : public AuthSession,
     }
   }
 
-  void ScheduleRefresh(std::chrono::milliseconds delay) {
-    ExecutorTask refresh([weak_self = weak_from_this()] {
+  static constexpr int kMaxSubmissionRetries = 5;
+
+  void ScheduleRefresh(std::chrono::milliseconds delay, int submission_retries = 0) {
+    auto weak_self = weak_from_this();
+    ExecutorTask refresh([weak_self] {
       if (auto self = weak_self.lock()) {
         if (auto next_delay = self->Refresh()) {
           self->ScheduleRefresh(*next_delay);
         }
       }
     });
-    ::iceberg::internal::TaskSubmissionCallback on_submission([](Status status) {
-      if (!status.has_value()) {
-        ICEBERG_LOG_WARN("Failed to submit OAuth2 token refresh: {}",
-                         status.error().message);
-      }
-    });
+    ::iceberg::internal::TaskSubmissionCallback on_submission(
+        [weak_self, submission_retries](Status status) {
+          if (status.has_value()) {
+            return;
+          }
+          if (submission_retries >= kMaxSubmissionRetries) {
+            ICEBERG_LOG_WARN(
+                "Stopping OAuth2 token refresh after repeated submission failures: {}",
+                status.error().message);
+            return;
+          }
+          if (auto self = weak_self.lock()) {
+            // Requeue on the timer; HTTP retries start only after Submit succeeds.
+            auto retry_delay = std::chrono::milliseconds(200) * (1 << submission_retries);
+            self->ScheduleRefresh(retry_delay, submission_retries + 1);
+          }
+        });
     scheduler_->Schedule(delay, std::move(refresh), std::move(on_submission));
   }
 
