@@ -99,7 +99,14 @@ TEST(SchemaTest, Equality) {
 }
 
 TEST(SchemaTest, SameSchemaWithDoc) {
-  using namespace iceberg;
+  using iceberg::int64;
+  using iceberg::ListType;
+  using iceberg::MapType;
+  using iceberg::Schema;
+  using iceberg::SchemaField;
+  using iceberg::string;
+  using iceberg::StructType;
+  using iceberg::Type;
   auto make_schemas = [](std::string_view doc, int32_t schema_id) {
     auto nested = SchemaField::MakeRequired(2, "nested", int64(), doc);
     auto element = SchemaField::MakeOptional(2, "element", int64(), doc);
