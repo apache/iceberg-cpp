@@ -20,11 +20,14 @@
 #include <memory>
 #include <ranges>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
+#include <nlohmann/json.hpp>
 
+#include "iceberg/json_serde_internal.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/result.h"
 #include "iceberg/schema.h"
@@ -790,6 +793,59 @@ TEST(TableMetadataBuilderTest, SetCurrentSchemaBasic) {
   builder->SetCurrentSchema(0);
   ICEBERG_UNWRAP_OR_FAIL(metadata, builder->Build());
   EXPECT_EQ(metadata->current_schema_id, 0);
+}
+
+TEST(TableMetadataBuilderTest, SetCurrentSchemaDocOnlyChange) {
+  auto make_schema = [](const std::string& doc) {
+    return std::make_shared<Schema>(
+        std::vector<SchemaField>{SchemaField::MakeRequired(1, "c", int64(), doc)}, 0);
+  };
+  const std::vector<std::pair<std::string, std::string>> doc_changes{
+      {"old", "new"}, {"", "new"}, {"old", ""}};
+  for (const auto& [old_doc, new_doc] : doc_changes) {
+    SCOPED_TRACE(old_doc + " -> " + new_doc);
+    auto base = CreateBaseMetadata();
+    base->schemas = {make_schema(old_doc)};
+    base->last_column_id = 1;
+    auto new_schema = make_schema(new_doc);
+    auto builder = TableMetadataBuilder::BuildFrom(base.get());
+    builder->SetCurrentSchema(new_schema, base->last_column_id);
+
+    ICEBERG_UNWRAP_OR_FAIL(auto metadata, builder->Build());
+    ICEBERG_UNWRAP_OR_FAIL(auto current_schema, metadata->Schema());
+    EXPECT_EQ(current_schema->fields()[0].doc(), new_doc);
+    EXPECT_NE(metadata->current_schema_id, base->current_schema_id);
+    EXPECT_EQ(metadata->last_column_id, base->last_column_id);
+    ASSERT_EQ(metadata->schemas.size(), 2);
+    EXPECT_EQ(metadata->schemas[0]->fields()[0].doc(), old_doc);
+    EXPECT_EQ(metadata->schemas[1]->schema_id(), metadata->current_schema_id);
+    EXPECT_EQ(metadata->schemas[1]->fields()[0].doc(), new_doc);
+
+    ICEBERG_UNWRAP_OR_FAIL(auto json, ToJson(*metadata));
+    ICEBERG_UNWRAP_OR_FAIL(auto restored, TableMetadataFromJson(json));
+    ICEBERG_UNWRAP_OR_FAIL(auto restored_schema, restored->Schema());
+    EXPECT_EQ(restored_schema->fields()[0].doc(), new_doc);
+    EXPECT_EQ(restored->current_schema_id, metadata->current_schema_id);
+    ASSERT_EQ(restored->schemas.size(), 2);
+    EXPECT_EQ(restored->schemas[0]->fields()[0].doc(), old_doc);
+
+    // Repeating the new doc must reuse its schema ID.
+    builder = TableMetadataBuilder::BuildFrom(metadata.get());
+    builder->SetCurrentSchema(make_schema(new_doc), metadata->last_column_id);
+    ICEBERG_UNWRAP_OR_FAIL(auto unchanged, builder->Build());
+    EXPECT_EQ(unchanged->schemas.size(), 2);
+    EXPECT_EQ(unchanged->current_schema_id, metadata->current_schema_id);
+    EXPECT_TRUE(builder->changes().empty());
+
+    // Restoring the old doc must reuse the historical schema, without adding a third.
+    builder = TableMetadataBuilder::BuildFrom(metadata.get());
+    builder->SetCurrentSchema(make_schema(old_doc), metadata->last_column_id);
+    ICEBERG_UNWRAP_OR_FAIL(auto reverted, builder->Build());
+    EXPECT_EQ(reverted->schemas.size(), 2);
+    EXPECT_EQ(reverted->current_schema_id, base->current_schema_id);
+    ICEBERG_UNWRAP_OR_FAIL(auto reverted_schema, reverted->Schema());
+    EXPECT_EQ(reverted_schema->fields()[0].doc(), old_doc);
+  }
 }
 
 TEST(TableMetadataBuilderTest, SetCurrentSchemaWithInvalidLastColumnId) {
