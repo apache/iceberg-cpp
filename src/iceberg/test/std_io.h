@@ -319,11 +319,9 @@ class StdFileIO : public FileIO {
 
   Status DeleteFile(const std::string& file_location) override {
     std::error_code ec;
-    if (!std::filesystem::remove(file_location, ec)) {
-      if (ec) {
-        return IOError("Failed to delete file {}: {}", file_location, ec.message());
-      }
-      return IOError("File does not exist: {}", file_location);
+    std::filesystem::remove(file_location, ec);
+    if (ec) {
+      return IOError("Failed to delete file {}: {}", file_location, ec.message());
     }
     return {};
   }
