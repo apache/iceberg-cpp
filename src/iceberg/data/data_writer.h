@@ -48,6 +48,8 @@ struct ICEBERG_DATA_EXPORT DataWriterOptions {
   std::shared_ptr<FileIO> io;
   std::optional<int32_t> sort_order_id;
   std::unordered_map<std::string, std::string> properties;
+  /// \brief Schema of input batches; when omitted, batches use the target schema.
+  std::shared_ptr<Schema> input_schema;
 };
 
 /// \brief Writer for Iceberg data files.

@@ -38,6 +38,7 @@ class DataWriter::Impl {
         .schema = options.schema,
         .io = options.io,
         .properties = WriterProperties::FromMap(options.properties),
+        .input_schema = options.input_schema,
     };
 
     ICEBERG_ASSIGN_OR_RAISE(auto writer,
