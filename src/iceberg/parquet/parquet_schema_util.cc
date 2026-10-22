@@ -310,10 +310,29 @@ Status ValidateGeospatialParquetType(const Type& expected_type,
     if (!descr.logical_type()->is_geometry()) {
       return InvalidSchema("Iceberg geometry requires Parquet Geometry logical type");
     }
+    const auto& expected = internal::checked_cast<const GeometryType&>(expected_type);
+    const auto& actual = internal::checked_cast<const ::parquet::GeometryLogicalType&>(
+        *descr.logical_type());
+    // Parquet represents an omitted CRS as an empty string.
+    const auto crs = actual.crs().empty() ? GeometryType::kDefaultCrs : actual.crs();
+    if (!StringUtils::EqualsIgnoreCase(expected.crs(), crs)) {
+      return InvalidSchema("Cannot read Parquet type {} as Iceberg type {} for field {}",
+                           actual.ToString(), expected_type, descr.path()->ToDotString());
+    }
     return {};
   }
   if (!descr.logical_type()->is_geography()) {
     return InvalidSchema("Iceberg geography requires Parquet Geography logical type");
+  }
+  const auto& expected = internal::checked_cast<const GeographyType&>(expected_type);
+  const auto& actual = internal::checked_cast<const ::parquet::GeographyLogicalType&>(
+      *descr.logical_type());
+  ICEBERG_ASSIGN_OR_RAISE(auto algorithm, ToParquetAlgorithm(expected.algorithm()));
+  const auto crs = actual.crs().empty() ? GeographyType::kDefaultCrs : actual.crs();
+  if (!StringUtils::EqualsIgnoreCase(expected.crs(), crs) ||
+      algorithm != actual.algorithm()) {
+    return InvalidSchema("Cannot read Parquet type {} as Iceberg type {} for field {}",
+                         actual.ToString(), expected_type, descr.path()->ToDotString());
   }
   return {};
 }
