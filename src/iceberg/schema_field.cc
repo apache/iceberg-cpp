@@ -243,7 +243,7 @@ bool DefaultEquals(const std::shared_ptr<const Literal>& lhs,
 
 bool SchemaField::Equals(const SchemaField& other) const {
   return field_id_ == other.field_id_ && name_ == other.name_ && *type_ == *other.type_ &&
-         optional_ == other.optional_ &&
+         optional_ == other.optional_ && doc_ == other.doc_ &&
          DefaultEquals(initial_default_, other.initial_default_) &&
          DefaultEquals(write_default_, other.write_default_);
 }

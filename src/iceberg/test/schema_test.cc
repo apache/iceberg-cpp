@@ -98,6 +98,52 @@ TEST(SchemaTest, Equality) {
   ASSERT_EQ(schema5, schema1);
 }
 
+TEST(SchemaTest, SameSchemaWithDoc) {
+  using iceberg::int64;
+  using iceberg::ListType;
+  using iceberg::MapType;
+  using iceberg::Schema;
+  using iceberg::SchemaField;
+  using iceberg::string;
+  using iceberg::StructType;
+  using iceberg::Type;
+  auto make_schemas = [](std::string_view doc, int32_t schema_id) {
+    auto nested = SchemaField::MakeRequired(2, "nested", int64(), doc);
+    auto element = SchemaField::MakeOptional(2, "element", int64(), doc);
+    auto key = SchemaField::MakeRequired(2, "key", string());
+    auto value = SchemaField::MakeOptional(3, "value", int64());
+    auto key_with_doc = SchemaField::MakeRequired(2, "key", string(), doc);
+    auto value_with_doc = SchemaField::MakeOptional(3, "value", int64(), doc);
+    std::vector<std::shared_ptr<Type>> types{
+        std::make_shared<StructType>(std::vector<SchemaField>{nested}),
+        std::make_shared<ListType>(element),
+        std::make_shared<MapType>(key_with_doc, value),
+        std::make_shared<MapType>(key, value_with_doc)};
+    std::vector<std::unique_ptr<Schema>> schemas;
+    schemas.push_back(std::make_unique<Schema>(
+        std::vector<SchemaField>{SchemaField::MakeRequired(1, "c", int64(), doc)},
+        schema_id));
+    for (auto& type : types) {
+      schemas.push_back(std::make_unique<Schema>(
+          std::vector<SchemaField>{SchemaField::MakeRequired(1, "c", type)}, schema_id));
+    }
+    return schemas;
+  };
+
+  const auto original = make_schemas("old", 0);
+  const auto same = make_schemas("old", 1);
+  const auto updated = make_schemas("new", 0);
+  const auto without_doc = make_schemas("", 0);
+  for (size_t i = 0; i < original.size(); ++i) {
+    SCOPED_TRACE(i);
+    EXPECT_TRUE(original[i]->SameSchema(*same[i]));
+    EXPECT_FALSE(original[i]->SameSchema(*updated[i]));
+    EXPECT_FALSE(updated[i]->SameSchema(*original[i]));
+    EXPECT_FALSE(original[i]->SameSchema(*without_doc[i]));
+    EXPECT_NE(*original[i], *updated[i]);
+  }
+}
+
 TEST(SchemaTest, ValidateRejectsV3TypesBeforeFormatV3) {
   iceberg::Schema timestamp_ns_schema(
       {iceberg::SchemaField(1, "timestamp_ns", iceberg::timestamp_ns(), false)});

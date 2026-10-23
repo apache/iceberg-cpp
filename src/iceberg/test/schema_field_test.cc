@@ -86,6 +86,21 @@ TEST(SchemaFieldTest, Equality) {
   ASSERT_EQ(field6, field1);
 }
 
+TEST(SchemaFieldTest, EqualityWithDoc) {
+  for (bool optional : {false, true}) {
+    SchemaField original(1, "foo", int32(), optional, "old");
+    SchemaField same(1, "foo", int32(), optional, "old");
+    SchemaField updated(1, "foo", int32(), optional, "new");
+    SchemaField without_doc(1, "foo", int32(), optional);
+
+    EXPECT_EQ(original, same);
+    EXPECT_NE(original, updated);
+    EXPECT_NE(updated, original);
+    EXPECT_NE(original, without_doc);
+    EXPECT_NE(without_doc, original);
+  }
+}
+
 TEST(SchemaFieldTest, WithDoc) {
   {
     SchemaField field(/*field_id=*/1, /*name=*/"foo", int32(),
