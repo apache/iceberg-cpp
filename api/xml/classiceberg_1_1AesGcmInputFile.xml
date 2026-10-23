@@ -1,0 +1,188 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1AesGcmInputFile" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::AesGcmInputFile</compoundname>
+    <basecompoundref refid="classiceberg_1_1InputFile" prot="public" virt="non-virtual">iceberg::InputFile</basecompoundref>
+    <includes refid="aes__gcm__stream_8h" local="no">aes_gcm_stream.h</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1AesGcmInputFile_1a537786bbbb4eebd367943d0fb7cdc42b" prot="private" static="no" mutable="no">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1InputFile" kindref="compound">InputFile</ref> &gt;</type>
+        <definition>std::unique_ptr&lt;InputFile&gt; iceberg::AesGcmInputFile::source_</definition>
+        <argsstring></argsstring>
+        <name>source_</name>
+        <qualifiedname>iceberg::AesGcmInputFile::source_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/encryption/aes_gcm_stream.h" line="77" column="19" bodyfile="iceberg/encryption/aes_gcm_stream.h" bodystart="77" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1AesGcmInputFile_1ac5dbd65d4e33c87fec9363b8080a5a7e" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; uint8_t &gt;</type>
+        <definition>std::vector&lt;uint8_t&gt; iceberg::AesGcmInputFile::key_</definition>
+        <argsstring></argsstring>
+        <name>key_</name>
+        <qualifiedname>iceberg::AesGcmInputFile::key_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/encryption/aes_gcm_stream.h" line="78" column="15" bodyfile="iceberg/encryption/aes_gcm_stream.h" bodystart="78" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1AesGcmInputFile_1ad82f0afc82a011cd4e3dff325c93c513" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; uint8_t &gt;</type>
+        <definition>std::vector&lt;uint8_t&gt; iceberg::AesGcmInputFile::aad_prefix_</definition>
+        <argsstring></argsstring>
+        <name>aad_prefix_</name>
+        <qualifiedname>iceberg::AesGcmInputFile::aad_prefix_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/encryption/aes_gcm_stream.h" line="79" column="15" bodyfile="iceberg/encryption/aes_gcm_stream.h" bodystart="79" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1AesGcmInputFile_1aecb4600023ff26e48f4b31481c2c3965" prot="private" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t iceberg::AesGcmInputFile::encrypted_length_</definition>
+        <argsstring></argsstring>
+        <name>encrypted_length_</name>
+        <qualifiedname>iceberg::AesGcmInputFile::encrypted_length_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/encryption/aes_gcm_stream.h" line="80" column="11" bodyfile="iceberg/encryption/aes_gcm_stream.h" bodystart="80" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1AesGcmInputFile_1af9625ce4fe4d865dd6df0f2ea64d2401" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::AesGcmInputFile::AesGcmInputFile</definition>
+        <argsstring>(std::unique_ptr&lt; InputFile &gt; source, std::vector&lt; uint8_t &gt; key, std::vector&lt; uint8_t &gt; aad_prefix, int64_t encrypted_length)</argsstring>
+        <name>AesGcmInputFile</name>
+        <qualifiedname>iceberg::AesGcmInputFile::AesGcmInputFile</qualifiedname>
+        <param>
+          <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1InputFile" kindref="compound">InputFile</ref> &gt;</type>
+          <declname>source</declname>
+        </param>
+        <param>
+          <type>std::vector&lt; uint8_t &gt;</type>
+          <declname>key</declname>
+        </param>
+        <param>
+          <type>std::vector&lt; uint8_t &gt;</type>
+          <declname>aad_prefix</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>encrypted_length</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/encryption/aes_gcm_stream.h" line="69" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1AesGcmInputFile_1a47c4b5433f5563001b231ef14e7caedd" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+        <type>std::string_view</type>
+        <definition>std::string_view iceberg::AesGcmInputFile::location</definition>
+        <argsstring>() const override</argsstring>
+        <name>location</name>
+        <qualifiedname>iceberg::AesGcmInputFile::location</qualifiedname>
+        <reimplements refid="classiceberg_1_1InputFile_1a187e1519accc6da35fdafc779551c303">location</reimplements>
+        <briefdescription>
+<para>File location represented by this handle. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/encryption/aes_gcm_stream.h" line="72" column="20" bodyfile="iceberg/encryption/aes_gcm_stream.h" bodystart="72" bodyend="72"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1AesGcmInputFile_1a6b3ca39ae48a8d98ee140abff0d81f26" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type><ref refid="namespaceiceberg_1aac79523734e35ca4d34cced52e56ec9b" kindref="member">Result</ref>&lt; int64_t &gt;</type>
+        <definition>Result&lt; int64_t &gt; iceberg::AesGcmInputFile::Size</definition>
+        <argsstring>() const override</argsstring>
+        <name>Size</name>
+        <qualifiedname>iceberg::AesGcmInputFile::Size</qualifiedname>
+        <reimplements refid="classiceberg_1_1InputFile_1a8c4986b0d2b414dc2791cb528f035837">Size</reimplements>
+        <briefdescription>
+<para>Return the total file size in bytes. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/encryption/aes_gcm_stream.h" line="73" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1AesGcmInputFile_1a1356c2911cc9a0659ee59d350e898fe9" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type><ref refid="namespaceiceberg_1aac79523734e35ca4d34cced52e56ec9b" kindref="member">Result</ref>&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1SeekableInputStream" kindref="compound">SeekableInputStream</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::unique_ptr&lt; SeekableInputStream &gt; &gt; iceberg::AesGcmInputFile::Open</definition>
+        <argsstring>() override</argsstring>
+        <name>Open</name>
+        <qualifiedname>iceberg::AesGcmInputFile::Open</qualifiedname>
+        <reimplements refid="classiceberg_1_1InputFile_1a6fe70deb243671584f2b02ab473c74f9">Open</reimplements>
+        <briefdescription>
+<para>Open a new independent input stream. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/encryption/aes_gcm_stream.h" line="74" column="10"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>An <ref refid="classiceberg_1_1InputFile" kindref="compound">InputFile</ref> that decrypts an AGS1 file. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>The encrypted length must come from a trusted source (the key metadata), so that truncation of the file is detected. </para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::AesGcmInputFile</label>
+        <link refid="classiceberg_1_1AesGcmInputFile"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::InputFile</label>
+        <link refid="classiceberg_1_1InputFile"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::AesGcmInputFile</label>
+        <link refid="classiceberg_1_1AesGcmInputFile"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::InputFile</label>
+        <link refid="classiceberg_1_1InputFile"/>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/encryption/aes_gcm_stream.h" line="67" column="1" bodyfile="iceberg/encryption/aes_gcm_stream.h" bodystart="67" bodyend="81"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1AesGcmInputFile_1ad82f0afc82a011cd4e3dff325c93c513" prot="private" virt="non-virtual"><scope>iceberg::AesGcmInputFile</scope><name>aad_prefix_</name></member>
+      <member refid="classiceberg_1_1AesGcmInputFile_1af9625ce4fe4d865dd6df0f2ea64d2401" prot="public" virt="non-virtual"><scope>iceberg::AesGcmInputFile</scope><name>AesGcmInputFile</name></member>
+      <member refid="classiceberg_1_1AesGcmInputFile_1aecb4600023ff26e48f4b31481c2c3965" prot="private" virt="non-virtual"><scope>iceberg::AesGcmInputFile</scope><name>encrypted_length_</name></member>
+      <member refid="classiceberg_1_1AesGcmInputFile_1ac5dbd65d4e33c87fec9363b8080a5a7e" prot="private" virt="non-virtual"><scope>iceberg::AesGcmInputFile</scope><name>key_</name></member>
+      <member refid="classiceberg_1_1AesGcmInputFile_1a47c4b5433f5563001b231ef14e7caedd" prot="public" virt="virtual"><scope>iceberg::AesGcmInputFile</scope><name>location</name></member>
+      <member refid="classiceberg_1_1AesGcmInputFile_1a1356c2911cc9a0659ee59d350e898fe9" prot="public" virt="virtual"><scope>iceberg::AesGcmInputFile</scope><name>Open</name></member>
+      <member refid="classiceberg_1_1AesGcmInputFile_1a6b3ca39ae48a8d98ee140abff0d81f26" prot="public" virt="virtual"><scope>iceberg::AesGcmInputFile</scope><name>Size</name></member>
+      <member refid="classiceberg_1_1AesGcmInputFile_1a537786bbbb4eebd367943d0fb7cdc42b" prot="private" virt="non-virtual"><scope>iceberg::AesGcmInputFile</scope><name>source_</name></member>
+      <member refid="classiceberg_1_1InputFile_1ae45533be9b39a243101308c08e74d475" prot="public" virt="virtual"><scope>iceberg::AesGcmInputFile</scope><name>~InputFile</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

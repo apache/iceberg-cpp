@@ -1,0 +1,297 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="hive__utils_8h" kind="file" language="C++">
+    <compoundname>hive_utils.h</compoundname>
+    <includes local="no">string</includes>
+    <includes local="no">string_view</includes>
+    <includes local="no">unordered_map</includes>
+    <includes local="no">vector</includes>
+    <includes refid="hive__schema_8h" local="yes">iceberg/catalog/hive/hive_schema.h</includes>
+    <includes refid="iceberg__hive__export_8h" local="yes">iceberg/catalog/hive/iceberg_hive_export.h</includes>
+    <includes refid="result_8h" local="yes">iceberg/result.h</includes>
+    <includes refid="table__identifier_8h" local="yes">iceberg/table_identifier.h</includes>
+    <incdepgraph>
+      <node id="6">
+        <label>iceberg/catalog/hive/hive_schema.h</label>
+        <link refid="hive__schema_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg/catalog/hive/hive_utils.h</label>
+        <link refid="hive__utils_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>iceberg/catalog/hive/iceberg_hive_export.h</label>
+        <link refid="iceberg__hive__export_8h"/>
+      </node>
+      <node id="17">
+        <label>iceberg/compat/compiler.h</label>
+        <link refid="compiler_8h_source"/>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+      </node>
+      <node id="12">
+        <label>iceberg/compat/expected.h</label>
+        <link refid="expected_8h"/>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+      </node>
+      <node id="19">
+        <label>iceberg/iceberg_export.h</label>
+        <link refid="iceberg__export_8h"/>
+      </node>
+      <node id="8">
+        <label>iceberg/result.h</label>
+        <link refid="result_8h"/>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+      </node>
+      <node id="21">
+        <label>iceberg/table_identifier.h</label>
+        <link refid="table__identifier_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+      </node>
+      <node id="20">
+        <label>iceberg/type_fwd.h</label>
+        <link refid="type__fwd_8h"/>
+      </node>
+      <node id="23">
+        <label>iceberg/util/formattable.h</label>
+        <link refid="formattable_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+      </node>
+      <node id="22">
+        <label>iceberg/util/formatter.h</label>
+        <link refid="formatter_8h"/>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>concepts</label>
+      </node>
+      <node id="13">
+        <label>exception</label>
+      </node>
+      <node id="10">
+        <label>format</label>
+      </node>
+      <node id="14">
+        <label>functional</label>
+      </node>
+      <node id="18">
+        <label>iceberg/compat/build_config.h</label>
+      </node>
+      <node id="2">
+        <label>string</label>
+      </node>
+      <node id="3">
+        <label>string_view</label>
+      </node>
+      <node id="11">
+        <label>type_traits</label>
+      </node>
+      <node id="4">
+        <label>unordered_map</label>
+      </node>
+      <node id="15">
+        <label>utility</label>
+      </node>
+      <node id="5">
+        <label>vector</label>
+      </node>
+      <node id="16">
+        <label>version</label>
+      </node>
+    </incdepgraph>
+    <innerclass refid="structiceberg_1_1hive_1_1HiveDatabase" prot="public">iceberg::hive::HiveDatabase</innerclass>
+    <innerclass refid="structiceberg_1_1hive_1_1HiveTable" prot="public">iceberg::hive::HiveTable</innerclass>
+    <innerclass refid="structiceberg_1_1hive_1_1HiveNamespace" prot="public">iceberg::hive::HiveNamespace</innerclass>
+    <innernamespace refid="namespaceiceberg">iceberg</innernamespace>
+    <innernamespace refid="namespaceiceberg_1_1hive">iceberg::hive</innernamespace>
+    <briefdescription>
+<para>Convert Iceberg catalog objects to HMS records. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">/*</highlight></codeline>
+<codeline lineno="2"><highlight class="comment"><sp/>*<sp/>Licensed<sp/>to<sp/>the<sp/>Apache<sp/>Software<sp/>Foundation<sp/>(ASF)<sp/>under<sp/>one</highlight></codeline>
+<codeline lineno="3"><highlight class="comment"><sp/>*<sp/>or<sp/>more<sp/>contributor<sp/>license<sp/>agreements.<sp/><sp/>See<sp/>the<sp/>NOTICE<sp/>file</highlight></codeline>
+<codeline lineno="4"><highlight class="comment"><sp/>*<sp/>distributed<sp/>with<sp/>this<sp/>work<sp/>for<sp/>additional<sp/>information</highlight></codeline>
+<codeline lineno="5"><highlight class="comment"><sp/>*<sp/>regarding<sp/>copyright<sp/>ownership.<sp/><sp/>The<sp/>ASF<sp/>licenses<sp/>this<sp/>file</highlight></codeline>
+<codeline lineno="6"><highlight class="comment"><sp/>*<sp/>to<sp/>you<sp/>under<sp/>the<sp/>Apache<sp/>License,<sp/>Version<sp/>2.0<sp/>(the</highlight></codeline>
+<codeline lineno="7"><highlight class="comment"><sp/>*<sp/>&quot;License&quot;);<sp/>you<sp/>may<sp/>not<sp/>use<sp/>this<sp/>file<sp/>except<sp/>in<sp/>compliance</highlight></codeline>
+<codeline lineno="8"><highlight class="comment"><sp/>*<sp/>with<sp/>the<sp/>License.<sp/><sp/>You<sp/>may<sp/>obtain<sp/>a<sp/>copy<sp/>of<sp/>the<sp/>License<sp/>at</highlight></codeline>
+<codeline lineno="9"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="10"><highlight class="comment"><sp/>*<sp/><sp/><sp/>http://www.apache.org/licenses/LICENSE-2.0</highlight></codeline>
+<codeline lineno="11"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="12"><highlight class="comment"><sp/>*<sp/>Unless<sp/>required<sp/>by<sp/>applicable<sp/>law<sp/>or<sp/>agreed<sp/>to<sp/>in<sp/>writing,</highlight></codeline>
+<codeline lineno="13"><highlight class="comment"><sp/>*<sp/>software<sp/>distributed<sp/>under<sp/>the<sp/>License<sp/>is<sp/>distributed<sp/>on<sp/>an</highlight></codeline>
+<codeline lineno="14"><highlight class="comment"><sp/>*<sp/>&quot;AS<sp/>IS&quot;<sp/>BASIS,<sp/>WITHOUT<sp/>WARRANTIES<sp/>OR<sp/>CONDITIONS<sp/>OF<sp/>ANY</highlight></codeline>
+<codeline lineno="15"><highlight class="comment"><sp/>*<sp/>KIND,<sp/>either<sp/>express<sp/>or<sp/>implied.<sp/><sp/>See<sp/>the<sp/>License<sp/>for<sp/>the</highlight></codeline>
+<codeline lineno="16"><highlight class="comment"><sp/>*<sp/>specific<sp/>language<sp/>governing<sp/>permissions<sp/>and<sp/>limitations</highlight></codeline>
+<codeline lineno="17"><highlight class="comment"><sp/>*<sp/>under<sp/>the<sp/>License.</highlight></codeline>
+<codeline lineno="18"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight></codeline>
+<codeline lineno="22"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;string&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="23"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;string_view&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="24"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;unordered_map&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;vector&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="hive__schema_8h" kindref="compound">iceberg/catalog/hive/hive_schema.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="iceberg__hive__export_8h" kindref="compound">iceberg/catalog/hive/iceberg_hive_export.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="result_8h" kindref="compound">iceberg/result.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="30"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="table__identifier_8h" kindref="compound">iceberg/table_identifier.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="31"><highlight class="normal"></highlight></codeline>
+<codeline lineno="34"><highlight class="normal"></highlight></codeline>
+<codeline lineno="35"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal"><ref refid="namespaceiceberg_1_1hive" kindref="compound">iceberg::hive</ref><sp/>{</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"></highlight></codeline>
+<codeline lineno="38" refid="namespaceiceberg_1_1hive_1a76a68a0599d85cc401ba84b4a9ea85e5" refkind="member"><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>std::string_view<sp/><ref refid="namespaceiceberg_1_1hive_1a76a68a0599d85cc401ba84b4a9ea85e5" kindref="member">kMetadataLocationKey</ref><sp/>=<sp/></highlight><highlight class="stringliteral">&quot;metadata_location&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>std::string_view<sp/>kTableTypeKey<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;table_type&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>std::string_view<sp/>kTableTypeIceberg<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;ICEBERG&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>std::string_view<sp/>kExternalKey<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;EXTERNAL&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>std::string_view<sp/>kExternalTrue<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;TRUE&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"></highlight></codeline>
+<codeline lineno="45" refid="namespaceiceberg_1_1hive_1a9e65ab650a5a193e84bd3c846b00e34c" refkind="member"><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>std::string_view<sp/><ref refid="namespaceiceberg_1_1hive_1a9e65ab650a5a193e84bd3c846b00e34c" kindref="member">kCommentProperty</ref><sp/>=<sp/></highlight><highlight class="stringliteral">&quot;comment&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>std::string_view<sp/>kLocationProperty<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;location&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"></highlight></codeline>
+<codeline lineno="49" refid="namespaceiceberg_1_1hive_1a02c8273fec2fc51cb6f08901d13f9091" refkind="member"><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>std::string_view<sp/><ref refid="namespaceiceberg_1_1hive_1a02c8273fec2fc51cb6f08901d13f9091" kindref="member">kHmsTableOwnerProperty</ref><sp/>=<sp/></highlight><highlight class="stringliteral">&quot;hive.metastore.table.owner&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"></highlight></codeline>
+<codeline lineno="52" refid="namespaceiceberg_1_1hive_1adc09628ab32e50d37fe0c99652d91efd" refkind="member"><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>std::string_view<sp/><ref refid="namespaceiceberg_1_1hive_1adc09628ab32e50d37fe0c99652d91efd" kindref="member">kHmsDbOwnerProperty</ref><sp/>=<sp/></highlight><highlight class="stringliteral">&quot;hive.metastore.database.owner&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>std::string_view<sp/>kHmsDbOwnerTypeProperty<sp/>=</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;hive.metastore.database.owner-type&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"></highlight></codeline>
+<codeline lineno="57" refid="namespaceiceberg_1_1hive_1afcee3c71119dd3d24d04b314b8d37e8d" refkind="member"><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>std::string_view<sp/><ref refid="namespaceiceberg_1_1hive_1afcee3c71119dd3d24d04b314b8d37e8d" kindref="member">kLazySimpleSerDe</ref><sp/>=</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>std::string_view<sp/>kFileInputFormat<sp/>=</highlight></codeline>
+<codeline lineno="60"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;org.apache.hadoop.mapred.FileInputFormat&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>std::string_view<sp/>kFileOutputFormat<sp/>=</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;org.apache.hadoop.mapred.FileOutputFormat&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"></highlight></codeline>
+<codeline lineno="65" refid="structiceberg_1_1hive_1_1HiveDatabase" refkind="compound"><highlight class="keyword">struct<sp/></highlight><highlight class="normal">ICEBERG_HIVE_EXPORT<sp/><ref refid="structiceberg_1_1hive_1_1HiveDatabase" kindref="compound">HiveDatabase</ref><sp/>{</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"><sp/><sp/>std::string<sp/>name;</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"><sp/><sp/>std::string<sp/>description;</highlight></codeline>
+<codeline lineno="68"><highlight class="normal"><sp/><sp/>std::string<sp/>location_uri;</highlight></codeline>
+<codeline lineno="69"><highlight class="normal"><sp/><sp/>std::unordered_map&lt;std::string,<sp/>std::string&gt;<sp/>parameters;</highlight></codeline>
+<codeline lineno="70"><highlight class="normal"><sp/><sp/>std::string<sp/>owner_name;</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"><sp/><sp/>std::string<sp/>owner_type;<sp/><sp/></highlight><highlight class="comment">//<sp/>&quot;USER&quot;,<sp/>&quot;GROUP&quot;<sp/>or<sp/>&quot;ROLE&quot;;<sp/>empty<sp/>means<sp/>HMS-default</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="72"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"></highlight></codeline>
+<codeline lineno="75" refid="structiceberg_1_1hive_1_1HiveTable" refkind="compound"><highlight class="keyword">struct<sp/></highlight><highlight class="normal">ICEBERG_HIVE_EXPORT<sp/><ref refid="structiceberg_1_1hive_1_1HiveTable" kindref="compound">HiveTable</ref><sp/>{</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"><sp/><sp/>std::string<sp/>db_name;</highlight></codeline>
+<codeline lineno="77"><highlight class="normal"><sp/><sp/>std::string<sp/>table_name;</highlight></codeline>
+<codeline lineno="78"><highlight class="normal"><sp/><sp/>std::string<sp/>owner;</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/>std::string<sp/>table_type;<sp/><sp/></highlight><highlight class="comment">//<sp/>&quot;EXTERNAL_TABLE&quot;<sp/>for<sp/>Iceberg<sp/>tables</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="80"><highlight class="normal"><sp/><sp/>std::string<sp/>location;</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"><sp/><sp/>std::vector&lt;HiveColumn&gt;<sp/>columns;</highlight></codeline>
+<codeline lineno="82"><highlight class="normal"><sp/><sp/>std::unordered_map&lt;std::string,<sp/>std::string&gt;<sp/>parameters;</highlight></codeline>
+<codeline lineno="83"><highlight class="normal"><sp/><sp/>std::string<sp/>serde;</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"><sp/><sp/>std::string<sp/>input_format;</highlight></codeline>
+<codeline lineno="85"><highlight class="normal"><sp/><sp/>std::string<sp/>output_format;</highlight></codeline>
+<codeline lineno="86"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="87"><highlight class="normal"></highlight></codeline>
+<codeline lineno="89" refid="structiceberg_1_1hive_1_1HiveNamespace" refkind="compound"><highlight class="keyword">struct<sp/></highlight><highlight class="normal">ICEBERG_HIVE_EXPORT<sp/><ref refid="structiceberg_1_1hive_1_1HiveNamespace" kindref="compound">HiveNamespace</ref><sp/>{</highlight></codeline>
+<codeline lineno="90"><highlight class="normal"><sp/><sp/><ref refid="structiceberg_1_1Namespace" kindref="compound">Namespace</ref><sp/>ns;</highlight></codeline>
+<codeline lineno="91"><highlight class="normal"><sp/><sp/>std::unordered_map&lt;std::string,<sp/>std::string&gt;<sp/>properties;</highlight></codeline>
+<codeline lineno="92"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="93"><highlight class="normal"></highlight></codeline>
+<codeline lineno="95" refid="namespaceiceberg_1_1hive_1aec54f4aa225bad5f2b0d31c75770745f" refkind="member"><highlight class="normal">ICEBERG_HIVE_EXPORT<sp/><ref refid="classiceberg_1_1expected" kindref="compound">Result&lt;HiveDatabase&gt;</ref><sp/><ref refid="namespaceiceberg_1_1hive_1aec54f4aa225bad5f2b0d31c75770745f" kindref="member">ConvertToHiveDatabase</ref>(</highlight></codeline>
+<codeline lineno="96"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1Namespace" kindref="compound">Namespace</ref>&amp;<sp/>ns,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::unordered_map&lt;std::string,<sp/>std::string&gt;&amp;<sp/>properties);</highlight></codeline>
+<codeline lineno="97"><highlight class="normal"></highlight></codeline>
+<codeline lineno="99" refid="namespaceiceberg_1_1hive_1afb113a4fb241b761270784296794fc9f" refkind="member"><highlight class="normal">ICEBERG_HIVE_EXPORT<sp/><ref refid="structiceberg_1_1hive_1_1HiveNamespace" kindref="compound">HiveNamespace</ref><sp/><ref refid="namespaceiceberg_1_1hive_1afb113a4fb241b761270784296794fc9f" kindref="member">ConvertFromHiveDatabase</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1hive_1_1HiveDatabase" kindref="compound">HiveDatabase</ref>&amp;<sp/>database);</highlight></codeline>
+<codeline lineno="100"><highlight class="normal"></highlight></codeline>
+<codeline lineno="104" refid="namespaceiceberg_1_1hive_1a2d712f066b1f205a467ffed70ec11653" refkind="member"><highlight class="normal">ICEBERG_HIVE_EXPORT<sp/><ref refid="classiceberg_1_1expected" kindref="compound">Result&lt;HiveTable&gt;</ref><sp/><ref refid="namespaceiceberg_1_1hive_1a2d712f066b1f205a467ffed70ec11653" kindref="member">ConvertToHiveTable</ref>(</highlight></codeline>
+<codeline lineno="105"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1TableIdentifier" kindref="compound">TableIdentifier</ref>&amp;<sp/>identifier,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::vector&lt;HiveColumn&gt;&amp;<sp/>columns,</highlight></codeline>
+<codeline lineno="106"><highlight class="normal"><sp/><sp/><sp/><sp/>std::string_view<sp/>metadata_location,<sp/>std::string_view<sp/>location,</highlight></codeline>
+<codeline lineno="107"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::unordered_map&lt;std::string,<sp/>std::string&gt;&amp;<sp/>table_properties);</highlight></codeline>
+<codeline lineno="108"><highlight class="normal"></highlight></codeline>
+<codeline lineno="110" refid="namespaceiceberg_1_1hive_1a8a2c5cf17610416f569cddcb59c311d9" refkind="member"><highlight class="normal">ICEBERG_HIVE_EXPORT<sp/><ref refid="classiceberg_1_1expected" kindref="compound">Result&lt;std::string&gt;</ref><sp/><ref refid="namespaceiceberg_1_1hive_1a8a2c5cf17610416f569cddcb59c311d9" kindref="member">GetMetadataLocation</ref>(</highlight></codeline>
+<codeline lineno="111"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::unordered_map&lt;std::string,<sp/>std::string&gt;&amp;<sp/>table_parameters);</highlight></codeline>
+<codeline lineno="112"><highlight class="normal"></highlight></codeline>
+<codeline lineno="114" refid="namespaceiceberg_1_1hive_1a6e3098cdc64f1badcdab3a7eaad9d1ae" refkind="member"><highlight class="normal">ICEBERG_HIVE_EXPORT<sp/><ref refid="classiceberg_1_1expected" kindref="compound">Status</ref><sp/><ref refid="namespaceiceberg_1_1hive_1a6e3098cdc64f1badcdab3a7eaad9d1ae" kindref="member">ValidateIcebergTable</ref>(</highlight></codeline>
+<codeline lineno="115"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1TableIdentifier" kindref="compound">TableIdentifier</ref>&amp;<sp/>identifier,</highlight></codeline>
+<codeline lineno="116"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::unordered_map&lt;std::string,<sp/>std::string&gt;&amp;<sp/>table_parameters);</highlight></codeline>
+<codeline lineno="117"><highlight class="normal"></highlight></codeline>
+<codeline lineno="119" refid="namespaceiceberg_1_1hive_1a44076271867edf8cf11fa8295ed11f9d" refkind="member"><highlight class="normal">ICEBERG_HIVE_EXPORT<sp/>std::string<sp/><ref refid="namespaceiceberg_1_1hive_1a44076271867edf8cf11fa8295ed11f9d" kindref="member">GetDefaultTableLocation</ref>(std::string_view<sp/>warehouse,</highlight></codeline>
+<codeline lineno="120"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1Namespace" kindref="compound">Namespace</ref>&amp;<sp/>ns,</highlight></codeline>
+<codeline lineno="121"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::string_view<sp/>table_name);</highlight></codeline>
+<codeline lineno="122"><highlight class="normal"></highlight></codeline>
+<codeline lineno="124" refid="namespaceiceberg_1_1hive_1a2044ca4b5a304d95ff52d12eeb9b1605" refkind="member"><highlight class="normal">ICEBERG_HIVE_EXPORT<sp/><ref refid="classiceberg_1_1expected" kindref="compound">Status</ref><sp/><ref refid="namespaceiceberg_1_1hive_1a2044ca4b5a304d95ff52d12eeb9b1605" kindref="member">ValidateNamespace</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1Namespace" kindref="compound">Namespace</ref>&amp;<sp/>ns);</highlight></codeline>
+<codeline lineno="125"><highlight class="normal"></highlight></codeline>
+<codeline lineno="128"><highlight class="normal">ICEBERG_HIVE_EXPORT<sp/><ref refid="classiceberg_1_1expected" kindref="compound">Status</ref></highlight></codeline>
+<codeline lineno="129" refid="namespaceiceberg_1_1hive_1a7c9a0f0e8a5757074c7d9a0135b9d1bf" refkind="member"><highlight class="normal"><ref refid="namespaceiceberg_1_1hive_1a7c9a0f0e8a5757074c7d9a0135b9d1bf" kindref="member">ValidateOwnerSettings</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::unordered_map&lt;std::string,<sp/>std::string&gt;&amp;<sp/>properties);</highlight></codeline>
+<codeline lineno="130"><highlight class="normal"></highlight></codeline>
+<codeline lineno="131"><highlight class="normal">}<sp/><sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>iceberg::hive</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="iceberg/catalog/hive/hive_utils.h"/>
+  </compounddef>
+</doxygen>

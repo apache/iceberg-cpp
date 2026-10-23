@@ -1,0 +1,87 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1hive_1_1HiveNamespace" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::hive::HiveNamespace</compoundname>
+    <includes refid="hive__utils_8h" local="no">hive_utils.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1hive_1_1HiveNamespace_1aa1b39298fe60df9ac1a8c4e62c0da6b2" prot="public" static="no" mutable="no">
+        <type><ref refid="structiceberg_1_1Namespace" kindref="compound">Namespace</ref></type>
+        <definition>Namespace iceberg::hive::HiveNamespace::ns</definition>
+        <argsstring></argsstring>
+        <name>ns</name>
+        <qualifiedname>iceberg::hive::HiveNamespace::ns</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/hive_utils.h" line="90" column="13" bodyfile="iceberg/catalog/hive/hive_utils.h" bodystart="90" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1hive_1_1HiveNamespace_1a868d46c17ba4ad47eec2bb9192520e71" prot="public" static="no" mutable="no">
+        <type>std::unordered_map&lt; std::string, std::string &gt;</type>
+        <definition>std::unordered_map&lt;std::string, std::string&gt; iceberg::hive::HiveNamespace::properties</definition>
+        <argsstring></argsstring>
+        <name>properties</name>
+        <qualifiedname>iceberg::hive::HiveNamespace::properties</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/hive_utils.h" line="91" column="22" bodyfile="iceberg/catalog/hive/hive_utils.h" bodystart="91" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para><ref refid="structiceberg_1_1Namespace" kindref="compound">Namespace</ref> and properties read from HMS. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="2">
+        <label>iceberg::Namespace</label>
+        <link refid="structiceberg_1_1Namespace"/>
+        <childnode refid="3" relation="usage">
+          <edgelabel>levels</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::hive::HiveNamespace</label>
+        <link refid="structiceberg_1_1hive_1_1HiveNamespace"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>ns</edgelabel>
+        </childnode>
+        <childnode refid="6" relation="usage">
+          <edgelabel>properties</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="4">
+        <label>std::string</label>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>std::unordered_map&lt; std::string, std::string &gt;</label>
+        <childnode refid="4" relation="usage">
+          <edgelabel>elements</edgelabel>
+          <edgelabel>keys</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::vector&lt; std::string &gt;</label>
+        <childnode refid="4" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/hive_utils.h" line="89" column="1" bodyfile="iceberg/catalog/hive/hive_utils.h" bodystart="89" bodyend="92"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1hive_1_1HiveNamespace_1aa1b39298fe60df9ac1a8c4e62c0da6b2" prot="public" virt="non-virtual"><scope>iceberg::hive::HiveNamespace</scope><name>ns</name></member>
+      <member refid="structiceberg_1_1hive_1_1HiveNamespace_1a868d46c17ba4ad47eec2bb9192520e71" prot="public" virt="non-virtual"><scope>iceberg::hive::HiveNamespace</scope><name>properties</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

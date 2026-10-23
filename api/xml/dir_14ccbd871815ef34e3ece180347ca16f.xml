@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="dir_14ccbd871815ef34e3ece180347ca16f" kind="dir">
+    <compoundname>iceberg/inspect</compoundname>
+    <innerfile refid="history__table_8h">history_table.h</innerfile>
+    <innerfile refid="metadata__table_8h">metadata_table.h</innerfile>
+    <innerfile refid="snapshots__table_8h">snapshots_table.h</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/inspect/"/>
+  </compounddef>
+</doxygen>

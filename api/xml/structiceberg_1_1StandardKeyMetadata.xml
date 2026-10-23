@@ -1,0 +1,181 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1StandardKeyMetadata" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::StandardKeyMetadata</compoundname>
+    <includes refid="standard__key__metadata_8h" local="no">standard_key_metadata.h</includes>
+    <sectiondef kind="public-static-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1StandardKeyMetadata_1a2d35cef73320f6f74a1d0b05d14df249" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr uint8_t</type>
+        <definition>constexpr uint8_t iceberg::StandardKeyMetadata::kV1</definition>
+        <argsstring></argsstring>
+        <name>kV1</name>
+        <qualifiedname>iceberg::StandardKeyMetadata::kV1</qualifiedname>
+        <initializer>= 1</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/encryption/standard_key_metadata.h" line="50" column="28" bodyfile="iceberg/encryption/standard_key_metadata.h" bodystart="50" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1StandardKeyMetadata_1a828b9892b53ea99ac965c0b93818502f" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; uint8_t &gt;</type>
+        <definition>std::vector&lt;uint8_t&gt; iceberg::StandardKeyMetadata::encryption_key</definition>
+        <argsstring></argsstring>
+        <name>encryption_key</name>
+        <qualifiedname>iceberg::StandardKeyMetadata::encryption_key</qualifiedname>
+        <briefdescription>
+<para>The data encryption key (16, 24 or 32 bytes). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/encryption/standard_key_metadata.h" line="53" column="15" bodyfile="iceberg/encryption/standard_key_metadata.h" bodystart="53" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1StandardKeyMetadata_1af09795723821752fea482c27c1a71320" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; std::vector&lt; uint8_t &gt; &gt;</type>
+        <definition>std::optional&lt;std::vector&lt;uint8_t&gt; &gt; iceberg::StandardKeyMetadata::aad_prefix</definition>
+        <argsstring></argsstring>
+        <name>aad_prefix</name>
+        <qualifiedname>iceberg::StandardKeyMetadata::aad_prefix</qualifiedname>
+        <briefdescription>
+<para>The AAD prefix (file ID) used to bind ciphertext to this file. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/encryption/standard_key_metadata.h" line="55" column="17" bodyfile="iceberg/encryption/standard_key_metadata.h" bodystart="55" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1StandardKeyMetadata_1ab740bcb78bb0e2e70a81cad7d2da623e" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; int64_t &gt;</type>
+        <definition>std::optional&lt;int64_t&gt; iceberg::StandardKeyMetadata::file_length</definition>
+        <argsstring></argsstring>
+        <name>file_length</name>
+        <qualifiedname>iceberg::StandardKeyMetadata::file_length</qualifiedname>
+        <briefdescription>
+<para>The encrypted (stored) file length, required to read AES GCM streams. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/encryption/standard_key_metadata.h" line="57" column="17" bodyfile="iceberg/encryption/standard_key_metadata.h" bodystart="57" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="structiceberg_1_1StandardKeyMetadata_1ab3c84d8e4e36fe498fdcc945e3f11af8" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceiceberg_1aac79523734e35ca4d34cced52e56ec9b" kindref="member">Result</ref>&lt; <ref refid="structiceberg_1_1StandardKeyMetadata" kindref="compound">StandardKeyMetadata</ref> &gt;</type>
+        <definition>static Result&lt; StandardKeyMetadata &gt; iceberg::StandardKeyMetadata::Parse</definition>
+        <argsstring>(std::span&lt; const uint8_t &gt; buffer)</argsstring>
+        <name>Parse</name>
+        <qualifiedname>iceberg::StandardKeyMetadata::Parse</qualifiedname>
+        <param>
+          <type>std::span&lt; const uint8_t &gt;</type>
+          <declname>buffer</declname>
+        </param>
+        <briefdescription>
+<para>Parse serialized key metadata. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/encryption/standard_key_metadata.h" line="60" column="17"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structiceberg_1_1StandardKeyMetadata_1ab6507b1e3667b5d462a96f64ec8c9c17" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>std::vector&lt; uint8_t &gt;</type>
+        <definition>std::vector&lt; uint8_t &gt; iceberg::StandardKeyMetadata::Serialize</definition>
+        <argsstring>() const</argsstring>
+        <name>Serialize</name>
+        <qualifiedname>iceberg::StandardKeyMetadata::Serialize</qualifiedname>
+        <briefdescription>
+<para>Serialize to the version-prefixed Avro binary form. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/encryption/standard_key_metadata.h" line="63" column="15"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1StandardKeyMetadata_1a972d3b8104bc5b08256fbe0a40369a4b" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="structiceberg_1_1StandardKeyMetadata" kindref="compound">StandardKeyMetadata</ref></type>
+        <definition>StandardKeyMetadata iceberg::StandardKeyMetadata::WithFileLength</definition>
+        <argsstring>(int64_t length) const</argsstring>
+        <name>WithFileLength</name>
+        <qualifiedname>iceberg::StandardKeyMetadata::WithFileLength</qualifiedname>
+        <param>
+          <type>int64_t</type>
+          <declname>length</declname>
+        </param>
+        <briefdescription>
+<para>Return a copy with the given encrypted file length. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/encryption/standard_key_metadata.h" line="66" column="23"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="friend">
+      <memberdef kind="friend" id="structiceberg_1_1StandardKeyMetadata_1a7f71ec930329607bb6d2a27b48ec4153" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool operator==</definition>
+        <argsstring>(const StandardKeyMetadata &amp;, const StandardKeyMetadata &amp;)=default</argsstring>
+        <name>operator==</name>
+        <qualifiedname>iceberg::StandardKeyMetadata::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1StandardKeyMetadata" kindref="compound">StandardKeyMetadata</ref> &amp;</type>
+        </param>
+        <param>
+          <type>const <ref refid="structiceberg_1_1StandardKeyMetadata" kindref="compound">StandardKeyMetadata</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/encryption/standard_key_metadata.h" line="68" column="15"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Per-file key metadata of the standard encryption scheme. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>Stored in the <computeroutput>key_metadata</computeroutput> field of data files, delete files and manifest files, and (encrypted by a key encryption key) in the table metadata <computeroutput>encryption-keys</computeroutput> for manifest lists.</para>
+<para>The Iceberg table spec leaves the key metadata representation to the encryption scheme; it mandates neither this encoding nor AES-GCM. The schema below follows Java&apos;s standard scheme.</para>
+<para>The serialized form is compatible with Java&apos;s <ref refid="structiceberg_1_1StandardKeyMetadata" kindref="compound">StandardKeyMetadata</ref>: a one-byte schema version (1) followed by an Avro binary encoded record with the fields <computeroutput>encryption_key: bytes</computeroutput>, <computeroutput>aad_prefix: union{null, bytes}</computeroutput> and <computeroutput>file_length: union{null, long}</computeroutput>. </para>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::StandardKeyMetadata</label>
+        <link refid="structiceberg_1_1StandardKeyMetadata"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>encryption_key</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>std::vector&lt; uint8_t &gt;</label>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/encryption/standard_key_metadata.h" line="49" column="1" bodyfile="iceberg/encryption/standard_key_metadata.h" bodystart="49" bodyend="70"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1StandardKeyMetadata_1af09795723821752fea482c27c1a71320" prot="public" virt="non-virtual"><scope>iceberg::StandardKeyMetadata</scope><name>aad_prefix</name></member>
+      <member refid="structiceberg_1_1StandardKeyMetadata_1a828b9892b53ea99ac965c0b93818502f" prot="public" virt="non-virtual"><scope>iceberg::StandardKeyMetadata</scope><name>encryption_key</name></member>
+      <member refid="structiceberg_1_1StandardKeyMetadata_1ab740bcb78bb0e2e70a81cad7d2da623e" prot="public" virt="non-virtual"><scope>iceberg::StandardKeyMetadata</scope><name>file_length</name></member>
+      <member refid="structiceberg_1_1StandardKeyMetadata_1a2d35cef73320f6f74a1d0b05d14df249" prot="public" virt="non-virtual"><scope>iceberg::StandardKeyMetadata</scope><name>kV1</name></member>
+      <member refid="structiceberg_1_1StandardKeyMetadata_1a7f71ec930329607bb6d2a27b48ec4153" prot="public" virt="non-virtual"><scope>iceberg::StandardKeyMetadata</scope><name>operator==</name></member>
+      <member refid="structiceberg_1_1StandardKeyMetadata_1ab3c84d8e4e36fe498fdcc945e3f11af8" prot="public" virt="non-virtual"><scope>iceberg::StandardKeyMetadata</scope><name>Parse</name></member>
+      <member refid="structiceberg_1_1StandardKeyMetadata_1ab6507b1e3667b5d462a96f64ec8c9c17" prot="public" virt="non-virtual"><scope>iceberg::StandardKeyMetadata</scope><name>Serialize</name></member>
+      <member refid="structiceberg_1_1StandardKeyMetadata_1a972d3b8104bc5b08256fbe0a40369a4b" prot="public" virt="non-virtual"><scope>iceberg::StandardKeyMetadata</scope><name>WithFileLength</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

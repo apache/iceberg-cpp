@@ -1,0 +1,19 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="concepticeberg_1_1internal_1_1RetryableStatusTask" kind="concept">
+    <compoundname>iceberg::internal::RetryableStatusTask</compoundname>
+    <templateparamlist>
+      <param>
+        <type>typename F</type>
+      </param>
+    </templateparamlist>
+    <initializer>template&lt;typename F&gt;
+concept <ref refid="concepticeberg_1_1internal_1_1RetryableStatusTask" kindref="compound">iceberg::internal::RetryableStatusTask</ref> =  std::constructible_from&lt;std::remove_cvref_t&lt;F&gt;, F&gt; &amp;&amp;
+                              RepeatableStatusTask&lt;std::remove_cvref_t&lt;F&gt;&gt;    </initializer>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/util/task_group.h" line="50" column="1"/>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,34 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1DeleteFileSet_1_1DeleteFileKeyHash" kind="struct" language="C++" prot="private">
+    <compoundname>iceberg::DeleteFileSet::DeleteFileKeyHash</compoundname>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structiceberg_1_1DeleteFileSet_1_1DeleteFileKeyHash_1a48c179f4c3ccf67d6f98b3f09bdecc87" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>size_t</type>
+        <definition>size_t iceberg::DeleteFileSet::DeleteFileKeyHash::operator()</definition>
+        <argsstring>(const DeleteFileKey &amp;key) const</argsstring>
+        <name>operator()</name>
+        <qualifiedname>iceberg::DeleteFileSet::DeleteFileKeyHash::operator()</qualifiedname>
+        <param>
+          <type>const DeleteFileKey &amp;</type>
+          <declname>key</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/data_file_set.h" line="226" column="12" bodyfile="iceberg/util/data_file_set.h" bodystart="226" bodyend="235"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/util/data_file_set.h" line="225" column="3" bodyfile="iceberg/util/data_file_set.h" bodystart="225" bodyend="236"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1DeleteFileSet_1_1DeleteFileKeyHash_1a48c179f4c3ccf67d6f98b3f09bdecc87" prot="public" virt="non-virtual"><scope>iceberg::DeleteFileSet::DeleteFileKeyHash</scope><name>operator()</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,72 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1hive_1_1HmsEndpoint" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::hive::HmsEndpoint</compoundname>
+    <includes refid="hms__client_8h" local="no">hms_client.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1hive_1_1HmsEndpoint_1a2221f90c77b9015b42113ca0feecc973" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::hive::HmsEndpoint::host</definition>
+        <argsstring></argsstring>
+        <name>host</name>
+        <qualifiedname>iceberg::hive::HmsEndpoint::host</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/hms_client.h" line="51" column="15" bodyfile="iceberg/catalog/hive/hms_client.h" bodystart="51" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1hive_1_1HmsEndpoint_1a5c88e1803dcfa7c8cdc4d357e0adf77e" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int iceberg::hive::HmsEndpoint::port</definition>
+        <argsstring></argsstring>
+        <name>port</name>
+        <qualifiedname>iceberg::hive::HmsEndpoint::port</qualifiedname>
+        <initializer>= <ref refid="namespaceiceberg_1_1hive_1ab49e066f157b4da08ca41b933484470a" kindref="member">kDefaultHmsPort</ref></initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/hive/hms_client.h" line="52" column="7" bodyfile="iceberg/catalog/hive/hms_client.h" bodystart="52" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>A single host:port pair parsed from an HMS URI. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>HMS URIs commonly take one of the forms:<itemizedlist>
+<listitem><para><computeroutput>thrift://host:port</computeroutput> (Java <ref refid="classiceberg_1_1hive_1_1HiveCatalog" kindref="compound">HiveCatalog</ref> convention)</para>
+</listitem><listitem><para><computeroutput>host:port</computeroutput> (iceberg-rust HmsCatalog convention)</para>
+</listitem><listitem><para>comma-separated list of either form for HA failover</para>
+</listitem></itemizedlist>
+</para>
+<para><computeroutput>port</computeroutput> defaults to 9083 (Hive&apos;s well-known metastore port) when the caller omits an explicit port. </para>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::hive::HmsEndpoint</label>
+        <link refid="structiceberg_1_1hive_1_1HmsEndpoint"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>host</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/hive/hms_client.h" line="50" column="1" bodyfile="iceberg/catalog/hive/hms_client.h" bodystart="50" bodyend="53"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1hive_1_1HmsEndpoint_1a2221f90c77b9015b42113ca0feecc973" prot="public" virt="non-virtual"><scope>iceberg::hive::HmsEndpoint</scope><name>host</name></member>
+      <member refid="structiceberg_1_1hive_1_1HmsEndpoint_1a5c88e1803dcfa7c8cdc4d357e0adf77e" prot="public" virt="non-virtual"><scope>iceberg::hive::HmsEndpoint</scope><name>port</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>
