@@ -168,6 +168,10 @@ if [[ -n "${ICEBERG_EXTRA_CMAKE_ARGS:-}" ]]; then
     CMAKE_ARGS+=("${EXTRA_CMAKE_ARGS[@]}")
 fi
 
+# CI must compile and run the complete variant tests, even if a runner happens
+# to discover an older system Arrow installation.
+CMAKE_ARGS+=("-DICEBERG_USE_BUNDLED_ARROW=ON" "-DICEBERG_REQUIRE_ARROW_VARIANT=ON")
+
 cmake "${CMAKE_ARGS[@]}" ${source_dir}
 
 cmake --build . --target install

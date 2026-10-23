@@ -25,6 +25,7 @@
 #include <functional>
 #include <memory>
 #include <optional>
+#include <unordered_map>
 #include <vector>
 
 #include "iceberg/arrow_c_data.h"
@@ -85,6 +86,11 @@ struct ICEBERG_EXPORT WriterOptions {
   std::shared_ptr<MetricsConfig> metrics_config = MetricsConfig::Default();
   /// \brief Format-specific or implementation-specific properties.
   WriterProperties properties;
+  /// \brief Optional logical shredding targets for Parquet variant fields, by field ID.
+  /// Targets may be supported primitive, struct, or list types. Their field IDs are
+  /// ignored. Unconfigured fields are written unshredded. Input arrays always use the
+  /// unshredded variant representation; the target layout stays fixed for this file.
+  std::unordered_map<int32_t, std::shared_ptr<Type>> variant_shredding_types;
 };
 
 /// \brief Base writer class to write data from different file formats.

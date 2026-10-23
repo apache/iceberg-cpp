@@ -30,7 +30,7 @@ namespace iceberg::parquet {
 /// \brief A writer that writes ArrowArray to Parquet files.
 class ICEBERG_BUNDLE_EXPORT ParquetWriter : public Writer {
  public:
-  ParquetWriter() = default;
+  ParquetWriter();
 
   ~ParquetWriter() override;
 

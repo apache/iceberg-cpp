@@ -99,6 +99,13 @@ TEST(SchemaTest, Equality) {
 }
 
 TEST(SchemaTest, ValidateRejectsV3TypesBeforeFormatV3) {
+  iceberg::Schema variant_schema(
+      {iceberg::SchemaField(1, "payload", iceberg::variant(), true)});
+  for (int32_t version : {1, 2}) {
+    EXPECT_THAT(variant_schema.Validate(version),
+                iceberg::IsError(iceberg::ErrorKind::kInvalidSchema));
+  }
+  EXPECT_THAT(variant_schema.Validate(3), iceberg::IsOk());
   iceberg::Schema timestamp_ns_schema(
       {iceberg::SchemaField(1, "timestamp_ns", iceberg::timestamp_ns(), false)});
   iceberg::Schema timestamptz_ns_schema(

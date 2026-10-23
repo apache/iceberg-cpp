@@ -17,13 +17,16 @@
  * under the License.
  */
 
+#include <arrow/extension/parquet_variant.h>
 #include <arrow/extension_type.h>
 #include <arrow/type.h>
 #include <arrow/type_fwd.h>
 #include <arrow/util/key_value_metadata.h>
 #include <parquet/arrow/schema.h>
+#include <parquet/properties.h>
 #include <parquet/schema.h>
 
+#include "iceberg/arrow/arrow_status_internal.h"
 #include "iceberg/constants.h"
 #include "iceberg/metadata_columns.h"
 #include "iceberg/name_mapping.h"
@@ -196,7 +199,9 @@ Result<::parquet::schema::NodePtr> ToParquetPrimitive(
                                                 physical_type, type_length, field_id);
 }
 
-Result<::parquet::schema::NodePtr> ToParquetNode(const SchemaField& field) {
+Result<::parquet::schema::NodePtr> ToParquetNode(
+    const SchemaField& field,
+    const std::shared_ptr<::arrow::DataType>& storage_type = nullptr) {
   const auto repetition = field.optional() ? ::parquet::Repetition::OPTIONAL
                                            : ::parquet::Repetition::REQUIRED;
   const auto& type = *field.type();
@@ -213,8 +218,12 @@ Result<::parquet::schema::NodePtr> ToParquetNode(const SchemaField& field) {
       }
       ::parquet::schema::NodeVector children;
       children.reserve(struct_type.fields().size());
-      for (const auto& child_field : struct_type.fields()) {
-        ICEBERG_ASSIGN_OR_RAISE(auto child, ToParquetNode(child_field));
+      for (size_t i = 0; i < struct_type.fields().size(); ++i) {
+        const auto& child_field = struct_type.fields()[i];
+        ICEBERG_ASSIGN_OR_RAISE(
+            auto child,
+            ToParquetNode(child_field,
+                          storage_type ? storage_type->field(i)->type() : nullptr));
         children.push_back(std::move(child));
       }
       return ::parquet::schema::GroupNode::Make(
@@ -223,7 +232,10 @@ Result<::parquet::schema::NodePtr> ToParquetNode(const SchemaField& field) {
     }
     case TypeId::kList: {
       const auto& list_type = internal::checked_cast<const ListType&>(type);
-      ICEBERG_ASSIGN_OR_RAISE(auto element, ToParquetNode(list_type.element()));
+      ICEBERG_ASSIGN_OR_RAISE(
+          auto element,
+          ToParquetNode(list_type.element(),
+                        storage_type ? storage_type->field(0)->type() : nullptr));
       auto repeated = ::parquet::schema::GroupNode::Make(
           "list", ::parquet::Repetition::REPEATED, {std::move(element)});
       return ::parquet::schema::GroupNode::Make(
@@ -232,8 +244,15 @@ Result<::parquet::schema::NodePtr> ToParquetNode(const SchemaField& field) {
     }
     case TypeId::kMap: {
       const auto& map_type = internal::checked_cast<const MapType&>(type);
-      ICEBERG_ASSIGN_OR_RAISE(auto key, ToParquetNode(map_type.key()));
-      ICEBERG_ASSIGN_OR_RAISE(auto value, ToParquetNode(map_type.value()));
+      const auto* arrow_map =
+          storage_type ? static_cast<const ::arrow::MapType*>(storage_type.get())
+                       : nullptr;
+      ICEBERG_ASSIGN_OR_RAISE(
+          auto key,
+          ToParquetNode(map_type.key(), arrow_map ? arrow_map->key_type() : nullptr));
+      ICEBERG_ASSIGN_OR_RAISE(
+          auto value,
+          ToParquetNode(map_type.value(), arrow_map ? arrow_map->item_type() : nullptr));
       auto repeated =
           ::parquet::schema::GroupNode::Make("key_value", ::parquet::Repetition::REPEATED,
                                              {std::move(key), std::move(value)});
@@ -241,8 +260,29 @@ Result<::parquet::schema::NodePtr> ToParquetNode(const SchemaField& field) {
           std::string(field.name()), repetition, {std::move(repeated)},
           ::parquet::LogicalType::Map(), field.field_id());
     }
-    case TypeId::kVariant:
-      return NotSupported("Cannot write Iceberg variant type to Parquet");
+    case TypeId::kVariant: {
+      if (storage_type) {
+        auto arrow_field =
+            ::arrow::field(std::string(field.name()), storage_type, field.optional())
+                ->WithMetadata(
+                    ::arrow::key_value_metadata({std::string(kParquetFieldIdKey)},
+                                                {std::to_string(field.field_id())}));
+        auto arrow_schema = ::arrow::schema({std::move(arrow_field)});
+        std::shared_ptr<::parquet::SchemaDescriptor> descriptor;
+        ICEBERG_ARROW_RETURN_NOT_OK(::parquet::arrow::ToParquetSchema(
+            arrow_schema.get(), *::parquet::default_writer_properties(), &descriptor));
+        return static_cast<const ::parquet::schema::GroupNode*>(
+                   descriptor->schema_root().get())
+            ->field(0);
+      }
+      auto metadata = ::parquet::schema::PrimitiveNode::Make(
+          "metadata", ::parquet::Repetition::REQUIRED, ::parquet::Type::BYTE_ARRAY);
+      auto value = ::parquet::schema::PrimitiveNode::Make(
+          "value", ::parquet::Repetition::REQUIRED, ::parquet::Type::BYTE_ARRAY);
+      return ::parquet::schema::GroupNode::Make(
+          std::string(field.name()), repetition, {std::move(metadata), std::move(value)},
+          ::parquet::LogicalType::Variant(), field.field_id());
+    }
     default:
       return InvalidSchema("Expected nested Iceberg type, got {}", type);
   }
@@ -256,24 +296,38 @@ bool HasSelectedColumn(const FieldProjection& projection) {
   if (projection.attributes) {
     const auto& attributes =
         internal::checked_cast<const ParquetExtraAttributes&>(*projection.attributes);
-    if (attributes.column_id) {
+    if (attributes.column_id || !attributes.column_ids.empty()) {
       return true;
     }
   }
   return std::ranges::any_of(projection.children, HasSelectedColumn);
 }
 
-std::optional<int32_t> FirstColumnIndex(
-    const ::parquet::arrow::SchemaField& parquet_field) {
-  if (parquet_field.column_index >= 0) {
-    return parquet_field.column_index;
+void CollectVariantColumns(const ::parquet::arrow::SchemaField& field,
+                           std::vector<int32_t>& column_ids) {
+  if (field.column_index >= 0) column_ids.push_back(field.column_index);
+  for (const auto& child : field.children) CollectVariantColumns(child, column_ids);
+}
+
+std::vector<int32_t> FirstAnchorColumns(const ::parquet::arrow::SchemaField& field) {
+  if (field.field->type()->id() == ::arrow::Type::EXTENSION &&
+      static_cast<const ::arrow::ExtensionType&>(*field.field->type()).extension_name() ==
+          kArrowVariantExtensionName) {
+    std::vector<int32_t> columns;
+    CollectVariantColumns(field, columns);
+    return columns;
   }
-  for (const auto& child : parquet_field.children) {
-    if (auto column_index = FirstColumnIndex(child)) {
-      return column_index;
-    }
+  if (field.column_index >= 0) return {field.column_index};
+  for (const auto& child : field.children) {
+    auto columns = FirstAnchorColumns(child);
+    if (!columns.empty()) return columns;
   }
-  return std::nullopt;
+  return {};
+}
+
+std::shared_ptr<ParquetExtraAttributes> AnchorAttributes(std::vector<int32_t> columns) {
+  if (columns.size() == 1) return std::make_shared<ParquetExtraAttributes>(columns[0]);
+  return std::make_shared<ParquetExtraAttributes>(std::move(columns));
 }
 
 // Pick a physical column as an anchor when all children are null-projected,
@@ -285,9 +339,9 @@ void SelectAnchorColumnIfEmpty(
     return;
   }
   for (const auto& parquet_field : parquet_fields) {
-    if (auto column_index = FirstColumnIndex(parquet_field)) {
-      projection->attributes =
-          std::make_shared<ParquetExtraAttributes>(column_index.value());
+    auto columns = FirstAnchorColumns(parquet_field);
+    if (!columns.empty()) {
+      projection->attributes = AnchorAttributes(std::move(columns));
       return;
     }
   }
@@ -476,8 +530,12 @@ Status ValidateParquetTypeCompatibility(
     case TypeId::kUnknown:
       return {};
     case TypeId::kVariant:
-      return NotSupported("Reading Iceberg type {} from Parquet is not supported",
-                          expected_type);
+      if (arrow_type->id() == ::arrow::Type::EXTENSION &&
+          static_cast<const ::arrow::ExtensionType&>(*arrow_type).extension_name() ==
+              kArrowVariantExtensionName) {
+        return {};
+      }
+      break;
     case TypeId::kStruct:
       if (arrow_type->id() == ::arrow::Type::STRUCT) {
         return {};
@@ -547,7 +605,33 @@ class ProjectionBuilder {
           ValidateParquetTypeCompatibility(expected_type, parquet_field));
     }
 
-    if (expected_type.is_nested()) {
+    if (expected_type.is_variant()) {
+      std::vector<int32_t> column_ids;
+      CollectVariantColumns(parquet_field, column_ids);
+      if (column_ids.empty()) {
+        return InvalidSchema("Variant field has no physical columns");
+      }
+      if (descr_ == nullptr)
+        return InvalidSchema("Missing variant Parquet schema metadata");
+      for (auto column_id : column_ids) {
+        if (column_id < 0 || column_id >= descr_->num_columns()) {
+          return InvalidSchema("Variant physical column index is out of range");
+        }
+        auto node = descr_->Column(column_id)->schema_node()->parent();
+        while (node != nullptr && !node->logical_type()->is_variant())
+          node = node->parent();
+        // ProjectStruct has already matched the manifest field ID, including IDs
+        // supplied by name mapping. The physical node may legitimately have no ID.
+        if (node == nullptr ||
+            (node->field_id() >= 0 && node->field_id() != expected_field.field_id())) {
+          return InvalidSchema(
+              "Iceberg variant requires a Parquet VARIANT group with the matching field "
+              "ID");
+        }
+      }
+      projection.attributes =
+          std::make_shared<ParquetExtraAttributes>(std::move(column_ids));
+    } else if (expected_type.is_nested()) {
       ICEBERG_ASSIGN_OR_RAISE(projection,
                               ProjectNested(expected_type, parquet_field.children));
     } else {
@@ -682,9 +766,9 @@ class ProjectionBuilder {
       ICEBERG_ASSIGN_OR_RAISE(auto sub_projection, ProjectField(sub_field, sub_node, i));
       if (sub_projection.kind == FieldProjection::Kind::kNull &&
           !HasSelectedColumn(sub_projection)) {
-        if (auto column_index = FirstColumnIndex(sub_node)) {
-          sub_projection.attributes =
-              std::make_shared<ParquetExtraAttributes>(column_index.value());
+        auto columns = FirstAnchorColumns(sub_node);
+        if (!columns.empty()) {
+          sub_projection.attributes = AnchorAttributes(std::move(columns));
         }
       }
       result.children.emplace_back(std::move(sub_projection));
@@ -733,6 +817,8 @@ void CollectColumnIds(const FieldProjection& field_projection,
     if (attributes.column_id) {
       column_ids->push_back(attributes.column_id.value());
     }
+    column_ids->insert(column_ids->end(), attributes.column_ids.begin(),
+                       attributes.column_ids.end());
   }
   for (const auto& child : field_projection.children) {
     CollectColumnIds(child, column_ids);
@@ -831,11 +917,16 @@ void ApplyNameMapping(const NameMapping& mapping,
 }
 
 Result<std::shared_ptr<::parquet::SchemaDescriptor>> ToParquetSchema(
-    const Schema& iceberg_schema) {
+    const Schema& iceberg_schema,
+    const std::shared_ptr<::arrow::Schema>& storage_schema) {
   ::parquet::schema::NodeVector fields;
   fields.reserve(iceberg_schema.fields().size());
-  for (const auto& field : iceberg_schema.fields()) {
-    ICEBERG_ASSIGN_OR_RAISE(auto parquet_field, ToParquetNode(field));
+  for (size_t i = 0; i < iceberg_schema.fields().size(); ++i) {
+    const auto& field = iceberg_schema.fields()[i];
+    ICEBERG_ASSIGN_OR_RAISE(
+        auto parquet_field,
+        ToParquetNode(field,
+                      storage_schema ? storage_schema->field(i)->type() : nullptr));
     fields.push_back(std::move(parquet_field));
   }
 

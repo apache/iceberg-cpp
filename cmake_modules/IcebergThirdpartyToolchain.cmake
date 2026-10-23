@@ -89,22 +89,21 @@ endfunction()
 # ICEBERG_CPR_URL            - cpr tarball URL
 #
 # Example usage:
-#   export ICEBERG_ARROW_URL="https://your-mirror.com/apache-arrow-25.0.0.tar.gz"
+#   export ICEBERG_ARROW_URL="https://your-mirror.com/arrow-0f16412bb1c39611aeed7393eba09e637f4d86fa.tar.gz"
 #   cmake -S . -B build
 #
 
-set(ICEBERG_ARROW_BUILD_VERSION "25.0.0")
+# Temporary pin for apache/arrow#50252. Replace with an Apache Arrow release
+# containing the variant APIs once that work has merged and been released.
+set(ICEBERG_ARROW_BUILD_COMMIT "0f16412bb1c39611aeed7393eba09e637f4d86fa")
 set(ICEBERG_ARROW_BUILD_SHA256_CHECKSUM
-    "12afc2dc8137bdd4a68876cec939f664c9d55cfc7b75f55b45163ebb4e344d81")
+    "4e184655c31b4b28cf7d0cd1034f9b3891d5d861520d427a90726b28e52e72f9")
 
 if(DEFINED ENV{ICEBERG_ARROW_URL})
   set(ARROW_SOURCE_URL "$ENV{ICEBERG_ARROW_URL}")
 else()
   set(ARROW_SOURCE_URL
-      "https://www.apache.org/dyn/closer.lua?action=download&filename=/arrow/arrow-${ICEBERG_ARROW_BUILD_VERSION}/apache-arrow-${ICEBERG_ARROW_BUILD_VERSION}.tar.gz"
-      "https://downloads.apache.org/arrow/arrow-${ICEBERG_ARROW_BUILD_VERSION}/apache-arrow-${ICEBERG_ARROW_BUILD_VERSION}.tar.gz"
-      "https://archive.apache.org/dist/arrow/arrow-${ICEBERG_ARROW_BUILD_VERSION}/apache-arrow-${ICEBERG_ARROW_BUILD_VERSION}.tar.gz"
-  )
+      "https://codeload.github.com/HuaHuaY/arrow/tar.gz/${ICEBERG_ARROW_BUILD_COMMIT}")
 endif()
 
 set(ICEBERG_NANOARROW_BUILD_VERSION "0.9.0")
@@ -180,12 +179,67 @@ macro(resolve_openssl_for_encryption)
   find_package(OpenSSL REQUIRED)
 endmacro()
 
+function(iceberg_check_arrow_variant)
+  if(NOT ICEBERG_REQUIRE_ARROW_VARIANT)
+    return()
+  endif()
+
+  include(CheckCXXSourceCompiles)
+  # This also works before bundled Arrow has been built: compile the API probe
+  # without linking against its libraries.
+  set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
+  set(CMAKE_REQUIRED_INCLUDES)
+  foreach(dependency Arrow Parquet)
+    if(dependency STREQUAL "Arrow")
+      set(component arrow)
+    else()
+      set(component parquet)
+    endif()
+    if(TARGET ${dependency}::${component}_static)
+      set(dependency_target ${dependency}::${component}_static)
+    else()
+      set(dependency_target ${dependency}::${component}_shared)
+    endif()
+    get_target_property(dependency_includes ${dependency_target}
+                        INTERFACE_INCLUDE_DIRECTORIES)
+    list(APPEND CMAKE_REQUIRED_INCLUDES ${dependency_includes})
+  endforeach()
+  # Recheck when an existing build switches Arrow installations or source pins.
+  unset(ICEBERG_ARROW_HAS_VARIANT CACHE)
+  check_cxx_source_compiles("#include <arrow/extension/parquet_variant.h>
+     #include <parquet/properties.h>
+     #include <parquet/variant/builder.h>
+     #include <parquet/variant/decoding.h>
+     #include <parquet/variant/shred.h>
+     #include <parquet/variant/unshred.h>
+     #include <parquet/variant/validate.h>
+     using Shred = decltype(&parquet::variant::ShredVariantArray);
+     using Unshred = decltype(&parquet::variant::UnshredVariantArray);
+     using Validate = decltype(&parquet::variant::ValidateVariants<true>);
+     using ReaderValidation = decltype(&parquet::ArrowReaderProperties::set_variant_validation_enabled);
+     using WriterValidation = decltype(&parquet::ArrowWriterProperties::Builder::set_variant_validation_enabled);
+     using IsShredded = decltype(&arrow::extension::VariantArray::is_shredded);
+     int main() { return 0; }"
+                            ICEBERG_ARROW_HAS_VARIANT)
+  if(NOT ICEBERG_ARROW_HAS_VARIANT)
+    message(FATAL_ERROR "Arrow/Parquet lacks the variant APIs required by ICEBERG_REQUIRE_ARROW_VARIANT. "
+                        "Use the pinned bundled Arrow (ICEBERG_USE_BUNDLED_ARROW=ON) "
+                        "or a compatible Arrow installation. Set ICEBERG_REQUIRE_ARROW_VARIANT=OFF "
+                        "only for builds that do not need variant I/O.")
+  endif()
+endfunction()
+
 function(resolve_arrow_dependency)
   if(ICEBERG_ENCRYPTION)
     resolve_openssl_for_encryption()
   endif()
 
   prepare_fetchcontent()
+  if(ICEBERG_USE_BUNDLED_ARROW)
+    # This override is scoped to Arrow; other dependencies can still use
+    # installed packages, including the Windows CI runner's vcpkg packages.
+    set(FETCHCONTENT_TRY_FIND_PACKAGE_MODE NEVER)
+  endif()
 
   # Prevent Arrow from injecting -Werror into CMAKE_CXX_FLAGS_DEBUG via
   # arrow_add_werror_if_debug(). PRODUCTION level only adds standard warnings.
@@ -339,6 +393,8 @@ function(resolve_arrow_dependency)
   if(ICEBERG_ENCRYPTION)
     list(APPEND ICEBERG_SYSTEM_DEPENDENCIES OpenSSL)
   endif()
+
+  iceberg_check_arrow_variant()
 
   set(ICEBERG_SYSTEM_DEPENDENCIES
       ${ICEBERG_SYSTEM_DEPENDENCIES}
