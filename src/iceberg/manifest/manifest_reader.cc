@@ -51,6 +51,11 @@
 
 namespace iceberg {
 
+// FULL validation only requires struct children to be >= the parent's length,
+// but the field parsers below index containers sized by the parent's length
+// using each child's own length, so a longer child must be rejected here.
+Status AssertChildrenLength(const ArrowArrayView* view, std::string_view field_name);
+
 namespace {
 
 [[nodiscard]] Status MakeNullError(std::string_view field_name, int64_t row_idx) {
@@ -318,6 +323,7 @@ Result<std::vector<ManifestFile>> ParseManifestList(ArrowSchema* arrow_schema,
 
   ICEBERG_RETURN_UNEXPECTED(AssertViewTypeAndChildren(
       &view, ArrowType::NANOARROW_TYPE_STRUCT, schema.fields().size(), "manifest_list"));
+  ICEBERG_RETURN_UNEXPECTED(AssertChildrenLength(&view, "manifest_list"));
 
   std::vector<ManifestFile> manifest_files;
   manifest_files.resize(array->length);
@@ -476,6 +482,7 @@ Status ParseDataFile(const std::shared_ptr<StructType>& data_file_schema,
   ICEBERG_RETURN_UNEXPECTED(
       AssertViewTypeAndChildren(view, ArrowType::NANOARROW_TYPE_STRUCT,
                                 data_file_schema->fields().size(), "data_file"));
+  ICEBERG_RETURN_UNEXPECTED(AssertChildrenLength(view, "data_file"));
 
   for (int64_t col_idx = 0; col_idx < view->n_children; ++col_idx) {
     ICEBERG_ASSIGN_OR_RAISE(auto field, data_file_schema->GetFieldByIndex(col_idx));
@@ -513,10 +520,12 @@ Status ParseDataFile(const std::shared_ptr<StructType>& data_file_schema,
         }
         break;
       case DataFile::kPartitionFieldId: {
-        ICEBERG_RETURN_UNEXPECTED(
-            AssertViewType(field_view, ArrowType::NANOARROW_TYPE_STRUCT, field_name));
         const auto& partition_type =
             internal::checked_cast<const StructType&>(*field->get().type());
+        ICEBERG_RETURN_UNEXPECTED(
+            AssertViewTypeAndChildren(field_view, ArrowType::NANOARROW_TYPE_STRUCT,
+                                      partition_type.fields().size(), field_name));
+        ICEBERG_RETURN_UNEXPECTED(AssertChildrenLength(field_view, field_name));
         for (int64_t part_idx = 0; part_idx < field_view->n_children; part_idx++) {
           auto part_view = field_view->children[part_idx];
           auto part_field_type = internal::checked_pointer_cast<PrimitiveType>(
@@ -647,6 +656,7 @@ Result<std::vector<ManifestEntry>> ParseManifestEntry(
 
   ICEBERG_RETURN_UNEXPECTED(AssertViewTypeAndChildren(
       &view, ArrowType::NANOARROW_TYPE_STRUCT, schema.fields().size(), "manifest_entry"));
+  ICEBERG_RETURN_UNEXPECTED(AssertChildrenLength(&view, "manifest_entry"));
 
   std::vector<ManifestEntry> manifest_entries;
   manifest_entries.resize(array->length);
@@ -834,6 +844,17 @@ class ManifestEntryStreamImpl final : public ManifestEntryStream {
 };
 
 }  // namespace
+
+Status AssertChildrenLength(const ArrowArrayView* view, std::string_view field_name) {
+  for (int64_t i = 0; i < view->n_children; i++) {
+    if (view->children[i]->length != view->length) {
+      return InvalidArgument(
+          "Field '{}' child {} should have length {} matching its parent, got {}",
+          field_name, i, view->length, view->children[i]->length);
+    }
+  }
+  return {};
+}
 
 bool ManifestReader::ShouldDropStats(const std::vector<std::string>& columns) {
   // Make sure we only drop all stats if we had projected all stats.
