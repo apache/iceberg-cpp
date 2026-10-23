@@ -454,6 +454,10 @@ class CredentialStore {
     return ResolveCredential(default_properties_, credential);
   }
 
+  const std::unordered_map<std::string, std::string>& default_properties() const {
+    return default_properties_;
+  }
+
   /// \brief Make `credentials` current, and `provider` too when one is given.
   void Install(std::vector<StorageCredential> credentials,
                std::optional<std::shared_ptr<StorageCredentialProvider>> provider) {
@@ -753,6 +757,10 @@ class ArrowS3FileIO final : public FileIO, public SupportsStorageCredentials {
   Status InitializeStorageCredentials(
       const std::vector<StorageCredential>& storage_credentials,
       std::shared_ptr<StorageCredentialProvider> provider) override;
+
+  const std::unordered_map<std::string, std::string>& properties() const override {
+    return credential_store_->default_properties();
+  }
 
   SupportsStorageCredentials* AsSupportsStorageCredentials() override { return this; }
 
