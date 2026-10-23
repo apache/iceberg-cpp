@@ -30,8 +30,10 @@
 #include <arrow/c/bridge.h>
 #include <arrow/json/from_string.h>
 #include <gtest/gtest.h>
+#include <nanoarrow/nanoarrow.h>
 
 #include "iceberg/arrow/arrow_io_util.h"
+#include "iceberg/arrow_c_data_guard_internal.h"
 #include "iceberg/avro/avro_register.h"
 #include "iceberg/expression/expressions.h"
 #include "iceberg/file_writer.h"
@@ -46,6 +48,9 @@
 #include "iceberg/type.h"
 
 namespace iceberg {
+
+// Declared in manifest_reader.cc; not exposed via a public header.
+Status AssertChildrenLength(const ArrowArrayView* view, std::string_view field_name);
 
 class TestManifestReader : public testing::TestWithParam<int8_t> {
  protected:
@@ -742,5 +747,35 @@ TEST(ManifestReaderStaticTest, WithStatsColumnsHandlesEmptyAndSelectAll) {
 
 INSTANTIATE_TEST_SUITE_P(ManifestReaderVersions, TestManifestReader,
                          testing::Values(1, 2, 3));
+
+TEST(AssertChildrenLengthTest, RejectsChildLongerThanParent) {
+  // nanoarrow FULL validation only requires struct children to be >= the
+  // parent's length, so build a struct of length 1 whose child has length 2.
+  auto child =
+      ::arrow::json::ArrayFromJSONString(::arrow::int32(), "[1, 2]").ValueOrDie();
+  auto struct_type = ::arrow::struct_({::arrow::field("a", ::arrow::int32())});
+  auto struct_array = std::make_shared<::arrow::StructArray>(
+      struct_type, /*length=*/1, std::vector<std::shared_ptr<::arrow::Array>>{child});
+
+  ArrowArray c_array;
+  ArrowSchema c_schema;
+  ASSERT_TRUE(::arrow::ExportArray(*struct_array, &c_array, &c_schema).ok());
+  internal::ArrowArrayGuard array_guard(&c_array);
+  internal::ArrowSchemaGuard schema_guard(&c_schema);
+
+  ArrowArrayView view;
+  ArrowError error;
+  ASSERT_EQ(ArrowArrayViewInitFromSchema(&view, &c_schema, &error), NANOARROW_OK);
+  internal::ArrowArrayViewGuard view_guard(&view);
+  ASSERT_EQ(ArrowArrayViewSetArray(&view, &c_array, &error), NANOARROW_OK);
+  ASSERT_EQ(ArrowArrayViewValidate(&view, NANOARROW_VALIDATION_LEVEL_FULL, &error),
+            NANOARROW_OK);
+
+  EXPECT_THAT(AssertChildrenLength(&view, "test_field"),
+              ::testing::AllOf(
+                  IsError(ErrorKind::kInvalidArgument),
+                  HasErrorMessage("child 0 should have length 1 matching its parent, "
+                                  "got 2")));
+}
 
 }  // namespace iceberg
