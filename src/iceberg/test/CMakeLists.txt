@@ -116,7 +116,7 @@ add_iceberg_test(expression_test
                  residual_evaluator_test.cc
                  strict_metrics_evaluator_test.cc)
 
-add_iceberg_test(encryption_test SOURCES standard_key_metadata_test.cc)
+add_iceberg_test(encryption_test SOURCES kms_test.cc standard_key_metadata_test.cc)
 
 add_iceberg_test(json_serde_test
                  SOURCES
