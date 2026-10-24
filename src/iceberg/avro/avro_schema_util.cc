@@ -903,6 +903,166 @@ Result<SchemaProjection> Project(const Schema& expected_schema,
 
 namespace {
 
+Result<std::shared_ptr<Type>> FromAvroNode(const ::avro::NodePtr& node);
+
+std::optional<std::string> GetIcebergFieldName(const ::avro::NodePtr& node,
+                                               size_t field_idx) {
+  if (field_idx >= node->customAttributes()) {
+    return std::nullopt;
+  }
+  auto name = node->customAttributesAt(field_idx).getAttribute(
+      std::string(kIcebergFieldNameProp));
+  if (name.has_value() && name->size() >= 2 && name->front() == '"' &&
+      name->back() == '"') {
+    return name->substr(1, name->size() - 2);
+  }
+  return name;
+}
+
+// Converts an Avro field node to an Iceberg field. A union with null is read as an
+// optional field and a bare null node as an optional field of unknown type.
+Result<SchemaField> FromAvroField(int32_t field_id, std::string_view name,
+                                  const ::avro::NodePtr& node) {
+  if (node->type() == ::avro::AVRO_NULL) {
+    return SchemaField::MakeOptional(field_id, name, iceberg::unknown());
+  }
+  ::avro::NodePtr value_node;
+  ICEBERG_RETURN_UNEXPECTED(UnwrapUnion(node, &value_node));
+  ICEBERG_ASSIGN_OR_RAISE(auto type, FromAvroNode(value_node));
+  bool optional = node->type() == ::avro::AVRO_UNION;
+  return SchemaField(field_id, name, std::move(type), optional);
+}
+
+Result<std::vector<SchemaField>> FromAvroRecordFields(const ::avro::NodePtr& node) {
+  if (node->type() != ::avro::AVRO_RECORD) {
+    return InvalidSchema("Expected AVRO_RECORD type, but got {}", ToString(node));
+  }
+  std::vector<SchemaField> fields;
+  fields.reserve(node->leaves());
+  for (size_t i = 0; i < node->leaves(); ++i) {
+    ICEBERG_ASSIGN_OR_RAISE(int32_t field_id, GetFieldId(node, i));
+    std::string name = GetIcebergFieldName(node, i).value_or(node->nameAt(i));
+    ICEBERG_ASSIGN_OR_RAISE(auto field, FromAvroField(field_id, name, node->leafAt(i)));
+    fields.emplace_back(std::move(field));
+  }
+  return fields;
+}
+
+Result<std::shared_ptr<Type>> FromAvroTimestamp(const ::avro::NodePtr& node, bool nanos) {
+  bool adjust_to_utc = GetAdjustToUtc(node).value_or("false") == "true";
+  if (nanos) {
+    return adjust_to_utc ? std::shared_ptr<Type>(iceberg::timestamptz_ns())
+                         : std::shared_ptr<Type>(iceberg::timestamp_ns());
+  }
+  return adjust_to_utc ? std::shared_ptr<Type>(iceberg::timestamp_tz())
+                       : std::shared_ptr<Type>(iceberg::timestamp());
+}
+
+Result<std::shared_ptr<Type>> FromAvroNode(const ::avro::NodePtr& node) {
+  switch (node->type()) {
+    case ::avro::AVRO_RECORD: {
+      ICEBERG_ASSIGN_OR_RAISE(auto fields, FromAvroRecordFields(node));
+      return iceberg::struct_(std::move(fields));
+    }
+    case ::avro::AVRO_ARRAY: {
+      if (node->leaves() != 1) {
+        return InvalidSchema("Array type must have exactly one node, got {}",
+                             node->leaves());
+      }
+      if (HasMapLogicalType(node)) {
+        const auto& entry_node = node->leafAt(0);
+        ICEBERG_ASSIGN_OR_RAISE(auto entry_fields, FromAvroRecordFields(entry_node));
+        if (entry_fields.size() != 2) {
+          return InvalidSchema(
+              "Array-backed map type must have a record node with two fields");
+        }
+        SchemaField key(entry_fields[0].field_id(), MapType::kKeyName,
+                        entry_fields[0].type(), entry_fields[0].optional());
+        SchemaField value(entry_fields[1].field_id(), MapType::kValueName,
+                          entry_fields[1].type(), entry_fields[1].optional());
+        return iceberg::map(std::move(key), std::move(value));
+      }
+      ICEBERG_ASSIGN_OR_RAISE(int32_t element_id, GetElementId(node));
+      ICEBERG_ASSIGN_OR_RAISE(
+          auto element,
+          FromAvroField(element_id, ListType::kElementName, node->leafAt(0)));
+      return iceberg::list(std::move(element));
+    }
+    case ::avro::AVRO_MAP: {
+      if (node->leaves() != 2) {
+        return InvalidSchema("Map type must have exactly two nodes, got {}",
+                             node->leaves());
+      }
+      ICEBERG_ASSIGN_OR_RAISE(int32_t key_id, GetKeyId(node));
+      ICEBERG_ASSIGN_OR_RAISE(int32_t value_id, GetValueId(node));
+      auto key = SchemaField::MakeRequired(key_id, MapType::kKeyName, iceberg::string());
+      ICEBERG_ASSIGN_OR_RAISE(
+          auto value, FromAvroField(value_id, MapType::kValueName, node->leafAt(1)));
+      return iceberg::map(std::move(key), std::move(value));
+    }
+    case ::avro::AVRO_BOOL:
+      return iceberg::boolean();
+    case ::avro::AVRO_INT:
+      if (HasLogicalType(node, ::avro::LogicalType::DATE)) {
+        return iceberg::date();
+      }
+      if (HasLogicalType(node, ::avro::LogicalType::NONE)) {
+        return iceberg::int32();
+      }
+      break;
+    case ::avro::AVRO_LONG:
+      switch (node->logicalType().type()) {
+        case ::avro::LogicalType::NONE:
+          return iceberg::int64();
+        case ::avro::LogicalType::TIME_MICROS:
+          return iceberg::time();
+        case ::avro::LogicalType::TIMESTAMP_MICROS:
+          return FromAvroTimestamp(node, /*nanos=*/false);
+        case ::avro::LogicalType::TIMESTAMP_NANOS:
+          return FromAvroTimestamp(node, /*nanos=*/true);
+        default:
+          break;
+      }
+      break;
+    case ::avro::AVRO_FLOAT:
+      return iceberg::float32();
+    case ::avro::AVRO_DOUBLE:
+      return iceberg::float64();
+    case ::avro::AVRO_STRING:
+      return iceberg::string();
+    case ::avro::AVRO_BYTES:
+      if (HasLogicalType(node, ::avro::LogicalType::NONE)) {
+        return iceberg::binary();
+      }
+      break;
+    case ::avro::AVRO_FIXED:
+      if (HasLogicalType(node, ::avro::LogicalType::DECIMAL)) {
+        const auto logical_type = node->logicalType();
+        return iceberg::decimal(static_cast<int32_t>(logical_type.precision()),
+                                static_cast<int32_t>(logical_type.scale()));
+      }
+      if (HasLogicalType(node, ::avro::LogicalType::UUID) && node->fixedSize() == 16) {
+        return iceberg::uuid();
+      }
+      if (HasLogicalType(node, ::avro::LogicalType::NONE)) {
+        return iceberg::fixed(static_cast<int32_t>(node->fixedSize()));
+      }
+      break;
+    default:
+      break;
+  }
+  return NotSupported("Cannot convert Avro type {} to an Iceberg type", ToString(node));
+}
+
+}  // namespace
+
+Result<std::unique_ptr<Schema>> FromAvroSchema(const ::avro::NodePtr& avro_node) {
+  ICEBERG_ASSIGN_OR_RAISE(auto fields, FromAvroRecordFields(avro_node));
+  return std::make_unique<Schema>(std::move(fields));
+}
+
+namespace {
+
 class NamesGuard {
  public:
   NamesGuard(std::vector<std::string>& names, const std::string& name) : names_(names) {

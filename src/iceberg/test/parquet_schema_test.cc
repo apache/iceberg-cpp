@@ -356,6 +356,105 @@ TEST(ParquetNameMappingTest, ApplyNameMappingWithUnmappedFields) {
   ASSERT_EQ(SelectedColumnIndices(projection), std::vector<int32_t>({0}));
 }
 
+TEST(ParquetSchemaConversionTest, FromParquetSchemaRoundTrip) {
+  Schema schema({
+      SchemaField::MakeRequired(/*field_id=*/1, "bool_col", boolean()),
+      SchemaField::MakeOptional(/*field_id=*/2, "int_col", int32()),
+      SchemaField::MakeRequired(/*field_id=*/3, "long_col", int64()),
+      SchemaField::MakeOptional(/*field_id=*/4, "float_col", float32()),
+      SchemaField::MakeRequired(/*field_id=*/5, "double_col", float64()),
+      SchemaField::MakeRequired(/*field_id=*/6, "decimal_col", decimal(10, 2)),
+      SchemaField::MakeRequired(/*field_id=*/7, "date_col", date()),
+      SchemaField::MakeRequired(/*field_id=*/8, "time_col", time()),
+      SchemaField::MakeRequired(/*field_id=*/9, "ts_col", timestamp()),
+      SchemaField::MakeRequired(/*field_id=*/10, "ts_tz_col", timestamp_tz()),
+      SchemaField::MakeRequired(/*field_id=*/11, "ts_ns_col", timestamp_ns()),
+      SchemaField::MakeOptional(/*field_id=*/12, "string_col", string()),
+      SchemaField::MakeRequired(/*field_id=*/13, "uuid_col", uuid()),
+      SchemaField::MakeRequired(/*field_id=*/14, "fixed_col", fixed(20)),
+      SchemaField::MakeOptional(/*field_id=*/15, "binary_col", binary()),
+      SchemaField::MakeOptional(
+          /*field_id=*/16, "struct_col",
+          std::make_shared<StructType>(std::vector<SchemaField>{
+              SchemaField::MakeRequired(/*field_id=*/17, "a", int32()),
+              SchemaField::MakeOptional(/*field_id=*/18, "b", string()),
+          })),
+      SchemaField::MakeOptional(/*field_id=*/19, "list_col",
+                                std::make_shared<ListType>(SchemaField::MakeOptional(
+                                    /*field_id=*/20, "element", int64()))),
+      SchemaField::MakeRequired(
+          /*field_id=*/21, "map_col",
+          std::make_shared<MapType>(
+              SchemaField::MakeRequired(/*field_id=*/22, "key", string()),
+              SchemaField::MakeOptional(/*field_id=*/23, "value", float64()))),
+  });
+
+  ICEBERG_UNWRAP_OR_FAIL(auto parquet_schema, ToParquetSchema(schema));
+  for (auto list_type : {::arrow::Type::LIST, ::arrow::Type::LARGE_LIST}) {
+    SCOPED_TRACE(list_type);
+    auto schema_manifest = MakeSchemaManifest(parquet_schema->schema_root(), list_type);
+    ICEBERG_UNWRAP_OR_FAIL(auto result, FromParquetSchema(schema_manifest));
+    EXPECT_EQ(*result, schema);
+  }
+}
+
+TEST(ParquetSchemaConversionTest, FromParquetSchemaWithNameMapping) {
+  auto parquet_schema = MakeGroupNode(
+      "iceberg_schema",
+      {
+          MakeInt64Node("id"),
+          MakeStringNode("unmapped"),
+          MakeGroupNode("profile", {MakeStringNode("name"), MakeStringNode("extra")}),
+          MakeListNode("numbers", MakeInt32Node("item")),
+          MakeListNode("unmapped_element", MakeInt32Node("item")),
+          MakeMapNode("counts",
+                      MakeStringNode("key", /*field_id=*/-1, /*optional=*/false),
+                      MakeInt32Node("value")),
+      });
+  auto mapping = NameMapping::Make({
+      MappedField{.names = {"id"}, .field_id = 1},
+      MappedField{.names = {"profile"},
+                  .field_id = 2,
+                  .nested_mapping = MappedFields::Make({
+                      MappedField{.names = {"name"}, .field_id = 201},
+                  })},
+      MappedField{.names = {"numbers"},
+                  .field_id = 3,
+                  .nested_mapping = MappedFields::Make({
+                      MappedField{.names = {"element"}, .field_id = 301},
+                  })},
+      MappedField{.names = {"unmapped_element"}, .field_id = 4},
+      MappedField{.names = {"counts"},
+                  .field_id = 5,
+                  .nested_mapping = MappedFields::Make({
+                      MappedField{.names = {"key"}, .field_id = 501},
+                      MappedField{.names = {"value"}, .field_id = 502},
+                  })},
+  });
+
+  auto schema_manifest = MakeSchemaManifest(parquet_schema);
+  ApplyNameMapping(*mapping, &schema_manifest);
+  ICEBERG_UNWRAP_OR_FAIL(auto result, FromParquetSchema(schema_manifest));
+
+  Schema expected_schema({
+      SchemaField::MakeOptional(/*field_id=*/1, "id", int64()),
+      SchemaField::MakeOptional(
+          /*field_id=*/2, "profile",
+          std::make_shared<StructType>(std::vector<SchemaField>{
+              SchemaField::MakeOptional(/*field_id=*/201, "name", string()),
+          })),
+      SchemaField::MakeOptional(/*field_id=*/3, "numbers",
+                                std::make_shared<ListType>(SchemaField::MakeOptional(
+                                    /*field_id=*/301, "element", int32()))),
+      SchemaField::MakeOptional(
+          /*field_id=*/5, "counts",
+          std::make_shared<MapType>(
+              SchemaField::MakeRequired(/*field_id=*/501, "key", string()),
+              SchemaField::MakeOptional(/*field_id=*/502, "value", int32()))),
+  });
+  EXPECT_EQ(*result, expected_schema);
+}
+
 TEST(ParquetSchemaProjectionTest, ProjectIdenticalSchemas) {
   Schema expected_schema({
       SchemaField::MakeRequired(/*field_id=*/1, "id", iceberg::int64()),

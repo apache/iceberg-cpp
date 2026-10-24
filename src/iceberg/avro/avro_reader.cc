@@ -284,13 +284,7 @@ std::shared_ptr<::arrow::DataType> StorageTypeForBuilder(
 class AvroReader::Impl {
  public:
   Status Open(const ReaderOptions& options) {
-    // TODO(gangwu): perhaps adding a ReaderOptions::Validate() method
-    if (options.projection == nullptr) {
-      return InvalidArgument("Projected schema is required by Avro reader");
-    }
-
     batch_size_ = options.properties.Get(ReaderProperties::kBatchSize);
-    read_schema_ = options.projection;
 
     // Open the input stream and adapt to the avro interface.
     ICEBERG_ASSIGN_OR_RAISE(
@@ -326,6 +320,13 @@ class AvroReader::Impl {
       }
     } else if (!has_id_visitor.AllHaveIds()) {
       return InvalidSchema("Not all fields in the Avro file schema have field IDs");
+    }
+
+    if (options.projection != nullptr) {
+      read_schema_ = options.projection;
+    } else {
+      // Read all fields of the file schema when no projection is given.
+      ICEBERG_ASSIGN_OR_RAISE(read_schema_, FromAvroSchema(file_schema.root()));
     }
 
     // Project the read schema on top of the file schema.

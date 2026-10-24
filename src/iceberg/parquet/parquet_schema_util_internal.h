@@ -74,6 +74,18 @@ bool HasFieldIds(const ::parquet::schema::NodePtr& root_node);
 void ApplyNameMapping(const NameMapping& mapping,
                       ::parquet::arrow::SchemaManifest* parquet_schema);
 
+/// \brief Convert a Parquet schema to an Iceberg schema.
+///
+/// Fields without a field ID (including lists and maps whose element, key or value
+/// has no field ID) cannot be read by ID and are left out of the result. Apply a
+/// name mapping first for files written without field IDs.
+///
+/// \param parquet_schema The Parquet schema to convert.
+/// \return The converted Iceberg schema, or an error if a Parquet type cannot be
+/// represented in Iceberg.
+Result<std::unique_ptr<Schema>> FromParquetSchema(
+    const ::parquet::arrow::SchemaManifest& parquet_schema);
+
 /// \brief Convert an Iceberg schema to a Parquet schema.
 Result<std::shared_ptr<::parquet::SchemaDescriptor>> ToParquetSchema(
     const Schema& iceberg_schema);
