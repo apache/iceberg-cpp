@@ -20,6 +20,7 @@
 /// \file arrow_c_data_util_test.cc
 /// Verifies ProjectBatch behavior across registered implementations.
 
+#include <array>
 #include <cstdint>
 #include <string_view>
 #include <utility>
@@ -189,6 +190,44 @@ TEST(ProjectBatchTest, ProjectionRejectsNestedPruning) {
   auto projection = ProjectionContext::Make(input_schema, output_schema, nullptr);
 
   EXPECT_THAT(projection, IsError(ErrorKind::kInvalidArgument));
+}
+
+TEST(ProjectBatchTest, RejectsNonMonotonicStringOffsets) {
+  auto schema = std::make_shared<Schema>(
+      std::vector<SchemaField>{SchemaField::MakeRequired(1, "value", string())});
+
+  // Arrow's builders always emit monotonic offsets, so a batch with a
+  // corrupt offsets buffer has to be hand-assembled via the nanoarrow C ABI.
+  // offsets = [0, 5, 2] with a 2-byte data buffer: DEFAULT validation only
+  // checks the first (0) and last (2) offsets, both of which are consistent
+  // with the 2-byte buffer, so it accepts this array. FULL validation also
+  // walks the offsets buffer and rejects it because 2 < 5.
+  ArrowArray root;
+  ASSERT_EQ(ArrowArrayInitFromType(&root, NANOARROW_TYPE_STRUCT), NANOARROW_OK);
+  ASSERT_EQ(ArrowArrayAllocateChildren(&root, 1), NANOARROW_OK);
+
+  ArrowArray* value_array = root.children[0];
+  ASSERT_EQ(ArrowArrayInitFromType(value_array, NANOARROW_TYPE_STRING), NANOARROW_OK);
+  const std::array<int32_t, 3> raw_offsets = {0, 5, 2};
+  ASSERT_EQ(ArrowBufferAppend(ArrowArrayBuffer(value_array, 1), raw_offsets.data(),
+                              raw_offsets.size() * sizeof(int32_t)),
+            NANOARROW_OK);
+  ASSERT_EQ(ArrowBufferAppend(ArrowArrayBuffer(value_array, 2), "ab", 2), NANOARROW_OK);
+  value_array->length = 2;
+  value_array->null_count = 0;
+  ASSERT_EQ(ArrowArrayFinishBuildingDefault(value_array, nullptr), NANOARROW_OK);
+
+  root.length = 2;
+  root.null_count = 0;
+  ASSERT_EQ(ArrowArrayFinishBuildingDefault(&root, nullptr), NANOARROW_OK);
+
+  auto projection = ProjectionContext::Make(*schema, *schema, nullptr);
+  ASSERT_THAT(projection, IsOk());
+
+  // No rows are selected, so the malformed offsets must be caught by batch
+  // validation itself rather than by appending the corrupt row.
+  auto result = ProjectBatch(&root, /*row_indices=*/{}, projection.value());
+  EXPECT_THAT(result, IsError(ErrorKind::kInvalidArrowData));
 }
 
 }  // namespace iceberg::internal
