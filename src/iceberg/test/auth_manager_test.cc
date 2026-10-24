@@ -434,6 +434,20 @@ TEST_F(AuthManagerTest, OAuth2StaticToken) {
 }
 
 // Verifies OAuth2 type is inferred from token property
+TEST_F(AuthManagerTest, OAuth2ZeroSessionTimeoutCreatesCatalogSession) {
+  std::unordered_map<std::string, std::string> properties = {
+      {AuthProperties::kAuthType, "oauth2"},
+      {AuthProperties::kToken.key(), "my-static-token"},
+      {AuthProperties::kSessionTimeoutMs.key(), "0"},
+  };
+
+  ICEBERG_UNWRAP_OR_FAIL(auto manager, AuthManagers::Load("test-catalog", properties));
+  ICEBERG_UNWRAP_OR_FAIL(auto session, manager->CatalogSession(client_, properties));
+
+  EXPECT_NE(session, nullptr);
+  EXPECT_THAT(manager->Close(), IsOk());
+}
+
 TEST_F(AuthManagerTest, OAuth2InferredFromToken) {
   std::unordered_map<std::string, std::string> properties = {
       {AuthProperties::kToken.key(), "inferred-token"},
@@ -552,6 +566,29 @@ TEST_F(AuthManagerTest, OAuth2TableTokenCreatesChild) {
   ASSERT_TRUE(info.has_value());
   EXPECT_EQ(info->issued_token_type, AuthProperties::kAccessTokenType);
   EXPECT_TRUE(info->credential.empty());
+}
+
+TEST_F(AuthManagerTest, OAuth2TableTokenSessionIsCachedByToken) {
+  std::unordered_map<std::string, std::string> properties = {
+      {AuthProperties::kAuthType, "oauth2"},
+  };
+  ICEBERG_UNWRAP_OR_FAIL(auto manager, AuthManagers::Load("test-catalog", properties));
+  ICEBERG_UNWRAP_OR_FAIL(auto parent, manager->CatalogSession(client_, properties));
+  TableIdentifier table{.ns = Namespace{{"db"}}, .name = "table"};
+
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto first,
+      manager->TableSession(table, {{AuthProperties::kToken.key(), "token-a"}}, parent));
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto second,
+      manager->TableSession(table, {{AuthProperties::kToken.key(), "token-a"}}, parent));
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto other,
+      manager->TableSession(table, {{AuthProperties::kToken.key(), "token-b"}}, parent));
+
+  EXPECT_EQ(first, second);
+  EXPECT_NE(first, other);
+  EXPECT_THAT(manager->Close(), IsOk());
 }
 
 TEST_F(AuthManagerTest, OAuth2TableIgnoresCredential) {
@@ -886,6 +923,57 @@ TEST(OAuth2SessionTest, StopsAfterHttpRetryBudget) {
   ASSERT_THAT(session->Close(), IsOk());
 }
 
+TEST(OAuth2SessionTest, StopRefreshingKeepsSessionUsable) {
+  MockExecutor executor;
+  EXPECT_CALL(executor, Submit).Times(0);
+  OAuthTokenResponse token_response{
+      .access_token = "token",
+      .token_type = "bearer",
+      .expires_in_secs = 3600,
+  };
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto session,
+      internal::OAuth2Session::Make(token_response,
+                                    {.token_endpoint = "http://localhost/oauth/tokens",
+                                     .client_id = "client_id",
+                                     .client_secret = "client_secret",
+                                     .scope = "catalog",
+                                     .refresh_executor = &executor},
+                                    std::make_shared<HttpClient>(), std::nullopt));
+  EXPECT_TRUE(session->IsRefreshable());
+
+  session->StopRefreshing();
+  session->StopRefreshing();
+
+  ICEBERG_UNWRAP_OR_FAIL(auto request, session->Authenticate({}));
+  EXPECT_EQ(request.headers.at("Authorization"), "Bearer token");
+  EXPECT_THAT(session->Close(), IsOk());
+}
+
+TEST(OAuth2SessionTest, ExpiresAtReflectsTokenLifetime) {
+  auto make_session = [](std::optional<int64_t> expires_in_secs) {
+    OAuthTokenResponse token_response{
+        .access_token = "opaque-token",
+        .token_type = "bearer",
+        .expires_in_secs = expires_in_secs,
+    };
+    return internal::OAuth2Session::Make(
+        token_response, {.token_endpoint = "http://localhost/oauth/tokens"},
+        std::make_shared<HttpClient>(), std::nullopt);
+  };
+
+  auto before = std::chrono::steady_clock::now();
+  ICEBERG_UNWRAP_OR_FAIL(auto expiring, make_session(60));
+  auto after = std::chrono::steady_clock::now();
+  auto expires_at = expiring->ExpiresAt();
+  ASSERT_TRUE(expires_at.has_value());
+  EXPECT_GE(*expires_at, before + std::chrono::seconds(60));
+  EXPECT_LE(*expires_at, after + std::chrono::seconds(60));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto unknown, make_session(std::nullopt));
+  EXPECT_FALSE(unknown->ExpiresAt().has_value());
+}
+
 TEST(OAuth2SessionTest, InitTokenExpirationUsesRequestStartTime) {
   OAuthTokenResponse token_response{
       .access_token = "opaque-token",
@@ -915,6 +1003,64 @@ TEST(OAuth2SessionTest, JwtExpirationTakesPriorityOverExpiresIn) {
 
   ASSERT_TRUE(expiration.has_value());
   EXPECT_EQ(*expiration, std::chrono::steady_clock::time_point(std::chrono::seconds(70)));
+}
+
+namespace {
+
+/// Creates a credential child session from a static-token catalog whose token
+/// endpoint always succeeds.
+Result<std::shared_ptr<internal::OAuth2Session>> CredentialChildSession(
+    AuthManager& manager) {
+  auto client = std::make_shared<RefreshHttpClient>();
+  client->response = []() -> Result<HttpResponse> {
+    return HttpResponse(
+        200, R"({"access_token":"child-token","token_type":"bearer","expires_in":3600})");
+  };
+  std::unordered_map<std::string, std::string> properties = {
+      {AuthProperties::kAuthType, "oauth2"},
+      {AuthProperties::kToken.key(), "catalog-token"},
+  };
+  ICEBERG_ASSIGN_OR_RAISE(auto parent, manager.CatalogSession(client, properties));
+  SessionContext context{
+      .session_id = "tenant-a",
+      .credentials = {{AuthProperties::kCredential.key(), "client:secret"}},
+  };
+  ICEBERG_ASSIGN_OR_RAISE(auto child, manager.ContextualSession(context, parent));
+  auto oauth2 = std::dynamic_pointer_cast<internal::OAuth2Session>(child);
+  ICEBERG_PRECHECK(oauth2 != nullptr, "child session is not an OAuth2 session");
+  return oauth2;
+}
+
+}  // namespace
+
+TEST(OAuth2ChildSessionTest, CredentialChildRefreshesWithExecutor) {
+  // The refresh is due long after this test ends, so nothing is submitted.
+  MockExecutor executor;
+  EXPECT_CALL(executor, Submit).Times(0);
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto manager,
+      AuthManagers::Load("test-catalog", {{AuthProperties::kAuthType, "oauth2"}}));
+  manager->SetAuthRefreshExecutor(&executor);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto child, CredentialChildSession(*manager));
+
+  EXPECT_TRUE(child->IsRefreshable());
+  ICEBERG_UNWRAP_OR_FAIL(auto request, child->Authenticate({}));
+  EXPECT_EQ(request.headers.at("Authorization"), "Bearer child-token");
+  EXPECT_THAT(manager->Close(), IsOk());
+}
+
+TEST(OAuth2ChildSessionTest, CredentialChildWithoutExecutorDoesNotRefresh) {
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto manager,
+      AuthManagers::Load("test-catalog", {{AuthProperties::kAuthType, "oauth2"}}));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto child, CredentialChildSession(*manager));
+
+  EXPECT_FALSE(child->IsRefreshable());
+  ICEBERG_UNWRAP_OR_FAIL(auto request, child->Authenticate({}));
+  EXPECT_EQ(request.headers.at("Authorization"), "Bearer child-token");
+  EXPECT_THAT(manager->Close(), IsOk());
 }
 
 }  // namespace iceberg::rest::auth
