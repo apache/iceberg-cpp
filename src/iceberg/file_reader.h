@@ -102,7 +102,8 @@ struct ICEBERG_EXPORT ReaderOptions {
   std::optional<Split> split;
   /// \brief FileIO instance to open the file.
   std::shared_ptr<class FileIO> io;
-  /// \brief The projection schema to read from the file. This field is required.
+  /// \brief The projection schema to read from the file. If not set, all fields of
+  /// the file schema are read.
   std::shared_ptr<class Schema> projection;
   /// \brief The filter to apply to the data. Reader implementations may ignore this if
   /// the file format does not support filtering.

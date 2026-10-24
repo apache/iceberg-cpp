@@ -41,6 +41,7 @@
 #include <gtest/gtest.h>
 
 #include "iceberg/arrow/arrow_io_internal.h"
+#include "iceberg/arrow_c_data_guard_internal.h"
 #include "iceberg/avro/avro_constants.h"
 #include "iceberg/avro/avro_register.h"
 #include "iceberg/avro/avro_stream_internal.h"
@@ -317,6 +318,26 @@ TEST_F(AvroReaderTest, ReadTwoFields) {
       {.path = temp_avro_file_, .io = file_io_, .projection = schema});
   ASSERT_THAT(reader_result, IsOk());
   auto reader = std::move(reader_result.value());
+
+  ASSERT_NO_FATAL_FAILURE(
+      VerifyNextBatch(*reader, R"([[1, "Alice"], [2, "Bob"], [3, "Charlie"]])"));
+  ASSERT_NO_FATAL_FAILURE(VerifyExhausted(*reader));
+}
+
+TEST_F(AvroReaderTest, ReadWithoutProjection) {
+  CreateSimpleAvroFile();
+
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto reader, ReaderFactoryRegistry::Open(
+                       FileFormatType::kAvro, {.path = temp_avro_file_, .io = file_io_}));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto arrow_schema, reader->Schema());
+  internal::ArrowSchemaGuard guard(&arrow_schema);
+  ICEBERG_UNWRAP_OR_FAIL(auto read_schema, FromArrowSchema(arrow_schema, std::nullopt));
+  EXPECT_EQ(*read_schema,
+            Schema(std::vector<SchemaField>{
+                SchemaField::MakeRequired(1, "id", std::make_shared<IntType>()),
+                SchemaField::MakeOptional(2, "name", std::make_shared<StringType>())}));
 
   ASSERT_NO_FATAL_FAILURE(
       VerifyNextBatch(*reader, R"([[1, "Alice"], [2, "Bob"], [3, "Charlie"]])"));
