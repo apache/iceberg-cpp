@@ -29,6 +29,7 @@
 #include <nlohmann/json.hpp>
 
 #include "iceberg/catalog.h"
+#include "iceberg/catalog/rest/auth/auth_properties.h"
 #include "iceberg/catalog/rest/auth/auth_session.h"
 #include "iceberg/catalog/rest/catalog_properties.h"
 #include "iceberg/catalog/rest/endpoint.h"
@@ -613,6 +614,109 @@ TEST_P(RestCatalogScanLifetimeTest, ScanKeepsCredentialRefreshAlive) {
 }
 
 INSTANTIATE_TEST_SUITE_P(ScanModes, RestCatalogScanLifetimeTest, ::testing::Bool());
+
+// --------------------------------------------------------------------------
+// Client-only properties tests
+// --------------------------------------------------------------------------
+
+class RestCatalogClientOnlyPropertiesTest : public ::testing::Test {
+ protected:
+  void SetUp() override {
+    mock_client_ = std::make_shared<MockHttpClient>();
+    FileIORegistry::Register(
+        "rest-catalog-unit-test-noop",
+        {.create = [](const std::unordered_map<std::string, std::string>&)
+             -> Result<std::unique_ptr<FileIO>> {
+          return std::make_unique<NoOpFileIO>();
+        }});
+  }
+
+  // Runs RestCatalog::Make against a server that returns `server_config` from
+  // /v1/config, and returns the configurations handed to the HTTP client
+  // factory. The second entry is the merged configuration.
+  std::vector<RestCatalogProperties> MakeWithServerConfig(
+      const CatalogConfig& server_config,
+      std::unordered_map<std::string, std::string> client_properties) {
+    client_properties["io-impl"] = "rest-catalog-unit-test-noop";
+    // These tests inspect the merged configuration only; disable refresh so no auth
+    // executor is required.
+    client_properties["token-refresh-enabled"] = "false";
+    EXPECT_CALL(*mock_client_, Get(::testing::EndsWith("/v1/config"), _, _, _, _))
+        .WillOnce(Return(HttpResponse(200, ToJson(server_config).dump())));
+    EXPECT_CALL(*mock_client_, PostForm(_, _, _, _, _))
+        .WillRepeatedly(
+            [](const std::string&, const std::unordered_map<std::string, std::string>&,
+               const std::unordered_map<std::string, std::string>&, const ErrorHandler&,
+               auth::AuthSession&) -> Result<HttpResponse> {
+              return HttpResponse(200, R"({"access_token":"tok","token_type":"bearer"})");
+            });
+
+    auto config = RestCatalogProperties::FromMap(std::move(client_properties));
+    std::vector<RestCatalogProperties> captured;
+    auto result = RestCatalog::Make(
+        config, [&captured, this](const RestCatalogProperties& properties) {
+          captured.push_back(properties);
+          return mock_client_;
+        });
+    EXPECT_THAT(result, IsOk());
+    return captured;
+  }
+
+  std::shared_ptr<MockHttpClient> mock_client_;
+};
+
+TEST_F(RestCatalogClientOnlyPropertiesTest,
+       ServerOverrideAppliesWhenNoClientOnlyPropertiesAreSet) {
+  auto configs = MakeWithServerConfig(
+      CatalogConfig{.defaults = {},
+                    .overrides = {{"oauth2-server-uri", "https://server.example/token"}},
+                    .endpoints = {}},
+      {{"uri", "https://catalog.example"}, {"credential", "client:secret"}});
+
+  ASSERT_EQ(configs.size(), 2);
+  // Upstream REST behavior is unchanged when the list is empty.
+  EXPECT_EQ(
+      configs[1].configs().at(std::string(auth::AuthProperties::kOAuth2ServerUri.key())),
+      "https://server.example/token");
+}
+
+TEST_F(RestCatalogClientOnlyPropertiesTest,
+       ClientOnlyPropertiesProtectsExplicitOAuth2ServerUri) {
+  auto configs = MakeWithServerConfig(
+      CatalogConfig{.defaults = {},
+                    .overrides = {{"oauth2-server-uri", "https://server.example/token"}},
+                    .endpoints = {}},
+      {{"uri", "https://catalog.example"},
+       {"credential", "client:secret"},
+       {"oauth2-server-uri", "https://idp.example/token"},
+       {"rest.client-only-properties", "oauth2-server-uri"}});
+
+  ASSERT_EQ(configs.size(), 2);
+  EXPECT_EQ(
+      configs[1].configs().at(std::string(auth::AuthProperties::kOAuth2ServerUri.key())),
+      "https://idp.example/token");
+}
+
+TEST_F(RestCatalogClientOnlyPropertiesTest,
+       ClientOnlyPropertiesProtectsDefaultOAuth2ServerUriFromIndirectOverride) {
+  auto configs = MakeWithServerConfig(
+      CatalogConfig{.defaults = {},
+                    .overrides = {{"uri", "https://collector.example"},
+                                  {"oauth2-server-uri", "https://server.example/token"}},
+                    .endpoints = {}},
+      {{"uri", "https://catalog.example"},
+       {"credential", "client:secret"},
+       {"rest.client-only-properties", "oauth2-server-uri"}});
+
+  ASSERT_EQ(configs.size(), 2);
+  // The endpoint is pinned against the client URI before merging, so a server
+  // override of `uri` cannot move it.
+  EXPECT_EQ(
+      configs[1].configs().at(std::string(auth::AuthProperties::kOAuth2ServerUri.key())),
+      "https://catalog.example/v1/oauth/tokens");
+  // `uri` itself is still overridable.
+  EXPECT_EQ(configs[1].Get(RestCatalogProperties::kUri), "https://collector.example");
+}
 
 }  // namespace
 

@@ -23,6 +23,7 @@
 
 #include <gtest/gtest.h>
 
+#include "iceberg/catalog/rest/auth/auth_properties.h"
 #include "iceberg/catalog/rest/catalog_properties.h"
 #include "iceberg/catalog/rest/endpoint.h"
 #include "iceberg/catalog/rest/resource_paths.h"
@@ -230,6 +231,154 @@ TEST(RestCatalogPropertiesTest, SnapshotLoadingModeDefaultIsAll) {
   auto result = config.SnapshotLoadingMode();
   ASSERT_THAT(result, IsOk());
   EXPECT_EQ(result.value(), SnapshotMode::kAll);
+}
+
+TEST(RestUtilTest, ParseClientOnlyProperties) {
+  // Empty string
+  auto result = ParseClientOnlyProperties("");
+  EXPECT_TRUE(result.empty());
+
+  // Single key
+  result = ParseClientOnlyProperties("oauth2-server-uri");
+  EXPECT_EQ(result.size(), 1);
+  EXPECT_TRUE(result.contains("oauth2-server-uri"));
+
+  // Multiple keys with spaces
+  result = ParseClientOnlyProperties(" a , b , c ");
+  EXPECT_EQ(result.size(), 3);
+  EXPECT_TRUE(result.contains("a"));
+  EXPECT_TRUE(result.contains("b"));
+  EXPECT_TRUE(result.contains("c"));
+
+  // Keys with leading/trailing spaces and empty entries
+  result = ParseClientOnlyProperties(" a , b ,, a ");
+  EXPECT_EQ(result.size(), 2);  // "a" deduplicated
+  EXPECT_TRUE(result.contains("a"));
+  EXPECT_TRUE(result.contains("b"));
+
+  // Only commas
+  result = ParseClientOnlyProperties(",,,");
+  EXPECT_TRUE(result.empty());
+
+  // Only spaces
+  result = ParseClientOnlyProperties("   ");
+  EXPECT_TRUE(result.empty());
+}
+
+TEST(RestUtilTest, MergeServerConfigWithoutClientOnlyProperties) {
+  std::unordered_map<std::string, std::string> server_defaults = {
+      {"default1", "value1"},
+      {"oauth2-server-uri", "https://server-default.example/token"}};
+  std::unordered_map<std::string, std::string> server_overrides = {
+      {"override1", "value1"},
+      {"oauth2-server-uri", "https://server-override.example/token"}};
+  std::unordered_map<std::string, std::string> client_configs = {
+      {"client1", "value1"}, {"uri", "https://catalog.example"}};
+
+  auto result = MergeServerConfig(server_defaults, server_overrides, client_configs);
+  ASSERT_THAT(result, IsOk());
+
+  auto merged = result.value();
+  EXPECT_EQ(merged["default1"], "value1");
+  EXPECT_EQ(merged["override1"], "value1");
+  EXPECT_EQ(merged["client1"], "value1");
+  // Server override wins when rest.client-only-properties is not set
+  EXPECT_EQ(merged["oauth2-server-uri"], "https://server-override.example/token");
+}
+
+TEST(RestUtilTest, MergeServerConfigWithClientOnlyPropertiesProtectsOAuth2ServerUri) {
+  std::unordered_map<std::string, std::string> server_defaults = {{"default1", "value1"}};
+  std::unordered_map<std::string, std::string> server_overrides = {
+      {"oauth2-server-uri", "https://malicious.example/token"}};
+  std::unordered_map<std::string, std::string> client_configs = {
+      {"uri", "https://catalog.example"},
+      {"oauth2-server-uri", "https://idp.example/token"},
+      {RestCatalogProperties::kClientOnlyProperties.key(), "oauth2-server-uri"}};
+
+  auto result = MergeServerConfig(server_defaults, server_overrides, client_configs);
+  ASSERT_THAT(result, IsOk());
+
+  auto merged = result.value();
+  EXPECT_EQ(merged["default1"], "value1");
+  // Client value is preserved
+  EXPECT_EQ(merged["oauth2-server-uri"], "https://idp.example/token");
+}
+
+TEST(RestUtilTest, MergeServerConfigResolvesRelativeOAuth2ServerUri) {
+  std::unordered_map<std::string, std::string> server_defaults = {};
+  std::unordered_map<std::string, std::string> server_overrides = {
+      {"uri", "https://collector.example"},
+      {"oauth2-server-uri", "https://malicious.example/token"}};
+  std::unordered_map<std::string, std::string> client_configs = {
+      {"uri", "https://catalog.example"},
+      // oauth2-server-uri not set, defaults to relative path "v1/oauth/tokens"
+      {RestCatalogProperties::kClientOnlyProperties.key(), "oauth2-server-uri"}};
+
+  auto result = MergeServerConfig(server_defaults, server_overrides, client_configs);
+  ASSERT_THAT(result, IsOk());
+
+  auto merged = result.value();
+  // oauth2-server-uri should be resolved against client uri before merging
+  EXPECT_EQ(merged["oauth2-server-uri"], "https://catalog.example/v1/oauth/tokens");
+  // uri can still be overridden by server (but token endpoint is already fixed)
+  EXPECT_EQ(merged["uri"], "https://collector.example");
+}
+
+TEST(RestUtilTest, MergeServerConfigIgnoresServerProvidedClientOnlyProperties) {
+  std::unordered_map<std::string, std::string> server_defaults = {
+      {RestCatalogProperties::kClientOnlyProperties.key(), "ignored-key"}};
+  std::unordered_map<std::string, std::string> server_overrides = {
+      {RestCatalogProperties::kClientOnlyProperties.key(), "another-ignored-key"}};
+  std::unordered_map<std::string, std::string> client_configs = {
+      {"uri", "https://catalog.example"},
+      {RestCatalogProperties::kClientOnlyProperties.key(), "oauth2-server-uri"}};
+
+  auto result = MergeServerConfig(server_defaults, server_overrides, client_configs);
+  ASSERT_THAT(result, IsOk());
+
+  auto merged = result.value();
+  // Client value is preserved, server values ignored
+  EXPECT_EQ(merged[RestCatalogProperties::kClientOnlyProperties.key()],
+            "oauth2-server-uri");
+}
+
+TEST(RestUtilTest, MergeServerConfigWithAbsoluteOAuth2ServerUri) {
+  std::unordered_map<std::string, std::string> server_defaults = {};
+  std::unordered_map<std::string, std::string> server_overrides = {
+      {"uri", "https://collector.example"},
+      {"oauth2-server-uri", "https://malicious.example/token"}};
+  std::unordered_map<std::string, std::string> client_configs = {
+      {"uri", "https://catalog.example"},
+      {"oauth2-server-uri", "https://idp.example/token"},
+      {RestCatalogProperties::kClientOnlyProperties.key(), "oauth2-server-uri"}};
+
+  auto result = MergeServerConfig(server_defaults, server_overrides, client_configs);
+  ASSERT_THAT(result, IsOk());
+
+  auto merged = result.value();
+  // Absolute client endpoint is preserved as-is
+  EXPECT_EQ(merged["oauth2-server-uri"], "https://idp.example/token");
+  // uri can still be overridden
+  EXPECT_EQ(merged["uri"], "https://collector.example");
+}
+
+TEST(RestUtilTest, MergeServerConfigWithLeadingSlashOAuth2ServerUri) {
+  std::unordered_map<std::string, std::string> server_defaults = {};
+  std::unordered_map<std::string, std::string> server_overrides = {
+      {"uri", "https://collector.example"}};
+  std::unordered_map<std::string, std::string> client_configs = {
+      {"uri", "https://catalog.example"},
+      {"oauth2-server-uri", "/custom/oauth/tokens"},
+      {RestCatalogProperties::kClientOnlyProperties.key(), "oauth2-server-uri"}};
+
+  auto result = MergeServerConfig(server_defaults, server_overrides, client_configs);
+  ASSERT_THAT(result, IsOk());
+
+  auto merged = result.value();
+  // Leading-slash path is resolved against client uri
+  EXPECT_EQ(merged["oauth2-server-uri"], "https://catalog.example/custom/oauth/tokens");
+  // uri can still be overridden
+  EXPECT_EQ(merged["uri"], "https://collector.example");
 }
 
 }  // namespace iceberg::rest

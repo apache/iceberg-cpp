@@ -20,11 +20,15 @@
 #include "iceberg/catalog/rest/rest_util.h"
 
 #include <format>
+#include <ranges>
 #include <unordered_set>
 
 #include <cpr/util.h>
 
+#include "iceberg/catalog/rest/auth/auth_properties.h"
+#include "iceberg/catalog/rest/catalog_properties.h"
 #include "iceberg/catalog/rest/endpoint.h"
+#include "iceberg/logging/log_macros.h"
 #include "iceberg/table_identifier.h"
 #include "iceberg/util/macros.h"
 
@@ -133,6 +137,69 @@ std::unordered_map<std::string, std::string> MergeConfigs(
     merged.insert_or_assign(key, value);
   }
   return merged;
+}
+
+std::unordered_set<std::string> ParseClientOnlyProperties(std::string_view value) {
+  constexpr std::string_view kWhitespace = " \t\n\r\f\v";
+
+  std::unordered_set<std::string> result;
+  for (auto part : std::views::split(value, ',')) {
+    std::string_view key(part.begin(), part.end());
+    if (auto first = key.find_first_not_of(kWhitespace);
+        first != std::string_view::npos) {
+      key = key.substr(first, key.find_last_not_of(kWhitespace) - first + 1);
+      result.emplace(key);
+    }
+  }
+  return result;
+}
+
+Result<std::unordered_map<std::string, std::string>> MergeServerConfig(
+    const std::unordered_map<std::string, std::string>& server_defaults,
+    const std::unordered_map<std::string, std::string>& server_overrides,
+    const std::unordered_map<std::string, std::string>& client_configs) {
+  // Make mutable copies of server configs
+  auto defaults = server_defaults;
+  auto overrides = server_overrides;
+
+  // Parse client-only properties list from client config only
+  std::string_view client_only_value;
+  if (auto it = client_configs.find(RestCatalogProperties::kClientOnlyProperties.key());
+      it != client_configs.end()) {
+    client_only_value = it->second;
+  }
+  const auto client_only = ParseClientOnlyProperties(client_only_value);
+
+  // Remove rest.client-only-properties itself from server configs
+  defaults.erase(RestCatalogProperties::kClientOnlyProperties.key());
+  overrides.erase(RestCatalogProperties::kClientOnlyProperties.key());
+
+  // Remove client-only keys from server configs
+  for (const auto& key : client_only) {
+    if (auto it = defaults.find(key); it != defaults.end()) {
+      ICEBERG_LOG_INFO("Ignoring server-provided '{}' in defaults: listed in {}", key,
+                       RestCatalogProperties::kClientOnlyProperties.key());
+      defaults.erase(it);
+    }
+    if (auto it = overrides.find(key); it != overrides.end()) {
+      ICEBERG_LOG_INFO("Ignoring server-provided '{}' in overrides: listed in {}", key,
+                       RestCatalogProperties::kClientOnlyProperties.key());
+      overrides.erase(it);
+    }
+  }
+
+  // If oauth2-server-uri is protected, resolve it to an absolute URL before merging
+  auto merged_client_configs = client_configs;
+  if (client_only.contains(auth::AuthProperties::kOAuth2ServerUri.key())) {
+    ICEBERG_ASSIGN_OR_RAISE(auto resolved_uri,
+                            auth::ResolveOAuth2ServerUri(client_configs));
+    if (!resolved_uri.empty()) {
+      merged_client_configs[auth::AuthProperties::kOAuth2ServerUri.key()] =
+          std::move(resolved_uri);
+    }
+  }
+
+  return MergeConfigs(defaults, merged_client_configs, overrides);
 }
 
 std::string GetStandardReasonPhrase(int32_t status_code) {

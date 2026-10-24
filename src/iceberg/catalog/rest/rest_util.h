@@ -92,6 +92,32 @@ ICEBERG_REST_EXPORT std::unordered_map<std::string, std::string> MergeConfigs(
     const std::unordered_map<std::string, std::string>& client_configs,
     const std::unordered_map<std::string, std::string>& server_overrides);
 
+/// \brief Parse the rest.client-only-properties value.
+///
+/// \details Parses a comma-separated list of property keys. Each key is taken from
+/// client configuration only; server-provided values for them are ignored. Leading
+/// and trailing whitespace is stripped from each key, and empty entries are ignored.
+/// \param value The raw string value of rest.client-only-properties.
+/// \return A set of property keys to protect from server override.
+ICEBERG_REST_EXPORT std::unordered_set<std::string> ParseClientOnlyProperties(
+    std::string_view value);
+
+/// \brief Resolve the effective catalog configuration from server-provided
+/// defaults/overrides and client configuration.
+///
+/// \details Keys listed in rest.client-only-properties are taken from client
+/// configuration only: server-provided values for them are ignored. If
+/// oauth2-server-uri is listed, it is resolved to an absolute URL before merging
+/// to prevent indirect override via the uri property.
+/// \param server_defaults Default properties provided by the server.
+/// \param server_overrides Override properties enforced by the server.
+/// \param client_configs Configuration properties from the client.
+/// \return The merged configuration map with client-only properties protected.
+ICEBERG_REST_EXPORT Result<std::unordered_map<std::string, std::string>>
+MergeServerConfig(const std::unordered_map<std::string, std::string>& server_defaults,
+                  const std::unordered_map<std::string, std::string>& server_overrides,
+                  const std::unordered_map<std::string, std::string>& client_configs);
+
 /// \brief Get the standard HTTP reason phrase for a status code.
 ///
 /// \details Returns the standard English reason phrase for common HTTP status codes.

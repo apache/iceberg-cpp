@@ -77,6 +77,10 @@ class ICEBERG_REST_EXPORT RestCatalogProperties
       "rest.client.connection-timeout-ms", 0};
   /// \brief HTTP socket/read timeout in milliseconds, matching Java REST clients.
   inline static Entry<int64_t> kClientSocketTimeoutMs{"rest.client.socket-timeout-ms", 0};
+  /// \brief Comma-separated keys that are resolved from client configuration
+  /// only; server-provided defaults and overrides for them are ignored.
+  inline static Entry<std::string> kClientOnlyProperties{"rest.client-only-properties",
+                                                         ""};
 
   /// \brief Create a default RestCatalogProperties instance.
   static RestCatalogProperties default_properties();

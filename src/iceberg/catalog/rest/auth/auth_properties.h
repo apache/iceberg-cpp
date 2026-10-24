@@ -128,4 +128,20 @@ class ICEBERG_REST_EXPORT AuthProperties : public ConfigBase<AuthProperties> {
   std::optional<int64_t> expires_at_millis_;
 };
 
+/// \brief Resolve the OAuth2 server URI from a properties map.
+///
+/// This function resolves the OAuth2 server URI by examining the
+/// `oauth2-server-uri` key in the provided properties map. The resolution logic:
+/// - If the value starts with `http://` or `https://`, it is returned as-is
+///   (absolute URL).
+/// - If the value is empty, it is returned as-is.
+/// - Otherwise, the value is treated as a relative path and resolved against the
+///   `uri` key from the properties map. If the relative path starts with `/`, it
+///   is appended directly; otherwise, a `/` separator is inserted.
+///
+/// \param properties Properties map containing `oauth2-server-uri` and `uri` keys.
+/// \return Resolved OAuth2 server URI.
+ICEBERG_REST_EXPORT Result<std::string> ResolveOAuth2ServerUri(
+    const std::unordered_map<std::string, std::string>& properties);
+
 }  // namespace iceberg::rest::auth

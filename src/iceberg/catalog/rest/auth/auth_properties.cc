@@ -36,6 +36,8 @@ std::pair<std::string, std::string> ParseCredential(const std::string& credentia
   return {credential.substr(0, colon_pos), credential.substr(colon_pos + 1)};
 }
 
+}  // namespace
+
 Result<std::string> ResolveOAuth2ServerUri(
     const std::unordered_map<std::string, std::string>& properties) {
   auto endpoint_it = properties.find(AuthProperties::kOAuth2ServerUri.key());
@@ -60,8 +62,6 @@ Result<std::string> ResolveOAuth2ServerUri(
   }
   return base_uri + "/" + endpoint;
 }
-
-}  // namespace
 
 std::unordered_map<std::string, std::string> AuthProperties::optional_oauth_params()
     const {
