@@ -22,6 +22,7 @@
 #include <algorithm>
 #include <array>
 #include <chrono>
+#include <mutex>
 #include <optional>
 #include <string_view>
 #include <utility>
@@ -33,6 +34,7 @@
 #include "iceberg/catalog/rest/auth/auth_session_internal.h"
 #include "iceberg/catalog/rest/auth/oauth2_util.h"
 #include "iceberg/catalog/session_context.h"
+#include "iceberg/logging/log_macros.h"
 #include "iceberg/util/base64.h"
 #include "iceberg/util/macros.h"
 
@@ -396,8 +398,16 @@ class OAuth2Manager : public AuthManager {
     auto temp_parent = AuthSession::MakeDefault(parent_info.headers);
     ICEBERG_ASSIGN_OR_RAISE(
         auto response, OAuth2Util::FetchToken(*refresh_client_, *temp_parent, config));
-    // Credential child sessions use keep_refreshed from catalog level
-    return MakeSession(response, config, keep_refreshed_);
+    // Credential child sessions follow the catalog's keep_refreshed, but refreshing
+    // needs an executor. Without one, the child keeps its initial token.
+    if (keep_refreshed_ && refresh_executor_ == nullptr) {
+      std::call_once(no_refresh_executor_warning_, [] {
+        ICEBERG_LOG_WARN(
+            "OAuth2 credential child sessions will not refresh their tokens because "
+            "no auth executor was provided");
+      });
+    }
+    return MakeSession(response, config, keep_refreshed_ && refresh_executor_ != nullptr);
   }
 
   Result<std::shared_ptr<AuthSession>> CreateTokenExchangeChildSession(
@@ -433,6 +443,7 @@ class OAuth2Manager : public AuthManager {
   bool exchange_enabled_ = true;
   std::chrono::milliseconds session_timeout_{3'600'000};
   std::shared_ptr<internal::AuthSessionCache> session_cache_;
+  std::once_flag no_refresh_executor_warning_;
 };
 
 Result<std::unique_ptr<AuthManager>> MakeOAuth2Manager(

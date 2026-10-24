@@ -935,4 +935,62 @@ TEST(OAuth2SessionTest, JwtExpirationTakesPriorityOverExpiresIn) {
   EXPECT_EQ(*expiration, std::chrono::steady_clock::time_point(std::chrono::seconds(70)));
 }
 
+namespace {
+
+/// Creates a credential child session from a static-token catalog whose token
+/// endpoint always succeeds.
+Result<std::shared_ptr<internal::OAuth2Session>> CredentialChildSession(
+    AuthManager& manager) {
+  auto client = std::make_shared<RefreshHttpClient>();
+  client->response = []() -> Result<HttpResponse> {
+    return HttpResponse(
+        200, R"({"access_token":"child-token","token_type":"bearer","expires_in":3600})");
+  };
+  std::unordered_map<std::string, std::string> properties = {
+      {AuthProperties::kAuthType, "oauth2"},
+      {AuthProperties::kToken.key(), "catalog-token"},
+  };
+  ICEBERG_ASSIGN_OR_RAISE(auto parent, manager.CatalogSession(client, properties));
+  SessionContext context{
+      .session_id = "tenant-a",
+      .credentials = {{AuthProperties::kCredential.key(), "client:secret"}},
+  };
+  ICEBERG_ASSIGN_OR_RAISE(auto child, manager.ContextualSession(context, parent));
+  auto oauth2 = std::dynamic_pointer_cast<internal::OAuth2Session>(child);
+  ICEBERG_PRECHECK(oauth2 != nullptr, "child session is not an OAuth2 session");
+  return oauth2;
+}
+
+}  // namespace
+
+TEST(OAuth2ChildSessionTest, CredentialChildRefreshesWithExecutor) {
+  // The refresh is due long after this test ends, so nothing is submitted.
+  MockExecutor executor;
+  EXPECT_CALL(executor, Submit).Times(0);
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto manager,
+      AuthManagers::Load("test-catalog", {{AuthProperties::kAuthType, "oauth2"}}));
+  manager->SetAuthRefreshExecutor(&executor);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto child, CredentialChildSession(*manager));
+
+  EXPECT_TRUE(child->IsRefreshable());
+  ICEBERG_UNWRAP_OR_FAIL(auto request, child->Authenticate({}));
+  EXPECT_EQ(request.headers.at("Authorization"), "Bearer child-token");
+  EXPECT_THAT(manager->Close(), IsOk());
+}
+
+TEST(OAuth2ChildSessionTest, CredentialChildWithoutExecutorDoesNotRefresh) {
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto manager,
+      AuthManagers::Load("test-catalog", {{AuthProperties::kAuthType, "oauth2"}}));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto child, CredentialChildSession(*manager));
+
+  EXPECT_FALSE(child->IsRefreshable());
+  ICEBERG_UNWRAP_OR_FAIL(auto request, child->Authenticate({}));
+  EXPECT_EQ(request.headers.at("Authorization"), "Bearer child-token");
+  EXPECT_THAT(manager->Close(), IsOk());
+}
+
 }  // namespace iceberg::rest::auth
