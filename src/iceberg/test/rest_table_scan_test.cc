@@ -20,9 +20,11 @@
 #include "iceberg/catalog/rest/rest_table_scan.h"
 
 #include <array>
+#include <chrono>
 #include <memory>
 #include <optional>
 #include <string>
+#include <thread>
 #include <tuple>
 #include <unordered_map>
 #include <unordered_set>
@@ -935,7 +937,7 @@ class RestScanResidualTest
     : public RestIncrementalAppendScanTest,
       public ::testing::WithParamInterface<std::tuple<bool, bool, bool, bool, bool>> {};
 
-TEST_P(RestScanResidualTest, PreservesFilteringAndDeleteFiles) {
+TEST_P(RestScanResidualTest, PreservesSplitRangesFilteringAndDeleteFiles) {
   const auto [incremental, submitted, fetch_token, server_residual, ignore_residuals] =
       GetParam();
   auto filter = Expressions::GreaterThan("id", Literal::Int(10));
@@ -944,6 +946,8 @@ TEST_P(RestScanResidualTest, PreservesFilteringAndDeleteFiles) {
   ICEBERG_UNWRAP_OR_FAIL(auto residual_json, iceberg::ToJson(*residual));
 
   auto task = FileTaskJson("s3://bucket/data.parquet");
+  task["start"] = 25;
+  task["length"] = 50;
   task["delete-file-references"] = {0};
   if (server_residual) task["residual-filter"] = residual_json;
   auto delete_file = FileTaskJson("s3://bucket/delete.parquet")["data-file"];
@@ -985,6 +989,9 @@ TEST_P(RestScanResidualTest, PreservesFilteringAndDeleteFiles) {
                          }));
   ASSERT_EQ(tasks.size(), 1);
   EXPECT_EQ(tasks[0]->data_file()->file_path, "s3://bucket/data.parquet");
+  EXPECT_TRUE(tasks[0]->is_split());
+  EXPECT_EQ(tasks[0]->start(), 25);
+  EXPECT_EQ(tasks[0]->length(), 50);
   ASSERT_EQ(tasks[0]->delete_files().size(), 1);
   EXPECT_EQ(tasks[0]->delete_files()[0]->file_path, "s3://bucket/delete.parquet");
   ASSERT_NE(tasks[0]->residual_filter(), nullptr);
@@ -1037,6 +1044,115 @@ TEST_P(RestScanRegressionTest, AllColumnStatsIncludeUnprojectedColumns) {
                            builder.Select({"data"}).IncludeColumnStats();
                          }));
   EXPECT_TRUE(tasks.empty());
+}
+
+TEST_P(RestScanRegressionTest, PollingSleepRespectsTimeout) {
+  constexpr std::string_view kSubmitted =
+      R"({"status":"submitted","plan-id":"timeout-plan"})";
+  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
+      .WillOnce(Return(HttpResponse(200, std::string(kSubmitted))));
+  int poll_count = 0;
+  EXPECT_CALL(*mock_client_, Get(_, _, _, _, _))
+      .WillRepeatedly([&](auto&&...) -> Result<HttpResponse> {
+        ++poll_count;
+        return HttpResponse(
+            200, poll_count == 1 ? std::string(kSubmitted) : R"({"status":"completed"})");
+      });
+  EXPECT_CALL(*mock_client_, Delete(_, _, _, _, _))
+      .WillOnce(Return(HttpResponse(200, "{}")));
+
+  auto ctx = MakeContext();
+  ctx.catalog_config = {{"rest-scan-planning.poll-timeout-ms", "10"}};
+  auto start = std::chrono::steady_clock::now();
+  EXPECT_THAT(
+      PlanScan(GetParam(), std::move(ctx), [](auto&) {}),
+      ::testing::AllOf(IsError(ErrorKind::kIOError), HasErrorMessage("timed out")));
+  auto elapsed = std::chrono::steady_clock::now() - start;
+  EXPECT_EQ(poll_count, 1);
+  EXPECT_GE(elapsed, std::chrono::milliseconds(10));
+  EXPECT_LT(elapsed, std::chrono::milliseconds(500));
+}
+
+TEST_P(RestScanRegressionTest, PollingCompletionAfterTimeoutIsPreserved) {
+  nlohmann::json completed = {
+      {"status", "completed"},
+      {"file-scan-tasks",
+       nlohmann::json::array({FileTaskJson("s3://bucket/completed.parquet")})}};
+  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
+      .WillOnce(
+          Return(HttpResponse(200, R"({"status":"submitted","plan-id":"slow-plan"})")));
+  EXPECT_CALL(*mock_client_, Get(_, _, _, _, _))
+      .WillOnce([&](auto&&...) -> Result<HttpResponse> {
+        std::this_thread::sleep_for(std::chrono::milliseconds(20));
+        return HttpResponse(200, completed.dump());
+      });
+  EXPECT_CALL(*mock_client_, Delete(_, _, _, _, _)).Times(0);
+
+  auto ctx = MakeContext();
+  ctx.catalog_config = {{"rest-scan-planning.poll-timeout-ms", "10"}};
+  ICEBERG_UNWRAP_OR_FAIL(auto tasks, PlanScan(GetParam(), std::move(ctx), [](auto&) {}));
+  ASSERT_EQ(tasks.size(), 1);
+  EXPECT_EQ(tasks[0]->data_file()->file_path, "s3://bucket/completed.parquet");
+}
+
+TEST_P(RestScanRegressionTest, PollingFailureAfterTimeoutPreservesServerError) {
+  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
+      .WillOnce(
+          Return(HttpResponse(200, R"({"status":"submitted","plan-id":"slow-plan"})")));
+  EXPECT_CALL(*mock_client_, Get(_, _, _, _, _))
+      .WillOnce([](auto&&...) -> Result<HttpResponse> {
+        std::this_thread::sleep_for(std::chrono::milliseconds(20));
+        return HttpResponse(
+            200,
+            R"({"status":"failed","error":{"message":"server error","type":"ServerError","code":500}})");
+      });
+  EXPECT_CALL(*mock_client_, Delete(_, _, _, _, _))
+      .WillOnce(Return(HttpResponse(200, "{}")));
+
+  auto ctx = MakeContext();
+  ctx.catalog_config = {{"rest-scan-planning.poll-timeout-ms", "10"}};
+  EXPECT_THAT(
+      PlanScan(GetParam(), std::move(ctx), [](auto&) {}),
+      ::testing::AllOf(IsError(ErrorKind::kIOError), HasErrorMessage("server error")));
+}
+
+TEST_P(RestScanRegressionTest, PollingCancellationAfterTimeoutDoesNotCancelAgain) {
+  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
+      .WillOnce(
+          Return(HttpResponse(200, R"({"status":"submitted","plan-id":"slow-plan"})")));
+  EXPECT_CALL(*mock_client_, Get(_, _, _, _, _))
+      .WillOnce([](auto&&...) -> Result<HttpResponse> {
+        std::this_thread::sleep_for(std::chrono::milliseconds(20));
+        return HttpResponse(200, R"({"status":"cancelled"})");
+      });
+  EXPECT_CALL(*mock_client_, Delete(_, _, _, _, _)).Times(0);
+
+  auto ctx = MakeContext();
+  ctx.catalog_config = {{"rest-scan-planning.poll-timeout-ms", "10"}};
+  EXPECT_THAT(
+      PlanScan(GetParam(), std::move(ctx), [](auto&) {}),
+      ::testing::AllOf(IsError(ErrorKind::kIOError), HasErrorMessage("was cancelled")));
+}
+
+TEST_P(RestScanRegressionTest, PollingSubmittedAfterTimeoutReturnsTimeout) {
+  constexpr std::string_view kSubmitted =
+      R"({"status":"submitted","plan-id":"slow-plan"})";
+  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _))
+      .WillOnce(Return(HttpResponse(200, std::string(kSubmitted))));
+  EXPECT_CALL(*mock_client_, Get(_, _, _, _, _))
+      .WillOnce([&](auto&&...) -> Result<HttpResponse> {
+        std::this_thread::sleep_for(std::chrono::milliseconds(20));
+        return HttpResponse(200, std::string(kSubmitted));
+      });
+  EXPECT_CALL(*mock_client_, Delete(_, _, _, _, _))
+      .WillOnce(Return(HttpResponse(200, "{}")));
+
+  auto ctx = MakeContext();
+  ctx.catalog_config = {{"rest-scan-planning.poll-timeout-ms", "10"},
+                        {"rest-scan-planning.poll-num-retries", "0"}};
+  EXPECT_THAT(
+      PlanScan(GetParam(), std::move(ctx), [](auto&) {}),
+      ::testing::AllOf(IsError(ErrorKind::kIOError), HasErrorMessage("timed out")));
 }
 
 TEST_P(RestScanRegressionTest, InvalidPollingConfigFailsBeforePlanning) {

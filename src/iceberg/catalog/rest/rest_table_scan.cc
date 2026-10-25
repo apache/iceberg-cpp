@@ -200,9 +200,20 @@ Result<FetchPlanningResultResponse> FetchPlanningResult(
   ICEBERG_ASSIGN_OR_RAISE(auto path, ctx.paths->Plan(ctx.identifier, plan_id));
 
   auto delay_ms = kMinSleepMs;
-  auto start = std::chrono::steady_clock::now();
+  const auto start = std::chrono::steady_clock::now();
+  const auto remaining_wait = [&]() -> Result<std::chrono::milliseconds> {
+    auto elapsed_ms = std::chrono::duration_cast<std::chrono::milliseconds>(
+                          std::chrono::steady_clock::now() - start)
+                          .count();
+    if (elapsed_ms >= poll_config.max_wait_ms) {
+      return IOError("Scan planning timed out after {}ms waiting for plan_id={}",
+                     elapsed_ms, plan_id);
+    }
+    return std::chrono::milliseconds(poll_config.max_wait_ms - elapsed_ms);
+  };
 
   for (int32_t retry = 0; retry <= poll_config.max_retries; ++retry) {
+    ICEBERG_RETURN_UNEXPECTED(remaining_wait());
     ICEBERG_ASSIGN_OR_RAISE(auto response,
                             ctx.client->Get(path, /*params=*/{}, /*headers=*/{},
                                             *PlanErrorHandler::Instance(), *ctx.session));
@@ -218,15 +229,10 @@ Result<FetchPlanningResultResponse> FetchPlanningResult(
         return result;
       }
       case PlanStatus::kSubmitted: {
-        auto elapsed_ms = std::chrono::duration_cast<std::chrono::milliseconds>(
-                              std::chrono::steady_clock::now() - start)
-                              .count();
-        if (elapsed_ms >= poll_config.max_wait_ms) {
-          return IOError("Scan planning timed out after {}ms waiting for plan_id={}",
-                         elapsed_ms, plan_id);
-        }
+        ICEBERG_ASSIGN_OR_RAISE(auto remaining, remaining_wait());
         if (retry == poll_config.max_retries) break;
-        std::this_thread::sleep_for(std::chrono::milliseconds(delay_ms));
+        std::this_thread::sleep_for(
+            std::min(std::chrono::milliseconds(delay_ms), remaining));
         delay_ms = std::min(delay_ms * 2, kMaxSleepMs);
         continue;
       }
@@ -278,9 +284,11 @@ class RestFileScanTaskStream final : public FileScanTaskStream {
         auto task = std::move(buffer_[buffer_pos_++]);
         if (ignore_residuals_ || !task->residual_filter()) {
           // The server may leave row filtering to the client.
-          return std::make_shared<FileScanTask>(
-              task->data_file(), task->delete_files(),
-              ignore_residuals_ ? True::Instance() : filter_);
+          ICEBERG_ASSIGN_OR_RAISE(
+              task,
+              FileScanTask::MakeSplit(task->data_file(), task->start(), task->length(),
+                                      task->delete_files(),
+                                      ignore_residuals_ ? True::Instance() : filter_));
         }
         return task;
       }
