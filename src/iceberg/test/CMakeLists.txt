@@ -21,6 +21,11 @@ set(ICEBERG_TEST_RESOURCES "${CMAKE_SOURCE_DIR}/src/iceberg/test/resources")
 
 configure_file("test_config.h.in" "test_config.h")
 
+if(WIN32 AND CMAKE_GENERATOR MATCHES "Ninja")
+  set_property(GLOBAL APPEND PROPERTY JOB_POOLS test_link_job_pool=1)
+  set(CMAKE_JOB_POOL_LINK test_link_job_pool)
+endif()
+
 function(add_iceberg_test test_name)
   set(options USE_BUNDLE USE_DATA)
   set(oneValueArgs)
