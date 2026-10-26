@@ -28,7 +28,7 @@ When a release candidate (RC) is published for a vote, community members are enc
 - `shasum` or `sha512sum`
 - `tar`
 - CMake 3.25+
-- C++23 compliant compiler (GCC 14+, Clang 18+, MSVC 2022+)
+- C++23 compliant compiler (GCC 14+, Clang 18+, MSVC Build Tools 14.44+ (Visual Studio 2022 17.14+))
 
 ## Verification Steps
 

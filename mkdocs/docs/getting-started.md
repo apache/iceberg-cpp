@@ -23,7 +23,7 @@
 
 **Required:**
 
-- C++23 compliant compiler (GCC 14+, Clang 18+, MSVC 2022+)
+- C++23 compliant compiler (GCC 14+, Clang 18+, MSVC Build Tools 14.44+ (Visual Studio 2022 17.14+))
 - CMake 3.25+
 - [Ninja](https://ninja-build.org/) (recommended build backend)
 
