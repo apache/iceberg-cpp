@@ -38,8 +38,11 @@ namespace iceberg {
 ///
 /// FileScanTaskReader chooses the copy-on-write path for tasks without deletes and
 /// the merge-on-read path for tasks with v2 position or equality deletes. The returned
-/// stream always exposes `projected_schema`. When `apply_residuals` is enabled, each
-/// task's residual filter is enforced after deletes and before final projection.
+/// stream exposes the fields of `projected_schema` in one stable physical Arrow layout,
+/// which may depend on the file format and reader properties (for example, `large_list`
+/// instead of `list`). Every batch matches the schema reported by the stream. When
+/// `apply_residuals` is enabled, each task's residual filter is enforced after deletes
+/// and before final projection.
 ///
 /// TODO(gangwu): Add a mode that emits a `_deleted` column instead of filtering rows.
 class ICEBERG_DATA_EXPORT FileScanTaskReader {
