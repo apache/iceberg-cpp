@@ -48,6 +48,8 @@
 #include "iceberg/data/position_delete_writer.h"
 #include "iceberg/deletes/dv_writer.h"
 #include "iceberg/deletes/position_delete_index.h"
+#include "iceberg/expression/expressions.h"
+#include "iceberg/expression/literal.h"
 #include "iceberg/file_format.h"
 #include "iceberg/file_io.h"
 #include "iceberg/file_reader.h"
@@ -94,6 +96,10 @@ struct ExportedBatch {
   }
   ExportedBatch& operator=(ExportedBatch&& other) noexcept = delete;
 };
+
+// Default rows read by the residual-filter tests.
+constexpr std::string_view kResidualDataJson =
+    R"([[1, "Foo", "blue"], [2, "Bar", "red"], [3, "Baz", "green"]])";
 
 }  // namespace
 
@@ -385,6 +391,39 @@ class FileScanTaskReaderTest : public TempFileTestBase {
     ASSERT_EQ(result.ValueOrDie(), nullptr) << "Reader returned an extra batch.";
   }
 
+  // Opens a task with a residual filter and the fixture's schemas.
+  Result<ArrowArrayStream> OpenResidualTask(
+      std::shared_ptr<Expression> residual,
+      std::vector<std::shared_ptr<DataFile>> delete_files = {},
+      bool case_sensitive = true, bool apply_residuals = true,
+      std::string_view data_json = kResidualDataJson) {
+    ICEBERG_ASSIGN_OR_RAISE(auto data_file,
+                            MakeDataFile(table_schema_, std::string(data_json)));
+    FileScanTask task(data_file, std::move(delete_files), std::move(residual));
+    FileScanTaskReader::Options options{
+        .io = file_io_,
+        .table_schema = table_schema_,
+        .schemas = {table_schema_},
+        .projected_schema = projected_schema_,
+        .case_sensitive = case_sensitive,
+        .apply_residuals = apply_residuals,
+    };
+    ICEBERG_ASSIGN_OR_RAISE(auto reader, FileScanTaskReader::Make(std::move(options)));
+    return reader->Open(task);
+  }
+
+  // Opens a task with `residual` enforced and verifies the streamed rows.
+  void VerifyResidualStream(std::shared_ptr<Expression> residual,
+                            std::string_view expected_json,
+                            std::vector<std::shared_ptr<DataFile>> delete_files = {},
+                            bool case_sensitive = true,
+                            std::string_view data_json = kResidualDataJson) {
+    ICEBERG_UNWRAP_OR_FAIL(
+        auto stream, OpenResidualTask(std::move(residual), delete_files, case_sensitive,
+                                      /*apply_residuals=*/true, data_json));
+    ASSERT_NO_FATAL_FAILURE(VerifyStream(&stream, expected_json));
+  }
+
   void VerifyDataReaderBatchLengths(const DataFile& data_file,
                                     const std::vector<int64_t>& expected_lengths,
                                     ReaderProperties properties = {}) {
@@ -642,6 +681,161 @@ TEST_F(FileScanTaskReaderTest, OpenWithPositionDeletesFiltersRowsAndPrunesPos) {
   auto stream = std::move(stream_result.value());
 
   ASSERT_NO_FATAL_FAILURE(VerifyStream(&stream, R"([[1, "Foo"], [3, "Baz"]])"));
+}
+
+TEST_F(FileScanTaskReaderTest, OpenAppliesResidualFilterWithoutDeletes) {
+  ASSERT_NO_FATAL_FAILURE(VerifyResidualStream(
+      Expressions::GreaterThan("id", Literal::Int(1)), R"([[2, "Bar"], [3, "Baz"]])"));
+}
+
+TEST_F(FileScanTaskReaderTest, OpenAppliesResidualFilterWithPositionDeletes) {
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto data_file,
+      MakeDataFile(table_schema_,
+                   R"([[1, "Foo", "blue"], [2, "Bar", "red"], [3, "Baz", "green"]])"));
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto pos_delete, MakePositionDeleteFile(CreateNewTempFilePathWithSuffix(".parquet"),
+                                              {1}, data_file->file_path));
+  // The position delete removes "Bar" and the residual removes "Baz".
+  FileScanTask task(data_file, {pos_delete},
+                    Expressions::LessThan("id", Literal::Int(3)));
+
+  FileScanTaskReader::Options options{
+      .io = file_io_,
+      .table_schema = table_schema_,
+      .schemas = {table_schema_},
+      .projected_schema = projected_schema_,
+      .apply_residuals = true,
+  };
+  ICEBERG_UNWRAP_OR_FAIL(auto reader, FileScanTaskReader::Make(std::move(options)));
+  auto stream_result = reader->Open(task);
+  ASSERT_THAT(stream_result, IsOk());
+  auto stream = std::move(stream_result.value());
+
+  ASSERT_NO_FATAL_FAILURE(VerifyStream(&stream, R"([[1, "Foo"]])"));
+}
+
+TEST_F(FileScanTaskReaderTest, OpenAppliesResidualFilterWithEqualityDeletes) {
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto eq_delete,
+      MakeEqualityDeleteFile(CreateNewTempFilePathWithSuffix(".parquet"), table_schema_,
+                             R"([[0, "Bar", "unused"]])", {2}));
+
+  // The residual removes "Foo"; the equality delete removes "Bar".
+  ASSERT_NO_FATAL_FAILURE(
+      VerifyResidualStream(Expressions::NotEqual("category", Literal::String("blue")),
+                           R"([[3, "Baz"]])", {eq_delete}));
+}
+
+TEST_F(FileScanTaskReaderTest, OpenAppliesResidualFilterOnColumnAbsentFromProjection) {
+  ICEBERG_UNWRAP_OR_FAIL(auto stream, OpenResidualTask(Expressions::Equal(
+                                          "category", Literal::String("blue"))));
+
+  // The filter column is read for evaluation but must not leak into the output.
+  auto record_batch_reader = ::arrow::ImportRecordBatchReader(&stream).ValueOrDie();
+  auto result = record_batch_reader->Next();
+  ASSERT_TRUE(result.ok()) << result.status().message();
+  auto actual_batch = result.ValueOrDie();
+  ASSERT_NE(actual_batch, nullptr);
+  ICEBERG_UNWRAP_OR_FAIL(auto expected_schema, MakeArrowSchema(*projected_schema_));
+  ASSERT_TRUE(actual_batch->schema()->Equals(*expected_schema))
+      << actual_batch->schema()->ToString();
+  ICEBERG_UNWRAP_OR_FAIL(auto expected_batch,
+                         MakeRecordBatch(expected_schema, R"([[1, "Foo"]])"));
+  ASSERT_TRUE(actual_batch->Equals(*expected_batch))
+      << actual_batch->ToString() << "\nExpected:\n"
+      << expected_batch->ToString();
+
+  result = record_batch_reader->Next();
+  ASSERT_TRUE(result.ok()) << result.status().message();
+  ASSERT_EQ(result.ValueOrDie(), nullptr);
+}
+
+TEST_F(FileScanTaskReaderTest, OpenAppliesCaseInsensitiveResidualFilter) {
+  ASSERT_NO_FATAL_FAILURE(
+      VerifyResidualStream(Expressions::GreaterThan("ID", Literal::Int(1)),
+                           R"([[2, "Bar"], [3, "Baz"]])", {}, /*case_sensitive=*/false));
+}
+
+TEST_F(FileScanTaskReaderTest, OpenRejectsCaseSensitiveResidualWithDifferentCase) {
+  EXPECT_THAT(OpenResidualTask(Expressions::GreaterThan("ID", Literal::Int(1))),
+              HasErrorMessage("Cannot find field 'ID' in struct"));
+}
+
+TEST_F(FileScanTaskReaderTest, OpenAppliesResidualFilterOnNullValues) {
+  // Null values never satisfy a comparison residual.
+  ASSERT_NO_FATAL_FAILURE(VerifyResidualStream(
+      Expressions::NotNull("name"), R"([[1, "Foo"], [3, "Baz"]])", {}, true,
+      R"([[1, "Foo", "blue"], [2, null, "red"], [3, "Baz", "green"]])"));
+}
+
+TEST_F(FileScanTaskReaderTest, OpenAppliesResidualMatchingAllRows) {
+  ASSERT_NO_FATAL_FAILURE(
+      VerifyResidualStream(Expressions::GreaterThanOrEqual("id", Literal::Int(1)),
+                           R"([[1, "Foo"], [2, "Bar"], [3, "Baz"]])"));
+}
+
+TEST_F(FileScanTaskReaderTest, OpenAppliesAlwaysFalseResidualReturningNoRows) {
+  ICEBERG_UNWRAP_OR_FAIL(auto stream, OpenResidualTask(Expressions::AlwaysFalse()));
+
+  auto record_batch_reader = ::arrow::ImportRecordBatchReader(&stream).ValueOrDie();
+  auto result = record_batch_reader->Next();
+  ASSERT_TRUE(result.ok()) << result.status().message();
+  ASSERT_EQ(result.ValueOrDie(), nullptr);
+}
+
+TEST_F(FileScanTaskReaderTest, OpenAppliesResidualFilterKeepingRowIdentities) {
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto data_file,
+      MakeDataFile(table_schema_,
+                   R"([[1, "Foo", "blue"], [2, "Bar", "red"], [3, "Baz", "green"]])"));
+  data_file->first_row_id = 100L;
+  data_file->data_sequence_number = 5L;
+  FileScanTask task(data_file, {}, Expressions::GreaterThan("id", Literal::Int(1)));
+
+  FileScanTaskReader::Options options{
+      .io = file_io_,
+      .table_schema = table_schema_,
+      .schemas = {table_schema_},
+      .projected_schema = RowLineageProjection(),
+      .apply_residuals = true,
+  };
+  ICEBERG_UNWRAP_OR_FAIL(auto reader, FileScanTaskReader::Make(std::move(options)));
+  auto stream_result = reader->Open(task);
+  ASSERT_THAT(stream_result, IsOk());
+  auto stream = std::move(stream_result.value());
+
+  // Row identities of the surviving rows only: dropped rows must not shift ids.
+  ASSERT_NO_FATAL_FAILURE(VerifyStream(&stream, R"([[2, 101, 5],
+                                                   [3, 102, 5]])"));
+}
+
+TEST_F(FileScanTaskReaderTest, OpenWithoutResidualEnforcementKeepsAllRows) {
+  // Residual enforcement is off; rows are returned unfiltered.
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto stream, OpenResidualTask(Expressions::GreaterThan("id", Literal::Int(1)), {},
+                                    /*case_sensitive=*/true, /*apply_residuals=*/false));
+
+  ASSERT_NO_FATAL_FAILURE(
+      VerifyStream(&stream, R"([[1, "Foo"], [2, "Bar"], [3, "Baz"]])"));
+}
+
+TEST_F(FileScanTaskReaderTest, OpenRejectsResidualWithUnknownColumn) {
+  EXPECT_THAT(OpenResidualTask(Expressions::Equal("missing", Literal::Int(1))),
+              HasErrorMessage("Cannot find field 'missing'"));
+}
+
+TEST_F(FileScanTaskReaderTest, OpenRejectsResidualOnNestedColumn) {
+  table_schema_ = std::make_shared<Schema>(std::vector<SchemaField>{
+      SchemaField::MakeRequired(1, "id", int32()),
+      SchemaField::MakeOptional(2, "s",
+                                std::make_shared<StructType>(std::vector<SchemaField>{
+                                    SchemaField::MakeOptional(3, "tags", string())}))});
+  projected_schema_ = table_schema_;
+  EXPECT_THAT(OpenResidualTask(Expressions::NotNull("s.tags"), {},
+                               /*case_sensitive=*/true, /*apply_residuals=*/true,
+                               R"([[1, {"tags": "a"}]])"),
+              HasErrorMessage("which is not a top-level column"));
 }
 
 TEST_F(FileScanTaskReaderTest, OpenWithDeletionVectorFiltersRows) {
