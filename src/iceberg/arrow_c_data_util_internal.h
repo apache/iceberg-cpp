@@ -31,6 +31,7 @@
 #include <vector>
 
 #include "iceberg/arrow_c_data.h"
+#include "iceberg/arrow_validation.h"
 #include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
@@ -68,13 +69,16 @@ class ICEBERG_EXPORT ProjectionContext {
   /// \param project_batch_function Optional implementation returned by
   ///   ProjectionContext::ResolveProjectBatchFunction, or nullptr to use the nanoarrow
   ///   path.
+  /// \param validation_mode Full content validation by default; Basic requires trusted
+  /// input.
   /// \note It validates that output_schema selects or reorders complete top-level fields
   /// by field id. Nested pruning and type changes are rejected. The input_schema and
   /// output_schema passed to Make must outlive the context. ProjectBatch may lazily
   /// initialize backend cache; do not share one context across concurrent calls.
-  static Result<ProjectionContext> Make(const Schema& input_schema,
-                                        const Schema& output_schema,
-                                        ProjectBatchFunction project_batch_function);
+  static Result<ProjectionContext> Make(
+      const Schema& input_schema, const Schema& output_schema,
+      ProjectBatchFunction project_batch_function,
+      ArrowValidationMode validation_mode = ArrowValidationMode::kFull);
 
   ProjectionContext(ProjectionContext&&) noexcept;
   ProjectionContext& operator=(ProjectionContext&&) noexcept;
@@ -97,6 +101,8 @@ class ICEBERG_EXPORT ProjectionContext {
 
   ProjectBatchState& project_batch_state();
 
+  ArrowValidationMode validation_mode() const;
+
  private:
   ProjectionContext() = default;
 
@@ -109,6 +115,7 @@ class ICEBERG_EXPORT ProjectionContext {
   ArrowSchema output_arrow_schema_{};
   ProjectBatchFunction project_batch_function_ = nullptr;
   ProjectBatchState project_batch_state_;
+  ArrowValidationMode validation_mode_ = ArrowValidationMode::kFull;
 };
 
 /// \brief Concept for sources that can be wrapped as ArrowArrayStreams.
@@ -228,10 +235,11 @@ ICEBERG_EXPORT Result<ArrowArrayStream> MakeArrowArrayStream(
 /// \brief Project selected rows from a batch into complete top-level fields.
 ///
 /// `input_batch` is consumed by this function. If the projection carries a registered
-/// implementation, the call is delegated to it; otherwise the built-in nanoarrow
-/// implementation is used. The projection must have been created for the stable schema
-/// pair that describes the input batch and requested output. This function does not
-/// revalidate schema compatibility on each batch.
+/// implementation, the call is delegated to it after validation; otherwise the built-in
+/// nanoarrow implementation is used. The projection must have been created for the stable
+/// schema pair that describes the input batch and requested output. This function does
+/// not revalidate schema compatibility on each batch. Input arrays are validated
+/// according to the context policy before either backend runs.
 ///
 /// \param input_batch Owned Arrow C Data batch to project.
 /// \param row_indices Zero-based row positions to copy from `input_batch`.

@@ -28,6 +28,7 @@
 #include <vector>
 
 #include "iceberg/arrow_c_data.h"
+#include "iceberg/arrow_validation.h"
 #include "iceberg/iceberg_data_export.h"
 #include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
@@ -61,6 +62,9 @@ class ICEBERG_DATA_EXPORT FileScanTaskReader {
     std::shared_ptr<NameMapping> name_mapping;
     /// Format-specific or implementation-specific options for data readers.
     std::unordered_map<std::string, std::string> properties;
+    /// Validation before merge-on-read batch projection. Basic requires trusted arrays.
+    /// This does not change validation in readers or delete filtering.
+    ArrowValidationMode arrow_validation_mode = ArrowValidationMode::kFull;
   };
 
   /// \brief Create a reusable task reader from shared read context.

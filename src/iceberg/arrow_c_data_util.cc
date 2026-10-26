@@ -238,7 +238,8 @@ ProjectionContext::ProjectionContext(ProjectionContext&& other) noexcept
       input_arrow_schema_(other.input_arrow_schema_),
       output_arrow_schema_(other.output_arrow_schema_),
       project_batch_function_(std::exchange(other.project_batch_function_, nullptr)),
-      project_batch_state_(std::move(other.project_batch_state_)) {
+      project_batch_state_(std::move(other.project_batch_state_)),
+      validation_mode_(other.validation_mode_) {
   other.input_arrow_schema_.release = nullptr;
   other.output_arrow_schema_.release = nullptr;
 }
@@ -264,6 +265,7 @@ ProjectionContext& ProjectionContext::operator=(ProjectionContext&& other) noexc
   other.output_arrow_schema_.release = nullptr;
   project_batch_function_ = std::exchange(other.project_batch_function_, nullptr);
   project_batch_state_ = std::move(other.project_batch_state_);
+  validation_mode_ = other.validation_mode_;
   return *this;
 }
 
@@ -278,7 +280,11 @@ ProjectionContext::~ProjectionContext() {
 
 Result<ProjectionContext> ProjectionContext::Make(
     const Schema& input_schema, const Schema& output_schema,
-    ProjectionContext::ProjectBatchFunction project_batch_function) {
+    ProjectionContext::ProjectBatchFunction project_batch_function,
+    ArrowValidationMode validation_mode) {
+  ICEBERG_PRECHECK(validation_mode == ArrowValidationMode::kFull ||
+                       validation_mode == ArrowValidationMode::kBasic,
+                   "Invalid Arrow validation mode");
   ICEBERG_ASSIGN_OR_RAISE(
       auto selected_field_indices,
       BuildSelectedFieldIndices(input_schema.fields(), output_schema.fields()));
@@ -290,6 +296,7 @@ Result<ProjectionContext> ProjectionContext::Make(
   ICEBERG_RETURN_UNEXPECTED(ToArrowSchema(input_schema, &context.input_arrow_schema_));
   ICEBERG_RETURN_UNEXPECTED(ToArrowSchema(output_schema, &context.output_arrow_schema_));
   context.project_batch_function_ = project_batch_function;
+  context.validation_mode_ = validation_mode;
 
   return context;
 }
@@ -319,6 +326,10 @@ ProjectionContext::ProjectBatchState& ProjectionContext::project_batch_state() {
   return project_batch_state_;
 }
 
+ArrowValidationMode ProjectionContext::validation_mode() const {
+  return validation_mode_;
+}
+
 void ProjectionContext::RegisterProjectBatchFunction(
     ProjectionContext::ProjectBatchFunction project_batch_function) {
   ICEBERG_DCHECK(project_batch_function != nullptr,
@@ -341,27 +352,13 @@ auto ProjectionContext::ResolveProjectBatchFunction()
 
 namespace {
 
-Result<ArrowArray> ProjectBatchNanoarrow(
-    const ArrowSchema& input_arrow_schema, const ArrowArray& input_batch,
-    std::span<const int32_t> row_indices, const ArrowSchema& output_arrow_schema,
-    std::span<const int32_t> selected_field_indices) {
-  ArrowArrayView input_view;
+Result<ArrowArray> ProjectBatchNanoarrow(const ArrowSchema& input_arrow_schema,
+                                         const ArrowArray& input_batch,
+                                         std::span<const int32_t> row_indices,
+                                         const ArrowSchema& output_arrow_schema,
+                                         std::span<const int32_t> selected_field_indices,
+                                         const ArrowArrayView& input_view) {
   ArrowError error;
-  ICEBERG_NANOARROW_RETURN_UNEXPECTED_WITH_ERROR(
-      ArrowArrayViewInitFromSchema(&input_view, &input_arrow_schema, &error), error);
-  internal::ArrowArrayViewGuard input_view_guard(&input_view);
-  ICEBERG_NANOARROW_RETURN_UNEXPECTED_WITH_ERROR(
-      ArrowArrayViewSetArray(&input_view, &input_batch, &error), error);
-  // FULL validation is required here: the append path below uses
-  // ArrowArrayViewGet{String,Bytes}Unsafe and raw list/map offset arithmetic,
-  // which nanoarrow only documents as memory-safe after FULL validation
-  // (DEFAULT does not check that every offsets-buffer entry is non-decreasing
-  // and in-bounds). This matches the FULL validation already performed on the
-  // equivalent untrusted-batch boundary in manifest_reader.cc.
-  ICEBERG_NANOARROW_RETURN_UNEXPECTED_WITH_ERROR(
-      ArrowArrayViewValidate(&input_view, NANOARROW_VALIDATION_LEVEL_FULL, &error),
-      error);
-
   ArrowArray output_array;
   ICEBERG_NANOARROW_RETURN_UNEXPECTED_WITH_ERROR(
       ArrowArrayInitFromSchema(&output_array, &output_arrow_schema, &error), error);
@@ -399,6 +396,20 @@ Result<ArrowArray> ProjectBatch(ArrowArray* input_batch,
   ICEBERG_PRECHECK(input_batch != nullptr, "input_batch must not be null");
   internal::ArrowArrayGuard input_batch_guard(input_batch);
 
+  ArrowArrayView input_view;
+  ArrowError error;
+  ICEBERG_NANOARROW_RETURN_UNEXPECTED_WITH_ERROR(
+      ArrowArrayViewInitFromSchema(&input_view, &projection.input_arrow_schema(), &error),
+      error);
+  internal::ArrowArrayViewGuard input_view_guard(&input_view);
+  ICEBERG_NANOARROW_RETURN_UNEXPECTED_WITH_ERROR(
+      ArrowArrayViewSetArray(&input_view, input_batch, &error), error);
+  if (projection.validation_mode() == ArrowValidationMode::kFull) {
+    ICEBERG_NANOARROW_RETURN_UNEXPECTED_WITH_ERROR(
+        ArrowArrayViewValidate(&input_view, NANOARROW_VALIDATION_LEVEL_FULL, &error),
+        error);
+  }
+
   auto project_batch_function = projection.project_batch_function();
   if (project_batch_function != nullptr) {
     // ProjectBatch owns input_batch. Arrow-backed implementations import it and clear
@@ -408,7 +419,7 @@ Result<ArrowArray> ProjectBatch(ArrowArray* input_batch,
 
   return ProjectBatchNanoarrow(projection.input_arrow_schema(), *input_batch, row_indices,
                                projection.output_arrow_schema(),
-                               projection.selected_field_indices());
+                               projection.selected_field_indices(), input_view);
 }
 
 namespace {

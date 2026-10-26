@@ -77,15 +77,16 @@ ProjectionContext::ProjectBatchFunction ArrowComputeFunction() {
 std::shared_ptr<::arrow::RecordBatch> RunProjectBatch(
     const ::arrow::RecordBatch& batch, const std::vector<int32_t>& alive_indices,
     const Schema& required_schema, const Schema& projected_schema,
-    ProjectionContext::ProjectBatchFunction project_batch_function) {
+    ProjectionContext::ProjectBatchFunction project_batch_function,
+    ArrowValidationMode validation_mode) {
   ArrowSchema c_schema;
   ArrowArray c_array;
   EXPECT_TRUE(::arrow::ExportRecordBatch(batch, &c_array, &c_schema).ok());
   ArrowSchemaGuard schema_guard(&c_schema);
   ArrowArrayGuard array_guard(&c_array);
 
-  auto projection =
-      ProjectionContext::Make(required_schema, projected_schema, project_batch_function);
+  auto projection = ProjectionContext::Make(required_schema, projected_schema,
+                                            project_batch_function, validation_mode);
   EXPECT_THAT(projection, IsOk());
 
   auto result = ProjectBatch(&c_array, alive_indices, projection.value());
@@ -104,22 +105,14 @@ void ExpectProjectBatch(const ::arrow::RecordBatch& batch,
                         const Schema& required_schema, const Schema& projected_schema,
                         std::string_view expected_json) {
   auto expected = MakeBatch(projected_schema, expected_json);
-  auto nanoarrow =
-      RunProjectBatch(batch, alive_indices, required_schema, projected_schema, nullptr);
-  auto arrow_compute = RunProjectBatch(batch, alive_indices, required_schema,
-                                       projected_schema, ArrowComputeFunction());
-
-  EXPECT_TRUE(nanoarrow->Equals(*expected)) << "nanoarrow:\n"
-                                            << nanoarrow->ToString() << "expected:\n"
-                                            << expected->ToString();
-  EXPECT_TRUE(arrow_compute->Equals(*expected))
-      << "arrow_compute:\n"
-      << arrow_compute->ToString() << "expected:\n"
-      << expected->ToString();
-  EXPECT_TRUE(nanoarrow->Equals(*arrow_compute))
-      << "nanoarrow:\n"
-      << nanoarrow->ToString() << "arrow_compute:\n"
-      << arrow_compute->ToString();
+  for (auto mode : {ArrowValidationMode::kFull, ArrowValidationMode::kBasic}) {
+    auto nanoarrow = RunProjectBatch(batch, alive_indices, required_schema,
+                                     projected_schema, nullptr, mode);
+    auto arrow_compute = RunProjectBatch(batch, alive_indices, required_schema,
+                                         projected_schema, ArrowComputeFunction(), mode);
+    EXPECT_TRUE(nanoarrow->Equals(*expected)) << nanoarrow->ToString();
+    EXPECT_TRUE(arrow_compute->Equals(*expected)) << arrow_compute->ToString();
+  }
 }
 
 std::shared_ptr<Schema> MakeFullSchema() {
@@ -232,42 +225,85 @@ TEST(ProjectBatchTest, ProjectionRejectsNestedPruning) {
   EXPECT_THAT(projection, IsError(ErrorKind::kInvalidArgument));
 }
 
-TEST(ProjectBatchTest, RejectsNonMonotonicStringOffsets) {
-  auto schema = std::make_shared<Schema>(
-      std::vector<SchemaField>{SchemaField::MakeRequired(1, "value", string())});
+TEST(ProjectBatchTest, ValidationModesWithNonMonotonicStringOffsets) {
+  for (auto mode : {ArrowValidationMode::kFull, ArrowValidationMode::kBasic}) {
+    for (auto function :
+         {ProjectionContext::ProjectBatchFunction{nullptr}, ArrowComputeFunction()}) {
+      auto schema = std::make_shared<Schema>(
+          std::vector<SchemaField>{SchemaField::MakeRequired(1, "value", string())});
 
-  // Arrow's builders always emit monotonic offsets, so a batch with a
-  // corrupt offsets buffer has to be hand-assembled via the nanoarrow C ABI.
-  // offsets = [0, 5, 2] with a 2-byte data buffer: DEFAULT validation only
-  // checks the first (0) and last (2) offsets, both of which are consistent
-  // with the 2-byte buffer, so it accepts this array. FULL validation also
-  // walks the offsets buffer and rejects it because 2 < 5.
-  ArrowArray root;
-  ASSERT_EQ(ArrowArrayInitFromType(&root, NANOARROW_TYPE_STRUCT), NANOARROW_OK);
-  ASSERT_EQ(ArrowArrayAllocateChildren(&root, 1), NANOARROW_OK);
+      // DEFAULT accepts the first/last offsets; FULL rejects the intermediate decrease.
+      ArrowArray root;
+      ASSERT_EQ(ArrowArrayInitFromType(&root, NANOARROW_TYPE_STRUCT), NANOARROW_OK);
+      ASSERT_EQ(ArrowArrayAllocateChildren(&root, 1), NANOARROW_OK);
 
-  ArrowArray* value_array = root.children[0];
-  ASSERT_EQ(ArrowArrayInitFromType(value_array, NANOARROW_TYPE_STRING), NANOARROW_OK);
-  const std::array<int32_t, 3> raw_offsets = {0, 5, 2};
-  ASSERT_EQ(ArrowBufferAppend(ArrowArrayBuffer(value_array, 1), raw_offsets.data(),
-                              raw_offsets.size() * sizeof(int32_t)),
-            NANOARROW_OK);
-  ASSERT_EQ(ArrowBufferAppend(ArrowArrayBuffer(value_array, 2), "ab", 2), NANOARROW_OK);
-  value_array->length = 2;
-  value_array->null_count = 0;
-  ASSERT_EQ(ArrowArrayFinishBuildingDefault(value_array, nullptr), NANOARROW_OK);
+      ArrowArray* value_array = root.children[0];
+      ASSERT_EQ(ArrowArrayInitFromType(value_array, NANOARROW_TYPE_STRING), NANOARROW_OK);
+      const std::array<int32_t, 3> raw_offsets = {0, 5, 2};
+      ASSERT_EQ(ArrowBufferAppend(ArrowArrayBuffer(value_array, 1), raw_offsets.data(),
+                                  raw_offsets.size() * sizeof(int32_t)),
+                NANOARROW_OK);
+      ASSERT_EQ(ArrowBufferAppend(ArrowArrayBuffer(value_array, 2), "ab", 2),
+                NANOARROW_OK);
+      value_array->length = 2;
+      value_array->null_count = 0;
+      ASSERT_EQ(ArrowArrayFinishBuildingDefault(value_array, nullptr), NANOARROW_OK);
 
-  root.length = 2;
-  root.null_count = 0;
-  ASSERT_EQ(ArrowArrayFinishBuildingDefault(&root, nullptr), NANOARROW_OK);
+      root.length = 2;
+      root.null_count = 0;
+      ASSERT_EQ(ArrowArrayFinishBuildingDefault(&root, nullptr), NANOARROW_OK);
 
-  auto projection = ProjectionContext::Make(*schema, *schema, nullptr);
-  ASSERT_THAT(projection, IsOk());
+      auto projection = mode == ArrowValidationMode::kFull
+                            ? ProjectionContext::Make(*schema, *schema, function)
+                            : ProjectionContext::Make(*schema, *schema, function, mode);
+      ASSERT_THAT(projection, IsOk());
 
-  // No rows are selected, so the malformed offsets must be caught by batch
-  // validation itself rather than by appending the corrupt row.
-  auto result = ProjectBatch(&root, /*row_indices=*/{}, projection.value());
-  EXPECT_THAT(result, IsError(ErrorKind::kInvalidArrowData));
+      // Empty selection lets Basic skip the content check without reading corrupt data.
+      auto result = ProjectBatch(&root, /*row_indices=*/{}, projection.value());
+      if (mode == ArrowValidationMode::kFull) {
+        EXPECT_THAT(result, IsError(ErrorKind::kInvalidArrowData));
+        EXPECT_THAT(result, HasErrorMessage("element size >= 0"));
+      } else {
+        EXPECT_THAT(result, IsOk());
+      }
+      if (result.has_value()) {
+        ArrowArrayGuard guard(&result.value());
+        EXPECT_EQ(result->length, 0);
+      }
+      EXPECT_EQ(root.release, nullptr);
+    }
+  }
+}
+
+TEST(ProjectBatchTest, BasicStillRejectsInvalidStructure) {
+  auto schema = MakeFullSchema();
+  auto batch = MakeBatch(*schema, R"([[1,"a",1.0]])");
+  for (auto function :
+       {ProjectionContext::ProjectBatchFunction{nullptr}, ArrowComputeFunction()}) {
+    ArrowArray array;
+    ASSERT_TRUE(::arrow::ExportRecordBatch(*batch, &array).ok());
+    array.length = -1;
+    ICEBERG_UNWRAP_OR_FAIL(
+        auto projection,
+        ProjectionContext::Make(*schema, *schema, function, ArrowValidationMode::kBasic));
+    auto result = ProjectBatch(&array, {}, projection);
+    EXPECT_THAT(result, IsError(ErrorKind::kInvalidArrowData));
+    EXPECT_THAT(result, HasErrorMessage("length"));
+    EXPECT_EQ(array.release, nullptr);
+  }
+}
+
+TEST(ProjectBatchTest, MovePreservesValidationMode) {
+  auto schema = MakeFullSchema();
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto basic,
+      ProjectionContext::Make(*schema, *schema, nullptr, ArrowValidationMode::kBasic));
+  auto moved = std::move(basic);
+  EXPECT_EQ(moved.validation_mode(), ArrowValidationMode::kBasic);
+  ICEBERG_UNWRAP_OR_FAIL(auto full, ProjectionContext::Make(*schema, *schema, nullptr));
+  EXPECT_EQ(full.validation_mode(), ArrowValidationMode::kFull);
+  full = std::move(moved);
+  EXPECT_EQ(full.validation_mode(), ArrowValidationMode::kBasic);
 }
 
 TEST(WriteProjectionTest, IdenticalSchemasTransferBatchWithoutConversion) {
