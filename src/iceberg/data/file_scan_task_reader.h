@@ -38,10 +38,10 @@ namespace iceberg {
 ///
 /// FileScanTaskReader chooses the copy-on-write path for tasks without deletes and
 /// the merge-on-read path for tasks with v2 position or equality deletes. The returned
-/// stream always exposes `projected_schema`.
+/// stream always exposes `projected_schema`. When `apply_residuals` is enabled, each
+/// task's residual filter is enforced after deletes and before final projection.
 ///
 /// TODO(gangwu): Add a mode that emits a `_deleted` column instead of filtering rows.
-/// TODO(gangwu): Use evaluator to apply residual expression filters.
 class ICEBERG_DATA_EXPORT FileScanTaskReader {
  public:
   /// \brief Options shared by all tasks opened by this reader.
@@ -55,12 +55,20 @@ class ICEBERG_DATA_EXPORT FileScanTaskReader {
     /// The output schema for the returned ArrowArrayStream. Must be a
     /// projection of table_schema.
     std::shared_ptr<Schema> projected_schema;
-    /// Case sensitivity for field name resolution. Pass TableScan::is_case_sensitive().
+    /// Case sensitivity for residual binding and reader field name resolution.
+    /// Must match TableScan::is_case_sensitive(); tasks do not carry this setting.
     bool case_sensitive = true;
     /// Optional name mapping for files written without field IDs.
     std::shared_ptr<NameMapping> name_mapping;
     /// Format-specific or implementation-specific options for data readers.
     std::unordered_map<std::string, std::string> properties;
+    /// Whether to enforce each task's residual filter row by row, after deletes
+    /// and before final projection. The default keeps the serial reader's
+    /// results unchanged; the parallel reader always enables it. Columns used
+    /// only by the residual are read for evaluation and removed by the final
+    /// projection. Format readers may ignore `ReaderOptions.filter`, so this is
+    /// the only guaranteed enforcement path.
+    bool apply_residuals{false};
   };
 
   /// \brief Create a reusable task reader from shared read context.
@@ -69,6 +77,10 @@ class ICEBERG_DATA_EXPORT FileScanTaskReader {
   ~FileScanTaskReader();
 
   /// \brief Open a task and return an Arrow C stream for its projected live rows.
+  ///
+  /// When Options::apply_residuals is set, the task's residual filter is enforced
+  /// row by row after deletes and before the final projection; unsupported
+  /// residual references fail with an explicit error.
   ///
   /// Partial tasks are supported for Parquet, with each row group assigned to the
   /// half-open range containing its midpoint, as in Java Iceberg. Row positions and
