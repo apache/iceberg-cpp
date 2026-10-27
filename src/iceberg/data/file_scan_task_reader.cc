@@ -172,7 +172,7 @@ class TaskStreamSource {
         // Project a fully selected batch, e.g. because columns were pruned or
         // reordered for evaluation.
         selection.resize(static_cast<size_t>(input_batch.length));
-        std::iota(selection.begin(), selection.end(), int32_t{0});
+        std::iota(selection.begin(), selection.end(), int32_t{0});  // NOLINT
       }
       return ProjectBatch(&input_batch, selection, projection_context_);
     }
@@ -270,7 +270,7 @@ class FileScanTaskReader::Impl {
     ICEBERG_ASSIGN_OR_RAISE(auto field_id_set,
                             ReferenceVisitor::GetReferencedFieldIds(bound));
     std::vector<int32_t> field_ids(field_id_set.begin(), field_id_set.end());
-    std::sort(field_ids.begin(), field_ids.end());
+    std::ranges::sort(field_ids);
 
     std::vector<SchemaField> read_columns;
     for (int32_t field_id : field_ids) {
