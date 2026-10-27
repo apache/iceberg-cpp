@@ -21,6 +21,10 @@ set(ICEBERG_TEST_RESOURCES "${CMAKE_SOURCE_DIR}/src/iceberg/test/resources")
 
 configure_file("test_config.h.in" "test_config.h")
 
+# vcpkg's z-applocal POST_BUILD copies dependency DLLs into this shared test
+# directory. Ninja appends that command to the link recipe, so a link pool of
+# depth 1 also serializes the copies. Parallel copies fail with a file lock
+# (https://github.com/apache/iceberg-cpp/issues/944).
 if(WIN32 AND CMAKE_GENERATOR MATCHES "Ninja")
   set_property(GLOBAL APPEND PROPERTY JOB_POOLS test_link_job_pool=1)
   set(CMAKE_JOB_POOL_LINK test_link_job_pool)
