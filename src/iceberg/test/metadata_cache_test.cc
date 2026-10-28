@@ -99,9 +99,9 @@ class FailingOpenInputFile : public InputFile {
   Result<std::unique_ptr<SeekableInputStream>> Open() override {
     ++state_->open_count;
     if (state_->open_count == 1) {
-      return std::unexpected<Error>(state_->first_error);
+      return unexpected<Error>(state_->first_error);
     }
-    return std::unexpected<Error>(state_->fallback_error);
+    return unexpected<Error>(state_->fallback_error);
   }
 
  private:

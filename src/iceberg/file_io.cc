@@ -169,7 +169,7 @@ class CachedInputFile : public InputFile {
     if (!content.has_value()) {
       auto cache_error = std::move(content).error();
       if (cache_error.kind != ErrorKind::kIOError) {
-        return std::unexpected<Error>(std::move(cache_error));
+        return unexpected<Error>(std::move(cache_error));
       }
 
       // Cache loading is an optimization. Match Java's ContentCache by falling back to
@@ -178,7 +178,7 @@ class CachedInputFile : public InputFile {
       if (!fallback.has_value()) {
         cache_error.message += "; fallback open failed: ";
         cache_error.message += fallback.error().message;
-        return std::unexpected<Error>(std::move(cache_error));
+        return unexpected<Error>(std::move(cache_error));
       }
       return fallback;
     }

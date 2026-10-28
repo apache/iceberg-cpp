@@ -206,7 +206,7 @@ Result<MetadataCache::Content> MetadataCache::Get(std::string location,
       if (entry->loading) {
         entry->loaded.wait(lock, [&entry] { return !entry->loading; });
         if (entry->error.has_value()) {
-          return std::unexpected<Error>(*entry->error);
+          return unexpected<Error>(*entry->error);
         }
         if (entry->content != nullptr) {
           if (auto current = impl_->entries_.find(location);
