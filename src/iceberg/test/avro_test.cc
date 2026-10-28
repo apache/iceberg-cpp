@@ -483,26 +483,19 @@ class AvroReaderParameterizedTest : public AvroReaderTest,
 
 TEST_P(AvroReaderParameterizedTest, ReadsPartitionConstants) {
   CreateSimpleAvroFile();
-  auto schema = std::make_shared<Schema>(std::vector<SchemaField>{
-      SchemaField::MakeRequired(1, "id", int32()),
-      SchemaField::MakeRequired(3, "region", string()),
-      SchemaField::MakeOptional(4, "missing", string()),
-      SchemaField::MakeOptional(
-          MetadataColumns::kPartitionColumnId, "_partition",
-          struct_({SchemaField::MakeOptional(1001, "bucket", int64()),
-                   SchemaField::MakeOptional(1002, "added", string())}))});
+  auto schema = std::make_shared<Schema>(
+      std::vector<SchemaField>{SchemaField::MakeRequired(1, "id", int32()),
+                               SchemaField::MakeRequired(3, "region", string()),
+                               SchemaField::MakeOptional(4, "missing", string())});
   ReaderOptions options{.path = temp_avro_file_, .io = file_io_, .projection = schema};
   options.properties.Set(ReaderProperties::kAvroSkipDatum, skip_datum_);
   options.constants = {
-      {1, Literal::Int(999)},
-      {3, Literal::String("CN")},
-      {4, Literal::Null(string())},
-      {MetadataColumns::kPartitionColumnId, StructConstant{{1001, Literal::Int(7)}}}};
+      {1, Literal::Int(999)}, {3, Literal::String("CN")}, {4, Literal::Null(string())}};
   ICEBERG_UNWRAP_OR_FAIL(auto reader,
                          ReaderFactoryRegistry::Open(FileFormatType::kAvro, options));
-  VerifyNextBatch(*reader, R"([[999,"CN",null,[7,null]],
-                              [999,"CN",null,[7,null]],
-                              [999,"CN",null,[7,null]]])");
+  VerifyNextBatch(*reader, R"([[999,"CN",null],
+                              [999,"CN",null],
+                              [999,"CN",null]])");
   VerifyExhausted(*reader);
 }
 

@@ -96,9 +96,9 @@ ICEBERG_EXPORT Result<SchemaProjection> Project(const Schema& expected_schema,
                                                 const Schema& source_schema,
                                                 bool prune_source);
 
-/// Build a typed constant projection, matching struct children by field ID.
+/// Build a primitive constant projection, validating type promotion and nullability.
 ICEBERG_EXPORT Result<FieldProjection> ProjectConstant(const SchemaField& field,
-                                                       const ColumnConstant& constant);
+                                                       const Literal& literal);
 
 ICEBERG_EXPORT std::string_view ToString(FieldProjection::Kind kind);
 ICEBERG_EXPORT std::string ToString(const FieldProjection& projection);

@@ -474,33 +474,6 @@ TEST_F(FileScanTaskReaderTest, IdentityConstantsApplyBeforeEqualityDeletes) {
   EXPECT_EQ(table->num_rows(), 0);
 }
 
-TEST_F(FileScanTaskReaderTest, PartitionMetadataMatchesHistoricalFieldIds) {
-  ICEBERG_UNWRAP_OR_FAIL(
-      auto file, MakeDataFile(table_schema_,
-                              R"([[1, "physical", "blue"], [2, "physical", "red"]])", 2));
-  ICEBERG_UNWRAP_OR_FAIL(
-      auto spec, PartitionSpec::Make(4, {{1, 1000, "bucket", Transform::Bucket(16)},
-                                         {2, 1001, "name", Transform::Identity()}}));
-  file->partition_spec_id = 4;
-  file->partition = PartitionValues({Literal::Int(5), Literal::String("constant")});
-  auto projection = std::make_shared<Schema>(std::vector<SchemaField>{
-      SchemaField::MakeOptional(2, "renamed", string()), MetadataColumns::kSpecId,
-      SchemaField::MakeOptional(
-          MetadataColumns::kPartitionColumnId, "_partition",
-          struct_({SchemaField::MakeOptional(1001, "region", string()),
-                   SchemaField::MakeOptional(1002, "added", int32()),
-                   SchemaField::MakeOptional(1000, "bucket", int64())}))});
-  FileScanTask task(file, {}, nullptr, std::move(spec));
-  ICEBERG_UNWRAP_OR_FAIL(auto reader,
-                         FileScanTaskReader::Make({.io = file_io_,
-                                                   .table_schema = table_schema_,
-                                                   .schemas = {table_schema_},
-                                                   .projected_schema = projection}));
-  ICEBERG_UNWRAP_OR_FAIL(auto stream, reader->Open(task));
-  VerifyStream(&stream, R"([["constant", 4, ["constant", null, 5]],
-                           ["constant", 4, ["constant", null, 5]]])");
-}
-
 TEST_F(FileScanTaskReaderTest, NullIdentityOverridesInitialDefault) {
   auto physical = std::make_shared<Schema>(
       std::vector<SchemaField>{SchemaField::MakeRequired(1, "id", int32())});

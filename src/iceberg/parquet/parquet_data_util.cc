@@ -251,18 +251,6 @@ Result<std::shared_ptr<::arrow::Array>> ProjectStructArray(
       ICEBERG_ASSIGN_OR_RAISE(
           projected_array,
           MakeNullArray(output_arrow_type, struct_array->length(), pool));
-    } else if (field_projection.kind == FieldProjection::Kind::kConstant &&
-               projected_field.type()->type_id() == TypeId::kStruct) {
-      // An empty source struct supplies the batch length; children come entirely
-      // from the constant projection and retain the requested field IDs/order.
-      auto source = std::make_shared<::arrow::StructArray>(
-          ::arrow::struct_({}), struct_array->length(), ::arrow::ArrayVector{});
-      ICEBERG_ASSIGN_OR_RAISE(
-          projected_array,
-          ProjectNestedArray(
-              source, output_arrow_type,
-              internal::checked_cast<const StructType&>(*projected_field.type()),
-              field_projection.children, metadata_context, row_positions, pool));
     } else if (field_projection.kind == FieldProjection::Kind::kDefault ||
                field_projection.kind == FieldProjection::Kind::kConstant) {
       ICEBERG_ASSIGN_OR_RAISE(
