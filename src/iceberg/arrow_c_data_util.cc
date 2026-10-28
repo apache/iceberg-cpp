@@ -22,6 +22,7 @@
 #include <memory>
 #include <mutex>
 #include <span>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -221,9 +222,7 @@ Status AppendValue(const ArrowSchema& input_schema, const ArrowArray& input_arra
 }  // namespace
 
 ProjectionContext::ProjectionContext(ProjectionContext&& other) noexcept
-    : input_schema_(std::exchange(other.input_schema_, nullptr)),
-      output_schema_(std::exchange(other.output_schema_, nullptr)),
-      selected_field_indices_(std::move(other.selected_field_indices_)),
+    : selected_field_indices_(std::move(other.selected_field_indices_)),
       input_arrow_schema_(other.input_arrow_schema_),
       output_arrow_schema_(other.output_arrow_schema_),
       project_batch_function_(std::exchange(other.project_batch_function_, nullptr)),
@@ -244,8 +243,6 @@ ProjectionContext& ProjectionContext::operator=(ProjectionContext&& other) noexc
     output_arrow_schema_.release(&output_arrow_schema_);
   }
 
-  input_schema_ = std::exchange(other.input_schema_, nullptr);
-  output_schema_ = std::exchange(other.output_schema_, nullptr);
   selected_field_indices_ = std::move(other.selected_field_indices_);
   input_arrow_schema_ = other.input_arrow_schema_;
   other.input_arrow_schema_.release = nullptr;
@@ -267,25 +264,52 @@ ProjectionContext::~ProjectionContext() {
 
 Result<ProjectionContext> ProjectionContext::Make(
     const Schema& input_schema, const Schema& output_schema,
+    const ArrowSchema& physical_input_schema,
     ProjectionContext::ProjectBatchFunction project_batch_function) {
+  ArrowSchemaView schema_view;
+  ArrowError error;
+  ArrowErrorInit(&error);
+  ICEBERG_NANOARROW_RETURN_UNEXPECTED_WITH_ERROR(
+      ArrowSchemaViewInit(&schema_view, &physical_input_schema, &error), error);
+  ICEBERG_PRECHECK(schema_view.type == NANOARROW_TYPE_STRUCT,
+                   "Physical input schema must be a struct, but is {}",
+                   ArrowTypeString(schema_view.type));
+  ICEBERG_PRECHECK(
+      std::cmp_equal(physical_input_schema.n_children, input_schema.fields().size()),
+      "Physical input schema must have {} fields to match the logical schema, but has {}",
+      input_schema.fields().size(), physical_input_schema.n_children);
+
   ICEBERG_ASSIGN_OR_RAISE(
       auto selected_field_indices,
       BuildSelectedFieldIndices(input_schema.fields(), output_schema.fields()));
-
   ProjectionContext context;
-  context.input_schema_ = &input_schema;
-  context.output_schema_ = &output_schema;
-  context.selected_field_indices_ = std::move(selected_field_indices);
-  ICEBERG_RETURN_UNEXPECTED(ToArrowSchema(input_schema, &context.input_arrow_schema_));
-  ICEBERG_RETURN_UNEXPECTED(ToArrowSchema(output_schema, &context.output_arrow_schema_));
   context.project_batch_function_ = project_batch_function;
+  ICEBERG_NANOARROW_RETURN_UNEXPECTED(
+      ArrowSchemaDeepCopy(&physical_input_schema, &context.input_arrow_schema_));
+  ICEBERG_RETURN_UNEXPECTED(ToArrowSchema(output_schema, &context.output_arrow_schema_));
 
+  // Replace each logical output field with the physical layout of its selected input
+  // field. The deep copy also carries the physical metadata (e.g. field ids and
+  // extension annotations); only the top-level name and nullability come from
+  // output_schema.
+  const auto& output_fields = output_schema.fields();
+  for (size_t i = 0; i < output_fields.size(); ++i) {
+    auto* output_field = context.output_arrow_schema_.children[i];
+    output_field->release(output_field);
+    ICEBERG_NANOARROW_RETURN_UNEXPECTED(ArrowSchemaDeepCopy(
+        physical_input_schema.children[selected_field_indices[i]], output_field));
+    ICEBERG_NANOARROW_RETURN_UNEXPECTED(
+        ArrowSchemaSetName(output_field, std::string(output_fields[i].name()).c_str()));
+    // Preserve type-specific flags such as sorted map keys when setting nullability.
+    if (output_fields[i].optional()) {
+      output_field->flags |= ARROW_FLAG_NULLABLE;
+    } else {
+      output_field->flags &= ~ARROW_FLAG_NULLABLE;
+    }
+  }
+  context.selected_field_indices_ = std::move(selected_field_indices);
   return context;
 }
-
-const Schema& ProjectionContext::input_schema() const { return *input_schema_; }
-
-const Schema& ProjectionContext::output_schema() const { return *output_schema_; }
 
 const ArrowSchema& ProjectionContext::input_arrow_schema() const {
   return input_arrow_schema_;
