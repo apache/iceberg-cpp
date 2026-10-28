@@ -62,7 +62,8 @@ Result<std::shared_ptr<::arrow::io::RandomAccessFile>> OpenInputStream(
 
 Result<SchemaProjection> BuildProjection(::parquet::arrow::FileReader* reader,
                                          const Schema& read_schema,
-                                         const NameMapping* name_mapping) {
+                                         const NameMapping* name_mapping,
+                                         const ColumnConstants& constants) {
   auto metadata = reader->parquet_reader()->metadata();
 
   ::parquet::arrow::SchemaManifest schema_manifest;
@@ -79,7 +80,8 @@ Result<SchemaProjection> BuildProjection(::parquet::arrow::FileReader* reader,
   }
 
   // Leverage SchemaManifest to project the schema
-  ICEBERG_ASSIGN_OR_RAISE(auto projection, Project(read_schema, schema_manifest));
+  ICEBERG_ASSIGN_OR_RAISE(auto projection,
+                          Project(read_schema, schema_manifest, constants));
   return projection;
 }
 
@@ -304,8 +306,9 @@ class ParquetReader::Impl {
     ICEBERG_RETURN_UNEXPECTED(PlanRowGroups(options));
 
     // Project read schema onto the Parquet file schema
-    ICEBERG_ASSIGN_OR_RAISE(projection_, BuildProjection(reader_.get(), *read_schema_,
-                                                         options.name_mapping.get()));
+    ICEBERG_ASSIGN_OR_RAISE(
+        projection_, BuildProjection(reader_.get(), *read_schema_,
+                                     options.name_mapping.get(), options.constants));
     metadata_context_ = {.file_path = options.path,
                          .first_row_id = options.first_row_id,
                          .data_sequence_number = options.data_sequence_number};

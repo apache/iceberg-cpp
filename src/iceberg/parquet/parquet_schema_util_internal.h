@@ -47,10 +47,12 @@ struct ParquetExtraAttributes : public FieldProjection::ExtraAttributes {
 ///
 /// \param expected_schema The Iceberg Schema that defines the expected structure.
 /// \param parquet_schema The Parquet schema to read data from.
+/// \param constants File-level values used for fields absent from the file.
 /// \return The schema projection result with column indices of projected Parquet columns
 /// specified via ParquetExtraAttributes.
 Result<SchemaProjection> Project(const Schema& expected_schema,
-                                 const ::parquet::arrow::SchemaManifest& parquet_schema);
+                                 const ::parquet::arrow::SchemaManifest& parquet_schema,
+                                 const ColumnConstants& constants = {});
 
 /// \brief Get the selected column indices by walking through the projection result.
 ///

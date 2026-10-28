@@ -26,8 +26,11 @@
 #include <functional>
 #include <memory>
 #include <optional>
+#include <unordered_map>
+#include <variant>
 
 #include "iceberg/arrow_c_data.h"
+#include "iceberg/expression/literal.h"
 #include "iceberg/file_format.h"
 #include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
@@ -92,6 +95,14 @@ class ICEBERG_EXPORT ReaderProperties : public ConfigBase<ReaderProperties> {
       const std::unordered_map<std::string, std::string>& properties);
 };
 
+/// A non-null struct constant, keyed by child field ID. Children are primitive
+/// literals, including typed nulls. Projected children absent from the map are null.
+using StructConstant = std::unordered_map<int32_t, Literal>;
+
+/// A file-level primitive or struct constant, independent of the file format.
+using ColumnConstant = std::variant<Literal, StructConstant>;
+using ColumnConstants = std::unordered_map<int32_t, ColumnConstant>;
+
 /// \brief Options for creating a reader.
 struct ICEBERG_EXPORT ReaderOptions {
   /// \brief The path to the file to read.
@@ -116,6 +127,11 @@ struct ICEBERG_EXPORT ReaderOptions {
   std::optional<int64_t> data_sequence_number;
   /// \brief Format-specific or implementation-specific properties.
   ReaderProperties properties;
+
+  /// File-level values keyed by field ID, used when physical columns are absent.
+  /// Constants precede initial defaults and optional-field nulls.
+  /// Example: `options.constants.emplace(2, Literal::String("CN"));`
+  ColumnConstants constants;
 };
 
 /// \brief Factory function to create a reader of a specific file format.

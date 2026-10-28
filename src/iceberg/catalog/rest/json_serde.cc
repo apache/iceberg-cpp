@@ -231,9 +231,16 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> FileScanTasksFromJson(
       ICEBERG_ASSIGN_OR_RAISE(residual_filter, ExpressionFromJson(filter_json));
     }
 
+    std::shared_ptr<const PartitionSpec> spec;
+    if (data_file.partition_spec_id.has_value()) {
+      auto it = partition_spec_by_id.find(*data_file.partition_spec_id);
+      if (it != partition_spec_by_id.end()) {
+        spec = it->second;
+      }
+    }
     auto task = FileScanTask::MakeSplit(std::make_shared<DataFile>(std::move(data_file)),
                                         start, length, std::move(task_delete_files),
-                                        std::move(residual_filter));
+                                        std::move(residual_filter), std::move(spec));
     if (!task) {
       return JsonParseError("Invalid FileScanTask range: {}", task.error().message);
     }

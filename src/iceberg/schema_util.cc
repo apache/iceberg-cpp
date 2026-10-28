@@ -194,6 +194,52 @@ Result<FieldProjection> ProjectNested(const Type& expected_type, const Type& sou
 
 }  // namespace
 
+Result<FieldProjection> ProjectConstant(const SchemaField& field,
+                                        const ColumnConstant& constant) {
+  FieldProjection projection{.kind = FieldProjection::Kind::kConstant};
+  if (const auto* literal = std::get_if<Literal>(&constant)) {
+    if (!field.type()->is_primitive() || literal->type() == nullptr ||
+        literal->IsAboveMax() || literal->IsBelowMin()) {
+      return InvalidSchema("Invalid constant for field {}", field.field_id());
+    }
+    ICEBERG_RETURN_UNEXPECTED(ValidateSchemaEvolution(*field.type(), *literal->type()));
+    if (literal->IsNull() && !field.optional()) {
+      return InvalidSchema("Null constant for required field {}", field.field_id());
+    }
+    if (literal->IsNull()) {
+      projection.kind = FieldProjection::Kind::kNull;
+      return projection;
+    }
+    projection.from = *literal;
+    return projection;
+  }
+
+  if (field.type()->type_id() != TypeId::kStruct) {
+    return InvalidSchema("Struct constant requires a struct field: {}", field.field_id());
+  }
+  const auto& fields = internal::checked_cast<const StructType&>(*field.type()).fields();
+  const auto& values = std::get<StructConstant>(constant);
+  if (fields.empty() && field.optional()) {
+    projection.kind = FieldProjection::Kind::kNull;
+    return projection;
+  }
+  for (const auto& child : fields) {
+    if (!child.type()->is_primitive()) {
+      return InvalidSchema("Struct constants require primitive children: {}",
+                           child.field_id());
+    }
+    if (const auto it = values.find(child.field_id()); it != values.end()) {
+      ICEBERG_ASSIGN_OR_RAISE(auto child_projection, ProjectConstant(child, it->second));
+      projection.children.push_back(std::move(child_projection));
+    } else if (child.optional()) {
+      projection.children.push_back({.kind = FieldProjection::Kind::kNull});
+    } else {
+      return InvalidSchema("Missing required constant field {}", child.field_id());
+    }
+  }
+  return projection;
+}
+
 Result<SchemaProjection> Project(const Schema& expected_schema,
                                  const Schema& source_schema, bool prune_source) {
   ICEBERG_ASSIGN_OR_RAISE(auto field_projection,

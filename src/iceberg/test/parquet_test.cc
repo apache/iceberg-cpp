@@ -552,6 +552,25 @@ class ParquetReaderTest : public TempFileTestBase {
   std::string temp_parquet_file_;
 };
 
+TEST_F(ParquetReaderTest, ConstantsValidateTypesAndRequiredNulls) {
+  CreateSimpleParquetFile();
+  auto schema = std::make_shared<Schema>(
+      std::vector<SchemaField>{SchemaField::MakeRequired(3, "constant", int64())});
+  for (const auto& value : {Literal::String("7"), Literal::Null(int64())}) {
+    ReaderOptions options{
+        .path = temp_parquet_file_, .io = file_io_, .projection = schema};
+    options.constants.emplace(3, value);
+    EXPECT_FALSE(
+        ReaderFactoryRegistry::Open(FileFormatType::kParquet, options).has_value());
+  }
+  ReaderOptions options{.path = temp_parquet_file_, .io = file_io_, .projection = schema};
+  options.constants.emplace(3, Literal::Int(7));
+  ICEBERG_UNWRAP_OR_FAIL(auto reader,
+                         ReaderFactoryRegistry::Open(FileFormatType::kParquet, options));
+  VerifyNextBatch(*reader, "[[7], [7], [7]]");
+  VerifyExhausted(*reader);
+}
+
 TEST_F(ParquetReaderTest, ReadTwoFields) {
   CreateSimpleParquetFile();
 

@@ -508,7 +508,9 @@ namespace {
 
 class ProjectionBuilder {
  public:
-  explicit ProjectionBuilder(const ::parquet::SchemaDescriptor* descr) : descr_(descr) {}
+  ProjectionBuilder(const ::parquet::SchemaDescriptor* descr,
+                    const ColumnConstants& constants)
+      : descr_(descr), constants_(constants) {}
 
   Result<FieldProjection> Project(
       const Type& nested_type,
@@ -596,6 +598,10 @@ class ProjectionBuilder {
         const auto& parquet_field = iter->second.parquet_field;
         ICEBERG_ASSIGN_OR_RAISE(child_projection, ProjectField(field, parquet_field,
                                                                iter->second.local_index));
+      } else if (auto constant = constants_.find(field_id);
+                 constant != constants_.end()) {
+        ICEBERG_ASSIGN_OR_RAISE(child_projection,
+                                ProjectConstant(field, constant->second));
       } else if (MetadataColumns::IsMetadataColumn(field_id)) {
         child_projection.kind = FieldProjection::Kind::kMetadata;
       } else if (field.initial_default() != nullptr) {
@@ -723,6 +729,7 @@ class ProjectionBuilder {
   }
 
   const ::parquet::SchemaDescriptor* descr_;
+  const ColumnConstants& constants_;
 };
 
 void CollectColumnIds(const FieldProjection& field_projection,
@@ -788,8 +795,9 @@ void ApplyNameMappingToField(const NameMapping& mapping, std::vector<std::string
 }  // namespace
 
 Result<SchemaProjection> Project(const Schema& expected_schema,
-                                 const ::parquet::arrow::SchemaManifest& parquet_schema) {
-  ProjectionBuilder builder(parquet_schema.descr);
+                                 const ::parquet::arrow::SchemaManifest& parquet_schema,
+                                 const ColumnConstants& constants) {
+  ProjectionBuilder builder(parquet_schema.descr, constants);
   ICEBERG_ASSIGN_OR_RAISE(auto field_projection,
                           builder.Project(static_cast<const Type&>(expected_schema),
                                           parquet_schema.schema_fields));

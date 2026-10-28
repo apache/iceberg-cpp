@@ -174,25 +174,28 @@ ScanTask::~ScanTask() = default;
 
 FileScanTask::FileScanTask(std::shared_ptr<DataFile> data_file,
                            std::vector<std::shared_ptr<DataFile>> delete_files,
-                           std::shared_ptr<Expression> residual_filter)
+                           std::shared_ptr<Expression> residual_filter,
+                           std::shared_ptr<const PartitionSpec> spec)
     : data_file_(std::move(data_file)),
       delete_files_(std::move(delete_files)),
-      residual_filter_(std::move(residual_filter)) {
+      residual_filter_(std::move(residual_filter)),
+      spec_(std::move(spec)) {
   ICEBERG_DCHECK(data_file_ != nullptr, "Data file cannot be null for FileScanTask");
 }
 
 FileScanTask::FileScanTask(std::shared_ptr<DataFile> data_file,
                            std::vector<std::shared_ptr<DataFile>> delete_files,
-                           std::shared_ptr<Expression> residual_filter, Range range)
+                           std::shared_ptr<Expression> residual_filter, Range range,
+                           std::shared_ptr<const PartitionSpec> spec)
     : FileScanTask(std::move(data_file), std::move(delete_files),
-                   std::move(residual_filter)) {
+                   std::move(residual_filter), std::move(spec)) {
   range_ = range;
 }
 
 Result<std::shared_ptr<FileScanTask>> FileScanTask::MakeSplit(
     std::shared_ptr<DataFile> data_file, int64_t start, int64_t length,
     std::vector<std::shared_ptr<DataFile>> delete_files,
-    std::shared_ptr<Expression> filter) {
+    std::shared_ptr<Expression> filter, std::shared_ptr<const PartitionSpec> spec) {
   if (data_file == nullptr) {
     return InvalidArgument("Cannot create a file scan task without a data file");
   }
@@ -215,7 +218,7 @@ Result<std::shared_ptr<FileScanTask>> FileScanTask::MakeSplit(
   // only valid empty range: [0, 0) of an empty file.
   if (start == 0 && length == file_size) {
     return std::make_shared<FileScanTask>(std::move(data_file), std::move(delete_files),
-                                          std::move(filter));
+                                          std::move(filter), std::move(spec));
   }
   if (length == 0) {
     return InvalidArgument("A partial split of file {} must have positive length",
@@ -224,7 +227,7 @@ Result<std::shared_ptr<FileScanTask>> FileScanTask::MakeSplit(
 
   return std::shared_ptr<FileScanTask>(
       new FileScanTask(std::move(data_file), std::move(delete_files), std::move(filter),
-                       Range{.start = start, .length = length}));
+                       Range{.start = start, .length = length}, std::move(spec)));
 }
 
 int64_t FileScanTask::length() const {

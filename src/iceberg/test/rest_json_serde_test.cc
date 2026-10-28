@@ -2652,6 +2652,8 @@ TEST(FetchScanTasksResponseRoundtripTest, PreservesResidualFilter) {
   ASSERT_TRUE(result->file_scan_tasks.has_value());
   ASSERT_EQ(result->file_scan_tasks->size(), 1);
   ASSERT_NE(result->file_scan_tasks->at(0)->residual_filter(), nullptr);
+  ASSERT_NE(result->file_scan_tasks->at(0)->spec(), nullptr);
+  EXPECT_EQ(result->file_scan_tasks->at(0)->spec()->spec_id(), 0);
 
   ICEBERG_UNWRAP_OR_FAIL(auto roundtrip_json,
                          ToJson(*result, UnpartitionedSpecs(), EmptySchema()));

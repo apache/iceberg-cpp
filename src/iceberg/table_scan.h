@@ -72,11 +72,13 @@ class ICEBERG_EXPORT FileScanTask : public ScanTask {
   /// \param data_file The data file to read.
   /// \param delete_files Delete files that apply to this data file.
   /// \param filter Optional residual filter to apply after reading.
+  /// \param spec Partition spec corresponding to the data file partition tuple.
   /// \note The shared data file, delete files, and residual filter must remain
   /// unchanged for this task's lifetime. Metadata changes require rebuilding tasks.
   explicit FileScanTask(std::shared_ptr<DataFile> data_file,
                         std::vector<std::shared_ptr<DataFile>> delete_files = {},
-                        std::shared_ptr<Expression> filter = nullptr);
+                        std::shared_ptr<Expression> filter = nullptr,
+                        std::shared_ptr<const PartitionSpec> spec = nullptr);
 
   /// \brief Make a task for a validated half-open byte range [start, start + length).
   ///
@@ -87,7 +89,8 @@ class ICEBERG_EXPORT FileScanTask : public ScanTask {
   static Result<std::shared_ptr<FileScanTask>> MakeSplit(
       std::shared_ptr<DataFile> data_file, int64_t start, int64_t length,
       std::vector<std::shared_ptr<DataFile>> delete_files = {},
-      std::shared_ptr<Expression> filter = nullptr);
+      std::shared_ptr<Expression> filter = nullptr,
+      std::shared_ptr<const PartitionSpec> spec = nullptr);
 
   /// \brief The inclusive byte offset where this task starts, or zero for a whole file.
   int64_t start() const { return range_ ? range_->start : 0; }
@@ -109,6 +112,9 @@ class ICEBERG_EXPORT FileScanTask : public ScanTask {
   /// \brief Residual filter to apply after reading.
   const std::shared_ptr<Expression>& residual_filter() const { return residual_filter_; }
 
+  /// The partition spec used to write this file, including historical field IDs.
+  const std::shared_ptr<const PartitionSpec>& spec() const { return spec_; }
+
   Kind kind() const override { return Kind::kFileScanTask; }
   int64_t size_bytes() const override;
   int32_t files_count() const override;
@@ -127,12 +133,14 @@ class ICEBERG_EXPORT FileScanTask : public ScanTask {
 
   FileScanTask(std::shared_ptr<DataFile> data_file,
                std::vector<std::shared_ptr<DataFile>> delete_files,
-               std::shared_ptr<Expression> filter, Range range);
+               std::shared_ptr<Expression> filter, Range range,
+               std::shared_ptr<const PartitionSpec> spec);
 
   std::shared_ptr<DataFile> data_file_;
   std::vector<std::shared_ptr<DataFile>> delete_files_;
   std::shared_ptr<Expression> residual_filter_;
   std::optional<Range> range_;
+  std::shared_ptr<const PartitionSpec> spec_;
 };
 
 /// \brief Stream of file scan tasks.

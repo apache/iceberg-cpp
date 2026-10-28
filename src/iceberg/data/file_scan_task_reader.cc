@@ -30,23 +30,75 @@
 #include "iceberg/data/delete_filter.h"
 #include "iceberg/file_reader.h"
 #include "iceberg/manifest/manifest_entry.h"
+#include "iceberg/metadata_columns.h"
+#include "iceberg/partition_spec.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_internal.h"
 #include "iceberg/table_scan.h"
+#include "iceberg/transform.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg {
 
 namespace {
 
-ReaderOptions MakeReaderOptions(const FileScanTask& task, std::shared_ptr<FileIO> io,
-                                std::shared_ptr<Schema> projection,
-                                std::shared_ptr<Expression> filter,
-                                std::shared_ptr<NameMapping> name_mapping,
-                                ReaderProperties properties,
-                                std::optional<int64_t> first_row_id,
-                                std::optional<int64_t> data_sequence_number) {
+Result<ColumnConstants> ConstantsOf(const FileScanTask& task, const Schema& projection) {
+  const auto& file = *task.data_file();
+  const auto& spec = task.spec();
+  ICEBERG_ASSIGN_OR_RAISE(auto partition_field,
+                          projection.FindFieldById(MetadataColumns::kPartitionColumnId));
+  ICEBERG_ASSIGN_OR_RAISE(auto spec_field,
+                          projection.FindFieldById(MetadataColumns::kSpecIdColumnId));
+  ColumnConstants constants;
+  auto spec_id = file.partition_spec_id;
+  if (spec) {
+    if (spec_id.has_value() && *spec_id != spec->spec_id()) {
+      return InvalidArgument("Data file spec ID {} does not match task spec ID {}",
+                             *spec_id, spec->spec_id());
+    }
+    spec_id = spec->spec_id();
+    if (file.partition.num_fields() != spec->fields().size()) {
+      return InvalidArgument(
+          "Partition value count {} does not match spec field count {}",
+          file.partition.num_fields(), spec->fields().size());
+    }
+    StructConstant partition;
+    for (size_t i = 0; i < spec->fields().size(); ++i) {
+      const auto& field = spec->fields()[i];
+      const auto& value = file.partition.values()[i];
+      if (field.transform() == nullptr) {
+        return InvalidArgument("Missing transform for partition field {}",
+                               field.field_id());
+      }
+      if (field.transform()->transform_type() == TransformType::kIdentity) {
+        constants.emplace(field.source_id(), value);
+      }
+      if (partition_field.has_value()) {
+        partition.emplace(field.field_id(), value);
+      }
+    }
+    if (partition_field.has_value()) {
+      constants.emplace(MetadataColumns::kPartitionColumnId, std::move(partition));
+    }
+  } else if (file.partition.num_fields() != 0 || partition_field.has_value()) {
+    return InvalidArgument("A partition spec is required to read partition values");
+  }
+  if (spec_field.has_value()) {
+    if (!spec_id.has_value()) {
+      return InvalidArgument("A partition spec ID is required to read _spec_id");
+    }
+    constants.emplace(MetadataColumns::kSpecIdColumnId, Literal::Int(*spec_id));
+  }
+  return constants;
+}
+
+Result<ReaderOptions> MakeReaderOptions(
+    const FileScanTask& task, std::shared_ptr<FileIO> io,
+    std::shared_ptr<Schema> projection, std::shared_ptr<Expression> filter,
+    std::shared_ptr<NameMapping> name_mapping, ReaderProperties properties,
+    std::optional<int64_t> first_row_id, std::optional<int64_t> data_sequence_number) {
   const auto& data_file = *task.data_file();
+  ICEBERG_ASSIGN_OR_RAISE(auto constants, ConstantsOf(task, *projection));
   return ReaderOptions{
       .path = data_file.file_path,
       .length = static_cast<size_t>(data_file.file_size_in_bytes),
@@ -61,6 +113,7 @@ ReaderOptions MakeReaderOptions(const FileScanTask& task, std::shared_ptr<FileIO
       .first_row_id = first_row_id,
       .data_sequence_number = data_sequence_number,
       .properties = std::move(properties),
+      .constants = std::move(constants),
   };
 }
 
@@ -189,9 +242,11 @@ class FileScanTaskReader::Impl {
     }
 
     if (task.delete_files().empty()) {
-      auto options = MakeReaderOptions(
-          task, io_, projected_schema_, task.residual_filter(), name_mapping_,
-          properties_, data_file->first_row_id, data_file->data_sequence_number);
+      ICEBERG_ASSIGN_OR_RAISE(
+          auto options,
+          MakeReaderOptions(task, io_, projected_schema_, task.residual_filter(),
+                            name_mapping_, properties_, data_file->first_row_id,
+                            data_file->data_sequence_number));
       ICEBERG_ASSIGN_OR_RAISE(
           auto reader, ReaderFactoryRegistry::Open(data_file->file_format, options));
       return MakeArrowArrayStream(std::move(reader));
@@ -215,9 +270,11 @@ class FileScanTaskReader::Impl {
                             ProjectionContext::Make(*required_schema, *projected_schema_,
                                                     project_batch_function));
 
-    auto options = MakeReaderOptions(task, io_, required_schema, task.residual_filter(),
-                                     name_mapping_, properties_, data_file->first_row_id,
-                                     data_file->data_sequence_number);
+    ICEBERG_ASSIGN_OR_RAISE(
+        auto options,
+        MakeReaderOptions(task, io_, required_schema, task.residual_filter(),
+                          name_mapping_, properties_, data_file->first_row_id,
+                          data_file->data_sequence_number));
     ICEBERG_ASSIGN_OR_RAISE(auto reader,
                             ReaderFactoryRegistry::Open(data_file->file_format, options));
 

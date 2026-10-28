@@ -28,6 +28,7 @@
 #include <vector>
 
 #include "iceberg/expression/literal.h"
+#include "iceberg/file_reader.h"
 #include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
@@ -94,6 +95,10 @@ struct ICEBERG_EXPORT SchemaProjection {
 ICEBERG_EXPORT Result<SchemaProjection> Project(const Schema& expected_schema,
                                                 const Schema& source_schema,
                                                 bool prune_source);
+
+/// Build a typed constant projection, matching struct children by field ID.
+ICEBERG_EXPORT Result<FieldProjection> ProjectConstant(const SchemaField& field,
+                                                       const ColumnConstant& constant);
 
 ICEBERG_EXPORT std::string_view ToString(FieldProjection::Kind kind);
 ICEBERG_EXPORT std::string ToString(const FieldProjection& projection);

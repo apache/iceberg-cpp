@@ -94,7 +94,8 @@ Status AppendStructToBuilder(const ::avro::NodePtr& avro_node,
                                                      metadata_context, field_builder));
     } else if (field_projection.kind == FieldProjection::Kind::kNull) {
       ICEBERG_ARROW_RETURN_NOT_OK(field_builder->AppendNull());
-    } else if (field_projection.kind == FieldProjection::Kind::kDefault) {
+    } else if (field_projection.kind == FieldProjection::Kind::kDefault ||
+               field_projection.kind == FieldProjection::Kind::kConstant) {
       ICEBERG_RETURN_UNEXPECTED(AppendDefaultToBuilder(field_projection, field_builder));
     } else if (field_projection.kind == FieldProjection::Kind::kMetadata) {
       int32_t field_id = expected_field.field_id();
@@ -476,7 +477,8 @@ Status AppendFieldToBuilder(const ::avro::NodePtr& avro_node,
     return {};
   }
 
-  if (projection.kind == FieldProjection::Kind::kDefault) {
+  if (projection.kind == FieldProjection::Kind::kDefault ||
+      projection.kind == FieldProjection::Kind::kConstant) {
     return AppendDefaultToBuilder(projection, array_builder);
   }
 
@@ -593,7 +595,13 @@ Status PrepareStructDefaultScalars(std::span<FieldProjection> projections,
     auto& field_projection = projections[i];
     auto* field_builder = struct_builder->field_builder(static_cast<int>(i));
 
-    if (field_projection.kind == FieldProjection::Kind::kDefault) {
+    if (field_projection.kind == FieldProjection::Kind::kDefault ||
+        field_projection.kind == FieldProjection::Kind::kConstant) {
+      if (field_builder->type()->id() == ::arrow::Type::STRUCT) {
+        ICEBERG_RETURN_UNEXPECTED(
+            PrepareStructDefaultScalars(field_projection.children, field_builder));
+        continue;
+      }
       // Get-or-create the single Avro attributes container: another Avro attribute may
       // have created it already, so guard on `default_scalar` being unset rather than on
       // the container's presence (otherwise a pre-existing container would skip
@@ -640,6 +648,19 @@ Status AppendDefaultToBuilder(const Literal& literal, ::arrow::ArrayBuilder* bui
 
 Status AppendDefaultToBuilder(const FieldProjection& projection,
                               ::arrow::ArrayBuilder* builder) {
+  if (projection.kind == FieldProjection::Kind::kNull) {
+    ICEBERG_ARROW_RETURN_NOT_OK(builder->AppendNull());
+    return {};
+  }
+  if (builder->type()->id() == ::arrow::Type::STRUCT) {
+    auto* struct_builder = internal::checked_cast<::arrow::StructBuilder*>(builder);
+    ICEBERG_ARROW_RETURN_NOT_OK(struct_builder->Append());
+    for (size_t i = 0; i < projection.children.size(); ++i) {
+      ICEBERG_RETURN_UNEXPECTED(AppendDefaultToBuilder(
+          projection.children[i], struct_builder->field_builder(static_cast<int>(i))));
+    }
+    return {};
+  }
   // Avro projections carry a single attributes type, so once one is attached it is an
   // AvroExtraAttributes; use checked_cast instead of a per-row dynamic_cast.
   if (projection.attributes != nullptr) {

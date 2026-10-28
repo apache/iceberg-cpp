@@ -2551,7 +2551,7 @@ Result<std::shared_ptr<FileScanTask>> FileScanTaskFromJson(const nlohmann::json&
 
   auto task = FileScanTask::MakeSplit(std::make_shared<DataFile>(std::move(data_file)),
                                       start, length, std::move(delete_files),
-                                      std::move(residual_filter));
+                                      std::move(residual_filter), std::move(shared_spec));
   if (!task) {
     return JsonParseError("Invalid FileScanTask range: {}", task.error().message);
   }

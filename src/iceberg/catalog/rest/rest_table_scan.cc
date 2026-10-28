@@ -278,9 +278,12 @@ class RestFileScanTaskStream final : public FileScanTaskStream {
         auto task = std::move(buffer_[buffer_pos_++]);
         if (ignore_residuals_ || !task->residual_filter()) {
           // The server may leave row filtering to the client.
-          return std::make_shared<FileScanTask>(
-              task->data_file(), task->delete_files(),
-              ignore_residuals_ ? True::Instance() : filter_);
+          ICEBERG_ASSIGN_OR_RAISE(
+              auto adjusted,
+              FileScanTask::MakeSplit(
+                  task->data_file(), task->start(), task->length(), task->delete_files(),
+                  ignore_residuals_ ? True::Instance() : filter_, task->spec()));
+          return adjusted;
         }
         return task;
       }
