@@ -43,7 +43,7 @@ class ICEBERG_EXPORT HistoryTable : public MetadataTable {
   const std::shared_ptr<Schema>& schema() const override;
 
  protected:
-  Result<ArrowArrayStream> ScanProjection(const Schema& projected_schema) override;
+  Result<ArrowArrayStream> ScanProjection(const Schema& projected_schema) const override;
 
  private:
   explicit HistoryTable(std::shared_ptr<Table> table);

@@ -195,7 +195,6 @@ TEST_F(SnapshotsTableTest, ScanReadsRepeatedly) {
   ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Select({"snapshot_id"}).Build());
   ASSERT_EQ(scan->schema()->fields().size(), 1);
   EXPECT_EQ(scan->schema()->fields()[0].name(), "snapshot_id");
-  EXPECT_TRUE(scan->snapshot_selection().IsCurrentSnapshot());
 
   for (int read = 0; read < 2; ++read) {
     ICEBERG_UNWRAP_OR_FAIL(auto stream, scan->ToArrowArrayStream());
@@ -207,12 +206,53 @@ TEST_F(SnapshotsTableTest, ScanReadsRepeatedly) {
   }
 }
 
-TEST_F(SnapshotsTableTest, ScanRejectsTimeTravel) {
+TEST_F(SnapshotsTableTest, ScanProjectedColumns) {
+  // Project() reorders columns and keeps the whole summary map.
+  auto projection = std::make_shared<Schema>(std::vector<SchemaField>{
+      SchemaField::MakeOptional(
+          6, "summary",
+          std::make_shared<MapType>(SchemaField::MakeRequired(7, "key", string()),
+                                    SchemaField::MakeRequired(8, "value", string()))),
+      SchemaField::MakeRequired(2, "snapshot_id", int64())});
   ICEBERG_UNWRAP_OR_FAIL(auto builder, snapshots_table_->NewScan());
-  EXPECT_THAT(builder->UseSnapshot(1).Build(), IsError(ErrorKind::kNotSupported));
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Project(projection).Build());
+  ICEBERG_UNWRAP_OR_FAIL(auto stream, scan->ToArrowArrayStream());
+  ICEBERG_UNWRAP_OR_FAIL(auto batches, ReadAllBatches(std::move(stream)));
+  ASSERT_EQ(batches.size(), 1);
+  const auto& batch = batches.front();
+  EXPECT_EQ(batch->num_rows(), 2);
+  ASSERT_EQ(batch->num_columns(), 2);
+  EXPECT_EQ(batch->column_name(0), "summary");
+  EXPECT_EQ(batch->column_name(1), "snapshot_id");
+  auto summaries = std::static_pointer_cast<::arrow::MapArray>(batch->column(0));
+  EXPECT_THAT(GetMapEntries(summaries, 1),
+              ::testing::Contains(::testing::Pair("total-records", "2")));
+  auto snapshot_ids = std::static_pointer_cast<::arrow::Int64Array>(batch->column(1));
+  EXPECT_EQ(snapshot_ids->Value(0), 1);
+  EXPECT_EQ(snapshot_ids->Value(1), 2);
+}
 
-  ICEBERG_UNWRAP_OR_FAIL(auto ref_builder, snapshots_table_->NewScan());
-  EXPECT_THAT(ref_builder->UseRef("dev").Build(), IsError(ErrorKind::kNotSupported));
+TEST_F(SnapshotsTableTest, ScanRejectsInvalidProjection) {
+  // An optional column cannot be projected as required.
+  auto required_parent = std::make_shared<Schema>(
+      std::vector<SchemaField>{SchemaField::MakeRequired(3, "parent_id", int64())});
+  ICEBERG_UNWRAP_OR_FAIL(auto builder, snapshots_table_->NewScan());
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Project(required_parent).Build());
+  EXPECT_THAT(scan->ToArrowArrayStream(), IsError(ErrorKind::kInvalidArgument));
+
+  // A column must keep its type.
+  auto string_id = std::make_shared<Schema>(
+      std::vector<SchemaField>{SchemaField::MakeRequired(2, "snapshot_id", string())});
+  ICEBERG_UNWRAP_OR_FAIL(auto type_builder, snapshots_table_->NewScan());
+  ICEBERG_UNWRAP_OR_FAIL(auto type_scan, type_builder->Project(string_id).Build());
+  EXPECT_THAT(type_scan->ToArrowArrayStream(), IsError(ErrorKind::kNotSupported));
+
+  // Nested fields are not top-level columns.
+  auto summary_key = std::make_shared<Schema>(
+      std::vector<SchemaField>{SchemaField::MakeRequired(7, "key", string())});
+  ICEBERG_UNWRAP_OR_FAIL(auto nested_builder, snapshots_table_->NewScan());
+  ICEBERG_UNWRAP_OR_FAIL(auto nested_scan, nested_builder->Project(summary_key).Build());
+  EXPECT_THAT(nested_scan->ToArrowArrayStream(), IsError(ErrorKind::kInvalidArgument));
 }
 
 TEST_F(SnapshotsTableTest, ScanNoColumns) {
@@ -240,7 +280,7 @@ TEST_F(SnapshotsTableTest, ScanSelectedMapColumn) {
   // A map cannot be projected without its values.
   ICEBERG_UNWRAP_OR_FAIL(auto builder, snapshots_table_->NewScan());
   EXPECT_THAT(builder->Select({"summary.key"}).Build(),
-              IsError(ErrorKind::kInvalidArgument));
+              IsError(ErrorKind::kValidationFailed));
 }
 
 TEST_F(SnapshotsTableTest, ScanEmptySnapshotList) {

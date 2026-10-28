@@ -94,7 +94,7 @@ class MetadataTableTestBase : public ::testing::Test {
                                               bool case_sensitive = true) {
     ICEBERG_ASSIGN_OR_RAISE(auto builder, table.NewScan());
     ICEBERG_ASSIGN_OR_RAISE(
-        auto scan, builder->Select(columns).CaseSensitive(case_sensitive).Build());
+        auto scan, builder->CaseSensitive(case_sensitive).Select(columns).Build());
     return scan->ToArrowArrayStream();
   }
 

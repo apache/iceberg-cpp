@@ -28,76 +28,47 @@
 
 namespace iceberg {
 
-MetadataScan::MetadataScan(MetadataTable& table, std::shared_ptr<Schema> schema,
-                           SnapshotSelection snapshot_selection)
-    : table_(&table),
-      schema_(std::move(schema)),
-      snapshot_selection_(std::move(snapshot_selection)) {}
+MetadataScan::MetadataScan(const MetadataTable& table, std::shared_ptr<Schema> schema)
+    : table_(&table), schema_(std::move(schema)) {}
 
 MetadataScan::~MetadataScan() = default;
 
 const std::shared_ptr<Schema>& MetadataScan::schema() const { return schema_; }
 
-const SnapshotSelection& MetadataScan::snapshot_selection() const {
-  return snapshot_selection_;
-}
-
 Result<ArrowArrayStream> MetadataScan::ToArrowArrayStream() const {
-  return table_->ScanSnapshot(snapshot_selection_, *schema_);
+  return table_->ScanProjection(*schema_);
 }
 
-MetadataScanBuilder::MetadataScanBuilder(MetadataTable& table) : table_(&table) {}
+MetadataScanBuilder::MetadataScanBuilder(const MetadataTable& table)
+    : table_(&table), projected_schema_(table.schema()) {}
 
 MetadataScanBuilder::~MetadataScanBuilder() = default;
 
 MetadataScanBuilder& MetadataScanBuilder::Select(
-    const std::vector<std::string>& column_names) {
-  selected_columns_ = column_names;
+    const std::vector<std::string>& columns) {
+  auto projected = table_->schema()->Select(columns, case_sensitive_);
+  if (projected) {
+    projected_schema_ = std::move(projected).value();
+  } else {
+    AddError(projected.error());
+  }
   return *this;
 }
 
-MetadataScanBuilder& MetadataScanBuilder::CaseSensitive(bool case_sensitive) {
-  case_sensitive_ = case_sensitive;
+MetadataScanBuilder& MetadataScanBuilder::Project(std::shared_ptr<Schema> schema) {
+  projected_schema_ = std::move(schema);
   return *this;
 }
 
-MetadataScanBuilder& MetadataScanBuilder::UseSnapshot(int64_t snapshot_id) {
-  ICEBERG_BUILDER_CHECK(
-      std::holds_alternative<std::monostate>(snapshot_selection_.snapshot),
-      "Cannot override snapshot, a snapshot or timestamp is already set");
-  snapshot_selection_.snapshot = snapshot_id;
-  return *this;
-}
-
-MetadataScanBuilder& MetadataScanBuilder::UseRef(const std::string& ref) {
-  ICEBERG_BUILDER_CHECK(snapshot_selection_.ref_name.empty(),
-                        "Cannot override ref, already set ref={}",
-                        snapshot_selection_.ref_name);
-  ICEBERG_BUILDER_CHECK(!ref.empty(), "Ref name cannot be empty");
-  snapshot_selection_.ref_name = ref;
-  return *this;
-}
-
-MetadataScanBuilder& MetadataScanBuilder::AsOfTime(int64_t timestamp_millis) {
-  ICEBERG_BUILDER_CHECK(
-      std::holds_alternative<std::monostate>(snapshot_selection_.snapshot),
-      "Cannot override snapshot, a snapshot or timestamp is already set");
-  snapshot_selection_.snapshot = TimePointMsFromUnixMs(timestamp_millis);
+MetadataScanBuilder& MetadataScanBuilder::CaseSensitive(bool value) {
+  case_sensitive_ = value;
   return *this;
 }
 
 Result<std::unique_ptr<MetadataScan>> MetadataScanBuilder::Build() {
   ICEBERG_RETURN_UNEXPECTED(CheckErrors());
-  if (!snapshot_selection_.IsCurrentSnapshot() && !table_->supports_time_travel()) {
-    return NotSupported("Metadata table does not support time travel");
-  }
-
-  std::shared_ptr<Schema> schema = table_->schema();
-  if (selected_columns_.has_value()) {
-    ICEBERG_ASSIGN_OR_RAISE(schema, schema->Select(*selected_columns_, case_sensitive_));
-  }
-  return std::unique_ptr<MetadataScan>(
-      new MetadataScan(*table_, std::move(schema), snapshot_selection_));
+  ICEBERG_PRECHECK(projected_schema_ != nullptr, "Projected schema cannot be null");
+  return std::unique_ptr<MetadataScan>(new MetadataScan(*table_, projected_schema_));
 }
 
 }  // namespace iceberg

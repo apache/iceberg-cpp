@@ -54,8 +54,9 @@ struct MetadataTableColumn {
 /// \param schema The metadata table schema.
 /// \param projected_schema Projection of `schema` with the columns to return.
 /// \param columns The columns of `schema` with their append functions.
-/// \return One append function per column of `projected_schema`, in the same order,
-/// or NotSupported if only some fields of a nested column are selected.
+/// \return One append function per column of `projected_schema`, in the same order.
+/// Each projected field must select a whole column of `schema` by field id, with the
+/// same type and without tightening its nullability.
 template <typename Row>
 Result<std::vector<AppendColumnFn<Row>>> SelectAppendFns(
     const Schema& schema, const Schema& projected_schema,
@@ -66,17 +67,21 @@ Result<std::vector<AppendColumnFn<Row>>> SelectAppendFns(
     // Only top-level columns have append functions, so nested field ids are rejected.
     ICEBERG_ASSIGN_OR_RAISE(auto field, schema.GetFieldById(projected_field.field_id()));
     if (!field.has_value()) {
-      return InvalidArgument("Metadata table column '{}' is not in the schema",
-                             projected_field.name());
+      return InvalidArgument("Unknown metadata column: {}", projected_field.name());
     }
     if (*field->get().type() != *projected_field.type()) {
-      return NotSupported("Cannot select nested fields of metadata table column '{}'",
+      return NotSupported("Partial projection of metadata column is not supported: {}",
                           projected_field.name());
+    }
+    if (field->get().optional() && !projected_field.optional()) {
+      return InvalidArgument(
+          "Nullable metadata column cannot be projected as required: {}",
+          projected_field.name());
     }
     auto column = std::ranges::find(columns, projected_field.field_id(),
                                     &MetadataTableColumn<Row>::field_id);
     if (column == columns.end()) {
-      return InvalidArgument("Metadata table column '{}' has no append function",
+      return InvalidArgument("Metadata column has no append function: {}",
                              projected_field.name());
     }
     append_fns.push_back(column->append);

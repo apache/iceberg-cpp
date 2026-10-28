@@ -31,34 +31,12 @@ MetadataTable::MetadataTable(std::shared_ptr<Table> source_table)
 
 MetadataTable::~MetadataTable() = default;
 
-bool MetadataTable::supports_time_travel() const noexcept { return false; }
-
 const std::shared_ptr<Table>& MetadataTable::source_table() const {
   return source_table_;
 }
 
-Result<std::unique_ptr<MetadataScanBuilder>> MetadataTable::NewScan() {
+Result<std::unique_ptr<MetadataScanBuilder>> MetadataTable::NewScan() const {
   return std::unique_ptr<MetadataScanBuilder>(new MetadataScanBuilder(*this));
-}
-
-Result<ArrowArrayStream> MetadataTable::ScanSnapshot(
-    const SnapshotSelection& snapshot_selection, const Schema& projected_schema) {
-  if (!snapshot_selection.IsCurrentSnapshot()) {
-    return NotSupported("Metadata table does not support time travel");
-  }
-  return ScanProjection(projected_schema);
-}
-
-TimeTravelMetadataTable::TimeTravelMetadataTable(std::shared_ptr<Table> source_table)
-    : MetadataTable(std::move(source_table)) {}
-
-TimeTravelMetadataTable::~TimeTravelMetadataTable() = default;
-
-bool TimeTravelMetadataTable::supports_time_travel() const noexcept { return true; }
-
-Result<ArrowArrayStream> TimeTravelMetadataTable::ScanProjection(
-    const Schema& projected_schema) {
-  return ScanSnapshot(SnapshotSelection{}, projected_schema);
 }
 
 }  // namespace iceberg

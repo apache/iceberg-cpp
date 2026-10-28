@@ -195,7 +195,8 @@ Result<std::unique_ptr<SnapshotsTable>> SnapshotsTable::Make(
   return std::unique_ptr<SnapshotsTable>(new SnapshotsTable(std::move(table)));
 }
 
-Result<ArrowArrayStream> SnapshotsTable::ScanProjection(const Schema& projected_schema) {
+Result<ArrowArrayStream> SnapshotsTable::ScanProjection(
+    const Schema& projected_schema) const {
   ICEBERG_ASSIGN_OR_RAISE(
       auto append_fns,
       internal::SelectAppendFns<Snapshot>(*schema(), projected_schema, kSnapshotColumns));
