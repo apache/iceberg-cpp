@@ -97,6 +97,11 @@ Result<FieldProjection> ProjectField(const SchemaField& expected_field,
   }
 
   if (expected_field.type()->type_id() == TypeId::kUnknown) {
+    if (mode == ProjectionMode::kWrite &&
+        source_field.type()->type_id() != TypeId::kUnknown) {
+      return NotSupported("Cannot project {} as {}: type promotion is not allowed",
+                          *source_field.type(), *expected_field.type());
+    }
     if (!expected_field.optional()) {
       return InvalidSchema("Cannot project required field with id {} as null",
                            expected_field.field_id());
@@ -183,12 +188,19 @@ Result<FieldProjection> ProjectNested(const Type& expected_type, const Type& sou
       ICEBERG_ASSIGN_OR_RAISE(child_projection,
                               ProjectField(expected_field, *iter->second.field,
                                            iter->second.local_index, prune_source, mode));
-    } else if (MetadataColumns::IsMetadataColumn(field_id)) {
+      if (mode == ProjectionMode::kWrite) {
+        source_field_map.erase(iter);
+      }
+    } else if (mode == ProjectionMode::kRead &&
+               MetadataColumns::IsMetadataColumn(field_id)) {
       child_projection.kind = FieldProjection::Kind::kMetadata;
     } else if (const auto& default_value = mode == ProjectionMode::kWrite
                                                ? expected_field.write_default()
                                                : expected_field.initial_default();
                default_value != nullptr) {
+      if (mode == ProjectionMode::kWrite) {
+        ICEBERG_RETURN_UNEXPECTED(expected_field.Validate());
+      }
       child_projection.kind = FieldProjection::Kind::kDefault;
       child_projection.from = *default_value;
     } else if (expected_field.optional()) {
@@ -202,6 +214,11 @@ Result<FieldProjection> ProjectNested(const Type& expected_type, const Type& sou
       return InvalidSchema("Missing required field: {}", expected_field.ToString());
     }
     result.children.emplace_back(std::move(child_projection));
+  }
+
+  if (mode == ProjectionMode::kWrite && !source_field_map.empty()) {
+    return InvalidSchema("Input field id {} is not present in write schema",
+                         source_field_map.begin()->first);
   }
 
   if (prune_source) {

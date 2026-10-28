@@ -32,8 +32,6 @@
 
 #include "iceberg/arrow/arrow_io_internal.h"
 #include "iceberg/arrow/arrow_status_internal.h"
-#include "iceberg/arrow_c_data_guard_internal.h"
-#include "iceberg/arrow_c_data_util_internal.h"
 #include "iceberg/avro/avro_data_util_internal.h"
 #include "iceberg/avro/avro_direct_encoder_internal.h"
 #include "iceberg/avro/avro_metrics.h"
@@ -183,7 +181,6 @@ class AvroWriter::Impl {
  public:
   Status Open(const WriterOptions& options) {
     write_schema_ = options.schema;
-    input_schema_ = options.input_schema ? options.input_schema : write_schema_;
 
     ::avro::NodePtr root;
     ICEBERG_RETURN_UNEXPECTED(ToAvroNodeVisitor{}.Visit(*write_schema_, &root));
@@ -232,11 +229,6 @@ class AvroWriter::Impl {
   }
 
   Status Write(ArrowArray* data) {
-    if (*input_schema_ != *write_schema_) {
-      ICEBERG_ASSIGN_OR_RAISE(
-          *data, arrow::AlignBatchForWrite(data, *input_schema_, *write_schema_));
-    }
-    internal::ArrowArrayGuard data_guard(data);
     ICEBERG_ARROW_ASSIGN_OR_RETURN(auto batch,
                                    ::arrow::ImportRecordBatch(data, arrow_schema_));
 
@@ -280,7 +272,6 @@ class AvroWriter::Impl {
  private:
   // The schema to write.
   std::shared_ptr<::iceberg::Schema> write_schema_;
-  std::shared_ptr<::iceberg::Schema> input_schema_;
   // The avro schema to write.
   std::shared_ptr<::avro::ValidSchema> avro_schema_;
   // Arrow output stream of the Avro file to write

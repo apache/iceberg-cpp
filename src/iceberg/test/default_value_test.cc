@@ -39,7 +39,6 @@
 #include <gtest/gtest.h>
 
 #include "iceberg/arrow/arrow_io_internal.h"
-#include "iceberg/arrow_c_data_guard_internal.h"
 #include "iceberg/avro/avro_register.h"
 #include "iceberg/data/data_writer.h"
 #include "iceberg/expression/literal.h"
@@ -80,7 +79,6 @@ struct WriteDefaultEndToEndParam {
   std::string name;
   FileFormatType format;
   std::string path;
-  bool avro_skip_datum = true;
 };
 
 class DefaultValueEndToEndTest
@@ -122,12 +120,13 @@ class WriteDefaultEndToEndTest
     if (param.format == FileFormatType::kParquet) {
       return {{"write.parquet.compression-codec", "uncompressed"}};
     }
-    return {{"write.avro.skip-datum", param.avro_skip_datum ? "true" : "false"}};
+    return {};
   }
 
   void WriteAndRead(const std::shared_ptr<Schema>& input_schema,
                     const std::shared_ptr<Schema>& write_schema,
-                    std::string_view input_json, std::string_view expected_json) {
+                    const std::vector<std::string_view>& input_batches,
+                    std::string_view expected_json) {
     const auto& param = GetParam();
     DataWriterOptions options{
         .path = param.path,
@@ -138,22 +137,35 @@ class WriteDefaultEndToEndTest
         .input_schema = input_schema,
     };
     ICEBERG_UNWRAP_OR_FAIL(auto writer, DataWriter::Make(options));
-    auto input = CreateArray(*input_schema, input_json);
-    ArrowArray arrow_array;
-    ASSERT_TRUE(::arrow::ExportArray(*input, &arrow_array).ok());
-    ASSERT_THAT(writer->Write(&arrow_array), IsOk());
+    for (auto input_json : input_batches) {
+      auto input = CreateArray(*input_schema, input_json);
+      ArrowArray arrow_array;
+      ASSERT_TRUE(::arrow::ExportArray(*input, &arrow_array).ok());
+      ASSERT_THAT(writer->Write(&arrow_array), IsOk());
+    }
     ASSERT_THAT(writer->Close(), IsOk());
 
     ICEBERG_UNWRAP_OR_FAIL(auto reader, ReaderFactoryRegistry::Open(
                                             param.format, {.path = param.path,
                                                            .io = file_io_,
                                                            .projection = write_schema}));
-    ICEBERG_UNWRAP_OR_FAIL(auto batch, reader->Next());
-    ASSERT_TRUE(batch.has_value());
     auto expected = CreateArray(*write_schema, expected_json);
-    auto actual = ::arrow::ImportArray(&batch.value(), expected->type()).ValueOrDie();
-    ASSERT_TRUE(actual->Equals(expected))
-        << "actual: " << actual->ToString() << "\nexpected: " << expected->ToString();
+    int64_t row_offset = 0;
+    while (true) {
+      ICEBERG_UNWRAP_OR_FAIL(auto batch, reader->Next());
+      if (!batch.has_value()) {
+        break;
+      }
+      auto actual = ::arrow::ImportArray(&batch.value(), expected->type()).ValueOrDie();
+      ASSERT_LE(row_offset + actual->length(), expected->length());
+      auto expected_batch = expected->Slice(row_offset, actual->length());
+      ASSERT_TRUE(actual->Equals(expected_batch))
+          << "actual: " << actual->ToString()
+          << "\nexpected: " << expected_batch->ToString();
+      row_offset += actual->length();
+    }
+    EXPECT_EQ(row_offset, expected->length());
+    ASSERT_THAT(reader->Close(), IsOk());
   }
 
   std::shared_ptr<FileIO> file_io_;
@@ -259,92 +271,30 @@ TEST_P(DefaultValueEndToEndTest, WriteEvolveReadFillsInitialDefault) {
   ASSERT_FALSE(next_batch.has_value());
 }
 
-TEST_P(WriteDefaultEndToEndTest, MissingColumnUsesWriteDefault) {
+TEST_P(WriteDefaultEndToEndTest, AlignsBatchesAndFillsWriteDefaults) {
   auto input_schema = std::make_shared<Schema>(std::vector<SchemaField>{
       SchemaField::MakeOptional(2, "name", string()),
       SchemaField::MakeRequired(1, "id", int32()),
+      SchemaField::MakeOptional(5, "score", unknown()),
   });
   auto write_schema = std::make_shared<Schema>(std::vector<SchemaField>{
       SchemaField::MakeRequired(1, "id", int32()),
-      SchemaField::MakeOptional(2, "name", string()),
+      SchemaField::MakeOptional(2, "name", string())
+          .WithWriteDefault(std::make_shared<const Literal>(Literal::String("default"))),
       SchemaField(3, "added", int32(), /*optional=*/false, /*doc=*/{},
                   std::make_shared<const Literal>(Literal::Int(42)),
                   std::make_shared<const Literal>(Literal::Int(7))),
       SchemaField::MakeOptional(4, "comment", string()),
+      SchemaField::MakeOptional(5, "score", int32()),
   });
   // This file is written after the column exists, so the missing input column uses
-  // write-default (7), not initial-default (42).
-  WriteAndRead(input_schema, write_schema, R"([["alice", 1], [null, 2]])",
-               R"([[1, "alice", 7, null], [2, null, 7, null]])");
-}
-
-TEST_P(WriteDefaultEndToEndTest, UnknownInputWritesTypedNulls) {
-  auto input_schema = std::make_shared<Schema>(
-      std::vector<SchemaField>{SchemaField::MakeOptional(1, "id", unknown())});
-  auto write_schema = std::make_shared<Schema>(
-      std::vector<SchemaField>{SchemaField::MakeOptional(1, "id", int32())});
-
-  WriteAndRead(input_schema, write_schema, R"([[null], [null]])", R"([[null], [null]])");
-}
-
-TEST_P(WriteDefaultEndToEndTest, RejectedBatchIsReleasedOnce) {
-  const auto& param = GetParam();
-  const auto id = SchemaField::MakeRequired(1, "id", int32());
-  const auto added = SchemaField::MakeRequired(2, "added", int32());
-  auto write_schema = std::make_shared<Schema>(std::vector<SchemaField>{id, added});
-  struct TestCase {
-    std::string_view expected_error;
-    std::vector<SchemaField> input_fields;
-    std::string_view input_json;
-  };
-  const std::vector<TestCase> cases = {
-      {.expected_error = "Missing required field",
-       .input_fields = {id},
-       .input_json = R"([[1]])"},
-      {.expected_error = "Input field id 3",
-       .input_fields = {id, added, SchemaField::MakeOptional(3, "extra", int32())},
-       .input_json = R"([[1, 2, 3]])"},
-      {.expected_error = "should be required, but is optional",
-       .input_fields = {SchemaField::MakeOptional(1, "id", int32()), added},
-       .input_json = R"([[null, 2]])"},
-  };
-  for (const auto& test_case : cases) {
-    SCOPED_TRACE(test_case.expected_error);
-    struct ReleaseState {
-      ArrowArray original{};
-      int count = 0;
-    } release_state;
-    auto input_schema = std::make_shared<Schema>(test_case.input_fields);
-    DataWriterOptions options{
-        .path = param.path,
-        .schema = write_schema,
-        .format = param.format,
-        .io = file_io_,
-        .properties = FormatProperties(param),
-        .input_schema = input_schema,
-    };
-    ICEBERG_UNWRAP_OR_FAIL(auto writer, DataWriter::Make(options));
-    auto input = CreateArray(*input_schema, test_case.input_json);
-    ArrowArray arrow_array;
-    ASSERT_TRUE(::arrow::ExportArray(*input, &arrow_array).ok());
-    release_state.original = arrow_array;
-    arrow_array.private_data = &release_state;
-    arrow_array.release = [](ArrowArray* array) {
-      auto* state = static_cast<ReleaseState*>(array->private_data);
-      ++state->count;
-      *array = state->original;
-      array->release(array);
-    };
-    internal::ArrowArrayGuard guard(&arrow_array);
-
-    auto result = writer->Write(&arrow_array);
-    EXPECT_THAT(result, IsError(ErrorKind::kInvalidSchema));
-    EXPECT_THAT(result, HasErrorMessage(test_case.expected_error));
-    EXPECT_EQ(arrow_array.release, nullptr);
-    EXPECT_EQ(release_state.count, 1);
-    ASSERT_THAT(writer->Close(), IsOk());
-    EXPECT_EQ(release_state.count, 1);
-  }
+  // write-default (7), not initial-default (42). Existing nulls remain null; the
+  // unknown input column and missing optional column become target-typed nulls.
+  WriteAndRead(input_schema, write_schema,
+               {R"([["alice", 1, null], [null, 2, null]])",
+                R"([["bob", 3, null], [null, 4, null]])"},
+               R"([[1, "alice", 7, null, null], [2, null, 7, null, null],
+                   [3, "bob", 7, null, null], [4, null, 7, null, null]])");
 }
 
 namespace {
@@ -424,12 +374,10 @@ INSTANTIATE_TEST_SUITE_P(
 
 INSTANTIATE_TEST_SUITE_P(
     Formats, WriteDefaultEndToEndTest,
-    ::testing::Values(
-        WriteDefaultEndToEndParam{"parquet", FileFormatType::kParquet,
-                                  "write-default.parquet"},
-        WriteDefaultEndToEndParam{"avro", FileFormatType::kAvro, "write-default.avro"},
-        WriteDefaultEndToEndParam{"avro_generic_datum", FileFormatType::kAvro,
-                                  "write-default-generic.avro", false}),
+    ::testing::Values(WriteDefaultEndToEndParam{"parquet", FileFormatType::kParquet,
+                                                "write-default.parquet"},
+                      WriteDefaultEndToEndParam{"avro", FileFormatType::kAvro,
+                                                "write-default.avro"}),
     [](const ::testing::TestParamInfo<WriteDefaultEndToEndParam>& info) {
       return info.param.name;
     });

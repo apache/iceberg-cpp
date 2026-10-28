@@ -39,11 +39,8 @@
 
 #include "iceberg/arrow/arrow_io_internal.h"
 #include "iceberg/arrow/arrow_status_internal.h"
-#include "iceberg/arrow_c_data_guard_internal.h"
-#include "iceberg/arrow_c_data_util_internal.h"
 #include "iceberg/parquet/parquet_metrics_internal.h"
 #include "iceberg/parquet/parquet_schema_util_internal.h"
-#include "iceberg/schema.h"
 #include "iceberg/schema_internal.h"
 #include "iceberg/type.h"
 #include "iceberg/util/macros.h"
@@ -242,7 +239,6 @@ class ParquetWriter::Impl {
  public:
   Status Open(const WriterOptions& options) {
     schema_ = options.schema;
-    input_schema_ = options.input_schema ? options.input_schema : schema_;
 
     ICEBERG_ASSIGN_OR_RAISE(auto compression, ParseCompression(options.properties));
     ICEBERG_ASSIGN_OR_RAISE(auto compression_level, ParseCodecLevel(options.properties));
@@ -285,11 +281,6 @@ class ParquetWriter::Impl {
   }
 
   Status Write(ArrowArray* array) {
-    if (*input_schema_ != *schema_) {
-      ICEBERG_ASSIGN_OR_RAISE(*array,
-                              arrow::AlignBatchForWrite(array, *input_schema_, *schema_));
-    }
-    internal::ArrowArrayGuard array_guard(array);
     ICEBERG_ARROW_ASSIGN_OR_RETURN(auto batch,
                                    ::arrow::ImportRecordBatch(array, arrow_schema_));
 
@@ -351,7 +342,6 @@ class ParquetWriter::Impl {
   ::arrow::MemoryPool* pool_ = ::arrow::default_memory_pool();
   // Schema to write from the Iceberg table.
   std::shared_ptr<Schema> schema_;
-  std::shared_ptr<Schema> input_schema_;
   // Schema to write from the Parquet file.
   std::shared_ptr<::arrow::Schema> arrow_schema_;
   // Parquet schema descriptor generated from the Arrow schema.

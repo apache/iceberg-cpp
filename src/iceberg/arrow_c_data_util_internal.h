@@ -31,7 +31,6 @@
 #include <vector>
 
 #include "iceberg/arrow_c_data.h"
-#include "iceberg/iceberg_bundle_export.h"
 #include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
@@ -243,20 +242,25 @@ ICEBERG_EXPORT Result<ArrowArray> ProjectBatch(ArrowArray* input_batch,
                                                std::span<const int32_t> row_indices,
                                                ProjectionContext& projection);
 
-namespace arrow {
-
-/// \brief Align an Arrow batch to an Iceberg write schema.
+/// \brief A write projection prepared once for a stable input/write schema pair.
 ///
-/// Fields are matched by Iceberg field id. Missing fields are materialized from their
-/// `write-default`, or as null when optional. Missing required fields without a
-/// `write-default` are rejected. Existing values, including explicit nulls, are
-/// preserved. Structs, lists, and maps are aligned recursively.
-///
-/// `input_batch` is consumed even when alignment fails.
-ICEBERG_BUNDLE_EXPORT Result<ArrowArray> AlignBatchForWrite(ArrowArray* input_batch,
-                                                            const Schema& input_schema,
-                                                            const Schema& write_schema);
+/// Matches fields by id, fills missing fields with write-defaults or typed nulls,
+/// and rejects incompatible schemas at Make. Existing values, including explicit
+/// nulls, are preserved. Do not share a projection across concurrent calls.
+class ICEBERG_EXPORT WriteProjection {
+ public:
+  static Result<std::unique_ptr<WriteProjection>> Make(const Schema& input_schema,
+                                                       const Schema& write_schema);
+  ~WriteProjection();
 
-}  // namespace arrow
+  /// \brief Align a batch, consuming it even on failure.
+  /// Identical schemas transfer the original batch without conversion.
+  Result<ArrowArray> AlignBatch(ArrowArray* input_batch) const;
+
+ private:
+  class Impl;
+  explicit WriteProjection(std::unique_ptr<Impl> impl);
+  std::unique_ptr<Impl> impl_;
+};
 
 }  // namespace iceberg

@@ -22,6 +22,8 @@
 #include <map>
 #include <utility>
 
+#include "iceberg/arrow_c_data_guard_internal.h"
+#include "iceberg/arrow_c_data_util_internal.h"
 #include "iceberg/data/writer.h"  // IWYU pragma: keep
 #include "iceberg/file_writer.h"
 #include "iceberg/manifest/manifest_entry.h"
@@ -33,21 +35,30 @@ namespace iceberg {
 class DataWriter::Impl {
  public:
   static Result<std::unique_ptr<Impl>> Make(DataWriterOptions options) {
+    ICEBERG_ASSIGN_OR_RAISE(
+        auto projection,
+        WriteProjection::Make(
+            options.input_schema ? *options.input_schema : *options.schema,
+            *options.schema));
     WriterOptions writer_options{
         .path = options.path,
         .schema = options.schema,
         .io = options.io,
         .properties = WriterProperties::FromMap(options.properties),
-        .input_schema = options.input_schema,
     };
 
     ICEBERG_ASSIGN_OR_RAISE(auto writer,
                             WriterFactoryRegistry::Open(options.format, writer_options));
 
-    return std::unique_ptr<Impl>(new Impl(std::move(options), std::move(writer)));
+    return std::unique_ptr<Impl>(
+        new Impl(std::move(options), std::move(writer), std::move(projection)));
   }
 
-  Status Write(ArrowArray* data) { return writer_->Write(data); }
+  Status Write(ArrowArray* data) {
+    ICEBERG_ASSIGN_OR_RAISE(auto aligned, projection_->AlignBatch(data));
+    internal::ArrowArrayGuard guard(&aligned);
+    return writer_->Write(&aligned);
+  }
 
   Result<int64_t> Length() const { return writer_->length(); }
 
@@ -107,11 +118,15 @@ class DataWriter::Impl {
   }
 
  private:
-  Impl(DataWriterOptions options, std::unique_ptr<Writer> writer)
-      : options_(std::move(options)), writer_(std::move(writer)) {}
+  Impl(DataWriterOptions options, std::unique_ptr<Writer> writer,
+       std::unique_ptr<WriteProjection> projection)
+      : options_(std::move(options)),
+        writer_(std::move(writer)),
+        projection_(std::move(projection)) {}
 
   DataWriterOptions options_;
   std::unique_ptr<Writer> writer_;
+  std::unique_ptr<WriteProjection> projection_;
   bool closed_ = false;
 };
 

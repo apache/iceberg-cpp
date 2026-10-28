@@ -196,6 +196,43 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(std::make_pair(FileFormatType::kParquet, "test_data.parquet"),
                       std::make_pair(FileFormatType::kAvro, "test_data.avro")));
 
+TEST(DataWriterSchemaTest, RejectsIncompatibleInputBeforeOpeningFile) {
+  const auto id = SchemaField::MakeRequired(1, "id", int32());
+  const auto added = SchemaField::MakeRequired(2, "added", int32());
+  struct TestCase {
+    std::vector<SchemaField> input_fields;
+    std::vector<SchemaField> write_fields;
+    std::string_view expected_error;
+    ErrorKind error_kind = ErrorKind::kInvalidSchema;
+  };
+  const std::vector<TestCase> cases = {
+      {.input_fields = {id},
+       .write_fields = {id, added},
+       .expected_error = "Missing required field"},
+      {.input_fields = {id, added},
+       .write_fields = {id},
+       .expected_error = "Input field id 2"},
+      {.input_fields = {SchemaField::MakeOptional(1, "id", int32())},
+       .write_fields = {id},
+       .expected_error = "should be required, but is optional"},
+      {.input_fields = {SchemaField::MakeOptional(1, "id", int32())},
+       .write_fields = {SchemaField::MakeOptional(1, "id", unknown())},
+       .expected_error = "Cannot project",
+       .error_kind = ErrorKind::kNotSupported},
+  };
+  for (const auto& test_case : cases) {
+    SCOPED_TRACE(test_case.expected_error);
+    // Schema errors must be reported before a file or format writer is opened.
+    DataWriterOptions options{
+        .schema = std::make_shared<Schema>(test_case.write_fields),
+        .input_schema = std::make_shared<Schema>(test_case.input_fields),
+    };
+    auto result = DataWriter::Make(options);
+    EXPECT_THAT(result, IsError(test_case.error_kind));
+    EXPECT_THAT(result, HasErrorMessage(test_case.expected_error));
+  }
+}
+
 TEST_F(DataWriterTest, WriteAndClose) {
   auto writer_result = DataWriter::Make(MakeDefaultOptions());
   ASSERT_THAT(writer_result, IsOk());

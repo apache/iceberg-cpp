@@ -75,7 +75,7 @@ class ICEBERG_EXPORT WriterProperties : public ConfigBase<WriterProperties> {
 struct ICEBERG_EXPORT WriterOptions {
   /// \brief The path to the file to write.
   std::string path;
-  /// \brief The target schema to write to the file.
+  /// \brief The schema of the data to write.
   std::shared_ptr<Schema> schema;
   /// \brief FileIO instance to create the file.
   std::shared_ptr<class FileIO> io;
@@ -85,8 +85,6 @@ struct ICEBERG_EXPORT WriterOptions {
   std::shared_ptr<MetricsConfig> metrics_config = MetricsConfig::Default();
   /// \brief Format-specific or implementation-specific properties.
   WriterProperties properties;
-  /// \brief Schema of input batches; when omitted, batches use the target schema.
-  std::shared_ptr<Schema> input_schema;
 };
 
 /// \brief Base writer class to write data from different file formats.

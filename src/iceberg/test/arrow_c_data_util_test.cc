@@ -27,7 +27,9 @@
 #include <utility>
 #include <vector>
 
+#include <arrow/array.h>
 #include <arrow/c/bridge.h>
+#include <arrow/extension_type.h>
 #include <arrow/json/from_string.h>
 #include <arrow/record_batch.h>
 #include <arrow/type.h>
@@ -45,6 +47,7 @@
 #include "iceberg/test/matchers.h"
 #include "iceberg/type.h"
 #include "iceberg/util/macros.h"
+#include "iceberg/util/uuid.h"
 
 namespace iceberg::internal {
 
@@ -128,10 +131,12 @@ std::shared_ptr<Schema> MakeFullSchema() {
 Result<std::shared_ptr<::arrow::RecordBatch>> AlignForWrite(
     const Schema& input_schema, const Schema& write_schema,
     const ::arrow::RecordBatch& input) {
+  ICEBERG_ASSIGN_OR_RAISE(auto projection,
+                          WriteProjection::Make(input_schema, write_schema));
   ArrowArray c_array;
   ICEBERG_ARROW_RETURN_NOT_OK(::arrow::ExportRecordBatch(input, &c_array));
-  ICEBERG_ASSIGN_OR_RAISE(
-      auto aligned, arrow::AlignBatchForWrite(&c_array, input_schema, write_schema));
+  ICEBERG_ASSIGN_OR_RAISE(auto aligned, projection->AlignBatch(&c_array));
+  ArrowArrayGuard aligned_guard(&aligned);
 
   ArrowSchema c_schema;
   ICEBERG_RETURN_UNEXPECTED(ToArrowSchema(write_schema, &c_schema));
@@ -226,18 +231,19 @@ TEST(ProjectBatchTest, ProjectionRejectsNestedPruning) {
   EXPECT_THAT(projection, IsError(ErrorKind::kInvalidArgument));
 }
 
-TEST(AlignBatchForWriteTest, IdenticalSchemasTransferBatchWithoutConversion) {
+TEST(WriteProjectionTest, IdenticalSchemasTransferBatchWithoutConversion) {
   auto input_schema = MakeFullSchema();
   auto write_schema = MakeFullSchema();
   auto input =
       MakeBatch(*input_schema, R"([[1,"alice",1.0],[2,null,2.0],[3,"carol",3.0]])")
           ->Slice(1, 2);
+  ICEBERG_UNWRAP_OR_FAIL(auto projection,
+                         WriteProjection::Make(*input_schema, *write_schema));
   ArrowArray c_array;
   ASSERT_TRUE(::arrow::ExportRecordBatch(*input, &c_array).ok());
   auto original = c_array;
 
-  ICEBERG_UNWRAP_OR_FAIL(
-      auto aligned, arrow::AlignBatchForWrite(&c_array, *input_schema, *write_schema));
+  ICEBERG_UNWRAP_OR_FAIL(auto aligned, projection->AlignBatch(&c_array));
   ArrowArrayGuard aligned_guard(&aligned);
   EXPECT_EQ(c_array.release, nullptr);
   EXPECT_EQ(aligned.private_data, original.private_data);
@@ -250,69 +256,123 @@ TEST(AlignBatchForWriteTest, IdenticalSchemasTransferBatchWithoutConversion) {
   EXPECT_TRUE(actual->Equals(*input));
 }
 
-struct AlignBatchForWriteParam {
+TEST(WriteProjectionTest, MaterializesPrimitiveDefaults) {
+  ICEBERG_UNWRAP_OR_FAIL(auto uuid,
+                         Uuid::FromString("30313233-3435-3637-3839-616263646566"));
+  struct TestColumn {
+    std::string name;
+    Literal value;
+    std::string_view expected_json;
+  };
+  const std::vector<TestColumn> columns = {
+      {.name = "decimal",
+       .value = Literal::Decimal(-12345, 9, 2),
+       .expected_json = R"(["-123.45","-123.45"])"},
+      {.name = "uuid",
+       .value = Literal::UUID(uuid),
+       .expected_json = R"(["0123456789abcdef","0123456789abcdef"])"},
+      {.name = "binary",
+       .value = Literal::Binary({'a', 0, 'b'}),
+       .expected_json = R"(["a\u0000b","a\u0000b"])"},
+      {.name = "fixed",
+       .value = Literal::Fixed({0, 'x', 0}),
+       .expected_json = R"(["\u0000x\u0000","\u0000x\u0000"])"},
+      {.name = "float", .value = Literal::Float(1.25F), .expected_json = "[1.25,1.25]"},
+      {.name = "double", .value = Literal::Double(-2.5), .expected_json = "[-2.5,-2.5]"},
+      {.name = "date", .value = Literal::Date(-1), .expected_json = "[-1,-1]"},
+      {.name = "timestamp",
+       .value = Literal::Timestamp(-1000001),
+       .expected_json = "[-1000001,-1000001]"},
+  };
+  Schema input_schema({SchemaField::MakeRequired(1, "id", int32())});
+  std::vector<SchemaField> write_fields(input_schema.fields().begin(),
+                                        input_schema.fields().end());
+  for (const auto& column : columns) {
+    write_fields.push_back(
+        SchemaField::MakeRequired(static_cast<int32_t>(write_fields.size() + 1),
+                                  column.name, column.value.type())
+            .WithWriteDefault(std::make_shared<const Literal>(column.value)));
+  }
+  Schema write_schema(std::move(write_fields));
+  auto input = MakeBatch(input_schema, "[[1],[2]]");
+  ICEBERG_UNWRAP_OR_FAIL(auto actual, AlignForWrite(input_schema, write_schema, *input));
+
+  for (size_t index = 0; index < columns.size(); ++index) {
+    SCOPED_TRACE(columns[index].name);
+    auto actual_column = actual->column(static_cast<int>(index + 1));
+    if (actual_column->type_id() == ::arrow::Type::EXTENSION) {
+      actual_column =
+          std::static_pointer_cast<::arrow::ExtensionArray>(actual_column)->storage();
+    }
+    auto expected = ::arrow::json::ArrayFromJSONString(
+                        actual_column->type(), std::string(columns[index].expected_json))
+                        .ValueOrDie();
+    EXPECT_TRUE(actual_column->Equals(expected)) << actual_column->ToString();
+  }
+}
+
+TEST(WriteProjectionTest, DetachedChildRetainsInputAndReleasesItOnce) {
+  Schema input_schema({SchemaField::MakeRequired(1, "id", int32())});
+  Schema write_schema({SchemaField::MakeRequired(1, "id", int32()),
+                       SchemaField::MakeOptional(2, "name", string())});
+  ICEBERG_UNWRAP_OR_FAIL(auto projection,
+                         WriteProjection::Make(input_schema, write_schema));
+  auto input = MakeBatch(input_schema, "[[1],[2]]");
+  struct ReleaseState {
+    ArrowArray original{};
+    int count = 0;
+  } state;
+  ArrowArray c_array;
+  ASSERT_TRUE(::arrow::ExportRecordBatch(*input, &c_array).ok());
+  input.reset();
+  state.original = c_array;
+  c_array.private_data = &state;
+  c_array.release = [](ArrowArray* array) {
+    auto* state = static_cast<ReleaseState*>(array->private_data);
+    ++state->count;
+    *array = state->original;
+    array->release(array);
+  };
+  ArrowArray retained_child{};
+  ArrowArrayGuard child_guard(&retained_child);
+  {
+    ICEBERG_UNWRAP_OR_FAIL(auto aligned, projection->AlignBatch(&c_array));
+    ArrowArrayGuard aligned_guard(&aligned);
+    EXPECT_EQ(c_array.release, nullptr);
+    retained_child = std::exchange(*aligned.children[0], ArrowArray{});
+  }
+  auto actual = ::arrow::ImportArray(&retained_child, ::arrow::int32()).ValueOrDie();
+  auto expected =
+      ::arrow::json::ArrayFromJSONString(::arrow::int32(), "[1,2]").ValueOrDie();
+  EXPECT_TRUE(actual->Equals(expected));
+  actual.reset();
+  EXPECT_EQ(state.count, 1);
+}
+
+struct WriteProjectionParam {
   std::string name;
   std::vector<SchemaField> input_fields;
   std::vector<SchemaField> write_fields;
   std::string_view input_json;
   std::string_view expected_json;
-  std::string_view expected_error;
   int64_t slice_offset = 0;
 };
 
-class AlignBatchForWriteParamTest
-    : public ::testing::TestWithParam<AlignBatchForWriteParam> {};
+class WriteProjectionParamTest : public ::testing::TestWithParam<WriteProjectionParam> {};
 
-TEST_P(AlignBatchForWriteParamTest, AlignBatch) {
+TEST_P(WriteProjectionParamTest, AlignBatch) {
   const auto& param = GetParam();
   Schema input_schema(param.input_fields);
   Schema write_schema(param.write_fields);
   auto input = MakeBatch(input_schema, param.input_json)->Slice(param.slice_offset);
 
-  auto result = AlignForWrite(input_schema, write_schema, *input);
-
-  if (!param.expected_error.empty()) {
-    EXPECT_THAT(result, IsError(ErrorKind::kInvalidSchema));
-    EXPECT_THAT(result, HasErrorMessage(param.expected_error));
-    return;
-  }
-  ICEBERG_UNWRAP_OR_FAIL(auto actual, std::move(result));
+  ICEBERG_UNWRAP_OR_FAIL(auto actual, AlignForWrite(input_schema, write_schema, *input));
   auto expected = MakeBatch(write_schema, param.expected_json);
   EXPECT_TRUE(actual->Equals(*expected)) << actual->ToString();
 }
 
-std::vector<AlignBatchForWriteParam> WriteAlignmentCases() {
-  std::vector<AlignBatchForWriteParam> cases = {{
-      .name = "MissingRequiredFieldWithoutWriteDefault",
-      .input_fields = {SchemaField::MakeRequired(1, "id", int32())},
-      .write_fields = {SchemaField::MakeRequired(1, "id", int32()),
-                       SchemaField::MakeRequired(2, "required", string())},
-      .input_json = R"([[1]])",
-      .expected_error = "without a write-default",
-  }};
-
-  {
-    auto list_field = SchemaField::MakeOptional(
-        1, "items", list(SchemaField::MakeOptional(2, "element", int32())));
-    auto map_field =
-        SchemaField::MakeOptional(3, "properties",
-                                  map(SchemaField::MakeRequired(4, "key", string()),
-                                      SchemaField::MakeOptional(5, "value", int32())));
-    cases.push_back({
-        .name = "CollectionsWhenAddingAndReorderingFields",
-        .input_fields = {list_field, map_field},
-        .write_fields =
-            {
-                map_field,
-                list_field,
-                DefaultedField(6, "name", string(), /*optional=*/false,
-                               Literal::String("initial"), Literal::String("written")),
-            },
-        .input_json = R"([[[1,2],[["a",3]]],[null,[]],[[],null]])",
-        .expected_json =
-            R"([[[["a",3]],[1,2],"written"],[[],null,"written"],[null,[],"written"]])",
-    });
-  }
+std::vector<WriteProjectionParam> WriteAlignmentCases() {
+  std::vector<WriteProjectionParam> cases;
 
   {
     auto input_item = std::make_shared<StructType>(std::vector<SchemaField>{
@@ -405,37 +465,13 @@ std::vector<AlignBatchForWriteParam> WriteAlignmentCases() {
     });
   }
 
-  auto input_struct = std::make_shared<StructType>(std::vector<SchemaField>{
-      SchemaField::MakeRequired(4, "value", int32()),
-      SchemaField::MakeOptional(5, "extra", string()),
-  });
-  auto write_struct = std::make_shared<StructType>(
-      std::vector<SchemaField>{SchemaField::MakeRequired(4, "value", int32())});
-  for (bool use_map : {false, true}) {
-    auto wrap = [use_map](std::shared_ptr<Type> child) -> std::shared_ptr<Type> {
-      if (use_map) {
-        return map(SchemaField::MakeRequired(2, "key", string()),
-                   SchemaField::MakeOptional(3, "value", std::move(child)));
-      }
-      return list(SchemaField::MakeOptional(
-          2, "element", list(SchemaField::MakeOptional(3, "element", std::move(child)))));
-    };
-    cases.push_back({
-        .name = use_map ? "UnknownFieldInsideMap" : "UnknownFieldInsideNestedList",
-        .input_fields = {SchemaField::MakeOptional(1, "items", wrap(input_struct))},
-        .write_fields = {SchemaField::MakeOptional(1, "items", wrap(write_struct))},
-        .input_json = R"([[[]]])",
-        .expected_error = "Input field id 5",
-    });
-  }
   return cases;
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    WriteAlignment, AlignBatchForWriteParamTest,
-    ::testing::ValuesIn(WriteAlignmentCases()),
-    [](const ::testing::TestParamInfo<AlignBatchForWriteParam>& info) {
-      return info.param.name;
-    });
+INSTANTIATE_TEST_SUITE_P(WriteAlignment, WriteProjectionParamTest,
+                         ::testing::ValuesIn(WriteAlignmentCases()),
+                         [](const ::testing::TestParamInfo<WriteProjectionParam>& info) {
+                           return info.param.name;
+                         });
 
 }  // namespace iceberg::internal
