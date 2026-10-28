@@ -189,15 +189,12 @@ TEST_F(SnapshotsTableTest, ScanAllColumnsSelection) {
   EXPECT_EQ(batches.front()->num_columns(), 6);
 }
 
-TEST_F(SnapshotsTableTest, ScanReadsRepeatedly) {
-  // A built scan can be read more than once; each read returns a new stream.
+TEST_F(SnapshotsTableTest, ScanBuildsRepeatedly) {
+  // A builder can be built more than once; each build returns a new stream.
   ICEBERG_UNWRAP_OR_FAIL(auto builder, snapshots_table_->NewScan());
-  ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Select({"snapshot_id"}).Build());
-  ASSERT_EQ(scan->schema()->fields().size(), 1);
-  EXPECT_EQ(scan->schema()->fields()[0].name(), "snapshot_id");
-
+  builder->Select({"snapshot_id"});
   for (int read = 0; read < 2; ++read) {
-    ICEBERG_UNWRAP_OR_FAIL(auto stream, scan->ToArrowArrayStream());
+    ICEBERG_UNWRAP_OR_FAIL(auto stream, builder->Build());
     ICEBERG_UNWRAP_OR_FAIL(auto batches, ReadAllBatches(std::move(stream)));
     ASSERT_EQ(batches.size(), 1);
     EXPECT_EQ(batches.front()->num_rows(), 2);
@@ -215,8 +212,7 @@ TEST_F(SnapshotsTableTest, ScanProjectedColumns) {
                                     SchemaField::MakeRequired(8, "value", string()))),
       SchemaField::MakeRequired(2, "snapshot_id", int64())});
   ICEBERG_UNWRAP_OR_FAIL(auto builder, snapshots_table_->NewScan());
-  ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Project(projection).Build());
-  ICEBERG_UNWRAP_OR_FAIL(auto stream, scan->ToArrowArrayStream());
+  ICEBERG_UNWRAP_OR_FAIL(auto stream, builder->Project(projection).Build());
   ICEBERG_UNWRAP_OR_FAIL(auto batches, ReadAllBatches(std::move(stream)));
   ASSERT_EQ(batches.size(), 1);
   const auto& batch = batches.front();
@@ -237,22 +233,22 @@ TEST_F(SnapshotsTableTest, ScanRejectsInvalidProjection) {
   auto required_parent = std::make_shared<Schema>(
       std::vector<SchemaField>{SchemaField::MakeRequired(3, "parent_id", int64())});
   ICEBERG_UNWRAP_OR_FAIL(auto builder, snapshots_table_->NewScan());
-  ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Project(required_parent).Build());
-  EXPECT_THAT(scan->ToArrowArrayStream(), IsError(ErrorKind::kInvalidArgument));
+  EXPECT_THAT(builder->Project(required_parent).Build(),
+              IsError(ErrorKind::kInvalidArgument));
 
   // A column must keep its type.
   auto string_id = std::make_shared<Schema>(
       std::vector<SchemaField>{SchemaField::MakeRequired(2, "snapshot_id", string())});
   ICEBERG_UNWRAP_OR_FAIL(auto type_builder, snapshots_table_->NewScan());
-  ICEBERG_UNWRAP_OR_FAIL(auto type_scan, type_builder->Project(string_id).Build());
-  EXPECT_THAT(type_scan->ToArrowArrayStream(), IsError(ErrorKind::kNotSupported));
+  EXPECT_THAT(type_builder->Project(string_id).Build(),
+              IsError(ErrorKind::kNotSupported));
 
   // Nested fields are not top-level columns.
   auto summary_key = std::make_shared<Schema>(
       std::vector<SchemaField>{SchemaField::MakeRequired(7, "key", string())});
   ICEBERG_UNWRAP_OR_FAIL(auto nested_builder, snapshots_table_->NewScan());
-  ICEBERG_UNWRAP_OR_FAIL(auto nested_scan, nested_builder->Project(summary_key).Build());
-  EXPECT_THAT(nested_scan->ToArrowArrayStream(), IsError(ErrorKind::kInvalidArgument));
+  EXPECT_THAT(nested_builder->Project(summary_key).Build(),
+              IsError(ErrorKind::kInvalidArgument));
 }
 
 TEST_F(SnapshotsTableTest, ScanNoColumns) {

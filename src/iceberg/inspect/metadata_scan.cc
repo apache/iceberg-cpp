@@ -28,17 +28,6 @@
 
 namespace iceberg {
 
-MetadataScan::MetadataScan(const MetadataTable& table, std::shared_ptr<Schema> schema)
-    : table_(&table), schema_(std::move(schema)) {}
-
-MetadataScan::~MetadataScan() = default;
-
-const std::shared_ptr<Schema>& MetadataScan::schema() const { return schema_; }
-
-Result<ArrowArrayStream> MetadataScan::ToArrowArrayStream() const {
-  return table_->ScanProjection(*schema_);
-}
-
 MetadataScanBuilder::MetadataScanBuilder(const MetadataTable& table)
     : table_(&table), projected_schema_(table.schema()) {}
 
@@ -65,10 +54,10 @@ MetadataScanBuilder& MetadataScanBuilder::CaseSensitive(bool value) {
   return *this;
 }
 
-Result<std::unique_ptr<MetadataScan>> MetadataScanBuilder::Build() {
+Result<ArrowArrayStream> MetadataScanBuilder::Build() {
   ICEBERG_RETURN_UNEXPECTED(CheckErrors());
   ICEBERG_PRECHECK(projected_schema_ != nullptr, "Projected schema cannot be null");
-  return std::unique_ptr<MetadataScan>(new MetadataScan(*table_, projected_schema_));
+  return table_->ScanProjection(*projected_schema_);
 }
 
 }  // namespace iceberg

@@ -278,7 +278,6 @@ class PositionDeleteIndex;
 
 /// \brief Metadata tables.
 class HistoryTable;
-class MetadataScan;
 class MetadataScanBuilder;
 class MetadataTable;
 class SnapshotsTable;

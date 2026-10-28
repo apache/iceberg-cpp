@@ -84,8 +84,7 @@ class MetadataTableTestBase : public ::testing::Test {
   /// \brief Scan all columns of a metadata table.
   static Result<ArrowArrayStream> Scan(MetadataTable& table) {
     ICEBERG_ASSIGN_OR_RAISE(auto builder, table.NewScan());
-    ICEBERG_ASSIGN_OR_RAISE(auto scan, builder->Build());
-    return scan->ToArrowArrayStream();
+    return builder->Build();
   }
 
   /// \brief Scan the selected columns of a metadata table.
@@ -93,9 +92,7 @@ class MetadataTableTestBase : public ::testing::Test {
                                               const std::vector<std::string>& columns,
                                               bool case_sensitive = true) {
     ICEBERG_ASSIGN_OR_RAISE(auto builder, table.NewScan());
-    ICEBERG_ASSIGN_OR_RAISE(
-        auto scan, builder->CaseSensitive(case_sensitive).Select(columns).Build());
-    return scan->ToArrowArrayStream();
+    return builder->CaseSensitive(case_sensitive).Select(columns).Build();
   }
 
   /// \brief Import and consume a scan-produced ArrowArrayStream.

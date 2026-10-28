@@ -25,6 +25,9 @@
 #include <utility>
 #include <vector>
 
+#include <arrow/c/bridge.h>
+#include <arrow/record_batch.h>
+#include <arrow/type.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
@@ -62,6 +65,18 @@ class MetadataTableTest : public ::testing::Test {
                                                std::make_shared<MockCatalog>()));
   }
 
+  /// \brief Import the schema of a stream and release the stream.
+  static Result<std::shared_ptr<::arrow::Schema>> ReadSchema(ArrowArrayStream&& stream) {
+    auto reader_result = ::arrow::ImportRecordBatchReader(&stream);
+    if (!reader_result.ok()) {
+      if (stream.release != nullptr) {
+        stream.release(&stream);
+      }
+      return InvalidArrowData(reader_result.status().ToString());
+    }
+    return reader_result.ValueUnsafe()->schema();
+  }
+
   std::shared_ptr<Table> table_;
 };
 
@@ -71,35 +86,24 @@ TEST_F(MetadataTableTest, FactoryRejectsNullSourceTable) {
   EXPECT_THAT(result, HasErrorMessage("Table cannot be null"));
 }
 
-TEST_F(MetadataTableTest, ScanBuilderDefaultsToAllColumns) {
-  ICEBERG_UNWRAP_OR_FAIL(auto snapshots_table,
-                         MetadataTable::Make<SnapshotsTable>(table_));
-  ICEBERG_UNWRAP_OR_FAIL(auto builder, snapshots_table->NewScan());
-  ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
-  EXPECT_EQ(scan->schema(), snapshots_table->schema());
-}
-
 TEST_F(MetadataTableTest, ScanBuilderSelectResolvesNamesImmediately) {
   ICEBERG_UNWRAP_OR_FAIL(auto snapshots_table,
                          MetadataTable::Make<SnapshotsTable>(table_));
 
   // Select() uses the case sensitivity in effect when it is called.
   ICEBERG_UNWRAP_OR_FAIL(auto builder, snapshots_table->NewScan());
-  ICEBERG_UNWRAP_OR_FAIL(auto scan,
+  ICEBERG_UNWRAP_OR_FAIL(auto stream,
                          builder->Select({"SNAPSHOT_ID"}).CaseSensitive(false).Build());
-  EXPECT_TRUE(scan->schema()->fields().empty());
+  ICEBERG_UNWRAP_OR_FAIL(auto schema, ReadSchema(std::move(stream)));
+  EXPECT_EQ(schema->num_fields(), 0);
 
   ICEBERG_UNWRAP_OR_FAIL(auto insensitive_builder, snapshots_table->NewScan());
   ICEBERG_UNWRAP_OR_FAIL(
-      auto insensitive_scan,
+      auto insensitive_stream,
       insensitive_builder->CaseSensitive(false).Select({"SNAPSHOT_ID"}).Build());
-  ASSERT_EQ(insensitive_scan->schema()->fields().size(), 1);
-  EXPECT_EQ(insensitive_scan->schema()->fields()[0].name(), "snapshot_id");
-
-  // Later builder changes do not affect a built scan.
-  insensitive_builder->Select({"operation"});
-  ASSERT_EQ(insensitive_scan->schema()->fields().size(), 1);
-  EXPECT_EQ(insensitive_scan->schema()->fields()[0].name(), "snapshot_id");
+  ICEBERG_UNWRAP_OR_FAIL(auto insensitive_schema,
+                         ReadSchema(std::move(insensitive_stream)));
+  EXPECT_THAT(insensitive_schema->field_names(), ::testing::ElementsAre("snapshot_id"));
 
   // An invalid selection is reported when the scan is built.
   ICEBERG_UNWRAP_OR_FAIL(auto invalid_builder, snapshots_table->NewScan());
@@ -115,25 +119,23 @@ TEST_F(MetadataTableTest, ScanBuilderProject) {
       std::vector<SchemaField>{SchemaField::MakeOptional(4, "operation", string()),
                                SchemaField::MakeRequired(2, "snapshot_id", int64())});
 
+  // Project() replaces an earlier selection.
   ICEBERG_UNWRAP_OR_FAIL(auto builder, snapshots_table->NewScan());
-  ICEBERG_UNWRAP_OR_FAIL(auto scan,
+  ICEBERG_UNWRAP_OR_FAIL(auto stream,
                          builder->Select({"snapshot_id"}).Project(projection).Build());
-  EXPECT_EQ(scan->schema(), projection);
+  ICEBERG_UNWRAP_OR_FAIL(auto schema, ReadSchema(std::move(stream)));
+  EXPECT_THAT(schema->field_names(), ::testing::ElementsAre("operation", "snapshot_id"));
 
   ICEBERG_UNWRAP_OR_FAIL(auto null_builder, snapshots_table->NewScan());
   EXPECT_THAT(null_builder->Project(nullptr).Build(),
               IsError(ErrorKind::kInvalidArgument));
 }
 
-TEST_F(MetadataTableTest, HistoryTableScan) {
+TEST_F(MetadataTableTest, HistoryTableScanIsNotSupported) {
   ICEBERG_UNWRAP_OR_FAIL(auto history_table, MetadataTable::Make<HistoryTable>(table_));
-
-  // Column selection builds, but the history table does not return rows yet.
   ICEBERG_UNWRAP_OR_FAIL(auto builder, history_table->NewScan());
-  ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Select({"snapshot_id"}).Build());
-  ASSERT_EQ(scan->schema()->fields().size(), 1);
-  EXPECT_EQ(scan->schema()->fields()[0].name(), "snapshot_id");
-  EXPECT_THAT(scan->ToArrowArrayStream(), IsError(ErrorKind::kNotSupported));
+  EXPECT_THAT(builder->Select({"snapshot_id"}).Build(),
+              IsError(ErrorKind::kNotSupported));
 }
 
 }  // namespace iceberg

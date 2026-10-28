@@ -70,8 +70,8 @@ class ICEBERG_EXPORT MetadataTable {
 
   /// \brief Create a builder for configuring a metadata table scan.
   ///
-  /// A builder with no options scans all columns. This table must outlive the builder
-  /// and the scans built from it.
+  /// A builder with no options scans all columns. This table must outlive the
+  /// builder.
   virtual Result<std::unique_ptr<MetadataScanBuilder>> NewScan() const;
 
  protected:
@@ -85,7 +85,7 @@ class ICEBERG_EXPORT MetadataTable {
       const Schema& projected_schema) const = 0;
 
  private:
-  friend class MetadataScan;
+  friend class MetadataScanBuilder;
 
   std::shared_ptr<Table> source_table_;
 };

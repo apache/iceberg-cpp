@@ -34,33 +34,6 @@
 
 namespace iceberg {
 
-/// \brief A metadata table scan that reads its rows as Arrow.
-///
-/// Scans are created by MetadataScanBuilder::Build(). The metadata table that created
-/// the builder must outlive the scan.
-class ICEBERG_EXPORT MetadataScan {
- public:
-  virtual ~MetadataScan();
-
-  /// \brief Return the output schema: schema() of the metadata table projected to the
-  /// selected columns.
-  const std::shared_ptr<Schema>& schema() const;
-
-  /// \brief Read the scan as one Arrow stream with the output schema.
-  ///
-  /// Each call returns a new stream. The caller owns the returned stream and must
-  /// invoke its `release` callback when the stream is no longer needed.
-  virtual Result<ArrowArrayStream> ToArrowArrayStream() const;
-
- private:
-  friend class MetadataScanBuilder;
-
-  MetadataScan(const MetadataTable& table, std::shared_ptr<Schema> schema);
-
-  const MetadataTable* table_;
-  std::shared_ptr<Schema> schema_;
-};
-
 /// \brief Configure a scan over a metadata table.
 ///
 /// Builders are created by MetadataTable::NewScan(), and the metadata table must
@@ -68,8 +41,7 @@ class ICEBERG_EXPORT MetadataScan {
 ///
 /// \code
 ///   ICEBERG_ASSIGN_OR_RAISE(auto builder, snapshots_table->NewScan());
-///   ICEBERG_ASSIGN_OR_RAISE(auto scan, builder->Select({"snapshot_id"}).Build());
-///   ICEBERG_ASSIGN_OR_RAISE(auto stream, scan->ToArrowArrayStream());
+///   ICEBERG_ASSIGN_OR_RAISE(auto stream, builder->Select({"snapshot_id"}).Build());
 /// \endcode
 class ICEBERG_EXPORT MetadataScanBuilder : public ErrorCollector {
  public:
@@ -98,12 +70,14 @@ class ICEBERG_EXPORT MetadataScanBuilder : public ErrorCollector {
   /// \param value Whether column names are matched case-sensitively.
   MetadataScanBuilder& CaseSensitive(bool value);
 
-  /// \brief Validate the settings and build a scan with its own copy of them.
+  /// \brief Validate the settings and scan the metadata table.
   ///
-  /// Later builder changes do not change the returned scan.
+  /// Each call returns a new stream with the output schema. The caller owns the
+  /// returned stream and must invoke its `release` callback when the stream is no
+  /// longer needed.
   ///
-  /// \return The scan, or the validation errors.
-  Result<std::unique_ptr<MetadataScan>> Build();
+  /// \return An Arrow stream containing the selected columns, or an error.
+  Result<ArrowArrayStream> Build();
 
  private:
   friend class MetadataTable;
