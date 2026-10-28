@@ -54,10 +54,35 @@ MetadataScanBuilder& MetadataScanBuilder::CaseSensitive(bool value) {
   return *this;
 }
 
+MetadataScanBuilder& MetadataScanBuilder::UseSnapshot(int64_t snapshot_id) {
+  ICEBERG_BUILDER_CHECK(
+      std::holds_alternative<std::monostate>(snapshot_selection_.snapshot),
+      "Cannot override snapshot, a snapshot or timestamp is already set");
+  snapshot_selection_.snapshot = snapshot_id;
+  return *this;
+}
+
+MetadataScanBuilder& MetadataScanBuilder::UseRef(const std::string& ref) {
+  ICEBERG_BUILDER_CHECK(snapshot_selection_.ref_name.empty(),
+                        "Cannot override ref, already set ref={}",
+                        snapshot_selection_.ref_name);
+  ICEBERG_BUILDER_CHECK(!ref.empty(), "Ref name cannot be empty");
+  snapshot_selection_.ref_name = ref;
+  return *this;
+}
+
+MetadataScanBuilder& MetadataScanBuilder::AsOfTime(int64_t timestamp_millis) {
+  ICEBERG_BUILDER_CHECK(
+      std::holds_alternative<std::monostate>(snapshot_selection_.snapshot),
+      "Cannot override snapshot, a snapshot or timestamp is already set");
+  snapshot_selection_.snapshot = TimePointMsFromUnixMs(timestamp_millis);
+  return *this;
+}
+
 Result<ArrowArrayStream> MetadataScanBuilder::Build() {
   ICEBERG_RETURN_UNEXPECTED(CheckErrors());
   ICEBERG_PRECHECK(projected_schema_ != nullptr, "Projected schema cannot be null");
-  return table_->ScanProjection(*projected_schema_);
+  return table_->ScanSnapshot(snapshot_selection_, *projected_schema_);
 }
 
 }  // namespace iceberg

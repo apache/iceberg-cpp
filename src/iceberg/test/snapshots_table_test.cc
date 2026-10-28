@@ -203,6 +203,17 @@ TEST_F(SnapshotsTableTest, ScanBuildsRepeatedly) {
   }
 }
 
+TEST_F(SnapshotsTableTest, ScanRejectsTimeTravel) {
+  ICEBERG_UNWRAP_OR_FAIL(auto builder, snapshots_table_->NewScan());
+  EXPECT_THAT(builder->UseSnapshot(1).Build(), IsError(ErrorKind::kNotSupported));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto ref_builder, snapshots_table_->NewScan());
+  EXPECT_THAT(ref_builder->UseRef("dev").Build(), IsError(ErrorKind::kNotSupported));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto time_builder, snapshots_table_->NewScan());
+  EXPECT_THAT(time_builder->AsOfTime(1).Build(), IsError(ErrorKind::kNotSupported));
+}
+
 TEST_F(SnapshotsTableTest, ScanProjectedColumns) {
   // Project() reorders columns and keeps the whole summary map.
   auto projection = std::make_shared<Schema>(std::vector<SchemaField>{

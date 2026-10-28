@@ -22,8 +22,10 @@
 /// \file iceberg/inspect/metadata_scan.h
 /// \brief Scan configuration for Iceberg metadata tables.
 
+#include <cstdint>
 #include <memory>
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "iceberg/arrow_c_data.h"
@@ -31,8 +33,22 @@
 #include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
 #include "iceberg/util/error_collector.h"
+#include "iceberg/util/timepoint.h"
 
 namespace iceberg {
+
+/// \brief Snapshot selection parameters for a time-travel scan.
+struct SnapshotSelection {
+  /// \brief Select the current snapshot, a snapshot ID, or an as-of timestamp.
+  ///
+  /// std::monostate selects the current snapshot.
+  std::variant<std::monostate, int64_t, TimePointMs> snapshot;
+
+  /// \brief Resolve the snapshot relative to this branch or tag.
+  ///
+  /// An empty string uses the main branch.
+  std::string ref_name;
+};
 
 /// \brief Configure a scan over a metadata table.
 ///
@@ -70,6 +86,33 @@ class ICEBERG_EXPORT MetadataScanBuilder : public ErrorCollector {
   /// \param value Whether column names are matched case-sensitively.
   MetadataScanBuilder& CaseSensitive(bool value);
 
+  /// \brief Request this scan to use the given snapshot by ID.
+  ///
+  /// Only metadata tables that support time travel accept a snapshot; Build()
+  /// returns NotSupported otherwise. The table resolves the snapshot when the scan
+  /// is built.
+  ///
+  /// \param snapshot_id A snapshot ID.
+  MetadataScanBuilder& UseSnapshot(int64_t snapshot_id);
+
+  /// \brief Request this scan to resolve the snapshot on the given branch or tag.
+  ///
+  /// Only metadata tables that support time travel accept a reference; Build()
+  /// returns NotSupported otherwise. The table resolves the reference when the scan
+  /// is built.
+  ///
+  /// \param ref A branch or tag name.
+  MetadataScanBuilder& UseRef(const std::string& ref);
+
+  /// \brief Request this scan to use the most recent snapshot as of the given time.
+  ///
+  /// The snapshot is resolved on the branch set by UseRef(), or main if no branch
+  /// is set. Only metadata tables that support time travel accept a timestamp;
+  /// Build() returns NotSupported otherwise.
+  ///
+  /// \param timestamp_millis A timestamp in milliseconds since the Unix epoch.
+  MetadataScanBuilder& AsOfTime(int64_t timestamp_millis);
+
   /// \brief Validate the settings and scan the metadata table.
   ///
   /// Each call returns a new stream with the output schema. The caller owns the
@@ -87,6 +130,7 @@ class ICEBERG_EXPORT MetadataScanBuilder : public ErrorCollector {
   const MetadataTable* table_;
   std::shared_ptr<Schema> projected_schema_;
   bool case_sensitive_ = true;
+  SnapshotSelection snapshot_selection_;
 };
 
 }  // namespace iceberg

@@ -68,10 +68,13 @@ class ICEBERG_EXPORT MetadataTable {
   /// \brief Return the source table whose metadata is exposed.
   const std::shared_ptr<Table>& source_table() const;
 
+  /// \brief Return whether this metadata table supports time travel.
+  virtual bool supports_time_travel() const noexcept;
+
   /// \brief Create a builder for configuring a metadata table scan.
   ///
-  /// A builder with no options scans all columns. This table must outlive the
-  /// builder.
+  /// A builder with no options scans all columns of the current snapshot on the main
+  /// branch. This table must outlive the builder.
   virtual Result<std::unique_ptr<MetadataScanBuilder>> NewScan() const;
 
  protected:
@@ -84,10 +87,49 @@ class ICEBERG_EXPORT MetadataTable {
   virtual Result<ArrowArrayStream> ScanProjection(
       const Schema& projected_schema) const = 0;
 
+  /// \brief Implement a scan for the requested snapshot selection.
+  ///
+  /// The default implementation scans the current snapshot on the main branch with
+  /// ScanProjection() and returns NotSupported for any other selection.
+  /// TimeTravelMetadataTable requires an implementation.
+  ///
+  /// \param snapshot_selection Snapshot ID, timestamp, and optional ref selection.
+  /// \param projected_schema Projection of schema() with the columns to return. It
+  /// is only valid during this call.
+  virtual Result<ArrowArrayStream> ScanSnapshot(
+      const SnapshotSelection& snapshot_selection, const Schema& projected_schema) const;
+
  private:
   friend class MetadataScanBuilder;
 
   std::shared_ptr<Table> source_table_;
+};
+
+/// \brief Base interface for metadata tables that support time travel.
+///
+/// Scans of these tables accept MetadataScanBuilder::UseSnapshot(), UseRef(), and
+/// AsOfTime(), which MetadataScanBuilder::Build() rejects for other tables.
+class ICEBERG_EXPORT TimeTravelMetadataTable : public MetadataTable {
+ public:
+  ~TimeTravelMetadataTable() override;
+
+  /// \brief Return true because this interface supports time travel.
+  bool supports_time_travel() const noexcept final;
+
+ protected:
+  explicit TimeTravelMetadataTable(std::shared_ptr<Table> source_table);
+
+  /// \brief Scan the current snapshot on the main branch.
+  Result<ArrowArrayStream> ScanProjection(const Schema& projected_schema) const final;
+
+  /// \brief Implement a scan for the requested snapshot selection.
+  ///
+  /// \param snapshot_selection Snapshot ID, timestamp, and optional ref selection.
+  /// \param projected_schema Projection of schema() with the columns to return. It
+  /// is only valid during this call.
+  Result<ArrowArrayStream> ScanSnapshot(const SnapshotSelection& snapshot_selection,
+                                        const Schema& projected_schema) const override =
+      0;
 };
 
 }  // namespace iceberg
