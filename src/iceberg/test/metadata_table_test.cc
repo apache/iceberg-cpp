@@ -41,6 +41,7 @@
 #include "iceberg/test/mock_catalog.h"
 #include "iceberg/test/mock_io.h"
 #include "iceberg/type.h"
+#include "iceberg/util/timepoint.h"
 
 namespace iceberg {
 namespace {
@@ -118,39 +119,82 @@ TEST_F(MetadataTableTest, SupportsTimeTravel) {
   EXPECT_FALSE(history_table->supports_time_travel());
 }
 
-TEST_F(MetadataTableTest, TimeTravelScanSelectsColumns) {
+TEST_F(MetadataTableTest, TimeTravelScanDefaults) {
   RecordingTimeTravelTable table(table_);
-  const ColumnSelection name_only{.names = std::vector<std::string>{"name"}};
+  ICEBERG_UNWRAP_OR_FAIL(auto builder, table.NewScan());
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
+  EXPECT_EQ(scan->schema(), table.schema());
+  EXPECT_TRUE(scan->snapshot_selection().IsCurrentSnapshot());
 
-  EXPECT_THAT(table.Scan(), IsError(ErrorKind::kNotSupported));
-  EXPECT_TRUE(std::holds_alternative<std::monostate>(table.scanned_snapshot().snapshot));
-  EXPECT_THAT(table.scanned_columns(), ::testing::ElementsAre("id", "name"));
-
-  EXPECT_THAT(table.ScanColumns(name_only), IsError(ErrorKind::kNotSupported));
-  EXPECT_TRUE(std::holds_alternative<std::monostate>(table.scanned_snapshot().snapshot));
-  EXPECT_THAT(table.scanned_columns(), ::testing::ElementsAre("name"));
-
-  const SnapshotSelection snapshot_one{.snapshot = int64_t{1}, .ref_name = "dev"};
-  EXPECT_THAT(table.Scan(snapshot_one), IsError(ErrorKind::kNotSupported));
-  EXPECT_EQ(table.scanned_snapshot().snapshot, snapshot_one.snapshot);
-  EXPECT_EQ(table.scanned_snapshot().ref_name, "dev");
-  EXPECT_THAT(table.scanned_columns(), ::testing::ElementsAre("id", "name"));
-
-  EXPECT_THAT(table.ScanColumns(snapshot_one, name_only),
-              IsError(ErrorKind::kNotSupported));
-  EXPECT_EQ(table.scanned_snapshot().snapshot, snapshot_one.snapshot);
-  EXPECT_THAT(table.scanned_columns(), ::testing::ElementsAre("name"));
-
-  EXPECT_THAT(table.Scan({}), IsError(ErrorKind::kNotSupported));
-  EXPECT_TRUE(std::holds_alternative<std::monostate>(table.scanned_snapshot().snapshot));
+  EXPECT_THAT(scan->ToArrowArrayStream(), IsError(ErrorKind::kNotSupported));
+  EXPECT_TRUE(table.scanned_snapshot().IsCurrentSnapshot());
   EXPECT_THAT(table.scanned_columns(), ::testing::ElementsAre("id", "name"));
 }
 
-TEST_F(MetadataTableTest, HistoryTableScanWithColumnsIsNotSupported) {
+TEST_F(MetadataTableTest, TimeTravelScanSelectsColumnsAndSnapshot) {
+  RecordingTimeTravelTable table(table_);
+  ICEBERG_UNWRAP_OR_FAIL(auto builder, table.NewScan());
+  ICEBERG_UNWRAP_OR_FAIL(auto scan,
+                         builder->Select({"name"}).UseSnapshot(1).UseRef("dev").Build());
+  ASSERT_EQ(scan->schema()->fields().size(), 1);
+  EXPECT_EQ(scan->schema()->fields()[0].name(), "name");
+  EXPECT_EQ(scan->snapshot_selection().snapshot,
+            (std::variant<std::monostate, int64_t, TimePointMs>{int64_t{1}}));
+  EXPECT_EQ(scan->snapshot_selection().ref_name, "dev");
+
+  EXPECT_THAT(scan->ToArrowArrayStream(), IsError(ErrorKind::kNotSupported));
+  EXPECT_EQ(table.scanned_snapshot().snapshot, scan->snapshot_selection().snapshot);
+  EXPECT_EQ(table.scanned_snapshot().ref_name, "dev");
+  EXPECT_THAT(table.scanned_columns(), ::testing::ElementsAre("name"));
+}
+
+TEST_F(MetadataTableTest, TimeTravelScanAsOfTime) {
+  RecordingTimeTravelTable table(table_);
+  ICEBERG_UNWRAP_OR_FAIL(auto builder, table.NewScan());
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->AsOfTime(1234567890000).Build());
+
+  EXPECT_THAT(scan->ToArrowArrayStream(), IsError(ErrorKind::kNotSupported));
+  ASSERT_TRUE(std::holds_alternative<TimePointMs>(table.scanned_snapshot().snapshot));
+  EXPECT_EQ(std::get<TimePointMs>(table.scanned_snapshot().snapshot),
+            TimePointMsFromUnixMs(1234567890000));
+  EXPECT_TRUE(table.scanned_snapshot().ref_name.empty());
+  EXPECT_THAT(table.scanned_columns(), ::testing::ElementsAre("id", "name"));
+}
+
+TEST_F(MetadataTableTest, ScanBuilderRejectsConflictingOptions) {
+  RecordingTimeTravelTable table(table_);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto snapshot_builder, table.NewScan());
+  auto snapshot_result = snapshot_builder->UseSnapshot(1).AsOfTime(2).Build();
+  EXPECT_THAT(snapshot_result, IsError(ErrorKind::kValidationFailed));
+  EXPECT_THAT(snapshot_result, HasErrorMessage("Cannot override snapshot"));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto ref_builder, table.NewScan());
+  auto ref_result = ref_builder->UseRef("dev").UseRef("main").Build();
+  EXPECT_THAT(ref_result, IsError(ErrorKind::kValidationFailed));
+  EXPECT_THAT(ref_result, HasErrorMessage("Cannot override ref"));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto empty_ref_builder, table.NewScan());
+  EXPECT_THAT(empty_ref_builder->UseRef("").Build(),
+              IsError(ErrorKind::kValidationFailed));
+}
+
+TEST_F(MetadataTableTest, HistoryTableScan) {
   ICEBERG_UNWRAP_OR_FAIL(auto history_table, MetadataTable::Make<HistoryTable>(table_));
-  EXPECT_THAT(history_table->ScanColumns(
-                  ColumnSelection{.names = std::vector<std::string>{"snapshot_id"}}),
+
+  // Column selection builds, but the history table does not return rows yet.
+  ICEBERG_UNWRAP_OR_FAIL(auto builder, history_table->NewScan());
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Select({"snapshot_id"}).Build());
+  ASSERT_EQ(scan->schema()->fields().size(), 1);
+  EXPECT_EQ(scan->schema()->fields()[0].name(), "snapshot_id");
+  EXPECT_THAT(scan->ToArrowArrayStream(), IsError(ErrorKind::kNotSupported));
+
+  // Tables without time travel reject snapshot selections when the scan is built.
+  ICEBERG_UNWRAP_OR_FAIL(auto snapshot_builder, history_table->NewScan());
+  EXPECT_THAT(snapshot_builder->UseSnapshot(1).Build(),
               IsError(ErrorKind::kNotSupported));
+  ICEBERG_UNWRAP_OR_FAIL(auto time_builder, history_table->NewScan());
+  EXPECT_THAT(time_builder->AsOfTime(1).Build(), IsError(ErrorKind::kNotSupported));
 }
 
 }  // namespace iceberg

@@ -79,6 +79,7 @@
 #include "iceberg/incremental_changelog_scan.h"
 #include "iceberg/inheritable_metadata.h"
 #include "iceberg/inspect/history_table.h"
+#include "iceberg/inspect/metadata_scan.h"
 #include "iceberg/inspect/metadata_table.h"
 #include "iceberg/inspect/snapshots_table.h"
 #include "iceberg/location_provider.h"

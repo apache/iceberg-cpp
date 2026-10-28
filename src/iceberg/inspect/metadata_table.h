@@ -24,33 +24,15 @@
 
 #include <concepts>
 #include <memory>
-#include <optional>
-#include <string>
 #include <utility>
-#include <variant>
-#include <vector>
 
 #include "iceberg/arrow_c_data.h"
 #include "iceberg/iceberg_export.h"
+#include "iceberg/inspect/metadata_scan.h"
 #include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
-#include "iceberg/util/timepoint.h"
 
 namespace iceberg {
-
-/// \brief Column selection for a metadata table scan.
-struct ColumnSelection {
-  /// \brief Names of the columns to return.
-  ///
-  /// Nested names are dot-concatenated. Columns are returned in schema order, and
-  /// names that match no column are ignored. std::nullopt or a list containing `*`
-  /// returns all columns. An empty list returns rows without columns. Selecting a
-  /// map's value returns the whole map; selecting only its key is an error.
-  std::optional<std::vector<std::string>> names;
-
-  /// \brief Whether names are matched case-sensitively.
-  bool case_sensitive = true;
-};
 
 /// \brief Base interface for an Iceberg metadata table.
 class ICEBERG_EXPORT MetadataTable {
@@ -89,23 +71,13 @@ class ICEBERG_EXPORT MetadataTable {
   /// \brief Return whether this metadata table supports time travel.
   virtual bool supports_time_travel() const noexcept;
 
-  /// \brief Scan all columns of the metadata table without time travel.
+  /// \brief Create a builder for a scan of this metadata table.
   ///
-  /// The caller owns the returned stream and must invoke its `release` callback
-  /// when the stream is no longer needed.
-  Result<ArrowArrayStream> Scan();
-
-  /// \brief Scan the selected columns of the metadata table without time travel.
-  ///
-  /// The caller owns the returned stream and must invoke its `release` callback
-  /// when the stream is no longer needed.
-  ///
-  /// This is not a Scan() overload so that `Scan({})` on a TimeTravelMetadataTable
-  /// still resolves to Scan(const SnapshotSelection&).
-  ///
-  /// \param columns Names of the columns to return.
-  /// \return An Arrow stream containing the selected columns, or an error.
-  Result<ArrowArrayStream> ScanColumns(const ColumnSelection& columns);
+  /// The builder selects the columns to return and, for tables that support time
+  /// travel, the snapshot to read. A builder with no options scans all columns of the
+  /// current snapshot on the main branch. This table must outlive the builder and the
+  /// scans built from it.
+  Result<std::unique_ptr<MetadataScanBuilder>> NewScan();
 
  protected:
   explicit MetadataTable(std::shared_ptr<Table> source_table);
@@ -116,51 +88,34 @@ class ICEBERG_EXPORT MetadataTable {
   /// is only valid during this call.
   virtual Result<ArrowArrayStream> ScanProjection(const Schema& projected_schema) = 0;
 
+  /// \brief Implement a scan for the requested snapshot selection.
+  ///
+  /// The default implementation scans the current snapshot on the main branch with
+  /// ScanProjection() and returns NotSupported for any other selection.
+  /// TimeTravelMetadataTable requires an implementation.
+  ///
+  /// \param snapshot_selection Snapshot ID, timestamp, and optional ref selection.
+  /// \param projected_schema Projection of schema() with the columns to return. It
+  /// is only valid during this call.
+  virtual Result<ArrowArrayStream> ScanSnapshot(
+      const SnapshotSelection& snapshot_selection, const Schema& projected_schema);
+
  private:
+  friend class MetadataScan;
+
   std::shared_ptr<Table> source_table_;
-};
-
-/// \brief Snapshot selection parameters for a time-travel scan.
-struct SnapshotSelection {
-  /// \brief Select the current snapshot, a snapshot ID, or an as-of timestamp.
-  ///
-  /// std::monostate selects the current snapshot.
-  std::variant<std::monostate, int64_t, TimePointMs> snapshot;
-
-  /// \brief Resolve the snapshot relative to this branch or tag.
-  ///
-  /// An empty string uses the main branch.
-  std::string ref_name;
 };
 
 /// \brief Base interface for metadata tables that support time travel.
 ///
-/// Keeping snapshot selection on this capability-specific interface prevents it from
-/// being exposed by metadata tables that do not support time travel.
+/// Scans of these tables accept MetadataScanBuilder::UseSnapshot(), UseRef(), and
+/// AsOfTime(), which MetadataScanBuilder::Build() rejects for other tables.
 class ICEBERG_EXPORT TimeTravelMetadataTable : public MetadataTable {
  public:
   ~TimeTravelMetadataTable() override;
 
   /// \brief Return true because this interface supports time travel.
   bool supports_time_travel() const noexcept final;
-
-  // Scans without a snapshot selection read the current snapshot on the main branch.
-  using MetadataTable::Scan;
-  using MetadataTable::ScanColumns;
-
-  /// \brief Scan all columns using the requested snapshot selection.
-  ///
-  /// \param snapshot_selection Snapshot ID, timestamp, and optional ref selection.
-  /// \return An Arrow stream containing the metadata table rows, or an error.
-  Result<ArrowArrayStream> Scan(const SnapshotSelection& snapshot_selection);
-
-  /// \brief Scan the selected columns using the requested snapshot selection.
-  ///
-  /// \param snapshot_selection Snapshot ID, timestamp, and optional ref selection.
-  /// \param columns Names of the columns to return.
-  /// \return An Arrow stream containing the selected columns, or an error.
-  Result<ArrowArrayStream> ScanColumns(const SnapshotSelection& snapshot_selection,
-                                       const ColumnSelection& columns);
 
  protected:
   explicit TimeTravelMetadataTable(std::shared_ptr<Table> source_table);
@@ -173,8 +128,8 @@ class ICEBERG_EXPORT TimeTravelMetadataTable : public MetadataTable {
   /// \param snapshot_selection Snapshot ID, timestamp, and optional ref selection.
   /// \param projected_schema Projection of schema() with the columns to return. It
   /// is only valid during this call.
-  virtual Result<ArrowArrayStream> ScanSnapshot(
-      const SnapshotSelection& snapshot_selection, const Schema& projected_schema) = 0;
+  Result<ArrowArrayStream> ScanSnapshot(const SnapshotSelection& snapshot_selection,
+                                        const Schema& projected_schema) override = 0;
 };
 
 }  // namespace iceberg

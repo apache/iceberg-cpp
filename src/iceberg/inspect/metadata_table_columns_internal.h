@@ -63,18 +63,22 @@ Result<std::vector<AppendColumnFn<Row>>> SelectAppendFns(
   std::vector<AppendColumnFn<Row>> append_fns;
   append_fns.reserve(projected_schema.fields().size());
   for (const auto& projected_field : projected_schema.fields()) {
-    ICEBERG_ASSIGN_OR_RAISE(auto field, schema.FindFieldById(projected_field.field_id()));
-    ICEBERG_CHECK(field.has_value(), "Metadata table column '{}' is not in the schema",
-                  projected_field.name());
+    // Only top-level columns have append functions, so nested field ids are rejected.
+    ICEBERG_ASSIGN_OR_RAISE(auto field, schema.GetFieldById(projected_field.field_id()));
+    if (!field.has_value()) {
+      return InvalidArgument("Metadata table column '{}' is not in the schema",
+                             projected_field.name());
+    }
     if (*field->get().type() != *projected_field.type()) {
       return NotSupported("Cannot select nested fields of metadata table column '{}'",
                           projected_field.name());
     }
     auto column = std::ranges::find(columns, projected_field.field_id(),
                                     &MetadataTableColumn<Row>::field_id);
-    ICEBERG_CHECK(column != columns.end(),
-                  "Metadata table column '{}' has no append function",
-                  projected_field.name());
+    if (column == columns.end()) {
+      return InvalidArgument("Metadata table column '{}' has no append function",
+                             projected_field.name());
+    }
     append_fns.push_back(column->append);
   }
   return append_fns;

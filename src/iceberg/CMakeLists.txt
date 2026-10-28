@@ -57,6 +57,7 @@ set(ICEBERG_SOURCES
     incremental_append_scan.cc
     incremental_changelog_scan.cc
     inspect/history_table.cc
+    inspect/metadata_scan.cc
     inspect/metadata_table.cc
     inspect/snapshots_table.cc
     inheritable_metadata.cc

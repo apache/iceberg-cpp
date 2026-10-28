@@ -21,7 +21,6 @@
 
 #include <cstdint>
 #include <memory>
-#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -78,7 +77,7 @@ TEST_F(SnapshotsTableTest, Construct) {
 
 TEST_F(SnapshotsTableTest, Scan) {
   // Scan the snapshots table once and verify all columns of the result.
-  ICEBERG_UNWRAP_OR_FAIL(auto stream, snapshots_table_->Scan());
+  ICEBERG_UNWRAP_OR_FAIL(auto stream, Scan(*snapshots_table_));
   ICEBERG_UNWRAP_OR_FAIL(auto batches, ReadAllBatches(std::move(stream)));
   ASSERT_EQ(batches.size(), 1);
   const auto& batch = batches.front();
@@ -134,9 +133,8 @@ TEST_F(SnapshotsTableTest, Scan) {
 }
 
 TEST_F(SnapshotsTableTest, ScanSelectedColumns) {
-  ICEBERG_UNWRAP_OR_FAIL(
-      auto stream, snapshots_table_->ScanColumns(ColumnSelection{
-                       .names = std::vector<std::string>{"operation", "snapshot_id"}}));
+  ICEBERG_UNWRAP_OR_FAIL(auto stream,
+                         ScanColumns(*snapshots_table_, {"operation", "snapshot_id"}));
   ICEBERG_UNWRAP_OR_FAIL(auto batches, ReadAllBatches(std::move(stream)));
   ASSERT_EQ(batches.size(), 1);
   const auto& batch = batches.front();
@@ -157,8 +155,7 @@ TEST_F(SnapshotsTableTest, ScanSelectedColumns) {
 
 TEST_F(SnapshotsTableTest, ScanSelectedColumnsIgnoresUnknownNames) {
   ICEBERG_UNWRAP_OR_FAIL(auto stream,
-                         snapshots_table_->ScanColumns(ColumnSelection{
-                             .names = std::vector<std::string>{"parent_id", "missing"}}));
+                         ScanColumns(*snapshots_table_, {"parent_id", "missing"}));
   ICEBERG_UNWRAP_OR_FAIL(auto batches, ReadAllBatches(std::move(stream)));
   ASSERT_EQ(batches.size(), 1);
   ASSERT_EQ(batches.front()->num_columns(), 1);
@@ -168,8 +165,7 @@ TEST_F(SnapshotsTableTest, ScanSelectedColumnsIgnoresUnknownNames) {
 TEST_F(SnapshotsTableTest, ScanSelectedColumnsCaseSensitivity) {
   ICEBERG_UNWRAP_OR_FAIL(
       auto insensitive_stream,
-      snapshots_table_->ScanColumns(ColumnSelection{
-          .names = std::vector<std::string>{"SNAPSHOT_ID"}, .case_sensitive = false}));
+      ScanColumns(*snapshots_table_, {"SNAPSHOT_ID"}, /*case_sensitive=*/false));
   ICEBERG_UNWRAP_OR_FAIL(auto insensitive_batches,
                          ReadAllBatches(std::move(insensitive_stream)));
   ASSERT_EQ(insensitive_batches.size(), 1);
@@ -177,8 +173,7 @@ TEST_F(SnapshotsTableTest, ScanSelectedColumnsCaseSensitivity) {
   EXPECT_EQ(insensitive_batches.front()->column_name(0), "snapshot_id");
 
   ICEBERG_UNWRAP_OR_FAIL(auto sensitive_stream,
-                         snapshots_table_->ScanColumns(ColumnSelection{
-                             .names = std::vector<std::string>{"SNAPSHOT_ID"}}));
+                         ScanColumns(*snapshots_table_, {"SNAPSHOT_ID"}));
   ICEBERG_UNWRAP_OR_FAIL(auto sensitive_batches,
                          ReadAllBatches(std::move(sensitive_stream)));
   ASSERT_EQ(sensitive_batches.size(), 1);
@@ -186,21 +181,42 @@ TEST_F(SnapshotsTableTest, ScanSelectedColumnsCaseSensitivity) {
 }
 
 TEST_F(SnapshotsTableTest, ScanAllColumnsSelection) {
-  std::vector<std::optional<std::vector<std::string>>> selections = {
-      std::nullopt, std::vector<std::string>{"*"}};
-  for (const auto& names : selections) {
-    ICEBERG_UNWRAP_OR_FAIL(
-        auto stream, snapshots_table_->ScanColumns(ColumnSelection{.names = names}));
+  // Selecting `*` returns the same columns as a scan without a selection.
+  ICEBERG_UNWRAP_OR_FAIL(auto stream, ScanColumns(*snapshots_table_, {"*"}));
+  ICEBERG_UNWRAP_OR_FAIL(auto batches, ReadAllBatches(std::move(stream)));
+  ASSERT_EQ(batches.size(), 1);
+  EXPECT_EQ(batches.front()->num_rows(), 2);
+  EXPECT_EQ(batches.front()->num_columns(), 6);
+}
+
+TEST_F(SnapshotsTableTest, ScanReadsRepeatedly) {
+  // A built scan can be read more than once; each read returns a new stream.
+  ICEBERG_UNWRAP_OR_FAIL(auto builder, snapshots_table_->NewScan());
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Select({"snapshot_id"}).Build());
+  ASSERT_EQ(scan->schema()->fields().size(), 1);
+  EXPECT_EQ(scan->schema()->fields()[0].name(), "snapshot_id");
+  EXPECT_TRUE(scan->snapshot_selection().IsCurrentSnapshot());
+
+  for (int read = 0; read < 2; ++read) {
+    ICEBERG_UNWRAP_OR_FAIL(auto stream, scan->ToArrowArrayStream());
     ICEBERG_UNWRAP_OR_FAIL(auto batches, ReadAllBatches(std::move(stream)));
     ASSERT_EQ(batches.size(), 1);
     EXPECT_EQ(batches.front()->num_rows(), 2);
-    EXPECT_EQ(batches.front()->num_columns(), 6);
+    ASSERT_EQ(batches.front()->num_columns(), 1);
+    EXPECT_EQ(batches.front()->column_name(0), "snapshot_id");
   }
 }
 
+TEST_F(SnapshotsTableTest, ScanRejectsTimeTravel) {
+  ICEBERG_UNWRAP_OR_FAIL(auto builder, snapshots_table_->NewScan());
+  EXPECT_THAT(builder->UseSnapshot(1).Build(), IsError(ErrorKind::kNotSupported));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto ref_builder, snapshots_table_->NewScan());
+  EXPECT_THAT(ref_builder->UseRef("dev").Build(), IsError(ErrorKind::kNotSupported));
+}
+
 TEST_F(SnapshotsTableTest, ScanNoColumns) {
-  ICEBERG_UNWRAP_OR_FAIL(auto stream, snapshots_table_->ScanColumns(ColumnSelection{
-                                          .names = std::vector<std::string>{}}));
+  ICEBERG_UNWRAP_OR_FAIL(auto stream, ScanColumns(*snapshots_table_, {}));
   ICEBERG_UNWRAP_OR_FAIL(auto batches, ReadAllBatches(std::move(stream)));
   ASSERT_EQ(batches.size(), 1);
   EXPECT_EQ(batches.front()->num_rows(), 2);
@@ -208,9 +224,7 @@ TEST_F(SnapshotsTableTest, ScanNoColumns) {
 }
 
 TEST_F(SnapshotsTableTest, ScanSelectedMapColumn) {
-  ICEBERG_UNWRAP_OR_FAIL(auto stream,
-                         snapshots_table_->ScanColumns(ColumnSelection{
-                             .names = std::vector<std::string>{"summary.value"}}));
+  ICEBERG_UNWRAP_OR_FAIL(auto stream, ScanColumns(*snapshots_table_, {"summary.value"}));
   ICEBERG_UNWRAP_OR_FAIL(auto batches, ReadAllBatches(std::move(stream)));
   ASSERT_EQ(batches.size(), 1);
   const auto& batch = batches.front();
@@ -223,8 +237,9 @@ TEST_F(SnapshotsTableTest, ScanSelectedMapColumn) {
   EXPECT_THAT(GetMapEntries(summaries, 1),
               ::testing::Contains(::testing::Pair("total-records", "2")));
 
-  EXPECT_THAT(snapshots_table_->ScanColumns(
-                  ColumnSelection{.names = std::vector<std::string>{"summary.key"}}),
+  // A map cannot be projected without its values.
+  ICEBERG_UNWRAP_OR_FAIL(auto builder, snapshots_table_->NewScan());
+  EXPECT_THAT(builder->Select({"summary.key"}).Build(),
               IsError(ErrorKind::kInvalidArgument));
 }
 
@@ -237,7 +252,7 @@ TEST_F(SnapshotsTableTest, ScanEmptySnapshotList) {
   ICEBERG_UNWRAP_OR_FAIL(snapshots_table_,
                          MetadataTable::Make<SnapshotsTable>(empty_table));
 
-  ICEBERG_UNWRAP_OR_FAIL(auto stream, snapshots_table_->Scan());
+  ICEBERG_UNWRAP_OR_FAIL(auto stream, Scan(*snapshots_table_));
   ICEBERG_UNWRAP_OR_FAIL(auto batches, ReadAllBatches(std::move(stream)));
   EXPECT_TRUE(batches.empty());
 }
@@ -249,7 +264,7 @@ TEST_F(SnapshotsTableTest, ScanSkipsNullSnapshots) {
   ICEBERG_UNWRAP_OR_FAIL(auto snapshots_table,
                          MetadataTable::Make<SnapshotsTable>(table));
 
-  ICEBERG_UNWRAP_OR_FAIL(auto stream, snapshots_table->Scan());
+  ICEBERG_UNWRAP_OR_FAIL(auto stream, Scan(*snapshots_table));
   ICEBERG_UNWRAP_OR_FAIL(auto batches, ReadAllBatches(std::move(stream)));
   ASSERT_EQ(batches.size(), 1);
   EXPECT_EQ(batches.front()->num_rows(), 2);
@@ -266,7 +281,7 @@ TEST_F(SnapshotsTableTest, ScanEmptySummary) {
   ICEBERG_UNWRAP_OR_FAIL(auto snapshots_table,
                          MetadataTable::Make<SnapshotsTable>(table));
 
-  ICEBERG_UNWRAP_OR_FAIL(auto stream, snapshots_table->Scan());
+  ICEBERG_UNWRAP_OR_FAIL(auto stream, Scan(*snapshots_table));
   ICEBERG_UNWRAP_OR_FAIL(auto batches, ReadAllBatches(std::move(stream)));
   ASSERT_EQ(batches.size(), 1);
   auto summaries =
@@ -285,7 +300,7 @@ TEST_F(SnapshotsTableTest, ScanReturnsMultipleBatches) {
   ICEBERG_UNWRAP_OR_FAIL(auto snapshots_table,
                          MetadataTable::Make<SnapshotsTable>(table));
 
-  ICEBERG_UNWRAP_OR_FAIL(auto stream, snapshots_table->Scan());
+  ICEBERG_UNWRAP_OR_FAIL(auto stream, Scan(*snapshots_table));
   ICEBERG_UNWRAP_OR_FAIL(auto batches, ReadAllBatches(std::move(stream)));
   ASSERT_EQ(batches.size(), 2);
   EXPECT_EQ(batches[0]->num_rows(), MetadataTable::kBatchSize);
@@ -301,7 +316,7 @@ TEST_F(SnapshotsTableTest, ScanUsesMetadataCapturedAtCreation) {
   ICEBERG_UNWRAP_OR_FAIL(auto snapshots_table,
                          MetadataTable::Make<SnapshotsTable>(table));
 
-  ICEBERG_UNWRAP_OR_FAIL(auto stream, snapshots_table->Scan());
+  ICEBERG_UNWRAP_OR_FAIL(auto stream, Scan(*snapshots_table));
   auto reader_result = ::arrow::ImportRecordBatchReader(&stream);
   ASSERT_TRUE(reader_result.ok()) << reader_result.status().ToString();
   auto reader = std::move(reader_result).ValueUnsafe();
