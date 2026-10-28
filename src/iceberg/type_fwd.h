@@ -146,6 +146,13 @@ struct TableMetadata;
 class InheritableMetadata;
 class SnapshotSummaryBuilder;
 
+/// \brief View metadata.
+struct SqlViewRepresentation;
+struct UnknownViewRepresentation;
+struct ViewHistoryEntry;
+struct ViewMetadata;
+struct ViewVersion;
+
 /// \brief Expression.
 class BoundPredicate;
 class BoundReference;
