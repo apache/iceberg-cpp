@@ -752,14 +752,14 @@ Result<FieldProjection> ProjectStruct(const StructType& struct_type,
     int32_t field_id = expected_field.field_id();
     FieldProjection child_projection;
 
-    if (auto iter = node_info_map.find(field_id); iter != node_info_map.cend()) {
+    if (auto constant = constants.find(field_id); constant != constants.end()) {
+      ICEBERG_ASSIGN_OR_RAISE(child_projection,
+                              ProjectConstant(expected_field, constant->second));
+    } else if (auto iter = node_info_map.find(field_id); iter != node_info_map.cend()) {
       ICEBERG_ASSIGN_OR_RAISE(
           child_projection,
           ProjectField(expected_field, iter->second.field_node, iter->second.local_index,
                        prune_source, constants));
-    } else if (auto constant = constants.find(field_id); constant != constants.end()) {
-      ICEBERG_ASSIGN_OR_RAISE(child_projection,
-                              ProjectConstant(expected_field, constant->second));
     } else if (MetadataColumns::IsMetadataColumn(field_id)) {
       child_projection.kind = FieldProjection::Kind::kMetadata;
     } else if (expected_field.initial_default() != nullptr) {

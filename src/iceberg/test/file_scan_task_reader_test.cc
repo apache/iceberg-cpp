@@ -497,8 +497,8 @@ TEST_F(FileScanTaskReaderTest, PartitionMetadataMatchesHistoricalFieldIds) {
                                                    .schemas = {table_schema_},
                                                    .projected_schema = projection}));
   ICEBERG_UNWRAP_OR_FAIL(auto stream, reader->Open(task));
-  VerifyStream(&stream, R"([["physical", 4, ["constant", null, 5]],
-                           ["physical", 4, ["constant", null, 5]]])");
+  VerifyStream(&stream, R"([["constant", 4, ["constant", null, 5]],
+                           ["constant", 4, ["constant", null, 5]]])");
 }
 
 TEST_F(FileScanTaskReaderTest, NullIdentityOverridesInitialDefault) {

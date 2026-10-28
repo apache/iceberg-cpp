@@ -593,15 +593,14 @@ class ProjectionBuilder {
       int32_t field_id = field.field_id();
       FieldProjection child_projection;
 
-      if (auto iter = field_context_map.find(field_id);
-          iter != field_context_map.cend()) {
+      if (auto constant = constants_.find(field_id); constant != constants_.end()) {
+        ICEBERG_ASSIGN_OR_RAISE(child_projection,
+                                ProjectConstant(field, constant->second));
+      } else if (auto iter = field_context_map.find(field_id);
+                 iter != field_context_map.cend()) {
         const auto& parquet_field = iter->second.parquet_field;
         ICEBERG_ASSIGN_OR_RAISE(child_projection, ProjectField(field, parquet_field,
                                                                iter->second.local_index));
-      } else if (auto constant = constants_.find(field_id);
-                 constant != constants_.end()) {
-        ICEBERG_ASSIGN_OR_RAISE(child_projection,
-                                ProjectConstant(field, constant->second));
       } else if (MetadataColumns::IsMetadataColumn(field_id)) {
         child_projection.kind = FieldProjection::Kind::kMetadata;
       } else if (field.initial_default() != nullptr) {

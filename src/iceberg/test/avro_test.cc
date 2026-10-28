@@ -500,9 +500,9 @@ TEST_P(AvroReaderParameterizedTest, ReadsPartitionConstants) {
       {MetadataColumns::kPartitionColumnId, StructConstant{{1001, Literal::Int(7)}}}};
   ICEBERG_UNWRAP_OR_FAIL(auto reader,
                          ReaderFactoryRegistry::Open(FileFormatType::kAvro, options));
-  VerifyNextBatch(*reader, R"([[1,"CN",null,[7,null]],
-                              [2,"CN",null,[7,null]],
-                              [3,"CN",null,[7,null]]])");
+  VerifyNextBatch(*reader, R"([[999,"CN",null,[7,null]],
+                              [999,"CN",null,[7,null]],
+                              [999,"CN",null,[7,null]]])");
   VerifyExhausted(*reader);
 }
 

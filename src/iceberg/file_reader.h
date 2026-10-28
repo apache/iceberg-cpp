@@ -128,8 +128,8 @@ struct ICEBERG_EXPORT ReaderOptions {
   /// \brief Format-specific or implementation-specific properties.
   ReaderProperties properties;
 
-  /// File-level values keyed by field ID, used when physical columns are absent.
-  /// Constants precede initial defaults and optional-field nulls.
+  /// File-level values keyed by field ID, overriding physical columns,
+  /// initial defaults and optional-field nulls, matching Iceberg Java.
   /// Example: `options.constants.emplace(2, Literal::String("CN"));`
   ColumnConstants constants;
 };
