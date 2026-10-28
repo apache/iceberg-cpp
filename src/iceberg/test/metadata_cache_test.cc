@@ -54,12 +54,18 @@ MetadataCacheOptions EnabledOptions(size_t max_total_bytes = 100,
 
 class CountingInputFile : public InputFile {
  public:
-  CountingInputFile(std::unique_ptr<InputFile> input_file, int* open_count)
-      : input_file_(std::move(input_file)), open_count_(open_count) {}
+  CountingInputFile(std::unique_ptr<InputFile> input_file, int* open_count,
+                    int* size_count)
+      : input_file_(std::move(input_file)),
+        open_count_(open_count),
+        size_count_(size_count) {}
 
   std::string_view location() const override { return input_file_->location(); }
 
-  Result<int64_t> Size() const override { return input_file_->Size(); }
+  Result<int64_t> Size() const override {
+    ++*size_count_;
+    return input_file_->Size();
+  }
 
   Result<std::unique_ptr<SeekableInputStream>> Open() override {
     ++*open_count_;
@@ -69,6 +75,7 @@ class CountingInputFile : public InputFile {
  private:
   std::unique_ptr<InputFile> input_file_;
   int* open_count_;
+  int* size_count_;
 };
 
 class CountingMockFileIO : public MockFileIO {
@@ -76,10 +83,28 @@ class CountingMockFileIO : public MockFileIO {
   Result<std::unique_ptr<InputFile>> NewInputFile(std::string file_location) override {
     ICEBERG_ASSIGN_OR_RAISE(auto input_file,
                             MockFileIO::NewInputFile(std::move(file_location)));
-    return std::make_unique<CountingInputFile>(std::move(input_file), &open_count);
+    return std::make_unique<CountingInputFile>(std::move(input_file), &open_count,
+                                               &size_count);
   }
 
   int open_count = 0;
+  int size_count = 0;
+};
+
+class NormalizingMockFileIO : public CountingMockFileIO {
+ public:
+  Result<std::unique_ptr<InputFile>> NewInputFile(std::string file_location) override {
+    if (fail_resolution) {
+      return IOError("Cannot resolve file location");
+    }
+    constexpr std::string_view kAliasPrefix = "alias://";
+    if (file_location.starts_with(kAliasPrefix)) {
+      file_location.erase(0, kAliasPrefix.size());
+    }
+    return CountingMockFileIO::NewInputFile(std::move(file_location));
+  }
+
+  bool fail_resolution = false;
 };
 
 struct FailingOpenState {
@@ -164,6 +189,64 @@ TEST(MetadataCacheTest, FileIOReusesCachedContentAcrossInputFiles) {
   ASSERT_THAT(second_stream.value()->Close(), IsOk());
 
   EXPECT_EQ(file_io.open_count, 1);
+}
+
+TEST(MetadataCacheTest, FileIOUsesNormalizedLocationForCacheHits) {
+  NormalizingMockFileIO file_io;
+  file_io.AddFile("manifest.avro", "manifest");
+  ASSERT_THAT(file_io.ConfigureMetadataCache(
+                  {{std::string(MetadataCacheOptions::kEnabled), "true"}}),
+              IsOk());
+
+  for (const auto* location :
+       {"alias://manifest.avro", "alias://manifest.avro", "manifest.avro"}) {
+    ICEBERG_UNWRAP_OR_FAIL(auto input_file, file_io.NewCachedInputFile(location));
+    EXPECT_EQ(input_file->location(), "manifest.avro");
+    ICEBERG_UNWRAP_OR_FAIL(auto stream, input_file->Open());
+    ASSERT_THAT(stream->Close(), IsOk());
+  }
+
+  EXPECT_EQ(file_io.size_count, 1);
+  EXPECT_EQ(file_io.open_count, 1);
+}
+
+TEST(MetadataCacheTest, FileIOInvalidatesNormalizedLocation) {
+  NormalizingMockFileIO file_io;
+  file_io.AddFile("manifest.avro", "manifest");
+  ASSERT_THAT(file_io.ConfigureMetadataCache(
+                  {{std::string(MetadataCacheOptions::kEnabled), "true"}}),
+              IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto input_file,
+                         file_io.NewCachedInputFile("alias://manifest.avro"));
+  ICEBERG_UNWRAP_OR_FAIL(auto stream, input_file->Open());
+  ASSERT_THAT(stream->Close(), IsOk());
+
+  for (const auto* location : {"alias://manifest.avro", "manifest.avro"}) {
+    file_io.InvalidateMetadataCache(location);
+    ICEBERG_UNWRAP_OR_FAIL(auto reloaded, input_file->Open());
+    ASSERT_THAT(reloaded->Close(), IsOk());
+  }
+
+  EXPECT_EQ(file_io.open_count, 3);
+}
+
+TEST(MetadataCacheTest, FileIOClearsCacheWhenInvalidationCannotResolveLocation) {
+  NormalizingMockFileIO file_io;
+  file_io.AddFile("manifest.avro", "manifest");
+  ASSERT_THAT(file_io.ConfigureMetadataCache(
+                  {{std::string(MetadataCacheOptions::kEnabled), "true"}}),
+              IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto input_file,
+                         file_io.NewCachedInputFile("alias://manifest.avro"));
+  ICEBERG_UNWRAP_OR_FAIL(auto stream, input_file->Open());
+  ASSERT_THAT(stream->Close(), IsOk());
+
+  file_io.fail_resolution = true;
+  file_io.InvalidateMetadataCache("alias://manifest.avro");
+  ICEBERG_UNWRAP_OR_FAIL(auto reloaded, input_file->Open());
+  ASSERT_THAT(reloaded->Close(), IsOk());
+
+  EXPECT_EQ(file_io.open_count, 2);
 }
 
 TEST(MetadataCacheTest, CachedInputFileDoesNotRetryNonIOErrors) {
@@ -472,6 +555,27 @@ TEST(MetadataCacheTest, ParsesJavaCompatibleProperties) {
   EXPECT_EQ(options->expiration_interval_ms, 1234);
   EXPECT_EQ(options->max_total_bytes, 200);
   EXPECT_EQ(options->max_content_length, 50);
+}
+
+TEST(MetadataCacheTest, ParsesEnabledPropertyIgnoringCase) {
+  for (const auto* value : {"true", "TRUE", "True", "tRuE"}) {
+    SCOPED_TRACE(value);
+    ICEBERG_UNWRAP_OR_FAIL(auto options,
+                           MetadataCacheOptions::FromProperties(
+                               {{std::string(MetadataCacheOptions::kEnabled), value}}));
+    EXPECT_TRUE(options.enabled);
+  }
+}
+
+TEST(MetadataCacheTest, TreatsOtherEnabledPropertyValuesAsFalseLikeJava) {
+  for (const auto* value :
+       {"false", "FALSE", "False", "fAlSe", "", "yes", "1", "ture", " true "}) {
+    SCOPED_TRACE(value);
+    ICEBERG_UNWRAP_OR_FAIL(auto options,
+                           MetadataCacheOptions::FromProperties(
+                               {{std::string(MetadataCacheOptions::kEnabled), value}}));
+    EXPECT_FALSE(options.enabled);
+  }
 }
 
 TEST(MetadataCacheTest, UsesJavaCompatibleDefaults) {

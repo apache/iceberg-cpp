@@ -176,6 +176,9 @@ class ICEBERG_EXPORT FileIO {
   bool MetadataCacheEnabled() const;
 
   /// \brief Invalidate a cached metadata file location.
+  ///
+  /// Resolve the location through NewInputFile to match the cache key used by reads.
+  /// If resolution fails, clear the cache to avoid retaining stale content.
   void InvalidateMetadataCache(std::string_view file_location);
 
   /// \brief Clear cached metadata file content.

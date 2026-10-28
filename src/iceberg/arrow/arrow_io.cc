@@ -431,8 +431,8 @@ class ArrowInputFile : public InputFile {
     ::arrow::fs::FileInfo file_info(path_, ::arrow::fs::FileType::File);
     ICEBERG_ARROW_ASSIGN_OR_RETURN(auto input, fs_->OpenInputFile(file_info));
     ICEBERG_ARROW_ASSIGN_OR_RETURN(auto size, input->GetSize());
+    ICEBERG_ARROW_RETURN_NOT_OK(input->Close());
     file_size_ = size;
-    pending_input_ = std::move(input);
     return size;
   }
 
@@ -443,12 +443,6 @@ class ArrowInputFile : public InputFile {
 
   Result<std::shared_ptr<::arrow::io::RandomAccessFile>> OpenArrowFile() {
     std::lock_guard lock(mutex_);
-    if (pending_input_ != nullptr) {
-      auto input = std::move(pending_input_);
-      pending_input_.reset();
-      return input;
-    }
-
     ::arrow::fs::FileInfo file_info(path_, ::arrow::fs::FileType::File);
     if (file_size_.has_value()) {
       file_info.set_size(*file_size_);
@@ -462,7 +456,6 @@ class ArrowInputFile : public InputFile {
   std::string location_;
   std::string path_;
   mutable std::optional<int64_t> file_size_;
-  mutable std::shared_ptr<::arrow::io::RandomAccessFile> pending_input_;
   mutable std::mutex mutex_;
 };
 

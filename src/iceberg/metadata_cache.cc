@@ -34,16 +34,6 @@ namespace iceberg {
 
 namespace {
 
-Result<bool> ParseBoolean(std::string_view key, const std::string& value) {
-  if (value == "true") {
-    return true;
-  }
-  if (value == "false") {
-    return false;
-  }
-  return InvalidArgument("Invalid boolean value '{}' for property {}", value, key);
-}
-
 template <typename T>
 Result<T> ParseNumberProperty(
     const std::unordered_map<std::string, std::string>& properties, std::string_view key,
@@ -66,7 +56,7 @@ Result<MetadataCacheOptions> MetadataCacheOptions::FromProperties(
     const std::unordered_map<std::string, std::string>& properties) {
   MetadataCacheOptions options;
   if (auto it = properties.find(std::string(kEnabled)); it != properties.end()) {
-    ICEBERG_ASSIGN_OR_RAISE(options.enabled, ParseBoolean(kEnabled, it->second));
+    options.enabled = StringUtils::ParseBoolean(it->second);
   }
 
   ICEBERG_ASSIGN_OR_RAISE(options.expiration_interval_ms,

@@ -238,7 +238,7 @@ Result<std::unique_ptr<InputFile>> FileIO::NewCachedInputFile(
     return input_file;
   }
 
-  if (auto cached = cache->GetIfPresent(file_location)) {
+  if (auto cached = cache->GetIfPresent(input_file->location())) {
     return std::make_unique<CachedInputFile>(std::move(input_file), std::move(cache),
                                              static_cast<int64_t>(cached->size()));
   }
@@ -284,9 +284,16 @@ bool FileIO::MetadataCacheEnabled() const {
 
 void FileIO::InvalidateMetadataCache(std::string_view file_location) {
   auto cache = GetMetadataCache();
-  if (cache != nullptr) {
-    cache->Invalidate(file_location);
+  if (cache == nullptr || !cache->options().enabled) {
+    return;
   }
+  auto input_file = NewInputFile(std::string(file_location));
+  if (!input_file.has_value()) {
+    // A deleted or inaccessible file may no longer resolve to its cache key.
+    cache->Clear();
+    return;
+  }
+  cache->Invalidate(input_file.value()->location());
 }
 
 void FileIO::ClearMetadataCache() {
