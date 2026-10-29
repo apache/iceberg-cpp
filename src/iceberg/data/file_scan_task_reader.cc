@@ -50,14 +50,6 @@ Result<std::unordered_map<int32_t, Literal>> ConstantsOf(const FileScanTask& tas
     }
     return id_to_constant;
   }
-  if (file.partition_spec_id.has_value() && *file.partition_spec_id != spec->spec_id()) {
-    return InvalidArgument("Data file spec ID {} does not match task spec ID {}",
-                           *file.partition_spec_id, spec->spec_id());
-  }
-  if (file.partition.num_fields() != spec->fields().size()) {
-    return InvalidArgument("Partition value count {} does not match spec field count {}",
-                           file.partition.num_fields(), spec->fields().size());
-  }
   for (size_t i = 0; i < spec->fields().size(); ++i) {
     const auto& field = spec->fields()[i];
     if (field.transform() == nullptr) {

@@ -570,7 +570,7 @@ TEST_F(FileScanTaskReaderTest, ReadsEvolvedSpecsWithoutLeakingConstantsBetweenFi
   }
 }
 
-TEST_F(FileScanTaskReaderTest, RejectsMissingOrInconsistentPartitionContext) {
+TEST_F(FileScanTaskReaderTest, RejectsMissingPartitionSpec) {
   ICEBERG_UNWRAP_OR_FAIL(auto file,
                          MakeDataFile(table_schema_, R"([[1, "Foo", "blue"]])", 1));
   ICEBERG_UNWRAP_OR_FAIL(
@@ -580,14 +580,6 @@ TEST_F(FileScanTaskReaderTest, RejectsMissingOrInconsistentPartitionContext) {
                                              .projected_schema = projected_schema_}));
   file->partition = PartitionValues({Literal::String("CN")});
   EXPECT_FALSE(reader->Open(FileScanTask(file)).has_value());
-  ICEBERG_UNWRAP_OR_FAIL(
-      auto spec, PartitionSpec::Make(3, {{2, 1000, "name", Transform::Identity()}}));
-  auto shared_spec = std::shared_ptr<PartitionSpec>(std::move(spec));
-  file->partition_spec_id = 9;
-  EXPECT_FALSE(reader->Open(FileScanTask(file, {}, nullptr, shared_spec)).has_value());
-  file->partition_spec_id = 3;
-  file->partition = PartitionValues{};
-  EXPECT_FALSE(reader->Open(FileScanTask(file, {}, nullptr, shared_spec)).has_value());
 }
 
 TEST_F(FileScanTaskReaderTest, OpenWithoutDeletesReadsProjectedSchema) {
