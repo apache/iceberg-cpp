@@ -197,7 +197,24 @@ std::string ToString(const MetadataLogEntry& entry) {
 Result<std::unique_ptr<TableMetadata>> TableMetadata::Make(
     const iceberg::Schema& schema, const iceberg::PartitionSpec& spec,
     const iceberg::SortOrder& sort_order, const std::string& location,
+    const std::unordered_map<std::string, std::string>& properties) {
+  auto persisted_properties = properties;
+  int format_version = kDefaultTableFormatVersion;
+  if (auto it = persisted_properties.find(TableProperties::kFormatVersion.key());
+      it != persisted_properties.end()) {
+    ICEBERG_ASSIGN_OR_RAISE(format_version,
+                            StringUtils::ParseNumber<int32_t>(it->second));
+    persisted_properties.erase(it);
+  }
+  return Make(schema, spec, sort_order, location, persisted_properties, format_version);
+}
+
+Result<std::unique_ptr<TableMetadata>> TableMetadata::Make(
+    const iceberg::Schema& schema, const iceberg::PartitionSpec& spec,
+    const iceberg::SortOrder& sort_order, const std::string& location,
     const std::unordered_map<std::string, std::string>& properties, int format_version) {
+  ICEBERG_PRECHECK(format_version >= 1 && format_version <= kSupportedTableFormatVersion,
+                   "Unsupported table format version: {}", format_version);
   for (const auto& [key, _] : properties) {
     if (TableProperties::reserved_properties().contains(key)) {
       return InvalidArgument(
@@ -556,6 +573,8 @@ Result<std::string> TableMetadataUtil::NewTableMetadataFilePath(const TableMetad
     return std::format("{}/{}", LocationUtil::StripTrailingSlash(metadata_location),
                        filename);
   } else {
+    ICEBERG_PRECHECK(!meta.location.empty(),
+                     "Cannot generate a metadata file location without a table location");
     return std::format("{}/{}/{}", meta.location, kMetadataFolderName, filename);
   }
 }
@@ -748,7 +767,8 @@ Status TableMetadataBuilder::Impl::AssignUUID(std::string_view uuid) {
 
 Status TableMetadataBuilder::Impl::UpgradeFormatVersion(int8_t new_format_version) {
   // Check that the new format version is supported
-  if (new_format_version > TableMetadata::kSupportedTableFormatVersion) {
+  if (new_format_version < 1 ||
+      new_format_version > TableMetadata::kSupportedTableFormatVersion) {
     return InvalidArgument(
         "Cannot upgrade table to unsupported format version: v{} (supported: v{})",
         new_format_version, TableMetadata::kSupportedTableFormatVersion);
@@ -763,6 +783,16 @@ Status TableMetadataBuilder::Impl::UpgradeFormatVersion(int8_t new_format_versio
   // No-op if the version is the same
   if (new_format_version == metadata_.format_version) {
     return {};
+  }
+
+  // Create transactions apply the version before adding their first schema.
+  if (new_format_version >= 4 && !metadata_.schemas.empty()) {
+    ICEBERG_ASSIGN_OR_RAISE(auto schema, metadata_.Schema());
+    if (!schema->IdentifierFieldIds().empty()) {
+      return NotSupported(
+          "Cannot upgrade a table with identifier fields to v4: primary-key "
+          "constraint migration is not supported yet");
+    }
   }
 
   // Update the format version
@@ -1089,6 +1119,21 @@ Status TableMetadataBuilder::Impl::AddSnapshot(std::shared_ptr<Snapshot> snapsho
                 "Attempting to add a snapshot before a sort order is added");
   ICEBERG_CHECK(!snapshots_by_id_.contains(snapshot->snapshot_id),
                 "Snapshot already exists for id: {}", snapshot->snapshot_id);
+  if (metadata_.format_version >= TableMetadata::kMinFormatVersionRootManifest) {
+    ICEBERG_CHECK(snapshot->root_manifest.has_value() &&
+                      !snapshot->root_manifest->empty() &&
+                      snapshot->manifest_list.empty(),
+                  "New v4 snapshots require root-manifest instead of manifest-list");
+  }
+  if (metadata_.format_version >= TableMetadata::kMinFormatVersionMonotonicTimestamps &&
+      snapshot->parent_snapshot_id.has_value()) {
+    auto parent = snapshots_by_id_.find(snapshot->parent_snapshot_id.value());
+    if (parent != snapshots_by_id_.end() &&
+        snapshot->timestamp_ms <= parent->second->timestamp_ms) {
+      return RetryableValidationFailed(
+          "V4 snapshot timestamp must be greater than its parent timestamp");
+    }
+  }
   if (metadata_.format_version != 1 &&
       snapshot->sequence_number <= metadata_.last_sequence_number &&
       snapshot->parent_snapshot_id.has_value()) {
@@ -1373,6 +1418,15 @@ Result<std::vector<SnapshotLogEntry>> TableMetadataBuilder::Impl::UpdateSnapshot
 
 Result<std::unique_ptr<TableMetadata>> TableMetadataBuilder::Impl::Build() {
   // 1. Validate metadata consistency through TableMetadata#Validate
+  ICEBERG_PRECHECK(
+      metadata_.format_version >= 1 &&
+          metadata_.format_version <= TableMetadata::kSupportedTableFormatVersion,
+      "Unsupported table format version: {}", metadata_.format_version);
+  if (metadata_.format_version >= TableMetadata::kMinFormatVersionOptionalLocation) {
+    ICEBERG_PRECHECK(metadata_.location.empty() ||
+                         !LocationUtil::ParseScheme(metadata_.location).empty(),
+                     "V4 table location must be absolute: {}", metadata_.location);
+  }
 
   // 2. Update last_updated_ms if there are changes
   if (metadata_.last_updated_ms == kInvalidLastUpdatedMs) {
@@ -1387,6 +1441,11 @@ Result<std::unique_ptr<TableMetadata>> TableMetadataBuilder::Impl::Build() {
                    "Current schema ID {} not found in schemas", current_schema_id);
   {
     const auto& current_schema = schema_it->second;
+    if (metadata_.format_version >= 4 && !current_schema->IdentifierFieldIds().empty()) {
+      return NotSupported(
+          "V4 primary-key constraints are not supported yet; "
+          "identifier-field-ids cannot be written in v4 schemas");
+    }
 
     auto spec_it = specs_by_id_.find(metadata_.default_spec_id);
     ICEBERG_PRECHECK(spec_it != specs_by_id_.end(),

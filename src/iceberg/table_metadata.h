@@ -72,7 +72,12 @@ struct ICEBERG_EXPORT MetadataLogEntry {
 /// (4) Map<String, SnapshotRef>
 struct ICEBERG_EXPORT TableMetadata {
   static constexpr int8_t kDefaultTableFormatVersion = 2;
-  static constexpr int8_t kSupportedTableFormatVersion = 3;
+  /// Highest supported table metadata version. V4 manifest tree I/O is not yet
+  /// implemented.
+  static constexpr int8_t kSupportedTableFormatVersion = 4;
+  static constexpr int8_t kMinFormatVersionOptionalLocation = 4;
+  static constexpr int8_t kMinFormatVersionRootManifest = 4;
+  static constexpr int8_t kMinFormatVersionMonotonicTimestamps = 4;
   static constexpr int8_t kMinFormatVersionRowLineage = 3;
   static constexpr int8_t kMinFormatVersionDefaultValues = 3;
   static constexpr int64_t kInitialSequenceNumber = 0;
@@ -87,7 +92,8 @@ struct ICEBERG_EXPORT TableMetadata {
   int8_t format_version;
   /// A UUID that identifies the table
   std::string table_uuid;
-  /// The table's base location
+  /// The table's base location. Empty represents an omitted location in v4
+  /// metadata; a catalog must provide the location before resolving relative paths.
   std::string location;
   /// The table's highest assigned sequence number
   int64_t last_sequence_number;
@@ -135,8 +141,12 @@ struct ICEBERG_EXPORT TableMetadata {
   static Result<std::unique_ptr<TableMetadata>> Make(
       const iceberg::Schema& schema, const iceberg::PartitionSpec& spec,
       const iceberg::SortOrder& sort_order, const std::string& location,
-      const std::unordered_map<std::string, std::string>& properties,
-      int format_version = kDefaultTableFormatVersion);
+      const std::unordered_map<std::string, std::string>& properties);
+
+  static Result<std::unique_ptr<TableMetadata>> Make(
+      const iceberg::Schema& schema, const iceberg::PartitionSpec& spec,
+      const iceberg::SortOrder& sort_order, const std::string& location,
+      const std::unordered_map<std::string, std::string>& properties, int format_version);
 
   /// \brief Get the current schema, return NotFoundError if not found
   /// \note The returned schema is guaranteed to be not null

@@ -173,7 +173,8 @@ bool Snapshot::Equals(const Snapshot& other) const {
          parent_snapshot_id == other.parent_snapshot_id &&
          sequence_number == other.sequence_number && timestamp_ms == other.timestamp_ms &&
          schema_id == other.schema_id && first_row_id == other.first_row_id &&
-         added_rows == other.added_rows && key_id == other.key_id;
+         added_rows == other.added_rows && key_id == other.key_id &&
+         root_manifest == other.root_manifest;
 }
 
 Result<std::unique_ptr<Snapshot>> Snapshot::Make(
@@ -205,6 +206,9 @@ Result<std::unique_ptr<Snapshot>> Snapshot::Make(
 
 Result<SnapshotReader::ManifestsCache> SnapshotReader::InitManifestsCache(
     const Snapshot* snapshot, std::shared_ptr<FileIO> file_io) {
+  if (snapshot->root_manifest.has_value()) {
+    return NotSupported("Reading v4 root manifests is not supported yet");
+  }
   if (file_io == nullptr) {
     return InvalidArgument("Cannot cache manifests: FileIO is null");
   }

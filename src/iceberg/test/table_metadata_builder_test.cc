@@ -432,7 +432,7 @@ TEST(TableMetadataBuilderTest, UpgradeFormatVersion) {
 
   // Unsupported format version should fail
   builder = TableMetadataBuilder::BuildFromEmpty(3);
-  builder->UpgradeFormatVersion(4);
+  builder->UpgradeFormatVersion(5);
   EXPECT_THAT(builder->Build(),
               HasErrorMessage("Cannot upgrade table to unsupported format version"));
 
