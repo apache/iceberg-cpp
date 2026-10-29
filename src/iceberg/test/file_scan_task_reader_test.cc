@@ -512,17 +512,21 @@ TEST_F(FileScanTaskReaderTest, ReadsEvolvedSpecsWithoutLeakingConstantsBetweenFi
   };
   auto identity_spec = std::shared_ptr<PartitionSpec>(std::move(identity));
   const std::vector<Case> cases{
-      {identity_spec, PartitionValues(Literal::String("CN")),
-       R"([[1, "CN"], [2, "CN"], [3, "CN"]])"},
-      {std::move(unpartitioned), PartitionValues(),
-       R"([[1, "file"], [2, "file"], [3, "file"]])"},
-      {std::move(bucket), PartitionValues(Literal::Int(3)),
-       R"([[1, "file"], [2, "file"], [3, "file"]])"},
-      {std::move(reordered),
-       PartitionValues({Literal::String("retired"), Literal::String("US")}),
-       R"([[1, "US"], [2, "US"], [3, "US"]])"},
-      {identity_spec, PartitionValues(Literal::Null(string())),
-       "[[1, null], [2, null], [3, null]]"}};
+      {.spec = identity_spec,
+       .partition = PartitionValues(Literal::String("CN")),
+       .expected = R"([[1, "CN"], [2, "CN"], [3, "CN"]])"},
+      {.spec = std::move(unpartitioned),
+       .partition = PartitionValues(),
+       .expected = R"([[1, "file"], [2, "file"], [3, "file"]])"},
+      {.spec = std::move(bucket),
+       .partition = PartitionValues(Literal::Int(3)),
+       .expected = R"([[1, "file"], [2, "file"], [3, "file"]])"},
+      {.spec = std::move(reordered),
+       .partition = PartitionValues({Literal::String("retired"), Literal::String("US")}),
+       .expected = R"([[1, "US"], [2, "US"], [3, "US"]])"},
+      {.spec = identity_spec,
+       .partition = PartitionValues(Literal::Null(string())),
+       .expected = "[[1, null], [2, null], [3, null]]"}};
   // The current schema omits category, but historical task schemas retain its type.
   ICEBERG_UNWRAP_OR_FAIL(
       auto reader, FileScanTaskReader::Make({.io = file_io_,
