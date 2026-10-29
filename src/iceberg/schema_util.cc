@@ -170,9 +170,7 @@ Result<FieldProjection> ProjectNested(
     FieldProjection child_projection;
 
     if (auto constant = id_to_constant.find(field_id); constant != id_to_constant.end()) {
-      child_projection.kind = constant->second.IsNull()
-                                  ? FieldProjection::Kind::kNull
-                                  : FieldProjection::Kind::kConstant;
+      child_projection.kind = FieldProjection::Kind::kConstant;
       child_projection.from = constant->second;
     } else if (auto iter = source_field_map.find(field_id);
                iter != source_field_map.cend()) {

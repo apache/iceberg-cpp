@@ -497,7 +497,8 @@ TEST_F(FileScanTaskReaderTest, NullIdentityOverridesInitialDefault) {
   VerifyStream(&stream, "[[null], [null], [null]]");
 }
 
-TEST_F(FileScanTaskReaderTest, ReadsEvolvedSpecsWithoutLeakingConstantsBetweenFiles) {
+TEST_F(FileScanTaskReaderTest,
+       ReadsTaskSpecificSpecsWithoutLeakingConstantsBetweenFiles) {
   ICEBERG_UNWRAP_OR_FAIL(
       auto identity, PartitionSpec::Make(7, {{2, 1000, "name", Transform::Identity()}}));
   ICEBERG_UNWRAP_OR_FAIL(auto unpartitioned, PartitionSpec::Make(8, {}));

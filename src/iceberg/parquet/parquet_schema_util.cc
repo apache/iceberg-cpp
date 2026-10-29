@@ -591,9 +591,7 @@ class ProjectionBuilder {
 
       if (auto constant = id_to_constant_.find(field_id);
           constant != id_to_constant_.end()) {
-        child_projection.kind = constant->second.IsNull()
-                                    ? FieldProjection::Kind::kNull
-                                    : FieldProjection::Kind::kConstant;
+        child_projection.kind = FieldProjection::Kind::kConstant;
         child_projection.from = constant->second;
       } else if (auto iter = field_context_map.find(field_id);
                  iter != field_context_map.cend()) {

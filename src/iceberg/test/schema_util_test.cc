@@ -122,7 +122,7 @@ TEST(SchemaUtilTest, ProjectConstantsFillMissingFields) {
   ASSERT_THAT(projection, IsOk());
   ASSERT_EQ(projection->fields.size(), 2);
   EXPECT_EQ(projection->fields[0].kind, FieldProjection::Kind::kConstant);
-  EXPECT_EQ(projection->fields[1].kind, FieldProjection::Kind::kNull);
+  EXPECT_EQ(projection->fields[1].kind, FieldProjection::Kind::kConstant);
 }
 
 TEST(SchemaUtilTest, ProjectConstantsIntoExistingStruct) {

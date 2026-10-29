@@ -753,9 +753,7 @@ Result<FieldProjection> ProjectStruct(
     FieldProjection child_projection;
 
     if (auto constant = id_to_constant.find(field_id); constant != id_to_constant.end()) {
-      child_projection.kind = constant->second.IsNull()
-                                  ? FieldProjection::Kind::kNull
-                                  : FieldProjection::Kind::kConstant;
+      child_projection.kind = FieldProjection::Kind::kConstant;
       child_projection.from = constant->second;
     } else if (auto iter = node_info_map.find(field_id); iter != node_info_map.cend()) {
       ICEBERG_ASSIGN_OR_RAISE(
