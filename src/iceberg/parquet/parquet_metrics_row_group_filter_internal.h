@@ -25,7 +25,6 @@
 
 #include <parquet/arrow/schema.h>
 
-#include "iceberg/expression/literal.h"
 #include "iceberg/iceberg_bundle_export.h"
 #include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
@@ -39,8 +38,7 @@ class ICEBERG_BUNDLE_EXPORT ParquetMetricsRowGroupFilter {
  public:
   static Result<std::unique_ptr<ParquetMetricsRowGroupFilter>> Make(
       const std::shared_ptr<Expression>& filter,
-      const ::parquet::SchemaDescriptor& file_schema,
-      const std::unordered_map<int32_t, Literal>& id_to_constant = {});
+      const ::parquet::SchemaDescriptor& file_schema);
 
   Result<bool> ShouldRead(const ::parquet::arrow::SchemaManifest& manifest,
                           const ::parquet::RowGroupMetaData& row_group) const;

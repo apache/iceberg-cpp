@@ -318,9 +318,8 @@ class ParquetReader::Impl {
         ICEBERG_ASSIGN_OR_RAISE(
             filter, Binder::Bind(*options.projection, filter, options.case_sensitive));
       }
-      ICEBERG_ASSIGN_OR_RAISE(
-          stats_filter_, ParquetMetricsRowGroupFilter::Make(
-                             filter, *reader_->manifest().descr, options.id_to_constant));
+      ICEBERG_ASSIGN_OR_RAISE(stats_filter_, ParquetMetricsRowGroupFilter::Make(
+                                                 filter, *reader_->manifest().descr));
     }
 
     ICEBERG_RETURN_UNEXPECTED(PlanRowGroups(options));

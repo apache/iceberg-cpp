@@ -291,14 +291,12 @@ class MetricsVisitor : public BoundVisitor<bool> {
 
 Result<std::unique_ptr<ParquetMetricsRowGroupFilter>> ParquetMetricsRowGroupFilter::Make(
     const std::shared_ptr<Expression>& filter,
-    const ::parquet::SchemaDescriptor& file_schema,
-    const std::unordered_map<int32_t, Literal>& id_to_constant) {
+    const ::parquet::SchemaDescriptor& file_schema) {
   auto result =
       std::unique_ptr<ParquetMetricsRowGroupFilter>(new ParquetMetricsRowGroupFilter());
   for (int i = 0; i < file_schema.num_columns(); ++i) {
     auto id = file_schema.Column(i)->schema_node()->field_id();
-    // Footer statistics describe physical values, not substituted constants.
-    if (id >= 0 && !id_to_constant.contains(id)) {
+    if (id >= 0) {
       result->field_id_to_column_idx_.emplace(id, i);
     }
   }
