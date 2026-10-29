@@ -494,6 +494,75 @@ TEST_F(FileScanTaskReaderTest, NullIdentityOverridesInitialDefault) {
   VerifyStream(&stream, "[[null], [null], [null]]");
 }
 
+TEST_F(FileScanTaskReaderTest, ReadsEvolvedSpecsWithoutLeakingConstantsBetweenFiles) {
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto identity, PartitionSpec::Make(7, {{2, 1000, "name", Transform::Identity()}}));
+  ICEBERG_UNWRAP_OR_FAIL(auto unpartitioned, PartitionSpec::Make(8, {}));
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto bucket,
+      PartitionSpec::Make(9, {{2, 1001, "name_bucket", Transform::Bucket(16)}}));
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto reordered,
+      PartitionSpec::Make(10, {{3, 1002, "category", Transform::Identity()},
+                               {2, 1000, "renamed_name", Transform::Identity()}}));
+  struct Case {
+    std::shared_ptr<PartitionSpec> spec;
+    PartitionValues partition;
+    std::string expected;
+  };
+  auto identity_spec = std::shared_ptr<PartitionSpec>(std::move(identity));
+  const std::vector<Case> cases{
+      {identity_spec, PartitionValues(Literal::String("CN")),
+       R"([[1, "CN"], [2, "CN"], [3, "CN"]])"},
+      {std::move(unpartitioned), PartitionValues(),
+       R"([[1, "file"], [2, "file"], [3, "file"]])"},
+      {std::move(bucket), PartitionValues(Literal::Int(3)),
+       R"([[1, "file"], [2, "file"], [3, "file"]])"},
+      {std::move(reordered),
+       PartitionValues({Literal::String("retired"), Literal::String("US")}),
+       R"([[1, "US"], [2, "US"], [3, "US"]])"},
+      {identity_spec, PartitionValues(Literal::Null(string())),
+       "[[1, null], [2, null], [3, null]]"}};
+  // The current schema omits category, but historical task schemas retain its type.
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto reader, FileScanTaskReader::Make({.io = file_io_,
+                                             .table_schema = projected_schema_,
+                                             .schemas = {table_schema_},
+                                             .projected_schema = projected_schema_}));
+  std::vector<std::shared_ptr<::arrow::RecordBatchReader>> readers;
+  for (const auto& test : cases) {
+    SCOPED_TRACE(test.spec->spec_id());
+    ICEBERG_UNWRAP_OR_FAIL(
+        auto file,
+        MakeDataFile(projected_schema_, R"([[1, "file"], [2, "file"], [3, "file"]])"));
+    file->partition_spec_id = test.spec->spec_id();
+    file->partition = test.partition;
+    ICEBERG_UNWRAP_OR_FAIL(auto json,
+                           ToJson(FileScanTask(file, {}, nullptr, test.spec),
+                                  {{test.spec->spec_id(), test.spec}}, *table_schema_));
+    ICEBERG_UNWRAP_OR_FAIL(auto task, FileScanTaskFromJson(json));
+    ICEBERG_UNWRAP_OR_FAIL(auto stream, reader->Open(*task));
+    auto imported = ::arrow::ImportRecordBatchReader(&stream);
+    ASSERT_TRUE(imported.ok()) << imported.status().ToString();
+    readers.push_back(imported.ValueOrDie());
+  }
+  // Keep all streams alive to detect accidental sharing of per-file constants.
+  for (size_t i = 0; i < cases.size(); ++i) {
+    SCOPED_TRACE(i);
+    auto next = readers[i]->Next();
+    ASSERT_TRUE(next.ok()) << next.status().ToString();
+    auto batch = next.ValueOrDie();
+    ASSERT_NE(batch, nullptr);
+    ASSERT_TRUE(batch->ValidateFull().ok());
+    ICEBERG_UNWRAP_OR_FAIL(auto expected,
+                           MakeRecordBatch(batch->schema(), cases[i].expected));
+    EXPECT_TRUE(batch->Equals(*expected));
+    next = readers[i]->Next();
+    ASSERT_TRUE(next.ok()) << next.status().ToString();
+    EXPECT_EQ(next.ValueOrDie(), nullptr);
+  }
+}
+
 TEST_F(FileScanTaskReaderTest, RejectsMissingOrInconsistentPartitionContext) {
   ICEBERG_UNWRAP_OR_FAIL(auto file,
                          MakeDataFile(table_schema_, R"([[1, "Foo", "blue"]])", 1));

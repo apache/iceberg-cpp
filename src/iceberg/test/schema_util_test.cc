@@ -101,6 +101,12 @@ std::shared_ptr<Type> CreateMapOfList() {
 
 }  // namespace
 
+TEST(SchemaUtilTest, ProjectConstantRejectsMissingFieldType) {
+  auto field = SchemaField::MakeOptional(1, "invalid", nullptr);
+  ASSERT_THAT(ProjectConstant(field, Literal::Long(7)),
+              IsError(ErrorKind::kInvalidSchema));
+}
+
 TEST(SchemaUtilTest, ProjectIdenticalSchemas) {
   Schema schema = CreateFlatSchema();
 

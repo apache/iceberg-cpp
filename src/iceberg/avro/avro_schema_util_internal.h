@@ -142,7 +142,7 @@ class HasIdVisitor {
 /// \param expected_schema The Iceberg Schema that defines the expected structure.
 /// \param avro_node The Avro node to read data from.
 /// \param prune_source Whether the source schema can be pruned.
-/// \param constants File-level values used for fields absent from the file.
+/// \param constants File-level values that override physical fields and defaults.
 /// \return The schema projection result.
 Result<SchemaProjection> Project(const Schema& expected_schema,
                                  const ::avro::NodePtr& avro_node, bool prune_source,

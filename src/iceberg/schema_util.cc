@@ -196,8 +196,8 @@ Result<FieldProjection> ProjectNested(const Type& expected_type, const Type& sou
 
 Result<FieldProjection> ProjectConstant(const SchemaField& field,
                                         const Literal& literal) {
-  if (!field.type()->is_primitive() || literal.type() == nullptr ||
-      literal.IsAboveMax() || literal.IsBelowMin()) {
+  if (field.type() == nullptr || !field.type()->is_primitive() ||
+      literal.type() == nullptr || literal.IsAboveMax() || literal.IsBelowMin()) {
     return InvalidSchema("Invalid constant for field {}", field.field_id());
   }
   ICEBERG_RETURN_UNEXPECTED(ValidateSchemaEvolution(*field.type(), *literal.type()));
