@@ -278,10 +278,13 @@ TEST_F(ParquetRowGroupFilterTest, MissingNullCountRetainsNullBranches) {
     bool should_read;
   };
   for (const auto& test : std::vector<Case>{
-           {Expressions::IsNull("key"), true},
-           {Expressions::NotNull("key"), true},
-           {Expressions::Not(Expressions::GreaterThan("key", Literal::Int(100))), true},
-           {Expressions::LessThan("key", Literal::Int(100)), false}}) {
+           {.filter = Expressions::IsNull("key"), .should_read = true},
+           {.filter = Expressions::NotNull("key"), .should_read = true},
+           {.filter =
+                Expressions::Not(Expressions::GreaterThan("key", Literal::Int(100))),
+            .should_read = true},
+           {.filter = Expressions::LessThan("key", Literal::Int(100)),
+            .should_read = false}}) {
     SCOPED_TRACE(test.filter->ToString());
     ICEBERG_UNWRAP_OR_FAIL(auto filter,
                            ParquetMetricsRowGroupFilter::Make(Options(test.filter).filter,
