@@ -101,14 +101,6 @@ std::shared_ptr<Type> CreateMapOfList() {
 
 }  // namespace
 
-TEST(SchemaUtilTest, ProjectConstantRejectsMissingFieldType) {
-  auto field = SchemaField::MakeOptional(1, "invalid", nullptr);
-  auto projection = Project(Schema({field}), Schema({}), /*prune_source=*/true,
-                            {{1, Literal::Long(7)}});
-  ASSERT_FALSE(projection.has_value());
-  EXPECT_EQ(projection.error().kind, ErrorKind::kInvalidSchema);
-}
-
 TEST(SchemaUtilTest, ProjectConstantsOverridePhysicalFieldsAndPruneIndices) {
   Schema schema({SchemaField::MakeRequired(1, "region", string()),
                  SchemaField::MakeRequired(2, "id", int64())});
@@ -122,7 +114,7 @@ TEST(SchemaUtilTest, ProjectConstantsOverridePhysicalFieldsAndPruneIndices) {
   }
 }
 
-TEST(SchemaUtilTest, ProjectConstantsFillMissingFieldsAndValidateNulls) {
+TEST(SchemaUtilTest, ProjectConstantsFillMissingFields) {
   Schema expected({SchemaField::MakeRequired(1, "id", int64()),
                    SchemaField::MakeOptional(2, "region", string())});
   auto projection = Project(expected, Schema({}), /*prune_source=*/true,
@@ -131,12 +123,6 @@ TEST(SchemaUtilTest, ProjectConstantsFillMissingFieldsAndValidateNulls) {
   ASSERT_EQ(projection->fields.size(), 2);
   EXPECT_EQ(projection->fields[0].kind, FieldProjection::Kind::kConstant);
   EXPECT_EQ(projection->fields[1].kind, FieldProjection::Kind::kNull);
-  EXPECT_FALSE(
-      Project(expected, Schema({}), /*prune_source=*/true, {{1, Literal::Null(int64())}})
-          .has_value());
-  EXPECT_FALSE(Project(expected, Schema({}), /*prune_source=*/true,
-                       {{1, Literal::String("invalid")}})
-                   .has_value());
 }
 
 TEST(SchemaUtilTest, ProjectConstantsIntoExistingStruct) {

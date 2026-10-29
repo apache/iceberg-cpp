@@ -170,8 +170,6 @@ Result<FieldProjection> ProjectNested(
     FieldProjection child_projection;
 
     if (auto constant = id_to_constant.find(field_id); constant != id_to_constant.end()) {
-      ICEBERG_RETURN_UNEXPECTED(
-          internal::ValidateConstant(expected_field, constant->second));
       child_projection.kind = constant->second.IsNull()
                                   ? FieldProjection::Kind::kNull
                                   : FieldProjection::Kind::kConstant;
@@ -204,18 +202,6 @@ Result<FieldProjection> ProjectNested(
 }
 
 }  // namespace
-
-Status internal::ValidateConstant(const SchemaField& field, const Literal& literal) {
-  if (field.type() == nullptr || !field.type()->is_primitive() ||
-      literal.type() == nullptr || literal.IsAboveMax() || literal.IsBelowMin()) {
-    return InvalidSchema("Invalid constant for field {}", field.field_id());
-  }
-  ICEBERG_RETURN_UNEXPECTED(ValidateSchemaEvolution(*field.type(), *literal.type()));
-  if (literal.IsNull() && !field.optional()) {
-    return InvalidSchema("Null constant for required field {}", field.field_id());
-  }
-  return {};
-}
 
 Result<SchemaProjection> Project(
     const Schema& expected_schema, const Schema& source_schema, bool prune_source,

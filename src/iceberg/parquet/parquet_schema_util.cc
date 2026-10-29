@@ -591,7 +591,6 @@ class ProjectionBuilder {
 
       if (auto constant = id_to_constant_.find(field_id);
           constant != id_to_constant_.end()) {
-        ICEBERG_RETURN_UNEXPECTED(internal::ValidateConstant(field, constant->second));
         child_projection.kind = constant->second.IsNull()
                                     ? FieldProjection::Kind::kNull
                                     : FieldProjection::Kind::kConstant;

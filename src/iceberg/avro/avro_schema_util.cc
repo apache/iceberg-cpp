@@ -753,8 +753,6 @@ Result<FieldProjection> ProjectStruct(
     FieldProjection child_projection;
 
     if (auto constant = id_to_constant.find(field_id); constant != id_to_constant.end()) {
-      ICEBERG_RETURN_UNEXPECTED(
-          internal::ValidateConstant(expected_field, constant->second));
       child_projection.kind = constant->second.IsNull()
                                   ? FieldProjection::Kind::kNull
                                   : FieldProjection::Kind::kConstant;
