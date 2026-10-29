@@ -75,6 +75,8 @@ add_iceberg_test(schema_test
                  transform_test.cc
                  type_test.cc)
 
+add_iceberg_test(v4_types_test SOURCES v4_types_test.cc)
+
 add_iceberg_test(table_test
                  SOURCES
                  catalog_util_test.cc

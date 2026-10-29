@@ -98,6 +98,7 @@
 #include "iceberg/manifest/manifest_reader.h"
 #include "iceberg/manifest/manifest_writer.h"
 #include "iceberg/manifest/rolling_manifest_writer.h"
+#include "iceberg/manifest/v4_types.h"
 #include "iceberg/metadata_columns.h"
 #include "iceberg/metrics.h"
 #include "iceberg/metrics/commit_report.h"
