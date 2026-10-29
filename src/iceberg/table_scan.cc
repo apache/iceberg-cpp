@@ -175,7 +175,7 @@ ScanTask::~ScanTask() = default;
 FileScanTask::FileScanTask(std::shared_ptr<DataFile> data_file,
                            std::vector<std::shared_ptr<DataFile>> delete_files,
                            std::shared_ptr<Expression> residual_filter,
-                           std::shared_ptr<const PartitionSpec> spec)
+                           std::shared_ptr<PartitionSpec> spec)
     : data_file_(std::move(data_file)),
       delete_files_(std::move(delete_files)),
       residual_filter_(std::move(residual_filter)),
@@ -186,7 +186,7 @@ FileScanTask::FileScanTask(std::shared_ptr<DataFile> data_file,
 FileScanTask::FileScanTask(std::shared_ptr<DataFile> data_file,
                            std::vector<std::shared_ptr<DataFile>> delete_files,
                            std::shared_ptr<Expression> residual_filter, Range range,
-                           std::shared_ptr<const PartitionSpec> spec)
+                           std::shared_ptr<PartitionSpec> spec)
     : FileScanTask(std::move(data_file), std::move(delete_files),
                    std::move(residual_filter), std::move(spec)) {
   range_ = range;
@@ -195,7 +195,7 @@ FileScanTask::FileScanTask(std::shared_ptr<DataFile> data_file,
 Result<std::shared_ptr<FileScanTask>> FileScanTask::MakeSplit(
     std::shared_ptr<DataFile> data_file, int64_t start, int64_t length,
     std::vector<std::shared_ptr<DataFile>> delete_files,
-    std::shared_ptr<Expression> filter, std::shared_ptr<const PartitionSpec> spec) {
+    std::shared_ptr<Expression> filter, std::shared_ptr<PartitionSpec> spec) {
   if (data_file == nullptr) {
     return InvalidArgument("Cannot create a file scan task without a data file");
   }

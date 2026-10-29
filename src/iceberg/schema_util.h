@@ -24,11 +24,11 @@
 
 #include <memory>
 #include <string>
+#include <unordered_map>
 #include <variant>
 #include <vector>
 
 #include "iceberg/expression/literal.h"
-#include "iceberg/file_reader.h"
 #include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
@@ -91,14 +91,12 @@ struct ICEBERG_EXPORT SchemaProjection {
 /// column pruning, so `prune_source` is set to true in this case such that the `from`
 /// field in `FieldProjection` exactly reflects the position (relative to its nesting
 /// level) to get the column value from the reader.
+/// \param id_to_constant Primitive values keyed by source field ID. Constants override
+/// physical fields and defaults, including primitive leaves of existing structs.
 /// \return The projection result.
-ICEBERG_EXPORT Result<SchemaProjection> Project(const Schema& expected_schema,
-                                                const Schema& source_schema,
-                                                bool prune_source);
-
-/// Build a primitive constant projection, validating type promotion and nullability.
-ICEBERG_EXPORT Result<FieldProjection> ProjectConstant(const SchemaField& field,
-                                                       const Literal& literal);
+ICEBERG_EXPORT Result<SchemaProjection> Project(
+    const Schema& expected_schema, const Schema& source_schema, bool prune_source,
+    const std::unordered_map<int32_t, Literal>& id_to_constant = {});
 
 ICEBERG_EXPORT std::string_view ToString(FieldProjection::Kind kind);
 ICEBERG_EXPORT std::string ToString(const FieldProjection& projection);

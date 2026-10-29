@@ -684,14 +684,14 @@ Status UnwrapUnion(const ::avro::NodePtr& node, ::avro::NodePtr* result) {
 }
 
 // Forward declaration
-Result<FieldProjection> ProjectNested(const Type& expected_type,
-                                      const ::avro::NodePtr& avro_node, bool prune_source,
-                                      const ColumnConstants& constants);
+Result<FieldProjection> ProjectNested(
+    const Type& expected_type, const ::avro::NodePtr& avro_node, bool prune_source,
+    const std::unordered_map<int32_t, Literal>& id_to_constant);
 
-Result<FieldProjection> ProjectField(const SchemaField& expected_field,
-                                     const ::avro::NodePtr& avro_node,
-                                     size_t source_index, bool prune_source,
-                                     const ColumnConstants& constants) {
+Result<FieldProjection> ProjectField(
+    const SchemaField& expected_field, const ::avro::NodePtr& avro_node,
+    size_t source_index, bool prune_source,
+    const std::unordered_map<int32_t, Literal>& id_to_constant) {
   const Type& expected_type = *expected_field.type();
   ::avro::NodePtr field_node;
   ICEBERG_RETURN_UNEXPECTED(UnwrapUnion(avro_node, &field_node));
@@ -708,8 +708,8 @@ Result<FieldProjection> ProjectField(const SchemaField& expected_field,
   }
 
   if (expected_type.is_nested()) {
-    ICEBERG_ASSIGN_OR_RAISE(
-        projection, ProjectNested(expected_type, field_node, prune_source, constants));
+    ICEBERG_ASSIGN_OR_RAISE(projection, ProjectNested(expected_type, field_node,
+                                                      prune_source, id_to_constant));
   } else {
     ICEBERG_RETURN_UNEXPECTED(ValidateAvroSchemaEvolution(expected_type, field_node));
   }
@@ -718,9 +718,9 @@ Result<FieldProjection> ProjectField(const SchemaField& expected_field,
   return projection;
 }
 
-Result<FieldProjection> ProjectStruct(const StructType& struct_type,
-                                      const ::avro::NodePtr& avro_node, bool prune_source,
-                                      const ColumnConstants& constants) {
+Result<FieldProjection> ProjectStruct(
+    const StructType& struct_type, const ::avro::NodePtr& avro_node, bool prune_source,
+    const std::unordered_map<int32_t, Literal>& id_to_constant) {
   if (avro_node->type() != ::avro::AVRO_RECORD) {
     return InvalidSchema("Expected AVRO_RECORD type, but got {}", ToString(avro_node));
   }
@@ -745,21 +745,25 @@ Result<FieldProjection> ProjectStruct(const StructType& struct_type,
     }
   }
 
-  FieldProjection result;
+  FieldProjection result{.kind = FieldProjection::Kind::kProjected};
   result.children.reserve(expected_fields.size());
 
   for (const auto& expected_field : expected_fields) {
     int32_t field_id = expected_field.field_id();
     FieldProjection child_projection;
 
-    if (auto constant = constants.find(field_id); constant != constants.end()) {
-      ICEBERG_ASSIGN_OR_RAISE(child_projection,
-                              ProjectConstant(expected_field, constant->second));
+    if (auto constant = id_to_constant.find(field_id); constant != id_to_constant.end()) {
+      ICEBERG_RETURN_UNEXPECTED(
+          internal::ValidateConstant(expected_field, constant->second));
+      child_projection.kind = constant->second.IsNull()
+                                  ? FieldProjection::Kind::kNull
+                                  : FieldProjection::Kind::kConstant;
+      child_projection.from = constant->second;
     } else if (auto iter = node_info_map.find(field_id); iter != node_info_map.cend()) {
       ICEBERG_ASSIGN_OR_RAISE(
           child_projection,
           ProjectField(expected_field, iter->second.field_node, iter->second.local_index,
-                       prune_source, constants));
+                       prune_source, id_to_constant));
     } else if (MetadataColumns::IsMetadataColumn(field_id)) {
       child_projection.kind = FieldProjection::Kind::kMetadata;
     } else if (expected_field.initial_default() != nullptr) {
@@ -782,9 +786,9 @@ Result<FieldProjection> ProjectStruct(const StructType& struct_type,
   return result;
 }
 
-Result<FieldProjection> ProjectList(const ListType& list_type,
-                                    const ::avro::NodePtr& avro_node, bool prune_source,
-                                    const ColumnConstants& constants) {
+Result<FieldProjection> ProjectList(
+    const ListType& list_type, const ::avro::NodePtr& avro_node, bool prune_source,
+    const std::unordered_map<int32_t, Literal>& id_to_constant) {
   if (avro_node->type() != ::avro::AVRO_ARRAY) {
     return InvalidSchema("Expected AVRO_ARRAY type, but got {}", ToString(avro_node));
   }
@@ -804,20 +808,20 @@ Result<FieldProjection> ProjectList(const ListType& list_type,
   ICEBERG_ASSIGN_OR_RAISE(
       element_projection,
       ProjectField(expected_element_field, avro_node->leafAt(0),
-                   /*source_index*/ size_t{0}, prune_source, constants));
+                   /*source_index*/ size_t{0}, prune_source, id_to_constant));
 
-  FieldProjection result;
+  FieldProjection result{.kind = FieldProjection::Kind::kProjected};
   result.children.emplace_back(std::move(element_projection));
   return result;
 }
 
-Result<FieldProjection> ProjectMap(const MapType& map_type,
-                                   const ::avro::NodePtr& avro_node, bool prune_source,
-                                   const ColumnConstants& constants) {
+Result<FieldProjection> ProjectMap(
+    const MapType& map_type, const ::avro::NodePtr& avro_node, bool prune_source,
+    const std::unordered_map<int32_t, Literal>& id_to_constant) {
   const auto& expected_key_field = map_type.key();
   const auto& expected_value_field = map_type.value();
 
-  FieldProjection result;
+  FieldProjection result{.kind = FieldProjection::Kind::kProjected};
   int32_t avro_key_id;
   int32_t avro_value_id;
   ::avro::NodePtr map_node;
@@ -864,16 +868,16 @@ Result<FieldProjection> ProjectMap(const MapType& map_type,
     const auto& expected_sub_field = map_type.fields()[i];
     ICEBERG_ASSIGN_OR_RAISE(sub_projection,
                             ProjectField(expected_sub_field, map_node->leafAt(i), i,
-                                         prune_source, constants));
+                                         prune_source, id_to_constant));
     result.children.emplace_back(std::move(sub_projection));
   }
 
   return result;
 }
 
-Result<FieldProjection> ProjectNested(const Type& expected_type,
-                                      const ::avro::NodePtr& avro_node, bool prune_source,
-                                      const ColumnConstants& constants) {
+Result<FieldProjection> ProjectNested(
+    const Type& expected_type, const ::avro::NodePtr& avro_node, bool prune_source,
+    const std::unordered_map<int32_t, Literal>& id_to_constant) {
   if (!expected_type.is_nested()) {
     return InvalidSchema("Expected a nested type, but got {}", expected_type);
   }
@@ -881,13 +885,13 @@ Result<FieldProjection> ProjectNested(const Type& expected_type,
   switch (expected_type.type_id()) {
     case TypeId::kStruct:
       return ProjectStruct(internal::checked_cast<const StructType&>(expected_type),
-                           avro_node, prune_source, constants);
+                           avro_node, prune_source, id_to_constant);
     case TypeId::kList:
       return ProjectList(internal::checked_cast<const ListType&>(expected_type),
-                         avro_node, prune_source, constants);
+                         avro_node, prune_source, id_to_constant);
     case TypeId::kMap:
       return ProjectMap(internal::checked_cast<const MapType&>(expected_type), avro_node,
-                        prune_source, constants);
+                        prune_source, id_to_constant);
     default:
       return InvalidSchema("Unsupported nested type: {}", expected_type);
   }
@@ -901,12 +905,12 @@ bool HasMapLogicalType(const ::avro::NodePtr& node) {
          node->logicalType().customLogicalType()->name() == "map";
 }
 
-Result<SchemaProjection> Project(const Schema& expected_schema,
-                                 const ::avro::NodePtr& avro_node, bool prune_source,
-                                 const ColumnConstants& constants) {
+Result<SchemaProjection> Project(
+    const Schema& expected_schema, const ::avro::NodePtr& avro_node, bool prune_source,
+    const std::unordered_map<int32_t, Literal>& id_to_constant) {
   ICEBERG_ASSIGN_OR_RAISE(auto field_projection,
                           ProjectNested(static_cast<const Type&>(expected_schema),
-                                        avro_node, prune_source, constants));
+                                        avro_node, prune_source, id_to_constant));
   return SchemaProjection{std::move(field_projection.children)};
 }
 

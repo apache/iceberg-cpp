@@ -23,7 +23,6 @@
 #include <memory>
 #include <optional>
 #include <utility>
-#include <vector>
 
 #include "iceberg/arrow_c_data_guard_internal.h"
 #include "iceberg/arrow_c_data_util_internal.h"
@@ -41,15 +40,15 @@ namespace iceberg {
 
 namespace {
 
-Result<ColumnConstants> ConstantsOf(const FileScanTask& task) {
+Result<std::unordered_map<int32_t, Literal>> ConstantsOf(const FileScanTask& task) {
   const auto& file = *task.data_file();
   const auto& spec = task.spec();
-  ColumnConstants constants;
+  std::unordered_map<int32_t, Literal> id_to_constant;
   if (!spec) {
     if (file.partition.num_fields() != 0) {
       return InvalidArgument("A partition spec is required to read partition values");
     }
-    return constants;
+    return id_to_constant;
   }
   if (file.partition_spec_id.has_value() && *file.partition_spec_id != spec->spec_id()) {
     return InvalidArgument("Data file spec ID {} does not match task spec ID {}",
@@ -66,19 +65,20 @@ Result<ColumnConstants> ConstantsOf(const FileScanTask& task) {
                              field.field_id());
     }
     if (field.transform()->transform_type() == TransformType::kIdentity) {
-      constants.emplace(field.source_id(), file.partition.values()[i]);
+      id_to_constant.emplace(field.source_id(), file.partition.values()[i]);
     }
   }
-  return constants;
+  return id_to_constant;
 }
 
 Result<ReaderOptions> MakeReaderOptions(
     const FileScanTask& task, std::shared_ptr<FileIO> io,
     std::shared_ptr<Schema> projection, std::shared_ptr<Expression> filter,
-    std::shared_ptr<NameMapping> name_mapping, ReaderProperties properties,
-    std::optional<int64_t> first_row_id, std::optional<int64_t> data_sequence_number) {
+    bool case_sensitive, std::shared_ptr<NameMapping> name_mapping,
+    ReaderProperties properties, std::optional<int64_t> first_row_id,
+    std::optional<int64_t> data_sequence_number) {
   const auto& data_file = *task.data_file();
-  ICEBERG_ASSIGN_OR_RAISE(auto constants, ConstantsOf(task));
+  ICEBERG_ASSIGN_OR_RAISE(auto id_to_constant, ConstantsOf(task));
   return ReaderOptions{
       .path = data_file.file_path,
       .length = static_cast<size_t>(data_file.file_size_in_bytes),
@@ -89,11 +89,12 @@ Result<ReaderOptions> MakeReaderOptions(
       .io = std::move(io),
       .projection = std::move(projection),
       .filter = std::move(filter),
+      .case_sensitive = case_sensitive,
       .name_mapping = std::move(name_mapping),
       .first_row_id = first_row_id,
       .data_sequence_number = data_sequence_number,
       .properties = std::move(properties),
-      .constants = std::move(constants),
+      .id_to_constant = std::move(id_to_constant),
   };
 }
 
@@ -221,10 +222,12 @@ class FileScanTaskReader::Impl {
       }
     }
 
+    auto filter = task.residual_filter();
+
     if (task.delete_files().empty()) {
       ICEBERG_ASSIGN_OR_RAISE(
           auto options,
-          MakeReaderOptions(task, io_, projected_schema_, task.residual_filter(),
+          MakeReaderOptions(task, io_, projected_schema_, filter, case_sensitive_,
                             name_mapping_, properties_, data_file->first_row_id,
                             data_file->data_sequence_number));
       ICEBERG_ASSIGN_OR_RAISE(
@@ -252,7 +255,7 @@ class FileScanTaskReader::Impl {
 
     ICEBERG_ASSIGN_OR_RAISE(
         auto options,
-        MakeReaderOptions(task, io_, required_schema, task.residual_filter(),
+        MakeReaderOptions(task, io_, required_schema, filter, case_sensitive_,
                           name_mapping_, properties_, data_file->first_row_id,
                           data_file->data_sequence_number));
     ICEBERG_ASSIGN_OR_RAISE(auto reader,
@@ -270,6 +273,7 @@ class FileScanTaskReader::Impl {
       : io_(std::move(options.io)),
         schemas_(std::move(options.schemas)),
         projected_schema_(std::move(options.projected_schema)),
+        case_sensitive_(options.case_sensitive),
         name_mapping_(std::move(options.name_mapping)),
         properties_(ReaderProperties::FromMap(options.properties)),
         field_lookup_(std::move(field_lookup)),
@@ -278,6 +282,7 @@ class FileScanTaskReader::Impl {
   std::shared_ptr<FileIO> io_;
   std::vector<std::shared_ptr<Schema>> schemas_;
   std::shared_ptr<Schema> projected_schema_;
+  bool case_sensitive_;
   std::shared_ptr<NameMapping> name_mapping_;
   ReaderProperties properties_;
   DeleteFilter::FieldLookup field_lookup_;

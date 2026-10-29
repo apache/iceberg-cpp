@@ -45,6 +45,7 @@
 
 #include "iceberg/arrow/arrow_io_internal.h"
 #include "iceberg/arrow/arrow_status_internal.h"
+#include "iceberg/expression/expressions.h"
 #include "iceberg/expression/literal.h"
 #include "iceberg/file_reader.h"
 #include "iceberg/file_writer.h"
@@ -559,12 +560,27 @@ TEST_F(ParquetReaderTest, ConstantsValidateTypesAndRequiredNulls) {
   for (const auto& value : {Literal::String("7"), Literal::Null(int64())}) {
     ReaderOptions options{
         .path = temp_parquet_file_, .io = file_io_, .projection = schema};
-    options.constants.emplace(3, value);
+    options.id_to_constant.emplace(3, value);
     EXPECT_FALSE(
         ReaderFactoryRegistry::Open(FileFormatType::kParquet, options).has_value());
   }
   ReaderOptions options{.path = temp_parquet_file_, .io = file_io_, .projection = schema};
-  options.constants.emplace(3, Literal::Int(7));
+  options.id_to_constant.emplace(3, Literal::Int(7));
+  ICEBERG_UNWRAP_OR_FAIL(auto reader,
+                         ReaderFactoryRegistry::Open(FileFormatType::kParquet, options));
+  VerifyNextBatch(*reader, "[[7], [7], [7]]");
+  VerifyExhausted(*reader);
+}
+
+TEST_F(ParquetReaderTest, ConstantsDoNotUsePhysicalColumnStatistics) {
+  CreateSimpleParquetFile();
+  auto schema = std::make_shared<Schema>(
+      std::vector<SchemaField>{SchemaField::MakeRequired(1, "id", int32())});
+  ReaderOptions options{.path = temp_parquet_file_,
+                        .io = file_io_,
+                        .projection = schema,
+                        .filter = Expressions::Equal("id", Literal::Int(7))};
+  options.id_to_constant.emplace(1, Literal::Int(7));
   ICEBERG_UNWRAP_OR_FAIL(auto reader,
                          ReaderFactoryRegistry::Open(FileFormatType::kParquet, options));
   VerifyNextBatch(*reader, "[[7], [7], [7]]");

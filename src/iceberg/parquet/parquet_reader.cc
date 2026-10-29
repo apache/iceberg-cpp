@@ -41,7 +41,9 @@
 #include "iceberg/arrow/arrow_io_internal.h"
 #include "iceberg/arrow/arrow_status_internal.h"
 #include "iceberg/arrow/metadata_column_util_internal.h"
+#include "iceberg/expression/binder.h"
 #include "iceberg/parquet/parquet_data_util_internal.h"
+#include "iceberg/parquet/parquet_metrics_row_group_filter_internal.h"
 #include "iceberg/parquet/parquet_register.h"
 #include "iceberg/parquet/parquet_schema_util_internal.h"
 #include "iceberg/parquet/row_number_reader_internal.h"
@@ -60,28 +62,27 @@ Result<std::shared_ptr<::arrow::io::RandomAccessFile>> OpenInputStream(
   return arrow::OpenArrowInputStream(options.io, options.path, options.length);
 }
 
-Result<SchemaProjection> BuildProjection(::parquet::arrow::FileReader* reader,
-                                         const Schema& read_schema,
-                                         const NameMapping* name_mapping,
-                                         const ColumnConstants& constants) {
+Result<SchemaProjection> BuildProjection(
+    ::parquet::arrow::FileReader* reader, const Schema& read_schema,
+    const NameMapping* name_mapping,
+    const std::unordered_map<int32_t, Literal>& id_to_constant) {
   auto metadata = reader->parquet_reader()->metadata();
-
-  ::parquet::arrow::SchemaManifest schema_manifest;
-  ICEBERG_ARROW_RETURN_NOT_OK(::parquet::arrow::SchemaManifest::Make(
-      metadata->schema(), metadata->key_value_metadata(), reader->properties(),
-      &schema_manifest));
 
   if (!HasFieldIds(metadata->schema()->schema_root())) {
     if (name_mapping == nullptr) {
       return InvalidSchema(
           "Parquet file schema has no field IDs and no name mapping provided");
     }
+    ::parquet::arrow::SchemaManifest schema_manifest;
+    ICEBERG_ARROW_RETURN_NOT_OK(::parquet::arrow::SchemaManifest::Make(
+        metadata->schema(), metadata->key_value_metadata(), reader->properties(),
+        &schema_manifest));
     ApplyNameMapping(*name_mapping, &schema_manifest);
+    return Project(read_schema, schema_manifest, id_to_constant);
   }
 
-  // Leverage SchemaManifest to project the schema
   ICEBERG_ASSIGN_OR_RAISE(auto projection,
-                          Project(read_schema, schema_manifest, constants));
+                          Project(read_schema, reader->manifest(), id_to_constant));
   return projection;
 }
 
@@ -284,6 +285,7 @@ class ParquetReader::Impl {
     }
 
     read_schema_ = options.projection;
+    stats_filter_.reset();
 
     // Prepare reader properties
     ::parquet::ReaderProperties reader_properties(pool_);
@@ -303,12 +305,26 @@ class ParquetReader::Impl {
     ICEBERG_ARROW_ASSIGN_OR_RETURN(
         reader_, ::parquet::arrow::FileReader::Make(pool_, std::move(file_reader),
                                                     arrow_reader_properties));
-    ICEBERG_RETURN_UNEXPECTED(PlanRowGroups(options));
 
     // Project read schema onto the Parquet file schema
     ICEBERG_ASSIGN_OR_RAISE(
         projection_, BuildProjection(reader_.get(), *read_schema_,
-                                     options.name_mapping.get(), options.constants));
+                                     options.name_mapping.get(), options.id_to_constant));
+    if (options.filter &&
+        options.properties.Get(ReaderProperties::kParquetRowGroupFilter)) {
+      auto filter = options.filter;
+      ICEBERG_ASSIGN_OR_RAISE(auto is_bound, IsBoundVisitor::IsBound(filter));
+      if (!is_bound) {
+        ICEBERG_ASSIGN_OR_RAISE(
+            filter, Binder::Bind(*options.projection, filter, options.case_sensitive));
+      }
+      ICEBERG_ASSIGN_OR_RAISE(
+          stats_filter_, ParquetMetricsRowGroupFilter::Make(
+                             filter, *reader_->manifest().descr, options.id_to_constant));
+    }
+
+    ICEBERG_RETURN_UNEXPECTED(PlanRowGroups(options));
+
     metadata_context_ = {.file_path = options.path,
                          .first_row_id = options.first_row_id,
                          .data_sequence_number = options.data_sequence_number};
@@ -398,7 +414,6 @@ class ParquetReader::Impl {
 
  private:
   Status PlanRowGroups(const ReaderOptions& options) {
-    // TODO(gangwu): add row group filtering based on zone map, bloom filter, etc.
     auto metadata = reader_->parquet_reader()->metadata();
     if (options.split.has_value()) {
       const auto& split = *options.split;
@@ -433,6 +448,19 @@ class ParquetReader::Impl {
     } else if (metadata->num_row_groups() > 0) {
       row_group_indices_.resize(metadata->num_row_groups());
       std::iota(row_group_indices_.begin(), row_group_indices_.end(), 0);  // NOLINT
+    }
+
+    if (stats_filter_) {
+      size_t selected_count = 0;
+      for (int row_group_index : row_group_indices_) {
+        auto row_group = metadata->RowGroup(row_group_index);
+        ICEBERG_ASSIGN_OR_RAISE(
+            auto should_read, stats_filter_->ShouldRead(reader_->manifest(), *row_group));
+        if (should_read) {
+          row_group_indices_[selected_count++] = row_group_index;
+        }
+      }
+      row_group_indices_.resize(selected_count);
     }
     return {};
   }
@@ -487,6 +515,8 @@ class ParquetReader::Impl {
   bool use_large_list_ = false;
   // Schema to read from the Parquet file.
   std::shared_ptr<::iceberg::Schema> read_schema_;
+  // Footer-statistics filter for row group pruning, if enabled.
+  std::unique_ptr<ParquetMetricsRowGroupFilter> stats_filter_;
   // The projection result to apply to the read schema.
   SchemaProjection projection_;
   // The input stream to read Parquet file.

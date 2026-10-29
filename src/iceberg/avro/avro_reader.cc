@@ -331,7 +331,7 @@ class AvroReader::Impl {
     // Project the read schema on top of the file schema.
     ICEBERG_ASSIGN_OR_RAISE(projection_,
                             Project(*read_schema_, file_schema.root(),
-                                    /*prune_source=*/false, options.constants));
+                                    /*prune_source=*/false, options.id_to_constant));
 
     ICEBERG_RETURN_UNEXPECTED(backend_->InitWithSchema(file_schema, options.split));
 

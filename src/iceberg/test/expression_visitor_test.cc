@@ -549,6 +549,31 @@ TEST_F(RewriteNotTest, ComplexExpression) {
   EXPECT_EQ(rewritten->op(), Expression::Operation::kOr);
 }
 
+TEST_F(RewriteNotTest, NullableRangeComparisons) {
+  const auto value = Literal::Double(7);
+  const std::vector<std::pair<std::shared_ptr<Expression>, std::shared_ptr<Expression>>>
+      cases = {{Expressions::LessThan("salary", value),
+                Expressions::GreaterThanOrEqual("salary", value)},
+               {Expressions::LessThanOrEqual("salary", value),
+                Expressions::GreaterThan("salary", value)},
+               {Expressions::GreaterThan("salary", value),
+                Expressions::LessThanOrEqual("salary", value)},
+               {Expressions::GreaterThanOrEqual("salary", value),
+                Expressions::LessThan("salary", value)}};
+  for (const auto& [predicate, inverse] : cases) {
+    SCOPED_TRACE(predicate->ToString());
+    auto expr = Expressions::Not(predicate);
+    auto expected = Expressions::Or(Expressions::IsNull("salary"), inverse);
+    ICEBERG_UNWRAP_OR_FAIL(auto rewritten, RewriteNot::Visit(expr));
+    EXPECT_TRUE(rewritten->Equals(*expected));
+
+    ICEBERG_UNWRAP_OR_FAIL(auto bound, Bind(expr));
+    ICEBERG_UNWRAP_OR_FAIL(auto rewritten_bound, RewriteNot::Visit(bound));
+    ICEBERG_UNWRAP_OR_FAIL(auto expected_bound, Bind(expected));
+    EXPECT_TRUE(rewritten_bound->Equals(*expected_bound));
+  }
+}
+
 // gtest's MatchesRegex/ContainsRegex falls back to a minimal "simple regex" engine on
 // MSVC (no groups, character classes, repetition, or alternation), unlike the POSIX
 // extended regex used on Linux/macOS. std::regex (ECMAScript grammar) behaves

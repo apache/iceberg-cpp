@@ -19,6 +19,10 @@
 
 #include "iceberg/row/partition_values.h"
 
+#include <string_view>
+
+#include "iceberg/util/uuid.h"
+
 namespace iceberg {
 
 PartitionValues& PartitionValues::operator=(const PartitionValues& other) {
@@ -71,6 +75,11 @@ Result<Scalar> PartitionValues::GetField(size_t pos) const {
     case TypeId::kBinary:
     case TypeId::kFixed: {
       const auto& bytes = std::get<std::vector<uint8_t>>(literal.value());
+      return Scalar{
+          std::string_view(reinterpret_cast<const char*>(bytes.data()), bytes.size())};
+    }
+    case TypeId::kUuid: {
+      const auto bytes = std::get<Uuid>(literal.value()).bytes();
       return Scalar{
           std::string_view(reinterpret_cast<const char*>(bytes.data()), bytes.size())};
     }

@@ -39,6 +39,13 @@ struct ParquetExtraAttributes : public FieldProjection::ExtraAttributes {
   std::optional<int32_t> column_id;
 };
 
+/// \brief Validate a Parquet field's Arrow type against the expected Iceberg type.
+/// Checks supported type promotions, time units, and decimal precision/scale.
+/// Nested fields require separate validation of their children; geospatial types
+/// require additional checks against the Parquet column descriptor.
+Status ValidateParquetTypeCompatibility(
+    const Type& expected_type, const ::parquet::arrow::SchemaField& parquet_field);
+
 /// \brief Project an Iceberg Schema onto a Parquet Schema.
 ///
 /// This function creates a projection from an Iceberg Schema to a Parquet schema.
@@ -47,12 +54,12 @@ struct ParquetExtraAttributes : public FieldProjection::ExtraAttributes {
 ///
 /// \param expected_schema The Iceberg Schema that defines the expected structure.
 /// \param parquet_schema The Parquet schema to read data from.
-/// \param constants File-level values that override physical fields and defaults.
+/// \param id_to_constant File-level values that override physical fields and defaults.
 /// \return The schema projection result with column indices of projected Parquet columns
 /// specified via ParquetExtraAttributes.
-Result<SchemaProjection> Project(const Schema& expected_schema,
-                                 const ::parquet::arrow::SchemaManifest& parquet_schema,
-                                 const ColumnConstants& constants = {});
+Result<SchemaProjection> Project(
+    const Schema& expected_schema, const ::parquet::arrow::SchemaManifest& parquet_schema,
+    const std::unordered_map<int32_t, Literal>& id_to_constant = {});
 
 /// \brief Get the selected column indices by walking through the projection result.
 ///

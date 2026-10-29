@@ -489,7 +489,7 @@ TEST_P(AvroReaderParameterizedTest, ReadsPartitionConstants) {
                                SchemaField::MakeOptional(4, "missing", string())});
   ReaderOptions options{.path = temp_avro_file_, .io = file_io_, .projection = schema};
   options.properties.Set(ReaderProperties::kAvroSkipDatum, skip_datum_);
-  options.constants = {
+  options.id_to_constant = {
       {1, Literal::Int(999)}, {3, Literal::String("CN")}, {4, Literal::Null(string())}};
   ICEBERG_UNWRAP_OR_FAIL(auto reader,
                          ReaderFactoryRegistry::Open(FileFormatType::kAvro, options));

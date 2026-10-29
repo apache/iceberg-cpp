@@ -82,6 +82,9 @@ class ICEBERG_EXPORT ReaderProperties : public ConfigBase<ReaderProperties> {
   /// Only the Parquet reader honors this option; other readers ignore it.
   /// Default: false (use 32-bit offset list).
   inline static Entry<bool> kArrowUseLargeList{"read.arrow.use-large-list", false};
+  /// \brief Use footer statistics to prune Parquet row groups.
+  inline static Entry<bool> kParquetRowGroupFilter{
+      "read.parquet.row-group-filter.enabled", true};
   /// \brief Skip GenericDatum in Avro reader for better performance.
   /// When true, decode directly from Avro to Arrow without GenericDatum intermediate.
   /// Default: true (skip GenericDatum for better performance).
@@ -93,9 +96,6 @@ class ICEBERG_EXPORT ReaderProperties : public ConfigBase<ReaderProperties> {
   static ReaderProperties FromMap(
       const std::unordered_map<std::string, std::string>& properties);
 };
-
-/// File-level primitive values keyed by source field ID, including typed nulls.
-using ColumnConstants = std::unordered_map<int32_t, Literal>;
 
 /// \brief Options for creating a reader.
 struct ICEBERG_EXPORT ReaderOptions {
@@ -112,6 +112,8 @@ struct ICEBERG_EXPORT ReaderOptions {
   /// \brief The filter to apply to the data. Reader implementations may ignore this if
   /// the file format does not support filtering.
   std::shared_ptr<class Expression> filter;
+  /// \brief Case sensitivity inherited from the scan when resolving field names.
+  bool case_sensitive = true;
   /// \brief Name mapping for schema evolution compatibility. Used when reading files
   /// that may have different field names than the current schema.
   std::shared_ptr<class NameMapping> name_mapping;
@@ -124,8 +126,9 @@ struct ICEBERG_EXPORT ReaderOptions {
 
   /// File-level values keyed by field ID, overriding physical columns,
   /// initial defaults and optional-field nulls, matching Iceberg Java.
-  /// Example: `options.constants.emplace(2, Literal::String("CN"));`
-  ColumnConstants constants;
+  /// Example: `options.id_to_constant.emplace(2, Literal::String("CN"));`
+  // TODO(yzsun): Use a nested value representation if struct constants are needed.
+  std::unordered_map<int32_t, Literal> id_to_constant;
 };
 
 /// \brief Factory function to create a reader of a specific file format.

@@ -343,8 +343,6 @@ Status ValidateGeospatialParquetType(const Type& expected_type,
 
 }  // namespace
 
-namespace {
-
 Status ValidateParquetTypeCompatibility(
     const Type& expected_type, const ::parquet::arrow::SchemaField& parquet_field) {
   const auto& arrow_type = parquet_field.field->type();
@@ -502,15 +500,13 @@ Status ValidateParquetTypeCompatibility(
                        expected_type, arrow_type->ToString());
 }
 
-}  // namespace
-
 namespace {
 
 class ProjectionBuilder {
  public:
   ProjectionBuilder(const ::parquet::SchemaDescriptor* descr,
-                    const ColumnConstants& constants)
-      : descr_(descr), constants_(constants) {}
+                    const std::unordered_map<int32_t, Literal>& id_to_constant)
+      : descr_(descr), id_to_constant_(id_to_constant) {}
 
   Result<FieldProjection> Project(
       const Type& nested_type,
@@ -593,9 +589,13 @@ class ProjectionBuilder {
       int32_t field_id = field.field_id();
       FieldProjection child_projection;
 
-      if (auto constant = constants_.find(field_id); constant != constants_.end()) {
-        ICEBERG_ASSIGN_OR_RAISE(child_projection,
-                                ProjectConstant(field, constant->second));
+      if (auto constant = id_to_constant_.find(field_id);
+          constant != id_to_constant_.end()) {
+        ICEBERG_RETURN_UNEXPECTED(internal::ValidateConstant(field, constant->second));
+        child_projection.kind = constant->second.IsNull()
+                                    ? FieldProjection::Kind::kNull
+                                    : FieldProjection::Kind::kConstant;
+        child_projection.from = constant->second;
       } else if (auto iter = field_context_map.find(field_id);
                  iter != field_context_map.cend()) {
         const auto& parquet_field = iter->second.parquet_field;
@@ -728,7 +728,7 @@ class ProjectionBuilder {
   }
 
   const ::parquet::SchemaDescriptor* descr_;
-  const ColumnConstants& constants_;
+  const std::unordered_map<int32_t, Literal>& id_to_constant_;
 };
 
 void CollectColumnIds(const FieldProjection& field_projection,
@@ -793,10 +793,10 @@ void ApplyNameMappingToField(const NameMapping& mapping, std::vector<std::string
 
 }  // namespace
 
-Result<SchemaProjection> Project(const Schema& expected_schema,
-                                 const ::parquet::arrow::SchemaManifest& parquet_schema,
-                                 const ColumnConstants& constants) {
-  ProjectionBuilder builder(parquet_schema.descr, constants);
+Result<SchemaProjection> Project(
+    const Schema& expected_schema, const ::parquet::arrow::SchemaManifest& parquet_schema,
+    const std::unordered_map<int32_t, Literal>& id_to_constant) {
+  ProjectionBuilder builder(parquet_schema.descr, id_to_constant);
   ICEBERG_ASSIGN_OR_RAISE(auto field_projection,
                           builder.Project(static_cast<const Type&>(expected_schema),
                                           parquet_schema.schema_fields));

@@ -25,6 +25,13 @@
 
 namespace iceberg {
 
+namespace internal {
+
+// Validate a primitive constant before substituting it for a projected field.
+Status ValidateConstant(const SchemaField& field, const Literal& literal);
+
+}  // namespace internal
+
 // Fix `from` field of `FieldProjection` to use pruned field index.
 inline void PruneFieldProjection(FieldProjection& field_projection) {
   std::map<size_t, size_t> local_index_to_pruned_index;

@@ -103,8 +103,57 @@ std::shared_ptr<Type> CreateMapOfList() {
 
 TEST(SchemaUtilTest, ProjectConstantRejectsMissingFieldType) {
   auto field = SchemaField::MakeOptional(1, "invalid", nullptr);
-  ASSERT_THAT(ProjectConstant(field, Literal::Long(7)),
-              IsError(ErrorKind::kInvalidSchema));
+  auto projection = Project(Schema({field}), Schema({}), /*prune_source=*/true,
+                            {{1, Literal::Long(7)}});
+  ASSERT_FALSE(projection.has_value());
+  EXPECT_EQ(projection.error().kind, ErrorKind::kInvalidSchema);
+}
+
+TEST(SchemaUtilTest, ProjectConstantsOverridePhysicalFieldsAndPruneIndices) {
+  Schema schema({SchemaField::MakeRequired(1, "region", string()),
+                 SchemaField::MakeRequired(2, "id", int64())});
+  for (bool prune_source : {false, true}) {
+    auto projection = Project(schema, schema, prune_source, {{1, Literal::String("CN")}});
+    ASSERT_THAT(projection, IsOk());
+    ASSERT_EQ(projection->fields.size(), 2);
+    EXPECT_EQ(projection->fields[0].kind, FieldProjection::Kind::kConstant);
+    EXPECT_EQ(std::get<Literal>(projection->fields[0].from), Literal::String("CN"));
+    AssertProjectedField(projection->fields[1], prune_source ? 0 : 1);
+  }
+}
+
+TEST(SchemaUtilTest, ProjectConstantsFillMissingFieldsAndValidateNulls) {
+  Schema expected({SchemaField::MakeRequired(1, "id", int64()),
+                   SchemaField::MakeOptional(2, "region", string())});
+  auto projection = Project(expected, Schema({}), /*prune_source=*/true,
+                            {{1, Literal::Int(7)}, {2, Literal::Null(string())}});
+  ASSERT_THAT(projection, IsOk());
+  ASSERT_EQ(projection->fields.size(), 2);
+  EXPECT_EQ(projection->fields[0].kind, FieldProjection::Kind::kConstant);
+  EXPECT_EQ(projection->fields[1].kind, FieldProjection::Kind::kNull);
+  EXPECT_FALSE(
+      Project(expected, Schema({}), /*prune_source=*/true, {{1, Literal::Null(int64())}})
+          .has_value());
+  EXPECT_FALSE(Project(expected, Schema({}), /*prune_source=*/true,
+                       {{1, Literal::String("invalid")}})
+                   .has_value());
+}
+
+TEST(SchemaUtilTest, ProjectConstantsIntoExistingStruct) {
+  Schema schema(
+      {SchemaField::MakeOptional(1, "parent",
+                                 std::make_shared<StructType>(std::vector<SchemaField>{
+                                     SchemaField::MakeOptional(2, "region", string()),
+                                     SchemaField::MakeRequired(3, "id", int64())}))});
+  auto projection =
+      Project(schema, schema, /*prune_source=*/true, {{2, Literal::String("CN")}});
+  ASSERT_THAT(projection, IsOk());
+  ASSERT_EQ(projection->fields.size(), 1);
+  const auto& parent = projection->fields[0];
+  AssertProjectedField(parent, 0);
+  ASSERT_EQ(parent.children.size(), 2);
+  EXPECT_EQ(parent.children[0].kind, FieldProjection::Kind::kConstant);
+  AssertProjectedField(parent.children[1], 0);
 }
 
 TEST(SchemaUtilTest, ProjectIdenticalSchemas) {
