@@ -35,6 +35,15 @@
 
 namespace iceberg {
 
+namespace {
+
+bool IsRangeComparison(Expression::Operation op) {
+  return op == Expression::Operation::kLt || op == Expression::Operation::kLtEq ||
+         op == Expression::Operation::kGt || op == Expression::Operation::kGtEq;
+}
+
+}  // namespace
+
 // Predicate template implementations
 template <TermType T>
 Predicate<T>::Predicate(Expression::Operation op, std::shared_ptr<T> term)
@@ -223,7 +232,16 @@ bool UnboundPredicateImpl<B>::Equals(const Expression& other) const {
 template <typename B>
 Result<std::shared_ptr<Expression>> UnboundPredicateImpl<B>::Negate() const {
   ICEBERG_ASSIGN_OR_RAISE(auto negated_op, ::iceberg::Negate(BASE::op()));
-  return UnboundPredicateImpl::Make(negated_op, BASE::term(), values_);
+  ICEBERG_ASSIGN_OR_RAISE(auto inverse,
+                          UnboundPredicateImpl::Make(negated_op, BASE::term(), values_));
+  if (!IsRangeComparison(BASE::op())) {
+    return inverse;
+  }
+  // Range comparisons reject null, but their boolean negation accepts it.
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto is_null,
+      UnboundPredicateImpl::Make(Expression::Operation::kIsNull, BASE::term()));
+  return Or::MakeFolded(std::move(is_null), std::move(inverse));
 }
 
 template <typename B>
@@ -240,7 +258,7 @@ Result<std::shared_ptr<Expression>> UnboundPredicateImpl<B>::Bind(
     return BindInOperation(std::move(bound_term));
   }
 
-  return BindLiteralOperation(std::move(bound_term));
+  return BindLiteralOperation(schema, std::move(bound_term));
 }
 
 namespace {
@@ -280,6 +298,23 @@ Result<bool> AllAncestorsAreRequired(const Schema& schema, int32_t field_id) {
   return true;
 }
 
+Result<std::shared_ptr<Expression>> BindNotNull(const Schema& schema,
+                                                std::shared_ptr<BoundTerm> term) {
+  // A required field can still be null if a parent is optional.
+  if (!term->MayProduceNull()) {
+    ICEBERG_ASSIGN_OR_RAISE(
+        bool all_ancestors_required,
+        AllAncestorsAreRequired(schema, term->reference()->field_id()));
+    if (all_ancestors_required) {
+      return Expressions::AlwaysTrue();
+    }
+  }
+  if (term->type()->type_id() == TypeId::kUnknown) {
+    return Expressions::AlwaysFalse();
+  }
+  return BoundUnaryPredicate::Make(Expression::Operation::kNotNull, std::move(term));
+}
+
 }  // namespace
 
 template <typename B>
@@ -301,21 +336,8 @@ Result<std::shared_ptr<Expression>> UnboundPredicateImpl<B>::BindUnaryOperation(
       return BoundUnaryPredicate::Make(Expression::Operation::kIsNull,
                                        std::move(bound_term));
     }
-    case Expression::Operation::kNotNull: {
-      if (!bound_term->MayProduceNull()) {
-        ICEBERG_ASSIGN_OR_RAISE(
-            bool all_ancestors_required,
-            AllAncestorsAreRequired(schema, bound_term->reference()->field_id()));
-        if (all_ancestors_required) {
-          return Expressions::AlwaysTrue();
-        }
-      }
-      if (bound_term->type()->type_id() == TypeId::kUnknown) {
-        return Expressions::AlwaysFalse();
-      }
-      return BoundUnaryPredicate::Make(Expression::Operation::kNotNull,
-                                       std::move(bound_term));
-    }
+    case Expression::Operation::kNotNull:
+      return BindNotNull(schema, std::move(bound_term));
     case Expression::Operation::kIsNan:
     case Expression::Operation::kNotNan:
       if (!IsFloatingType(bound_term->type()->type_id())) {
@@ -331,7 +353,7 @@ Result<std::shared_ptr<Expression>> UnboundPredicateImpl<B>::BindUnaryOperation(
 
 template <typename B>
 Result<std::shared_ptr<Expression>> UnboundPredicateImpl<B>::BindLiteralOperation(
-    std::shared_ptr<B> bound_term) const {
+    const Schema& schema, std::shared_ptr<B> bound_term) const {
   if (BASE::op() == Expression::Operation::kStartsWith ||
       BASE::op() == Expression::Operation::kNotStartsWith) {
     if (bound_term->type()->type_id() != TypeId::kString) {
@@ -357,6 +379,8 @@ Result<std::shared_ptr<Expression>> UnboundPredicateImpl<B>::BindLiteralOperatio
     switch (BASE::op()) {
       case Expression::Operation::kLt:
       case Expression::Operation::kLtEq:
+        // All non-null values match, but null still fails the comparison.
+        return BindNotNull(schema, std::move(bound_term));
       case Expression::Operation::kNotEq:
         return Expressions::AlwaysTrue();
       case Expression::Operation::kGt:
@@ -370,6 +394,8 @@ Result<std::shared_ptr<Expression>> UnboundPredicateImpl<B>::BindLiteralOperatio
     switch (BASE::op()) {
       case Expression::Operation::kGt:
       case Expression::Operation::kGtEq:
+        // All non-null values match, but null still fails the comparison.
+        return BindNotNull(schema, std::move(bound_term));
       case Expression::Operation::kNotEq:
         return Expressions::AlwaysTrue();
       case Expression::Operation::kLt:
@@ -562,7 +588,15 @@ Result<bool> BoundLiteralPredicate::Test(const Literal& value) const {
 
 Result<std::shared_ptr<Expression>> BoundLiteralPredicate::Negate() const {
   ICEBERG_ASSIGN_OR_RAISE(auto negated_op, ::iceberg::Negate(op()));
-  return BoundLiteralPredicate::Make(negated_op, term_, literal_);
+  ICEBERG_ASSIGN_OR_RAISE(auto inverse,
+                          BoundLiteralPredicate::Make(negated_op, term_, literal_));
+  if (!IsRangeComparison(op())) {
+    return inverse;
+  }
+  // A required leaf can still produce null through an optional ancestor.
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto is_null, BoundUnaryPredicate::Make(Expression::Operation::kIsNull, term_));
+  return Or::MakeFolded(std::move(is_null), std::move(inverse));
 }
 
 bool BoundLiteralPredicate::Equals(const Expression& other) const {

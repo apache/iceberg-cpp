@@ -237,20 +237,14 @@ TEST_F(ResidualEvaluatorTest, ComparisonWithNullValue) {
   ICEBERG_UNWRAP_OR_FAIL(auto evaluator,
                          ResidualEvaluator::Make(expr, *spec, *schema, true));
 
-  // A null partition value must not satisfy NOT(key < 100); otherwise the residual
-  // folds to true and drops value = 5, disagreeing with Evaluator.
+  // key < 100 is false for null, so its boolean NOT is true for the partition.
   PartitionValues null_partition(Literal::Null(int32()));
   ICEBERG_UNWRAP_OR_FAIL(auto null_residual, evaluator->ResidualFor(null_partition));
-  ASSERT_TRUE(null_residual->is_unbound_predicate());
-  auto unbound = std::dynamic_pointer_cast<UnboundPredicate>(null_residual);
-  ASSERT_NE(unbound, nullptr);
-  EXPECT_EQ(unbound->op(), Expression::Operation::kEq);
-  EXPECT_EQ(unbound->reference()->name(), "value");
+  EXPECT_EQ(null_residual->op(), Expression::Operation::kTrue);
 
   PartitionValues below(Literal::Int(50));
   ICEBERG_UNWRAP_OR_FAIL(auto below_residual, evaluator->ResidualFor(below));
-  ASSERT_TRUE(below_residual->is_unbound_predicate());
-  EXPECT_EQ(below_residual->op(), Expression::Operation::kEq);
+  EXPECT_TRUE(below_residual->Equals(*Expressions::Equal("value", Literal::Int(5))));
 
   PartitionValues above(Literal::Int(150));
   ICEBERG_UNWRAP_OR_FAIL(auto above_residual, evaluator->ResidualFor(above));
@@ -262,10 +256,7 @@ TEST_F(ResidualEvaluatorTest, ComparisonWithNullValue) {
   PartitionValues empty_partition;
   ICEBERG_UNWRAP_OR_FAIL(auto unpartitioned_residual,
                          unpartitioned->ResidualFor(empty_partition));
-  ASSERT_EQ(unpartitioned_residual->op(), Expression::Operation::kOr);
-  auto unpartitioned_or = std::dynamic_pointer_cast<Or>(unpartitioned_residual);
-  ASSERT_NE(unpartitioned_or, nullptr);
-  EXPECT_EQ(unpartitioned_or->left()->op(), Expression::Operation::kGtEq);
+  EXPECT_TRUE(unpartitioned_residual->Equals(*expr));
 }
 
 TEST_F(ResidualEvaluatorTest, NotUuidComparison) {
@@ -292,6 +283,16 @@ TEST_F(ResidualEvaluatorTest, NotUuidComparison) {
   PartitionValues equal(Literal::UUID(lower));
   ICEBERG_UNWRAP_OR_FAIL(auto equal_residual, evaluator->ResidualFor(equal));
   EXPECT_EQ(equal_residual->op(), Expression::Operation::kTrue);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto smaller,
+                         Uuid::FromString("00000000-0000-0000-0000-000000000001"));
+  PartitionValues below(Literal::UUID(smaller));
+  ICEBERG_UNWRAP_OR_FAIL(auto below_residual, evaluator->ResidualFor(below));
+  EXPECT_EQ(below_residual->op(), Expression::Operation::kFalse);
+
+  PartitionValues null_partition(Literal::Null(uuid()));
+  ICEBERG_UNWRAP_OR_FAIL(auto null_residual, evaluator->ResidualFor(null_partition));
+  EXPECT_EQ(null_residual->op(), Expression::Operation::kTrue);
 }
 
 TEST_F(ResidualEvaluatorTest, UnpartitionedResiduals) {

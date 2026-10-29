@@ -571,14 +571,26 @@ TEST_F(PredicateTest, BoundLiteralPredicateNegate) {
   ASSERT_THAT(negated_result, IsOk());
 
   auto negated = negated_result.value();
-  EXPECT_EQ(negated->op(), Expression::Operation::kNotEq);
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto expected_not_eq,
+      Expressions::NotEqual("age", Literal::Int(25))->Bind(*schema_, true));
+  EXPECT_TRUE(negated->Equals(*expected_not_eq));
 
   // Test less than negation
   auto lt_pred = Expressions::LessThan("age", Literal::Int(30));
   auto bound_lt = lt_pred->Bind(*schema_, true).value();
   auto neg_lt_result = bound_lt->Negate();
   ASSERT_THAT(neg_lt_result, IsOk());
-  EXPECT_EQ(neg_lt_result.value()->op(), Expression::Operation::kGtEq);
+  auto original = std::dynamic_pointer_cast<BoundLiteralPredicate>(bound_lt);
+  ASSERT_NE(original, nullptr);
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto null_guard,
+      BoundUnaryPredicate::Make(Expression::Operation::kIsNull, original->term()));
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto inverse,
+      Expressions::GreaterThanOrEqual("age", Literal::Int(30))->Bind(*schema_, true));
+  auto expected = Expressions::Or(std::move(null_guard), std::move(inverse));
+  EXPECT_TRUE(neg_lt_result.value()->Equals(*expected));
 }
 
 TEST_F(PredicateTest, BoundLiteralPredicateEquals) {

@@ -22,7 +22,6 @@
 #include "iceberg/expression/expression.h"
 #include "iceberg/expression/expression_visitor.h"
 #include "iceberg/expression/predicate.h"
-#include "iceberg/expression/rewrite_not.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/row/struct_like.h"
 #include "iceberg/schema.h"
@@ -329,7 +328,6 @@ Result<std::unique_ptr<ResidualEvaluator>> ResidualEvaluator::Unpartitioned(
 Result<std::unique_ptr<ResidualEvaluator>> ResidualEvaluator::Make(
     std::shared_ptr<Expression> expr, const PartitionSpec& spec, const Schema& schema,
     bool case_sensitive) {
-  ICEBERG_ASSIGN_OR_RAISE(expr, RewriteNot::Visit(std::move(expr)));
   if (spec.fields().empty()) {
     return Unpartitioned(std::move(expr));
   }

@@ -37,6 +37,7 @@
 #include "iceberg/metadata_columns.h"
 #include "iceberg/name_mapping.h"
 #include "iceberg/parquet/parquet_data_util_internal.h"
+#include "iceberg/parquet/parquet_metrics_row_group_filter_internal.h"
 #include "iceberg/parquet/parquet_register.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_internal.h"
@@ -239,6 +240,57 @@ TEST_F(ParquetRowGroupFilterTest, MissingStatisticsRetainGroups) {
   Check(Options(Expressions::NotNull("key")), {0, 1, 2, 3, 4, 5});
 }
 
+TEST_F(ParquetRowGroupFilterTest, MissingNullCountRetainsNullBranches) {
+  ASSERT_THAT(Write(true, "[[null,0],[150,1]]"), IsOk());
+  auto original = metadata_->RowGroup(0);
+  auto builder = ::parquet::FileMetaDataBuilder::Make(
+      metadata_->schema(), ::parquet::default_writer_properties());
+  auto row_group = builder->AppendRowGroup();
+  row_group->set_num_rows(original->num_rows());
+  for (int i = 0; i < original->num_columns(); ++i) {
+    auto column = original->ColumnChunk(i);
+    auto stats = column->statistics()->Encode();
+    if (i == 0) {
+      stats.has_null_count = false;
+    }
+    auto chunk = row_group->NextColumnChunk();
+    chunk->SetStatistics(stats);
+    chunk->Finish(column->num_values(), column->dictionary_page_offset(),
+                  /*index_page_offset=*/0, column->data_page_offset(),
+                  column->total_compressed_size(), column->total_uncompressed_size(),
+                  column->has_dictionary_page(), /*dictionary_fallback=*/false, {}, {});
+  }
+  row_group->Finish(original->total_byte_size());
+  auto rebuilt = builder->Finish();
+  auto group = rebuilt->RowGroup(0);
+  auto stats = group->ColumnChunk(0)->statistics();
+  ASSERT_NE(stats, nullptr);
+  ASSERT_TRUE(stats->HasMinMax());
+  ASSERT_FALSE(stats->HasNullCount());
+
+  ::parquet::arrow::SchemaManifest manifest;
+  ASSERT_TRUE(::parquet::arrow::SchemaManifest::Make(
+                  rebuilt->schema(), /*key_value_metadata=*/nullptr,
+                  ::parquet::default_arrow_reader_properties(), &manifest)
+                  .ok());
+  struct Case {
+    std::shared_ptr<Expression> filter;
+    bool should_read;
+  };
+  for (const auto& test : std::vector<Case>{
+           {Expressions::IsNull("key"), true},
+           {Expressions::NotNull("key"), true},
+           {Expressions::Not(Expressions::GreaterThan("key", Literal::Int(100))), true},
+           {Expressions::LessThan("key", Literal::Int(100)), false}}) {
+    SCOPED_TRACE(test.filter->ToString());
+    ICEBERG_UNWRAP_OR_FAIL(auto filter,
+                           ParquetMetricsRowGroupFilter::Make(Options(test.filter).filter,
+                                                              *rebuilt->schema()));
+    ICEBERG_UNWRAP_OR_FAIL(auto should_read, filter->ShouldRead(manifest, *group));
+    EXPECT_EQ(should_read, test.should_read);
+  }
+}
+
 TEST_F(ParquetRowGroupFilterTest, OpenRejectsUnresolvableReferences) {
   ASSERT_THAT(Write(), IsOk());
   auto options = Options(nullptr);
@@ -263,7 +315,7 @@ TEST_F(ParquetRowGroupFilterTest, MissingColumnWithDefaultRetainsGroups) {
       schema_->fields()[0], schema_->fields()[1],
       SchemaField::MakeOptional(3, "defaulted", int32())
           .WithInitialDefault(std::make_shared<Literal>(Literal::Int(7)))});
-  Check(Options(Expressions::Equal("defaulted", Literal::Int(8))), {0, 1, 2, 3, 4, 5});
+  Check(Options(Expressions::Equal("defaulted", Literal::Int(7))), {0, 1, 2, 3, 4, 5});
 }
 
 TEST_F(ParquetRowGroupFilterTest, FileAndFilterTypeCompatibility) {
@@ -354,11 +406,23 @@ TEST_F(ParquetRowGroupFilterTest, FileAndFilterTypeCompatibility) {
     SetKeyType(test.file_type);
     ASSERT_THAT(Write(true, test.json), IsOk());
     SetKeyType(test.filter_type);
+    const bool floating = test.filter_type->type_id() == TypeId::kFloat ||
+                          test.filter_type->type_id() == TypeId::kDouble;
     Check(Options(Expressions::Equal("key", test.value)),
-          test.filter_type->type_id() != TypeId::kFloat &&
-                  test.filter_type->type_id() != TypeId::kDouble && test.compatible
-              ? std::vector<int64_t>{2, 3}
-              : std::vector<int64_t>{0, 1, 2, 3, 4, 5});
+          !floating && test.compatible ? std::vector<int64_t>{2, 3}
+                                       : std::vector<int64_t>{0, 1, 2, 3, 4, 5});
+    if (floating) {
+      // Null counts still distinguish compatible types when bounds are disabled.
+      SetKeyType(test.file_type);
+      ASSERT_THAT(Write(true, "[[null,0],[null,1],[10,2],[11,3]]"), IsOk());
+      SetKeyType(test.filter_type);
+      Check(Options(Expressions::IsNull("key")), test.compatible
+                                                     ? std::vector<int64_t>{0, 1}
+                                                     : std::vector<int64_t>{0, 1, 2, 3});
+      Check(Options(Expressions::NotNull("key")), test.compatible
+                                                      ? std::vector<int64_t>{2, 3}
+                                                      : std::vector<int64_t>{0, 1, 2, 3});
+    }
   }
 }
 
@@ -408,16 +472,16 @@ TEST_F(ParquetRowGroupFilterTest, RewriteNotForBoundPredicates) {
 
 TEST_F(ParquetRowGroupFilterTest, RewrittenNotPrunesNullableGroups) {
   ASSERT_THAT(Write(true, "[[null,0],[null,1],[null,2],[50,3],[100,4],[150,5]]"), IsOk());
-  // Match Evaluator's normalized predicates: null does not match these ranges.
+  // Negated ranges match nulls; non-null groups still use range pruning.
   Check(Options(Expressions::Not(Expressions::LessThan("key", Literal::Int(100)))),
-        {4, 5});
+        {0, 1, 2, 3, 4, 5});
   Check(Options(Expressions::Not(Expressions::LessThanOrEqual("key", Literal::Int(100)))),
-        {4, 5});
+        {0, 1, 2, 3, 4, 5});
   Check(Options(Expressions::Not(Expressions::GreaterThan("key", Literal::Int(100)))),
-        {2, 3, 4, 5});
+        {0, 1, 2, 3, 4, 5});
   Check(Options(
             Expressions::Not(Expressions::GreaterThanOrEqual("key", Literal::Int(100)))),
-        {2, 3});
+        {0, 1, 2, 3});
 }
 
 TEST_F(ParquetRowGroupFilterTest, BoundComparisonBoundariesAndAllNullGroups) {
@@ -630,7 +694,7 @@ TEST_F(ParquetRowGroupFilterTest, RequiredLeafWithNullableParent) {
   Check(Options(Expressions::Not(is_null)), {2, 3});
   Check(Options(Expressions::Not(not_null)), {0, 1, 4, 5});
   Check(Options(Expressions::Not(Expressions::LessThan("key.nested", Literal::Int(100)))),
-        {});
+        {0, 1, 4, 5});
 }
 
 TEST_F(ParquetRowGroupFilterTest, UnsupportedTransformRetainsGroups) {
@@ -645,7 +709,8 @@ TEST_F(ParquetRowGroupFilterTest, NegativePredicates) {
   Check(Options(Expressions::NotEqual("key", Literal::Int(5))), {0, 1, 2, 3, 4, 5});
   Check(Options(Expressions::NotIn("key", {Literal::Int(5), Literal::Int(6)})),
         {0, 1, 2, 3, 4, 5});
-  Check(Options(Expressions::Not(Expressions::LessThan("key", Literal::Int(100)))), {});
+  Check(Options(Expressions::Not(Expressions::LessThan("key", Literal::Int(100)))),
+        {2, 3});
 }
 
 TEST_F(ParquetRowGroupFilterTest, PrefixPredicates) {

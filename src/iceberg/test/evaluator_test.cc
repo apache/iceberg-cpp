@@ -36,6 +36,7 @@
 #include "iceberg/arrow_c_data_guard_internal.h"
 #include "iceberg/expression/expressions.h"
 #include "iceberg/expression/literal.h"
+#include "iceberg/expression/rewrite_not.h"
 #include "iceberg/result.h"
 #include "iceberg/row/arrow_array_wrapper.h"
 #include "iceberg/schema.h"
@@ -705,7 +706,7 @@ TEST_F(EvaluatorTest, Not) {
       *struct_evaluator, true);
 }
 
-TEST_F(EvaluatorTest, NotRangeComparisonsExcludeNull) {
+TEST_F(EvaluatorTest, NotRangeComparisonsIncludeNull) {
   struct Case {
     std::shared_ptr<Expression> predicate;
     bool below;
@@ -733,10 +734,27 @@ TEST_F(EvaluatorTest, NotRangeComparisonsExcludeNull) {
     SCOPED_TRACE(test.predicate->ToString());
     ICEBERG_UNWRAP_OR_FAIL(auto evaluator,
                            Evaluator::Make(*schema_, Expressions::Not(test.predicate)));
-    TestData(R"([{"x": 0, "y": 0.0, "z": null}])", *evaluator, false);
+    TestData(R"([{"x": 0, "y": 0.0, "z": null}])", *evaluator, true);
     TestData(R"([{"x": 0, "y": 0.0, "z": 6}])", *evaluator, test.below);
     TestData(R"([{"x": 0, "y": 0.0, "z": 7}])", *evaluator, test.equal);
     TestData(R"([{"x": 0, "y": 0.0, "z": 8}])", *evaluator, test.above);
+  }
+}
+
+TEST_F(EvaluatorTest, NegatedRangePreservesNullableAncestors) {
+  for (const auto& constant :
+       {Literal::Int(7), Literal::Long(std::numeric_limits<int64_t>::max())}) {
+    auto expr = Expressions::Not(Expressions::LessThan("s1.s2.s3.s4.i", constant));
+    ICEBERG_UNWRAP_OR_FAIL(auto original, Evaluator::Make(*schema_, expr));
+    ICEBERG_UNWRAP_OR_FAIL(auto rewritten, RewriteNot::Visit(expr));
+    ICEBERG_UNWRAP_OR_FAIL(auto normalized, Evaluator::Make(*schema_, rewritten));
+    for (auto* evaluator : {original.get(), normalized.get()}) {
+      TestData(R"([{"x": 0, "y": 0.0, "s1": null}])", *evaluator, true);
+      TestData(R"([{"x": 0, "y": 0.0, "s1": {"s2": {"s3": {"s4": {"i": 6}}}}}])",
+               *evaluator, false);
+      TestData(R"([{"x": 0, "y": 0.0, "s1": {"s2": {"s3": {"s4": {"i": 7}}}}}])",
+               *evaluator, constant == Literal::Int(7));
+    }
   }
 }
 

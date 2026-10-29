@@ -243,6 +243,31 @@ TEST_P(TestManifestReader, TestManifestReaderWithEmptyInheritableMetadata) {
   EXPECT_EQ(read_entry.snapshot_id, 1000L);
 }
 
+TEST_P(TestManifestReader, NegatedRowRangeRetainsNullPartitions) {
+  schema_ = std::make_shared<Schema>(
+      std::vector<SchemaField>{SchemaField::MakeOptional(3, "key", int32())});
+  ICEBERG_UNWRAP_OR_FAIL(
+      spec_, PartitionSpec::Make(
+                 *schema_, 0,
+                 {PartitionField(3, 1000, "key_part", Transform::Identity())}, false));
+  std::vector<ManifestEntry> entries;
+  for (const auto& value :
+       {Literal::Null(int32()), Literal::Int(50), Literal::Int(150)}) {
+    entries.push_back(MakeEntry(ManifestStatus::kAdded, 1000L,
+                                MakeDataFile("/path/to/" + value.ToString() + ".parquet",
+                                             PartitionValues(value))));
+  }
+  auto manifest = WriteManifest(GetParam(), 1000L, entries);
+  auto filter = Expressions::Not(Expressions::GreaterThan("key", Literal::Int(100)));
+  ICEBERG_UNWRAP_OR_FAIL(auto reader,
+                         ManifestReader::Make(manifest, file_io_, schema_, spec_));
+  reader->FilterRows(filter);
+  ICEBERG_UNWRAP_OR_FAIL(auto actual, reader->Entries());
+  ASSERT_EQ(actual.size(), 2);
+  EXPECT_TRUE(actual[0].data_file->partition.values()[0].IsNull());
+  EXPECT_EQ(actual[1].data_file->partition.values()[0], Literal::Int(50));
+}
+
 TEST_P(TestManifestReader, EntriesStreamOwnsReaderResources) {
   auto version = GetParam();
   auto file_a =
