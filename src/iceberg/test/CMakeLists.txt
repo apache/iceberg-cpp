@@ -76,6 +76,7 @@ add_iceberg_test(schema_test
                  type_test.cc)
 
 add_iceberg_test(v4_types_test SOURCES v4_types_test.cc)
+add_iceberg_test(v4_table_metadata_test SOURCES v4_table_metadata_test.cc)
 
 add_iceberg_test(table_test
                  SOURCES
