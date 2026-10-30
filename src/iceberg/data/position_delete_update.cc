@@ -199,9 +199,8 @@ class PositionDeleteUpdate::Impl {
     const auto write_uuid = Uuid::GenerateV7().ToString();
     size_t file_number = 0;
 
-    for (const auto& [path, positions] : deletes_) {
-      auto sorted_positions = positions;
-      std::ranges::sort(sorted_positions);
+    for (auto& [path, positions] : deletes_) {
+      std::ranges::sort(positions);
 
       const auto& target = targets.at(path);
       const auto filename =
@@ -219,7 +218,7 @@ class PositionDeleteUpdate::Impl {
                                   .io = table_->io(),
                                   .properties = properties,
                               }));
-      for (int64_t pos : sorted_positions) {
+      for (int64_t pos : positions) {
         ICEBERG_RETURN_UNEXPECTED(writer->WriteDelete(path, pos));
       }
       ICEBERG_RETURN_UNEXPECTED(writer->Close());
