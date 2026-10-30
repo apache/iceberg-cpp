@@ -242,4 +242,25 @@ ICEBERG_EXPORT Result<ArrowArray> ProjectBatch(ArrowArray* input_batch,
                                                std::span<const int32_t> row_indices,
                                                ProjectionContext& projection);
 
+/// \brief A write projection prepared once for a stable input/write schema pair.
+///
+/// Matches fields by id, fills missing fields with write-defaults or typed nulls,
+/// and rejects incompatible schemas at Make. Existing values, including explicit
+/// nulls, are preserved. Do not share a projection across concurrent calls.
+class ICEBERG_EXPORT WriteProjection {
+ public:
+  static Result<std::unique_ptr<WriteProjection>> Make(const Schema& input_schema,
+                                                       const Schema& write_schema);
+  ~WriteProjection();
+
+  /// \brief Align a batch, consuming it even on failure.
+  /// Identical schemas transfer the original batch without conversion.
+  Result<ArrowArray> AlignBatch(ArrowArray* input_batch) const;
+
+ private:
+  class Impl;
+  explicit WriteProjection(std::unique_ptr<Impl> impl);
+  std::unique_ptr<Impl> impl_;
+};
+
 }  // namespace iceberg

@@ -82,6 +82,14 @@ struct ICEBERG_EXPORT SchemaProjection {
   std::vector<FieldProjection> fields;
 };
 
+/// \brief Whether schema projection is used for reading or writing.
+enum class ProjectionMode {
+  /// \brief Use initial-default and allow type promotion.
+  kRead,
+  /// \brief Use write-default, require matching types, and reject optional-to-required.
+  kWrite,
+};
+
 /// \brief Project the expected schema on top of the source schema.
 ///
 /// \param expected_schema The expected schema.
@@ -91,11 +99,14 @@ struct ICEBERG_EXPORT SchemaProjection {
 /// column pruning, so `prune_source` is set to true in this case such that the `from`
 /// field in `FieldProjection` exactly reflects the position (relative to its nesting
 /// level) to get the column value from the reader.
+/// \param mode Whether to project for reading or writing.
 /// \param id_to_constant Primitive values keyed by source field ID. Constants override
-/// physical fields and defaults, including primitive leaves of existing structs.
+/// physical fields and defaults, including primitive leaves of existing structs. Only
+/// applied when `mode` is `ProjectionMode::kRead`.
 /// \return The projection result.
 ICEBERG_EXPORT Result<SchemaProjection> Project(
     const Schema& expected_schema, const Schema& source_schema, bool prune_source,
+    ProjectionMode mode = ProjectionMode::kRead,
     const std::unordered_map<int32_t, Literal>& id_to_constant = {});
 
 ICEBERG_EXPORT std::string_view ToString(FieldProjection::Kind kind);

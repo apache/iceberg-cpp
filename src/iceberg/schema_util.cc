@@ -84,15 +84,26 @@ Status ValidateSchemaEvolution(const Type& expected_type, const Type& source_typ
 
 Result<FieldProjection> ProjectNested(
     const Type& expected_type, const Type& source_type, bool prune_source,
-    const std::unordered_map<int32_t, Literal>& id_to_constant);
+    ProjectionMode mode, const std::unordered_map<int32_t, Literal>& id_to_constant);
 
 Result<FieldProjection> ProjectField(
     const SchemaField& expected_field, const SchemaField& source_field,
-    size_t source_index, bool prune_source,
+    size_t source_index, bool prune_source, ProjectionMode mode,
     const std::unordered_map<int32_t, Literal>& id_to_constant) {
   FieldProjection projection;
 
+  if (mode == ProjectionMode::kWrite && source_field.optional() &&
+      !expected_field.optional()) {
+    return InvalidSchema("Field {} should be required, but is optional",
+                         expected_field.ToString());
+  }
+
   if (expected_field.type()->type_id() == TypeId::kUnknown) {
+    if (mode == ProjectionMode::kWrite &&
+        source_field.type()->type_id() != TypeId::kUnknown) {
+      return NotSupported("Cannot project {} as {}: type promotion is not allowed",
+                          *source_field.type(), *expected_field.type());
+    }
     if (!expected_field.optional()) {
       return InvalidSchema("Cannot project required field with id {} as null",
                            expected_field.field_id());
@@ -106,7 +117,9 @@ Result<FieldProjection> ProjectField(
                          expected_field.field_id());
   }
   if (source_field.type()->type_id() == TypeId::kUnknown &&
-      expected_field.type()->is_nested()) {
+      (expected_field.type()->is_nested() || mode == ProjectionMode::kWrite)) {
+    // The write path must materialize nulls with the expected type rather than copy
+    // the source's unknown array into a differently typed column.
     projection.kind = FieldProjection::Kind::kNull;
     return projection;
   }
@@ -114,7 +127,12 @@ Result<FieldProjection> ProjectField(
   if (expected_field.type()->is_nested()) {
     ICEBERG_ASSIGN_OR_RAISE(projection,
                             ProjectNested(*expected_field.type(), *source_field.type(),
-                                          prune_source, id_to_constant));
+                                          prune_source, mode, id_to_constant));
+  } else if (mode == ProjectionMode::kWrite) {
+    if (*expected_field.type() != *source_field.type()) {
+      return NotSupported("Cannot project {} as {}: type promotion is not allowed",
+                          *source_field.type(), *expected_field.type());
+    }
   } else {
     ICEBERG_RETURN_UNEXPECTED(
         ValidateSchemaEvolution(*expected_field.type(), *source_field.type()));
@@ -130,7 +148,7 @@ Result<FieldProjection> ProjectField(
 
 Result<FieldProjection> ProjectNested(
     const Type& expected_type, const Type& source_type, bool prune_source,
-    const std::unordered_map<int32_t, Literal>& id_to_constant) {
+    ProjectionMode mode, const std::unordered_map<int32_t, Literal>& id_to_constant) {
   if (!expected_type.is_nested()) {
     return InvalidSchema("Expected a nested type, but got {}", expected_type);
   }
@@ -169,7 +187,8 @@ Result<FieldProjection> ProjectNested(
     int32_t field_id = expected_field.field_id();
     FieldProjection child_projection;
 
-    if (auto constant = id_to_constant.find(field_id); constant != id_to_constant.end()) {
+    if (auto constant = id_to_constant.find(field_id);
+        mode == ProjectionMode::kRead && constant != id_to_constant.end()) {
       child_projection.kind = FieldProjection::Kind::kConstant;
       child_projection.from = constant->second;
     } else if (auto iter = source_field_map.find(field_id);
@@ -177,19 +196,37 @@ Result<FieldProjection> ProjectNested(
       ICEBERG_ASSIGN_OR_RAISE(
           child_projection,
           ProjectField(expected_field, *iter->second.field, iter->second.local_index,
-                       prune_source, id_to_constant));
-    } else if (MetadataColumns::IsMetadataColumn(field_id)) {
+                       prune_source, mode, id_to_constant));
+      if (mode == ProjectionMode::kWrite) {
+        source_field_map.erase(iter);
+      }
+    } else if (mode == ProjectionMode::kRead &&
+               MetadataColumns::IsMetadataColumn(field_id)) {
       child_projection.kind = FieldProjection::Kind::kMetadata;
-    } else if (expected_field.initial_default() != nullptr) {
-      // Rows written before the field existed assume its `initial-default` value.
+    } else if (const auto& default_value = mode == ProjectionMode::kWrite
+                                               ? expected_field.write_default()
+                                               : expected_field.initial_default();
+               default_value != nullptr) {
+      if (mode == ProjectionMode::kWrite) {
+        ICEBERG_RETURN_UNEXPECTED(expected_field.Validate());
+      }
       child_projection.kind = FieldProjection::Kind::kDefault;
-      child_projection.from = *expected_field.initial_default();
+      child_projection.from = *default_value;
     } else if (expected_field.optional()) {
       child_projection.kind = FieldProjection::Kind::kNull;
     } else {
+      if (mode == ProjectionMode::kWrite) {
+        return InvalidSchema("Missing required field: {} without a write-default",
+                             expected_field.ToString());
+      }
       return InvalidSchema("Missing required field: {}", expected_field.ToString());
     }
     result.children.emplace_back(std::move(child_projection));
+  }
+
+  if (mode == ProjectionMode::kWrite && !source_field_map.empty()) {
+    return InvalidSchema("Input field id {} is not present in write schema",
+                         source_field_map.begin()->first);
   }
 
   if (prune_source) {
@@ -203,10 +240,10 @@ Result<FieldProjection> ProjectNested(
 
 Result<SchemaProjection> Project(
     const Schema& expected_schema, const Schema& source_schema, bool prune_source,
-    const std::unordered_map<int32_t, Literal>& id_to_constant) {
+    ProjectionMode mode, const std::unordered_map<int32_t, Literal>& id_to_constant) {
   ICEBERG_ASSIGN_OR_RAISE(
       auto field_projection,
-      ProjectNested(expected_schema, source_schema, prune_source, id_to_constant));
+      ProjectNested(expected_schema, source_schema, prune_source, mode, id_to_constant));
   return SchemaProjection{std::move(field_projection.children)};
 }
 

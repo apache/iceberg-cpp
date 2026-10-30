@@ -17,25 +17,36 @@
  * under the License.
  */
 
+#include <cerrno>
 #include <cstdint>
 #include <limits>
 #include <memory>
 #include <mutex>
 #include <span>
+#include <string>
+#include <string_view>
+#include <type_traits>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include <nanoarrow/nanoarrow.h>
 
 #include "iceberg/arrow_c_data_guard_internal.h"
 #include "iceberg/arrow_c_data_util_internal.h"
+#include "iceberg/expression/literal.h"
 #include "iceberg/file_reader.h"
 #include "iceberg/nanoarrow_status_internal.h"
 #include "iceberg/result.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_field.h"
 #include "iceberg/schema_internal.h"
+#include "iceberg/schema_util.h"
+#include "iceberg/type.h"
+#include "iceberg/util/checked_cast.h"
+#include "iceberg/util/decimal.h"
 #include "iceberg/util/macros.h"
+#include "iceberg/util/uuid.h"
 
 namespace iceberg {
 
@@ -392,6 +403,174 @@ Result<ArrowArray> ProjectBatch(ArrowArray* input_batch,
   return ProjectBatchNanoarrow(projection.input_arrow_schema(), *input_batch, row_indices,
                                projection.output_arrow_schema(),
                                projection.selected_field_indices());
+}
+
+namespace {
+
+int AppendWriteDefault(ArrowArray* array, const Literal& literal) {
+  return std::visit(
+      [&](const auto& value) -> int {
+        using Value = std::decay_t<decltype(value)>;
+        if constexpr (std::is_same_v<Value, std::monostate>) {
+          return ArrowArrayAppendNull(array, 1);
+        } else if constexpr (std::is_integral_v<Value>) {
+          return ArrowArrayAppendInt(array, value);
+        } else if constexpr (std::is_floating_point_v<Value>) {
+          return ArrowArrayAppendDouble(array, value);
+        } else if constexpr (std::is_same_v<Value, std::string>) {
+          return ArrowArrayAppendString(array,
+                                        ArrowStringView(value.data(), value.size()));
+        } else if constexpr (std::is_same_v<Value, std::vector<uint8_t>>) {
+          ArrowBufferView bytes;
+          bytes.data.as_uint8 = value.data();
+          bytes.size_bytes = static_cast<int64_t>(value.size());
+          return ArrowArrayAppendBytes(array, bytes);
+        } else if constexpr (std::is_same_v<Value, Uuid>) {
+          ArrowBufferView bytes;
+          bytes.data.as_uint8 = value.bytes().data();
+          bytes.size_bytes = Uuid::kLength;
+          return ArrowArrayAppendBytes(array, bytes);
+        } else if constexpr (std::is_same_v<Value, Decimal>) {
+          const auto& type = internal::checked_cast<const DecimalType&>(*literal.type());
+          ArrowDecimal decimal;
+          ArrowDecimalInit(&decimal, Decimal::kBitWidth, type.precision(), type.scale());
+          ArrowDecimalSetBytes(&decimal, value.native_endian_bytes());
+          return ArrowArrayAppendDecimal(array, &decimal);
+        } else {
+          return EINVAL;
+        }
+      },
+      literal.value());
+}
+
+Result<ArrowArray> MaterializeWriteField(const FieldProjection& projection,
+                                         const ArrowSchema& schema, int64_t length) {
+  ArrowArray result{};
+  ArrowError error;
+  ICEBERG_NANOARROW_RETURN_UNEXPECTED_WITH_ERROR(
+      ArrowArrayInitFromSchema(&result, &schema, &error), error);
+  internal::ArrowArrayGuard guard(&result);
+  ICEBERG_NANOARROW_RETURN_UNEXPECTED(ArrowArrayStartAppending(&result));
+  if (projection.kind == FieldProjection::Kind::kNull) {
+    ICEBERG_NANOARROW_RETURN_UNEXPECTED(ArrowArrayAppendNull(&result, length));
+  } else {
+    const auto& literal = std::get<Literal>(projection.from);
+    for (int64_t row = 0; row < length; ++row) {
+      ICEBERG_NANOARROW_RETURN_UNEXPECTED(AppendWriteDefault(&result, literal));
+    }
+  }
+  ICEBERG_NANOARROW_RETURN_UNEXPECTED_WITH_ERROR(
+      ArrowArrayFinishBuildingDefault(&result, &error), error);
+  return std::exchange(result, ArrowArray{});
+}
+
+Result<ArrowArray> MaterializeWriteProjection(
+    ArrowArray& input, const ArrowSchema& schema,
+    std::span<const FieldProjection> projections) {
+  ArrowArray result{};
+  ICEBERG_NANOARROW_RETURN_UNEXPECTED(
+      ArrowArrayInitFromType(&result, NANOARROW_TYPE_UNINITIALIZED));
+  internal::ArrowArrayGuard guard(&result);
+  ICEBERG_NANOARROW_RETURN_UNEXPECTED(
+      ArrowArrayAllocateChildren(&result, schema.n_children));
+  result.n_buffers = input.n_buffers;
+  result.length = input.length;
+  result.offset = input.offset;
+  result.null_count = input.null_count;
+  // MoveShared makes every input buffer independently reference-counted. Clone only
+  // the parent buffers; existing leaves can then move directly into the new tree.
+  for (int64_t index = 0; index < input.n_buffers; ++index) {
+    ArrowBuffer buffer;
+    ArrowBufferInit(&buffer);
+    internal::ArrowArrayBufferGuard buffer_guard(&buffer);
+    ICEBERG_NANOARROW_RETURN_UNEXPECTED(
+        ArrowSharedBufferClone(ArrowArrayBuffer(&input, index), &buffer));
+    ICEBERG_NANOARROW_RETURN_UNEXPECTED(ArrowArraySetBuffer(&result, index, &buffer));
+  }
+  if (std::string_view(schema.format) == "+m") {
+    // Maps add an entries struct between the map and its key/value projection.
+    ICEBERG_ASSIGN_OR_RAISE(
+        *result.children[0],
+        MaterializeWriteProjection(*input.children[0], *schema.children[0], projections));
+  } else {
+    const int64_t length = std::string_view(schema.format) == "+s"
+                               ? input.offset + input.length
+                               : input.children[0]->length;
+    for (size_t index = 0; index < projections.size(); ++index) {
+      const auto& projection = projections[index];
+      const auto& child_schema = *schema.children[index];
+      auto* output_child = result.children[index];
+      if (projection.kind == FieldProjection::Kind::kProjected) {
+        auto* child = input.children[std::get<size_t>(projection.from)];
+        if (projection.children.empty()) {
+          ArrowArrayMove(child, output_child);
+        } else {
+          ICEBERG_ASSIGN_OR_RAISE(
+              *output_child,
+              MaterializeWriteProjection(*child, child_schema, projection.children));
+        }
+      } else {
+        ICEBERG_ASSIGN_OR_RAISE(*output_child,
+                                MaterializeWriteField(projection, child_schema, length));
+      }
+    }
+  }
+  return std::exchange(result, ArrowArray{});
+}
+
+}  // namespace
+
+class WriteProjection::Impl {
+ public:
+  bool identical = false;
+  SchemaProjection projection;
+  ArrowSchema write_schema{};
+  ArrowArrayView input_view{};
+
+  ~Impl() {
+    ArrowArrayViewReset(&input_view);
+    if (write_schema.release != nullptr) {
+      ArrowSchemaRelease(&write_schema);
+    }
+  }
+};
+
+WriteProjection::WriteProjection(std::unique_ptr<Impl> impl) : impl_(std::move(impl)) {}
+WriteProjection::~WriteProjection() = default;
+
+Result<std::unique_ptr<WriteProjection>> WriteProjection::Make(
+    const Schema& input_schema, const Schema& write_schema) {
+  auto impl = std::make_unique<Impl>();
+  impl->identical = input_schema == write_schema;
+  if (!impl->identical) {
+    ICEBERG_ASSIGN_OR_RAISE(impl->projection,
+                            Project(write_schema, input_schema, /*prune_source=*/false,
+                                    ProjectionMode::kWrite));
+    ICEBERG_RETURN_UNEXPECTED(ToArrowSchema(write_schema, &impl->write_schema));
+    ArrowSchema input_arrow_schema{};
+    ICEBERG_RETURN_UNEXPECTED(ToArrowSchema(input_schema, &input_arrow_schema));
+    internal::ArrowSchemaGuard guard(&input_arrow_schema);
+    ArrowError error;
+    ICEBERG_NANOARROW_RETURN_UNEXPECTED_WITH_ERROR(
+        ArrowArrayViewInitFromSchema(&impl->input_view, &input_arrow_schema, &error),
+        error);
+  }
+  return std::unique_ptr<WriteProjection>(new WriteProjection(std::move(impl)));
+}
+
+Result<ArrowArray> WriteProjection::AlignBatch(ArrowArray* input_batch) const {
+  if (impl_->identical) {
+    return std::exchange(*input_batch, ArrowArray{});
+  }
+  internal::ArrowArrayGuard input_guard(input_batch);
+  ArrowError error;
+  ICEBERG_NANOARROW_RETURN_UNEXPECTED_WITH_ERROR(
+      ArrowArrayViewSetArray(&impl_->input_view, input_batch, &error), error);
+  ArrowArray shared{};
+  internal::ArrowArrayGuard shared_guard(&shared);
+  ICEBERG_NANOARROW_RETURN_UNEXPECTED(ArrowArrayMoveShared(input_batch, &shared));
+  return MaterializeWriteProjection(shared, impl_->write_schema,
+                                    impl_->projection.fields);
 }
 
 }  // namespace iceberg

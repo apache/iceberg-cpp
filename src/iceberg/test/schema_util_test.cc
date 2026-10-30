@@ -105,7 +105,8 @@ TEST(SchemaUtilTest, ProjectConstantsOverridePhysicalFieldsAndPruneIndices) {
   Schema schema({SchemaField::MakeRequired(1, "region", string()),
                  SchemaField::MakeRequired(2, "id", int64())});
   for (bool prune_source : {false, true}) {
-    auto projection = Project(schema, schema, prune_source, {{1, Literal::String("CN")}});
+    auto projection = Project(schema, schema, prune_source, ProjectionMode::kRead,
+                              {{1, Literal::String("CN")}});
     ASSERT_THAT(projection, IsOk());
     ASSERT_EQ(projection->fields.size(), 2);
     EXPECT_EQ(projection->fields[0].kind, FieldProjection::Kind::kConstant);
@@ -117,8 +118,9 @@ TEST(SchemaUtilTest, ProjectConstantsOverridePhysicalFieldsAndPruneIndices) {
 TEST(SchemaUtilTest, ProjectConstantsFillMissingFields) {
   Schema expected({SchemaField::MakeRequired(1, "id", int64()),
                    SchemaField::MakeOptional(2, "region", string())});
-  auto projection = Project(expected, Schema({}), /*prune_source=*/true,
-                            {{1, Literal::Int(7)}, {2, Literal::Null(string())}});
+  auto projection =
+      Project(expected, Schema({}), /*prune_source=*/true, ProjectionMode::kRead,
+              {{1, Literal::Int(7)}, {2, Literal::Null(string())}});
   ASSERT_THAT(projection, IsOk());
   ASSERT_EQ(projection->fields.size(), 2);
   EXPECT_EQ(projection->fields[0].kind, FieldProjection::Kind::kConstant);
@@ -131,8 +133,8 @@ TEST(SchemaUtilTest, ProjectConstantsIntoExistingStruct) {
                                  std::make_shared<StructType>(std::vector<SchemaField>{
                                      SchemaField::MakeOptional(2, "region", string()),
                                      SchemaField::MakeRequired(3, "id", int64())}))});
-  auto projection =
-      Project(schema, schema, /*prune_source=*/true, {{2, Literal::String("CN")}});
+  auto projection = Project(schema, schema, /*prune_source=*/true, ProjectionMode::kRead,
+                            {{2, Literal::String("CN")}});
   ASSERT_THAT(projection, IsOk());
   ASSERT_EQ(projection->fields.size(), 1);
   const auto& parent = projection->fields[0];
@@ -273,6 +275,131 @@ TEST(SchemaUtilTest, ProjectPresentFieldIgnoresInitialDefault) {
   AssertProjectedField(projection_result->fields[0], 0);
 }
 
+TEST(SchemaUtilTest, ProjectWritePolicyIgnoresInitialDefault) {
+  // With the write default source, a field having only `initial-default` behaves as if
+  // it had no default: optional becomes null and required is rejected.
+  Schema source_schema(
+      {SchemaField::MakeRequired(/*field_id=*/1, "id", iceberg::int64())});
+  Schema expected_schema({
+      SchemaField::MakeRequired(/*field_id=*/1, "id", iceberg::int64()),
+      SchemaField(/*field_id=*/10, "extra", iceberg::string(), /*optional=*/true,
+                  /*doc=*/{}, std::make_shared<const Literal>(Literal::String("n/a"))),
+  });
+
+  auto projection_result = Project(expected_schema, source_schema, /*prune_source=*/false,
+                                   ProjectionMode::kWrite);
+  ASSERT_THAT(projection_result, IsOk());
+  ASSERT_EQ(projection_result->fields[1].kind, FieldProjection::Kind::kNull);
+}
+
+TEST(SchemaUtilTest, ProjectWritePolicyUnknownSourceProducesNull) {
+  Schema source_schema(
+      {SchemaField::MakeOptional(/*field_id=*/1, "value", iceberg::unknown())});
+  Schema expected_schema({
+      SchemaField(/*field_id=*/1, "value", iceberg::int32(), /*optional=*/true,
+                  /*doc=*/{}, /*initial_default=*/nullptr,
+                  std::make_shared<const Literal>(Literal::Int(7))),
+  });
+
+  auto write_projection = Project(expected_schema, source_schema, /*prune_source=*/false,
+                                  ProjectionMode::kWrite);
+  ASSERT_THAT(write_projection, IsOk());
+  ASSERT_EQ(write_projection->fields.size(), 1);
+  // A supplied null stays null, even when the field has a write-default.
+  ASSERT_EQ(write_projection->fields[0].kind, FieldProjection::Kind::kNull);
+
+  auto read_projection = Project(expected_schema, source_schema, /*prune_source=*/false);
+  ASSERT_THAT(read_projection, IsOk());
+  ASSERT_EQ(read_projection->fields.size(), 1);
+  AssertProjectedField(read_projection->fields[0], 0);
+}
+
+TEST(SchemaUtilTest, ProjectWriteRejectsTypePromotion) {
+  Schema source_schema(
+      {SchemaField::MakeRequired(/*field_id=*/1, "id", iceberg::int32())});
+  Schema expected_schema(
+      {SchemaField::MakeRequired(/*field_id=*/1, "id", iceberg::int64())});
+
+  auto projection_result = Project(expected_schema, source_schema, /*prune_source=*/false,
+                                   ProjectionMode::kWrite);
+  ASSERT_THAT(projection_result, IsError(ErrorKind::kNotSupported));
+  ASSERT_THAT(projection_result, HasErrorMessage("type promotion is not allowed"));
+}
+
+class ProjectWriteCompatibilityTest : public ::testing::TestWithParam<TypeId> {
+ protected:
+  Schema MakeSchema(bool optional, std::shared_ptr<Type> type = int32()) const {
+    auto value = SchemaField(1, "value", std::move(type), optional);
+    std::shared_ptr<Type> nested;
+    switch (GetParam()) {
+      case TypeId::kStruct:
+        nested = std::make_shared<StructType>(std::vector<SchemaField>{value});
+        break;
+      case TypeId::kList:
+        nested = list(value.WithName("element"));
+        break;
+      case TypeId::kMap:
+        nested = map(SchemaField::MakeRequired(2, "key", string()), value);
+        break;
+      default:
+        return Schema({value});
+    }
+    return Schema({SchemaField::MakeOptional(3, "nested", nested)});
+  }
+};
+
+TEST_P(ProjectWriteCompatibilityTest, RejectsOptionalToRequired) {
+  auto source_schema = MakeSchema(/*optional=*/true);
+  auto expected_schema = MakeSchema(/*optional=*/false);
+
+  auto result = Project(expected_schema, source_schema, /*prune_source=*/false,
+                        ProjectionMode::kWrite);
+  ASSERT_THAT(result, IsError(ErrorKind::kInvalidSchema));
+  EXPECT_THAT(result, HasErrorMessage("should be required, but is optional"));
+  EXPECT_THAT(Project(source_schema, expected_schema, /*prune_source=*/false,
+                      ProjectionMode::kWrite),
+              IsOk());
+  EXPECT_THAT(Project(expected_schema, source_schema, /*prune_source=*/false), IsOk());
+}
+
+TEST_P(ProjectWriteCompatibilityTest, RejectsConcreteToUnknown) {
+  auto source_schema = MakeSchema(/*optional=*/true);
+  auto expected_schema = MakeSchema(/*optional=*/true, unknown());
+
+  auto result = Project(expected_schema, source_schema, /*prune_source=*/false,
+                        ProjectionMode::kWrite);
+  ASSERT_THAT(result, IsError(ErrorKind::kNotSupported));
+  EXPECT_THAT(result, HasErrorMessage("type promotion is not allowed"));
+  EXPECT_THAT(Project(expected_schema, source_schema, /*prune_source=*/false), IsOk());
+}
+
+TEST_P(ProjectWriteCompatibilityTest, RejectsExtraInputFields) {
+  std::vector<SchemaField> fields{
+      SchemaField::MakeOptional(10, "kept", int32()),
+      SchemaField::MakeOptional(11, "extra", int32()),
+  };
+  auto source_schema =
+      GetParam() == TypeId::kInt
+          ? Schema(fields)
+          : MakeSchema(/*optional=*/true, std::make_shared<StructType>(fields));
+  fields.pop_back();
+  auto expected_schema =
+      GetParam() == TypeId::kInt
+          ? Schema(fields)
+          : MakeSchema(/*optional=*/true, std::make_shared<StructType>(fields));
+
+  auto result = Project(expected_schema, source_schema, /*prune_source=*/false,
+                        ProjectionMode::kWrite);
+  ASSERT_THAT(result, IsError(ErrorKind::kInvalidSchema));
+  EXPECT_THAT(result,
+              HasErrorMessage("Input field id 11 is not present in write schema"));
+  EXPECT_THAT(Project(expected_schema, source_schema, /*prune_source=*/false), IsOk());
+}
+
+INSTANTIATE_TEST_SUITE_P(Fields, ProjectWriteCompatibilityTest,
+                         ::testing::Values(TypeId::kInt, TypeId::kStruct, TypeId::kList,
+                                           TypeId::kMap));
+
 TEST(SchemaUtilTest, ProjectMetadataColumn) {
   Schema source_schema = CreateFlatSchema();
   Schema expected_schema({
@@ -288,6 +415,11 @@ TEST(SchemaUtilTest, ProjectMetadataColumn) {
   ASSERT_EQ(projection.fields.size(), 2);
   AssertProjectedField(projection.fields[0], 0);
   ASSERT_EQ(projection.fields[1].kind, FieldProjection::Kind::kMetadata);
+
+  auto write_projection = Project(expected_schema, source_schema, /*prune_source=*/false,
+                                  ProjectionMode::kWrite);
+  EXPECT_THAT(write_projection, IsError(ErrorKind::kInvalidSchema));
+  EXPECT_THAT(write_projection, HasErrorMessage("Missing required field"));
 }
 
 TEST(SchemaUtilTest, ProjectSchemaEvolutionIntToLong) {
