@@ -50,6 +50,7 @@
 #endif
 
 #include "iceberg/catalog/rest/auth/auth_session.h"
+#include "iceberg/catalog/rest/catalog_properties.h"
 #include "iceberg/catalog/rest/error_handlers.h"
 #include "iceberg/catalog/rest/http_client_internal.h"
 #include "iceberg/test/matchers.h"
@@ -61,7 +62,7 @@ namespace iceberg::rest {
 namespace {
 
 /// \brief Minimal HTTP/1.1 server on 127.0.0.1 that answers every request with
-/// a fixed response and closes the connection.
+/// fixed responses, optionally keeping the connection open for the next request.
 class LoopbackHttpServer {
  public:
   explicit LoopbackHttpServer(std::string response,
@@ -72,8 +73,10 @@ class LoopbackHttpServer {
         header_byte_interval_(header_byte_interval) {}
 
   explicit LoopbackHttpServer(std::vector<std::string> responses,
-                              bool wait_for_client_close = false)
-      : responses_(std::move(responses)), wait_for_client_close_(wait_for_client_close) {}
+                              bool wait_for_client_close = false, bool keep_alive = false)
+      : responses_(std::move(responses)),
+        wait_for_client_close_(wait_for_client_close),
+        keep_alive_(keep_alive) {}
 
   ~LoopbackHttpServer() {
     stop_ = true;
@@ -116,6 +119,7 @@ class LoopbackHttpServer {
 
   int port() const { return port_; }
   int request_count() const { return request_count_.load(); }
+  int connection_count() const { return connection_count_.load(); }
   std::vector<std::string> requests() const {
     std::lock_guard lock(requests_mutex_);
     return requests_;
@@ -135,39 +139,45 @@ class LoopbackHttpServer {
       if (conn < 0) {
         continue;
       }
-      auto request = ReadRequest(conn);
-      {
-        std::lock_guard lock(requests_mutex_);
-        requests_.push_back(std::move(request));
-      }
-      const auto index = static_cast<size_t>(request_count_.fetch_add(1));
-      const auto& response = responses_.empty()
-                                 ? response_
-                                 : responses_[std::min(index, responses_.size() - 1)];
-      if (header_byte_interval_ > std::chrono::milliseconds::zero()) {
-        const auto line_end = response.find("\r\n") + 2;
-        const auto body_start = response.find("\r\n\r\n") + 4;
-        SendAll(conn, response.substr(0, line_end));
-        for (size_t i = line_end; i < body_start && !stop_; ++i) {
-          std::this_thread::sleep_for(header_byte_interval_);
-          SendAll(conn, response.substr(i, 1));
+      ++connection_count_;
+      do {
+        auto request = ReadRequest(conn);
+        if (request.empty()) break;
+        {
+          std::lock_guard lock(requests_mutex_);
+          requests_.push_back(std::move(request));
         }
-        if (!stop_) SendAll(conn, response.substr(body_start));
-      } else if (body_byte_interval_ == std::chrono::milliseconds::zero()) {
-        SendAll(conn, response);
-      } else {
-        const auto body_start = response.find("\r\n\r\n") + 4;
-        SendAll(conn, response.substr(0, body_start));
-        for (size_t i = body_start; i < response.size() && !stop_; ++i) {
-          std::this_thread::sleep_for(body_byte_interval_);
-          SendAll(conn, response.substr(i, 1));
+        const auto index = static_cast<size_t>(request_count_.fetch_add(1));
+        const auto& response = responses_.empty()
+                                   ? response_
+                                   : responses_[std::min(index, responses_.size() - 1)];
+        if (header_byte_interval_ > std::chrono::milliseconds::zero()) {
+          const auto line_end = response.find("\r\n") + 2;
+          // Fragment one complete header line. Its total transfer time can exceed
+          // the idle timeout without delaying every header in the response.
+          const auto header_end = response.find("\r\n", line_end) + 2;
+          SendAll(conn, response.substr(0, line_end));
+          for (size_t i = line_end; i < header_end && !stop_; ++i) {
+            std::this_thread::sleep_for(header_byte_interval_);
+            SendAll(conn, response.substr(i, 1));
+          }
+          if (!stop_) SendAll(conn, response.substr(header_end));
+        } else if (body_byte_interval_ == std::chrono::milliseconds::zero()) {
+          SendAll(conn, response);
+        } else {
+          const auto body_start = response.find("\r\n\r\n") + 4;
+          SendAll(conn, response.substr(0, body_start));
+          for (size_t i = body_start; i < response.size() && !stop_; ++i) {
+            std::this_thread::sleep_for(body_byte_interval_);
+            SendAll(conn, response.substr(i, 1));
+          }
         }
-      }
-      if (wait_for_client_close_) {
-        std::array<char, 1024> buffer{};
-        while (recv(conn, buffer.data(), buffer.size(), 0) > 0) {
+        if (wait_for_client_close_) {
+          std::array<char, 1024> buffer{};
+          while (recv(conn, buffer.data(), buffer.size(), 0) > 0) {
+          }
         }
-      }
+      } while (keep_alive_ && !stop_);
       close(conn);
     }
   }
@@ -237,10 +247,12 @@ class LoopbackHttpServer {
   std::chrono::milliseconds header_byte_interval_{};
   std::vector<std::string> responses_;
   bool wait_for_client_close_ = false;
+  bool keep_alive_ = false;
   int listen_fd_ = -1;
   int port_ = 0;
   std::atomic<bool> stop_{false};
   std::atomic<int> request_count_{0};
+  std::atomic<int> connection_count_{0};
   mutable std::mutex requests_mutex_;
   std::vector<std::string> requests_;
   std::thread thread_;
@@ -428,7 +440,7 @@ TEST(HttpClientTest, SocketTimeoutAllowsAHeaderArrivingInFragments) {
                             /*header_byte_interval=*/std::chrono::milliseconds(40));
   ASSERT_TRUE(server.Start());
   auto client =
-      HttpClient::Make({}, HttpClientOptions{.socket_timeout_ms = 250, .max_retries = 1});
+      HttpClient::Make({}, HttpClientOptions{.socket_timeout_ms = 500, .max_retries = 1});
   CountingAuthSession session;
   ICEBERG_UNWRAP_OR_FAIL(auto response,
                          client->Get(server.url("/v1/config"), {}, {},
@@ -439,14 +451,14 @@ TEST(HttpClientTest, SocketTimeoutAllowsAHeaderArrivingInFragments) {
 }
 
 TEST(HttpClientTest, SocketTimeoutAllowsSlowContinuousProgress) {
-  // Below one byte per second, but every gap is shorter than the idle timeout.
+  // The response takes longer than the idle timeout, but each gap is shorter.
   LoopbackHttpServer server(
       "HTTP/1.1 200 OK\r\nContent-Length: 4\r\n"
       "Connection: close\r\n\r\nnull",
-      std::chrono::milliseconds(1200));
+      std::chrono::milliseconds(300));
   ASSERT_TRUE(server.Start());
   auto client = HttpClient::Make(
-      {}, HttpClientOptions{.socket_timeout_ms = 2000, .max_retries = 0});
+      {}, HttpClientOptions{.socket_timeout_ms = 1000, .max_retries = 0});
   auto session = auth::AuthSession::MakeDefault({});
   ICEBERG_UNWRAP_OR_FAIL(auto response,
                          client->Get(server.url("/v1/config"), {}, {},
@@ -468,6 +480,28 @@ TEST(HttpClientTest, DoesNotRetryTruncatedGetResponse) {
   EXPECT_THAT(response, IsError(ErrorKind::kIOError));
   EXPECT_THAT(response, HasErrorMessage("failed after status 200"));
   EXPECT_EQ(server.request_count(), 1);
+}
+
+TEST(HttpClientTest, ReusesConnectionsAcrossRequestsWithFreshMultiHandles) {
+  for (const int32_t socket_timeout : {0, 2000}) {
+    SCOPED_TRACE(socket_timeout);
+    const std::string response = "HTTP/1.1 200 OK\r\nContent-Length: 2\r\n\r\n{}";
+    LoopbackHttpServer server(std::vector<std::string>{response, response},
+                              /*wait_for_client_close=*/false, /*keep_alive=*/true);
+    ASSERT_TRUE(server.Start());
+    auto client = HttpClient::Make({}, {.connection_timeout_ms = 5000,
+                                        .socket_timeout_ms = socket_timeout,
+                                        .max_retries = 0});
+    auto session = auth::AuthSession::MakeDefault({});
+    for (int request = 0; request < 2; ++request) {
+      ICEBERG_UNWRAP_OR_FAIL(auto result,
+                             client->Get(server.url("/v1/config"), {}, {},
+                                         *DefaultErrorHandler::Instance(), *session));
+      EXPECT_EQ(result.body(), "{}");
+    }
+    EXPECT_EQ(server.request_count(), 2);
+    EXPECT_EQ(server.connection_count(), 1);
+  }
 }
 
 TEST(HttpClientTest, Retries503AtHeadersBeforeReadingTheBody) {
@@ -876,6 +910,213 @@ TEST(HttpClientRetryTest, ExponentialBackoffIsCapped) {
   }
 }
 
+class HttpClientRetryExecutionTest : public ::testing::Test {
+ protected:
+  HttpClientRetryExecutionTest() {
+    timing_.now = [&] { return std::chrono::system_clock::time_point{} + elapsed_; };
+    timing_.sleep = [&](std::chrono::milliseconds delay) {
+      sleeps_.push_back(delay);
+      elapsed_ += delay;
+    };
+  }
+
+  static detail::Attempt Reply(int status, const std::string& retry_after = {}) {
+    cpr::Response response;
+    response.status_code = status;
+    if (!retry_after.empty()) response.header["Retry-After"] = retry_after;
+    return {.response = std::move(response)};
+  }
+
+  std::chrono::milliseconds elapsed_{};
+  std::vector<std::chrono::milliseconds> sleeps_;
+  detail::RetryTiming timing_;
+};
+
+TEST_F(HttpClientRetryExecutionTest, UnkeyedRequestsHonorRetryAfterWithoutCap) {
+  const std::pair<const char*, std::chrono::milliseconds> cases[] = {
+      {"3600", std::chrono::hours(1)},
+      {"9999999999", std::chrono::milliseconds(9999999999000LL)},
+      {"9223372036854775807", std::chrono::milliseconds::max()},
+      {"Thu, 01 Jan 1970 01:00:00 GMT", std::chrono::hours(1)}};
+  // Record even the largest durations without advancing a nanosecond clock
+  // beyond its representable range or actually sleeping.
+  timing_.sleep = [&](std::chrono::milliseconds delay) { sleeps_.push_back(delay); };
+  for (const auto& [value, delay] : cases) {
+    SCOPED_TRACE(value);
+    sleeps_.clear();
+    int attempts = 0;
+    ICEBERG_UNWRAP_OR_FAIL(auto response,
+                           detail::SendWithRetry(
+                               {}, {},
+                               [&](int64_t, auto) -> Result<detail::Attempt> {
+                                 return Reply(++attempts == 1 ? 429 : 200, value);
+                               },
+                               timing_));
+    EXPECT_EQ(response.status_code, 200);
+    EXPECT_EQ(attempts, 2);
+    EXPECT_THAT(sleeps_, ::testing::ElementsAre(delay));
+  }
+}
+
+TEST_F(HttpClientRetryExecutionTest, KeyLifetimeRejectsLongRetryAfterBeforeWaiting) {
+  const HttpRequest request{.method = HttpMethod::kPost,
+                            .headers = {{"Idempotency-Key", "key"}}};
+  int attempts = 0;
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto response, detail::SendWithRetry(
+                         {.idempotency_key_lifetime = std::chrono::seconds(1)}, request,
+                         [&](int64_t, auto) -> Result<detail::Attempt> {
+                           ++attempts;
+                           auto attempt = Reply(429, "3600");
+                           attempt.response.text = "server error";
+                           return attempt;
+                         },
+                         timing_));
+  EXPECT_EQ(response.status_code, 429);
+  EXPECT_EQ(response.text, "server error");
+  EXPECT_EQ(attempts, 1);
+  EXPECT_TRUE(sleeps_.empty());
+}
+
+TEST_F(HttpClientRetryExecutionTest, KeyLifetimeIncludesAttemptsAndAllPriorWaits) {
+  const HttpRequest request{.headers = {{"Idempotency-Key", "key"}}};
+  int attempts = 0;
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto response,
+      detail::SendWithRetry(
+          {.max_retries = 10,
+           .idempotency_key_lifetime = std::chrono::milliseconds(2500)},
+          request,
+          [&](int64_t count, auto first_attempt) -> Result<detail::Attempt> {
+            EXPECT_EQ(count, ++attempts);
+            EXPECT_EQ(first_attempt, std::chrono::system_clock::time_point{});
+            elapsed_ += std::chrono::milliseconds(100);
+            return Reply(503, "1");
+          },
+          timing_));
+  EXPECT_EQ(response.status_code, 503);
+  EXPECT_EQ(attempts, 3);
+  EXPECT_THAT(sleeps_,
+              ::testing::ElementsAre(std::chrono::seconds(1), std::chrono::seconds(1)));
+}
+
+TEST_F(HttpClientRetryExecutionTest, RespectsRetryCountWithBackoffAndJitter) {
+  int attempts = 0;
+  ICEBERG_UNWRAP_OR_FAIL(auto response,
+                         detail::SendWithRetry(
+                             {.max_retries = 2}, {},
+                             [&](int64_t, auto) -> Result<detail::Attempt> {
+                               ++attempts;
+                               return Reply(500);
+                             },
+                             timing_));
+  EXPECT_EQ(response.status_code, 500);
+  EXPECT_EQ(attempts, 3);
+  ASSERT_EQ(sleeps_.size(), 2);
+  EXPECT_GE(sleeps_[0], std::chrono::milliseconds(1000));
+  EXPECT_LT(sleeps_[0], std::chrono::milliseconds(1100));
+  EXPECT_GE(sleeps_[1], std::chrono::milliseconds(2000));
+  EXPECT_LT(sleeps_[1], std::chrono::milliseconds(2200));
+}
+
+TEST_F(HttpClientRetryExecutionTest, IoRetriesHaveNoWait) {
+  int attempts = 0;
+  ICEBERG_UNWRAP_OR_FAIL(auto response,
+                         detail::SendWithRetry(
+                             {.max_retries = 2}, {},
+                             [&](int64_t, auto) -> Result<detail::Attempt> {
+                               if (++attempts == 3) return Reply(200);
+                               auto attempt = Reply(0);
+                               attempt.response.error.code = cpr::ErrorCode::RECV_ERROR;
+                               return attempt;
+                             },
+                             timing_));
+  EXPECT_EQ(response.status_code, 200);
+  EXPECT_EQ(attempts, 3);
+  EXPECT_TRUE(sleeps_.empty());
+}
+
+TEST_F(HttpClientRetryExecutionTest, ApprovedRetryStillRunsAfterSleepOvershootsLifetime) {
+  const HttpRequest request{.headers = {{"Idempotency-Key", "key"}}};
+  timing_.sleep = [&](std::chrono::milliseconds delay) {
+    sleeps_.push_back(delay);
+    elapsed_ += std::chrono::seconds(2);
+  };
+  int attempts = 0;
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto response, detail::SendWithRetry(
+                         {.idempotency_key_lifetime = std::chrono::seconds(2)}, request,
+                         [&](int64_t, auto) -> Result<detail::Attempt> {
+                           return Reply(++attempts == 1 ? 429 : 200, "1");
+                         },
+                         timing_));
+  // Java checks the lifetime when approving a retry, not again after sleeping.
+  EXPECT_EQ(response.status_code, 200);
+  EXPECT_EQ(attempts, 2);
+  EXPECT_THAT(sleeps_, ::testing::ElementsAre(std::chrono::seconds(1)));
+}
+
+TEST_F(HttpClientRetryExecutionTest, PreservesRetryApprovedAtResponseHeaders) {
+  const HttpRequest request{.headers = {{"Idempotency-Key", "key"}}};
+  int attempts = 0;
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto response, detail::SendWithRetry(
+                         {.idempotency_key_lifetime = std::chrono::seconds(2)}, request,
+                         [&](int64_t, auto) -> Result<detail::Attempt> {
+                           if (++attempts == 2) return Reply(200);
+                           auto attempt = Reply(429, "1");
+                           // The retry was approved before closing the current response
+                           // took time.
+                           attempt.retry_approved = true;
+                           elapsed_ += std::chrono::milliseconds(1500);
+                           return attempt;
+                         },
+                         timing_));
+  EXPECT_EQ(response.status_code, 200);
+  EXPECT_EQ(attempts, 2);
+  EXPECT_THAT(sleeps_, ::testing::ElementsAre(std::chrono::seconds(1)));
+}
+
+TEST_F(HttpClientRetryExecutionTest, KeyLifetimeAccountsForLargestPossibleJitter) {
+  const HttpRequest request{.headers = {{"Idempotency-Key", "key"}}};
+  for (const int64_t lifetime : {1050, 1101}) {
+    SCOPED_TRACE(lifetime);
+    elapsed_ = std::chrono::milliseconds::zero();
+    sleeps_.clear();
+    int attempts = 0;
+    ICEBERG_UNWRAP_OR_FAIL(
+        auto response,
+        detail::SendWithRetry(
+            {.idempotency_key_lifetime = std::chrono::milliseconds(lifetime)}, request,
+            [&](int64_t, auto) -> Result<detail::Attempt> {
+              return Reply(++attempts == 1 ? 500 : 200);
+            },
+            timing_));
+    EXPECT_EQ(response.status_code, lifetime == 1050 ? 500 : 200);
+    EXPECT_EQ(attempts, lifetime == 1050 ? 1 : 2);
+    EXPECT_EQ(sleeps_.size(), lifetime == 1050 ? 0 : 1);
+  }
+}
+
+TEST_F(HttpClientRetryExecutionTest, IoFailureCannotRetryAfterKeyLifetimeExpires) {
+  const HttpRequest request{.headers = {{"Idempotency-Key", "key"}}};
+  int attempts = 0;
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto response, detail::SendWithRetry(
+                         {.idempotency_key_lifetime = std::chrono::seconds(1)}, request,
+                         [&](int64_t, auto) -> Result<detail::Attempt> {
+                           ++attempts;
+                           elapsed_ += std::chrono::seconds(1);
+                           auto attempt = Reply(0);
+                           attempt.response.error.code = cpr::ErrorCode::RECV_ERROR;
+                           return attempt;
+                         },
+                         timing_));
+  EXPECT_EQ(response.error.code, cpr::ErrorCode::RECV_ERROR);
+  EXPECT_EQ(attempts, 1);
+  EXPECT_TRUE(sleeps_.empty());
+}
+
 TEST(HttpClientOptionsTest, SocketTimeoutAcceptsMaximumMilliseconds) {
   ICEBERG_UNWRAP_OR_FAIL(auto options,
                          HttpClientOptions::FromProperties(
@@ -922,6 +1163,9 @@ TEST(HttpClientOptionsTest, DefaultsMatchJavaClient) {
   EXPECT_EQ(options.max_retries, 5);
   EXPECT_FALSE(options.user_agent.has_value());
   EXPECT_FALSE(options.idempotency_key_lifetime.has_value());
+  const RestCatalogProperties properties;
+  EXPECT_EQ(options.connection_timeout_ms,
+            properties.Get(RestCatalogProperties::kClientConnectionTimeoutMs));
 }
 
 TEST(HttpClientOptionsTest, AppliesTransportProperties) {

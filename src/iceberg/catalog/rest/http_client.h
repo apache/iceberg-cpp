@@ -26,6 +26,7 @@
 #include <string>
 #include <unordered_map>
 
+#include "iceberg/catalog/rest/constant.h"
 #include "iceberg/catalog/rest/http_request.h"
 #include "iceberg/catalog/rest/iceberg_rest_export.h"
 #include "iceberg/catalog/rest/type_fwd.h"
@@ -69,7 +70,7 @@ class ICEBERG_REST_EXPORT HttpResponse {
 struct ICEBERG_REST_EXPORT HttpClientOptions {
   /// `rest.client.connection-timeout-ms`; Java defaults to three minutes.
   /// Zero disables the configured connection deadline.
-  std::optional<int64_t> connection_timeout_ms = 180000;
+  std::optional<int64_t> connection_timeout_ms = kDefaultConnectionTimeoutMs;
   /// `rest.client.socket-timeout-ms`, the maximum transfer inactivity.
   /// Unset or zero leaves it unbounded.
   std::optional<int32_t> socket_timeout_ms;
@@ -97,11 +98,11 @@ class ICEBERG_REST_EXPORT HttpClient {
       HttpClientOptions options = {}, std::optional<std::string> base_uri = std::nullopt);
   /// \brief Construct with a connection timeout and a legacy total request timeout.
   /// \param connection_timeout,socket_timeout Zero leaves requests unbounded.
-  explicit HttpClient(
-      std::unordered_map<std::string, std::string> default_headers = {},
-      std::chrono::milliseconds connection_timeout = std::chrono::minutes(3),
-      std::chrono::milliseconds socket_timeout = {},
-      std::optional<std::string> base_uri = std::nullopt);
+  explicit HttpClient(std::unordered_map<std::string, std::string> default_headers = {},
+                      std::chrono::milliseconds connection_timeout =
+                          std::chrono::milliseconds(kDefaultConnectionTimeoutMs),
+                      std::chrono::milliseconds socket_timeout = {},
+                      std::optional<std::string> base_uri = std::nullopt);
   virtual ~HttpClient();
 
   HttpClient(const HttpClient&) = delete;
@@ -159,7 +160,7 @@ class ICEBERG_REST_EXPORT HttpClient {
   std::optional<std::string> base_uri_;
   HttpClientOptions options_;
   HttpHeaders default_headers_;
-  std::chrono::milliseconds socket_timeout_{};
+  std::chrono::milliseconds request_timeout_{};
   std::unique_ptr<ConnectionPools> connection_pools_;
 };
 

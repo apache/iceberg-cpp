@@ -22,25 +22,45 @@
 #include <chrono>
 #include <cstdint>
 #include <ctime>
+#include <functional>
 #include <optional>
+
+#include <cpr/response.h>
 
 #include "iceberg/catalog/rest/http_client.h"
 #include "iceberg/catalog/rest/iceberg_rest_export.h"
-
-namespace cpr {
-class Response;
-}  // namespace cpr
 
 namespace iceberg::rest::detail {
 
 ICEBERG_REST_EXPORT bool ShouldRetry(
     const cpr::Response& response, const HttpRequest& request, int64_t exec_count,
     const HttpClientOptions& options,
-    std::optional<std::chrono::milliseconds> elapsed = std::nullopt);
+    std::optional<std::chrono::milliseconds> elapsed = std::nullopt,
+    std::chrono::system_clock::time_point now = std::chrono::system_clock::now());
 
 ICEBERG_REST_EXPORT std::chrono::milliseconds RetryInterval(
     const cpr::Response& response, int64_t exec_count,
     std::chrono::system_clock::time_point now = std::chrono::system_clock::now());
+
+/// Internal timing seam for testing the retry execution loop without real waits.
+struct ICEBERG_REST_EXPORT RetryTiming {
+  RetryTiming();
+  std::function<std::chrono::system_clock::time_point()> now;
+  std::function<void(std::chrono::milliseconds)> sleep;
+};
+
+struct Attempt {
+  cpr::Response response;
+  bool retry_approved = false;
+};
+
+using SendAttempt =
+    std::function<Result<Attempt>(int64_t, std::chrono::system_clock::time_point)>;
+
+ICEBERG_REST_EXPORT Result<cpr::Response> SendWithRetry(const HttpClientOptions& options,
+                                                        const HttpRequest& request,
+                                                        const SendAttempt& send,
+                                                        const RetryTiming& timing = {});
 
 /// Tracks transfer inactivity independently of the average byte rate.
 class ICEBERG_REST_EXPORT SocketIdleTimeout {

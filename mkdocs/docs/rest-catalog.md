@@ -29,14 +29,14 @@ properties.
 | --- | --- | --- |
 | `rest.client.connection-timeout-ms` | 180000 | Non-negative integer; zero disables the configured deadline |
 | `rest.client.socket-timeout-ms` | Unbounded | Non-negative integer; zero disables the response inactivity timeout |
-| `rest.client.max-retries` | 5 | Positive integer; excludes the first attempt |
+| `rest.client.max-retries` | 5 | Positive integer; excludes the first attempt; does not bound total wait time |
 | `rest.client.user-agent` | `iceberg-cpp/<version>` | Used when the request has no explicit `User-Agent` header |
 | `rest.client.idempotency-key-lifetime` | Unbounded | ISO-8601 duration, for example `PT30M`; zero or negative durations disable keyed retries; malformed or out-of-range values are ignored |
 
 The socket timeout measures response inactivity rather than average transfer
-speed or total request duration. Connection setup and writing a request body
-use their own transport behavior. Transfers run synchronously in the calling
-thread, polling the remaining read deadline in milliseconds; no executor is
+speed or total request duration. It does not bound request-body uploads. The
+legacy `HttpClient` constructor's third argument remains a total timeout per
+attempt. Transfers run synchronously in the calling thread; no executor is
 required for HTTP retries.
 
 HTTP response retries are decided after receiving the headers, before reading
@@ -67,6 +67,10 @@ constrained by this property.
 Authentication runs once before the first send. Retries replay the same
 headers, body and idempotency key. A subsequent logical request authenticates
 again and can use an updated token.
+
+The client does not generate idempotency keys. Supply a distinct key for each
+logical mutation through per-request headers or an `AuthSession`. A static
+`header.Idempotency-Key` is unsuitable for unrelated mutations.
 
 Errors are classified from the `code` reported in the error body, falling back
 to the HTTP status when the body cannot be parsed. Service diagnostics remain

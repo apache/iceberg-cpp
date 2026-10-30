@@ -23,6 +23,7 @@
 #include <string>
 #include <unordered_map>
 
+#include "iceberg/catalog/rest/constant.h"
 #include "iceberg/catalog/rest/iceberg_rest_export.h"
 #include "iceberg/result.h"
 #include "iceberg/util/config.h"
@@ -74,7 +75,7 @@ class ICEBERG_REST_EXPORT RestCatalogProperties
   inline static constexpr std::string_view kHeaderPrefix = "header.";
   /// \brief HTTP connection timeout in milliseconds, matching Java REST clients.
   inline static Entry<int64_t> kClientConnectionTimeoutMs{
-      "rest.client.connection-timeout-ms", 180000};
+      "rest.client.connection-timeout-ms", kDefaultConnectionTimeoutMs};
   /// \brief HTTP socket/read timeout in milliseconds, matching Java REST clients.
   inline static Entry<int64_t> kClientSocketTimeoutMs{"rest.client.socket-timeout-ms", 0};
 

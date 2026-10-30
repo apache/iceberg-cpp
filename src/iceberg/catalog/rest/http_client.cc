@@ -37,6 +37,7 @@
 #include <curl/curl.h>
 
 #include "iceberg/catalog/rest/auth/auth_session.h"
+#include "iceberg/catalog/rest/catalog_properties.h"
 #include "iceberg/catalog/rest/constant.h"
 #include "iceberg/catalog/rest/error_handlers.h"
 #include "iceberg/catalog/rest/http_client_internal.h"
@@ -51,8 +52,6 @@ namespace {
 
 // Property names follow the Java HTTPClient.
 constexpr std::string_view kRestMaxRetries = "rest.client.max-retries";
-constexpr std::string_view kRestConnectionTimeoutMs = "rest.client.connection-timeout-ms";
-constexpr std::string_view kRestSocketTimeoutMs = "rest.client.socket-timeout-ms";
 constexpr std::string_view kRestUserAgent = "rest.client.user-agent";
 constexpr std::string_view kRestKeyLifetime = "rest.client.idempotency-key-lifetime";
 
@@ -171,10 +170,12 @@ std::optional<std::chrono::milliseconds> ParseKeyLifetime(const std::string& val
 Result<HttpClientOptions> HttpClientOptions::FromProperties(
     const std::unordered_map<std::string, std::string>& properties) {
   HttpClientOptions options;
-  ICEBERG_RETURN_UNEXPECTED(ParseIntegerProperty(properties, kRestConnectionTimeoutMs,
-                                                 options.connection_timeout_ms));
-  ICEBERG_RETURN_UNEXPECTED(
-      ParseIntegerProperty(properties, kRestSocketTimeoutMs, options.socket_timeout_ms));
+  ICEBERG_RETURN_UNEXPECTED(ParseIntegerProperty(
+      properties, RestCatalogProperties::kClientConnectionTimeoutMs.key(),
+      options.connection_timeout_ms));
+  ICEBERG_RETURN_UNEXPECTED(ParseIntegerProperty(
+      properties, RestCatalogProperties::kClientSocketTimeoutMs.key(),
+      options.socket_timeout_ms));
   std::optional<int> max_retries;
   ICEBERG_RETURN_UNEXPECTED(
       ParseIntegerProperty(properties, kRestMaxRetries, max_retries, 1));
@@ -317,7 +318,8 @@ namespace detail {
 
 bool ShouldRetry(const cpr::Response& response, const HttpRequest& request,
                  int64_t exec_count, const HttpClientOptions& options,
-                 std::optional<std::chrono::milliseconds> elapsed) {
+                 std::optional<std::chrono::milliseconds> elapsed,
+                 std::chrono::system_clock::time_point now) {
   if (exec_count > options.max_retries) return false;
   const bool has_key = request.headers.contains("Idempotency-Key");
   const bool safe = IsIdempotent(request.method) || has_key;
@@ -344,7 +346,7 @@ bool ShouldRetry(const cpr::Response& response, const HttpRequest& request,
     }
     auto upper_delay = Backoff(exec_count);
     if (!response.error) {
-      if (auto retry_after = RetryAfter(response, std::chrono::system_clock::now())) {
+      if (auto retry_after = RetryAfter(response, now)) {
         upper_delay = *retry_after;
       } else {
         upper_delay += upper_delay / 10;
@@ -365,6 +367,31 @@ std::chrono::milliseconds RetryInterval(const cpr::Response& response, int64_t e
   std::uniform_int_distribution<int64_t> jitter(
       0, std::max<int64_t>(1, delay.count() / 10) - 1);
   return delay + std::chrono::milliseconds(jitter(generator));
+}
+
+RetryTiming::RetryTiming()
+    : now(std::chrono::system_clock::now),
+      sleep([](std::chrono::milliseconds delay) { std::this_thread::sleep_for(delay); }) {
+}
+
+Result<cpr::Response> SendWithRetry(const HttpClientOptions& options,
+                                    const HttpRequest& request, const SendAttempt& send,
+                                    const RetryTiming& timing) {
+  // Java records FIRST_ATTEMPT_EPOCH with System.currentTimeMillis().
+  const auto first_attempt =
+      std::chrono::time_point_cast<std::chrono::milliseconds>(timing.now());
+  for (int64_t exec_count = 1;; ++exec_count) {
+    ICEBERG_ASSIGN_OR_RAISE(auto attempt, send(exec_count, first_attempt));
+    const auto now = timing.now();
+    const auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(
+        std::chrono::time_point_cast<std::chrono::milliseconds>(now) - first_attempt);
+    if (!attempt.retry_approved &&
+        !ShouldRetry(attempt.response, request, exec_count, options, elapsed, now)) {
+      return std::move(attempt.response);
+    }
+    const auto delay = RetryInterval(attempt.response, exec_count, timing.now());
+    if (delay > std::chrono::milliseconds::zero()) timing.sleep(delay);
+  }
 }
 
 bool SocketIdleTimeout::Check(int64_t downloaded, int64_t uploaded, int64_t header_bytes,
@@ -391,33 +418,9 @@ std::optional<std::chrono::milliseconds> SocketIdleTimeout::Remaining(
 
 namespace {
 
-struct Attempt {
-  cpr::Response response;
-  bool retry_approved = false;
-};
-
-/// Retry the same authenticated request, matching Java's retry execution chain.
-template <typename Send>
-Result<cpr::Response> SendWithRetry(const HttpClientOptions& options,
-                                    const HttpRequest& request, Send send) {
-  const auto first_attempt = std::chrono::time_point_cast<std::chrono::milliseconds>(
-      std::chrono::system_clock::now());
-  for (int64_t exec_count = 1;; ++exec_count) {
-    ICEBERG_ASSIGN_OR_RAISE(auto attempt, send(exec_count, first_attempt));
-    const auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(
-        std::chrono::time_point_cast<std::chrono::milliseconds>(
-            std::chrono::system_clock::now()) -
-        first_attempt);
-    if (!attempt.retry_approved &&
-        !detail::ShouldRetry(attempt.response, request, exec_count, options, elapsed)) {
-      return std::move(attempt.response);
-    }
-    std::this_thread::sleep_for(detail::RetryInterval(attempt.response, exec_count));
-  }
-}
-
 void ApplyOptions(cpr::Session& session, const HttpClientOptions& options) {
-  const auto timeout = options.connection_timeout_ms.value_or(180000);
+  const auto timeout =
+      options.connection_timeout_ms.value_or(kDefaultConnectionTimeoutMs);
   // libcurl interprets zero as its own five-minute default. Use its largest
   // native deadline when Java's disabled connection timeout is requested.
   session.SetConnectTimeout(cpr::ConnectTimeout{std::chrono::milliseconds(
@@ -734,7 +737,7 @@ HttpClient::HttpClient(WithOptions,
     : base_uri_(std::move(base_uri)),
       options_(std::move(options)),
       default_headers_{default_headers.begin(), default_headers.end()},
-      socket_timeout_(request_timeout),
+      request_timeout_(request_timeout),
       connection_pools_{std::make_unique<ConnectionPools>()} {
   // Set default Content-Type for all requests (including GET/HEAD/DELETE).
   // Many systems require that content type is set regardless, even on an empty body.
@@ -782,10 +785,10 @@ Result<HttpResponse> HttpClient::Execute(HttpMethod method, const std::string& u
       AuthenticateRequest(session, method, url, std::move(headers), std::move(body)));
   return connection_pools_->Run(
       [&](const cpr::ConnectionPool& pool) -> Result<cpr::Response> {
-        return SendWithRetry(
+        return detail::SendWithRetry(
           options_, request,
-          [&](int64_t exec_count,
-              std::chrono::system_clock::time_point first_attempt) -> Result<Attempt> {
+          [&](int64_t exec_count, std::chrono::system_clock::time_point first_attempt)
+              -> Result<detail::Attempt> {
             detail::SocketIdleTimeout idle_timeout(
                 std::chrono::milliseconds(options_.socket_timeout_ms.value_or(0)));
             bool socket_timed_out = false;
@@ -796,7 +799,7 @@ Result<HttpResponse> HttpClient::Execute(HttpMethod method, const std::string& u
             cpr_session.SetConnectionPool(pool);
             ApplyOptions(cpr_session, options_);
             cpr_session.SetRedirect(kNoFollowRedirects);
-            cpr_session.SetTimeout(cpr::Timeout{socket_timeout_});
+            cpr_session.SetTimeout(cpr::Timeout{request_timeout_});
             cpr_session.SetUrl(cpr::Url{request.url});
             cpr_session.SetHeader(ToCprHeader(request));
             auto* curl = cpr_session.GetCurlHolder()->handle;
@@ -817,6 +820,8 @@ Result<HttpResponse> HttpClient::Execute(HttpMethod method, const std::string& u
                                       elapsed)) {
                 // Apache decides HTTP-status retries before reading the entity.
                 // Do not wait for an error response body that may never arrive.
+                // Aborting before draining the body sacrifices connection reuse
+                // for this response; subsequent successful requests still reuse the pool.
                 retry_approved = true;
                 return false;
               }
@@ -888,7 +893,7 @@ Result<HttpResponse> HttpClient::Execute(HttpMethod method, const std::string& u
               result.error.message =
                   "No response progress within the configured socket timeout";
             }
-            return Attempt{.response = std::move(result),
+            return detail::Attempt{.response = std::move(result),
                            .retry_approved = retry_approved};
           });
       },
