@@ -243,7 +243,11 @@ if(ICEBERG_BUILD_BUNDLE)
   endif()
 
   if(ICEBERG_ENCRYPTION)
-    add_iceberg_test(crypto_test USE_BUNDLE SOURCES aes_gcm_test.cc)
+    add_iceberg_test(crypto_test
+                     USE_BUNDLE
+                     SOURCES
+                     aes_gcm_test.cc
+                     standard_encryption_manager_test.cc)
   endif()
 
   add_iceberg_test(scan_test

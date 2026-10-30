@@ -33,6 +33,7 @@ set(ICEBERG_SOURCES
     deletes/position_delete_index.cc
     deletes/position_delete_range_consumer.cc
     deletes/roaring_position_bitmap.cc
+    encryption/encryption_manager.cc
     encryption/key_management_client.cc
     encryption/standard_key_metadata.cc
     expression/aggregate.cc
@@ -321,6 +322,7 @@ if(ICEBERG_BUILD_BUNDLE)
       avro/avro_register.cc
       avro/avro_schema_util.cc
       avro/avro_stream_internal.cc
+      encryption/encryption_register.cc
       parquet/parquet_data_util.cc
       parquet/parquet_metrics.cc
       parquet/parquet_metrics_row_group_filter.cc
@@ -335,7 +337,8 @@ if(ICEBERG_BUILD_BUNDLE)
          ICEBERG_BUNDLE_SOURCES
          encryption/aes_gcm.cc
          encryption/aes_gcm_stream.cc
-         encryption/in_memory_kms.cc)
+         encryption/in_memory_kms.cc
+         encryption/standard_encryption_manager.cc)
   endif()
 
   # Libraries to link with exported libiceberg_bundle.{so,a}.
@@ -410,6 +413,11 @@ if(ICEBERG_BUILD_BUNDLE)
 
   foreach(target iceberg_bundle_static iceberg_bundle_shared)
     if(TARGET ${target})
+      if(ICEBERG_ENCRYPTION)
+        target_compile_definitions(${target} PRIVATE ICEBERG_ENCRYPTION_ENABLED=1)
+      else()
+        target_compile_definitions(${target} PRIVATE ICEBERG_ENCRYPTION_ENABLED=0)
+      endif()
       if(ICEBERG_S3)
         target_compile_definitions(${target}
                                    PUBLIC "$<BUILD_INTERFACE:ICEBERG_S3_ENABLED=1>")
