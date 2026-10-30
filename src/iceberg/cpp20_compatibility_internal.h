@@ -25,7 +25,6 @@
 #pragma once
 
 #include "iceberg/arrow_c_data.h"
-#include "iceberg/arrow_validation.h"
 #include "iceberg/catalog.h"
 #include "iceberg/catalog/catalog_util.h"
 #include "iceberg/catalog/memory/in_memory_catalog.h"

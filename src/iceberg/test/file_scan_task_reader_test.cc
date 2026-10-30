@@ -671,7 +671,7 @@ TEST_F(FileScanTaskReaderTest, OpenWithDeletionVectorFiltersRows) {
   ASSERT_NO_FATAL_FAILURE(VerifyStream(&stream, R"([[1, "Foo"], [3, "Baz"]])"));
 }
 
-TEST_F(FileScanTaskReaderTest, PassesValidationModeToProjection) {
+TEST_F(FileScanTaskReaderTest, ReadsArrowValidateBatchProperty) {
   ICEBERG_UNWRAP_OR_FAIL(
       auto data_file,
       MakeDataFile(table_schema_,
@@ -690,19 +690,17 @@ TEST_F(FileScanTaskReaderTest, PassesValidationModeToProjection) {
       [](ArrowArray*, std::span<const int32_t>,
          ProjectionContext& projection) -> Result<ArrowArray> {
         return InvalidArgument("projection mode: {}",
-                               projection.validation_mode() == ArrowValidationMode::kBasic
-                                   ? "basic"
-                                   : "full");
+                               projection.validate_batch() ? "full" : "basic");
       });
 
-  for (auto mode : {ArrowValidationMode::kFull, ArrowValidationMode::kBasic}) {
+  for (bool validate_batch : {true, false}) {
     FileScanTaskReader::Options options{
         .io = file_io_,
         .table_schema = table_schema_,
         .projected_schema = projected_schema_,
     };
-    if (mode == ArrowValidationMode::kBasic) {
-      options.arrow_validation_mode = mode;
+    if (!validate_batch) {
+      options.properties[ReaderProperties::kArrowValidateBatch.key()] = "false";
     }
     ICEBERG_UNWRAP_OR_FAIL(auto reader, FileScanTaskReader::Make(std::move(options)));
     ICEBERG_UNWRAP_OR_FAIL(auto stream, reader->Open(task));
@@ -710,9 +708,8 @@ TEST_F(FileScanTaskReaderTest, PassesValidationModeToProjection) {
     ArrowArray array{};
     EXPECT_NE(stream.get_next(&stream, &array), 0);
     EXPECT_THAT(stream.get_last_error(&stream),
-                ::testing::HasSubstr(mode == ArrowValidationMode::kBasic
-                                         ? "projection mode: basic"
-                                         : "projection mode: full"));
+                ::testing::HasSubstr(validate_batch ? "projection mode: full"
+                                                    : "projection mode: basic"));
     stream.release(&stream);
   }
 }

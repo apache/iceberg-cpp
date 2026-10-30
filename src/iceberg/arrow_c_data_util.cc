@@ -239,7 +239,7 @@ ProjectionContext::ProjectionContext(ProjectionContext&& other) noexcept
       output_arrow_schema_(other.output_arrow_schema_),
       project_batch_function_(std::exchange(other.project_batch_function_, nullptr)),
       project_batch_state_(std::move(other.project_batch_state_)),
-      validation_mode_(other.validation_mode_) {
+      validate_batch_(other.validate_batch_) {
   other.input_arrow_schema_.release = nullptr;
   other.output_arrow_schema_.release = nullptr;
 }
@@ -265,7 +265,7 @@ ProjectionContext& ProjectionContext::operator=(ProjectionContext&& other) noexc
   other.output_arrow_schema_.release = nullptr;
   project_batch_function_ = std::exchange(other.project_batch_function_, nullptr);
   project_batch_state_ = std::move(other.project_batch_state_);
-  validation_mode_ = other.validation_mode_;
+  validate_batch_ = other.validate_batch_;
   return *this;
 }
 
@@ -280,11 +280,7 @@ ProjectionContext::~ProjectionContext() {
 
 Result<ProjectionContext> ProjectionContext::Make(
     const Schema& input_schema, const Schema& output_schema,
-    ProjectionContext::ProjectBatchFunction project_batch_function,
-    ArrowValidationMode validation_mode) {
-  ICEBERG_PRECHECK(validation_mode == ArrowValidationMode::kFull ||
-                       validation_mode == ArrowValidationMode::kBasic,
-                   "Invalid Arrow validation mode");
+    ProjectionContext::ProjectBatchFunction project_batch_function, bool validate_batch) {
   ICEBERG_ASSIGN_OR_RAISE(
       auto selected_field_indices,
       BuildSelectedFieldIndices(input_schema.fields(), output_schema.fields()));
@@ -296,7 +292,7 @@ Result<ProjectionContext> ProjectionContext::Make(
   ICEBERG_RETURN_UNEXPECTED(ToArrowSchema(input_schema, &context.input_arrow_schema_));
   ICEBERG_RETURN_UNEXPECTED(ToArrowSchema(output_schema, &context.output_arrow_schema_));
   context.project_batch_function_ = project_batch_function;
-  context.validation_mode_ = validation_mode;
+  context.validate_batch_ = validate_batch;
 
   return context;
 }
@@ -326,9 +322,7 @@ ProjectionContext::ProjectBatchState& ProjectionContext::project_batch_state() {
   return project_batch_state_;
 }
 
-ArrowValidationMode ProjectionContext::validation_mode() const {
-  return validation_mode_;
-}
+bool ProjectionContext::validate_batch() const { return validate_batch_; }
 
 void ProjectionContext::RegisterProjectBatchFunction(
     ProjectionContext::ProjectBatchFunction project_batch_function) {
@@ -404,7 +398,7 @@ Result<ArrowArray> ProjectBatch(ArrowArray* input_batch,
   internal::ArrowArrayViewGuard input_view_guard(&input_view);
   ICEBERG_NANOARROW_RETURN_UNEXPECTED_WITH_ERROR(
       ArrowArrayViewSetArray(&input_view, input_batch, &error), error);
-  if (projection.validation_mode() == ArrowValidationMode::kFull) {
+  if (projection.validate_batch()) {
     ICEBERG_NANOARROW_RETURN_UNEXPECTED_WITH_ERROR(
         ArrowArrayViewValidate(&input_view, NANOARROW_VALIDATION_LEVEL_FULL, &error),
         error);

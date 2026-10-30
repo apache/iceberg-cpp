@@ -77,8 +77,7 @@ ProjectionContext::ProjectBatchFunction ArrowComputeFunction() {
 std::shared_ptr<::arrow::RecordBatch> RunProjectBatch(
     const ::arrow::RecordBatch& batch, const std::vector<int32_t>& alive_indices,
     const Schema& required_schema, const Schema& projected_schema,
-    ProjectionContext::ProjectBatchFunction project_batch_function,
-    ArrowValidationMode validation_mode) {
+    ProjectionContext::ProjectBatchFunction project_batch_function, bool validate_batch) {
   ArrowSchema c_schema;
   ArrowArray c_array;
   EXPECT_TRUE(::arrow::ExportRecordBatch(batch, &c_array, &c_schema).ok());
@@ -86,7 +85,7 @@ std::shared_ptr<::arrow::RecordBatch> RunProjectBatch(
   ArrowArrayGuard array_guard(&c_array);
 
   auto projection = ProjectionContext::Make(required_schema, projected_schema,
-                                            project_batch_function, validation_mode);
+                                            project_batch_function, validate_batch);
   EXPECT_THAT(projection, IsOk());
 
   auto result = ProjectBatch(&c_array, alive_indices, projection.value());
@@ -105,11 +104,12 @@ void ExpectProjectBatch(const ::arrow::RecordBatch& batch,
                         const Schema& required_schema, const Schema& projected_schema,
                         std::string_view expected_json) {
   auto expected = MakeBatch(projected_schema, expected_json);
-  for (auto mode : {ArrowValidationMode::kFull, ArrowValidationMode::kBasic}) {
+  for (bool validate_batch : {true, false}) {
     auto nanoarrow = RunProjectBatch(batch, alive_indices, required_schema,
-                                     projected_schema, nullptr, mode);
-    auto arrow_compute = RunProjectBatch(batch, alive_indices, required_schema,
-                                         projected_schema, ArrowComputeFunction(), mode);
+                                     projected_schema, nullptr, validate_batch);
+    auto arrow_compute =
+        RunProjectBatch(batch, alive_indices, required_schema, projected_schema,
+                        ArrowComputeFunction(), validate_batch);
     EXPECT_TRUE(nanoarrow->Equals(*expected)) << nanoarrow->ToString();
     EXPECT_TRUE(arrow_compute->Equals(*expected)) << arrow_compute->ToString();
   }
@@ -225,8 +225,8 @@ TEST(ProjectBatchTest, ProjectionRejectsNestedPruning) {
   EXPECT_THAT(projection, IsError(ErrorKind::kInvalidArgument));
 }
 
-TEST(ProjectBatchTest, ValidationModesWithNonMonotonicStringOffsets) {
-  for (auto mode : {ArrowValidationMode::kFull, ArrowValidationMode::kBasic}) {
+TEST(ProjectBatchTest, ValidateBatchControlsNonMonotonicStringOffsets) {
+  for (bool validate_batch : {true, false}) {
     for (auto function :
          {ProjectionContext::ProjectBatchFunction{nullptr}, ArrowComputeFunction()}) {
       auto schema = std::make_shared<Schema>(
@@ -253,14 +253,13 @@ TEST(ProjectBatchTest, ValidationModesWithNonMonotonicStringOffsets) {
       root.null_count = 0;
       ASSERT_EQ(ArrowArrayFinishBuildingDefault(&root, nullptr), NANOARROW_OK);
 
-      auto projection = mode == ArrowValidationMode::kFull
-                            ? ProjectionContext::Make(*schema, *schema, function)
-                            : ProjectionContext::Make(*schema, *schema, function, mode);
+      auto projection =
+          ProjectionContext::Make(*schema, *schema, function, validate_batch);
       ASSERT_THAT(projection, IsOk());
 
-      // Empty selection lets Basic skip the content check without reading corrupt data.
+      // Empty selection skips the content check without reading corrupt data.
       auto result = ProjectBatch(&root, /*row_indices=*/{}, projection.value());
-      if (mode == ArrowValidationMode::kFull) {
+      if (validate_batch) {
         EXPECT_THAT(result, IsError(ErrorKind::kInvalidArrowData));
         EXPECT_THAT(result, HasErrorMessage("element size >= 0"));
       } else {
@@ -275,7 +274,7 @@ TEST(ProjectBatchTest, ValidationModesWithNonMonotonicStringOffsets) {
   }
 }
 
-TEST(ProjectBatchTest, BasicStillRejectsInvalidStructure) {
+TEST(ProjectBatchTest, SkippedContentValidationStillRejectsInvalidStructure) {
   auto schema = MakeFullSchema();
   auto batch = MakeBatch(*schema, R"([[1,"a",1.0]])");
   for (auto function :
@@ -285,7 +284,7 @@ TEST(ProjectBatchTest, BasicStillRejectsInvalidStructure) {
     array.length = -1;
     ICEBERG_UNWRAP_OR_FAIL(
         auto projection,
-        ProjectionContext::Make(*schema, *schema, function, ArrowValidationMode::kBasic));
+        ProjectionContext::Make(*schema, *schema, function, /*validate_batch=*/false));
     auto result = ProjectBatch(&array, {}, projection);
     EXPECT_THAT(result, IsError(ErrorKind::kInvalidArrowData));
     EXPECT_THAT(result, HasErrorMessage("length"));
@@ -293,17 +292,18 @@ TEST(ProjectBatchTest, BasicStillRejectsInvalidStructure) {
   }
 }
 
-TEST(ProjectBatchTest, MovePreservesValidationMode) {
+TEST(ProjectBatchTest, MovePreservesValidateBatch) {
   auto schema = MakeFullSchema();
   ICEBERG_UNWRAP_OR_FAIL(
-      auto basic,
-      ProjectionContext::Make(*schema, *schema, nullptr, ArrowValidationMode::kBasic));
-  auto moved = std::move(basic);
-  EXPECT_EQ(moved.validation_mode(), ArrowValidationMode::kBasic);
-  ICEBERG_UNWRAP_OR_FAIL(auto full, ProjectionContext::Make(*schema, *schema, nullptr));
-  EXPECT_EQ(full.validation_mode(), ArrowValidationMode::kFull);
-  full = std::move(moved);
-  EXPECT_EQ(full.validation_mode(), ArrowValidationMode::kBasic);
+      auto without_validation,
+      ProjectionContext::Make(*schema, *schema, nullptr, /*validate_batch=*/false));
+  auto moved = std::move(without_validation);
+  EXPECT_FALSE(moved.validate_batch());
+  ICEBERG_UNWRAP_OR_FAIL(auto validation,
+                         ProjectionContext::Make(*schema, *schema, nullptr));
+  EXPECT_TRUE(validation.validate_batch());
+  validation = std::move(moved);
+  EXPECT_FALSE(validation.validate_batch());
 }
 
 TEST(WriteProjectionTest, IdenticalSchemasTransferBatchWithoutConversion) {

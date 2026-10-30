@@ -216,7 +216,8 @@ class FileScanTaskReader::Impl {
     ICEBERG_ASSIGN_OR_RAISE(
         auto projection_context,
         ProjectionContext::Make(*required_schema, *projected_schema_,
-                                project_batch_function, arrow_validation_mode_));
+                                project_batch_function,
+                                properties_.Get(ReaderProperties::kArrowValidateBatch)));
 
     auto options = MakeReaderOptions(task, io_, required_schema, filter, case_sensitive_,
                                      name_mapping_, properties_, data_file->first_row_id,
@@ -239,7 +240,6 @@ class FileScanTaskReader::Impl {
         case_sensitive_(options.case_sensitive),
         name_mapping_(std::move(options.name_mapping)),
         properties_(ReaderProperties::FromMap(options.properties)),
-        arrow_validation_mode_(options.arrow_validation_mode),
         field_lookup_(std::move(field_lookup)),
         delete_counter_(std::move(delete_counter)) {}
 
@@ -249,7 +249,6 @@ class FileScanTaskReader::Impl {
   bool case_sensitive_;
   std::shared_ptr<NameMapping> name_mapping_;
   ReaderProperties properties_;
-  ArrowValidationMode arrow_validation_mode_;
   DeleteFilter::FieldLookup field_lookup_;
   std::shared_ptr<DeleteCounter> delete_counter_;
 };
