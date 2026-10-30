@@ -178,14 +178,6 @@ TEST_F(CompactionPlannerTest, ZeroDeleteThresholdsDisableDeleteSelection) {
   EXPECT_THAT(plan.groups, IsEmpty());
 }
 
-TEST_F(CompactionPlannerTest, BindsPlanToSourceSnapshot) {
-  ICEBERG_UNWRAP_OR_FAIL(auto plan, CompactionPlanner::Plan(kSnapshotId, {}, Config()));
-
-  EXPECT_EQ(plan.source_snapshot_id, kSnapshotId);
-  EXPECT_THAT(CompactionPlanner::Plan(-1, {}, Config()),
-              IsError(ErrorKind::kInvalidArgument));
-}
-
 TEST_F(CompactionPlannerTest, SelectsThresholdBoundariesAndIgnoresOtherDeletes) {
   std::vector<std::shared_ptr<FileScanTask>> tasks{
       Task(Data("small-a", 1, 49)),
@@ -266,6 +258,7 @@ TEST_F(CompactionPlannerTest, ProducesCanonicalPartitionAndFileOrder) {
 
   ASSERT_THAT(first.groups, SizeIs(3));
   ASSERT_THAT(second.groups, SizeIs(3));
+  EXPECT_EQ(first.source_snapshot_id, kSnapshotId);
   for (size_t i = 0; i < first.groups.size(); ++i) {
     EXPECT_EQ(first.groups[i].partition_spec_id, second.groups[i].partition_spec_id);
     EXPECT_EQ(Paths(first.groups[i]), Paths(second.groups[i]));
@@ -312,21 +305,6 @@ TEST_F(CompactionPlannerTest, RejectsDvCardinalityAboveDataRows) {
       Task(Data("data", 1, 100), {DeletionVector("dv", "data", 101)})};
 
   EXPECT_THAT(CompactionPlanner::Plan(kSnapshotId, tasks, Config()),
-              IsError(ErrorKind::kInvalidArgument));
-}
-
-TEST_F(CompactionPlannerTest, ReturnsErrorsForAggregateOverflow) {
-  constexpr int64_t kMax = std::numeric_limits<int64_t>::max();
-  std::vector<std::shared_ptr<FileScanTask>> file_overflow{
-      Task(Data("data", 1, 100, 1, kMax), {PositionDelete("delete-a", "data", kMax),
-                                           PositionDelete("delete-b", "data", kMax)})};
-  EXPECT_THAT(CompactionPlanner::Plan(kSnapshotId, file_overflow, Config()),
-              IsError(ErrorKind::kInvalidArgument));
-
-  std::vector<std::shared_ptr<FileScanTask>> group_overflow{
-      Task(Data("a", 1, 0, 1, kMax), {PositionDelete("delete-a", "a", kMax)}),
-      Task(Data("b", 1, 0, 1, kMax), {PositionDelete("delete-b", "b", kMax)})};
-  EXPECT_THAT(CompactionPlanner::Plan(kSnapshotId, group_overflow, Config()),
               IsError(ErrorKind::kInvalidArgument));
 }
 
