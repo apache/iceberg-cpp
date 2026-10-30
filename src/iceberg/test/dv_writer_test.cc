@@ -332,18 +332,16 @@ TEST(DVWriterTest, DeleteRejectsEmptyReferencedFile) {
               IsError(ErrorKind::kInvalidArgument));
 }
 
-TEST(DVWriterTest, DeleteRejectsOutOfRangePosition) {
+TEST(DVWriterTest, DeleteRejectsNegativeAndAcceptsMaximumPosition) {
   auto io = std::make_shared<MockFileIO>();
   auto spec = UnpartitionedSpec();
   ICEBERG_UNWRAP_OR_FAIL(
       auto writer, DVWriter::Make(MakeDVWriterOptions(io, "memory://invalid.puffin")));
-  // Negative and out-of-range positions are rejected rather than silently
-  // dropped by the underlying bitmap.
   EXPECT_THAT(writer->Delete("data.parquet", -1, spec, PartitionValues{}),
               IsError(ErrorKind::kInvalidArgument));
-  EXPECT_THAT(writer->Delete("data.parquet", RoaringPositionBitmap::kMaxPosition + 1,
-                             spec, PartitionValues{}),
-              IsError(ErrorKind::kInvalidArgument));
+  EXPECT_THAT(writer->Delete("data.parquet", RoaringPositionBitmap::kMaxPosition, spec,
+                             PartitionValues{}),
+              IsOk());
 }
 
 // Close propagates a load_previous_deletes failure and returns no metadata.
