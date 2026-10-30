@@ -197,6 +197,19 @@ class ExpireSnapshotsCleanupTest : public UpdateTestBase {
     RewriteTable(std::move(metadata));
   }
 
+  void UseV4Root(TableMetadata& metadata) const {
+    metadata.format_version = 4;
+    metadata.location = "file:" + table_location_;
+    // Keep the mock filesystem's metadata writes at its existing absolute path.
+    metadata.properties.Set(TableProperties::kWriteMetadataLocation,
+                            table_location_ + "/metadata");
+    auto& current = *metadata.snapshots.back();
+    current.manifest_list.clear();
+    current.root_manifest = table_location_ + "/metadata/current-root.avro";
+    current.first_row_id = 0;
+    current.added_rows = 0;
+  }
+
   void RewriteTable(std::shared_ptr<TableMetadata> metadata) {
     ASSERT_NE(metadata, nullptr);
 
@@ -223,6 +236,118 @@ class ExpireSnapshotsCleanupTest : public UpdateTestBase {
     RewriteTable(std::move(metadata));
   }
 };
+
+class ExpireSnapshotsV4CleanupTest : public ExpireSnapshotsCleanupTest,
+                                     public ::testing::WithParamInterface<CleanupLevel> {
+};
+
+TEST_P(ExpireSnapshotsV4CleanupTest, RejectsCleanupBeforeCommit) {
+  const auto data_path = table_location_ + "/data/shared.parquet";
+  const auto manifest_path = table_location_ + "/metadata/shared-manifest.avro";
+  const auto expired_list = table_location_ + "/metadata/expired-list.avro";
+  ASSERT_THAT(file_io_->WriteFile(data_path, "data"), IsOk());
+  auto manifest =
+      WriteDataManifest(manifest_path, kExpiredSnapshotId,
+                        {MakeEntry(ManifestStatus::kAdded, kExpiredSnapshotId,
+                                   kExpiredSequenceNumber, MakeDataFile(data_path))});
+  WriteManifestList(expired_list, kExpiredSnapshotId, 0, kExpiredSequenceNumber,
+                    {manifest});
+
+  auto metadata = ReloadMetadata();
+  metadata->snapshots.front()->manifest_list = expired_list;
+  UseV4Root(*metadata);
+  RewriteTable(std::move(metadata));
+  const auto metadata_location = std::string(table_->metadata_file_location());
+
+  // The opaque v4 root may still reference the legacy manifest. Exercise both
+  // incremental (by age) and reachable (by explicit ID) cleanup selection.
+  for (bool explicit_id : {false, true}) {
+    SCOPED_TRACE(explicit_id);
+    std::vector<std::string> deleted_files;
+    ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewExpireSnapshots());
+    if (explicit_id) {
+      update->ExpireSnapshotId(kExpiredSnapshotId);
+    } else {
+      update->ExpireOlderThan(
+          UnixMsFromTimePointMs(table_->metadata()->snapshots.back()->timestamp_ms));
+    }
+    update->CleanupLevel(GetParam()).DeleteWith([&](const std::string& path) {
+      deleted_files.push_back(path);
+    });
+    EXPECT_THAT(update->Apply(), IsError(ErrorKind::kNotSupported));
+    EXPECT_THAT(update->Commit(), IsError(ErrorKind::kNotSupported));
+    EXPECT_TRUE(deleted_files.empty());
+    EXPECT_TRUE(ReloadMetadata()->SnapshotById(kExpiredSnapshotId).has_value());
+    EXPECT_EQ(table_->metadata_file_location(), metadata_location);
+    for (const auto& path : {data_path, manifest_path, expired_list}) {
+      EXPECT_THAT(file_io_->ReadFile(path, std::nullopt), IsOk());
+    }
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(FileCleanupLevels, ExpireSnapshotsV4CleanupTest,
+                         ::testing::Values(CleanupLevel::kAll,
+                                           CleanupLevel::kMetadataOnly));
+
+TEST_F(ExpireSnapshotsCleanupTest, V4SupportsNoOpAndExpirationWithoutFileCleanup) {
+  const auto expired_list = table_location_ + "/metadata/expired-list.avro";
+  WriteManifestList(expired_list, kExpiredSnapshotId, 0, kExpiredSequenceNumber, {});
+  auto metadata = ReloadMetadata();
+  metadata->snapshots.front()->manifest_list = expired_list;
+  UseV4Root(*metadata);
+  RewriteTable(std::move(metadata));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto noop, table_->NewExpireSnapshots());
+  noop->RetainLast(2);
+  EXPECT_THAT(noop->Commit(), IsOk());
+
+  std::vector<std::string> deleted_files;
+  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewExpireSnapshots());
+  update->ExpireSnapshotId(kExpiredSnapshotId)
+      .CleanupLevel(CleanupLevel::kNone)
+      .DeleteWith([&](const std::string& path) { deleted_files.push_back(path); });
+  ASSERT_THAT(update->Commit(), IsOk());
+  EXPECT_TRUE(deleted_files.empty());
+  metadata = ReloadMetadata();
+  EXPECT_FALSE(metadata->SnapshotById(kExpiredSnapshotId).has_value());
+  EXPECT_TRUE(metadata->SnapshotById(kCurrentSnapshotId).has_value());
+  EXPECT_THAT(file_io_->ReadFile(expired_list, std::nullopt), IsOk());
+}
+
+TEST_F(ExpireSnapshotsCleanupTest, SkipsCleanupWhenCommittedMetadataAddsV4Root) {
+  const auto expired_list = table_location_ + "/metadata/expired-list.avro";
+  const auto current_list = table_location_ + "/metadata/current-list.avro";
+  WriteManifestList(expired_list, kExpiredSnapshotId, 0, kExpiredSequenceNumber, {});
+  WriteManifestList(current_list, kCurrentSnapshotId, kExpiredSnapshotId,
+                    kCurrentSequenceNumber, {});
+  RewriteTableWithManifestLists(expired_list, current_list);
+
+  auto mock = std::make_shared<::testing::NiceMock<MockCatalog>>();
+  EXPECT_CALL(*mock, UpdateTable(::testing::_, ::testing::_, ::testing::_))
+      .WillOnce([this](const auto& name, const auto& requirements,
+                       const auto& updates) -> Result<std::shared_ptr<Table>> {
+        ICEBERG_ASSIGN_OR_RAISE(auto committed,
+                                catalog_->UpdateTable(name, requirements, updates));
+        UseV4Root(*committed->metadata());
+        ICEBERG_RETURN_UNEXPECTED(TableMetadataUtil::Write(
+            *file_io_, std::string(committed->metadata_file_location()),
+            *committed->metadata()));
+        return committed;
+      });
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto table,
+      Table::Make(table_->name(), table_->metadata(),
+                  std::string(table_->metadata_file_location()), file_io_, mock));
+  std::vector<std::string> deleted_files;
+  ICEBERG_UNWRAP_OR_FAIL(auto update, table->NewExpireSnapshots());
+  update->ExpireSnapshotId(kExpiredSnapshotId).DeleteWith([&](const std::string& path) {
+    deleted_files.push_back(path);
+  });
+  ASSERT_THAT(update->Commit(), IsOk());
+  EXPECT_TRUE(deleted_files.empty());
+  EXPECT_TRUE(ReloadMetadata()->snapshots.back()->root_manifest.has_value());
+  EXPECT_THAT(file_io_->ReadFile(expired_list, std::nullopt), IsOk());
+}
 
 TEST_F(ExpireSnapshotsTest, DefaultExpireByAge) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewExpireSnapshots());

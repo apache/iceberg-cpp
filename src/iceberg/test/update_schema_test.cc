@@ -159,7 +159,7 @@ class UpdateSchemaDefaultValueTest : public UpdateSchemaTest {
 
     ICEBERG_UNWRAP_OR_FAIL(auto metadata,
                            ReadTableMetadataFromResource("TableMetadataV2Valid.json"));
-    metadata->format_version = TableMetadata::kSupportedTableFormatVersion;
+    metadata->format_version = TableMetadata::kMinFormatVersionDefaultValues;
     metadata->next_row_id = TableMetadata::kInitialRowId;
     RegisterTable(std::move(metadata));
   }
