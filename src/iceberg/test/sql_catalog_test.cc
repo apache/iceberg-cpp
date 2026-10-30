@@ -167,6 +167,28 @@ TEST(ConnectionUriTest, RejectsInvalidPort) {
               IsError(ErrorKind::kInvalidArgument));
 }
 
+TEST(ConnectionUriTest, RedactsPassword) {
+  EXPECT_EQ(RedactConnectionUri("postgresql://alice:secret@db.example:5432/prod"),
+            "postgresql://alice:***@db.example:5432/prod");
+  // No credentials or no password: returned unchanged.
+  EXPECT_EQ(RedactConnectionUri("mysql://db.example:3306/prod"),
+            "mysql://db.example:3306/prod");
+  EXPECT_EQ(RedactConnectionUri("mysql://alice@db.example/prod"),
+            "mysql://alice@db.example/prod");
+  // Password containing '@' (last '@' delimits the host, as in ParseConnectionUri).
+  EXPECT_EQ(RedactConnectionUri("mysql://alice:p@ss@db.example/prod"),
+            "mysql://alice:***@db.example/prod");
+  // '@' in the path must not be mistaken for a userinfo delimiter.
+  EXPECT_EQ(RedactConnectionUri("mysql://db.example/we@rd"), "mysql://db.example/we@rd");
+}
+
+TEST(ConnectionUriTest, ParseErrorsDoNotEchoPassword) {
+  auto result = ParseConnectionUri("mysql://alice:secret@db.example:abc/prod");
+  ASSERT_THAT(result, IsError(ErrorKind::kInvalidArgument));
+  EXPECT_THAT(result, ::testing::Not(HasErrorMessage("secret")));
+  EXPECT_THAT(result, HasErrorMessage("alice:***@db.example"));
+}
+
 TEST_F(SqlCatalogTest, CatalogName) { EXPECT_EQ(catalog_->name(), "test_catalog"); }
 
 TEST_F(SqlCatalogTest, NamespaceLifecycle) {
