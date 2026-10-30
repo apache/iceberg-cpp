@@ -591,7 +591,14 @@ Result<std::unique_ptr<OutputFile>> ArrowFileSystemFileIO::NewOutputFile(
 /// \brief Delete a file at the given location.
 Status ArrowFileSystemFileIO::DeleteFile(const std::string& file_location) {
   ICEBERG_ASSIGN_OR_RAISE(auto path, ResolvePath(file_location));
-  ICEBERG_ARROW_RETURN_NOT_OK(arrow_fs_->DeleteFile(path));
+  auto status = arrow_fs_->DeleteFile(path);
+  if (!status.ok()) {
+    auto info = arrow_fs_->GetFileInfo(path);
+    if (info.ok() && info->type() == ::arrow::fs::FileType::NotFound) {
+      return {};
+    }
+  }
+  ICEBERG_ARROW_RETURN_NOT_OK(status);
   return {};
 }
 
