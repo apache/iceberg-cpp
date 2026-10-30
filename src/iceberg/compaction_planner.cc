@@ -25,6 +25,7 @@
 #include <iterator>
 #include <limits>
 #include <map>
+#include <set>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -158,9 +159,7 @@ Result<CompactionFile> BuildCompactionFile(
           data_file->record_count);
     }
 
-    ICEBERG_ASSIGN_OR_RAISE(result.file_scoped_delete_count,
-                            CheckedAddNonNegative(result.file_scoped_delete_count, 1,
-                                                  "File-scoped delete-file count"));
+    ++result.file_scoped_delete_count;
     ICEBERG_ASSIGN_OR_RAISE(result.file_scoped_delete_record_count,
                             CheckedAddNonNegative(result.file_scoped_delete_record_count,
                                                   delete_file->record_count,
@@ -189,10 +188,8 @@ bool PackingCandidateLess(const Candidate& lhs, const Candidate& rhs) {
 Result<void> AddToGroup(CompactionGroup& group, Candidate candidate,
                         bool& has_delete_pressure) {
   const auto& data_file = *candidate.file.scan_task->data_file();
-  ICEBERG_ASSIGN_OR_RAISE(
-      group.data_file_size_bytes,
-      CheckedAddNonNegative(group.data_file_size_bytes, data_file.file_size_in_bytes,
-                            "Compaction group data-file size"));
+  // Packing only adds files that fit, except for a single oversized file.
+  group.data_file_size_bytes += data_file.file_size_in_bytes;
   ICEBERG_ASSIGN_OR_RAISE(
       group.file_scoped_delete_record_count,
       CheckedAddNonNegative(group.file_scoped_delete_record_count,
@@ -216,22 +213,15 @@ Result<std::vector<CompactionGroup>> PackPartition(
   std::ranges::sort(partition.files, PackingCandidateLess);
 
   std::vector<PendingGroup> bins;
+  // Smallest sufficient capacity first; bin index breaks ties deterministically.
+  std::set<std::pair<int64_t, size_t>> available_bins;
   for (auto& candidate : partition.files) {
     const int64_t file_size = candidate.file.scan_task->data_file()->file_size_in_bytes;
     size_t best_bin = bins.size();
-    int64_t best_remaining = std::numeric_limits<int64_t>::max();
-    for (size_t i = 0; i < bins.size(); ++i) {
-      const int64_t bin_size = bins[i].group.data_file_size_bytes;
-      if (bin_size > config.target_file_size_bytes ||
-          file_size > config.target_file_size_bytes - bin_size) {
-        continue;
-      }
-
-      const int64_t remaining = config.target_file_size_bytes - bin_size - file_size;
-      if (remaining < best_remaining) {
-        best_bin = i;
-        best_remaining = remaining;
-      }
+    auto bin = available_bins.lower_bound({file_size, 0});
+    if (bin != available_bins.end()) {
+      best_bin = bin->second;
+      available_bins.erase(bin);
     }
 
     if (best_bin == bins.size()) {
@@ -243,6 +233,10 @@ Result<std::vector<CompactionGroup>> PackPartition(
     }
     ICEBERG_RETURN_UNEXPECTED(AddToGroup(bins[best_bin].group, std::move(candidate),
                                          bins[best_bin].has_delete_pressure));
+    const int64_t bin_size = bins[best_bin].group.data_file_size_bytes;
+    if (bin_size <= config.target_file_size_bytes) {
+      available_bins.emplace(config.target_file_size_bytes - bin_size, best_bin);
+    }
   }
 
   std::vector<CompactionGroup> groups;
