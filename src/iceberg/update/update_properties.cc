@@ -88,7 +88,8 @@ Result<UpdateProperties::ApplyResult> UpdateProperties::Apply() {
     ICEBERG_ASSIGN_OR_RAISE(auto parsed_version,
                             StringUtils::ParseNumber<int32_t>(iter->second));
 
-    if (parsed_version > TableMetadata::kSupportedTableFormatVersion) {
+    if (parsed_version < 1 ||
+        parsed_version > TableMetadata::kSupportedTableFormatVersion) {
       return InvalidArgument(
           "Cannot upgrade table to unsupported format version: v{} (supported: v{})",
           parsed_version, TableMetadata::kSupportedTableFormatVersion);
