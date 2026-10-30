@@ -29,23 +29,48 @@
 #include "iceberg/data/delete_filter.h"
 #include "iceberg/file_reader.h"
 #include "iceberg/manifest/manifest_entry.h"
+#include "iceberg/partition_spec.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_internal.h"
 #include "iceberg/table_scan.h"
+#include "iceberg/transform.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg {
 
 namespace {
 
-ReaderOptions MakeReaderOptions(const FileScanTask& task, std::shared_ptr<FileIO> io,
-                                std::shared_ptr<Schema> projection,
-                                std::shared_ptr<Expression> filter, bool case_sensitive,
-                                std::shared_ptr<NameMapping> name_mapping,
-                                ReaderProperties properties,
-                                std::optional<int64_t> first_row_id,
-                                std::optional<int64_t> data_sequence_number) {
+Result<std::unordered_map<int32_t, Literal>> ConstantsOf(const FileScanTask& task) {
+  const auto& file = *task.data_file();
+  const auto& spec = task.spec();
+  std::unordered_map<int32_t, Literal> id_to_constant;
+  if (!spec) {
+    if (file.partition.num_fields() != 0) {
+      return InvalidArgument("A partition spec is required to read partition values");
+    }
+    return id_to_constant;
+  }
+  for (size_t i = 0; i < spec->fields().size(); ++i) {
+    const auto& field = spec->fields()[i];
+    if (field.transform() == nullptr) {
+      return InvalidArgument("Missing transform for partition field {}",
+                             field.field_id());
+    }
+    if (field.transform()->transform_type() == TransformType::kIdentity) {
+      id_to_constant.emplace(field.source_id(), file.partition.values()[i]);
+    }
+  }
+  return id_to_constant;
+}
+
+Result<ReaderOptions> MakeReaderOptions(
+    const FileScanTask& task, std::shared_ptr<FileIO> io,
+    std::shared_ptr<Schema> projection, std::shared_ptr<Expression> filter,
+    bool case_sensitive, std::shared_ptr<NameMapping> name_mapping,
+    ReaderProperties properties, std::optional<int64_t> first_row_id,
+    std::optional<int64_t> data_sequence_number) {
   const auto& data_file = *task.data_file();
+  ICEBERG_ASSIGN_OR_RAISE(auto id_to_constant, ConstantsOf(task));
   return ReaderOptions{
       .path = data_file.file_path,
       .length = static_cast<size_t>(data_file.file_size_in_bytes),
@@ -61,6 +86,7 @@ ReaderOptions MakeReaderOptions(const FileScanTask& task, std::shared_ptr<FileIO
       .first_row_id = first_row_id,
       .data_sequence_number = data_sequence_number,
       .properties = std::move(properties),
+      .id_to_constant = std::move(id_to_constant),
   };
 }
 
@@ -191,9 +217,11 @@ class FileScanTaskReader::Impl {
     auto filter = task.residual_filter();
 
     if (task.delete_files().empty()) {
-      auto options = MakeReaderOptions(
-          task, io_, projected_schema_, filter, case_sensitive_, name_mapping_,
-          properties_, data_file->first_row_id, data_file->data_sequence_number);
+      ICEBERG_ASSIGN_OR_RAISE(
+          auto options,
+          MakeReaderOptions(task, io_, projected_schema_, filter, case_sensitive_,
+                            name_mapping_, properties_, data_file->first_row_id,
+                            data_file->data_sequence_number));
       ICEBERG_ASSIGN_OR_RAISE(
           auto reader, ReaderFactoryRegistry::Open(data_file->file_format, options));
       return MakeArrowArrayStream(std::move(reader));
@@ -217,9 +245,11 @@ class FileScanTaskReader::Impl {
                             ProjectionContext::Make(*required_schema, *projected_schema_,
                                                     project_batch_function));
 
-    auto options = MakeReaderOptions(task, io_, required_schema, filter, case_sensitive_,
-                                     name_mapping_, properties_, data_file->first_row_id,
-                                     data_file->data_sequence_number);
+    ICEBERG_ASSIGN_OR_RAISE(
+        auto options,
+        MakeReaderOptions(task, io_, required_schema, filter, case_sensitive_,
+                          name_mapping_, properties_, data_file->first_row_id,
+                          data_file->data_sequence_number));
     ICEBERG_ASSIGN_OR_RAISE(auto reader,
                             ReaderFactoryRegistry::Open(data_file->file_format, options));
 

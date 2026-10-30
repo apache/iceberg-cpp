@@ -26,8 +26,10 @@
 #include <functional>
 #include <memory>
 #include <optional>
+#include <unordered_map>
 
 #include "iceberg/arrow_c_data.h"
+#include "iceberg/expression/literal.h"
 #include "iceberg/file_format.h"
 #include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
@@ -121,6 +123,12 @@ struct ICEBERG_EXPORT ReaderOptions {
   std::optional<int64_t> data_sequence_number;
   /// \brief Format-specific or implementation-specific properties.
   ReaderProperties properties;
+
+  /// File-level values keyed by field ID, overriding physical columns,
+  /// initial defaults and optional-field nulls, matching Iceberg Java.
+  /// Example: `options.id_to_constant.emplace(2, Literal::String("CN"));`
+  // TODO(yzsun): Use a nested value representation if struct constants are needed.
+  std::unordered_map<int32_t, Literal> id_to_constant;
 };
 
 /// \brief Factory function to create a reader of a specific file format.

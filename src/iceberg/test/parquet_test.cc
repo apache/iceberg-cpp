@@ -45,6 +45,7 @@
 
 #include "iceberg/arrow/arrow_io_internal.h"
 #include "iceberg/arrow/arrow_status_internal.h"
+#include "iceberg/expression/expressions.h"
 #include "iceberg/expression/literal.h"
 #include "iceberg/file_reader.h"
 #include "iceberg/file_writer.h"
@@ -551,6 +552,19 @@ class ParquetReaderTest : public TempFileTestBase {
   std::shared_ptr<FileIO> file_io_;
   std::string temp_parquet_file_;
 };
+
+TEST_F(ParquetReaderTest, PromotesPartitionConstant) {
+  CreateSimpleParquetFile();
+  auto schema = std::make_shared<Schema>(
+      std::vector<SchemaField>{SchemaField::MakeRequired(3, "constant", int64())});
+
+  ReaderOptions options{.path = temp_parquet_file_, .io = file_io_, .projection = schema};
+  options.id_to_constant.emplace(3, Literal::Int(7));
+  ICEBERG_UNWRAP_OR_FAIL(auto reader,
+                         ReaderFactoryRegistry::Open(FileFormatType::kParquet, options));
+  VerifyNextBatch(*reader, "[[7], [7], [7]]");
+  VerifyExhausted(*reader);
+}
 
 TEST_F(ParquetReaderTest, ReadTwoFields) {
   CreateSimpleParquetFile();

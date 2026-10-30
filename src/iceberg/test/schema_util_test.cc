@@ -101,6 +101,49 @@ std::shared_ptr<Type> CreateMapOfList() {
 
 }  // namespace
 
+TEST(SchemaUtilTest, ProjectConstantsOverridePhysicalFieldsAndPruneIndices) {
+  Schema schema({SchemaField::MakeRequired(1, "region", string()),
+                 SchemaField::MakeRequired(2, "id", int64())});
+  for (bool prune_source : {false, true}) {
+    auto projection = Project(schema, schema, prune_source, ProjectionMode::kRead,
+                              {{1, Literal::String("CN")}});
+    ASSERT_THAT(projection, IsOk());
+    ASSERT_EQ(projection->fields.size(), 2);
+    EXPECT_EQ(projection->fields[0].kind, FieldProjection::Kind::kConstant);
+    EXPECT_EQ(std::get<Literal>(projection->fields[0].from), Literal::String("CN"));
+    AssertProjectedField(projection->fields[1], prune_source ? 0 : 1);
+  }
+}
+
+TEST(SchemaUtilTest, ProjectConstantsFillMissingFields) {
+  Schema expected({SchemaField::MakeRequired(1, "id", int64()),
+                   SchemaField::MakeOptional(2, "region", string())});
+  auto projection =
+      Project(expected, Schema({}), /*prune_source=*/true, ProjectionMode::kRead,
+              {{1, Literal::Int(7)}, {2, Literal::Null(string())}});
+  ASSERT_THAT(projection, IsOk());
+  ASSERT_EQ(projection->fields.size(), 2);
+  EXPECT_EQ(projection->fields[0].kind, FieldProjection::Kind::kConstant);
+  EXPECT_EQ(projection->fields[1].kind, FieldProjection::Kind::kConstant);
+}
+
+TEST(SchemaUtilTest, ProjectConstantsIntoExistingStruct) {
+  Schema schema(
+      {SchemaField::MakeOptional(1, "parent",
+                                 std::make_shared<StructType>(std::vector<SchemaField>{
+                                     SchemaField::MakeOptional(2, "region", string()),
+                                     SchemaField::MakeRequired(3, "id", int64())}))});
+  auto projection = Project(schema, schema, /*prune_source=*/true, ProjectionMode::kRead,
+                            {{2, Literal::String("CN")}});
+  ASSERT_THAT(projection, IsOk());
+  ASSERT_EQ(projection->fields.size(), 1);
+  const auto& parent = projection->fields[0];
+  AssertProjectedField(parent, 0);
+  ASSERT_EQ(parent.children.size(), 2);
+  EXPECT_EQ(parent.children[0].kind, FieldProjection::Kind::kConstant);
+  AssertProjectedField(parent.children[1], 0);
+}
+
 TEST(SchemaUtilTest, ProjectIdenticalSchemas) {
   Schema schema = CreateFlatSchema();
 

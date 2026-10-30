@@ -54,10 +54,12 @@ Status ValidateParquetTypeCompatibility(
 ///
 /// \param expected_schema The Iceberg Schema that defines the expected structure.
 /// \param parquet_schema The Parquet schema to read data from.
+/// \param id_to_constant File-level values that override physical fields and defaults.
 /// \return The schema projection result with column indices of projected Parquet columns
 /// specified via ParquetExtraAttributes.
-Result<SchemaProjection> Project(const Schema& expected_schema,
-                                 const ::parquet::arrow::SchemaManifest& parquet_schema);
+Result<SchemaProjection> Project(
+    const Schema& expected_schema, const ::parquet::arrow::SchemaManifest& parquet_schema,
+    const std::unordered_map<int32_t, Literal>& id_to_constant = {});
 
 /// \brief Get the selected column indices by walking through the projection result.
 ///

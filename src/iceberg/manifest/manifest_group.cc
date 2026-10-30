@@ -320,7 +320,8 @@ class ManifestGroup::FilePlanningStream final : public FileScanTaskStream {
                               residuals->ResidualFor(value.data_file->partition));
 
       return std::optional<std::shared_ptr<FileScanTask>>{std::make_shared<FileScanTask>(
-          std::move(value.data_file), std::move(delete_files), std::move(residual))};
+          std::move(value.data_file), std::move(delete_files), std::move(residual),
+          group_->specs_by_id_.at(spec_id))};
     }
   }
 

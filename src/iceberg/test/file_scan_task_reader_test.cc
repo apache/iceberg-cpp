@@ -33,6 +33,7 @@
 #include <arrow/json/from_string.h>
 #include <arrow/record_batch.h>
 #include <arrow/table.h>
+#include <nlohmann/json.hpp>
 #include <parquet/arrow/writer.h>
 #include <parquet/file_reader.h>
 #include <parquet/metadata.h>
@@ -54,6 +55,7 @@
 #include "iceberg/file_format.h"
 #include "iceberg/file_io.h"
 #include "iceberg/file_reader.h"
+#include "iceberg/json_serde_internal.h"
 #include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/metadata_columns.h"
 #include "iceberg/parquet/parquet_register.h"
@@ -66,6 +68,7 @@
 #include "iceberg/test/matchers.h"
 #include "iceberg/test/std_io.h"
 #include "iceberg/test/temp_file_test_base.h"
+#include "iceberg/transform.h"
 #include "iceberg/type.h"
 #include "iceberg/util/macros.h"
 
@@ -420,6 +423,165 @@ class FileScanTaskReaderTest : public TempFileTestBase {
   std::shared_ptr<Schema> table_schema_;
   std::shared_ptr<Schema> projected_schema_;
 };
+
+TEST_F(FileScanTaskReaderTest, IdentityPartitionConstantsSurviveJsonAndSplit) {
+  auto physical = std::make_shared<Schema>(
+      std::vector<SchemaField>{SchemaField::MakeRequired(1, "id", int32())});
+  ICEBERG_UNWRAP_OR_FAIL(auto file, MakeDataFile(physical, "[[1], [2], [3]]"));
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto spec, PartitionSpec::Make(7, {{2, 1000, "name", Transform::Identity()}}));
+  file->partition_spec_id = 7;
+  file->partition = PartitionValues({Literal::String("CN")});
+  FileScanTask task(file, {}, nullptr, std::move(spec));
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto json, ToJson(task, {{7, std::const_pointer_cast<PartitionSpec>(task.spec())}},
+                        *table_schema_));
+  ICEBERG_UNWRAP_OR_FAIL(auto parsed, FileScanTaskFromJson(json));
+  ASSERT_NE(parsed->spec(), nullptr);
+  EXPECT_EQ(parsed->spec()->spec_id(), 7);
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto split, FileScanTask::MakeSplit(parsed->data_file(), 0, parsed->length(), {},
+                                          nullptr, parsed->spec()));
+  EXPECT_EQ(split->spec(), parsed->spec());
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto reader, FileScanTaskReader::Make({.io = file_io_,
+                                             .table_schema = table_schema_,
+                                             .schemas = {table_schema_},
+                                             .projected_schema = projected_schema_}));
+  ICEBERG_UNWRAP_OR_FAIL(auto stream, reader->Open(*split));
+  VerifyStream(&stream, R"([[1, "CN"], [2, "CN"], [3, "CN"]])");
+}
+
+TEST_F(FileScanTaskReaderTest, IdentityConstantsApplyBeforeEqualityDeletes) {
+  auto physical = std::make_shared<Schema>(
+      std::vector<SchemaField>{SchemaField::MakeRequired(1, "id", int32())});
+  ICEBERG_UNWRAP_OR_FAIL(auto file, MakeDataFile(physical, "[[1], [2], [3]]"));
+  auto delete_schema = std::make_shared<Schema>(
+      std::vector<SchemaField>{SchemaField::MakeOptional(2, "name", string())});
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto deletes, MakeEqualityDeleteFile(CreateNewTempFilePathWithSuffix(".parquet"),
+                                           delete_schema, R"([["CN"]])", {2}));
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto spec, PartitionSpec::Make(7, {{2, 1000, "name", Transform::Identity()}}));
+  file->partition_spec_id = 7;
+  file->partition = PartitionValues({Literal::String("CN")});
+  FileScanTask task(file, {deletes}, nullptr, std::move(spec));
+  ICEBERG_UNWRAP_OR_FAIL(auto reader,
+                         FileScanTaskReader::Make({.io = file_io_,
+                                                   .table_schema = table_schema_,
+                                                   .schemas = {table_schema_},
+                                                   .projected_schema = physical}));
+  ICEBERG_UNWRAP_OR_FAIL(auto stream, reader->Open(task));
+  auto batches = ::arrow::ImportRecordBatchReader(&stream).ValueOrDie();
+  auto table = batches->ToTable().ValueOrDie();
+  EXPECT_EQ(table->num_rows(), 0);
+}
+
+TEST_F(FileScanTaskReaderTest, NullIdentityOverridesInitialDefault) {
+  auto physical = std::make_shared<Schema>(
+      std::vector<SchemaField>{SchemaField::MakeRequired(1, "id", int32())});
+  ICEBERG_UNWRAP_OR_FAIL(auto file, MakeDataFile(physical, "[[1], [2], [3]]"));
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto spec, PartitionSpec::Make(0, {{2, 1000, "name", Transform::Identity()}}));
+  file->partition = PartitionValues({Literal::Null(string())});
+  auto projection = std::make_shared<Schema>(std::vector<SchemaField>{
+      SchemaField(2, "name", string(), true, {},
+                  std::make_shared<const Literal>(Literal::String("default")))});
+  FileScanTask task(file, {}, nullptr, std::move(spec));
+  ICEBERG_UNWRAP_OR_FAIL(auto reader,
+                         FileScanTaskReader::Make({.io = file_io_,
+                                                   .table_schema = table_schema_,
+                                                   .schemas = {table_schema_},
+                                                   .projected_schema = projection}));
+  ICEBERG_UNWRAP_OR_FAIL(auto stream, reader->Open(task));
+  VerifyStream(&stream, "[[null], [null], [null]]");
+}
+
+TEST_F(FileScanTaskReaderTest,
+       ReadsTaskSpecificSpecsWithoutLeakingConstantsBetweenFiles) {
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto identity, PartitionSpec::Make(7, {{2, 1000, "name", Transform::Identity()}}));
+  ICEBERG_UNWRAP_OR_FAIL(auto unpartitioned, PartitionSpec::Make(8, {}));
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto bucket,
+      PartitionSpec::Make(9, {{2, 1001, "name_bucket", Transform::Bucket(16)}}));
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto reordered,
+      PartitionSpec::Make(10, {{3, 1002, "category", Transform::Identity()},
+                               {2, 1000, "renamed_name", Transform::Identity()}}));
+  struct Case {
+    std::shared_ptr<PartitionSpec> spec;
+    PartitionValues partition;
+    std::string expected;
+  };
+  auto identity_spec = std::shared_ptr<PartitionSpec>(std::move(identity));
+  const std::vector<Case> cases{
+      {.spec = identity_spec,
+       .partition = PartitionValues(Literal::String("CN")),
+       .expected = R"([[1, "CN"], [2, "CN"], [3, "CN"]])"},
+      {.spec = std::move(unpartitioned),
+       .partition = PartitionValues(),
+       .expected = R"([[1, "file"], [2, "file"], [3, "file"]])"},
+      {.spec = std::move(bucket),
+       .partition = PartitionValues(Literal::Int(3)),
+       .expected = R"([[1, "file"], [2, "file"], [3, "file"]])"},
+      {.spec = std::move(reordered),
+       .partition = PartitionValues({Literal::String("retired"), Literal::String("US")}),
+       .expected = R"([[1, "US"], [2, "US"], [3, "US"]])"},
+      {.spec = identity_spec,
+       .partition = PartitionValues(Literal::Null(string())),
+       .expected = "[[1, null], [2, null], [3, null]]"}};
+  // The current schema omits category, but historical task schemas retain its type.
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto reader, FileScanTaskReader::Make({.io = file_io_,
+                                             .table_schema = projected_schema_,
+                                             .schemas = {table_schema_},
+                                             .projected_schema = projected_schema_}));
+  std::vector<std::shared_ptr<::arrow::RecordBatchReader>> readers;
+  for (const auto& test : cases) {
+    SCOPED_TRACE(test.spec->spec_id());
+    ICEBERG_UNWRAP_OR_FAIL(
+        auto file,
+        MakeDataFile(projected_schema_, R"([[1, "file"], [2, "file"], [3, "file"]])"));
+    file->partition_spec_id = test.spec->spec_id();
+    file->partition = test.partition;
+    ICEBERG_UNWRAP_OR_FAIL(auto json,
+                           ToJson(FileScanTask(file, {}, nullptr, test.spec),
+                                  {{test.spec->spec_id(), test.spec}}, *table_schema_));
+    ICEBERG_UNWRAP_OR_FAIL(auto task, FileScanTaskFromJson(json));
+    ICEBERG_UNWRAP_OR_FAIL(auto stream, reader->Open(*task));
+    auto imported = ::arrow::ImportRecordBatchReader(&stream);
+    ASSERT_TRUE(imported.ok()) << imported.status().ToString();
+    readers.push_back(imported.ValueOrDie());
+  }
+  // Keep all streams alive to detect accidental sharing of per-file constants.
+  for (size_t i = 0; i < cases.size(); ++i) {
+    SCOPED_TRACE(i);
+    auto next = readers[i]->Next();
+    ASSERT_TRUE(next.ok()) << next.status().ToString();
+    auto batch = next.ValueOrDie();
+    ASSERT_NE(batch, nullptr);
+    ASSERT_TRUE(batch->ValidateFull().ok());
+    ICEBERG_UNWRAP_OR_FAIL(auto expected,
+                           MakeRecordBatch(batch->schema(), cases[i].expected));
+    EXPECT_TRUE(batch->Equals(*expected));
+    next = readers[i]->Next();
+    ASSERT_TRUE(next.ok()) << next.status().ToString();
+    EXPECT_EQ(next.ValueOrDie(), nullptr);
+  }
+}
+
+TEST_F(FileScanTaskReaderTest, RejectsMissingPartitionSpec) {
+  ICEBERG_UNWRAP_OR_FAIL(auto file,
+                         MakeDataFile(table_schema_, R"([[1, "Foo", "blue"]])", 1));
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto reader, FileScanTaskReader::Make({.io = file_io_,
+                                             .table_schema = table_schema_,
+                                             .schemas = {table_schema_},
+                                             .projected_schema = projected_schema_}));
+  file->partition = PartitionValues({Literal::String("CN")});
+  EXPECT_FALSE(reader->Open(FileScanTask(file)).has_value());
+}
 
 TEST_F(FileScanTaskReaderTest, OpenWithoutDeletesReadsProjectedSchema) {
   ICEBERG_UNWRAP_OR_FAIL(
