@@ -326,32 +326,6 @@ TEST_F(PositionDeletesTableTest, SurfacesDeletedRowsFromParquet) {
   EXPECT_EQ(data->GetString(0), "deleted");
 }
 
-TEST_F(PositionDeletesTableTest, ProjectsSubsetDeletedRowsFromParquet) {
-  ICEBERG_UNWRAP_OR_FAIL(
-      auto delete_file,
-      WritePositionDeletesWithRows("position-deletes-with-subset-rows.parquet",
-                                   R"([["data.parquet", 5, ["deleted"]]])",
-                                   {schema_->fields()[1]}, true, unpartitioned_spec_,
-                                   PartitionValues{}));
-  constexpr int64_t kSnapshotId = 16;
-  auto manifest = WriteDeleteManifest(
-      2, kSnapshotId, {MakeEntry(ManifestStatus::kAdded, kSnapshotId, 1, delete_file)},
-      unpartitioned_spec_);
-  auto table = MakePositionDeletesTable(
-      MakeTable(2, unpartitioned_spec_, MakeSnapshot(2, kSnapshotId, 1, {manifest})));
-
-  ICEBERG_UNWRAP_OR_FAIL(auto array, table->Scan());
-  auto batch = Import(std::move(array), *table->schema());
-  ASSERT_EQ(batch->num_rows(), 1);
-
-  auto rows = std::static_pointer_cast<::arrow::StructArray>(batch->column(2));
-  ASSERT_FALSE(rows->IsNull(0));
-  auto ids = std::static_pointer_cast<::arrow::Int32Array>(rows->field(0));
-  auto data = std::static_pointer_cast<::arrow::StringArray>(rows->field(1));
-  EXPECT_TRUE(ids->IsNull(0));
-  EXPECT_EQ(data->GetString(0), "deleted");
-}
-
 TEST_F(PositionDeletesTableTest, DoesNotDefaultOmittedDeletedRowFields) {
   schema_ = std::make_shared<Schema>(
       std::vector<SchemaField>{
@@ -378,6 +352,8 @@ TEST_F(PositionDeletesTableTest, DoesNotDefaultOmittedDeletedRowFields) {
   ASSERT_EQ(batch->num_rows(), 1);
 
   auto rows = std::static_pointer_cast<::arrow::StructArray>(batch->column(2));
+  ASSERT_FALSE(rows->IsNull(0));
+  EXPECT_TRUE(rows->type()->field(0)->nullable());
   auto ids = std::static_pointer_cast<::arrow::Int32Array>(rows->field(0));
   auto data = std::static_pointer_cast<::arrow::StringArray>(rows->field(1));
   EXPECT_TRUE(ids->IsNull(0));

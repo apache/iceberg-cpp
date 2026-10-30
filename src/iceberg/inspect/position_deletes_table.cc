@@ -23,6 +23,7 @@
 #include <array>
 #include <cstdint>
 #include <format>
+#include <functional>
 #include <limits>
 #include <memory>
 #include <numeric>
@@ -79,31 +80,16 @@ struct UnifiedPartitionField {
   SchemaField field;
 };
 
-Status CollectFieldIds(const Type& type, std::unordered_set<int32_t>& field_ids) {
-  if (!type.is_nested()) {
-    return {};
-  }
-  for (const auto& field : static_cast<const NestedType&>(type).fields()) {
-    if (!field_ids.insert(field.field_id()).second) {
-      return InvalidSchema("Duplicate field ID {} in position_deletes schema",
-                           field.field_id());
-    }
-    ICEBERG_RETURN_UNEXPECTED(CollectFieldIds(*field.type(), field_ids));
-  }
-  return {};
-}
+std::shared_ptr<Type> PositionDeleteRowType(const Schema& table_schema);
 
 Result<int32_t> TakeFreshFieldId(int64_t& candidate,
                                  std::unordered_set<int32_t>& used_ids) {
   constexpr int64_t kMaxFieldId = std::numeric_limits<int32_t>::max();
-  for (int pass = 0; pass < 2; ++pass) {
-    while (candidate <= kMaxFieldId) {
-      const auto field_id = static_cast<int32_t>(candidate++);
-      if (used_ids.insert(field_id).second) {
-        return field_id;
-      }
+  while (candidate <= kMaxFieldId) {
+    const auto field_id = static_cast<int32_t>(candidate++);
+    if (used_ids.insert(field_id).second) {
+      return field_id;
     }
-    candidate = 1;
   }
   return InvalidSchema("No field ID is available for position_deletes partition fields");
 }
@@ -124,14 +110,10 @@ Result<PositionDeletesSchema> MakePositionDeletesSchema(const Table& table) {
   ICEBERG_ASSIGN_OR_RAISE(auto table_schema, table.schema());
 
   std::vector<std::shared_ptr<PartitionSpec>> specs = table.metadata()->partition_specs;
-  std::ranges::sort(specs, {}, [](const auto& spec) {
-    return spec == nullptr ? std::numeric_limits<int32_t>::min() : spec->spec_id();
-  });
-  std::ranges::reverse(specs);
+  std::ranges::sort(specs, std::greater{}, &PartitionSpec::spec_id);
 
   std::unordered_map<int32_t, UnifiedPartitionField> fields_by_partition_id;
   for (const auto& spec : specs) {
-    ICEBERG_PRECHECK(spec != nullptr, "Partition spec cannot be null");
     for (const auto& partition_field : spec->fields()) {
       ICEBERG_PRECHECK(
           partition_field.transform()->transform_type() != TransformType::kUnknown,
@@ -206,23 +188,9 @@ Result<PositionDeletesSchema> MakePositionDeletesSchema(const Table& table) {
   };
   std::unordered_set<int32_t> used_ids(kMetadataFieldIds.begin(),
                                        kMetadataFieldIds.end());
-  std::unordered_set<int32_t> current_schema_ids;
-  ICEBERG_RETURN_UNEXPECTED(CollectFieldIds(*table_schema, current_schema_ids));
-  for (int32_t field_id : current_schema_ids) {
-    if (!used_ids.insert(field_id).second) {
-      return InvalidSchema("Table field ID {} conflicts with a metadata field ID",
-                           field_id);
-    }
-  }
-  for (const auto& historical_schema : table.metadata()->schemas) {
-    ICEBERG_PRECHECK(historical_schema != nullptr, "Table schema cannot be null");
-    std::unordered_set<int32_t> historical_ids;
-    ICEBERG_RETURN_UNEXPECTED(CollectFieldIds(*historical_schema, historical_ids));
-    used_ids.insert(historical_ids.begin(), historical_ids.end());
-  }
-
-  int64_t next_field_id =
-      std::max<int64_t>(1, static_cast<int64_t>(table.metadata()->last_column_id) + 1);
+  // last_column_id includes historical and nested fields; only metadata IDs remain
+  // to be skipped when assigning partition fields.
+  int64_t next_field_id = static_cast<int64_t>(table.metadata()->last_column_id) + 1;
   std::vector<SchemaField> partition_fields;
   partition_fields.reserve(unified_partition_fields.size());
   for (const auto& field : unified_partition_fields) {
@@ -252,12 +220,10 @@ Result<PositionDeletesSchema> MakePositionDeletesSchema(const Table& table) {
   std::vector<SchemaField> fields{
       MetadataColumns::kDeleteFilePath,
       MetadataColumns::kDeleteFilePos,
-      SchemaField::MakeOptional(
-          MetadataColumns::kDeleteFileRowColumnId,
-          MetadataColumns::kDeleteFileRowFieldName,
-          std::make_shared<StructType>(std::vector<SchemaField>(
-              table_schema->fields().begin(), table_schema->fields().end())),
-          MetadataColumns::kDeleteFileRowDoc),
+      SchemaField::MakeOptional(MetadataColumns::kDeleteFileRowColumnId,
+                                MetadataColumns::kDeleteFileRowFieldName,
+                                PositionDeleteRowType(*table_schema),
+                                MetadataColumns::kDeleteFileRowDoc),
   };
   if (!partition_fields.empty()) {
     fields.push_back(SchemaField::MakeRequired(
@@ -370,16 +336,12 @@ Status AppendLiteralValue(ArrowArray* array, const Literal& literal,
 Status AppendPartition(ArrowArray* array, const StructType& partition_type,
                        const PartitionValues& partition,
                        const PartitionMapping& mapping) {
-  ICEBERG_PRECHECK(std::cmp_equal(array->n_children, mapping.size()),
-                   "Partition builder does not match metadata table schema");
   for (size_t output_idx = 0; output_idx < mapping.size(); ++output_idx) {
     if (!mapping[output_idx].has_value()) {
       ICEBERG_RETURN_UNEXPECTED(AppendNull(array->children[output_idx]));
       continue;
     }
     const size_t input_idx = *mapping[output_idx];
-    ICEBERG_PRECHECK(input_idx < partition.num_fields(),
-                     "Partition values do not match partition spec");
     ICEBERG_ASSIGN_OR_RAISE(auto literal, partition.ValueAt(input_idx));
     ICEBERG_RETURN_UNEXPECTED(
         AppendLiteralValue(array->children[output_idx], literal.get(),
@@ -471,12 +433,12 @@ class PositionDeleteBatchBuilder {
   std::vector<ArrowArray> batches_;
 };
 
-Status AppendPositionDeleteRow(
-    PositionDeleteBatchBuilder& builder, const OutputLayout& layout,
-    const DataFile& delete_file, std::string_view data_file_path, int64_t pos,
-    int32_t spec_id, const StructType& partition_type,
-    const std::unordered_map<int32_t, PartitionMapping>& partition_mappings,
-    const DeletedRowValue* deleted_row) {
+Status AppendPositionDeleteRow(PositionDeleteBatchBuilder& builder,
+                               const OutputLayout& layout, const DataFile& delete_file,
+                               std::string_view data_file_path, int64_t pos,
+                               int32_t spec_id, const StructType& partition_type,
+                               const PartitionMapping& partition_mapping,
+                               const DeletedRowValue* deleted_row) {
   ICEBERG_RETURN_UNEXPECTED(AppendString(builder.column(0), data_file_path));
   ICEBERG_RETURN_UNEXPECTED(AppendInt(builder.column(1), pos));
   if (deleted_row == nullptr) {
@@ -488,12 +450,9 @@ Status AppendPositionDeleteRow(
   }
 
   if (layout.partition.has_value()) {
-    auto mapping = partition_mappings.find(spec_id);
-    ICEBERG_PRECHECK(mapping != partition_mappings.end(),
-                     "Partition spec ID {} not found", spec_id);
     ICEBERG_RETURN_UNEXPECTED(AppendPartition(builder.column(*layout.partition),
                                               partition_type, delete_file.partition,
-                                              mapping->second));
+                                              partition_mapping));
   }
 
   ICEBERG_RETURN_UNEXPECTED(AppendInt(builder.column(layout.spec_id), spec_id));
@@ -543,23 +502,11 @@ std::shared_ptr<Type> MakePositionDeleteReadType(const std::shared_ptr<Type>& ty
   }
 }
 
-std::shared_ptr<Schema> PositionDeleteFileSchema(const Schema& table_schema) {
-  std::vector<SchemaField> fields{
-      MetadataColumns::kDeleteFilePath,
-      MetadataColumns::kDeleteFilePos,
-  };
-  std::vector<SchemaField> row_fields;
-  row_fields.reserve(table_schema.fields().size());
-  for (const auto& field : table_schema.fields()) {
-    row_fields.push_back(ClearPositionDeleteReadDefaults(
-                             field.WithType(MakePositionDeleteReadType(field.type())))
-                             .AsOptional());
-  }
-  fields.push_back(SchemaField::MakeOptional(
-      MetadataColumns::kDeleteFileRowColumnId, MetadataColumns::kDeleteFileRowFieldName,
-      std::make_shared<StructType>(std::move(row_fields)),
-      MetadataColumns::kDeleteFileRowDoc));
-  return std::make_shared<Schema>(std::move(fields));
+std::shared_ptr<Type> PositionDeleteRowType(const Schema& table_schema) {
+  // Stored rows may contain only a subset of table fields. Missing values stay null,
+  // even when the corresponding table field is required or has a default.
+  return MakePositionDeleteReadType(std::make_shared<StructType>(std::vector<SchemaField>(
+      table_schema.fields().begin(), table_schema.fields().end())));
 }
 
 struct PositionDeleteReader {
@@ -567,15 +514,15 @@ struct PositionDeleteReader {
   bool has_row;
 };
 
-Result<PositionDeleteReader> OpenPositionDeleteFile(const DataFile& file,
-                                                    const Schema& table_schema,
-                                                    const std::shared_ptr<FileIO>& io) {
+Result<PositionDeleteReader> OpenPositionDeleteFile(
+    const DataFile& file, const std::shared_ptr<Schema>& projection,
+    const std::shared_ptr<FileIO>& io) {
   ICEBERG_PRECHECK(file.file_format == FileFormatType::kParquet,
                    "Unsupported position delete format: {}", ToString(file.file_format));
   ReaderOptions options{.path = file.file_path,
                         .length = static_cast<size_t>(file.file_size_in_bytes),
                         .io = io,
-                        .projection = PositionDeleteFileSchema(table_schema)};
+                        .projection = projection};
   ICEBERG_ASSIGN_OR_RAISE(auto reader,
                           ReaderFactoryRegistry::Open(file.file_format, options));
   ICEBERG_ASSIGN_OR_RAISE(
@@ -583,21 +530,18 @@ Result<PositionDeleteReader> OpenPositionDeleteFile(const DataFile& file,
   return PositionDeleteReader{.reader = std::move(reader), .has_row = has_row};
 }
 
-Status AppendParquetDeletes(
-    PositionDeleteBatchBuilder& builder, const OutputLayout& layout,
-    const std::shared_ptr<DataFile>& delete_file, int32_t spec_id,
-    const StructType& partition_type,
-    const std::unordered_map<int32_t, PartitionMapping>& partition_mappings,
-    const Schema& table_schema, const std::shared_ptr<FileIO>& io) {
+Status AppendParquetDeletes(PositionDeleteBatchBuilder& builder,
+                            const OutputLayout& layout,
+                            const std::shared_ptr<DataFile>& delete_file, int32_t spec_id,
+                            const StructType& partition_type,
+                            const PartitionMapping& partition_mapping,
+                            const std::shared_ptr<Schema>& projection,
+                            const std::shared_ptr<FileIO>& io) {
   ICEBERG_ASSIGN_OR_RAISE(auto delete_reader,
-                          OpenPositionDeleteFile(*delete_file, table_schema, io));
+                          OpenPositionDeleteFile(*delete_file, projection, io));
   auto& reader = delete_reader.reader;
   ICEBERG_ASSIGN_OR_RAISE(auto arrow_schema, reader->Schema());
   internal::ArrowSchemaGuard schema_guard(&arrow_schema);
-  constexpr int64_t expected_columns = 3;
-  ICEBERG_PRECHECK(arrow_schema.n_children == expected_columns,
-                   "Position delete reader returned {} columns, expected {}",
-                   arrow_schema.n_children, expected_columns);
 
   ArrowArrayView array_view;
   internal::ArrowArrayViewGuard view_guard(&array_view);
@@ -615,9 +559,6 @@ Status AppendParquetDeletes(
     internal::ArrowArrayGuard batch_guard(&batch);
     ICEBERG_NANOARROW_RETURN_UNEXPECTED_WITH_ERROR(
         ArrowArrayViewSetArray(&array_view, &batch, &error), error);
-    ICEBERG_PRECHECK(batch.n_children == expected_columns,
-                     "Position delete batch has {} columns, expected {}",
-                     batch.n_children, expected_columns);
 
     const auto* path_view = array_view.children[0];
     const auto* pos_view = array_view.children[1];
@@ -648,7 +589,7 @@ Status AppendParquetDeletes(
       ICEBERG_RETURN_UNEXPECTED(AppendPositionDeleteRow(
           builder, layout, *delete_file,
           std::string_view(path.data, static_cast<size_t>(path.size_bytes)),
-          positions[row], spec_id, partition_type, partition_mappings,
+          positions[row], spec_id, partition_type, partition_mapping,
           deleted_row ? &*deleted_row : nullptr));
     }
   }
@@ -656,12 +597,12 @@ Status AppendParquetDeletes(
   return reader->Close();
 }
 
-Status AppendDeletionVector(
-    PositionDeleteBatchBuilder& builder, const OutputLayout& layout,
-    const std::shared_ptr<DataFile>& delete_file, int32_t spec_id,
-    const StructType& partition_type,
-    const std::unordered_map<int32_t, PartitionMapping>& partition_mappings,
-    const std::shared_ptr<FileIO>& io) {
+Status AppendDeletionVector(PositionDeleteBatchBuilder& builder,
+                            const OutputLayout& layout,
+                            const std::shared_ptr<DataFile>& delete_file, int32_t spec_id,
+                            const StructType& partition_type,
+                            const PartitionMapping& partition_mapping,
+                            const std::shared_ptr<FileIO>& io) {
   ICEBERG_PRECHECK(delete_file->referenced_data_file.has_value(),
                    "Deletion vector requires a referenced data file");
   ICEBERG_ASSIGN_OR_RAISE(auto positions, DVUtil::ReadDV(delete_file, io));
@@ -671,7 +612,7 @@ Status AppendDeletionVector(
     if (status.has_value()) {
       status = AppendPositionDeleteRow(builder, layout, *delete_file,
                                        *delete_file->referenced_data_file, pos, spec_id,
-                                       partition_type, partition_mappings, nullptr);
+                                       partition_type, partition_mapping, nullptr);
     }
   });
   return status;
@@ -733,6 +674,8 @@ Result<ArrowArrayStream> PositionDeletesTable::Scan(const Schema& projected_sche
     ICEBERG_ASSIGN_OR_RAISE(auto table_schema, source_table()->schema());
     ICEBERG_ASSIGN_OR_RAISE(auto specs_ref, source_table()->specs());
     const auto& specs = specs_ref.get();
+    auto delete_projection = std::make_shared<Schema>(std::vector<SchemaField>(
+        schema_->fields().begin(), schema_->fields().begin() + 3));
 
     for (const auto& manifest : manifests) {
       ICEBERG_ASSIGN_OR_RAISE(
@@ -740,22 +683,21 @@ Result<ArrowArrayStream> PositionDeletesTable::Scan(const Schema& projected_sche
           ManifestReader::Make(manifest, source_table()->io(), table_schema, specs));
       ICEBERG_ASSIGN_OR_RAISE(auto entries, reader->LiveEntries());
       for (const auto& entry : entries) {
-        ICEBERG_PRECHECK(entry.data_file != nullptr,
-                         "Manifest entry must have a data file");
         const auto& file = entry.data_file;
         if (file->content != DataFile::Content::kPositionDeletes) {
           continue;
         }
         const int32_t spec_id =
             file->partition_spec_id.value_or(manifest.partition_spec_id);
+        const auto& partition_mapping = partition_mappings_.at(spec_id);
         if (file->IsDeletionVector()) {
           ICEBERG_RETURN_UNEXPECTED(
               AppendDeletionVector(builder, layout, file, spec_id, *partition_type_,
-                                   partition_mappings_, source_table()->io()));
+                                   partition_mapping, source_table()->io()));
         } else {
           ICEBERG_RETURN_UNEXPECTED(AppendParquetDeletes(
-              builder, layout, file, spec_id, *partition_type_, partition_mappings_,
-              *table_schema, source_table()->io()));
+              builder, layout, file, spec_id, *partition_type_, partition_mapping,
+              delete_projection, source_table()->io()));
         }
       }
     }
