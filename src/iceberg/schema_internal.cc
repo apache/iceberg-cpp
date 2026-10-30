@@ -39,31 +39,6 @@ constexpr const char* kArrowExtensionName = "ARROW:extension:name";
 constexpr const char* kArrowExtensionMetadata = "ARROW:extension:metadata";
 constexpr int32_t kUnknownFieldId = -1;
 
-Status CheckArrowCompatible(const Type& type) {
-  switch (type.type_id()) {
-    case TypeId::kVariant:
-      return NotSupported("Iceberg type {} is not supported by Arrow conversion",
-                          type.ToString());
-    case TypeId::kStruct:
-      for (const auto& field : static_cast<const StructType&>(type).fields()) {
-        ICEBERG_RETURN_UNEXPECTED(CheckArrowCompatible(*field.type()));
-      }
-      break;
-    case TypeId::kList:
-      ICEBERG_RETURN_UNEXPECTED(
-          CheckArrowCompatible(*static_cast<const ListType&>(type).element().type()));
-      break;
-    case TypeId::kMap: {
-      const auto& map_type = static_cast<const MapType&>(type);
-      ICEBERG_RETURN_UNEXPECTED(CheckArrowCompatible(*map_type.key().type()));
-      ICEBERG_RETURN_UNEXPECTED(CheckArrowCompatible(*map_type.value().type()));
-    } break;
-    default:
-      break;
-  }
-  return {};
-}
-
 // Convert an Iceberg type to Arrow schema. Return value is Nanoarrow error code.
 ArrowErrorCode ToArrowSchema(const Type& type, bool optional, std::string_view name,
                              std::optional<int32_t> field_id, ArrowSchema* schema) {
@@ -182,8 +157,15 @@ ArrowErrorCode ToArrowSchema(const Type& type, bool optional, std::string_view n
       NANOARROW_RETURN_NOT_OK(ArrowSchemaSetType(schema, NANOARROW_TYPE_NA));
       break;
     case TypeId::kVariant:
-      ArrowBufferReset(&metadata_buffer);
-      return EINVAL;
+      NANOARROW_RETURN_NOT_OK(ArrowSchemaSetTypeStruct(schema, 2));
+      NANOARROW_RETURN_NOT_OK(
+          ToArrowSchema(*binary(), false, "metadata", std::nullopt, schema->children[0]));
+      NANOARROW_RETURN_NOT_OK(
+          ToArrowSchema(*binary(), false, "value", std::nullopt, schema->children[1]));
+      NANOARROW_RETURN_NOT_OK(
+          ArrowMetadataBuilderAppend(&metadata_buffer, ArrowCharView(kArrowExtensionName),
+                                     ArrowCharView(kArrowVariantExtensionName)));
+      break;
   }
 
   if (!name.empty()) {
@@ -209,8 +191,6 @@ Status ToArrowSchema(const Schema& schema, ArrowSchema* out) {
     return InvalidArgument("Output Arrow schema cannot be null");
   }
 
-  ICEBERG_RETURN_UNEXPECTED(CheckArrowCompatible(schema));
-
   ArrowSchemaInit(out);
   internal::ArrowSchemaGuard schema_guard(out);
 
@@ -234,9 +214,10 @@ Result<int32_t> GetFieldId(const ArrowSchema& schema) {
 
   ArrowStringView field_id_key{.data = kParquetFieldIdKey.data(),
                                .size_bytes = kParquetFieldIdKey.size()};
-  ArrowStringView field_id_value;
+  ArrowStringView field_id_value{};
   if (ArrowMetadataGetValue(schema.metadata, field_id_key, &field_id_value) !=
-      NANOARROW_OK) {
+          NANOARROW_OK ||
+      field_id_value.data == nullptr) {
     return kUnknownFieldId;
   }
 
@@ -247,6 +228,124 @@ Result<int32_t> GetFieldId(const ArrowSchema& schema) {
   }
 
   return field_id_result.value();
+}
+
+Status ValidateVariantTypedValue(const ArrowSchema& schema);
+
+bool IsVariantBinary(const ArrowSchemaView& view) {
+  return view.type == NANOARROW_TYPE_BINARY || view.type == NANOARROW_TYPE_LARGE_BINARY ||
+         view.type == NANOARROW_TYPE_BINARY_VIEW;
+}
+
+Status ValidateVariantFieldGroup(const ArrowSchema& schema) {
+  ArrowSchemaView view;
+  ArrowError error{};
+  if (ArrowSchemaViewInit(&view, &schema, &error) != NANOARROW_OK ||
+      view.storage_type != NANOARROW_TYPE_STRUCT || schema.dictionary != nullptr ||
+      view.extension_name.size_bytes != 0) {
+    return InvalidSchema("Variant field group must use struct storage");
+  }
+  bool has_value = false;
+  bool has_typed_value = false;
+  for (int64_t i = 0; i < schema.n_children; ++i) {
+    const auto& child = *schema.children[i];
+    std::string_view name = child.name == nullptr ? "" : child.name;
+    if (name == "typed_value" && !has_typed_value) {
+      ICEBERG_RETURN_UNEXPECTED(ValidateVariantTypedValue(child));
+      has_typed_value = true;
+    } else if (name == "value" && !has_value) {
+      ArrowSchemaView child_view;
+      if (ArrowSchemaViewInit(&child_view, &child, &error) != NANOARROW_OK ||
+          !IsVariantBinary(child_view) || child.dictionary != nullptr ||
+          (child.flags & ARROW_FLAG_NULLABLE) == 0) {
+        return InvalidSchema("Variant field group value must be optional binary");
+      }
+      has_value = true;
+    } else {
+      return InvalidSchema("Unexpected or duplicate variant field group child '{}'",
+                           name);
+    }
+  }
+  if (!has_value && !has_typed_value) {
+    return InvalidSchema("Variant field group requires value or typed_value");
+  }
+  return {};
+}
+
+Status ValidateVariantTypedValue(const ArrowSchema& schema) {
+  // Match Arrow's reader-compatible layouts without linking Arrow C++ into core.
+  ArrowSchemaView view;
+  ArrowError error{};
+  if (ArrowSchemaViewInit(&view, &schema, &error) != NANOARROW_OK ||
+      schema.dictionary != nullptr || (schema.flags & ARROW_FLAG_NULLABLE) == 0) {
+    return InvalidSchema("Variant typed_value must have a supported optional type");
+  }
+  const std::string_view extension_name(
+      view.extension_name.data == nullptr ? "" : view.extension_name.data,
+      view.extension_name.size_bytes);
+  if (!extension_name.empty()) {
+    if (extension_name == kArrowUuidExtensionName &&
+        view.storage_type == NANOARROW_TYPE_FIXED_SIZE_BINARY && view.fixed_size == 16 &&
+        view.extension_metadata.size_bytes == 0) {
+      return {};
+    }
+    return InvalidSchema("Unsupported variant typed_value extension '{}'",
+                         extension_name);
+  }
+  switch (view.type) {
+    case NANOARROW_TYPE_STRUCT:
+      if (schema.n_children == 0) {
+        return InvalidSchema("Variant typed_value object must not be empty");
+      }
+      for (int64_t i = 0; i < schema.n_children; ++i) {
+        ICEBERG_RETURN_UNEXPECTED(ValidateVariantFieldGroup(*schema.children[i]));
+      }
+      return {};
+    case NANOARROW_TYPE_LIST:
+    case NANOARROW_TYPE_LARGE_LIST:
+    case NANOARROW_TYPE_LIST_VIEW:
+    case NANOARROW_TYPE_LARGE_LIST_VIEW:
+    case NANOARROW_TYPE_FIXED_SIZE_LIST:
+      if ((schema.children[0]->flags & ARROW_FLAG_NULLABLE) != 0) {
+        return InvalidSchema("Variant typed_value list element must be required");
+      }
+      return ValidateVariantFieldGroup(*schema.children[0]);
+    case NANOARROW_TYPE_BOOL:
+    case NANOARROW_TYPE_INT8:
+    case NANOARROW_TYPE_INT16:
+    case NANOARROW_TYPE_INT32:
+    case NANOARROW_TYPE_INT64:
+    case NANOARROW_TYPE_FLOAT:
+    case NANOARROW_TYPE_DOUBLE:
+    case NANOARROW_TYPE_DATE32:
+    case NANOARROW_TYPE_BINARY:
+    case NANOARROW_TYPE_LARGE_BINARY:
+    case NANOARROW_TYPE_BINARY_VIEW:
+    case NANOARROW_TYPE_STRING:
+    case NANOARROW_TYPE_LARGE_STRING:
+    case NANOARROW_TYPE_STRING_VIEW:
+      return {};
+    case NANOARROW_TYPE_DECIMAL32:
+    case NANOARROW_TYPE_DECIMAL64:
+    case NANOARROW_TYPE_DECIMAL128:
+      if (view.decimal_scale >= 0 && view.decimal_scale <= view.decimal_precision) {
+        return {};
+      }
+      break;
+    case NANOARROW_TYPE_TIME64:
+      if (view.time_unit == NANOARROW_TIME_UNIT_MICRO) return {};
+      break;
+    case NANOARROW_TYPE_TIMESTAMP:
+      if (view.time_unit == NANOARROW_TIME_UNIT_MICRO ||
+          view.time_unit == NANOARROW_TIME_UNIT_NANO) {
+        return {};
+      }
+      break;
+    default:
+      break;
+  }
+  return InvalidSchema("Unsupported variant typed_value type '{}'",
+                       ArrowTypeString(view.type));
 }
 
 Result<std::shared_ptr<Type>> FromArrowSchema(const ArrowSchema& schema) {
@@ -271,6 +370,58 @@ Result<std::shared_ptr<Type>> FromArrowSchema(const ArrowSchema& schema) {
       error_code != NANOARROW_OK) {
     return InvalidSchema("Failed to read Arrow schema, code: {}, message: {}", error_code,
                          arrow_error.message);
+  }
+
+  const std::string_view extension_name(
+      schema_view.extension_name.data == nullptr ? "" : schema_view.extension_name.data,
+      schema_view.extension_name.size_bytes);
+  if (extension_name == kArrowVariantExtensionName) {
+    if (schema_view.extension_metadata.size_bytes != 0) {
+      return InvalidSchema("Variant extension metadata must be empty");
+    }
+    if (schema_view.storage_type != NANOARROW_TYPE_STRUCT || schema.n_children < 2 ||
+        schema.n_children > 3) {
+      return InvalidSchema(
+          "Variant extension requires struct storage with metadata and value or "
+          "typed_value");
+    }
+    bool has_metadata = false;
+    bool has_value = false;
+    bool has_typed_value = false;
+    bool value_nullable = true;
+    for (int64_t i = 0; i < schema.n_children; ++i) {
+      const auto& child = *schema.children[i];
+      std::string_view name = child.name == nullptr ? "" : child.name;
+      if (name == "typed_value" && !has_typed_value) {
+        ICEBERG_RETURN_UNEXPECTED(ValidateVariantTypedValue(child));
+        has_typed_value = true;
+        continue;
+      }
+      ArrowSchemaView child_view;
+      if (ArrowSchemaViewInit(&child_view, &child, &arrow_error) != NANOARROW_OK ||
+          !IsVariantBinary(child_view) || child.dictionary != nullptr) {
+        return InvalidSchema("Variant storage field '{}' must be binary", name);
+      }
+      if (name == "metadata" && !has_metadata) {
+        if ((child.flags & ARROW_FLAG_NULLABLE) != 0) {
+          return InvalidSchema("Variant metadata must be required");
+        }
+        has_metadata = true;
+      } else if (name == "value" && !has_value) {
+        has_value = true;
+        value_nullable = (child.flags & ARROW_FLAG_NULLABLE) != 0;
+      } else {
+        return InvalidSchema("Unexpected or duplicate variant storage field '{}'", name);
+      }
+    }
+    if (!has_metadata || (!has_value && !has_typed_value)) {
+      return InvalidSchema("Variant storage requires metadata and value or typed_value");
+    }
+    if (has_typed_value != value_nullable) {
+      return InvalidSchema(
+          "Variant value must be required when unshredded and optional when shredded");
+    }
+    return variant();
   }
 
   switch (schema_view.type) {

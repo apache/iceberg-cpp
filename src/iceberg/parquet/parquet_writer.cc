@@ -34,13 +34,16 @@
 #include <arrow/util/compression.h>
 #include <arrow/util/key_value_metadata.h>
 #include <parquet/arrow/writer.h>
+#include <parquet/exception.h>
 #include <parquet/file_writer.h>
 #include <parquet/properties.h>
 
 #include "iceberg/arrow/arrow_io_internal.h"
+#include "iceberg/arrow/arrow_register.h"
 #include "iceberg/arrow/arrow_status_internal.h"
 #include "iceberg/parquet/parquet_metrics_internal.h"
 #include "iceberg/parquet/parquet_schema_util_internal.h"
+#include "iceberg/parquet/parquet_variant_util_internal.h"
 #include "iceberg/schema_internal.h"
 #include "iceberg/type.h"
 #include "iceberg/util/macros.h"
@@ -238,7 +241,10 @@ Result<std::optional<int32_t>> ParseCodecLevel(const WriterProperties& propertie
 class ParquetWriter::Impl {
  public:
   Status Open(const WriterOptions& options) {
+    arrow::RegisterAll();
+    ICEBERG_PRECHECK(options.schema != nullptr, "Writer schema must not be null");
     schema_ = options.schema;
+    variant_shredding_types_ = options.variant_shredding_types;
 
     ICEBERG_ASSIGN_OR_RAISE(auto compression, ParseCompression(options.properties));
     ICEBERG_ASSIGN_OR_RAISE(auto compression_level, ParseCodecLevel(options.properties));
@@ -258,9 +264,12 @@ class ParquetWriter::Impl {
 
     ArrowSchema c_schema;
     ICEBERG_RETURN_UNEXPECTED(ToArrowSchema(*schema_, &c_schema));
-    ICEBERG_ARROW_ASSIGN_OR_RETURN(arrow_schema_, ::arrow::ImportSchema(&c_schema));
+    ICEBERG_ARROW_ASSIGN_OR_RETURN(input_arrow_schema_, ::arrow::ImportSchema(&c_schema));
+    ICEBERG_ASSIGN_OR_RAISE(arrow_schema_,
+                            MakeVariantWriteSchema(*schema_, input_arrow_schema_,
+                                                   variant_shredding_types_, pool_));
 
-    ICEBERG_ASSIGN_OR_RAISE(parquet_schema_, ToParquetSchema(*schema_));
+    ICEBERG_ASSIGN_OR_RAISE(parquet_schema_, ToParquetSchema(*schema_, arrow_schema_));
     auto schema_node = std::static_pointer_cast<::parquet::schema::GroupNode>(
         parquet_schema_->schema_root());
 
@@ -281,8 +290,9 @@ class ParquetWriter::Impl {
   }
 
   Status Write(ArrowArray* array) {
-    ICEBERG_ARROW_ASSIGN_OR_RETURN(auto batch,
-                                   ::arrow::ImportRecordBatch(array, arrow_schema_));
+    ICEBERG_ARROW_ASSIGN_OR_RETURN(
+        auto batch, ::arrow::ImportRecordBatch(array, input_arrow_schema_));
+    ICEBERG_ARROW_RETURN_NOT_OK(batch->ValidateFull());
 
     ICEBERG_ARROW_ASSIGN_OR_RETURN(auto struct_array, batch->ToStructArray());
     FieldMetricsCollector field_metrics_collector(field_metrics_, *metrics_config_,
@@ -290,7 +300,13 @@ class ParquetWriter::Impl {
     ICEBERG_RETURN_UNEXPECTED(
         field_metrics_collector.VisitStruct(*schema_, *struct_array));
 
-    ICEBERG_ARROW_RETURN_NOT_OK(writer_->WriteRecordBatch(*batch));
+    ICEBERG_ASSIGN_OR_RAISE(batch, ShredVariantBatch(*schema_, batch, arrow_schema_,
+                                                     variant_shredding_types_, pool_));
+    try {
+      ICEBERG_ARROW_RETURN_NOT_OK(writer_->WriteRecordBatch(*batch));
+    } catch (const ::parquet::ParquetException& error) {
+      return Invalid("Cannot write Parquet batch: {}", error.what());
+    }
 
     return {};
   }
@@ -346,6 +362,8 @@ class ParquetWriter::Impl {
   std::shared_ptr<::arrow::Schema> arrow_schema_;
   // Parquet schema descriptor generated from the Arrow schema.
   std::shared_ptr<::parquet::SchemaDescriptor> parquet_schema_;
+  std::shared_ptr<::arrow::Schema> input_arrow_schema_;
+  std::unordered_map<int32_t, std::shared_ptr<Type>> variant_shredding_types_;
   // Metrics config for collecting metrics during write.
   std::shared_ptr<MetricsConfig> metrics_config_;
   // The output stream to write Parquet file.
@@ -362,11 +380,16 @@ class ParquetWriter::Impl {
   std::unordered_map<int32_t, FieldMetrics> field_metrics_;
 };
 
+ParquetWriter::ParquetWriter() = default;
 ParquetWriter::~ParquetWriter() = default;
 
 Status ParquetWriter::Open(const WriterOptions& options) {
   impl_ = std::make_unique<Impl>();
-  return impl_->Open(options);
+  try {
+    return impl_->Open(options);
+  } catch (const ::parquet::ParquetException& error) {
+    return InvalidSchema("Cannot open Parquet writer: {}", error.what());
+  }
 }
 
 Status ParquetWriter::Write(ArrowArray* array) { return impl_->Write(array); }

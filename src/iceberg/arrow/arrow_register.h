@@ -26,7 +26,7 @@
 
 namespace iceberg::arrow {
 
-/// \brief Register Arrow FileIOs and Arrow-backed C Data utilities.
+/// \brief Register Arrow FileIOs, the variant extension, and C Data utilities.
 ///
 /// This operation is idempotent and safe to call multiple times.
 ICEBERG_BUNDLE_EXPORT void RegisterAll();

@@ -30,7 +30,9 @@
 #include "iceberg/arrow/literal_util_internal.h"
 #include "iceberg/metadata_columns.h"
 #include "iceberg/parquet/parquet_data_util_internal.h"
+#include "iceberg/parquet/parquet_variant_util_internal.h"
 #include "iceberg/schema.h"
+#include "iceberg/schema_internal.h"
 #include "iceberg/schema_util.h"
 #include "iceberg/type.h"
 #include "iceberg/util/checked_cast.h"
@@ -117,9 +119,8 @@ Result<std::shared_ptr<::arrow::Array>> ProjectNestedArray(
 Result<std::shared_ptr<::arrow::Array>> MakeNullArray(
     const std::shared_ptr<::arrow::DataType>& type, int64_t length,
     ::arrow::MemoryPool* pool) {
-  ICEBERG_ARROW_ASSIGN_OR_RETURN(auto builder, ::arrow::MakeBuilder(type, pool));
-  ICEBERG_ARROW_RETURN_NOT_OK(builder->AppendNulls(length));
-  ICEBERG_ARROW_ASSIGN_OR_RETURN(auto array, builder->Finish());
+  ICEBERG_ARROW_ASSIGN_OR_RETURN(auto array,
+                                 ::arrow::MakeArrayOfNull(type, length, pool));
   return array;
 }
 
@@ -127,6 +128,11 @@ Result<std::shared_ptr<::arrow::Array>> ProjectPrimitiveArray(
     const std::shared_ptr<::arrow::Array>& array,
     const std::shared_ptr<::arrow::DataType>& output_arrow_type,
     ::arrow::MemoryPool* pool) {
+  if (output_arrow_type->id() == ::arrow::Type::EXTENSION &&
+      static_cast<const ::arrow::ExtensionType&>(*output_arrow_type).extension_name() ==
+          kArrowVariantExtensionName) {
+    return ProjectVariantArray(array, output_arrow_type, pool);
+  }
   if (array->type()->Equals(output_arrow_type)) {
     return array;
   }

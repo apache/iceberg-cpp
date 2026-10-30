@@ -326,6 +326,7 @@ if(ICEBERG_BUILD_BUNDLE)
       parquet/parquet_reader.cc
       parquet/parquet_register.cc
       parquet/parquet_schema_util.cc
+      parquet/parquet_variant_util.cc
       parquet/parquet_writer.cc
       parquet/row_number_reader.cc)
 

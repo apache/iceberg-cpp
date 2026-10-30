@@ -20,6 +20,8 @@
 #pragma once
 
 #include <optional>
+#include <utility>
+#include <vector>
 
 #include <parquet/arrow/schema.h>
 #include <parquet/type_fwd.h>
@@ -33,10 +35,14 @@ namespace iceberg::parquet {
 /// \brief Parquet specific attributes for the field.
 struct ParquetExtraAttributes : public FieldProjection::ExtraAttributes {
   explicit ParquetExtraAttributes(int32_t column_id) : column_id(column_id) {}
+  explicit ParquetExtraAttributes(std::vector<int32_t> column_ids)
+      : column_ids(std::move(column_ids)) {}
   ~ParquetExtraAttributes() override = default;
 
   /// \brief The column id of projected Parquet column.
   std::optional<int32_t> column_id;
+  /// \brief All physical leaves of a projected variant group.
+  std::vector<int32_t> column_ids;
 };
 
 /// \brief Validate a Parquet field's Arrow type against the expected Iceberg type.
@@ -83,6 +89,7 @@ void ApplyNameMapping(const NameMapping& mapping,
 
 /// \brief Convert an Iceberg schema to a Parquet schema.
 Result<std::shared_ptr<::parquet::SchemaDescriptor>> ToParquetSchema(
-    const Schema& iceberg_schema);
+    const Schema& iceberg_schema,
+    const std::shared_ptr<::arrow::Schema>& storage_schema = nullptr);
 
 }  // namespace iceberg::parquet

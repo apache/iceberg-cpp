@@ -42,6 +42,43 @@ are supplied by the `iceberg_bundle` library.
 This library combines `iceberg_data` with the Arrow C++, Avro, Parquet, and
 Arrow filesystem integrations. It gives applications one link-time dependency.
 
+Variant values use the `arrow.parquet.variant` extension with binary `metadata`
+and `value` storage. Call `iceberg::arrow::RegisterAll()` before importing these
+schemas into Arrow C++. Parquet readers and writers also register the extension
+when opened.
+
+Parquet variant I/O requires the Arrow variant builders, validation, and shredding
+utilities introduced by [Arrow PR #50252](https://github.com/apache/arrow/pull/50252).
+The bundled dependency temporarily pins Arrow revision
+`0f16412bb1c39611aeed7393eba09e637f4d86fa` from that PR and verifies the source
+archive's SHA256. It will be replaced by an Apache Arrow release containing these
+APIs. Use `ICEBERG_USE_BUNDLED_ARROW=ON` to force this Arrow source, or provide a
+compatible Arrow installation through `CMAKE_PREFIX_PATH`.
+
+`ICEBERG_REQUIRE_ARROW_VARIANT` defaults to `ON`: configuration fails when the
+selected Arrow/Parquet lacks the required APIs. CI explicitly uses the pinned
+Arrow source and keeps this option enabled; the variant tests fail to compile
+if their APIs are missing. To use an older Arrow installation for other
+functionality, explicitly set this option
+to `OFF`; Parquet variant I/O then returns `NotSupported`.
+
+Variants are written unshredded by default. To shred a field, supply a logical
+target keyed by its Iceberg field ID:
+
+```cpp
+iceberg::WriterOptions options;
+// Set the path, schema, and FileIO as usual.
+options.variant_shredding_types.emplace(7, iceberg::int64());
+```
+
+Targets can also contain structs and lists. Their field IDs are ignored; they
+describe the requested layout inside the variant. The layout stays fixed for
+the file, and incompatible values remain in residual storage. Input batches
+always use unshredded variants. Readers reconstruct the same unshredded schema
+from either file layout. Validation stays enabled, and a null column value is
+distinct from an encoded variant null. Avro variant data and variant bounds
+metrics are not supported.
+
 ### `iceberg_rest`, `iceberg_hive`, `iceberg_sql_catalog`
 
 These optional catalog libraries cover REST, Hive Metastore, and SQL databases.

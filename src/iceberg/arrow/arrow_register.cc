@@ -23,6 +23,10 @@
 #include <string>
 #include <string_view>
 
+#include <arrow/extension/parquet_variant.h>
+#include <arrow/extension_type.h>
+#include <arrow/type.h>
+
 #include "iceberg/arrow/arrow_io_util.h"
 #include "iceberg/arrow/s3/s3_properties.h"
 #include "iceberg/file_io_registry.h"
@@ -57,6 +61,16 @@ void RegisterS3FileIO() {
 void EnsureArrowFileIOsRegistered() {
   static std::once_flag flag;
   std::call_once(flag, []() {
+    // Unlike UUID, Arrow does not register its variant extension by default.
+    // Register it so C Data imports reconstruct variant arrays from Iceberg's
+    // canonical metadata/value storage.
+    if (!::arrow::GetExtensionType("arrow.parquet.variant")) {
+      auto variant = ::arrow::extension::variant(
+          ::arrow::struct_({::arrow::field("metadata", ::arrow::binary(), false),
+                            ::arrow::field("value", ::arrow::binary(), false)}));
+      (void)::arrow::RegisterExtensionType(
+          std::static_pointer_cast<::arrow::ExtensionType>(variant));
+    }
     RegisterLocalFileIO();
     RegisterS3FileIO();
   });
