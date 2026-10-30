@@ -168,7 +168,9 @@ set(ICEBERG_SOURCES
     util/truncate_util.cc
     util/type_util.cc
     util/url_encoder.cc
-    util/uuid.cc)
+    util/uuid.cc
+    view_metadata.cc
+    view_version.cc)
 
 set(ICEBERG_STATIC_BUILD_INTERFACE_LIBS)
 set(ICEBERG_SHARED_BUILD_INTERFACE_LIBS)
