@@ -62,6 +62,12 @@ Result<std::unique_ptr<ManifestReader>> MakeManifestReader(
   return ManifestReader::Make(manifest, file_io, std::move(schema), specs_by_id.get());
 }
 
+bool HasV4RootManifest(const TableMetadata& metadata) {
+  return std::ranges::any_of(metadata.snapshots, [](const auto& snapshot) {
+    return snapshot && snapshot->root_manifest.has_value();
+  });
+}
+
 /// \brief Abstract strategy for cleaning up files after snapshot expiration.
 class FileCleanupStrategy {
  public:
@@ -966,6 +972,13 @@ Result<ExpireSnapshots::ApplyResult> ExpireSnapshots::Apply() {
     }
   });
 
+  if (cleanup_level_ != CleanupLevel::kNone && !result.snapshot_ids_to_remove.empty() &&
+      HasV4RootManifest(base)) {
+    return NotSupported(
+        "Snapshot expiration file cleanup with v4 root manifests "
+        "is not supported yet; use CleanupLevel::kNone");
+  }
+
   if (clean_expired_metadata_) {
     ICEBERG_ASSIGN_OR_RAISE(
         auto reachable_ids,
@@ -1025,6 +1038,15 @@ Status ExpireSnapshots::Finalize(const TableMetadata& metadata_after_expiration)
                    "Missing pre-expiration table metadata for cleanup");
   const TableMetadata& metadata_before_expiration =
       *apply_result->metadata_before_expiration;
+
+  // Later transaction updates or the catalog's committed result may introduce
+  // root manifests after Apply(). Never treat untraversable roots as empty.
+  if (HasV4RootManifest(metadata_before_expiration) ||
+      HasV4RootManifest(metadata_after_expiration)) {
+    return NotSupported(
+        "Snapshot expiration file cleanup with v4 root manifests "
+        "is not supported yet");
+  }
 
   // Pick incremental cleanup when the expiration is a simple linear-ancestry walk:
   // no explicit snapshot IDs, no removed snapshots outside main ancestry, and no
