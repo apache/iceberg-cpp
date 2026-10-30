@@ -45,6 +45,7 @@
 
 #include "iceberg/arrow/arrow_io_internal.h"
 #include "iceberg/arrow/arrow_status_internal.h"
+#include "iceberg/arrow_c_data_guard_internal.h"
 #include "iceberg/expression/literal.h"
 #include "iceberg/file_reader.h"
 #include "iceberg/file_writer.h"
@@ -569,6 +570,52 @@ TEST_F(ParquetReaderTest, ReadTwoFields) {
   ASSERT_NO_FATAL_FAILURE(
       VerifyNextBatch(*reader, R"([[1, "Foo"], [2, "Bar"], [3, "Baz"]])"));
   ASSERT_NO_FATAL_FAILURE(VerifyExhausted(*reader));
+}
+
+TEST_F(ParquetReaderTest, ReadWithoutProjection) {
+  CreateSimpleParquetFile();
+
+  ICEBERG_UNWRAP_OR_FAIL(auto reader, ReaderFactoryRegistry::Open(
+                                          FileFormatType::kParquet,
+                                          {.path = temp_parquet_file_, .io = file_io_}));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto arrow_schema, reader->Schema());
+  internal::ArrowSchemaGuard guard(&arrow_schema);
+  ICEBERG_UNWRAP_OR_FAIL(auto read_schema, FromArrowSchema(arrow_schema, std::nullopt));
+  EXPECT_EQ(*read_schema, Schema(std::vector<SchemaField>{
+                              SchemaField::MakeRequired(1, "id", int32()),
+                              SchemaField::MakeOptional(2, "name", string())}));
+
+  ASSERT_NO_FATAL_FAILURE(
+      VerifyNextBatch(*reader, R"([[1, "Foo"], [2, "Bar"], [3, "Baz"]])"));
+  ASSERT_NO_FATAL_FAILURE(VerifyExhausted(*reader));
+}
+
+TEST_F(ParquetReaderTest, ReadWithoutProjectionWithNameMapping) {
+  ASSERT_NO_FATAL_FAILURE(CreateParquetFileWithoutFieldIds(
+      ::arrow::struct_({::arrow::field("id", ::arrow::int32()),
+                        ::arrow::field("name", ::arrow::utf8())}),
+      R"([[1, "Foo"], [2, "Bar"], [3, "Baz"]])"));
+  // Fields without a mapped ID cannot be read by ID and are skipped.
+  auto mapping = NameMapping::Make({MappedField{.names = {"name"}, .field_id = 2}});
+
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto reader, ReaderFactoryRegistry::Open(FileFormatType::kParquet,
+                                               {.path = temp_parquet_file_,
+                                                .io = file_io_,
+                                                .name_mapping = std::move(mapping)}));
+  ASSERT_NO_FATAL_FAILURE(VerifyNextBatch(*reader, R"([["Foo"], ["Bar"], ["Baz"]])"));
+  ASSERT_NO_FATAL_FAILURE(VerifyExhausted(*reader));
+}
+
+TEST_F(ParquetReaderTest, ReadWithoutProjectionOrFieldIds) {
+  ASSERT_NO_FATAL_FAILURE(CreateParquetFileWithoutFieldIds(
+      ::arrow::struct_({::arrow::field("id", ::arrow::int32())}), R"([[1]])"));
+
+  auto reader_result = ReaderFactoryRegistry::Open(
+      FileFormatType::kParquet, {.path = temp_parquet_file_, .io = file_io_});
+  ASSERT_THAT(reader_result, IsError(ErrorKind::kInvalidSchema));
+  EXPECT_THAT(reader_result, HasErrorMessage("no field IDs and no name mapping"));
 }
 
 TEST_F(ParquetReaderTest, ReadWithoutFieldIdsOrNameMapping) {

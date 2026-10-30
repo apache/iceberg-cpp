@@ -62,6 +62,27 @@ Result<std::shared_ptr<::arrow::io::RandomAccessFile>> OpenInputStream(
   return arrow::OpenArrowInputStream(options.io, options.path, options.length);
 }
 
+// SchemaManifest holds pointers into its own fields, so it is filled in place.
+Status MakeSchemaManifest(::parquet::arrow::FileReader* reader,
+                          const NameMapping* name_mapping,
+                          ::parquet::arrow::SchemaManifest* schema_manifest) {
+  auto metadata = reader->parquet_reader()->metadata();
+
+  ICEBERG_ARROW_RETURN_NOT_OK(::parquet::arrow::SchemaManifest::Make(
+      metadata->schema(), metadata->key_value_metadata(), reader->properties(),
+      schema_manifest));
+
+  if (!HasFieldIds(metadata->schema()->schema_root())) {
+    if (name_mapping == nullptr) {
+      return InvalidSchema(
+          "Parquet file schema has no field IDs and no name mapping provided");
+    }
+    ApplyNameMapping(*name_mapping, schema_manifest);
+  }
+
+  return {};
+}
+
 Result<SchemaProjection> BuildProjection(::parquet::arrow::FileReader* reader,
                                          const Schema& read_schema,
                                          const NameMapping* name_mapping) {
@@ -278,11 +299,6 @@ class ParquetReader::Impl {
  public:
   // Open the Parquet reader with the given options
   Status Open(const ReaderOptions& options) {
-    if (options.projection == nullptr) {
-      return InvalidArgument("Projected schema is required by Parquet reader");
-    }
-
-    read_schema_ = options.projection;
     stats_filter_.reset();
 
     // Prepare reader properties
@@ -304,6 +320,16 @@ class ParquetReader::Impl {
         reader_, ::parquet::arrow::FileReader::Make(pool_, std::move(file_reader),
                                                     arrow_reader_properties));
 
+    ::parquet::arrow::SchemaManifest schema_manifest;
+    ICEBERG_RETURN_UNEXPECTED(
+        MakeSchemaManifest(reader_.get(), options.name_mapping.get(), &schema_manifest));
+    if (options.projection != nullptr) {
+      read_schema_ = options.projection;
+    } else {
+      // Read all fields of the file schema when no projection is given.
+      ICEBERG_ASSIGN_OR_RAISE(read_schema_, FromParquetSchema(schema_manifest));
+    }
+
     // Project read schema onto the Parquet file schema
     ICEBERG_ASSIGN_OR_RAISE(projection_, BuildProjection(reader_.get(), *read_schema_,
                                                          options.name_mapping.get()));
@@ -313,7 +339,7 @@ class ParquetReader::Impl {
       ICEBERG_ASSIGN_OR_RAISE(auto is_bound, IsBoundVisitor::IsBound(filter));
       if (!is_bound) {
         ICEBERG_ASSIGN_OR_RAISE(
-            filter, Binder::Bind(*options.projection, filter, options.case_sensitive));
+            filter, Binder::Bind(*read_schema_, filter, options.case_sensitive));
       }
       ICEBERG_ASSIGN_OR_RAISE(stats_filter_, ParquetMetricsRowGroupFilter::Make(
                                                  filter, *reader_->manifest().descr));

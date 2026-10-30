@@ -17,6 +17,7 @@
  * under the License.
  */
 
+#include <arrow/c/bridge.h>
 #include <arrow/extension_type.h>
 #include <arrow/type.h>
 #include <arrow/type_fwd.h>
@@ -24,6 +25,7 @@
 #include <parquet/arrow/schema.h>
 #include <parquet/schema.h>
 
+#include "iceberg/arrow_c_data_guard_internal.h"
 #include "iceberg/constants.h"
 #include "iceberg/metadata_columns.h"
 #include "iceberg/name_mapping.h"
@@ -781,6 +783,60 @@ void ApplyNameMappingToField(const NameMapping& mapping, std::vector<std::string
   }
 }
 
+// Rebuilds the Arrow field of a Parquet schema field so that nested fields carry the
+// field IDs stored in the SchemaField tree (e.g. those assigned by a name mapping).
+// List elements and map keys/values use the Iceberg names. Returns nullptr if the field,
+// or any list element or map key/value inside it, has no field ID, since such a field
+// cannot be read by ID.
+std::shared_ptr<::arrow::Field> ToArrowFieldWithIds(
+    const ::parquet::arrow::SchemaField& parquet_field) {
+  if (!GetFieldId(parquet_field).has_value()) {
+    return nullptr;
+  }
+
+  const auto& field = parquet_field.field;
+  const auto& children = parquet_field.children;
+  switch (field->type()->id()) {
+    case ::arrow::Type::STRUCT: {
+      ::arrow::FieldVector child_fields;
+      child_fields.reserve(children.size());
+      for (const auto& child : children) {
+        if (auto child_field = ToArrowFieldWithIds(child); child_field != nullptr) {
+          child_fields.push_back(std::move(child_field));
+        }
+      }
+      return field->WithType(::arrow::struct_(std::move(child_fields)));
+    }
+    case ::arrow::Type::LIST:
+    case ::arrow::Type::LARGE_LIST: {
+      if (children.size() != 1) {
+        return nullptr;
+      }
+      auto element_field = ToArrowFieldWithIds(children[0]);
+      if (element_field == nullptr) {
+        return nullptr;
+      }
+      return field->WithType(
+          ::arrow::list(element_field->WithName(std::string(ListType::kElementName))));
+    }
+    case ::arrow::Type::MAP: {
+      if (children.size() != 1 || children[0].children.size() != 2) {
+        return nullptr;
+      }
+      auto key_field = ToArrowFieldWithIds(children[0].children[0]);
+      auto value_field = ToArrowFieldWithIds(children[0].children[1]);
+      if (key_field == nullptr || value_field == nullptr) {
+        return nullptr;
+      }
+      return field->WithType(std::make_shared<::arrow::MapType>(
+          key_field->WithName(std::string(MapType::kKeyName)),
+          value_field->WithName(std::string(MapType::kValueName))));
+    }
+    default:
+      return field;
+  }
+}
+
 }  // namespace
 
 Result<SchemaProjection> Project(const Schema& expected_schema,
@@ -824,6 +880,27 @@ void ApplyNameMapping(const NameMapping& mapping,
   for (auto& parquet_field : parquet_schema->schema_fields) {
     ApplyNameMappingToChild(mapping, names, parquet_field.field->name(), &parquet_field);
   }
+}
+
+Result<std::unique_ptr<Schema>> FromParquetSchema(
+    const ::parquet::arrow::SchemaManifest& parquet_schema) {
+  ::arrow::FieldVector fields;
+  fields.reserve(parquet_schema.schema_fields.size());
+  for (const auto& parquet_field : parquet_schema.schema_fields) {
+    if (auto field = ToArrowFieldWithIds(parquet_field); field != nullptr) {
+      fields.push_back(std::move(field));
+    }
+  }
+
+  ArrowSchema arrow_schema;
+  if (auto status =
+          ::arrow::ExportSchema(::arrow::Schema(std::move(fields)), &arrow_schema);
+      !status.ok()) {
+    return InvalidSchema("Failed to export Parquet file schema to Arrow: {}",
+                         status.message());
+  }
+  internal::ArrowSchemaGuard guard(&arrow_schema);
+  return FromArrowSchema(arrow_schema, /*schema_id=*/std::nullopt);
 }
 
 Result<std::shared_ptr<::parquet::SchemaDescriptor>> ToParquetSchema(

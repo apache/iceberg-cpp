@@ -22,6 +22,7 @@
 #include <avro/Compiler.hh>
 #include <avro/NodeImpl.hh>
 #include <avro/Types.hh>
+#include <avro/ValidSchema.hh>
 #include <gtest/gtest.h>
 
 #include "iceberg/avro/avro_register.h"
@@ -30,6 +31,7 @@
 #include "iceberg/name_mapping.h"
 #include "iceberg/schema.h"
 #include "iceberg/test/matchers.h"
+#include "iceberg/util/macros.h"
 
 namespace iceberg::avro {
 
@@ -1942,4 +1944,105 @@ TEST_F(NameMappingAvroSchemaTest, MissingFieldIdError) {
   auto result = MakeAvroNodeWithFieldIds(avro_schema.root(), *name_mapping);
   ASSERT_THAT(result, IsError(ErrorKind::kInvalidSchema));
 }
+namespace {
+
+// Converts an Iceberg schema to Avro, serializes it to JSON and parses it back, as an
+// Avro file schema would be, before converting it back to Iceberg.
+Result<std::unique_ptr<Schema>> RoundTripThroughAvro(const Schema& schema) {
+  ::avro::NodePtr node;
+  ICEBERG_RETURN_UNEXPECTED(ToAvroNodeVisitor{}.Visit(schema, &node));
+  auto json = ::avro::ValidSchema(node).toJson(/*prettyPrint=*/false);
+  auto parsed = ::avro::compileJsonSchemaFromString(json);
+  return FromAvroSchema(parsed.root());
+}
+
+}  // namespace
+
+TEST(FromAvroSchemaTest, PrimitiveTypes) {
+  Schema schema({
+      SchemaField::MakeRequired(1, "bool_col", iceberg::boolean()),
+      SchemaField::MakeOptional(2, "int_col", iceberg::int32()),
+      SchemaField::MakeRequired(3, "long_col", iceberg::int64()),
+      SchemaField::MakeOptional(4, "float_col", iceberg::float32()),
+      SchemaField::MakeRequired(5, "double_col", iceberg::float64()),
+      SchemaField::MakeRequired(6, "decimal_col", iceberg::decimal(10, 2)),
+      SchemaField::MakeRequired(7, "date_col", iceberg::date()),
+      SchemaField::MakeRequired(8, "time_col", iceberg::time()),
+      SchemaField::MakeRequired(9, "ts_col", iceberg::timestamp()),
+      SchemaField::MakeRequired(10, "ts_tz_col", iceberg::timestamp_tz()),
+      SchemaField::MakeRequired(11, "ts_ns_col", iceberg::timestamp_ns()),
+      SchemaField::MakeRequired(12, "ts_tz_ns_col", iceberg::timestamptz_ns()),
+      SchemaField::MakeOptional(13, "string_col", iceberg::string()),
+      SchemaField::MakeRequired(14, "uuid_col", iceberg::uuid()),
+      SchemaField::MakeRequired(15, "fixed_col", iceberg::fixed(20)),
+      SchemaField::MakeOptional(16, "binary_col", iceberg::binary()),
+      SchemaField::MakeOptional(17, "unknown_col", iceberg::unknown()),
+  });
+
+  ICEBERG_UNWRAP_OR_FAIL(auto result, RoundTripThroughAvro(schema));
+  EXPECT_EQ(*result, schema);
+}
+
+TEST(FromAvroSchemaTest, NestedTypes) {
+  Schema schema({
+      SchemaField::MakeRequired(
+          1, "struct_col",
+          iceberg::struct_({SchemaField::MakeRequired(2, "a", iceberg::int32()),
+                            SchemaField::MakeOptional(3, "b", iceberg::string())})),
+      SchemaField::MakeOptional(
+          4, "list_col",
+          iceberg::list(SchemaField::MakeOptional(5, "element", iceberg::int64()))),
+      SchemaField::MakeRequired(
+          6, "string_map_col",
+          iceberg::map(SchemaField::MakeRequired(7, "key", iceberg::string()),
+                       SchemaField::MakeOptional(8, "value", iceberg::float64()))),
+      SchemaField::MakeOptional(
+          9, "int_map_col",
+          iceberg::map(
+              SchemaField::MakeRequired(10, "key", iceberg::int32()),
+              SchemaField::MakeRequired(11, "value",
+                                        iceberg::struct_({SchemaField::MakeRequired(
+                                            12, "c", iceberg::boolean())})))),
+  });
+
+  ICEBERG_UNWRAP_OR_FAIL(auto result, RoundTripThroughAvro(schema));
+  EXPECT_EQ(*result, schema);
+}
+
+TEST(FromAvroSchemaTest, RestoresSanitizedFieldNames) {
+  Schema schema({
+      SchemaField::MakeRequired(1, "user-name", iceberg::string()),
+      SchemaField::MakeOptional(2, "1st", iceberg::int32()),
+  });
+
+  ICEBERG_UNWRAP_OR_FAIL(auto result, RoundTripThroughAvro(schema));
+  EXPECT_EQ(*result, schema);
+}
+
+TEST(FromAvroSchemaTest, MissingFieldIdError) {
+  auto avro_schema = ::avro::compileJsonSchemaFromString(R"({
+    "type": "record",
+    "name": "test_record",
+    "fields": [
+      {"name": "id", "type": "int", "field-id": 1},
+      {"name": "name", "type": "string"}
+    ]
+  })");
+
+  EXPECT_THAT(FromAvroSchema(avro_schema.root()), IsError(ErrorKind::kInvalidSchema));
+}
+
+TEST(FromAvroSchemaTest, UnsupportedTypeError) {
+  auto avro_schema = ::avro::compileJsonSchemaFromString(R"({
+    "type": "record",
+    "name": "test_record",
+    "fields": [
+      {"name": "e", "type": {"type": "enum", "name": "e", "symbols": ["A"]},
+       "field-id": 1}
+    ]
+  })");
+
+  EXPECT_THAT(FromAvroSchema(avro_schema.root()), IsError(ErrorKind::kNotSupported));
+}
+
 }  // namespace iceberg::avro
