@@ -1,0 +1,155 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1KeyManagementClient" kind="class" language="C++" prot="public" abstract="yes">
+    <compoundname>iceberg::KeyManagementClient</compoundname>
+    <derivedcompoundref refid="classiceberg_1_1InMemoryKms" prot="public" virt="non-virtual">iceberg::InMemoryKms</derivedcompoundref>
+    <includes refid="key__management__client_8h" local="no">key_management_client.h</includes>
+    <innerclass refid="structiceberg_1_1KeyManagementClient_1_1GeneratedKey" prot="public">iceberg::KeyManagementClient::GeneratedKey</innerclass>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1KeyManagementClient_1ae5c7de0aaa76aa6a62905d81a77baeee" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type></type>
+        <definition>virtual iceberg::KeyManagementClient::~KeyManagementClient</definition>
+        <argsstring>()=default</argsstring>
+        <name>~KeyManagementClient</name>
+        <qualifiedname>iceberg::KeyManagementClient::~KeyManagementClient</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/encryption/key_management_client.h" line="53" column="11"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1KeyManagementClient_1a6b85b14ea190529955545bf6dad7c421" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type><ref refid="classiceberg_1_1expected" kindref="compound">Status</ref></type>
+        <definition>virtual Status iceberg::KeyManagementClient::Initialize</definition>
+        <argsstring>(const std::unordered_map&lt; std::string, std::string &gt; &amp;properties)</argsstring>
+        <name>Initialize</name>
+        <qualifiedname>iceberg::KeyManagementClient::Initialize</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1InMemoryKms_1aeaa294780edc4cbe85dcbed6404be600">Initialize</reimplementedby>
+        <param>
+          <type>const std::unordered_map&lt; std::string, std::string &gt; &amp;</type>
+          <declname>properties</declname>
+        </param>
+        <briefdescription>
+<para>Initialize the client with the catalog properties. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/encryption/key_management_client.h" line="56" column="18" bodyfile="iceberg/encryption/key_management_client.h" bodystart="56" bodyend="59"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1KeyManagementClient_1afdbb134ec6d5416a38dbc307b0c672a8" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type><ref refid="namespaceiceberg_1aac79523734e35ca4d34cced52e56ec9b" kindref="member">Result</ref>&lt; std::vector&lt; uint8_t &gt; &gt;</type>
+        <definition>virtual Result&lt; std::vector&lt; uint8_t &gt; &gt; iceberg::KeyManagementClient::WrapKey</definition>
+        <argsstring>(std::span&lt; const uint8_t &gt; key, std::string_view wrapping_key_id)=0</argsstring>
+        <name>WrapKey</name>
+        <qualifiedname>iceberg::KeyManagementClient::WrapKey</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1InMemoryKms_1abfc88ce4a217c2fb3ac4a07da16e70e5">WrapKey</reimplementedby>
+        <param>
+          <type>std::span&lt; const uint8_t &gt;</type>
+          <declname>key</declname>
+        </param>
+        <param>
+          <type>std::string_view</type>
+          <declname>wrapping_key_id</declname>
+        </param>
+        <briefdescription>
+<para>Wrap (encrypt) a secret key with the master key <computeroutput>wrapping_key_id</computeroutput>. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The result may include KMS-specific metadata needed to unwrap it. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/encryption/key_management_client.h" line="64" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1KeyManagementClient_1a63f846785670235d36c27ad7756e1656" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type><ref refid="namespaceiceberg_1aac79523734e35ca4d34cced52e56ec9b" kindref="member">Result</ref>&lt; std::vector&lt; uint8_t &gt; &gt;</type>
+        <definition>virtual Result&lt; std::vector&lt; uint8_t &gt; &gt; iceberg::KeyManagementClient::UnwrapKey</definition>
+        <argsstring>(std::span&lt; const uint8_t &gt; wrapped_key, std::string_view wrapping_key_id)=0</argsstring>
+        <name>UnwrapKey</name>
+        <qualifiedname>iceberg::KeyManagementClient::UnwrapKey</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1InMemoryKms_1ae5ce17aeb9f5605ed2f6fbbed0e5947d">UnwrapKey</reimplementedby>
+        <param>
+          <type>std::span&lt; const uint8_t &gt;</type>
+          <declname>wrapped_key</declname>
+        </param>
+        <param>
+          <type>std::string_view</type>
+          <declname>wrapping_key_id</declname>
+        </param>
+        <briefdescription>
+<para>Unwrap a key returned by WrapKey. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/encryption/key_management_client.h" line="68" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1KeyManagementClient_1a194201b653d4a7272c34dc87a7677a20" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+        <type>bool</type>
+        <definition>virtual bool iceberg::KeyManagementClient::SupportsKeyGeneration</definition>
+        <argsstring>() const</argsstring>
+        <name>SupportsKeyGeneration</name>
+        <qualifiedname>iceberg::KeyManagementClient::SupportsKeyGeneration</qualifiedname>
+        <briefdescription>
+<para>Whether the KMS can generate keys (GenerateKey). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/encryption/key_management_client.h" line="72" column="16" bodyfile="iceberg/encryption/key_management_client.h" bodystart="72" bodyend="72"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1KeyManagementClient_1a198c75a7537556b76a8f6f8c36cc90a2" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type><ref refid="namespaceiceberg_1aac79523734e35ca4d34cced52e56ec9b" kindref="member">Result</ref>&lt; <ref refid="structiceberg_1_1KeyManagementClient_1_1GeneratedKey" kindref="compound">GeneratedKey</ref> &gt;</type>
+        <definition>virtual Result&lt; GeneratedKey &gt; iceberg::KeyManagementClient::GenerateKey</definition>
+        <argsstring>(std::string_view wrapping_key_id)</argsstring>
+        <name>GenerateKey</name>
+        <qualifiedname>iceberg::KeyManagementClient::GenerateKey</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>wrapping_key_id</declname>
+        </param>
+        <briefdescription>
+<para>Generate a new key in the KMS, returned in plain and wrapped form. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/encryption/key_management_client.h" line="75" column="18" bodyfile="iceberg/encryption/key_management_client.h" bodystart="75" bodyend="77"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Wraps and unwraps secret keys with master keys kept in a KMS. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>Mirrors Java&apos;s org.apache.iceberg.encryption.KeyManagementClient. The table master key (table property <computeroutput>encryption.key-id</computeroutput>) never leaves the KMS; it only wraps and unwraps the table&apos;s key encryption keys. </para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>iceberg::InMemoryKms</label>
+        <link refid="classiceberg_1_1InMemoryKms"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::KeyManagementClient</label>
+        <link refid="classiceberg_1_1KeyManagementClient"/>
+      </node>
+    </inheritancegraph>
+    <location file="iceberg/encryption/key_management_client.h" line="45" column="1" bodyfile="iceberg/encryption/key_management_client.h" bodystart="45" bodyend="78"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1KeyManagementClient_1a198c75a7537556b76a8f6f8c36cc90a2" prot="public" virt="virtual"><scope>iceberg::KeyManagementClient</scope><name>GenerateKey</name></member>
+      <member refid="classiceberg_1_1KeyManagementClient_1a6b85b14ea190529955545bf6dad7c421" prot="public" virt="virtual"><scope>iceberg::KeyManagementClient</scope><name>Initialize</name></member>
+      <member refid="classiceberg_1_1KeyManagementClient_1a194201b653d4a7272c34dc87a7677a20" prot="public" virt="virtual"><scope>iceberg::KeyManagementClient</scope><name>SupportsKeyGeneration</name></member>
+      <member refid="classiceberg_1_1KeyManagementClient_1a63f846785670235d36c27ad7756e1656" prot="public" virt="pure-virtual"><scope>iceberg::KeyManagementClient</scope><name>UnwrapKey</name></member>
+      <member refid="classiceberg_1_1KeyManagementClient_1afdbb134ec6d5416a38dbc307b0c672a8" prot="public" virt="pure-virtual"><scope>iceberg::KeyManagementClient</scope><name>WrapKey</name></member>
+      <member refid="classiceberg_1_1KeyManagementClient_1ae5c7de0aaa76aa6a62905d81a77baeee" prot="public" virt="virtual"><scope>iceberg::KeyManagementClient</scope><name>~KeyManagementClient</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

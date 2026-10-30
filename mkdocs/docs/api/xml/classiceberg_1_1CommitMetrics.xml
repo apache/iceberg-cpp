@@ -1,0 +1,155 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1CommitMetrics" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::CommitMetrics</compoundname>
+    <includes refid="commit__report_8h" local="no">commit_report.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1CommitMetrics_1ae82deb2c9694b7e306537b5fac4bd269" prot="public" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Timer" kindref="compound">Timer</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Timer&gt; iceberg::CommitMetrics::total_duration</definition>
+        <argsstring></argsstring>
+        <name>total_duration</name>
+        <qualifiedname>iceberg::CommitMetrics::total_duration</qualifiedname>
+        <briefdescription>
+<para><ref refid="classiceberg_1_1Timer" kindref="compound">Timer</ref> measuring total wall-clock time of the commit call. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/commit_report.h" line="135" column="19" bodyfile="iceberg/metrics/commit_report.h" bodystart="135" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1CommitMetrics_1a71ff1dd05486fd70cbc6c9cfd5e7eec1" prot="public" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Counter" kindref="compound">Counter</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Counter&gt; iceberg::CommitMetrics::attempts</definition>
+        <argsstring></argsstring>
+        <name>attempts</name>
+        <qualifiedname>iceberg::CommitMetrics::attempts</qualifiedname>
+        <briefdescription>
+<para><ref refid="classiceberg_1_1Counter" kindref="compound">Counter</ref> for the number of commit attempts (including retries). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/commit_report.h" line="138" column="19" bodyfile="iceberg/metrics/commit_report.h" bodystart="138" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1CommitMetrics_1a289bc4172381103cb8ad4192e155b0ea" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1CommitMetrics" kindref="compound">CommitMetrics</ref> &gt;</type>
+        <definition>static std::unique_ptr&lt; CommitMetrics &gt; iceberg::CommitMetrics::Make</definition>
+        <argsstring>(MetricsContext &amp;context)</argsstring>
+        <name>Make</name>
+        <qualifiedname>iceberg::CommitMetrics::Make</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1MetricsContext" kindref="compound">MetricsContext</ref> &amp;</type>
+          <declname>context</declname>
+        </param>
+        <briefdescription>
+<para>Create a <ref refid="classiceberg_1_1CommitMetrics" kindref="compound">CommitMetrics</ref> instance backed by the given <ref refid="classiceberg_1_1MetricsContext" kindref="compound">MetricsContext</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/commit_report.h" line="126" column="26"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1CommitMetrics_1a16595dfcfe15e86d3e047be801490900" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1CommitMetrics" kindref="compound">CommitMetrics</ref> &gt;</type>
+        <definition>static std::unique_ptr&lt; CommitMetrics &gt; iceberg::CommitMetrics::Noop</definition>
+        <argsstring>()</argsstring>
+        <name>Noop</name>
+        <qualifiedname>iceberg::CommitMetrics::Noop</qualifiedname>
+        <briefdescription>
+<para>Create a <ref refid="classiceberg_1_1CommitMetrics" kindref="compound">CommitMetrics</ref> instance with all-noop timer and counter. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/commit_report.h" line="129" column="26"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1CommitMetrics_1a92090e152d2c313d58543333b8783d43" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="structiceberg_1_1CommitMetricsResult" kindref="compound">CommitMetricsResult</ref></type>
+        <definition>CommitMetricsResult iceberg::CommitMetrics::ToResult</definition>
+        <argsstring>() const</argsstring>
+        <name>ToResult</name>
+        <qualifiedname>iceberg::CommitMetrics::ToResult</qualifiedname>
+        <briefdescription>
+<para><ref refid="structiceberg_1_1Snapshot" kindref="compound">Snapshot</ref> current timer and counter values into a <ref refid="structiceberg_1_1CommitMetricsResult" kindref="compound">CommitMetricsResult</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/commit_report.h" line="132" column="23"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classiceberg_1_1CommitMetrics_1afd86e5e2e80f94f8b571b0e18c426168" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::CommitMetrics::CommitMetrics</definition>
+        <argsstring>()=default</argsstring>
+        <name>CommitMetrics</name>
+        <qualifiedname>iceberg::CommitMetrics::CommitMetrics</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/commit_report.h" line="141" column="3"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Live commit metrics collected during a table commit operation. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>Tracks the overall commit duration and retry count. File/record counts come from the snapshot summary after the commit succeeds and are stored separately in <ref refid="structiceberg_1_1CommitMetricsResult" kindref="compound">CommitMetricsResult</ref>. </para>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::CommitMetrics</label>
+        <link refid="classiceberg_1_1CommitMetrics"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>total_duration</edgelabel>
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>attempts</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>iceberg::Counter</label>
+        <link refid="classiceberg_1_1Counter"/>
+      </node>
+      <node id="3">
+        <label>iceberg::Timer</label>
+        <link refid="classiceberg_1_1Timer"/>
+      </node>
+      <node id="4">
+        <label>std::shared_ptr&lt; iceberg::Counter &gt;</label>
+        <childnode refid="5" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>std::shared_ptr&lt; iceberg::Timer &gt;</label>
+        <childnode refid="3" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/metrics/commit_report.h" line="123" column="1" bodyfile="iceberg/metrics/commit_report.h" bodystart="123" bodyend="142"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1CommitMetrics_1a71ff1dd05486fd70cbc6c9cfd5e7eec1" prot="public" virt="non-virtual"><scope>iceberg::CommitMetrics</scope><name>attempts</name></member>
+      <member refid="classiceberg_1_1CommitMetrics_1afd86e5e2e80f94f8b571b0e18c426168" prot="private" virt="non-virtual"><scope>iceberg::CommitMetrics</scope><name>CommitMetrics</name></member>
+      <member refid="classiceberg_1_1CommitMetrics_1a289bc4172381103cb8ad4192e155b0ea" prot="public" virt="non-virtual"><scope>iceberg::CommitMetrics</scope><name>Make</name></member>
+      <member refid="classiceberg_1_1CommitMetrics_1a16595dfcfe15e86d3e047be801490900" prot="public" virt="non-virtual"><scope>iceberg::CommitMetrics</scope><name>Noop</name></member>
+      <member refid="classiceberg_1_1CommitMetrics_1a92090e152d2c313d58543333b8783d43" prot="public" virt="non-virtual"><scope>iceberg::CommitMetrics</scope><name>ToResult</name></member>
+      <member refid="classiceberg_1_1CommitMetrics_1ae82deb2c9694b7e306537b5fac4bd269" prot="public" virt="non-virtual"><scope>iceberg::CommitMetrics</scope><name>total_duration</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,129 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1EncryptedKey" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::EncryptedKey</compoundname>
+    <includes refid="encrypted__key_8h" local="no">encrypted_key.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1EncryptedKey_1a1ef47219ec45fa56d177322ce727196d" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::EncryptedKey::key_id</definition>
+        <argsstring></argsstring>
+        <name>key_id</name>
+        <qualifiedname>iceberg::EncryptedKey::key_id</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/encryption/encrypted_key.h" line="35" column="15" bodyfile="iceberg/encryption/encrypted_key.h" bodystart="35" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1EncryptedKey_1a35cec9a161bba9de41b1378ecd4d8e9c" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::EncryptedKey::encrypted_key_metadata</definition>
+        <argsstring></argsstring>
+        <name>encrypted_key_metadata</name>
+        <qualifiedname>iceberg::EncryptedKey::encrypted_key_metadata</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/encryption/encrypted_key.h" line="36" column="15" bodyfile="iceberg/encryption/encrypted_key.h" bodystart="36" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1EncryptedKey_1a594d4773c8c7eed74a973f80c277de0a" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; std::string &gt;</type>
+        <definition>std::optional&lt;std::string&gt; iceberg::EncryptedKey::encrypted_by_id</definition>
+        <argsstring></argsstring>
+        <name>encrypted_by_id</name>
+        <qualifiedname>iceberg::EncryptedKey::encrypted_by_id</qualifiedname>
+        <initializer>= std::nullopt</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/encryption/encrypted_key.h" line="37" column="17" bodyfile="iceberg/encryption/encrypted_key.h" bodystart="37" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1EncryptedKey_1ac986fe1e4e646a9c0aecb57319f54388" prot="public" static="no" mutable="no">
+        <type>std::unordered_map&lt; std::string, std::string &gt;</type>
+        <definition>std::unordered_map&lt;std::string, std::string&gt; iceberg::EncryptedKey::properties</definition>
+        <argsstring></argsstring>
+        <name>properties</name>
+        <qualifiedname>iceberg::EncryptedKey::properties</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/encryption/encrypted_key.h" line="38" column="22" bodyfile="iceberg/encryption/encrypted_key.h" bodystart="38" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="friend">
+      <memberdef kind="friend" id="structiceberg_1_1EncryptedKey_1adc25aaa882b8e1c240fcc17d40af60a6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool operator==</definition>
+        <argsstring>(const EncryptedKey &amp;, const EncryptedKey &amp;)=default</argsstring>
+        <name>operator==</name>
+        <qualifiedname>iceberg::EncryptedKey::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1EncryptedKey" kindref="compound">EncryptedKey</ref> &amp;</type>
+        </param>
+        <param>
+          <type>const <ref refid="structiceberg_1_1EncryptedKey" kindref="compound">EncryptedKey</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/encryption/encrypted_key.h" line="40" column="15"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Represents an encrypted table key entry. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::EncryptedKey</label>
+        <link refid="structiceberg_1_1EncryptedKey"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>encrypted_key_metadata</edgelabel>
+          <edgelabel>key_id</edgelabel>
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>properties</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>std::unordered_map&lt; std::string, std::string &gt;</label>
+        <childnode refid="2" relation="usage">
+          <edgelabel>elements</edgelabel>
+          <edgelabel>keys</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/encryption/encrypted_key.h" line="34" column="1" bodyfile="iceberg/encryption/encrypted_key.h" bodystart="34" bodyend="41"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1EncryptedKey_1a594d4773c8c7eed74a973f80c277de0a" prot="public" virt="non-virtual"><scope>iceberg::EncryptedKey</scope><name>encrypted_by_id</name></member>
+      <member refid="structiceberg_1_1EncryptedKey_1a35cec9a161bba9de41b1378ecd4d8e9c" prot="public" virt="non-virtual"><scope>iceberg::EncryptedKey</scope><name>encrypted_key_metadata</name></member>
+      <member refid="structiceberg_1_1EncryptedKey_1a1ef47219ec45fa56d177322ce727196d" prot="public" virt="non-virtual"><scope>iceberg::EncryptedKey</scope><name>key_id</name></member>
+      <member refid="structiceberg_1_1EncryptedKey_1adc25aaa882b8e1c240fcc17d40af60a6" prot="public" virt="non-virtual"><scope>iceberg::EncryptedKey</scope><name>operator==</name></member>
+      <member refid="structiceberg_1_1EncryptedKey_1ac986fe1e4e646a9c0aecb57319f54388" prot="public" virt="non-virtual"><scope>iceberg::EncryptedKey</scope><name>properties</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

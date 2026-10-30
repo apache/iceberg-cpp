@@ -1,0 +1,159 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1bad__expected__access_3_01void_01_4" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::bad_expected_access&lt; void &gt;</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">std::exception</basecompoundref>
+    <templateparamlist>
+    </templateparamlist>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1bad__expected__access_3_01void_01_4_1ad61aef03b398574c5f14dc5711c73536" prot="public" static="no" const="yes" explicit="no" inline="yes" noexcept="yes" virt="non-virtual">
+        <type>const char *</type>
+        <definition>const char * iceberg::bad_expected_access&lt; void &gt;::what</definition>
+        <argsstring>() const noexcept override</argsstring>
+        <name>what</name>
+        <qualifiedname>iceberg::bad_expected_access&lt; void &gt;::what</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/compat/expected.h" line="329" column="15" bodyfile="iceberg/compat/expected.h" bodystart="329" bodyend="331"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-func">
+      <memberdef kind="function" id="classiceberg_1_1bad__expected__access_3_01void_01_4_1aa587b18f895d863ef7c40f49948b7316" prot="protected" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::bad_expected_access&lt; void &gt;::bad_expected_access</definition>
+        <argsstring>() noexcept=default</argsstring>
+        <name>bad_expected_access</name>
+        <qualifiedname>iceberg::bad_expected_access&lt; void &gt;::bad_expected_access</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/compat/expected.h" line="335" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1bad__expected__access_3_01void_01_4_1afe4058df64f82b030243877a1bd992a2" prot="protected" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::bad_expected_access&lt; void &gt;::bad_expected_access</definition>
+        <argsstring>(const bad_expected_access &amp;) noexcept=default</argsstring>
+        <name>bad_expected_access</name>
+        <qualifiedname>iceberg::bad_expected_access&lt; void &gt;::bad_expected_access</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1bad__expected__access" kindref="compound">bad_expected_access</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/compat/expected.h" line="336" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1bad__expected__access_3_01void_01_4_1a90de6c0e777a36a59cb8b90368c30308" prot="protected" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::bad_expected_access&lt; void &gt;::bad_expected_access</definition>
+        <argsstring>(bad_expected_access &amp;&amp;) noexcept=default</argsstring>
+        <name>bad_expected_access</name>
+        <qualifiedname>iceberg::bad_expected_access&lt; void &gt;::bad_expected_access</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1bad__expected__access" kindref="compound">bad_expected_access</ref> &amp;&amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/compat/expected.h" line="337" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1bad__expected__access_3_01void_01_4_1a2e10f5eb68728503a358fe357939b285" prot="protected" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1bad__expected__access" kindref="compound">bad_expected_access</ref> &amp;</type>
+        <definition>bad_expected_access &amp; iceberg::bad_expected_access&lt; void &gt;::operator=</definition>
+        <argsstring>(const bad_expected_access &amp;) noexcept=default</argsstring>
+        <name>operator=</name>
+        <qualifiedname>iceberg::bad_expected_access&lt; void &gt;::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1bad__expected__access" kindref="compound">bad_expected_access</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/compat/expected.h" line="338" column="23"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1bad__expected__access_3_01void_01_4_1a8f5e5c8b9a07d97d65ffd789643ac056" prot="protected" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1bad__expected__access" kindref="compound">bad_expected_access</ref> &amp;</type>
+        <definition>bad_expected_access &amp; iceberg::bad_expected_access&lt; void &gt;::operator=</definition>
+        <argsstring>(bad_expected_access &amp;&amp;) noexcept=default</argsstring>
+        <name>operator=</name>
+        <qualifiedname>iceberg::bad_expected_access&lt; void &gt;::operator=</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1bad__expected__access" kindref="compound">bad_expected_access</ref> &amp;&amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/compat/expected.h" line="339" column="23"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1bad__expected__access_3_01void_01_4_1a9c118ed68e81397b937c2d95de1600e0" prot="protected" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::bad_expected_access&lt; void &gt;::~bad_expected_access</definition>
+        <argsstring>() override=default</argsstring>
+        <name>~bad_expected_access</name>
+        <qualifiedname>iceberg::bad_expected_access&lt; void &gt;::~bad_expected_access</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/compat/expected.h" line="340" column="3"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::bad_expected_access&lt; void &gt;</label>
+        <link refid="classiceberg_1_1bad__expected__access_3_01void_01_4"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>std::exception</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::bad_expected_access&lt; void &gt;</label>
+        <link refid="classiceberg_1_1bad__expected__access_3_01void_01_4"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>std::exception</label>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/compat/expected.h" line="327" column="1" bodyfile="iceberg/compat/expected.h" bodystart="327" bodyend="341"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1bad__expected__access_3_01void_01_4_1aa587b18f895d863ef7c40f49948b7316" prot="protected" virt="non-virtual"><scope>iceberg::bad_expected_access&lt; void &gt;</scope><name>bad_expected_access</name></member>
+      <member refid="classiceberg_1_1bad__expected__access_3_01void_01_4_1afe4058df64f82b030243877a1bd992a2" prot="protected" virt="non-virtual"><scope>iceberg::bad_expected_access&lt; void &gt;</scope><name>bad_expected_access</name></member>
+      <member refid="classiceberg_1_1bad__expected__access_3_01void_01_4_1a90de6c0e777a36a59cb8b90368c30308" prot="protected" virt="non-virtual"><scope>iceberg::bad_expected_access&lt; void &gt;</scope><name>bad_expected_access</name></member>
+      <member refid="classiceberg_1_1bad__expected__access_3_01void_01_4_1a2e10f5eb68728503a358fe357939b285" prot="protected" virt="non-virtual"><scope>iceberg::bad_expected_access&lt; void &gt;</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1bad__expected__access_3_01void_01_4_1a8f5e5c8b9a07d97d65ffd789643ac056" prot="protected" virt="non-virtual"><scope>iceberg::bad_expected_access&lt; void &gt;</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1bad__expected__access_3_01void_01_4_1ad61aef03b398574c5f14dc5711c73536" prot="public" virt="non-virtual"><scope>iceberg::bad_expected_access&lt; void &gt;</scope><name>what</name></member>
+      <member refid="classiceberg_1_1bad__expected__access_3_01void_01_4_1a9c118ed68e81397b937c2d95de1600e0" prot="protected" virt="non-virtual"><scope>iceberg::bad_expected_access&lt; void &gt;</scope><name>~bad_expected_access</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

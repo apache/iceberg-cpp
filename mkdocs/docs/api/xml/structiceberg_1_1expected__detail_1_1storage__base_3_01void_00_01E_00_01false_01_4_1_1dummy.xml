@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1expected__detail_1_1storage__base_3_01void_00_01E_00_01false_01_4_1_1dummy" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::expected_detail::storage_base&lt; void, E, false &gt;::dummy</compoundname>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/compat/expected.h" line="824" column="3" bodyfile="iceberg/compat/expected.h" bodystart="824" bodyend="824"/>
+    <listofallmembers>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

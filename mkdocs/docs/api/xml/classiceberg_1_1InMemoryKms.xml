@@ -1,0 +1,256 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1InMemoryKms" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::InMemoryKms</compoundname>
+    <basecompoundref refid="classiceberg_1_1KeyManagementClient" prot="public" virt="non-virtual">iceberg::KeyManagementClient</basecompoundref>
+    <includes refid="in__memory__kms_8h" local="no">in_memory_kms.h</includes>
+    <sectiondef kind="public-static-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1InMemoryKms_1ad508fc631e24299a965b91596472a20d" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr std::string_view</type>
+        <definition>constexpr std::string_view iceberg::InMemoryKms::kName</definition>
+        <argsstring></argsstring>
+        <name>kName</name>
+        <qualifiedname>iceberg::InMemoryKms::kName</qualifiedname>
+        <initializer>= &quot;in-memory&quot;</initializer>
+        <briefdescription>
+<para>The name used with <computeroutput>encryption.kms-impl</computeroutput> after RegisterInMemoryKms(). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/encryption/in_memory_kms.h" line="45" column="37" bodyfile="iceberg/encryption/in_memory_kms.h" bodystart="45" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1InMemoryKms_1a8cacee647abcb3717d3220a8e3133ac5" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr std::string_view</type>
+        <definition>constexpr std::string_view iceberg::InMemoryKms::kKeyPropertyPrefix</definition>
+        <argsstring></argsstring>
+        <name>kKeyPropertyPrefix</name>
+        <qualifiedname>iceberg::InMemoryKms::kKeyPropertyPrefix</qualifiedname>
+        <initializer>= &quot;encryption.in-memory-kms.key.&quot;</initializer>
+        <briefdescription>
+<para><ref refid="classiceberg_1_1Catalog" kindref="compound">Catalog</ref> property prefix for master keys: <computeroutput>encryption.in-memory-kms.key.&lt;id&gt;</computeroutput> = <ref refid="classiceberg_1_1Base64" kindref="compound">Base64</ref> of the key bytes. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/encryption/in_memory_kms.h" line="48" column="37" bodyfile="iceberg/encryption/in_memory_kms.h" bodystart="48" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1InMemoryKms_1a075fc97ab10f40ce2dd35db5dd70f5e5" prot="private" static="no" mutable="no">
+        <type>std::unordered_map&lt; std::string, std::vector&lt; uint8_t &gt; &gt;</type>
+        <definition>std::unordered_map&lt;std::string, std::vector&lt;uint8_t&gt; &gt; iceberg::InMemoryKms::master_keys_</definition>
+        <argsstring></argsstring>
+        <name>master_keys_</name>
+        <qualifiedname>iceberg::InMemoryKms::master_keys_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/encryption/in_memory_kms.h" line="69" column="22" bodyfile="iceberg/encryption/in_memory_kms.h" bodystart="69" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1InMemoryKms_1aee0a6acae5b64d4ad960d074e08699a0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::InMemoryKms::InMemoryKms</definition>
+        <argsstring>()=default</argsstring>
+        <name>InMemoryKms</name>
+        <qualifiedname>iceberg::InMemoryKms::InMemoryKms</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/encryption/in_memory_kms.h" line="50" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1InMemoryKms_1af7e82f49bde4f815fcc2e1039ecb1cb9" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::InMemoryKms::InMemoryKms</definition>
+        <argsstring>(std::unordered_map&lt; std::string, std::vector&lt; uint8_t &gt; &gt; master_keys)</argsstring>
+        <name>InMemoryKms</name>
+        <qualifiedname>iceberg::InMemoryKms::InMemoryKms</qualifiedname>
+        <param>
+          <type>std::unordered_map&lt; std::string, std::vector&lt; uint8_t &gt; &gt;</type>
+          <declname>master_keys</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/encryption/in_memory_kms.h" line="51" column="12" bodyfile="iceberg/encryption/in_memory_kms.h" bodystart="51" bodyend="52"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1InMemoryKms_1aeaa294780edc4cbe85dcbed6404be600" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type><ref refid="classiceberg_1_1expected" kindref="compound">Status</ref></type>
+        <definition>Status iceberg::InMemoryKms::Initialize</definition>
+        <argsstring>(const std::unordered_map&lt; std::string, std::string &gt; &amp;properties) override</argsstring>
+        <name>Initialize</name>
+        <qualifiedname>iceberg::InMemoryKms::Initialize</qualifiedname>
+        <reimplements refid="classiceberg_1_1KeyManagementClient_1a6b85b14ea190529955545bf6dad7c421">Initialize</reimplements>
+        <param>
+          <type>const std::unordered_map&lt; std::string, std::string &gt; &amp;</type>
+          <declname>properties</declname>
+        </param>
+        <briefdescription>
+<para>Add master keys from <computeroutput>encryption.in-memory-kms.key.&lt;id&gt;</computeroutput> properties. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/encryption/in_memory_kms.h" line="58" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1InMemoryKms_1abfc88ce4a217c2fb3ac4a07da16e70e5" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type><ref refid="namespaceiceberg_1aac79523734e35ca4d34cced52e56ec9b" kindref="member">Result</ref>&lt; std::vector&lt; uint8_t &gt; &gt;</type>
+        <definition>Result&lt; std::vector&lt; uint8_t &gt; &gt; iceberg::InMemoryKms::WrapKey</definition>
+        <argsstring>(std::span&lt; const uint8_t &gt; key, std::string_view wrapping_key_id) override</argsstring>
+        <name>WrapKey</name>
+        <qualifiedname>iceberg::InMemoryKms::WrapKey</qualifiedname>
+        <reimplements refid="classiceberg_1_1KeyManagementClient_1afdbb134ec6d5416a38dbc307b0c672a8">WrapKey</reimplements>
+        <param>
+          <type>std::span&lt; const uint8_t &gt;</type>
+          <declname>key</declname>
+        </param>
+        <param>
+          <type>std::string_view</type>
+          <declname>wrapping_key_id</declname>
+        </param>
+        <briefdescription>
+<para>Wrap (encrypt) a secret key with the master key <computeroutput>wrapping_key_id</computeroutput>. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The result may include KMS-specific metadata needed to unwrap it. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/encryption/in_memory_kms.h" line="61" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1InMemoryKms_1ae5ce17aeb9f5605ed2f6fbbed0e5947d" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type><ref refid="namespaceiceberg_1aac79523734e35ca4d34cced52e56ec9b" kindref="member">Result</ref>&lt; std::vector&lt; uint8_t &gt; &gt;</type>
+        <definition>Result&lt; std::vector&lt; uint8_t &gt; &gt; iceberg::InMemoryKms::UnwrapKey</definition>
+        <argsstring>(std::span&lt; const uint8_t &gt; wrapped_key, std::string_view wrapping_key_id) override</argsstring>
+        <name>UnwrapKey</name>
+        <qualifiedname>iceberg::InMemoryKms::UnwrapKey</qualifiedname>
+        <reimplements refid="classiceberg_1_1KeyManagementClient_1a63f846785670235d36c27ad7756e1656">UnwrapKey</reimplements>
+        <param>
+          <type>std::span&lt; const uint8_t &gt;</type>
+          <declname>wrapped_key</declname>
+        </param>
+        <param>
+          <type>std::string_view</type>
+          <declname>wrapping_key_id</declname>
+        </param>
+        <briefdescription>
+<para>Unwrap a key returned by WrapKey. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/encryption/in_memory_kms.h" line="63" column="10"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1InMemoryKms_1a8a4fb083a6157fdac895dc6a4268f908" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>static void iceberg::InMemoryKms::Register</definition>
+        <argsstring>()</argsstring>
+        <name>Register</name>
+        <qualifiedname>iceberg::InMemoryKms::Register</qualifiedname>
+        <briefdescription>
+<para>Register this client in <ref refid="classiceberg_1_1KmsRegistry" kindref="compound">KmsRegistry</ref> under kName. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/encryption/in_memory_kms.h" line="55" column="15"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classiceberg_1_1InMemoryKms_1a428b68ee5033f8ad4480163691c224b4" prot="private" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceiceberg_1aac79523734e35ca4d34cced52e56ec9b" kindref="member">Result</ref>&lt; const std::vector&lt; uint8_t &gt; * &gt;</type>
+        <definition>Result&lt; const std::vector&lt; uint8_t &gt; * &gt; iceberg::InMemoryKms::MasterKey</definition>
+        <argsstring>(std::string_view id) const</argsstring>
+        <name>MasterKey</name>
+        <qualifiedname>iceberg::InMemoryKms::MasterKey</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>id</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/encryption/in_memory_kms.h" line="67" column="10"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>KMS client with in-memory master keys. <ref refid="classiceberg_1_1Not" kindref="compound">Not</ref> for production use. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>Wire compatible with Java&apos;s MemoryMockKMS (used by Java tests through UnitestKMS): keys are wrapped with AES-GCM under the master key, as nonce | ciphertext | tag, without AAD. </para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::InMemoryKms</label>
+        <link refid="classiceberg_1_1InMemoryKms"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::KeyManagementClient</label>
+        <link refid="classiceberg_1_1KeyManagementClient"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::InMemoryKms</label>
+        <link refid="classiceberg_1_1InMemoryKms"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>kKeyPropertyPrefix</edgelabel>
+          <edgelabel>kName</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::KeyManagementClient</label>
+        <link refid="classiceberg_1_1KeyManagementClient"/>
+      </node>
+      <node id="4">
+        <label>std::basic_string_view&lt; Char &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::string_view</label>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/encryption/in_memory_kms.h" line="42" column="1" bodyfile="iceberg/encryption/in_memory_kms.h" bodystart="42" bodyend="70"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1KeyManagementClient_1a198c75a7537556b76a8f6f8c36cc90a2" prot="public" virt="virtual"><scope>iceberg::InMemoryKms</scope><name>GenerateKey</name></member>
+      <member refid="classiceberg_1_1InMemoryKms_1aeaa294780edc4cbe85dcbed6404be600" prot="public" virt="virtual"><scope>iceberg::InMemoryKms</scope><name>Initialize</name></member>
+      <member refid="classiceberg_1_1InMemoryKms_1aee0a6acae5b64d4ad960d074e08699a0" prot="public" virt="non-virtual"><scope>iceberg::InMemoryKms</scope><name>InMemoryKms</name></member>
+      <member refid="classiceberg_1_1InMemoryKms_1af7e82f49bde4f815fcc2e1039ecb1cb9" prot="public" virt="non-virtual"><scope>iceberg::InMemoryKms</scope><name>InMemoryKms</name></member>
+      <member refid="classiceberg_1_1InMemoryKms_1a8cacee647abcb3717d3220a8e3133ac5" prot="public" virt="non-virtual"><scope>iceberg::InMemoryKms</scope><name>kKeyPropertyPrefix</name></member>
+      <member refid="classiceberg_1_1InMemoryKms_1ad508fc631e24299a965b91596472a20d" prot="public" virt="non-virtual"><scope>iceberg::InMemoryKms</scope><name>kName</name></member>
+      <member refid="classiceberg_1_1InMemoryKms_1a075fc97ab10f40ce2dd35db5dd70f5e5" prot="private" virt="non-virtual"><scope>iceberg::InMemoryKms</scope><name>master_keys_</name></member>
+      <member refid="classiceberg_1_1InMemoryKms_1a428b68ee5033f8ad4480163691c224b4" prot="private" virt="non-virtual"><scope>iceberg::InMemoryKms</scope><name>MasterKey</name></member>
+      <member refid="classiceberg_1_1InMemoryKms_1a8a4fb083a6157fdac895dc6a4268f908" prot="public" virt="non-virtual"><scope>iceberg::InMemoryKms</scope><name>Register</name></member>
+      <member refid="classiceberg_1_1KeyManagementClient_1a194201b653d4a7272c34dc87a7677a20" prot="public" virt="virtual"><scope>iceberg::InMemoryKms</scope><name>SupportsKeyGeneration</name></member>
+      <member refid="classiceberg_1_1InMemoryKms_1ae5ce17aeb9f5605ed2f6fbbed0e5947d" prot="public" virt="virtual"><scope>iceberg::InMemoryKms</scope><name>UnwrapKey</name></member>
+      <member refid="classiceberg_1_1InMemoryKms_1abfc88ce4a217c2fb3ac4a07da16e70e5" prot="public" virt="virtual"><scope>iceberg::InMemoryKms</scope><name>WrapKey</name></member>
+      <member refid="classiceberg_1_1KeyManagementClient_1ae5c7de0aaa76aa6a62905d81a77baeee" prot="public" virt="virtual"><scope>iceberg::InMemoryKms</scope><name>~KeyManagementClient</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="group__type-semi-structured" kind="group">
+    <compoundname>type-semi-structured</compoundname>
+    <title>Semi-structured Types</title>
+    <innerclass refid="classiceberg_1_1VariantType" prot="public">iceberg::VariantType</innerclass>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>Semi-structured types may contain values whose structure varies across rows. </para>
+    </detaileddescription>
+  </compounddef>
+</doxygen>
