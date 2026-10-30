@@ -106,7 +106,7 @@ void RoaringPositionBitmap::Add(int64_t pos) {
 
 void RoaringPositionBitmap::AddManyForKey(int32_t key,
                                           std::span<const uint32_t> positions) {
-  if (key < 0 || positions.empty()) {
+  if (positions.empty()) {
     return;
   }
   impl_->bitmaps[key].addMany(positions.size(), positions.data());

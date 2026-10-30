@@ -415,6 +415,8 @@ TEST(RoaringPositionBitmapTest, TestSerializeOmitsEmptyBuckets) {
                      /*portable=*/true);
 
   ICEBERG_UNWRAP_OR_FAIL(auto bitmap, RoaringPositionBitmap::Deserialize(bytes));
+  EXPECT_TRUE(bitmap.IsEmpty());
+  EXPECT_EQ(bitmap.Cardinality(), 0);
   ICEBERG_UNWRAP_OR_FAIL(auto serialized, bitmap.Serialize());
   ASSERT_EQ(serialized.size(), kBitmapCountSizeBytes);
   ASSERT_EQ(ReadLittleEndian<int64_t>(serialized.data()), 0);
@@ -453,7 +455,6 @@ TEST(RoaringPositionBitmapTest, TestSerializeOrdersKeysAscending) {
   }
 
   EXPECT_EQ(keys, (std::vector<int32_t>{0, 1, 100, std::numeric_limits<int32_t>::max()}));
-  EXPECT_EQ(keys.back(), std::numeric_limits<int32_t>::max());
   EXPECT_EQ(remaining, 0u);
 }
 

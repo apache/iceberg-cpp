@@ -156,7 +156,9 @@ Result<size_t> PositionDeleteIndex::PrepareForSerialization() {
 Result<std::vector<uint8_t>> PositionDeleteIndex::Serialize() {
   ICEBERG_ASSIGN_OR_RAISE(const auto magic_and_vector_size, PrepareForSerialization());
 
-  std::vector<uint8_t> blob(kLengthPrefixBytes);
+  std::vector<uint8_t> blob;
+  blob.reserve(kLengthPrefixBytes + magic_and_vector_size + kCrcBytes);
+  blob.resize(kLengthPrefixBytes);
   blob.insert(blob.end(), kMagic.begin(), kMagic.end());
   ICEBERG_RETURN_UNEXPECTED(bitmap_.SerializeTo(blob));
 
