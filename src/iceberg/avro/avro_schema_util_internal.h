@@ -146,6 +146,17 @@ class HasIdVisitor {
 Result<SchemaProjection> Project(const Schema& expected_schema,
                                  const ::avro::NodePtr& avro_node, bool prune_source);
 
+/// \brief Convert an Avro record schema annotated with Iceberg field IDs to an
+/// Iceberg Schema.
+///
+/// Every field must carry a field ID (and every array or map an element, key or
+/// value ID). A union with null becomes an optional field.
+///
+/// \param avro_node The Avro record node to convert.
+/// \return The converted Iceberg Schema, or an error if the Avro schema cannot be
+/// represented in Iceberg.
+Result<std::unique_ptr<Schema>> FromAvroSchema(const ::avro::NodePtr& avro_node);
+
 std::string ToString(const ::avro::NodePtr& node);
 std::string ToString(const ::avro::LogicalType& logical_type);
 std::string ToString(const ::avro::LogicalType::Type& logical_type);
