@@ -22,9 +22,12 @@
 #include <chrono>
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
 #include <unordered_map>
 
+#include "iceberg/catalog/rest/constant.h"
+#include "iceberg/catalog/rest/http_request.h"
 #include "iceberg/catalog/rest/iceberg_rest_export.h"
 #include "iceberg/catalog/rest/type_fwd.h"
 #include "iceberg/result.h"
@@ -69,12 +72,40 @@ class ICEBERG_REST_EXPORT HttpResponse {
   std::unique_ptr<Impl> impl_;
 };
 
+/// \brief Transport settings shared by the config, init and catalog clients.
+///
+/// Property names and defaults mirror the Java `HTTPClient` (`rest.client.*`).
+struct ICEBERG_REST_EXPORT HttpClientOptions {
+  /// `rest.client.connection-timeout-ms`; Java defaults to three minutes.
+  /// Zero disables the configured connection deadline.
+  std::optional<int64_t> connection_timeout_ms = kDefaultConnectionTimeoutMs;
+  /// `rest.client.socket-timeout-ms`, the maximum transfer inactivity.
+  /// Unset or zero leaves it unbounded.
+  std::optional<int32_t> socket_timeout_ms;
+  /// `rest.client.max-retries`, the maximum number of retries per request.
+  int max_retries = 5;
+  /// `rest.client.user-agent`; unset sends `iceberg-cpp/<version>`.
+  std::optional<std::string> user_agent;
+  /// `rest.client.idempotency-key-lifetime`, parsed from an ISO-8601 duration.
+  /// Unset disables the bound; zero disables retries of keyed requests.
+  std::optional<std::chrono::milliseconds> idempotency_key_lifetime;
+
+  static Result<HttpClientOptions> FromProperties(
+      const std::unordered_map<std::string, std::string>& properties);
+};
+
 /// \brief HTTP client for making requests to Iceberg REST Catalog API.
 class ICEBERG_REST_EXPORT HttpClient {
  public:
+  /// \brief Create a client using Java-style transport options.
+  static std::shared_ptr<HttpClient> Make(
+      std::unordered_map<std::string, std::string> default_headers = {},
+      HttpClientOptions options = {}, std::optional<std::string> base_uri = std::nullopt);
+  /// \brief Construct with a connection timeout and a legacy total request timeout.
   /// \param connection_timeout,socket_timeout Zero leaves requests unbounded.
   explicit HttpClient(std::unordered_map<std::string, std::string> default_headers = {},
-                      std::chrono::milliseconds connection_timeout = {},
+                      std::chrono::milliseconds connection_timeout =
+                          std::chrono::milliseconds(kDefaultConnectionTimeoutMs),
                       std::chrono::milliseconds socket_timeout = {},
                       std::optional<std::string> base_uri = std::nullopt);
   virtual ~HttpClient();
@@ -116,13 +147,24 @@ class ICEBERG_REST_EXPORT HttpClient {
       const ErrorHandler& error_handler, auth::AuthSession& session);
 
  private:
+  struct WithOptions {};
+  HttpClient(WithOptions, std::unordered_map<std::string, std::string> default_headers,
+             HttpClientOptions options, std::chrono::milliseconds request_timeout,
+             std::optional<std::string> base_uri);
+
   /// \brief Build a request URI from this client's base URI and a path.
   Result<std::string> RequestUri(const std::string& path) const;
 
+  /// \brief Authenticate once, then send and retry the authenticated request.
+  Result<HttpResponse> Execute(HttpMethod method, const std::string& url,
+                               HttpHeaders headers, std::string body,
+                               const ErrorHandler& error_handler,
+                               auth::AuthSession& session);
+
   std::optional<std::string> base_uri_;
-  std::unordered_map<std::string, std::string> default_headers_;
-  std::chrono::milliseconds connection_timeout_;
-  std::chrono::milliseconds socket_timeout_;
+  HttpClientOptions options_;
+  HttpHeaders default_headers_;
+  std::chrono::milliseconds request_timeout_{};
   std::unique_ptr<cpr::ConnectionPool> connection_pool_;
 };
 
