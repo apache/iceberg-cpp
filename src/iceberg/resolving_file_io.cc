@@ -25,6 +25,7 @@
 
 #include "iceberg/file_io_registry.h"
 #include "iceberg/logging/log_macros.h"
+#include "iceberg/metadata_cache.h"
 #include "iceberg/util/location_util.h"
 #include "iceberg/util/macros.h"
 #include "iceberg/util/string_util.h"
@@ -32,7 +33,14 @@
 namespace iceberg {
 
 ResolvingFileIO::ResolvingFileIO(std::unordered_map<std::string, std::string> properties)
-    : properties_(std::move(properties)) {}
+    : properties_(std::move(properties)) {
+  // The resolver owns the content cache. Delegates provide raw input handles and do not
+  // need their own per-scheme caches.
+  properties_.erase(std::string(MetadataCacheOptions::kEnabled));
+  properties_.erase(std::string(MetadataCacheOptions::kExpirationIntervalMs));
+  properties_.erase(std::string(MetadataCacheOptions::kMaxTotalBytes));
+  properties_.erase(std::string(MetadataCacheOptions::kMaxContentLength));
+}
 
 ResolvingFileIO::~ResolvingFileIO() = default;
 

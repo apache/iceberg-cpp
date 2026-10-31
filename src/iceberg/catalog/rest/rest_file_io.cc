@@ -28,6 +28,7 @@
 #include "iceberg/file_io.h"
 #include "iceberg/file_io_registry.h"
 #include "iceberg/logging/log_macros.h"
+#include "iceberg/metadata_cache.h"
 #include "iceberg/resolving_file_io.h"
 #include "iceberg/util/macros.h"
 
@@ -50,7 +51,11 @@ std::unordered_map<std::string, std::string> MergeFileIOProperties(
 Result<std::unique_ptr<FileIO>> MakeCatalogFileIO(const RestCatalogProperties& config) {
   const std::string io_impl = config.Get(RestCatalogProperties::kIOImpl);
   if (io_impl.empty()) {
-    return std::make_unique<ResolvingFileIO>(config.configs());
+    auto io = std::make_unique<ResolvingFileIO>(config.configs());
+    if (config.configs().contains(std::string(MetadataCacheOptions::kEnabled))) {
+      ICEBERG_RETURN_UNEXPECTED(io->ConfigureMetadataCache(config.configs()));
+    }
+    return std::move(io);
   }
 
   return FileIORegistry::Load(io_impl, config.configs());
