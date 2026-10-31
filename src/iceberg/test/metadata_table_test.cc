@@ -23,7 +23,6 @@
 #include <memory>
 #include <string>
 #include <utility>
-#include <variant>
 #include <vector>
 
 #include <arrow/c/bridge.h>
@@ -34,53 +33,35 @@
 
 #include "iceberg/constants.h"
 #include "iceberg/inspect/history_table.h"
+#include "iceberg/inspect/metadata_scan.h"
+#include "iceberg/inspect/metadata_scan_task.h"
 #include "iceberg/inspect/snapshots_table.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_field.h"
 #include "iceberg/table.h"
 #include "iceberg/table_identifier.h"
 #include "iceberg/table_metadata.h"
+#include "iceberg/test/arrow_test_util.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/test/mock_catalog.h"
 #include "iceberg/test/mock_io.h"
 #include "iceberg/type.h"
-#include "iceberg/util/timepoint.h"
 
 namespace iceberg {
 namespace {
 
-/// \brief Time-travel table that records the arguments of each scan.
-class RecordingTimeTravelTable : public TimeTravelMetadataTable {
+class PlannedMetadataScan : public MetadataScan {
  public:
-  explicit RecordingTimeTravelTable(std::shared_ptr<Table> table)
-      : TimeTravelMetadataTable(std::move(table)) {}
+  PlannedMetadataScan(internal::MetadataScanContext context,
+                      std::vector<std::shared_ptr<MetadataScanTask>> tasks)
+      : MetadataScan(std::move(context)), tasks_(std::move(tasks)) {}
 
-  Kind kind() const noexcept override { return Kind::kSnapshots; }
-
-  const std::shared_ptr<Schema>& schema() const override {
-    static const auto schema = std::make_shared<Schema>(
-        std::vector<SchemaField>{SchemaField::MakeRequired(1, "id", int64()),
-                                 SchemaField::MakeOptional(2, "name", string())});
-    return schema;
-  }
-
-  const SnapshotSelection& scanned_snapshot() const { return scanned_snapshot_; }
-  const std::vector<std::string>& scanned_columns() const { return scanned_columns_; }
-
- protected:
-  Result<ArrowArrayStream> ScanSnapshot(const SnapshotSelection& snapshot_selection,
-                                        const Schema& projected_schema) const override {
-    scanned_snapshot_ = snapshot_selection;
-    scanned_columns_.clear();
-    for (const auto& field : projected_schema.fields()) {
-      scanned_columns_.emplace_back(field.name());
-    }
-    return NotSupported("Recording table does not return rows");
+  Result<MetadataScanTaskStreamPtr> PlanTasksStream() const override {
+    return MetadataScanTaskStream::FromVector(tasks_);
   }
 
  private:
-  mutable SnapshotSelection scanned_snapshot_;
-  mutable std::vector<std::string> scanned_columns_;
+  const std::vector<std::shared_ptr<MetadataScanTask>> tasks_;
 };
 
 }  // namespace
@@ -102,6 +83,11 @@ class MetadataTableTest : public ::testing::Test {
     ICEBERG_UNWRAP_OR_FAIL(table_, Table::Make(ident, metadata, "s3://bucket/meta.json",
                                                std::make_shared<MockFileIO>(),
                                                std::make_shared<MockCatalog>()));
+  }
+
+  static Result<ArrowArrayStream> BuildStream(MetadataScanBuilder& builder) {
+    ICEBERG_ASSIGN_OR_RAISE(auto scan, builder.Build());
+    return scan->ToArrowArrayStream();
   }
 
   /// \brief Import the schema of a stream and release the stream.
@@ -131,15 +117,15 @@ TEST_F(MetadataTableTest, ScanBuilderSelectResolvesNamesImmediately) {
 
   // Select() uses the case sensitivity in effect when it is called.
   ICEBERG_UNWRAP_OR_FAIL(auto builder, snapshots_table->NewScan());
-  ICEBERG_UNWRAP_OR_FAIL(auto stream,
-                         builder->Select({"SNAPSHOT_ID"}).CaseSensitive(false).Build());
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto stream, BuildStream(builder->Select({"SNAPSHOT_ID"}).CaseSensitive(false)));
   ICEBERG_UNWRAP_OR_FAIL(auto schema, ReadSchema(std::move(stream)));
   EXPECT_EQ(schema->num_fields(), 0);
 
   ICEBERG_UNWRAP_OR_FAIL(auto insensitive_builder, snapshots_table->NewScan());
   ICEBERG_UNWRAP_OR_FAIL(
       auto insensitive_stream,
-      insensitive_builder->CaseSensitive(false).Select({"SNAPSHOT_ID"}).Build());
+      BuildStream(insensitive_builder->CaseSensitive(false).Select({"SNAPSHOT_ID"})));
   ICEBERG_UNWRAP_OR_FAIL(auto insensitive_schema,
                          ReadSchema(std::move(insensitive_stream)));
   EXPECT_THAT(insensitive_schema->field_names(), ::testing::ElementsAre("snapshot_id"));
@@ -160,8 +146,8 @@ TEST_F(MetadataTableTest, ScanBuilderProject) {
 
   // Project() replaces an earlier selection.
   ICEBERG_UNWRAP_OR_FAIL(auto builder, snapshots_table->NewScan());
-  ICEBERG_UNWRAP_OR_FAIL(auto stream,
-                         builder->Select({"snapshot_id"}).Project(projection).Build());
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto stream, BuildStream(builder->Select({"snapshot_id"}).Project(projection)));
   ICEBERG_UNWRAP_OR_FAIL(auto schema, ReadSchema(std::move(stream)));
   EXPECT_THAT(schema->field_names(), ::testing::ElementsAre("operation", "snapshot_id"));
 
@@ -170,79 +156,65 @@ TEST_F(MetadataTableTest, ScanBuilderProject) {
               IsError(ErrorKind::kInvalidArgument));
 }
 
-TEST_F(MetadataTableTest, SupportsTimeTravel) {
-  ICEBERG_UNWRAP_OR_FAIL(auto snapshots_table,
-                         MetadataTable::Make<SnapshotsTable>(table_));
-  EXPECT_FALSE(snapshots_table->supports_time_travel());
-
-  ICEBERG_UNWRAP_OR_FAIL(auto history_table, MetadataTable::Make<HistoryTable>(table_));
-  EXPECT_FALSE(history_table->supports_time_travel());
-
-  RecordingTimeTravelTable time_travel_table(table_);
-  EXPECT_TRUE(time_travel_table.supports_time_travel());
-}
-
-TEST_F(MetadataTableTest, TimeTravelScanDefaults) {
-  RecordingTimeTravelTable table(table_);
-  ICEBERG_UNWRAP_OR_FAIL(auto builder, table.NewScan());
-  EXPECT_THAT(builder->Build(), IsError(ErrorKind::kNotSupported));
-  EXPECT_TRUE(std::holds_alternative<std::monostate>(table.scanned_snapshot().snapshot));
-  EXPECT_TRUE(table.scanned_snapshot().ref_name.empty());
-  EXPECT_THAT(table.scanned_columns(), ::testing::ElementsAre("id", "name"));
-}
-
-TEST_F(MetadataTableTest, TimeTravelScanSelectsColumnsAndSnapshot) {
-  RecordingTimeTravelTable table(table_);
-  ICEBERG_UNWRAP_OR_FAIL(auto builder, table.NewScan());
-  EXPECT_THAT(builder->Select({"name"}).UseSnapshot(1).UseRef("dev").Build(),
-              IsError(ErrorKind::kNotSupported));
-  ASSERT_TRUE(std::holds_alternative<int64_t>(table.scanned_snapshot().snapshot));
-  EXPECT_EQ(std::get<int64_t>(table.scanned_snapshot().snapshot), 1);
-  EXPECT_EQ(table.scanned_snapshot().ref_name, "dev");
-  EXPECT_THAT(table.scanned_columns(), ::testing::ElementsAre("name"));
-}
-
-TEST_F(MetadataTableTest, TimeTravelScanAsOfTime) {
-  RecordingTimeTravelTable table(table_);
-  ICEBERG_UNWRAP_OR_FAIL(auto builder, table.NewScan());
-  EXPECT_THAT(builder->AsOfTime(1234567890000).Build(),
-              IsError(ErrorKind::kNotSupported));
-  ASSERT_TRUE(std::holds_alternative<TimePointMs>(table.scanned_snapshot().snapshot));
-  EXPECT_EQ(std::get<TimePointMs>(table.scanned_snapshot().snapshot),
-            TimePointMsFromUnixMs(1234567890000));
-  EXPECT_TRUE(table.scanned_snapshot().ref_name.empty());
-  EXPECT_THAT(table.scanned_columns(), ::testing::ElementsAre("id", "name"));
-}
-
 TEST_F(MetadataTableTest, ScanBuilderRejectsConflictingSnapshotOptions) {
-  RecordingTimeTravelTable table(table_);
+  ICEBERG_UNWRAP_OR_FAIL(auto table, MetadataTable::Make<SnapshotsTable>(table_));
 
-  ICEBERG_UNWRAP_OR_FAIL(auto snapshot_builder, table.NewScan());
+  ICEBERG_UNWRAP_OR_FAIL(auto snapshot_builder, table->NewScan());
   auto snapshot_result = snapshot_builder->UseSnapshot(1).AsOfTime(2).Build();
   EXPECT_THAT(snapshot_result, IsError(ErrorKind::kValidationFailed));
   EXPECT_THAT(snapshot_result, HasErrorMessage("Cannot override snapshot"));
 
-  ICEBERG_UNWRAP_OR_FAIL(auto ref_builder, table.NewScan());
+  ICEBERG_UNWRAP_OR_FAIL(auto ref_builder, table->NewScan());
   auto ref_result = ref_builder->UseRef("dev").UseRef("main").Build();
   EXPECT_THAT(ref_result, IsError(ErrorKind::kValidationFailed));
   EXPECT_THAT(ref_result, HasErrorMessage("Cannot override ref"));
 
-  ICEBERG_UNWRAP_OR_FAIL(auto empty_ref_builder, table.NewScan());
+  ICEBERG_UNWRAP_OR_FAIL(auto empty_ref_builder, table->NewScan());
   EXPECT_THAT(empty_ref_builder->UseRef("").Build(),
               IsError(ErrorKind::kValidationFailed));
 }
 
-TEST_F(MetadataTableTest, HistoryTableScanIsNotSupported) {
+TEST_F(MetadataTableTest, HistoryTableScanAndTimeTravelSelection) {
   ICEBERG_UNWRAP_OR_FAIL(auto history_table, MetadataTable::Make<HistoryTable>(table_));
   ICEBERG_UNWRAP_OR_FAIL(auto builder, history_table->NewScan());
-  EXPECT_THAT(builder->Select({"snapshot_id"}).Build(),
-              IsError(ErrorKind::kNotSupported));
+  ICEBERG_UNWRAP_OR_FAIL(auto stream, BuildStream(builder->Select({"snapshot_id"})));
+  ICEBERG_UNWRAP_OR_FAIL(auto schema, ReadSchema(std::move(stream)));
+  EXPECT_THAT(schema->field_names(), ::testing::ElementsAre("snapshot_id"));
 
   // Tables without time travel reject snapshot selections.
   ICEBERG_UNWRAP_OR_FAIL(auto snapshot_builder, history_table->NewScan());
   auto snapshot_result = snapshot_builder->UseSnapshot(1).Build();
   EXPECT_THAT(snapshot_result, IsError(ErrorKind::kNotSupported));
   EXPECT_THAT(snapshot_result, HasErrorMessage("does not support time travel"));
+}
+
+TEST_F(MetadataTableTest, ScanReadsEveryTaskInPlanningOrder) {
+  auto projection = std::make_shared<Schema>(
+      std::vector<SchemaField>{SchemaField::MakeRequired(2, "snapshot_id", int64())});
+  auto metadata = std::make_shared<TableMetadata>();
+  metadata->snapshots = {std::make_shared<Snapshot>(Snapshot{.snapshot_id = 2})};
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto first,
+      StaticMetadataTask::Make(MetadataTableKind::kSnapshots, metadata, projection));
+  auto next_metadata = std::make_shared<TableMetadata>();
+  next_metadata->snapshots = {std::make_shared<Snapshot>(Snapshot{.snapshot_id = 1})};
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto second,
+      StaticMetadataTask::Make(MetadataTableKind::kSnapshots, next_metadata, projection));
+  ICEBERG_UNWRAP_OR_FAIL(auto empty, StaticMetadataTask::Make(
+                                         MetadataTableKind::kSnapshots,
+                                         std::make_shared<TableMetadata>(), projection));
+  PlannedMetadataScan scan({.kind = MetadataTableKind::kSnapshots,
+                            .table_metadata = metadata,
+                            .schema = SnapshotsTable::CanonicalSchema(),
+                            .projected_schema = projection},
+                           {empty, first, empty, second});
+  ICEBERG_UNWRAP_OR_FAIL(auto stream, scan.ToArrowArrayStream());
+  ICEBERG_UNWRAP_OR_FAIL(auto actual, ReadArrowTable(std::move(stream)));
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto expected,
+      TableFromJson(*projection, R"([{"snapshot_id":2},{"snapshot_id":1}])"));
+  EXPECT_TRUE(TablesEqual(*expected, *actual));
 }
 
 }  // namespace iceberg

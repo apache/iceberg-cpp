@@ -32,7 +32,9 @@
 #include <gtest/gtest.h>
 
 #include "iceberg/constants.h"
+#include "iceberg/inspect/metadata_scan_task_reader.h"
 #include "iceberg/inspect/metadata_table.h"
+#include "iceberg/test/arrow_test_util.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/test/metadata_table_test_base.h"
 
@@ -194,7 +196,7 @@ TEST_F(SnapshotsTableTest, ScanBuildsRepeatedly) {
   ICEBERG_UNWRAP_OR_FAIL(auto builder, snapshots_table_->NewScan());
   builder->Select({"snapshot_id"});
   for (int read = 0; read < 2; ++read) {
-    ICEBERG_UNWRAP_OR_FAIL(auto stream, builder->Build());
+    ICEBERG_UNWRAP_OR_FAIL(auto stream, BuildStream(*builder));
     ICEBERG_UNWRAP_OR_FAIL(auto batches, ReadAllBatches(std::move(stream)));
     ASSERT_EQ(batches.size(), 1);
     EXPECT_EQ(batches.front()->num_rows(), 2);
@@ -223,7 +225,7 @@ TEST_F(SnapshotsTableTest, ScanProjectedColumns) {
                                     SchemaField::MakeRequired(8, "value", string()))),
       SchemaField::MakeRequired(2, "snapshot_id", int64())});
   ICEBERG_UNWRAP_OR_FAIL(auto builder, snapshots_table_->NewScan());
-  ICEBERG_UNWRAP_OR_FAIL(auto stream, builder->Project(projection).Build());
+  ICEBERG_UNWRAP_OR_FAIL(auto stream, BuildStream(builder->Project(projection)));
   ICEBERG_UNWRAP_OR_FAIL(auto batches, ReadAllBatches(std::move(stream)));
   ASSERT_EQ(batches.size(), 1);
   const auto& batch = batches.front();
@@ -320,6 +322,7 @@ TEST_F(SnapshotsTableTest, ScanSkipsNullSnapshots) {
 TEST_F(SnapshotsTableTest, ScanEmptySummary) {
   auto [missing_summary, operation_only_summary] = MakeTestSnapshots();
   missing_summary->summary.clear();
+  missing_summary->manifest_list.clear();
   operation_only_summary->summary = {
       {SnapshotSummaryFields::kOperation, DataOperation::kAppend}};
   ICEBERG_UNWRAP_OR_FAIL(auto table,
@@ -334,14 +337,18 @@ TEST_F(SnapshotsTableTest, ScanEmptySummary) {
   auto summaries =
       std::static_pointer_cast<::arrow::MapArray>(batches.front()->column(5));
   EXPECT_TRUE(summaries->IsNull(0));
+  auto manifests =
+      std::static_pointer_cast<::arrow::StringArray>(batches.front()->column(4));
+  EXPECT_TRUE(manifests->IsNull(0));
+  EXPECT_FALSE(manifests->IsNull(1));
   EXPECT_FALSE(summaries->IsNull(1));
   EXPECT_EQ(summaries->value_length(1), 0);
 }
 
 TEST_F(SnapshotsTableTest, ScanReturnsMultipleBatches) {
   auto snapshot = MakeTestSnapshots().first;
-  std::vector<std::shared_ptr<Snapshot>> snapshots(MetadataTable::kBatchSize + 1,
-                                                   snapshot);
+  std::vector<std::shared_ptr<Snapshot>> snapshots(
+      MetadataScanTaskReader::Options{}.batch_size + 1, snapshot);
   ICEBERG_UNWRAP_OR_FAIL(auto table, MakeTableWithSnapshots(std::move(snapshots),
                                                             /*current_snapshot_id=*/1));
   ICEBERG_UNWRAP_OR_FAIL(auto snapshots_table,
@@ -350,14 +357,14 @@ TEST_F(SnapshotsTableTest, ScanReturnsMultipleBatches) {
   ICEBERG_UNWRAP_OR_FAIL(auto stream, Scan(*snapshots_table));
   ICEBERG_UNWRAP_OR_FAIL(auto batches, ReadAllBatches(std::move(stream)));
   ASSERT_EQ(batches.size(), 2);
-  EXPECT_EQ(batches[0]->num_rows(), MetadataTable::kBatchSize);
+  EXPECT_EQ(batches[0]->num_rows(), MetadataScanTaskReader::Options{}.batch_size);
   EXPECT_EQ(batches[1]->num_rows(), 1);
 }
 
 TEST_F(SnapshotsTableTest, ScanUsesMetadataCapturedAtCreation) {
   auto snapshot = MakeTestSnapshots().first;
-  std::vector<std::shared_ptr<Snapshot>> snapshots(MetadataTable::kBatchSize + 1,
-                                                   snapshot);
+  std::vector<std::shared_ptr<Snapshot>> snapshots(
+      MetadataScanTaskReader::Options{}.batch_size + 1, snapshot);
   ICEBERG_UNWRAP_OR_FAIL(auto table, MakeTableWithSnapshots(std::move(snapshots),
                                                             /*current_snapshot_id=*/1));
   ICEBERG_UNWRAP_OR_FAIL(auto snapshots_table,
@@ -371,7 +378,8 @@ TEST_F(SnapshotsTableTest, ScanUsesMetadataCapturedAtCreation) {
   auto first_batch_result = reader->Next();
   ASSERT_TRUE(first_batch_result.ok()) << first_batch_result.status().ToString();
   ASSERT_NE(*first_batch_result, nullptr);
-  EXPECT_EQ((*first_batch_result)->num_rows(), MetadataTable::kBatchSize);
+  EXPECT_EQ((*first_batch_result)->num_rows(),
+            MetadataScanTaskReader::Options{}.batch_size);
 
   ICEBERG_UNWRAP_OR_FAIL(
       auto refreshed_table,
@@ -385,6 +393,52 @@ TEST_F(SnapshotsTableTest, ScanUsesMetadataCapturedAtCreation) {
   ASSERT_TRUE(second_batch_result.ok()) << second_batch_result.status().ToString();
   ASSERT_NE(*second_batch_result, nullptr);
   EXPECT_EQ((*second_batch_result)->num_rows(), 1);
+}
+
+TEST_F(SnapshotsTableTest, CanonicalSchema) {
+  auto expected = std::make_shared<Schema>(std::vector<SchemaField>{
+      SchemaField::MakeRequired(1, "committed_at", timestamp_tz()),
+      SchemaField::MakeRequired(2, "snapshot_id", int64()),
+      SchemaField::MakeOptional(3, "parent_id", int64()),
+      SchemaField::MakeOptional(4, "operation", string()),
+      SchemaField::MakeOptional(5, "manifest_list", string()),
+      SchemaField::MakeOptional(
+          6, "summary",
+          std::make_shared<MapType>(SchemaField::MakeRequired(7, "key", string()),
+                                    SchemaField::MakeRequired(8, "value", string())))});
+  EXPECT_EQ(*SnapshotsTable::CanonicalSchema(), *expected);
+  EXPECT_EQ(*snapshots_table_->schema(), *expected);
+}
+
+TEST_F(SnapshotsTableTest, PlannedTaskRetainsProjectionAndIndependentReadState) {
+  ICEBERG_UNWRAP_OR_FAIL(auto builder, snapshots_table_->NewScan());
+  builder->Select({"snapshot_id", "operation"});
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
+  ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanTasks());
+  ASSERT_EQ(tasks.size(), 1);
+  ICEBERG_UNWRAP_OR_FAIL(auto reader, MetadataScanTaskReader::Make({.batch_size = 1}));
+  ICEBERG_UNWRAP_OR_FAIL(auto first, reader->Open(*tasks.front()));
+  ICEBERG_UNWRAP_OR_FAIL(auto second, reader->Open(*tasks.front()));
+  // Streams retain their own input and cursors after the planning objects are gone.
+  tasks.clear();
+  scan.reset();
+  reader.reset();
+  builder.reset();
+  snapshots_table_.reset();
+  table_.reset();
+  Schema selected({SchemaField::MakeRequired(2, "snapshot_id", int64()),
+                   SchemaField::MakeOptional(4, "operation", string())});
+  ICEBERG_UNWRAP_OR_FAIL(auto expected, TableFromJson(selected, R"([
+    {"snapshot_id":1,"operation":"append"},
+    {"snapshot_id":2,"operation":"append"}
+  ])"));
+  ICEBERG_UNWRAP_OR_FAIL(auto actual, ReadArrowTable(std::move(first)));
+  EXPECT_TRUE(TablesEqual(*expected, *actual));
+  ASSERT_EQ(actual->column(0)->num_chunks(), 2);
+  EXPECT_EQ(actual->column(0)->chunk(0)->length(), 1);
+  EXPECT_EQ(actual->column(0)->chunk(1)->length(), 1);
+  ICEBERG_UNWRAP_OR_FAIL(auto repeated, ReadArrowTable(std::move(second)));
+  EXPECT_TRUE(TablesEqual(*expected, *repeated));
 }
 
 }  // namespace iceberg

@@ -20,22 +20,15 @@
 #include "iceberg/inspect/snapshots_table.h"
 
 #include <array>
-#include <chrono>
-#include <cstddef>
 #include <memory>
-#include <optional>
 #include <utility>
 #include <vector>
 
-#include <nanoarrow/nanoarrow.h>
-
-#include "iceberg/arrow_c_data_util_internal.h"
 #include "iceberg/arrow_row_builder_internal.h"
-#include "iceberg/inspect/metadata_table_columns_internal.h"
-#include "iceberg/nanoarrow_status_internal.h"
+#include "iceberg/inspect/metadata_scan_task.h"
+#include "iceberg/inspect/metadata_scan_util_internal.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_field.h"
-#include "iceberg/schema_internal.h"
 #include "iceberg/snapshot.h"
 #include "iceberg/table.h"
 #include "iceberg/table_metadata.h"
@@ -45,165 +38,127 @@
 namespace iceberg {
 namespace {
 
-Status AppendCommittedAt(ArrowArray* column, const Snapshot& snapshot) {
-  return AppendInt(column, std::chrono::duration_cast<std::chrono::microseconds>(
-                               snapshot.timestamp_ms.time_since_epoch())
-                               .count());
-}
-
-Status AppendSnapshotId(ArrowArray* column, const Snapshot& snapshot) {
-  return AppendInt(column, snapshot.snapshot_id);
-}
-
-Status AppendParentId(ArrowArray* column, const Snapshot& snapshot) {
-  if (snapshot.parent_snapshot_id.has_value()) {
-    return AppendInt(column, *snapshot.parent_snapshot_id);
-  }
-  return AppendNull(column);
-}
-
-Status AppendOperation(ArrowArray* column, const Snapshot& snapshot) {
-  auto operation = snapshot.Operation();
-  if (operation.has_value()) {
-    return AppendString(column, *operation);
-  }
-  return AppendNull(column);
-}
-
-Status AppendManifestList(ArrowArray* column, const Snapshot& snapshot) {
-  return AppendString(column, snapshot.manifest_list);
-}
-
-Status AppendSummary(ArrowArray* column, const Snapshot& snapshot) {
-  if (snapshot.summary.empty()) {
-    return AppendNull(column);
-  }
-  if (snapshot.summary.contains(SnapshotSummaryFields::kOperation)) {
-    auto summary = snapshot.summary;
-    summary.erase(SnapshotSummaryFields::kOperation);
-    return AppendStringMap(column, summary);
-  }
-  return AppendStringMap(column, snapshot.summary);
-}
-
-constexpr std::array<internal::MetadataTableColumn<Snapshot>, 6> kSnapshotColumns{{
-    {.field_id = 1, .append = AppendCommittedAt},
-    {.field_id = 2, .append = AppendSnapshotId},
-    {.field_id = 3, .append = AppendParentId},
-    {.field_id = 4, .append = AppendOperation},
-    {.field_id = 5, .append = AppendManifestList},
-    {.field_id = 6, .append = AppendSummary},
-}};
-
-class SnapshotsTableStream {
- public:
-  static Result<std::unique_ptr<SnapshotsTableStream>> Make(
-      std::shared_ptr<const TableMetadata> metadata,
-      const iceberg::Schema& projected_schema,
-      std::vector<internal::AppendColumnFn<Snapshot>> append_fns) {
-    ArrowSchema arrow_schema{};
-    ICEBERG_RETURN_UNEXPECTED(ToArrowSchema(projected_schema, &arrow_schema));
-    return std::unique_ptr<SnapshotsTableStream>(new SnapshotsTableStream(
-        std::move(metadata), std::move(append_fns), std::move(arrow_schema)));
-  }
-
-  ~SnapshotsTableStream() = default;
-
-  Status Close() {
-    metadata_.reset();
-    if (arrow_schema_.release != nullptr) {
-      ArrowSchemaRelease(&arrow_schema_);
-    }
-    return {};
-  }
-
-  Result<std::optional<ArrowArray>> Next() {
-    if (metadata_ == nullptr) [[unlikely]] {
-      return InvalidArgument("Cannot read from a closed snapshots table stream");
-    }
-    const auto& snapshots = metadata_->snapshots;
-    if (next_snapshot_ == snapshots.size()) {
-      return std::nullopt;
-    }
-
-    ICEBERG_ASSIGN_OR_RAISE(auto builder, ArrowRowBuilder::Make(&arrow_schema_));
-    while (next_snapshot_ < snapshots.size() &&
-           builder.num_rows() < MetadataTable::kBatchSize) {
-      const auto& snapshot = snapshots[next_snapshot_++];
-      if (snapshot == nullptr) [[unlikely]] {
-        continue;
-      }
-      ICEBERG_RETURN_UNEXPECTED(
-          internal::AppendRow<Snapshot>(builder, append_fns_, *snapshot));
-    }
-    if (builder.num_rows() == 0) {
-      return std::nullopt;
-    }
-
-    ICEBERG_ASSIGN_OR_RAISE(auto array, std::move(builder).Finish());
-    return array;
-  }
-
-  Result<ArrowSchema> Schema() {
-    if (arrow_schema_.release == nullptr) [[unlikely]] {
-      return InvalidArgument("Cannot read schema from a closed snapshots table stream");
-    }
-    ArrowSchema schema_copy{};
-    ICEBERG_NANOARROW_RETURN_UNEXPECTED(
-        ArrowSchemaDeepCopy(&arrow_schema_, &schema_copy));
-    return schema_copy;
-  }
-
- private:
-  SnapshotsTableStream(std::shared_ptr<const TableMetadata> metadata,
-                       std::vector<internal::AppendColumnFn<Snapshot>> append_fns,
-                       ArrowSchema arrow_schema)
-      : metadata_(std::move(metadata)),
-        append_fns_(std::move(append_fns)),
-        arrow_schema_(std::move(arrow_schema)) {}
-
-  std::shared_ptr<const TableMetadata> metadata_;
-  std::vector<internal::AppendColumnFn<Snapshot>> append_fns_;
-  ArrowSchema arrow_schema_{};
-  size_t next_snapshot_ = 0;
-};
+constexpr std::array<internal::MetadataTableColumn<Snapshot>, 6> kSnapshotColumns = {
+    {{.field_id = 1,
+      .append =
+          [](ArrowArray* column, const Snapshot& row) {
+            return AppendInt(column, UnixMsFromTimePointMs(row.timestamp_ms) * 1000);
+          }},
+     {.field_id = 2,
+      .append = [](ArrowArray* column,
+                   const Snapshot& row) { return AppendInt(column, row.snapshot_id); }},
+     {.field_id = 3,
+      .append =
+          [](ArrowArray* column, const Snapshot& row) {
+            return row.parent_snapshot_id ? AppendInt(column, *row.parent_snapshot_id)
+                                          : AppendNull(column);
+          }},
+     {.field_id = 4,
+      .append =
+          [](ArrowArray* column, const Snapshot& row) {
+            auto operation = row.Operation();
+            return operation ? AppendString(column, *operation) : AppendNull(column);
+          }},
+     {.field_id = 5,
+      .append =
+          [](ArrowArray* column, const Snapshot& row) {
+            return row.manifest_list.empty() ? AppendNull(column)
+                                             : AppendString(column, row.manifest_list);
+          }},
+     {.field_id = 6, .append = [](ArrowArray* column, const Snapshot& row) {
+        if (row.summary.empty()) {
+          return AppendNull(column);
+        }
+        auto summary = row.summary;
+        summary.erase(SnapshotSummaryFields::kOperation);
+        return AppendStringMap(column, summary);
+      }}}};
 
 }  // namespace
 
-SnapshotsTable::SnapshotsTable(std::shared_ptr<Table> table)
+// SnapshotsTable implementation
+SnapshotsTable::SnapshotsTable(std::shared_ptr<const Table> table)
     : MetadataTable(std::move(table)) {}
 
 SnapshotsTable::~SnapshotsTable() = default;
 
 const std::shared_ptr<Schema>& SnapshotsTable::schema() const {
+  return CanonicalSchema();
+}
+
+const std::shared_ptr<Schema>& SnapshotsTable::CanonicalSchema() {
   static const auto schema = std::make_shared<Schema>(std::vector<SchemaField>{
       SchemaField::MakeRequired(1, "committed_at", timestamp_tz()),
       SchemaField::MakeRequired(2, "snapshot_id", int64()),
       SchemaField::MakeOptional(3, "parent_id", int64()),
       SchemaField::MakeOptional(4, "operation", string()),
       SchemaField::MakeOptional(5, "manifest_list", string()),
-      SchemaField::MakeOptional(6, "summary",
-                                std::make_shared<iceberg::MapType>(
-                                    SchemaField::MakeRequired(7, "key", string()),
+      SchemaField::MakeOptional(
+          6, "summary",
+          std::make_shared<MapType>(SchemaField::MakeRequired(7, "key", string()),
                                     SchemaField::MakeRequired(8, "value", string())))});
   return schema;
 }
 
 Result<std::unique_ptr<SnapshotsTable>> SnapshotsTable::Make(
-    std::shared_ptr<Table> table) {
+    std::shared_ptr<const Table> table) {
   ICEBERG_PRECHECK(table != nullptr, "Table cannot be null");
   return std::unique_ptr<SnapshotsTable>(new SnapshotsTable(std::move(table)));
 }
 
-Result<ArrowArrayStream> SnapshotsTable::ScanProjection(
-    const Schema& projected_schema) const {
-  ICEBERG_ASSIGN_OR_RAISE(
-      auto append_fns,
-      internal::SelectAppendFns<Snapshot>(*schema(), projected_schema, kSnapshotColumns));
-  ICEBERG_ASSIGN_OR_RAISE(
-      auto stream, SnapshotsTableStream::Make(source_table()->metadata(),
-                                              projected_schema, std::move(append_fns)));
-  return MakeArrowArrayStream(std::move(stream));
+Result<std::unique_ptr<MetadataScan>> SnapshotsTable::MakeScan(
+    internal::MetadataScanContext context) const {
+  return SnapshotsScan::Make(std::move(context));
+}
+
+Result<ArrowArrayStream> SnapshotsTable::ReadRows(
+    std::shared_ptr<const TableMetadata> metadata,
+    const std::shared_ptr<Schema>& projected_schema, int64_t batch_size) {
+  std::vector<size_t> snapshot_indices;
+  for (size_t i = 0; i < metadata->snapshots.size(); ++i) {
+    if (metadata->snapshots[i]) {
+      snapshot_indices.push_back(i);
+    }
+  }
+  const size_t num_rows = snapshot_indices.size();
+  return internal::MakeMetadataBatchStream<Snapshot>(
+      CanonicalSchema(), projected_schema, kSnapshotColumns, num_rows, batch_size,
+      [metadata = std::move(metadata),
+       snapshot_indices = std::move(snapshot_indices)](size_t index) -> const Snapshot& {
+        return *metadata->snapshots[snapshot_indices[index]];
+      });
+}
+
+// SnapshotsScan implementation
+SnapshotsScan::SnapshotsScan(internal::MetadataScanContext context,
+                             std::shared_ptr<MetadataScanTask> task)
+    : MetadataScan(std::move(context)), task_(std::move(task)) {}
+
+SnapshotsScan::~SnapshotsScan() = default;
+
+Result<std::unique_ptr<SnapshotsScan>> SnapshotsScan::Make(
+    internal::MetadataScanContext context) {
+  ICEBERG_PRECHECK(context.kind == MetadataTableKind::kSnapshots,
+                   "Unexpected metadata table kind for snapshots scan");
+  if (context.snapshot_id.has_value() || !context.ref_name.empty() ||
+      context.as_of_time_in_millis.has_value()) {
+    return NotSupported("Metadata table does not support time travel");
+  }
+  ICEBERG_PRECHECK(context.table_metadata != nullptr, "Table metadata cannot be null");
+  ICEBERG_PRECHECK(context.schema != nullptr, "Metadata table schema cannot be null");
+  ICEBERG_PRECHECK(context.projected_schema != nullptr,
+                   "Projected schema cannot be null");
+  ICEBERG_RETURN_UNEXPECTED(internal::SelectAppendFns<Snapshot>(
+      *SnapshotsTable::CanonicalSchema(), *context.projected_schema, kSnapshotColumns));
+  ICEBERG_ASSIGN_OR_RAISE(auto task,
+                          StaticMetadataTask::Make(context.kind, context.table_metadata,
+                                                   context.projected_schema));
+  return std::unique_ptr<SnapshotsScan>(
+      new SnapshotsScan(std::move(context), std::move(task)));
+}
+
+Result<MetadataScanTaskStreamPtr> SnapshotsScan::PlanTasksStream() const {
+  return MetadataScanTaskStream::FromVector({task_});
 }
 
 }  // namespace iceberg
