@@ -31,6 +31,7 @@
 #include "iceberg/result.h"
 #include "iceberg/schema.h"
 #include "iceberg/table_metadata.h"
+#include "iceberg/util/error_util_internal.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg {
@@ -46,7 +47,13 @@ ManifestWriter::ManifestWriter(std::unique_ptr<Writer> writer,
       partition_summary_(
           std::make_unique<PartitionSummary>(*adapter_->partition_type())) {}
 
-ManifestWriter::~ManifestWriter() = default;
+ManifestWriter::~ManifestWriter() {
+  if (!closed_) {
+    // Release the output on failure without flushing uncommitted adapter entries.
+    internal::LogAndIgnoreFailure("Manifest writer cleanup",
+                                  [this] { return writer_->Close(); });
+  }
+}
 
 Status ManifestWriter::WriteAddedEntry(std::shared_ptr<DataFile> file,
                                        std::optional<int64_t> data_sequence_number) {
