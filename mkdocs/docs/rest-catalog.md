@@ -74,7 +74,7 @@ logical mutation through per-request headers or an `AuthSession`. A static
 
 Errors are classified from the `code` reported in the error body, falling back
 to the HTTP status when the body cannot be parsed. Service diagnostics remain
-available. Malformed OAuth token responses never echo response content.
+available.
 
 Other Java transport options, including `rest.client.max-connections`,
 `rest.client.connections-per-route`, `rest.client.proxy.*` and
