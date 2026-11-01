@@ -149,7 +149,7 @@ class LoopbackHttpServer {
         const auto index = static_cast<size_t>(request_count_.fetch_add(1));
         const auto& response = responses_.empty()
                                    ? response_
-                                   : responses_[std::min(index, responses_.size() - 1)];
+                                   : responses_[(std::min)(index, responses_.size() - 1)];
         if (header_byte_interval_ > std::chrono::milliseconds::zero()) {
           const auto line_end = response.find("\r\n") + 2;
           // Fragment one complete header line. Its total transfer time can exceed
@@ -726,25 +726,61 @@ TEST(HttpClientTest, DoesNotFollowRedirects) {
 
 TEST(HttpClientRetryTest, TransportRetriesMatchTheJavaExceptionBoundary) {
   struct Case {
-    HttpMethod method;
     int status;
     cpr::ErrorCode error;
+    HttpMethod method;
     bool retry;
   };
-  const Case cases[] = {
-      {HttpMethod::kGet, 0, cpr::ErrorCode::RECV_ERROR, true},
-      {HttpMethod::kHead, 0, cpr::ErrorCode::GOT_NOTHING, true},
-      {HttpMethod::kDelete, 0, cpr::ErrorCode::SEND_ERROR, true},
-      {HttpMethod::kGet, 0, cpr::ErrorCode::OPERATION_TIMEDOUT, false},
-      {HttpMethod::kGet, 0, cpr::ErrorCode::SSL_CONNECT_ERROR, false},
-      {HttpMethod::kGet, 0, cpr::ErrorCode::COULDNT_CONNECT, false},
-      {HttpMethod::kGet, 0, cpr::ErrorCode::PARTIAL_FILE, false},
-      {HttpMethod::kGet, 0, cpr::ErrorCode::WEIRD_SERVER_REPLY, false},
-      {HttpMethod::kGet, 200, cpr::ErrorCode::PARTIAL_FILE, false},
-      {HttpMethod::kGet, 200, cpr::ErrorCode::RECV_ERROR, false},
-      {HttpMethod::kPost, 0, cpr::ErrorCode::RECV_ERROR, false},
-      {HttpMethod::kPost, 200, cpr::ErrorCode::PARTIAL_FILE, false},
-  };
+  const std::array<Case, 12> cases{{
+      {.status = 0,
+       .error = cpr::ErrorCode::RECV_ERROR,
+       .method = HttpMethod::kGet,
+       .retry = true},
+      {.status = 0,
+       .error = cpr::ErrorCode::GOT_NOTHING,
+       .method = HttpMethod::kHead,
+       .retry = true},
+      {.status = 0,
+       .error = cpr::ErrorCode::SEND_ERROR,
+       .method = HttpMethod::kDelete,
+       .retry = true},
+      {.status = 0,
+       .error = cpr::ErrorCode::OPERATION_TIMEDOUT,
+       .method = HttpMethod::kGet,
+       .retry = false},
+      {.status = 0,
+       .error = cpr::ErrorCode::SSL_CONNECT_ERROR,
+       .method = HttpMethod::kGet,
+       .retry = false},
+      {.status = 0,
+       .error = cpr::ErrorCode::COULDNT_CONNECT,
+       .method = HttpMethod::kGet,
+       .retry = false},
+      {.status = 0,
+       .error = cpr::ErrorCode::PARTIAL_FILE,
+       .method = HttpMethod::kGet,
+       .retry = false},
+      {.status = 0,
+       .error = cpr::ErrorCode::WEIRD_SERVER_REPLY,
+       .method = HttpMethod::kGet,
+       .retry = false},
+      {.status = 200,
+       .error = cpr::ErrorCode::PARTIAL_FILE,
+       .method = HttpMethod::kGet,
+       .retry = false},
+      {.status = 200,
+       .error = cpr::ErrorCode::RECV_ERROR,
+       .method = HttpMethod::kGet,
+       .retry = false},
+      {.status = 0,
+       .error = cpr::ErrorCode::RECV_ERROR,
+       .method = HttpMethod::kPost,
+       .retry = false},
+      {.status = 200,
+       .error = cpr::ErrorCode::PARTIAL_FILE,
+       .method = HttpMethod::kPost,
+       .retry = false},
+  }};
   for (const auto& test_case : cases) {
     SCOPED_TRACE(std::format("method={}, status={}, error={}",
                              static_cast<int>(test_case.method), test_case.status,
@@ -787,33 +823,41 @@ TEST(HttpClientRetryTest, KeyedNetworkFailuresRetryWithoutAnExceptionDelay) {
 TEST(HttpClientRetryTest, KeyLifetimeMatchesJavaBudgetChecks) {
   struct Case {
     std::chrono::milliseconds lifetime;
-    std::chrono::milliseconds elapsed;
-    bool has_key;
+    std::chrono::milliseconds elapsed{};
     std::string retry_after;
-    int attempt;
-    bool transport_error;
-    bool retry;
+    int attempt = 1;
+    bool has_key = true;
+    bool transport_error = false;
+    bool retry = false;
   };
-  const Case cases[] = {
-      {std::chrono::seconds(1), {}, true, "3600", 1, false, false},
-      {std::chrono::hours(1), {}, true, "1", 1, false, true},
-      {std::chrono::milliseconds(1), {}, true, "", 1, true, false},
-      {std::chrono::milliseconds(1), {}, false, "3600", 1, false, true},
-      {std::chrono::minutes(30), std::chrono::minutes(31), true, "1", 1, false, false},
-      {std::chrono::seconds(2), std::chrono::milliseconds(1100), true, "1", 2, false,
-       false},
-      {std::chrono::milliseconds(1), {}, true, "", 1, false, false},
-      {{}, {}, true, "1", 1, false, false},
-      {{}, {}, false, "1", 1, false, true},
-      {std::chrono::milliseconds(1050), {}, true, "", 1, false, false},
-      {std::chrono::milliseconds(1101), {}, true, "", 1, false, true},
-  };
+  const std::array<Case, 11> cases{{
+      {.lifetime = std::chrono::seconds(1), .retry_after = "3600"},
+      {.lifetime = std::chrono::hours(1), .retry_after = "1", .retry = true},
+      {.lifetime = std::chrono::milliseconds(1), .transport_error = true},
+      {.lifetime = std::chrono::milliseconds(1),
+       .retry_after = "3600",
+       .has_key = false,
+       .retry = true},
+      {.lifetime = std::chrono::minutes(30),
+       .elapsed = std::chrono::minutes(31),
+       .retry_after = "1"},
+      {.lifetime = std::chrono::seconds(2),
+       .elapsed = std::chrono::milliseconds(1100),
+       .retry_after = "1",
+       .attempt = 2},
+      {.lifetime = std::chrono::milliseconds(1)},
+      {.lifetime = {}, .retry_after = "1"},
+      {.lifetime = {}, .retry_after = "1", .has_key = false, .retry = true},
+      {.lifetime = std::chrono::milliseconds(1050)},
+      {.lifetime = std::chrono::milliseconds(1101), .retry = true},
+  }};
   for (const auto& test_case : cases) {
     cpr::Response response;
     response.status_code = test_case.transport_error ? 0 : 500;
     if (test_case.transport_error) response.error.code = cpr::ErrorCode::RECV_ERROR;
-    if (!test_case.retry_after.empty())
+    if (!test_case.retry_after.empty()) {
       response.header["Retry-After"] = test_case.retry_after;
+    }
     HttpRequest request{.method =
                             test_case.has_key ? HttpMethod::kPost : HttpMethod::kGet};
     if (test_case.has_key) request.headers["Idempotency-Key"] = "key";
@@ -848,7 +892,7 @@ TEST(HttpClientRetryTest, LargeRetryAfterValuesSaturateWithoutOverflow) {
        {"9223372036854776", "18446744073709552", "9223372036854775807"}) {
     cpr::Response response;
     response.header["Retry-After"] = value;
-    EXPECT_EQ(detail::RetryInterval(response, 1), std::chrono::milliseconds::max());
+    EXPECT_EQ(detail::RetryInterval(response, 1), (std::chrono::milliseconds::max)());
   }
 }
 
@@ -869,7 +913,8 @@ TEST(HttpClientRetryTest, InvalidRetryAfterFallsBackWithoutOverflow) {
 TEST(HttpClientRetryTest, ExponentialBackoffIsCapped) {
   cpr::Response response;
   EXPECT_EQ(detail::RetryInterval(response, 0), std::chrono::milliseconds::zero());
-  for (int64_t attempt : {int64_t{7}, int64_t{8}, std::numeric_limits<int64_t>::max()}) {
+  for (int64_t attempt :
+       {int64_t{7}, int64_t{8}, (std::numeric_limits<int64_t>::max)()}) {
     const auto delay = detail::RetryInterval(response, attempt);
     EXPECT_GE(delay, std::chrono::seconds(64));
     EXPECT_LT(delay, std::chrono::milliseconds(70400));
@@ -899,11 +944,11 @@ class HttpClientRetryExecutionTest : public ::testing::Test {
 };
 
 TEST_F(HttpClientRetryExecutionTest, UnkeyedRequestsHonorRetryAfterWithoutCap) {
-  const std::pair<const char*, std::chrono::milliseconds> cases[] = {
-      {"3600", std::chrono::hours(1)},
-      {"9999999999", std::chrono::milliseconds(9999999999000LL)},
-      {"9223372036854775807", std::chrono::milliseconds::max()},
-      {"Thu, 01 Jan 1970 01:00:00 GMT", std::chrono::hours(1)}};
+  const std::array<std::pair<const char*, std::chrono::milliseconds>, 4> cases{
+      {{"3600", std::chrono::hours(1)},
+       {"9999999999", std::chrono::milliseconds(9999999999000LL)},
+       {"9223372036854775807", (std::chrono::milliseconds::max)()},
+       {"Thu, 01 Jan 1970 01:00:00 GMT", std::chrono::hours(1)}}};
   // Record even the largest durations without advancing a nanosecond clock
   // beyond its representable range or actually sleeping.
   timing_.sleep = [&](std::chrono::milliseconds delay) { sleeps_.push_back(delay); };
@@ -1179,7 +1224,7 @@ TEST(HttpClientOptionsTest, RejectsInvalidSettingsWithoutEchoingValues) {
 }
 
 TEST(HttpClientOptionsTest, ParsesJavaDurationSyntaxForKeyLifetime) {
-  const std::pair<const char*, int64_t> cases[] = {
+  const std::array<std::pair<const char*, int64_t>, 14> cases{{
       {"PT30M", 1800000},
       {"PT0S", 0},
       {"PT-5M", 0},
@@ -1193,8 +1238,8 @@ TEST(HttpClientOptionsTest, ParsesJavaDurationSyntaxForKeyLifetime) {
       {"-PT-6H+3M", 21420000},
       {"+PT+1S", 1000},
       {"PT1.S", 1000},
-      {"PT9223372036854775.807S", std::numeric_limits<int64_t>::max()},
-  };
+      {"PT9223372036854775.807S", (std::numeric_limits<int64_t>::max)()},
+  }};
   for (const auto& [value, millis] : cases) {
     SCOPED_TRACE(value);
     ICEBERG_UNWRAP_OR_FAIL(auto options,

@@ -20,6 +20,7 @@
 #include "iceberg/catalog/rest/http_client.h"
 
 #include <algorithm>
+#include <array>
 #include <charconv>
 #include <chrono>
 #include <ctime>
@@ -80,8 +81,8 @@ Status ParseIntegerProperty(
 }
 
 bool CheckedAdd(int64_t left, int64_t right, int64_t& result) {
-  if ((right > 0 && left > std::numeric_limits<int64_t>::max() - right) ||
-      (right < 0 && left < std::numeric_limits<int64_t>::min() - right)) {
+  if ((right > 0 && left > (std::numeric_limits<int64_t>::max)() - right) ||
+      (right < 0 && left < (std::numeric_limits<int64_t>::min)() - right)) {
     return false;
   }
   result = left + right;
@@ -89,8 +90,8 @@ bool CheckedAdd(int64_t left, int64_t right, int64_t& result) {
 }
 
 bool CheckedSubtract(int64_t left, int64_t right, int64_t& result) {
-  if ((right > 0 && left < std::numeric_limits<int64_t>::min() + right) ||
-      (right < 0 && left > std::numeric_limits<int64_t>::max() + right)) {
+  if ((right > 0 && left < (std::numeric_limits<int64_t>::min)() + right) ||
+      (right < 0 && left > (std::numeric_limits<int64_t>::max)() + right)) {
     return false;
   }
   result = left - right;
@@ -112,8 +113,8 @@ std::optional<std::chrono::milliseconds> ParseKeyLifetime(const std::string& val
        !has_time)) {
     return std::nullopt;
   }
-  constexpr int64_t multipliers[] = {86400, 3600, 60, 1};
-  int64_t components[4]{};
+  constexpr std::array<int64_t, 4> multipliers = {86400, 3600, 60, 1};
+  std::array<int64_t, 4> components{};
   for (size_t i = 0; i < 4; ++i) {
     if (!match[i + 2].matched) continue;
     const auto text = match[i + 2].str();
@@ -122,8 +123,8 @@ std::optional<std::chrono::milliseconds> ParseKeyLifetime(const std::string& val
     int64_t number{};
     auto [end, ec] = std::from_chars(view.data(), view.data() + view.size(), number);
     if (ec != std::errc{} || end != view.data() + view.size() ||
-        number > std::numeric_limits<int64_t>::max() / multipliers[i] ||
-        number < std::numeric_limits<int64_t>::min() / multipliers[i]) {
+        number > (std::numeric_limits<int64_t>::max)() / multipliers[i] ||
+        number < (std::numeric_limits<int64_t>::min)() / multipliers[i]) {
       return std::nullopt;
     }
     components[i] = number * multipliers[i];
@@ -145,7 +146,7 @@ std::optional<std::chrono::milliseconds> ParseKeyLifetime(const std::string& val
   }
   if (match[1].str() == "-") {
     if (nanos == 0) {
-      if (seconds == std::numeric_limits<int64_t>::min()) return std::nullopt;
+      if (seconds == (std::numeric_limits<int64_t>::min)()) return std::nullopt;
       seconds = -seconds;
     } else {
       seconds = seconds >= 0 ? -seconds - 1 : -(seconds + 1);
@@ -155,7 +156,7 @@ std::optional<std::chrono::milliseconds> ParseKeyLifetime(const std::string& val
   if (seconds < 0 || (seconds == 0 && nanos == 0)) {
     return std::chrono::milliseconds::zero();
   }
-  constexpr auto kMaxMillis = std::chrono::milliseconds::max().count();
+  constexpr auto kMaxMillis = (std::chrono::milliseconds::max)().count();
   if (seconds > kMaxMillis / 1000 ||
       (seconds == kMaxMillis / 1000 && nanos > (kMaxMillis % 1000) * 1000000)) {
     return std::nullopt;
@@ -284,8 +285,8 @@ std::optional<std::chrono::milliseconds> RetryAfter(
   auto [end, ec] = std::from_chars(value.data(), value.data() + value.size(), seconds);
   if (ec == std::errc{} && end == value.data() + value.size()) {
     if (seconds <= 0) return std::nullopt;
-    constexpr auto kMaxSeconds = std::chrono::milliseconds::max().count() / 1000;
-    if (seconds > kMaxSeconds) return std::chrono::milliseconds::max();
+    constexpr auto kMaxSeconds = (std::chrono::milliseconds::max)().count() / 1000;
+    if (seconds > kMaxSeconds) return (std::chrono::milliseconds::max)();
     return std::chrono::milliseconds(seconds * 1000);
   }
   const auto date = curl_getdate(it->second.c_str(), nullptr);
@@ -294,13 +295,13 @@ std::optional<std::chrono::milliseconds> RetryAfter(
       std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch())
           .count();
   const auto date_seconds = static_cast<int64_t>(date);
-  if (date_seconds > std::chrono::milliseconds::max().count() / 1000) {
-    return std::chrono::milliseconds::max();
+  if (date_seconds > (std::chrono::milliseconds::max)().count() / 1000) {
+    return (std::chrono::milliseconds::max)();
   }
   const auto date_ms = date_seconds * 1000;
   if (date_ms <= now_ms) return std::nullopt;
   int64_t delay;
-  if (!CheckedSubtract(date_ms, now_ms, delay)) return std::chrono::milliseconds::max();
+  if (!CheckedSubtract(date_ms, now_ms, delay)) return (std::chrono::milliseconds::max)();
   return std::chrono::milliseconds(delay);
 }
 
@@ -319,22 +320,24 @@ bool ShouldRetry(const cpr::Response& response, const HttpRequest& request,
     // Java reads the final response entity outside HttpRequestRetryExec. A body
     // read failure is propagated, even for a successful status or keyed request.
     if (response.status_code != 0 || !safe ||
-        !IsRetriableTransportError(response.error.code))
+        !IsRetriableTransportError(response.error.code)) {
       return false;
+    }
   } else {
     const auto code = response.status_code;
     if (code != 429 &&
         !(code == 503 && response.header.contains(std::string(kHeaderRetryAfter))) &&
         !(safe &&
-          (code == 408 || code == 500 || code == 502 || code == 503 || code == 504)))
+          (code == 408 || code == 500 || code == 502 || code == 503 || code == 504))) {
       return false;
+    }
   }
   if (has_key && options.idempotency_key_lifetime.has_value() && elapsed.has_value()) {
     const auto lifetime = options.idempotency_key_lifetime->count();
     if (elapsed->count() >= lifetime) return false;
     int64_t remaining;
     if (!CheckedSubtract(lifetime, elapsed->count(), remaining)) {
-      remaining = std::numeric_limits<int64_t>::max();
+      remaining = (std::numeric_limits<int64_t>::max)();
     }
     auto upper_delay = Backoff(exec_count);
     if (!response.error) {
@@ -401,9 +404,9 @@ bool SocketIdleTimeout::Check(int64_t downloaded, int64_t uploaded, int64_t head
 std::optional<std::chrono::milliseconds> SocketIdleTimeout::Remaining(
     Clock::time_point now) const {
   if (!last_progress_.has_value()) return std::nullopt;
-  return std::max(
-      std::chrono::milliseconds::zero(),
-      std::chrono::ceil<std::chrono::milliseconds>(timeout_ - (now - *last_progress_)));
+  return (std::max)(std::chrono::milliseconds::zero(),
+                    std::chrono::ceil<std::chrono::milliseconds>(
+                        timeout_ - (now - *last_progress_)));
 }
 
 }  // namespace detail
@@ -415,9 +418,11 @@ void ApplyOptions(cpr::Session& session, const HttpClientOptions& options) {
       options.connection_timeout_ms.value_or(kDefaultConnectionTimeoutMs);
   // libcurl interprets zero as its own five-minute default. Use its largest
   // native deadline when Java's disabled connection timeout is requested.
+  // Its native long timeout is 32-bit on Windows, so int64_t is not equivalent.
+  constexpr auto kMaxCurlTimeoutMs =
+      (std::numeric_limits<long>::max)();  // NOLINT(google-runtime-int)
   session.SetConnectTimeout(cpr::ConnectTimeout{std::chrono::milliseconds(
-      timeout == 0 ? std::numeric_limits<long>::max()
-                   : std::min<int64_t>(timeout, std::numeric_limits<long>::max()))});
+      timeout == 0 ? kMaxCurlTimeoutMs : std::min<int64_t>(timeout, kMaxCurlTimeoutMs))});
 }
 
 // Drive transfers synchronously through libcurl's socket API. Observe socket
@@ -481,26 +486,27 @@ Result<cpr::Response> PerformSession(cpr::Session& session,
       break;
     }
     auto wait_ms = std::chrono::milliseconds(1000);
-    long curl_timeout = -1;
+    // curl_multi_timeout requires a native long pointer, also on Windows.
+    long curl_timeout = -1;  // NOLINT(google-runtime-int)
     if (const auto status = curl_multi_timeout(multi.get(), &curl_timeout);
         status != CURLM_OK) {
       return IOError("HTTP timer query failed: {}", curl_multi_strerror(status));
     }
     if (curl_timeout >= 0) {
-      wait_ms = std::min(wait_ms, std::chrono::milliseconds(curl_timeout));
+      wait_ms = (std::min)(wait_ms, std::chrono::milliseconds(curl_timeout));
     }
     if (idle_timeout != nullptr) {
       if (auto remaining = idle_timeout->Remaining()) {
-        wait_ms = std::min(wait_ms, *remaining);
+        wait_ms = (std::min)(wait_ms, *remaining);
       }
     }
     std::vector<curl_waitfd> watched;
     watched.reserve(sockets.size());
     for (const auto& [socket, action] : sockets) {
-      short events = 0;
-      if (action & CURL_POLL_IN) events |= CURL_WAIT_POLLIN;
-      if (action & CURL_POLL_OUT) events |= CURL_WAIT_POLLOUT;
-      if (events != 0) watched.push_back({socket, events, 0});
+      curl_waitfd watched_socket{.fd = socket, .events = 0, .revents = 0};
+      if (action & CURL_POLL_IN) watched_socket.events |= CURL_WAIT_POLLIN;
+      if (action & CURL_POLL_OUT) watched_socket.events |= CURL_WAIT_POLLOUT;
+      if (watched_socket.events != 0) watched.push_back(watched_socket);
     }
     int activity = 0;
 #if LIBCURL_VERSION_NUM >= 0x074200
