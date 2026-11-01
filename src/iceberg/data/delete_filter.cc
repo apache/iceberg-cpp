@@ -460,50 +460,50 @@ Result<std::unique_ptr<DeleteFilter>> DeleteFilter::Make(
     std::string file_path, std::span<const std::shared_ptr<DataFile>> delete_files,
     std::shared_ptr<Schema> table_schema, std::shared_ptr<Schema> requested_schema,
     std::shared_ptr<FileIO> io, bool need_row_pos_col,
-    std::shared_ptr<DeleteCounter> counter) {
+    std::shared_ptr<DeleteCounter> counter, bool validate_batch) {
   ICEBERG_ASSIGN_OR_RAISE(auto field_lookup, MakeFieldLookup(table_schema));
   return Make(std::move(file_path), delete_files, std::move(requested_schema),
               std::move(io), std::move(field_lookup), need_row_pos_col,
-              std::move(counter));
+              std::move(counter), validate_batch);
 }
 
 Result<std::unique_ptr<DeleteFilter>> DeleteFilter::Make(
     std::string file_path, std::span<const std::shared_ptr<DataFile>> delete_files,
     std::shared_ptr<TableMetadata> table_metadata,
     std::shared_ptr<Schema> requested_schema, std::shared_ptr<FileIO> io,
-    bool need_row_pos_col, std::shared_ptr<DeleteCounter> counter) {
+    bool need_row_pos_col, std::shared_ptr<DeleteCounter> counter, bool validate_batch) {
   ICEBERG_PRECHECK(table_metadata != nullptr, "Table metadata must not be null");
 
   ICEBERG_ASSIGN_OR_RAISE(auto field_lookup, MakeFieldLookup(std::move(table_metadata)));
   return Make(std::move(file_path), delete_files, std::move(requested_schema),
               std::move(io), std::move(field_lookup), need_row_pos_col,
-              std::move(counter));
+              std::move(counter), validate_batch);
 }
 
 Result<std::unique_ptr<DeleteFilter>> DeleteFilter::Make(
     std::string file_path, std::span<const std::shared_ptr<DataFile>> delete_files,
     std::shared_ptr<Schema> table_schema, std::shared_ptr<Schema> requested_schema,
     std::shared_ptr<FileIO> io, std::span<const std::shared_ptr<Schema>> schemas,
-    bool need_row_pos_col, std::shared_ptr<DeleteCounter> counter) {
+    bool need_row_pos_col, std::shared_ptr<DeleteCounter> counter, bool validate_batch) {
   ICEBERG_ASSIGN_OR_RAISE(auto field_lookup, MakeFieldLookup(table_schema, schemas));
   return Make(std::move(file_path), delete_files, std::move(requested_schema),
               std::move(io), std::move(field_lookup), need_row_pos_col,
-              std::move(counter));
+              std::move(counter), validate_batch);
 }
 
 Result<std::unique_ptr<DeleteFilter>> DeleteFilter::Make(
     std::string file_path, std::span<const std::shared_ptr<DataFile>> delete_files,
     std::shared_ptr<Schema> requested_schema, std::shared_ptr<FileIO> io,
     FieldLookup field_lookup, bool need_row_pos_col,
-    std::shared_ptr<DeleteCounter> counter) {
+    std::shared_ptr<DeleteCounter> counter, bool validate_batch) {
   ICEBERG_PRECHECK(requested_schema != nullptr, "Requested schema must not be null");
   ICEBERG_PRECHECK(field_lookup != nullptr, "Field lookup must not be null");
   ICEBERG_PRECHECK(delete_files.empty() || io != nullptr,
                    "FileIO must not be null when delete files are present");
 
-  auto filter = std::unique_ptr<DeleteFilter>(
-      new DeleteFilter(std::move(file_path), std::move(requested_schema), std::move(io),
-                       std::move(field_lookup), need_row_pos_col, std::move(counter)));
+  auto filter = std::unique_ptr<DeleteFilter>(new DeleteFilter(
+      std::move(file_path), std::move(requested_schema), std::move(io),
+      std::move(field_lookup), need_row_pos_col, std::move(counter), validate_batch));
   ICEBERG_RETURN_UNEXPECTED(filter->Init(delete_files));
   return filter;
 }
@@ -511,13 +511,15 @@ Result<std::unique_ptr<DeleteFilter>> DeleteFilter::Make(
 DeleteFilter::DeleteFilter(std::string file_path,
                            std::shared_ptr<Schema> requested_schema,
                            std::shared_ptr<FileIO> io, FieldLookup field_lookup,
-                           bool need_row_pos_col, std::shared_ptr<DeleteCounter> counter)
+                           bool need_row_pos_col, std::shared_ptr<DeleteCounter> counter,
+                           bool validate_batch)
     : file_path_(std::move(file_path)),
       requested_schema_(std::move(requested_schema)),
       field_lookup_(std::move(field_lookup)),
       need_row_pos_col_(need_row_pos_col),
+      validate_batch_(validate_batch),
       counter_(std::move(counter)),
-      delete_loader_(std::move(io)) {}
+      delete_loader_(std::move(io), validate_batch) {}
 
 DeleteFilter::~DeleteFilter() = default;
 
@@ -750,7 +752,9 @@ Result<AliveRowSelection> DeleteFilter::ComputeAliveRows(const ArrowSchema& batc
       batch.length <= static_cast<int64_t>(std::numeric_limits<int32_t>::max()),
       "Batch length {} exceeds int32_t row index capacity", batch.length);
   result.indices.reserve(static_cast<size_t>(batch.length));
-  ICEBERG_ASSIGN_OR_RAISE(auto row, ArrowArrayStructLike::Make(batch_schema, batch));
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto row,
+      ArrowArrayStructLike::Make(batch_schema, batch, /*row_index=*/0, validate_batch_));
 
   for (int64_t i = 0; i < batch.length; ++i) {
     if (i > 0) {

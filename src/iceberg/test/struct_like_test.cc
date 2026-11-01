@@ -33,6 +33,7 @@
 #include <arrow/type.h>
 #include <arrow/type_fwd.h>
 #include <arrow/util/decimal.h>
+#include <nanoarrow/nanoarrow.h>
 
 #include "iceberg/arrow_c_data_guard_internal.h"
 #include "iceberg/expression/literal.h"
@@ -616,6 +617,107 @@ TEST(ArrowArrayStructLike, PrimitiveMap) {
       EXPECT_SCALAR_EQ(map_like->GetValue(j), int32_t, expected_map[j].second);
     }
   }
+}
+
+TEST(ArrowArrayStructLike, ConfigurableFullValidation) {
+  {
+    auto type = ::arrow::struct_({::arrow::field("id", ::arrow::int64(), false),
+                                  ::arrow::field("name", ::arrow::utf8())});
+    auto array_result = ::arrow::json::ArrayFromJSONString(
+        type, R"([[1,"first"], [2,"second"], [3,"third"]])");
+    ASSERT_TRUE(array_result.ok()) << array_result.status().ToString();
+    auto array = array_result.ValueOrDie();
+
+    ArrowSchema c_schema;
+    ArrowArray c_array;
+    internal::ArrowSchemaGuard schema_guard(&c_schema);
+    internal::ArrowArrayGuard array_guard(&c_array);
+    ASSERT_TRUE(::arrow::ExportType(*type, &c_schema).ok());
+    ASSERT_TRUE(::arrow::ExportArray(*array, &c_array).ok());
+
+    auto* offsets = const_cast<int32_t*>(
+        reinterpret_cast<const int32_t*>(c_array.children[1]->buffers[1]));
+    offsets[2] = offsets[1] - 1;
+
+    EXPECT_THAT(ArrowArrayStructLike::Make(c_schema, c_array),
+                IsError(ErrorKind::kInvalidArrowData));
+    EXPECT_THAT(ArrowArrayStructLike::Make(c_schema, c_array, 0, false), IsOk());
+  }
+
+  {
+    auto type = ::arrow::list(::arrow::field("item", ::arrow::int32()));
+    auto array_result = ::arrow::json::ArrayFromJSONString(type, R"([[1, 2], [3], [4]])");
+    ASSERT_TRUE(array_result.ok()) << array_result.status().ToString();
+    auto array = array_result.ValueOrDie();
+
+    ArrowSchema c_schema;
+    ArrowArray c_array;
+    internal::ArrowSchemaGuard schema_guard(&c_schema);
+    internal::ArrowArrayGuard array_guard(&c_array);
+    ASSERT_TRUE(::arrow::ExportType(*type, &c_schema).ok());
+    ASSERT_TRUE(::arrow::ExportArray(*array, &c_array).ok());
+
+    auto* offsets =
+        const_cast<int32_t*>(reinterpret_cast<const int32_t*>(c_array.buffers[1]));
+    offsets[2] = offsets[1] - 1;
+
+    EXPECT_THAT(ArrowArrayArrayLike::Make(c_schema, c_array),
+                IsError(ErrorKind::kInvalidArrowData));
+    EXPECT_THAT(ArrowArrayArrayLike::Make(c_schema, c_array, 0, false), IsOk());
+  }
+
+  {
+    auto type = std::make_shared<::arrow::MapType>(
+        ::arrow::field("key", ::arrow::utf8(), false),
+        ::arrow::field("value", ::arrow::int32(), false));
+    auto array_result = ::arrow::json::ArrayFromJSONString(
+        type, R"([[ ["a", 1], ["b", 2] ], [ ["c", 3] ], []])");
+    ASSERT_TRUE(array_result.ok()) << array_result.status().ToString();
+    auto array = array_result.ValueOrDie();
+
+    ArrowSchema c_schema;
+    ArrowArray c_array;
+    internal::ArrowSchemaGuard schema_guard(&c_schema);
+    internal::ArrowArrayGuard array_guard(&c_array);
+    ASSERT_TRUE(::arrow::ExportType(*type, &c_schema).ok());
+    ASSERT_TRUE(::arrow::ExportArray(*array, &c_array).ok());
+
+    auto* offsets =
+        const_cast<int32_t*>(reinterpret_cast<const int32_t*>(c_array.buffers[1]));
+    offsets[2] = offsets[1] - 1;
+
+    EXPECT_THAT(ArrowArrayMapLike::Make(c_schema, c_array),
+                IsError(ErrorKind::kInvalidArrowData));
+    EXPECT_THAT(ArrowArrayMapLike::Make(c_schema, c_array, 0, false), IsOk());
+  }
+}
+
+TEST(ArrowArrayStructLike, NestedValidationPolicy) {
+  auto type = ::arrow::struct_({::arrow::field(
+      "nested", ::arrow::struct_({::arrow::field("value", ::arrow::utf8())}))});
+  auto array_result = ::arrow::json::ArrayFromJSONString(
+      type, R"([[{"value":"first"}], [{"value":"second"}]])");
+  ASSERT_TRUE(array_result.ok()) << array_result.status().ToString();
+  auto array = array_result.ValueOrDie();
+
+  ArrowSchema c_schema;
+  ArrowArray c_array;
+  internal::ArrowSchemaGuard schema_guard(&c_schema);
+  internal::ArrowArrayGuard array_guard(&c_array);
+  ASSERT_TRUE(::arrow::ExportType(*type, &c_schema).ok());
+  ASSERT_TRUE(::arrow::ExportArray(*array, &c_array).ok());
+
+  auto* offsets = const_cast<int32_t*>(
+      reinterpret_cast<const int32_t*>(c_array.children[0]->children[0]->buffers[1]));
+  offsets[1] = offsets[0] + 1;
+  offsets[2] = offsets[1] - 1;
+
+  EXPECT_THAT(ArrowArrayStructLike::Make(c_schema, c_array),
+              IsError(ErrorKind::kInvalidArrowData));
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto struct_like,
+      ArrowArrayStructLike::Make(c_schema, c_array, 0, /*validate_batch=*/false));
+  EXPECT_THAT(struct_like->GetField(0), IsOk());
 }
 
 TEST(ArrowArrayStructLike, Accessor) {
