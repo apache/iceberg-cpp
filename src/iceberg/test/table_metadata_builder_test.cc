@@ -17,6 +17,7 @@
  * under the License.
  */
 
+#include <algorithm>
 #include <memory>
 #include <ranges>
 #include <string>
@@ -108,6 +109,7 @@ TEST(TableMetadataTest, Make) {
 
   ICEBERG_UNWRAP_OR_FAIL(
       auto metadata, TableMetadata::Make(*Schema, *spec, *order, "s3://bucket/test", {}));
+  EXPECT_EQ(metadata->format_version, TableMetadata::kDefaultTableFormatVersion);
   EXPECT_THAT(Uuid::FromString(metadata->table_uuid), IsOk());
   // Check schema fields
   ASSERT_EQ(1, metadata->schemas.size());
@@ -141,6 +143,142 @@ TEST(TableMetadataTest, Make) {
   EXPECT_EQ(3, order_fields[0].source_id());
   EXPECT_EQ(SortDirection::kAscending, order_fields[0].direction());
   EXPECT_EQ(NullOrder::kLast, order_fields[0].null_order());
+}
+
+class TableMetadataFormatVersionTest : public ::testing::TestWithParam<int> {};
+
+TEST_P(TableMetadataFormatVersionTest, MakeWithProperty) {
+  auto schema = CreateTestSchema();
+  auto spec = PartitionSpec::Unpartitioned();
+  auto order = SortOrder::Unsorted();
+  const int version = GetParam();
+  const std::unordered_map<std::string, std::string> properties = {
+      {"format-version", std::to_string(version)}, {"owner", "alice"}};
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto metadata,
+      TableMetadata::Make(*schema, *spec, *order, "s3://bucket/test", properties));
+  EXPECT_EQ(metadata->format_version, version);
+  EXPECT_THAT(metadata->properties.configs(),
+              ::testing::UnorderedElementsAre(::testing::Pair("owner", "alice")));
+  EXPECT_EQ(properties.at("format-version"), std::to_string(version));
+}
+
+TEST_P(TableMetadataFormatVersionTest, MakeWithExplicitVersion) {
+  auto schema = CreateTestSchema();
+  auto spec = PartitionSpec::Unpartitioned();
+  auto order = SortOrder::Unsorted();
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto metadata,
+      TableMetadata::Make(*schema, *spec, *order, "s3://bucket/test", {}, GetParam()));
+  EXPECT_EQ(metadata->format_version, GetParam());
+}
+
+INSTANTIATE_TEST_SUITE_P(SupportedVersions, TableMetadataFormatVersionTest,
+                         ::testing::Values(1, 2, 3),
+                         [](const ::testing::TestParamInfo<int>& info) {
+                           return "V" + std::to_string(info.param);
+                         });
+
+class TableMetadataInvalidFormatVersionTest : public ::testing::TestWithParam<int> {};
+
+TEST_P(TableMetadataInvalidFormatVersionTest, MakeRejectsProperty) {
+  auto schema = CreateTestSchema();
+  auto spec = PartitionSpec::Unpartitioned();
+  auto order = SortOrder::Unsorted();
+  EXPECT_THAT(TableMetadata::Make(*schema, *spec, *order, "s3://bucket/test",
+                                  {{"format-version", std::to_string(GetParam())}}),
+              IsError(ErrorKind::kInvalidArgument));
+}
+
+TEST_P(TableMetadataInvalidFormatVersionTest, MakeRejectsExplicitVersion) {
+  auto schema = CreateTestSchema();
+  auto spec = PartitionSpec::Unpartitioned();
+  auto order = SortOrder::Unsorted();
+  EXPECT_THAT(
+      TableMetadata::Make(*schema, *spec, *order, "s3://bucket/test", {}, GetParam()),
+      IsError(ErrorKind::kInvalidArgument));
+}
+
+INSTANTIATE_TEST_SUITE_P(UnsupportedVersions, TableMetadataInvalidFormatVersionTest,
+                         ::testing::Values(0, -1, 4, 257));
+
+struct InvalidFormatVersionString {
+  std::string name;
+  std::string value;
+};
+
+class TableMetadataInvalidFormatVersionStringTest
+    : public ::testing::TestWithParam<InvalidFormatVersionString> {};
+
+TEST_P(TableMetadataInvalidFormatVersionStringTest, MakeRejectsProperty) {
+  auto schema = CreateTestSchema();
+  auto spec = PartitionSpec::Unpartitioned();
+  auto order = SortOrder::Unsorted();
+  auto result = TableMetadata::Make(*schema, *spec, *order, "s3://bucket/test",
+                                    {{"format-version", GetParam().value}});
+  EXPECT_THAT(result, IsError(ErrorKind::kInvalidArgument));
+  EXPECT_THAT(result, HasErrorMessage("Invalid format-version property"));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    InvalidStrings, TableMetadataInvalidFormatVersionStringTest,
+    ::testing::Values(InvalidFormatVersionString{"Empty", ""},
+                      InvalidFormatVersionString{"NonNumeric", "abc"},
+                      InvalidFormatVersionString{"TrailingCharacters", "2x"},
+                      InvalidFormatVersionString{"Fractional", "1.5"},
+                      InvalidFormatVersionString{"Overflow", "2147483648"},
+                      InvalidFormatVersionString{"LeadingPlus", "+2"},
+                      InvalidFormatVersionString{"LeadingWhitespace", " 2"},
+                      InvalidFormatVersionString{"TrailingWhitespace", "2 "}),
+    [](const ::testing::TestParamInfo<InvalidFormatVersionString>& info) {
+      return info.param.name;
+    });
+
+class TableMetadataReservedPropertyTest : public ::testing::TestWithParam<std::string> {};
+
+TEST_P(TableMetadataReservedPropertyTest, MakeWithProperty) {
+  auto schema = CreateTestSchema();
+  auto spec = PartitionSpec::Unpartitioned();
+  auto order = SortOrder::Unsorted();
+  auto result = TableMetadata::Make(*schema, *spec, *order, "s3://bucket/test",
+                                    {{GetParam(), "1"}});
+  if (GetParam() == TableProperties::kFormatVersion.key()) {
+    ASSERT_THAT(result, IsOk());
+    EXPECT_EQ(result.value()->format_version, 1);
+    EXPECT_TRUE(result.value()->properties.configs().empty());
+  } else {
+    EXPECT_THAT(result, IsError(ErrorKind::kInvalidArgument));
+  }
+}
+
+TEST_P(TableMetadataReservedPropertyTest, ExplicitVersionRejectsReservedProperty) {
+  auto schema = CreateTestSchema();
+  auto spec = PartitionSpec::Unpartitioned();
+  auto order = SortOrder::Unsorted();
+  EXPECT_THAT(TableMetadata::Make(*schema, *spec, *order, "s3://bucket/test",
+                                  {{GetParam(), "1"}}, 2),
+              IsError(ErrorKind::kInvalidArgument));
+}
+
+INSTANTIATE_TEST_SUITE_P(ReservedProperties, TableMetadataReservedPropertyTest,
+                         ::testing::ValuesIn(TableProperties::reserved_properties()),
+                         [](const ::testing::TestParamInfo<std::string>& info) {
+                           auto name = info.param;
+                           std::ranges::replace(name, '-', '_');
+                           return name;
+                         });
+
+TEST(TableMetadataTest, MakeValidatesSchemaUsingRequestedFormatVersion) {
+  Schema schema({SchemaField::MakeRequired(1, "ts", timestamp_ns())});
+  auto spec = PartitionSpec::Unpartitioned();
+  auto order = SortOrder::Unsorted();
+  auto result = TableMetadata::Make(schema, *spec, *order, "s3://bucket/test",
+                                    {{"format-version", "2"}});
+  EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
+  EXPECT_THAT(result, HasErrorMessage("timestamp_ns is not supported until v3"));
+  EXPECT_THAT(TableMetadata::Make(schema, *spec, *order, "s3://bucket/test",
+                                  {{"format-version", "3"}}),
+              IsOk());
 }
 
 TEST(TableMetadataTest, MakeWithInvalidPartitionSpec) {

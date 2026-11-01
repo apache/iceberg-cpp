@@ -132,11 +132,21 @@ struct ICEBERG_EXPORT TableMetadata {
   /// A list of encrypted table key entries
   std::vector<EncryptedKey> encryption_keys;
 
+  /// \brief Create table metadata from user-supplied properties.
+  /// \note The reserved format-version property selects the table format version,
+  /// defaulting to kDefaultTableFormatVersion, and is not persisted. Other reserved
+  /// properties are rejected. The input properties are not modified.
   static Result<std::unique_ptr<TableMetadata>> Make(
       const iceberg::Schema& schema, const iceberg::PartitionSpec& spec,
       const iceberg::SortOrder& sort_order, const std::string& location,
-      const std::unordered_map<std::string, std::string>& properties,
-      int format_version = kDefaultTableFormatVersion);
+      const std::unordered_map<std::string, std::string>& properties);
+
+  /// \brief Create table metadata with an explicit supported format version.
+  /// \note All reserved properties, including format-version, are rejected.
+  static Result<std::unique_ptr<TableMetadata>> Make(
+      const iceberg::Schema& schema, const iceberg::PartitionSpec& spec,
+      const iceberg::SortOrder& sort_order, const std::string& location,
+      const std::unordered_map<std::string, std::string>& properties, int format_version);
 
   /// \brief Get the current schema, return NotFoundError if not found
   /// \note The returned schema is guaranteed to be not null
