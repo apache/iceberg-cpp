@@ -216,9 +216,10 @@ auto ParallelCollect(OptionalExecutor executor, Args&&... args) {
                 return {};
               });
             } else {
-              group.Submit([&, item = std::move(item)]() mutable -> Status {
+              group.Submit([&, moved_item = std::move(item)]() mutable -> Status {
                 ICEBERG_ASSIGN_OR_RAISE(
-                    value, std::invoke(std::get<I * 2 + 1>(args_tuple), std::move(item)));
+                    value,
+                    std::invoke(std::get<I * 2 + 1>(args_tuple), std::move(moved_item)));
                 return {};
               });
             }
