@@ -259,8 +259,8 @@ Status OAuthTokenResponse::Validate() const {
   std::string lower_type = token_type;
   std::ranges::transform(lower_type, lower_type.begin(), ::tolower);
   if (lower_type != "bearer" && lower_type != "n_a") {
-    return ValidationFailed(R"(Unsupported token type: {} (must be "bearer" or "N_A"))",
-                            token_type);
+    // Keep OAuth response values out of errors that callers may log.
+    return ValidationFailed(R"(Unsupported token type (must be "bearer" or "N_A"))");
   }
   return {};
 }

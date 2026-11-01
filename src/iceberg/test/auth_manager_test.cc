@@ -659,6 +659,35 @@ Result<std::shared_ptr<AuthSession>> RefreshingSession(
 
 }  // namespace
 
+TEST(OAuth2UtilTest, TokenResponseErrorsDoNotExposeResponseValues) {
+  const std::array<std::string, 6> responses{
+      R"({"access_token":"sensitive-response-value",)",
+      R"({"access_token":"sensitive-response-value"})",
+      R"({"access_token":{"value":"sensitive-response-value"},"token_type":"bearer"})",
+      R"({"access_token":"access","token_type":"sensitive-response-value"})",
+      R"({"access_token":"access","token_type":"","refresh_token":"sensitive-response-value"})",
+      R"({"access_token":"","token_type":"bearer","refresh_token":"sensitive-response-value"})"};
+  ICEBERG_UNWRAP_OR_FAIL(auto properties,
+                         AuthProperties::FromProperties(
+                             {{"credential", "client:secret"},
+                              {"oauth2-server-uri", "https://auth.example/token"}}));
+  auto session = AuthSession::MakeDefault({});
+  RefreshHttpClient client;
+  const auto check_error = [](const Result<OAuthTokenResponse>& result) {
+    ASSERT_FALSE(result.has_value());
+    EXPECT_THAT(result.error().message,
+                ::testing::Not(::testing::HasSubstr("sensitive-response-value")));
+  };
+  for (const auto& body : responses) {
+    client.response = [&] { return HttpResponse(200, body); };
+    check_error(OAuth2Util::FetchToken(client, *session, properties));
+    check_error(OAuth2Util::ExchangeToken(
+        client, *session, {}, "subject-token", AuthProperties::kAccessTokenType,
+        std::nullopt, std::nullopt, "catalog", "https://auth.example/token", {}));
+  }
+  EXPECT_EQ(client.requests, responses.size() * 2);
+}
+
 TEST(OAuth2SessionTest, RefreshesAndReschedulesThroughPublicFactory) {
   MockExecutor executor;
   std::array<std::promise<ExecutorTask>, 2> queued;
