@@ -153,7 +153,7 @@ Result<std::vector<uint8_t>> StandardEncryptionManager::UnwrapKek(
   ICEBERG_ASSIGN_OR_RAISE(
       auto kek,
       kms_->UnwrapKey(AsBytes(it->second.encrypted_key_metadata), table_key_id_));
-  unwrapped_keks_.insert_or_assign(kek_id, CachedKek{kek, now});
+  unwrapped_keks_.insert_or_assign(kek_id, CachedKek{.key = kek, .unwrapped_at_ms = now});
   return kek;
 }
 
@@ -206,7 +206,8 @@ Result<std::string> StandardEncryptionManager::CurrentKekId() {
                       .encrypted_key_metadata = ToString(wrapped),
                       .encrypted_by_id = table_key_id_,
                       .properties = {{std::string(kKeyTimestamp), std::to_string(now)}}});
-  unwrapped_keks_.insert_or_assign(kek_id, CachedKek{std::move(kek), now});
+  unwrapped_keks_.insert_or_assign(
+      kek_id, CachedKek{.key = std::move(kek), .unwrapped_at_ms = now});
   return kek_id;
 }
 
