@@ -34,6 +34,7 @@
 
 #include "iceberg/arrow/arrow_io_internal.h"
 #include "iceberg/catalog/sql/catalog_store.h"
+#include "iceberg/catalog/sql/config.h"
 #include "iceberg/catalog/sql/connection_uri_internal.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/schema.h"
@@ -188,6 +189,17 @@ TEST(ConnectionUriTest, ParseErrorsDoNotEchoPassword) {
   EXPECT_THAT(result, ::testing::Not(HasErrorMessage("secret")));
   EXPECT_THAT(result, HasErrorMessage("alice:***@db.example"));
 }
+
+#ifdef BUILD_POSTGRESQL_CONNECTOR
+TEST(ConnectionUriTest, PostgreSqlConnectErrorsDoNotEchoPassword) {
+  auto result = MakePostgreSqlCatalogStore(
+      {.catalog_name = "test",
+       .uri = "postgresql://alice:secret fragment@127.0.0.1:1/prod"});
+  ASSERT_THAT(result, IsError(ErrorKind::kIOError));
+  EXPECT_THAT(result, ::testing::Not(HasErrorMessage("secret")));
+  EXPECT_THAT(result, ::testing::Not(HasErrorMessage("fragment")));
+}
+#endif
 
 TEST_F(SqlCatalogTest, CatalogName) { EXPECT_EQ(catalog_->name(), "test_catalog"); }
 
