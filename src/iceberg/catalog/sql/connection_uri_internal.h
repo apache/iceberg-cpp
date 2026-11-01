@@ -47,4 +47,12 @@ struct ConnectionUri {
 /// be passed unambiguously to a SQL driver is returned as `InvalidArgument`.
 Result<ConnectionUri> ParseConnectionUri(std::string_view uri);
 
+/// \brief Render a connection URI with any password replaced by "***".
+///
+/// Connection URIs may embed credentials (`scheme://user:password@host`).
+/// Use this rendering whenever a URI is interpolated into an error message
+/// or log line so the password never reaches an audience broader than the
+/// credential's. The input is returned unchanged when no password is present.
+std::string RedactConnectionUri(std::string_view uri);
+
 }  // namespace iceberg::sql
