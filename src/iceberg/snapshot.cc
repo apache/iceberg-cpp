@@ -165,6 +165,31 @@ Result<std::optional<int64_t>> Snapshot::FirstRowId() const { return first_row_i
 
 Result<std::optional<int64_t>> Snapshot::AddedRows() const { return added_rows; }
 
+Status Snapshot::ValidateForFormatVersion(int8_t format_version,
+                                          bool is_new_snapshot) const {
+  if (!root_manifest.has_value()) {
+    ICEBERG_CHECK(!is_new_snapshot || format_version < 4,
+                  "New v4 snapshots require root-manifest instead of manifest-list");
+    return {};
+  }
+
+  ICEBERG_CHECK(format_version >= 4, "root-manifest requires format version 4");
+  ICEBERG_CHECK(manifest_list.empty(), "root-manifest cannot coexist with manifest-list");
+  ICEBERG_CHECK(!root_manifest->empty(), "Snapshot root-manifest cannot be empty");
+  ICEBERG_CHECK(sequence_number > 0, "V4 snapshots require a positive sequence-number");
+  ICEBERG_CHECK(first_row_id.has_value() && first_row_id.value() >= 0,
+                "V4 snapshots require a non-negative first-row-id");
+  ICEBERG_CHECK(added_rows.has_value() && added_rows.value() >= 0,
+                "V4 snapshots require non-negative added-rows");
+  const auto operation = Operation();
+  ICEBERG_CHECK(
+      operation.has_value() &&
+          (operation == DataOperation::kAppend || operation == DataOperation::kReplace ||
+           operation == DataOperation::kOverwrite || operation == DataOperation::kDelete),
+      "V4 snapshots require a valid operation in summary");
+  return {};
+}
+
 bool Snapshot::Equals(const Snapshot& other) const {
   if (this == &other) {
     return true;

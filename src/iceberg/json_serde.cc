@@ -1143,9 +1143,6 @@ Result<std::unique_ptr<Snapshot>> SnapshotFromJson(const nlohmann::json& json) {
     return JsonParseError(
         "Snapshot requires exactly one of manifest-list or root-manifest");
   }
-  if (root_manifest.has_value() && root_manifest->empty()) {
-    return JsonParseError("Snapshot root-manifest cannot be empty");
-  }
   if (json.contains("constraint-statuses") && !json["constraint-statuses"].empty()) {
     return NotSupported("V4 snapshot constraint statuses are not supported yet");
   }
@@ -1166,14 +1163,15 @@ Result<std::unique_ptr<Snapshot>> SnapshotFromJson(const nlohmann::json& json) {
             "Invalid snapshot summary field value for '{}' (JSON value of type {})", key,
             value.type_name());
       }
-      if (key == SnapshotSummaryFields::kOperation &&
+      if (key == SnapshotSummaryFields::kOperation && !root_manifest.has_value() &&
           !kValidDataOperation.contains(value.get<std::string>())) {
         return JsonParseError("Invalid snapshot operation in snapshot summary");
       }
       summary[key] = value.get<std::string>();
     }
     // If summary is available but operation is missing, set operation to overwrite.
-    if (!summary.contains(SnapshotSummaryFields::kOperation)) {
+    if (!root_manifest.has_value() &&
+        !summary.contains(SnapshotSummaryFields::kOperation)) {
       summary[SnapshotSummaryFields::kOperation] = DataOperation::kOverwrite;
     }
   }
@@ -1183,36 +1181,38 @@ Result<std::unique_ptr<Snapshot>> SnapshotFromJson(const nlohmann::json& json) {
   ICEBERG_ASSIGN_OR_RAISE(auto added_rows,
                           GetJsonValueOptional<int64_t>(json, kAddedRows));
 
-  if (first_row_id.has_value() && first_row_id.value() < 0) {
-    return JsonParseError("Invalid first-row-id (cannot be negative): {}",
-                          first_row_id.value());
-  }
-  if (added_rows.has_value() && added_rows.value() < 0) {
-    return JsonParseError("Invalid added-rows (cannot be negative): {}",
-                          added_rows.value());
-  }
-  if (first_row_id.has_value() && !added_rows.has_value()) {
-    return JsonParseError("Invalid added-rows (required when first-row-id is set): null");
-  }
-  if (!first_row_id.has_value()) {
-    added_rows = std::nullopt;
-  }
-  if (root_manifest.has_value() &&
-      (!sequence_number.has_value() || sequence_number.value() <= 0 ||
-       !first_row_id.has_value() || !summary_json.has_value() ||
-       !summary_json->contains(SnapshotSummaryFields::kOperation))) {
-    return JsonParseError(
-        "V4 snapshots require sequence-number, first-row-id, added-rows, and summary");
+  if (!root_manifest.has_value()) {
+    if (first_row_id.has_value() && first_row_id.value() < 0) {
+      return JsonParseError("Invalid first-row-id (cannot be negative): {}",
+                            first_row_id.value());
+    }
+    if (added_rows.has_value() && added_rows.value() < 0) {
+      return JsonParseError("Invalid added-rows (cannot be negative): {}",
+                            added_rows.value());
+    }
+    if (first_row_id.has_value() && !added_rows.has_value()) {
+      return JsonParseError(
+          "Invalid added-rows (required when first-row-id is set): null");
+    }
+    if (!first_row_id.has_value()) {
+      added_rows = std::nullopt;
+    }
   }
 
   ICEBERG_ASSIGN_OR_RAISE(auto schema_id, GetJsonValueOptional<int32_t>(json, kSchemaId));
   ICEBERG_ASSIGN_OR_RAISE(auto key_id, GetJsonValueOptional<std::string>(json, kKeyId));
 
-  return std::make_unique<Snapshot>(
+  auto snapshot = std::make_unique<Snapshot>(
       snapshot_id, parent_snapshot_id,
       sequence_number.value_or(TableMetadata::kInitialSequenceNumber), timestamp_ms,
       manifest_list.value_or(""), std::move(summary), schema_id, first_row_id, added_rows,
       std::move(key_id), std::move(root_manifest));
+  if (auto status =
+          snapshot->ValidateForFormatVersion(snapshot->root_manifest.has_value() ? 4 : 1);
+      !status) {
+    return JsonParseError("Invalid snapshot: {}", status.error().message);
+  }
+  return snapshot;
 }
 
 nlohmann::json ToJson(const BlobMetadata& blob_metadata) {
@@ -1375,17 +1375,9 @@ Result<nlohmann::json> ToJson(const TableMetadata& table_metadata) {
           table_metadata.format_version <= TableMetadata::kSupportedTableFormatVersion,
       "Unsupported table format version: {}", table_metadata.format_version);
   for (const auto& snapshot : table_metadata.snapshots) {
-    if (snapshot->root_manifest.has_value() &&
-        (table_metadata.format_version < TableMetadata::kMinFormatVersionRootManifest ||
-         !snapshot->manifest_list.empty())) {
-      return InvalidArgument(
-          "root-manifest requires v4 and cannot coexist with manifest-list");
-    }
-    if (snapshot->root_manifest.has_value() &&
-        (snapshot->root_manifest->empty() || snapshot->sequence_number <= 0 ||
-         !snapshot->first_row_id.has_value() || !snapshot->added_rows.has_value() ||
-         !snapshot->Operation().has_value())) {
-      return InvalidArgument("Cannot write an incomplete v4 snapshot");
+    if (auto status = snapshot->ValidateForFormatVersion(table_metadata.format_version);
+        !status) {
+      return InvalidArgument("Cannot write snapshot: {}", status.error().message);
     }
   }
   nlohmann::json json;
@@ -1510,12 +1502,19 @@ Result<std::shared_ptr<Schema>> ParseSchemas(
 
     ICEBERG_ASSIGN_OR_RAISE(current_schema_id,
                             GetJsonInteger<int32_t>(json, kCurrentSchemaId));
-    for (auto schema_json : schema_array) {
-      if (format_version >= 4 && schema_json.is_object()) {
-        schema_json.erase(kIdentifierFieldIds);
+    const auto parse_schema =
+        [format_version](
+            const nlohmann::json& schema_json) -> Result<std::unique_ptr<Schema>> {
+      if (format_version >= 4 && schema_json.is_object() &&
+          schema_json.contains(kIdentifierFieldIds)) {
+        auto v4_schema_json = schema_json;
+        v4_schema_json.erase(kIdentifierFieldIds);
+        return SchemaFromJson(v4_schema_json);
       }
-      ICEBERG_ASSIGN_OR_RAISE(std::shared_ptr<Schema> schema,
-                              SchemaFromJson(schema_json));
+      return SchemaFromJson(schema_json);
+    };
+    for (const auto& schema_json : schema_array) {
+      ICEBERG_ASSIGN_OR_RAISE(std::shared_ptr<Schema> schema, parse_schema(schema_json));
       ICEBERG_RETURN_UNEXPECTED(schema->Validate(format_version));
       if (schema->schema_id() == current_schema_id) {
         current_schema = schema;
@@ -1660,24 +1659,21 @@ Result<std::unique_ptr<TableMetadata>> TableMetadataFromJson(const nlohmann::jso
   }
   table_metadata->format_version = static_cast<int8_t>(format_version);
 
+  ICEBERG_ASSIGN_OR_RAISE(table_metadata->table_uuid,
+                          GetJsonValueOrDefault<std::string>(json, kTableUuid));
   if (table_metadata->format_version >= 4) {
-    ICEBERG_ASSIGN_OR_RAISE(table_metadata->table_uuid,
-                            GetJsonValue<std::string>(json, kTableUuid));
     if (json.contains("constraints") && !json["constraints"].empty()) {
       return NotSupported("V4 table constraints are not supported yet");
     }
     if (json.contains("last-constraint-id") && json["last-constraint-id"] != 0) {
       return NotSupported("V4 table constraint IDs are not supported yet");
     }
-  } else {
-    ICEBERG_ASSIGN_OR_RAISE(table_metadata->table_uuid,
-                            GetJsonValueOrDefault<std::string>(json, kTableUuid));
   }
   if (table_metadata->format_version >=
       TableMetadata::kMinFormatVersionOptionalLocation) {
     ICEBERG_ASSIGN_OR_RAISE(table_metadata->location,
                             GetJsonValueOrDefault<std::string>(json, kLocation));
-    if (json.contains(kLocation) &&
+    if (!table_metadata->location.empty() &&
         LocationUtil::ParseScheme(table_metadata->location).empty()) {
       return JsonParseError("V4 table location must be absolute: {}",
                             table_metadata->location);
@@ -1764,11 +1760,11 @@ Result<std::unique_ptr<TableMetadata>> TableMetadataFromJson(const nlohmann::jso
 
   ICEBERG_ASSIGN_OR_RAISE(table_metadata->snapshots,
                           FromJsonList<Snapshot>(json, kSnapshots, SnapshotFromJson));
-  if (table_metadata->format_version < TableMetadata::kMinFormatVersionRootManifest &&
-      std::ranges::any_of(
-          table_metadata->snapshots,
-          [](const auto& snapshot) { return snapshot->root_manifest.has_value(); })) {
-    return JsonParseError("root-manifest requires format version 4");
+  for (const auto& snapshot : table_metadata->snapshots) {
+    if (auto status = snapshot->ValidateForFormatVersion(table_metadata->format_version);
+        !status) {
+      return JsonParseError("Invalid snapshot: {}", status.error().message);
+    }
   }
   ICEBERG_ASSIGN_OR_RAISE(
       table_metadata->statistics,

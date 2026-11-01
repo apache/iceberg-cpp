@@ -422,6 +422,12 @@ struct ICEBERG_EXPORT Snapshot {
   /// when a table is upgraded.
   std::optional<std::string> root_manifest;
 
+  /// \brief Validate snapshot metadata against a table format version.
+  /// Existing snapshots may retain a legacy manifest list after a v4 upgrade;
+  /// newly added v4 snapshots must use a root manifest.
+  Status ValidateForFormatVersion(int8_t format_version,
+                                  bool is_new_snapshot = false) const;
+
   /// \brief Create a new Snapshot instance with validation on the inputs.
   static Result<std::unique_ptr<Snapshot>> Make(
       int64_t sequence_number, int64_t snapshot_id,

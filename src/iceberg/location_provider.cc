@@ -191,11 +191,21 @@ Result<std::string> ObjectStoreLocationProvider::NewDataLocation(
 
 Result<std::unique_ptr<LocationProvider>> LocationProvider::Make(
     std::string_view location, const TableProperties& properties) {
+  const bool object_store = properties.Get(TableProperties::kObjectStoreEnabled);
+  // Validate once before either provider can derive a data path or table context.
+  // An explicit absolute URI is sufficient only for the default provider; object
+  // stores also need the table location to derive their context.
+  ICEBERG_PRECHECK(
+      !location.empty() ||
+          (!object_store &&
+           !LocationUtil::ParseScheme(properties.Get(TableProperties::kWriteDataLocation))
+                .empty()),
+      "Cannot create a location provider without a table location");
   location = LocationUtil::StripTrailingSlash(location);
 
   // TODO(xxx): create location provider specified by "write.location-provider.impl"
 
-  if (properties.Get(TableProperties::kObjectStoreEnabled)) {
+  if (object_store) {
     return std::make_unique<ObjectStoreLocationProvider>(location, properties);
   } else {
     return std::make_unique<DefaultLocationProvider>(location, properties);

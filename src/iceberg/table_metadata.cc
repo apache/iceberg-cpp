@@ -785,10 +785,12 @@ Status TableMetadataBuilder::Impl::UpgradeFormatVersion(int8_t new_format_versio
     return {};
   }
 
-  // Create transactions apply the version before adding their first schema.
-  if (new_format_version >= 4 && !metadata_.schemas.empty()) {
-    ICEBERG_ASSIGN_OR_RAISE(auto schema, metadata_.Schema());
-    if (!schema->IdentifierFieldIds().empty()) {
+  // A create transaction may add schemas before selecting the current schema.
+  // Build() will validate the schema selected after this upgrade.
+  if (new_format_version >= 4) {
+    auto current_schema = schemas_by_id_.find(metadata_.current_schema_id);
+    if (current_schema != schemas_by_id_.end() &&
+        !current_schema->second->IdentifierFieldIds().empty()) {
       return NotSupported(
           "Cannot upgrade a table with identifier fields to v4: primary-key "
           "constraint migration is not supported yet");
@@ -1119,18 +1121,14 @@ Status TableMetadataBuilder::Impl::AddSnapshot(std::shared_ptr<Snapshot> snapsho
                 "Attempting to add a snapshot before a sort order is added");
   ICEBERG_CHECK(!snapshots_by_id_.contains(snapshot->snapshot_id),
                 "Snapshot already exists for id: {}", snapshot->snapshot_id);
-  if (metadata_.format_version >= TableMetadata::kMinFormatVersionRootManifest) {
-    ICEBERG_CHECK(snapshot->root_manifest.has_value() &&
-                      !snapshot->root_manifest->empty() &&
-                      snapshot->manifest_list.empty(),
-                  "New v4 snapshots require root-manifest instead of manifest-list");
-  }
+  ICEBERG_RETURN_UNEXPECTED(
+      snapshot->ValidateForFormatVersion(metadata_.format_version, true));
   if (metadata_.format_version >= TableMetadata::kMinFormatVersionMonotonicTimestamps &&
       snapshot->parent_snapshot_id.has_value()) {
     auto parent = snapshots_by_id_.find(snapshot->parent_snapshot_id.value());
     if (parent != snapshots_by_id_.end() &&
         snapshot->timestamp_ms <= parent->second->timestamp_ms) {
-      return RetryableValidationFailed(
+      return ValidationFailed(
           "V4 snapshot timestamp must be greater than its parent timestamp");
     }
   }

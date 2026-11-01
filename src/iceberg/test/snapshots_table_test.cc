@@ -86,7 +86,7 @@ TEST_F(SnapshotsTableTest, Scan) {
 
   // Row and column counts.
   EXPECT_EQ(batch->num_rows(), 2);
-  EXPECT_EQ(batch->num_columns(), 6);
+  EXPECT_EQ(batch->num_columns(), 7);
 
   // Column 0: committed_at (timestamptz) — microseconds since epoch.
   auto committed_at = std::static_pointer_cast<::arrow::TimestampArray>(batch->column(0));
@@ -132,6 +132,34 @@ TEST_F(SnapshotsTableTest, Scan) {
       second_summary,
       ::testing::Not(::testing::Contains(::testing::Pair("operation", "append"))));
   EXPECT_THAT(second_summary, ::testing::Contains(::testing::Pair("total-records", "2")));
+
+  // Legacy snapshots have no root manifest.
+  EXPECT_EQ(batch->column(6)->null_count(), 2);
+}
+
+TEST_F(SnapshotsTableTest, ExposesRootManifestAndNullLegacyManifestList) {
+  auto& metadata = *table_->metadata();
+  metadata.format_version = 4;
+  auto& snapshot = *metadata.snapshots.back();
+  snapshot.manifest_list.clear();
+  snapshot.root_manifest = "s3://bucket/metadata/root.avro";
+  snapshot.first_row_id = 0;
+  snapshot.added_rows = 0;
+
+  ICEBERG_UNWRAP_OR_FAIL(auto stream, snapshots_table_->Scan());
+  ICEBERG_UNWRAP_OR_FAIL(auto batches, ReadAllBatches(std::move(stream)));
+  ASSERT_EQ(batches.size(), 1);
+  const auto& batch = batches.front();
+  auto lists = std::static_pointer_cast<::arrow::StringArray>(
+      batch->GetColumnByName("manifest_list"));
+  auto roots = std::static_pointer_cast<::arrow::StringArray>(
+      batch->GetColumnByName("root_manifest"));
+  ASSERT_NE(lists, nullptr);
+  ASSERT_NE(roots, nullptr);
+  EXPECT_EQ(lists->GetString(0), "file:/tmp/manifest1.avro");
+  EXPECT_TRUE(lists->IsNull(1));
+  EXPECT_TRUE(roots->IsNull(0));
+  EXPECT_EQ(roots->GetString(1), snapshot.root_manifest.value());
 }
 
 TEST_F(SnapshotsTableTest, ScanSelectedColumns) {
@@ -188,7 +216,7 @@ TEST_F(SnapshotsTableTest, ScanAllColumnsSelection) {
   ICEBERG_UNWRAP_OR_FAIL(auto batches, ReadAllBatches(std::move(stream)));
   ASSERT_EQ(batches.size(), 1);
   EXPECT_EQ(batches.front()->num_rows(), 2);
-  EXPECT_EQ(batches.front()->num_columns(), 6);
+  EXPECT_EQ(batches.front()->num_columns(), 7);
 }
 
 TEST_F(SnapshotsTableTest, ScanBuildsRepeatedly) {
@@ -405,7 +433,8 @@ TEST_F(SnapshotsTableTest, CanonicalSchema) {
       SchemaField::MakeOptional(
           6, "summary",
           std::make_shared<MapType>(SchemaField::MakeRequired(7, "key", string()),
-                                    SchemaField::MakeRequired(8, "value", string())))});
+                                    SchemaField::MakeRequired(8, "value", string()))),
+      SchemaField::MakeOptional(9, "root_manifest", string())});
   EXPECT_EQ(*SnapshotsTable::CanonicalSchema(), *expected);
   EXPECT_EQ(*snapshots_table_->schema(), *expected);
 }

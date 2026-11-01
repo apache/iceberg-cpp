@@ -74,6 +74,32 @@ TEST_F(LocationProviderTest, DefaultLocationProviderWithCustomDataLocation) {
   EXPECT_EQ("new_location/my_file", location);
 }
 
+TEST_F(LocationProviderTest, MissingTableLocationRequiresAnExplicitDataLocation) {
+  EXPECT_THAT(LocationProvider::Make("", properties_),
+              IsError(ErrorKind::kInvalidArgument));
+  for (const auto* data_location : {"data", "/data"}) {
+    properties_.Set(TableProperties::kWriteDataLocation, std::string(data_location));
+    EXPECT_THAT(LocationProvider::Make("", properties_),
+                IsError(ErrorKind::kInvalidArgument));
+  }
+  properties_.Set(TableProperties::kWriteDataLocation, std::string("s3://data/table"));
+  ICEBERG_UNWRAP_OR_FAIL(auto provider, LocationProvider::Make("", properties_));
+  EXPECT_EQ(provider->NewDataLocation("f.parquet"), "s3://data/table/f.parquet");
+}
+
+TEST_F(LocationProviderTest, ObjectStoreRequiresTableLocationForPathContext) {
+  properties_.Set(TableProperties::kObjectStoreEnabled, true);
+  EXPECT_THAT(LocationProvider::Make("", properties_),
+              IsError(ErrorKind::kInvalidArgument));
+  properties_.Set(TableProperties::kWriteDataLocation, std::string("s3://shared-data"));
+  EXPECT_THAT(LocationProvider::Make("", properties_),
+              IsError(ErrorKind::kInvalidArgument));
+  ICEBERG_UNWRAP_OR_FAIL(auto provider,
+                         LocationProvider::Make("s3://bucket/db/table", properties_));
+  EXPECT_THAT(provider->NewDataLocation("f.parquet"),
+              testing::EndsWith("/db/table/f.parquet"));
+}
+
 TEST_F(LocationProviderTest, ObjectStorageLocationProvider) {
   std::ignore = properties_.Set(TableProperties::kObjectStoreEnabled, true);
   ICEBERG_UNWRAP_OR_FAIL(auto provider,

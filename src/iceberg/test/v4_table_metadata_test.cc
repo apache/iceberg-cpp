@@ -31,6 +31,7 @@
 #include "iceberg/catalog/memory/in_memory_catalog.h"
 #include "iceberg/file_io.h"
 #include "iceberg/json_serde_internal.h"
+#include "iceberg/location_provider.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_field.h"
@@ -41,6 +42,7 @@
 #include "iceberg/table_metadata.h"
 #include "iceberg/table_update.h"
 #include "iceberg/test/matchers.h"
+#include "iceberg/test/mock_catalog.h"
 #include "iceberg/test/mock_io.h"
 #include "iceberg/transaction.h"
 #include "iceberg/type.h"
@@ -198,7 +200,7 @@ TEST(V4TableMetadataTest, RejectRelativeTableLocationAndMissingRequiredFields) {
   EXPECT_THAT(builder->Build(), HasErrorMessage("location must be absolute"));
   metadata->location = "relative/table";
   EXPECT_THAT(ToJson(*metadata), HasErrorMessage("location must be absolute"));
-  for (const auto* field : {"table-uuid", "next-row-id"}) {
+  for (const auto* field : {"next-row-id"}) {
     json = MetadataJson();
     json.erase(field);
     EXPECT_FALSE(TableMetadataFromJson(json).has_value());
@@ -257,7 +259,7 @@ TEST(V4TableMetadataTest, NewSnapshotsRequireRootsAndMonotonicTimestamps) {
     auto builder = TableMetadataBuilder::BuildFrom(base.get());
     builder->AddSnapshot(std::move(child));
     if (timestamp <= 1000) {
-      EXPECT_THAT(builder->Build(), IsError(ErrorKind::kRetryableValidationFailed));
+      EXPECT_THAT(builder->Build(), IsError(ErrorKind::kValidationFailed));
     } else {
       ICEBERG_UNWRAP_OR_FAIL(auto updated, builder->Build());
       EXPECT_EQ(updated->next_row_id, 20);
@@ -371,7 +373,79 @@ TEST(V4TableMetadataTest, RejectInvalidVersionPropertiesAndIncompleteSnapshotWri
   ICEBERG_UNWRAP_OR_FAIL(auto snapshot, SnapshotFromJson(RootSnapshotJson()));
   snapshot->first_row_id.reset();
   metadata->snapshots.push_back(std::move(snapshot));
-  EXPECT_THAT(ToJson(*metadata), HasErrorMessage("incomplete v4 snapshot"));
+  EXPECT_THAT(ToJson(*metadata), HasErrorMessage("first-row-id"));
+}
+
+TEST(V4TableMetadataTest, MissingOrNullUuidUsesTheDefaultForEveryVersion) {
+  for (int version : {1, 2, 3, 4}) {
+    auto json = MetadataJson();
+    json["format-version"] = version;
+    for (bool explicit_null : {false, true}) {
+      if (explicit_null) {
+        json["table-uuid"] = nullptr;
+      } else {
+        json.erase("table-uuid");
+      }
+      ICEBERG_UNWRAP_OR_FAIL(auto metadata, TableMetadataFromJson(json));
+      EXPECT_TRUE(metadata->table_uuid.empty());
+    }
+  }
+}
+
+TEST(V4TableMetadataTest, NullLocationIsAbsentAndCannotProduceDefaultDataPaths) {
+  auto json = MetadataJson();
+  json["location"] = nullptr;
+  ICEBERG_UNWRAP_OR_FAIL(auto metadata, TableMetadataFromJson(json));
+  EXPECT_TRUE(metadata->location.empty());
+  ICEBERG_UNWRAP_OR_FAIL(auto serialized, ToJson(*metadata));
+  EXPECT_FALSE(serialized.contains("location"));
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto table, Table::Make(TableIdentifier{.name = "unlocated"}, std::move(metadata),
+                              "s3://bucket/metadata.json", MemoryIO(),
+                              std::make_shared<::testing::NiceMock<MockCatalog>>()));
+  EXPECT_THAT(table->location_provider(), IsError(ErrorKind::kInvalidArgument));
+  for (int version : {1, 2, 3}) {
+    json["format-version"] = version;
+    EXPECT_FALSE(TableMetadataFromJson(json).has_value());
+  }
+}
+
+TEST(V4TableMetadataTest, UpgradeBeforeSelectingCurrentSchema) {
+  ICEBERG_UNWRAP_OR_FAIL(auto metadata, NewMetadata(3));
+  metadata->current_schema_id = -1;
+  auto builder = TableMetadataBuilder::BuildFrom(metadata.get());
+  builder->AddSchema(TestSchema()).UpgradeFormatVersion(4).SetCurrentSchema(0);
+  ICEBERG_UNWRAP_OR_FAIL(auto upgraded, builder->Build());
+  EXPECT_EQ(upgraded->format_version, 4);
+  EXPECT_EQ(upgraded->current_schema_id, 0);
+}
+
+TEST(V4TableMetadataTest, RootOperationValidationIsSharedAcrossMetadataPaths) {
+  for (const auto& operation :
+       std::vector<std::optional<std::string>>{std::nullopt, "", "invalid"}) {
+    auto json = RootSnapshotJson();
+    if (operation.has_value()) {
+      json["summary"]["operation"] = operation.value();
+    } else {
+      json["summary"].erase("operation");
+    }
+    EXPECT_THAT(SnapshotFromJson(json), HasErrorMessage("valid operation"));
+
+    ICEBERG_UNWRAP_OR_FAIL(auto snapshot, SnapshotFromJson(RootSnapshotJson()));
+    if (operation.has_value()) {
+      snapshot->summary["operation"] = operation.value();
+    } else {
+      snapshot->summary.erase("operation");
+    }
+    EXPECT_THAT(snapshot->ValidateForFormatVersion(4),
+                IsError(ErrorKind::kValidationFailed));
+    ICEBERG_UNWRAP_OR_FAIL(auto base, NewMetadata());
+    auto builder = TableMetadataBuilder::BuildFrom(base.get());
+    builder->AddSnapshot(std::make_shared<Snapshot>(*snapshot));
+    EXPECT_THAT(builder->Build(), HasErrorMessage("valid operation"));
+    base->snapshots.push_back(std::move(snapshot));
+    EXPECT_THAT(ToJson(*base), HasErrorMessage("valid operation"));
+  }
 }
 
 }  // namespace
