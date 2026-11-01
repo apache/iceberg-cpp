@@ -37,7 +37,8 @@ class ICEBERG_DATA_EXPORT DeleteLoader {
  public:
   /// \brief Create a DeleteLoader.
   /// \param io FileIO instance for reading delete files
-  explicit DeleteLoader(std::shared_ptr<FileIO> io);
+  /// \param validate_batch Whether equality-delete Arrow batches are fully validated
+  explicit DeleteLoader(std::shared_ptr<FileIO> io, bool validate_batch = true);
 
   ~DeleteLoader();
 
@@ -71,6 +72,7 @@ class ICEBERG_DATA_EXPORT DeleteLoader {
                             std::string_view data_file_path) const;
 
   std::shared_ptr<FileIO> io_;
+  const bool validate_batch_;
 };
 
 }  // namespace iceberg

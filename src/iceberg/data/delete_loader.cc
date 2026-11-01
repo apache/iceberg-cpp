@@ -106,7 +106,8 @@ Status ValidateDV(const DataFile& dv, std::string_view data_file_path) {
 
 }  // namespace
 
-DeleteLoader::DeleteLoader(std::shared_ptr<FileIO> io) : io_(std::move(io)) {}
+DeleteLoader::DeleteLoader(std::shared_ptr<FileIO> io, bool validate_batch)
+    : io_(std::move(io)), validate_batch_(validate_batch) {}
 
 DeleteLoader::~DeleteLoader() = default;
 
@@ -255,7 +256,8 @@ Result<std::unique_ptr<UncheckedStructLikeSet>> DeleteLoader::LoadEqualityDelete
       internal::ArrowArrayGuard batch_guard(&batch);
 
       ICEBERG_ASSIGN_OR_RAISE(
-          auto row, ArrowArrayStructLike::Make(arrow_schema, batch, /*row_index=*/0));
+          auto row, ArrowArrayStructLike::Make(arrow_schema, batch, /*row_index=*/0,
+                                               validate_batch_));
 
       for (int64_t i = 0; i < batch.length; ++i) {
         if (i > 0) {

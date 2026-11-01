@@ -1362,6 +1362,33 @@ TEST_F(DeleteFilterTest, NullPosInBatchErrors) {
   EXPECT_THAT(alive, IsError(ErrorKind::kInvalidArrowData));
 }
 
+TEST_F(DeleteFilterTest, ConfiguresBatchValidation) {
+  auto requested_schema = Project({2});
+  std::vector<std::shared_ptr<DataFile>> delete_files;
+
+  for (bool validate_batch : {true, false}) {
+    ICEBERG_UNWRAP_OR_FAIL(
+        auto filter,
+        DeleteFilter::Make(std::string(kDataPath), delete_files, table_schema_,
+                           requested_schema, file_io_, true, nullptr, validate_batch));
+    ICEBERG_UNWRAP_OR_FAIL(
+        auto batch,
+        MakeBatch(*filter->RequiredSchema(), R"([["first"], ["second"], ["third"]])"));
+
+    auto* offsets = const_cast<int32_t*>(
+        reinterpret_cast<const int32_t*>(batch.array.children[0]->buffers[1]));
+    offsets[2] = offsets[1] - 1;
+
+    auto alive = filter->ComputeAliveRows(batch.schema, batch.array);
+    if (validate_batch) {
+      EXPECT_THAT(alive, IsError(ErrorKind::kInvalidArrowData));
+    } else {
+      ASSERT_THAT(alive, IsOk());
+      EXPECT_THAT(alive.value().indices, ::testing::ElementsAre(0, 1, 2));
+    }
+  }
+}
+
 TEST_F(DeleteFilterTest, ExpectedSchemaIsRequestedSchema) {
   auto requested_schema = Project({1});
   auto eq_by_name = std::make_shared<DataFile>(DataFile{

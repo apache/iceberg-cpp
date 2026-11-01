@@ -283,7 +283,8 @@ class FileScanTaskReader::Impl {
       ICEBERG_ASSIGN_OR_RAISE(
           delete_filter,
           DeleteFilter::Make(data_file->file_path, task.delete_files(), projected_schema_,
-                             io_, field_lookup_, has_position_deletes, delete_counter_));
+                             io_, field_lookup_, has_position_deletes, delete_counter_,
+                             properties_.Get(ReaderProperties::kArrowValidateBatch)));
       required_schema = delete_filter->RequiredSchema();
     }
 
