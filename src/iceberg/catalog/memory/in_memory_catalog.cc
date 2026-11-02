@@ -461,7 +461,7 @@ Result<std::shared_ptr<Table>> InMemoryCatalog::UpdateTable(
     if (base_metadata_location.has_value()) {
       return AlreadyExists("Table already exists: {}", identifier);
     }
-    int8_t format_version = TableMetadata::kDefaultTableFormatVersion;
+    int32_t format_version = TableMetadata::kDefaultTableFormatVersion;
     for (const auto& update : updates) {
       if (update->kind() == TableUpdate::Kind::kUpgradeFormatVersion) {
         format_version =

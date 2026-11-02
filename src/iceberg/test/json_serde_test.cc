@@ -44,6 +44,7 @@
 #include "iceberg/sort_field.h"
 #include "iceberg/sort_order.h"
 #include "iceberg/statistics_file.h"
+#include "iceberg/table_metadata.h"
 #include "iceberg/table_requirement.h"
 #include "iceberg/table_scan.h"
 #include "iceberg/table_update.h"
@@ -687,16 +688,46 @@ TEST(JsonInternalTest, TableUpdateAssignUUID) {
 }
 
 TEST(JsonInternalTest, TableUpdateUpgradeFormatVersion) {
-  table::UpgradeFormatVersion update(2);
-  nlohmann::json expected =
-      R"({"action":"upgrade-format-version","format-version":2})"_json;
+  for (int32_t version : {1, 2, 3, 4, 260, -252, std::numeric_limits<int32_t>::min(),
+                          std::numeric_limits<int32_t>::max()}) {
+    SCOPED_TRACE(version);
+    table::UpgradeFormatVersion update(version);
+    nlohmann::json expected = {{"action", "upgrade-format-version"},
+                               {"format-version", version}};
 
-  ICEBERG_UNWRAP_OR_FAIL(auto json, ToJson(update));
-  EXPECT_EQ(json, expected);
-  auto parsed = TableUpdateFromJson(expected);
-  ASSERT_THAT(parsed, IsOk());
-  EXPECT_EQ(*internal::checked_cast<table::UpgradeFormatVersion*>(parsed.value().get()),
-            update);
+    ICEBERG_UNWRAP_OR_FAIL(auto json, ToJson(update));
+    EXPECT_EQ(json, expected);
+    ICEBERG_UNWRAP_OR_FAIL(auto parsed, TableUpdateFromJson(expected));
+    const auto& actual =
+        internal::checked_cast<const table::UpgradeFormatVersion&>(*parsed);
+    EXPECT_EQ(actual.format_version(), version);
+    EXPECT_EQ(actual, update);
+
+    if (version < 1 || version > TableMetadata::kSupportedTableFormatVersion) {
+      auto builder = TableMetadataBuilder::BuildFromEmpty(2);
+      parsed->ApplyTo(*builder);
+      auto result = builder->Build();
+      EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
+      EXPECT_THAT(result, HasErrorMessage(
+                              "Cannot upgrade table to unsupported format version: v" +
+                              std::to_string(version)));
+      EXPECT_TRUE(builder->changes().empty());
+    }
+  }
+}
+
+TEST(JsonInternalTest, TableUpdateUpgradeFormatVersionRejectsInvalidIntegers) {
+  for (const auto& value : {nlohmann::json(2147483648LL), nlohmann::json(-2147483649LL),
+                            nlohmann::json(std::numeric_limits<uint64_t>::max()),
+                            nlohmann::json(4.0), nlohmann::json(4.5), nlohmann::json("4"),
+                            nlohmann::json(true), nlohmann::json(nullptr)}) {
+    SCOPED_TRACE(value.dump());
+    nlohmann::json json = {{"action", "upgrade-format-version"},
+                           {"format-version", value}};
+    EXPECT_THAT(TableUpdateFromJson(json), IsError(ErrorKind::kJsonParseError));
+  }
+  EXPECT_THAT(TableUpdateFromJson({{"action", "upgrade-format-version"}}),
+              IsError(ErrorKind::kJsonParseError));
 }
 
 TEST(JsonInternalTest, TableUpdateAddSchema) {

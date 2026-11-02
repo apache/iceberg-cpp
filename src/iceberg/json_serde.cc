@@ -2164,7 +2164,7 @@ Result<std::unique_ptr<TableUpdate>> TableUpdateFromJson(const nlohmann::json& j
   }
   if (action == kActionUpgradeFormatVersion) {
     ICEBERG_ASSIGN_OR_RAISE(auto format_version,
-                            GetJsonValue<int8_t>(json, kFormatVersion));
+                            GetJsonInteger<int32_t>(json, kFormatVersion));
     return std::make_unique<table::UpgradeFormatVersion>(format_version);
   }
   if (action == kActionAddSchema) {

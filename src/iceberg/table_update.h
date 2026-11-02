@@ -22,6 +22,7 @@
 /// \file iceberg/table_update.h
 /// Table metadata update operations for Iceberg tables.
 
+#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>
@@ -134,10 +135,10 @@ class ICEBERG_EXPORT AssignUUID : public TableUpdate {
 /// \brief Represents an upgrade of the table format version
 class ICEBERG_EXPORT UpgradeFormatVersion : public TableUpdate {
  public:
-  explicit UpgradeFormatVersion(int8_t format_version)
+  explicit UpgradeFormatVersion(int32_t format_version)
       : format_version_(format_version) {}
 
-  int8_t format_version() const { return format_version_; }
+  int32_t format_version() const { return format_version_; }
 
   void ApplyTo(TableMetadataBuilder& builder) const override;
 
@@ -150,7 +151,7 @@ class ICEBERG_EXPORT UpgradeFormatVersion : public TableUpdate {
   std::unique_ptr<TableUpdate> Clone() const override;
 
  private:
-  int8_t format_version_;
+  int32_t format_version_;
 };
 
 /// \brief Represents adding a new schema to the table
