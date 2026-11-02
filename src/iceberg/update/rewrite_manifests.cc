@@ -196,9 +196,6 @@ Result<std::vector<ManifestFile>> RewriteManifests::Apply(
 std::unordered_map<std::string, std::string> RewriteManifests::Summary() {
   summary_.Clear();
   summary_.SetPartitionSummaryLimit(0);
-  for (const auto& [property, value] : custom_summary_properties_) {
-    summary_.Set(property, value);
-  }
   summary_.Set(SnapshotSummaryFields::kManifestsCreated,
                std::to_string(new_manifests_.size() + added_manifests_.size() +
                               rewritten_added_manifests_.size()));
@@ -208,12 +205,6 @@ std::unordered_map<std::string, std::string> RewriteManifests::Summary() {
                std::to_string(rewritten_manifests_.size() + deleted_manifests_.size()));
   summary_.Set(SnapshotSummaryFields::kEntriesProcessed, std::to_string(entry_count_));
   return summary_.Build();
-}
-
-void RewriteManifests::SetSummaryProperty(const std::string& property,
-                                          const std::string& value) {
-  custom_summary_properties_[property] = value;
-  SnapshotUpdate::SetSummaryProperty(property, value);
 }
 
 Status RewriteManifests::CleanUncommitted(

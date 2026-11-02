@@ -39,6 +39,8 @@
 #include "iceberg/expression/expressions.h"
 #include "iceberg/file_io.h"
 #include "iceberg/file_reader.h"
+#include "iceberg/file_writer.h"
+#include "iceberg/manifest/v1_metadata_internal.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/schema.h"
 #include "iceberg/table_metadata.h"
@@ -53,6 +55,7 @@
 #include "iceberg/update/row_delta.h"
 #include "iceberg/update/update_partition_spec.h"
 #include "iceberg/update/update_properties.h"
+#include "iceberg/update/update_schema.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg {
@@ -633,53 +636,57 @@ class RewriteManifestsTest : public MinimalUpdateTestBase,
   }
 
   Result<ManifestFile> WriteExistingManifest(
-      const std::string& name, int64_t snapshot_id,
-      const std::vector<std::shared_ptr<DataFile>>& files,
+      const std::string& name, const std::vector<ManifestEntry>& entries,
       ManifestContent content = ManifestContent::kData,
-      std::shared_ptr<PartitionSpec> manifest_spec = nullptr,
-      int64_t data_sequence_number = TableMetadata::kInitialSequenceNumber,
-      std::optional<int64_t> file_sequence_number = std::nullopt) {
+      std::shared_ptr<PartitionSpec> manifest_spec = nullptr) {
     auto path = std::format("{}/metadata/{}.avro", table_location_, name);
     auto spec = manifest_spec != nullptr ? std::move(manifest_spec) : spec_;
-    std::vector<std::shared_ptr<DataFile>> files_to_write;
-    files_to_write.reserve(files.size());
-    std::optional<int64_t> first_row_id = std::nullopt;
-    if (table_->metadata()->format_version >= 3 && content == ManifestContent::kData) {
-      first_row_id = TableMetadata::kInitialRowId;
-      ICEBERG_ASSIGN_OR_RAISE(auto current_manifests, CurrentManifests());
-      std::unordered_map<std::string, std::shared_ptr<DataFile>> current_files_by_path;
-      for (const auto& manifest : current_manifests) {
-        ICEBERG_ASSIGN_OR_RAISE(auto entries, ReadManifestEntries(manifest));
-        for (const auto& entry : entries) {
-          if (entry.IsAlive() && entry.data_file != nullptr) {
-            current_files_by_path.emplace(entry.data_file->file_path,
-                                          std::make_shared<DataFile>(*entry.data_file));
-          }
-        }
-      }
-      for (const auto& file : files) {
-        auto file_to_write = file;
-        if (!file_to_write->first_row_id.has_value()) {
-          if (auto it = current_files_by_path.find(file->file_path);
-              it != current_files_by_path.end()) {
-            file_to_write = it->second;
-          }
-        }
-        files_to_write.push_back(std::move(file_to_write));
-      }
-    } else {
-      files_to_write = files;
-    }
     ICEBERG_ASSIGN_OR_RAISE(
         auto writer,
         ManifestWriter::MakeWriter(table_->metadata()->format_version, kInvalidSnapshotId,
-                                   path, file_io_, spec, schema_, content, first_row_id));
-    for (const auto& file : files_to_write) {
-      ICEBERG_RETURN_UNEXPECTED(writer->WriteExistingEntry(
-          file, snapshot_id, data_sequence_number, file_sequence_number));
+                                   path, file_io_, spec, schema_, content));
+    for (const auto& entry : entries) {
+      ICEBERG_RETURN_UNEXPECTED(writer->WriteExistingEntry(entry));
     }
     ICEBERG_RETURN_UNEXPECTED(writer->Close());
     return writer->ToManifestFile();
+  }
+
+  Result<ManifestFile> WriteExistingManifest(
+      const std::string& name,
+      const std::vector<std::pair<std::shared_ptr<DataFile>, int64_t>>& files,
+      ManifestContent content = ManifestContent::kData,
+      std::shared_ptr<PartitionSpec> manifest_spec = nullptr) {
+    ICEBERG_ASSIGN_OR_RAISE(auto manifests, content == ManifestContent::kData
+                                                ? CurrentManifests()
+                                                : CurrentDeleteManifests());
+    ICEBERG_ASSIGN_OR_RAISE(auto original_entries, ReadManifestEntries(manifests));
+    std::vector<ManifestEntry> entries;
+    for (const auto& [file, snapshot_id] : files) {
+      auto original = std::ranges::find_if(original_entries, [&](const auto& entry) {
+        return entry.IsAlive() && entry.snapshot_id == snapshot_id &&
+               entry.data_file != nullptr &&
+               entry.data_file->file_path == file->file_path;
+      });
+      ICEBERG_CHECK(original != original_entries.end(),
+                    "Cannot find original entry for {} in snapshot {}", file->file_path,
+                    snapshot_id);
+      entries.push_back(*original);
+    }
+    return WriteExistingManifest(name, entries, content, std::move(manifest_spec));
+  }
+
+  Result<ManifestFile> WriteExistingManifest(
+      const std::string& name, int64_t snapshot_id,
+      const std::vector<std::shared_ptr<DataFile>>& files,
+      ManifestContent content = ManifestContent::kData,
+      std::shared_ptr<PartitionSpec> manifest_spec = nullptr) {
+    std::vector<std::pair<std::shared_ptr<DataFile>, int64_t>> files_with_snapshots;
+    for (const auto& file : files) {
+      files_with_snapshots.emplace_back(file, snapshot_id);
+    }
+    return WriteExistingManifest(name, files_with_snapshots, content,
+                                 std::move(manifest_spec));
   }
 
   struct ExistingManifestEntry {
@@ -700,51 +707,6 @@ class RewriteManifestsTest : public MinimalUpdateTestBase,
       ICEBERG_RETURN_UNEXPECTED(writer->WriteExistingEntry(entry.file, entry.snapshot_id,
                                                            entry.data_sequence_number,
                                                            entry.file_sequence_number));
-    }
-    ICEBERG_RETURN_UNEXPECTED(writer->Close());
-    return writer->ToManifestFile();
-  }
-
-  Result<ManifestFile> WriteExistingManifest(
-      const std::string& name,
-      const std::vector<std::pair<std::shared_ptr<DataFile>, int64_t>>& files) {
-    auto path = std::format("{}/metadata/{}.avro", table_location_, name);
-    std::vector<std::pair<std::shared_ptr<DataFile>, int64_t>> files_to_write;
-    files_to_write.reserve(files.size());
-    std::optional<int64_t> first_row_id = std::nullopt;
-    if (table_->metadata()->format_version >= 3) {
-      first_row_id = TableMetadata::kInitialRowId;
-      ICEBERG_ASSIGN_OR_RAISE(auto current_manifests, CurrentManifests());
-      std::unordered_map<std::string, std::shared_ptr<DataFile>> current_files_by_path;
-      for (const auto& manifest : current_manifests) {
-        ICEBERG_ASSIGN_OR_RAISE(auto entries, ReadManifestEntries(manifest));
-        for (const auto& entry : entries) {
-          if (entry.IsAlive() && entry.data_file != nullptr) {
-            current_files_by_path.emplace(entry.data_file->file_path,
-                                          std::make_shared<DataFile>(*entry.data_file));
-          }
-        }
-      }
-      for (const auto& [file, snapshot_id] : files) {
-        auto file_to_write = file;
-        if (!file_to_write->first_row_id.has_value()) {
-          if (auto it = current_files_by_path.find(file->file_path);
-              it != current_files_by_path.end()) {
-            file_to_write = it->second;
-          }
-        }
-        files_to_write.emplace_back(std::move(file_to_write), snapshot_id);
-      }
-    } else {
-      files_to_write = files;
-    }
-    ICEBERG_ASSIGN_OR_RAISE(
-        auto writer, ManifestWriter::MakeWriter(
-                         table_->metadata()->format_version, kInvalidSnapshotId, path,
-                         file_io_, spec_, schema_, ManifestContent::kData, first_row_id));
-    for (const auto& [file, snapshot_id] : files_to_write) {
-      ICEBERG_RETURN_UNEXPECTED(writer->WriteExistingEntry(
-          file, snapshot_id, TableMetadata::kInitialSequenceNumber));
     }
     ICEBERG_RETURN_UNEXPECTED(writer->Close());
     return writer->ToManifestFile();
@@ -1473,19 +1435,51 @@ TEST_P(RewriteManifestsTest, ClosesAndCleansCopiedManifestOnFailure) {
       auto valid_manifest,
       WriteExistingManifest("copy-close-failure", snapshot->snapshot_id, {file_a_}));
 
+  // Bypass ManifestWriter's status handling to persist an unknown integer status.
+  ManifestEntryAdapterV1 adapter(snapshot->snapshot_id, spec_, schema_);
+  ASSERT_THAT(adapter.Init(), IsOk());
+  ASSERT_THAT(adapter.StartAppending(), IsOk());
+  ManifestEntry invalid_entry;
+  invalid_entry.status = static_cast<ManifestStatus>(99);
+  invalid_entry.snapshot_id = snapshot->snapshot_id;
+  invalid_entry.data_file = file_a_;
+  ASSERT_THAT(adapter.Append(invalid_entry), IsOk());
+  auto unknown_manifest = valid_manifest;
+  unknown_manifest.manifest_path = table_location_ + "/metadata/copy-unknown-entry.avro";
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto writer, WriterFactoryRegistry::Open(FileFormatType::kAvro,
+                                               {.path = unknown_manifest.manifest_path,
+                                                .schema = adapter.schema(),
+                                                .io = file_io_,
+                                                .metadata = adapter.metadata()}));
+  ICEBERG_UNWRAP_OR_FAIL(auto batch, adapter.FinishAppending());
+  ASSERT_THAT(writer->Write(batch), IsOk());
+  ASSERT_THAT(writer->Close(), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(unknown_manifest.manifest_length, writer->length());
+
+  struct FailureCase {
+    const ManifestFile* source;
+    ErrorKind error_kind;
+    const char* error_message;
+    bool creates_output;
+  };
   for (bool explicit_transaction : {false, true}) {
-    for (const auto& [source, error_message] :
-         {std::pair{&valid_manifest, "Injected rewrite manifest close failure"},
-          std::pair{&added_manifest,
-                    "Invalid manifest entry status: ADDED (allowed status: EXISTING)"},
-          std::pair{
-              &deleted_manifest,
-              "Invalid manifest entry status: DELETED (allowed status: EXISTING)"}}) {
-      const bool invalid_entry = source != &valid_manifest;
+    for (const auto& [source, error_kind, error_message, creates_output] :
+         {FailureCase{&valid_manifest, ErrorKind::kIOError,
+                      "Injected rewrite manifest close failure", true},
+          FailureCase{&added_manifest, ErrorKind::kValidationFailed,
+                      "Invalid manifest entry status: ADDED (allowed status: EXISTING)",
+                      true},
+          FailureCase{&deleted_manifest, ErrorKind::kValidationFailed,
+                      "Invalid manifest entry status: DELETED (allowed status: EXISTING)",
+                      true},
+          // Unknown statuses are rejected by the reader before an output is opened.
+          FailureCase{&unknown_manifest, ErrorKind::kInvalidArgument,
+                      "Invalid manifest status: 99", false}}) {
       SCOPED_TRACE(std::format("explicit_transaction={}, error={}", explicit_transaction,
                                error_message));
       auto state = std::make_shared<ManifestWriteFailureState>();
-      state->fail_on_manifest_close = invalid_entry ? 0 : 1;
+      state->fail_on_manifest_close = error_kind == ErrorKind::kIOError ? 1 : 0;
       BindTableWithFileIO(std::make_shared<ManifestWriteFailureFileIO>(
           file_io_, table_location_ + "/metadata/", state));
       std::shared_ptr<Transaction> txn;
@@ -1498,19 +1492,24 @@ TEST_P(RewriteManifestsTest, ClosesAndCleansCopiedManifestOnFailure) {
       }
       rewrite->DeleteManifest(before[0]).AddManifest(*source);
       auto result = rewrite->Commit();
-      EXPECT_THAT(result, IsError(invalid_entry ? ErrorKind::kValidationFailed
-                                                : ErrorKind::kIOError));
+      EXPECT_THAT(result, IsError(error_kind));
       EXPECT_THAT(result, HasErrorMessage(error_message));
       if (txn) {
         EXPECT_EQ(txn->state(), TransactionState::kFailed);
       }
-      ASSERT_EQ(state->manifest_outputs.size(), 1U);
-      EXPECT_THAT(state->manifest_close_attempts,
-                  ::testing::ElementsAre(state->manifest_outputs[0]));
+      if (creates_output) {
+        ASSERT_EQ(state->manifest_outputs.size(), 1U);
+        EXPECT_THAT(state->manifest_close_attempts,
+                    ::testing::ElementsAre(state->manifest_outputs[0]));
+        EXPECT_THAT(state->deleted_files,
+                    ::testing::Contains(state->manifest_outputs[0]));
+        EXPECT_FALSE(FileExists(state->manifest_outputs[0]));
+      } else {
+        EXPECT_TRUE(state->manifest_outputs.empty());
+        EXPECT_TRUE(state->manifest_close_attempts.empty());
+      }
       EXPECT_TRUE(state->open_manifest_paths.empty());
       EXPECT_TRUE(state->deleted_open_files.empty());
-      EXPECT_THAT(state->deleted_files, ::testing::Contains(state->manifest_outputs[0]));
-      EXPECT_FALSE(FileExists(state->manifest_outputs[0]));
       EXPECT_TRUE(FileExists(source->manifest_path));
       ICEBERG_UNWRAP_OR_FAIL(auto after, CurrentManifests());
       EXPECT_EQ(after, before);
@@ -1614,6 +1613,59 @@ TEST_P(RewriteManifestsTest, RewriteManifestDuringAppend) {
                                        {ManifestStatus::kAdded}, {file_append_id});
   ExpectManifestEntriesWithSnapshotIds(manifests[1], {file_a_->file_path},
                                        {ManifestStatus::kExisting}, {append_snapshot_id});
+}
+
+TEST_P(RewriteManifestsTest, ManifestReplacementPreservesSequenceNumbers) {
+  // Give the first file different data and file sequence numbers in v2/v3.
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto added_manifest,
+      WriteAddedManifest("older-data-sequence", {file_a_}, std::nullopt, 0));
+  ICEBERG_UNWRAP_OR_FAIL(auto append, table_->NewFastAppend());
+  append->AppendManifest(added_manifest);
+  ASSERT_THAT(append->Commit(), IsOk());
+  ASSERT_THAT(table_->Refresh(), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto first_snapshot, table_->current_snapshot());
+  ASSERT_THAT(AppendFiles({file_b_}), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto second_snapshot, table_->current_snapshot());
+  ICEBERG_UNWRAP_OR_FAIL(auto original_manifests, CurrentManifests());
+  ICEBERG_UNWRAP_OR_FAIL(auto original_entries, ReadManifestEntries(original_manifests));
+  ASSERT_EQ(original_entries.size(), 2U);
+  SetSnapshotIdInheritanceEnabled();
+
+  for (bool inherit_snapshot_id : {false, true}) {
+    SCOPED_TRACE(inherit_snapshot_id);
+    ICEBERG_UNWRAP_OR_FAIL(
+        auto replacement,
+        WriteExistingManifest(std::format("preserve-sequences-{}", inherit_snapshot_id),
+                              {{file_a_, first_snapshot->snapshot_id},
+                               {file_b_, second_snapshot->snapshot_id}}));
+    if (inherit_snapshot_id) {
+      replacement.added_snapshot_id.reset();
+    }
+    ICEBERG_UNWRAP_OR_FAIL(auto before, CurrentManifests());
+    ICEBERG_UNWRAP_OR_FAIL(auto rewrite, table_->NewRewriteManifests());
+    for (const auto& manifest : before) {
+      rewrite->DeleteManifest(manifest);
+    }
+    rewrite->AddManifest(replacement);
+    ASSERT_THAT(rewrite->Commit(), IsOk());
+    ICEBERG_UNWRAP_OR_FAIL(auto after, CurrentManifests());
+    ASSERT_EQ(after.size(), 1U);
+    EXPECT_EQ(after[0].manifest_path == replacement.manifest_path, inherit_snapshot_id);
+    ICEBERG_UNWRAP_OR_FAIL(auto entries, ReadManifestEntries(after[0]));
+    ASSERT_EQ(entries.size(), original_entries.size());
+    for (const auto& original : original_entries) {
+      auto entry = std::ranges::find_if(entries, [&](const ManifestEntry& entry) {
+        return entry.data_file->file_path == original.data_file->file_path;
+      });
+      ASSERT_NE(entry, entries.end());
+      EXPECT_EQ(entry->status, ManifestStatus::kExisting);
+      EXPECT_EQ(entry->snapshot_id, original.snapshot_id);
+      EXPECT_EQ(entry->sequence_number, original.sequence_number);
+      EXPECT_EQ(entry->file_sequence_number, original.file_sequence_number);
+      EXPECT_EQ(entry->data_file->first_row_id, original.data_file->first_row_id);
+    }
+  }
 }
 
 TEST_P(RewriteManifestsTest, BasicManifestReplacement) {
@@ -1770,9 +1822,7 @@ TEST_P(RewriteManifestsTest, ManifestReplacementWithExplicitInvalidSnapshotIdIsC
   ICEBERG_UNWRAP_OR_FAIL(
       auto replacement,
       WriteExistingManifest("explicit-invalid-id", original_snapshot->snapshot_id,
-                            {file_a_}, ManifestContent::kData, nullptr,
-                            original_snapshot->sequence_number,
-                            original_snapshot->sequence_number));
+                            {file_a_}, ManifestContent::kData));
   ASSERT_EQ(replacement.added_snapshot_id, kInvalidSnapshotId);
 
   ICEBERG_UNWRAP_OR_FAIL(auto rewrite, table_->NewRewriteManifests());
@@ -1790,6 +1840,56 @@ TEST_P(RewriteManifestsTest, ManifestReplacementWithExplicitInvalidSnapshotIdIsC
   EXPECT_EQ(entries[0].snapshot_id, original_snapshot->snapshot_id);
   EXPECT_EQ(entries[0].sequence_number, original_snapshot->sequence_number);
   EXPECT_EQ(entries[0].file_sequence_number, original_snapshot->sequence_number);
+}
+
+TEST_P(RewriteManifestsTest, PreservesBucketPartitionsAfterDroppingSourceColumn) {
+  ICEBERG_UNWRAP_OR_FAIL(auto add_column, table_->NewUpdateSchema());
+  add_column->AddColumn("bucket_source", int64());
+  ASSERT_THAT(add_column->Commit(), IsOk());
+  ASSERT_THAT(table_->Refresh(), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto add_partition, table_->NewUpdatePartitionSpec());
+  add_partition->AddField(Expressions::Bucket("bucket_source", 4));
+  ASSERT_THAT(add_partition->Commit(), IsOk());
+  ASSERT_THAT(table_->Refresh(), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto bucket_spec, table_->spec());
+
+  auto file_y =
+      MakeDataFile("bucket-y", bucket_spec, 1, 10, {Literal::Long(5), Literal::Int(2)});
+  auto file_z =
+      MakeDataFile("bucket-z", bucket_spec, 1, 10, {Literal::Long(7), Literal::Int(3)});
+  ASSERT_THAT(AppendFiles({file_y}), IsOk());
+  ASSERT_THAT(AppendFiles({file_z}), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto before, CurrentManifests());
+  ASSERT_EQ(before.size(), 2U);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto remove_partition, table_->NewUpdatePartitionSpec());
+  remove_partition->RemoveField("bucket_source_bucket_4");
+  ASSERT_THAT(remove_partition->Commit(), IsOk());
+  ASSERT_THAT(table_->Refresh(), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto remove_column, table_->NewUpdateSchema());
+  remove_column->DeleteColumn("bucket_source");
+  ASSERT_THAT(remove_column->Commit(), IsOk());
+  ASSERT_THAT(table_->Refresh(), IsOk());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto rewrite, table_->NewRewriteManifests());
+  rewrite->ClusterBy([](const DataFile&) { return "all"; });
+  ASSERT_THAT(rewrite->Commit(), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto after, CurrentManifests());
+  ASSERT_EQ(after.size(), 1U);
+  EXPECT_EQ(after[0].partition_spec_id, bucket_spec->spec_id());
+  EXPECT_NE(after[0].manifest_path, before[0].manifest_path);
+  EXPECT_NE(after[0].manifest_path, before[1].manifest_path);
+  ICEBERG_UNWRAP_OR_FAIL(auto entries, ReadManifestEntries(after[0]));
+  ASSERT_EQ(entries.size(), 2U);
+  for (const auto& file : {file_y, file_z}) {
+    auto entry = std::ranges::find_if(entries, [&](const ManifestEntry& entry) {
+      return entry.data_file != nullptr && entry.data_file->file_path == file->file_path;
+    });
+    ASSERT_NE(entry, entries.end());
+    EXPECT_EQ(entry->status, ManifestStatus::kExisting);
+    // Use the originally written values, not values read with the evolved schema.
+    EXPECT_EQ(entry->data_file->partition, file->partition);
+  }
 }
 
 TEST_P(RewriteManifestsTest, WithMultiplePartitionSpec) {
@@ -1824,7 +1924,7 @@ TEST_P(RewriteManifestsTest, WithMultiplePartitionSpec) {
                              std::move(partition_y));
   std::vector<Literal> partition_z{Literal::Long(/*x=*/7L),
                                    Literal::Int(/*y_bucket_16=*/2),
-                                   Literal::Int(/*z_bucket_4=*/4)};
+                                   Literal::Int(/*z_bucket_4=*/1)};
   auto file_z = MakeDataFile("z", new_spec, /*record_count=*/1, /*size=*/10,
                              std::move(partition_z));
   ASSERT_THAT(AppendFiles({file_y}), IsOk());
@@ -1874,7 +1974,7 @@ TEST_P(RewriteManifestsTest, ManifestSizeWithMultiplePartitionSpec) {
 
   std::vector<Literal> partition_z{Literal::Long(/*x=*/7L),
                                    Literal::Int(/*y_bucket_16=*/2),
-                                   Literal::Int(/*z_bucket_4=*/4)};
+                                   Literal::Int(/*z_bucket_4=*/1)};
   auto file_z = MakeDataFile("z", new_spec, /*record_count=*/1, /*size=*/10,
                              std::move(partition_z));
   ASSERT_THAT(AppendFiles({file_z}), IsOk());
@@ -2088,8 +2188,7 @@ TEST_P(RewriteManifestsTest, ManifestReplacementCombinedWithRewriteConcurrentDel
   ICEBERG_UNWRAP_OR_FAIL(
       auto new_manifest,
       WriteExistingManifest("combined-concurrent-delete-a", first_snapshot_id, {file_a_},
-                            ManifestContent::kData, nullptr,
-                            first_snapshot->sequence_number));
+                            ManifestContent::kData));
 
   ICEBERG_UNWRAP_OR_FAIL(auto txn, table_->NewTransaction());
   ICEBERG_UNWRAP_OR_FAIL(auto rewrite, txn->NewRewriteManifests());
@@ -2382,15 +2481,11 @@ TEST_P(RewriteManifestsTest, ReplaceDeleteManifestsOnly) {
   ICEBERG_UNWRAP_OR_FAIL(
       auto new_delete_manifest_a,
       WriteExistingManifest("delete-manifest-file-1", delete_snapshot_id, {delete_a},
-                            ManifestContent::kDeletes, nullptr,
-                            delete_snapshot_sequence_number,
-                            delete_snapshot_sequence_number));
+                            ManifestContent::kDeletes));
   ICEBERG_UNWRAP_OR_FAIL(
       auto new_delete_manifest_a2,
       WriteExistingManifest("delete-manifest-file-2", delete_snapshot_id, {delete_a2},
-                            ManifestContent::kDeletes, nullptr,
-                            delete_snapshot_sequence_number,
-                            delete_snapshot_sequence_number));
+                            ManifestContent::kDeletes));
 
   ICEBERG_UNWRAP_OR_FAIL(auto rewrite, table_->NewRewriteManifests());
   rewrite->DeleteManifest(original_delete_manifests[0])
@@ -2451,26 +2546,18 @@ TEST_P(RewriteManifestsTest, ReplaceDataAndDeleteManifests) {
 
   ICEBERG_UNWRAP_OR_FAIL(auto new_data_manifest_a,
                          WriteExistingManifest("manifest-file-1", append_snapshot_id,
-                                               {file_a_}, ManifestContent::kData, nullptr,
-                                               append_snapshot_sequence_number,
-                                               append_snapshot_sequence_number));
+                                               {file_a_}, ManifestContent::kData));
   ICEBERG_UNWRAP_OR_FAIL(auto new_data_manifest_b,
                          WriteExistingManifest("manifest-file-2", append_snapshot_id,
-                                               {file_b_}, ManifestContent::kData, nullptr,
-                                               append_snapshot_sequence_number,
-                                               append_snapshot_sequence_number));
+                                               {file_b_}, ManifestContent::kData));
   ICEBERG_UNWRAP_OR_FAIL(
       auto new_delete_manifest_a,
       WriteExistingManifest("delete-manifest-file-1", delete_snapshot_id, {delete_a},
-                            ManifestContent::kDeletes, nullptr,
-                            delete_snapshot_sequence_number,
-                            delete_snapshot_sequence_number));
+                            ManifestContent::kDeletes));
   ICEBERG_UNWRAP_OR_FAIL(
       auto new_delete_manifest_a2,
       WriteExistingManifest("delete-manifest-file-2", delete_snapshot_id, {delete_a2},
-                            ManifestContent::kDeletes, nullptr,
-                            delete_snapshot_sequence_number,
-                            delete_snapshot_sequence_number));
+                            ManifestContent::kDeletes));
 
   ICEBERG_UNWRAP_OR_FAIL(auto rewrite, table_->NewRewriteManifests());
   rewrite->DeleteManifest(original_data_manifests[0])
@@ -2534,15 +2621,11 @@ TEST_P(RewriteManifestsTest, DeleteManifestReplacementConcurrentAppend) {
   ICEBERG_UNWRAP_OR_FAIL(
       auto new_delete_manifest_a,
       WriteExistingManifest("delete-manifest-file-1", delete_snapshot_id, {delete_a},
-                            ManifestContent::kDeletes, nullptr,
-                            delete_snapshot_sequence_number,
-                            delete_snapshot_sequence_number));
+                            ManifestContent::kDeletes));
   ICEBERG_UNWRAP_OR_FAIL(
       auto new_delete_manifest_a2,
       WriteExistingManifest("delete-manifest-file-2", delete_snapshot_id, {delete_a2},
-                            ManifestContent::kDeletes, nullptr,
-                            delete_snapshot_sequence_number,
-                            delete_snapshot_sequence_number));
+                            ManifestContent::kDeletes));
 
   ICEBERG_UNWRAP_OR_FAIL(auto rewrite, table_->NewRewriteManifests());
   rewrite->DeleteManifest(original_delete_manifests[0])
@@ -2632,15 +2715,11 @@ TEST_P(RewriteManifestsTest, DeleteManifestReplacementConcurrentDeleteFileRemova
   ICEBERG_UNWRAP_OR_FAIL(
       auto new_delete_manifest_a,
       WriteExistingManifest("delete-concurrent-removal-a", first_delete_snapshot_id,
-                            {delete_a}, ManifestContent::kDeletes, nullptr,
-                            first_delete_snapshot_sequence_number,
-                            first_delete_snapshot_sequence_number));
+                            {delete_a}, ManifestContent::kDeletes));
   ICEBERG_UNWRAP_OR_FAIL(
       auto new_delete_manifest_a2,
       WriteExistingManifest("delete-concurrent-removal-a2", first_delete_snapshot_id,
-                            {delete_a2}, ManifestContent::kDeletes, nullptr,
-                            first_delete_snapshot_sequence_number,
-                            first_delete_snapshot_sequence_number));
+                            {delete_a2}, ManifestContent::kDeletes));
 
   ICEBERG_UNWRAP_OR_FAIL(auto rewrite, table_->NewRewriteManifests());
   rewrite->DeleteManifest(original_delete_manifest)
@@ -2721,15 +2800,11 @@ TEST_P(RewriteManifestsTest, DeleteManifestReplacementConflictingDeleteFileRemov
   ICEBERG_UNWRAP_OR_FAIL(
       auto new_delete_manifest_a,
       WriteExistingManifest("delete-conflicting-removal-a", delete_snapshot_id,
-                            {delete_a}, ManifestContent::kDeletes, nullptr,
-                            delete_snapshot_sequence_number,
-                            delete_snapshot_sequence_number));
+                            {delete_a}, ManifestContent::kDeletes));
   ICEBERG_UNWRAP_OR_FAIL(
       auto new_delete_manifest_a2,
       WriteExistingManifest("delete-conflicting-removal-a2", delete_snapshot_id,
-                            {delete_a2}, ManifestContent::kDeletes, nullptr,
-                            delete_snapshot_sequence_number,
-                            delete_snapshot_sequence_number));
+                            {delete_a2}, ManifestContent::kDeletes));
 
   ICEBERG_UNWRAP_OR_FAIL(auto rewrite, table_->NewRewriteManifests());
   rewrite->DeleteManifest(original_delete_manifest)

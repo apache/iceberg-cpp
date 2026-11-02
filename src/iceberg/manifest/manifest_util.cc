@@ -19,6 +19,7 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 #include <vector>
 
 #include "iceberg/file_reader.h"
@@ -117,14 +118,12 @@ Result<ManifestFile> CopyRewriteManifest(
                                  schema, manifest.content, manifest.first_row_id));
   for (auto& entry : entries) {
     // A rewritten added manifest may only contain existing entries.
-    if (entry.status == ManifestStatus::kAdded) {
-      return ValidationFailed(
-          "Invalid manifest entry status: ADDED (allowed status: EXISTING)");
-    }
-    if (entry.status == ManifestStatus::kDeleted) {
-      return ValidationFailed(
-          "Invalid manifest entry status: DELETED (allowed status: EXISTING)");
-    }
+    ICEBERG_CHECK(entry.status == ManifestStatus::kExisting,
+                  "Invalid manifest entry status: {} (allowed status: EXISTING)",
+                  entry.status == ManifestStatus::kAdded ? "ADDED"
+                  : entry.status == ManifestStatus::kDeleted
+                      ? "DELETED"
+                      : std::to_string(static_cast<int>(entry.status)));
     if (source_format_version == 1) {
       // V1 does not persist sequence numbers. Materialize its legacy defaults
       // before writing EXISTING entries into a v2 or v3 replacement manifest.

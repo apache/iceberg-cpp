@@ -67,10 +67,12 @@ class ICEBERG_EXPORT RewriteManifests : public SnapshotUpdate {
   /// ignored during the rewrite process.
   RewriteManifests& ClusterBy(ClusterByFunc func);
 
-  /// \brief Determine which existing manifest files should be rewritten.
+  /// \brief Determine which existing data manifests should be rewritten.
   ///
-  /// Manifests that do not match the predicate are kept as-is. If this is not
-  /// called and no predicate is set, all manifests will be rewritten.
+  /// When ClusterBy is configured, matching data manifests are rewritten. If no
+  /// predicate is set, all data manifests not explicitly deleted are selected.
+  /// Manifests that do not match the predicate are kept as-is. Delete manifests
+  /// are not rewritten.
   RewriteManifests& RewriteIf(RewritePredicate predicate);
 
   /// \brief Delete a manifest file from the table.
@@ -98,7 +100,6 @@ class ICEBERG_EXPORT RewriteManifests : public SnapshotUpdate {
       const TableMetadata& metadata_to_update,
       const std::shared_ptr<Snapshot>& snapshot) override;
   std::unordered_map<std::string, std::string> Summary() override;
-  void SetSummaryProperty(const std::string& property, const std::string& value) override;
   Status CleanUncommitted(const std::unordered_set<std::string>& committed) override;
 
   explicit RewriteManifests(std::string table_name,
@@ -135,8 +136,6 @@ class ICEBERG_EXPORT RewriteManifests : public SnapshotUpdate {
   std::vector<ManifestFile> new_manifests_;
   std::unordered_set<ManifestFile> rewritten_manifests_;
   int64_t entry_count_{0};
-
-  std::unordered_map<std::string, std::string> custom_summary_properties_;
 };
 
 }  // namespace iceberg
