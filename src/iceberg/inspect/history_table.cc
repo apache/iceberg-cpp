@@ -111,10 +111,13 @@ Result<ArrowArrayStream> HistoryTable::ReadRows(
 
   // Walk the current snapshot's ancestry; the insert check stops on cycles.
   std::unordered_set<int64_t> ancestors;
-  for (auto current = metadata->current_snapshot_id;
-       current != kInvalidSnapshotId && ancestors.insert(current).second;) {
+  for (auto current = metadata->current_snapshot_id; current != kInvalidSnapshotId;) {
     auto it = snapshots_by_id.find(current);
-    if (it == snapshots_by_id.end() || !it->second->parent_snapshot_id) {
+    // Stop at a missing snapshot without adding its ID to the ancestors.
+    if (it == snapshots_by_id.end() || !ancestors.insert(current).second) {
+      break;
+    }
+    if (!it->second->parent_snapshot_id) {
       break;
     }
     current = *it->second->parent_snapshot_id;

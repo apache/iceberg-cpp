@@ -38,7 +38,7 @@ class TaskArrowStreamSource {
  public:
   TaskArrowStreamSource(std::vector<std::shared_ptr<MetadataScanTask>> tasks,
                         std::unique_ptr<MetadataScanTaskReader> reader,
-                        std::shared_ptr<Schema> schema)
+                        std::shared_ptr<iceberg::Schema> schema)
       : tasks_(std::move(tasks)),
         reader_(std::move(reader)),
         schema_(std::move(schema)) {}
@@ -75,7 +75,9 @@ class TaskArrowStreamSource {
         if (next_task_ == tasks_.size()) {
           return std::nullopt;
         }
-        ICEBERG_ASSIGN_OR_RAISE(current_, reader_->Open(*tasks_[next_task_++]));
+        const auto& task = tasks_[next_task_++];
+        ICEBERG_CHECK(task != nullptr, "Metadata scan task cannot be null");
+        ICEBERG_ASSIGN_OR_RAISE(current_, reader_->Open(*task));
       }
 
       ArrowArray array{};

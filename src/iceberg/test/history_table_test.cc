@@ -136,6 +136,38 @@ TEST_F(HistoryTableTest, Project) {
   EXPECT_TRUE(TablesEqual(*reordered, *projected));
 }
 
+TEST_F(HistoryTableTest, MissingSnapshotsAreNotAncestors) {
+  // Snapshot 4 is in the history log but no longer exists in snapshots.
+  for (bool missing_current : {true, false}) {
+    SCOPED_TRACE(missing_current);
+    metadata_->current_snapshot_id = missing_current ? 4 : 3;
+    metadata_->snapshots.back()->parent_snapshot_id = 4;
+    ICEBERG_UNWRAP_OR_FAIL(auto builder, metadata_table_->NewScan());
+    builder->Select({"snapshot_id", "is_current_ancestor"});
+    ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
+    ICEBERG_UNWRAP_OR_FAIL(auto stream, scan->ToArrowArrayStream());
+    ICEBERG_UNWRAP_OR_FAIL(auto actual, ReadArrowTable(std::move(stream)));
+    Schema schema({SchemaField::MakeRequired(2, "snapshot_id", int64()),
+                   SchemaField::MakeRequired(4, "is_current_ancestor", boolean())});
+    const auto rows = missing_current ? R"([
+      {"snapshot_id":1,"is_current_ancestor":false},
+      {"snapshot_id":2,"is_current_ancestor":false},
+      {"snapshot_id":1,"is_current_ancestor":false},
+      {"snapshot_id":4,"is_current_ancestor":false},
+      {"snapshot_id":3,"is_current_ancestor":false}
+    ])"
+                                      : R"([
+      {"snapshot_id":1,"is_current_ancestor":false},
+      {"snapshot_id":2,"is_current_ancestor":false},
+      {"snapshot_id":1,"is_current_ancestor":false},
+      {"snapshot_id":4,"is_current_ancestor":false},
+      {"snapshot_id":3,"is_current_ancestor":true}
+    ])";
+    ICEBERG_UNWRAP_OR_FAIL(auto expected, TableFromJson(schema, rows));
+    EXPECT_TRUE(TablesEqual(*expected, *actual));
+  }
+}
+
 TEST_F(HistoryTableTest, CyclicAncestryTerminates) {
   metadata_->snapshots.front()->parent_snapshot_id = 3;
   ICEBERG_UNWRAP_OR_FAIL(auto builder, metadata_table_->NewScan());

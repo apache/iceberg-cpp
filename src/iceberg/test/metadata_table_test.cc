@@ -31,7 +31,6 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "iceberg/constants.h"
 #include "iceberg/inspect/history_table.h"
 #include "iceberg/inspect/metadata_scan.h"
 #include "iceberg/inspect/metadata_scan_task.h"
@@ -39,12 +38,10 @@
 #include "iceberg/schema.h"
 #include "iceberg/schema_field.h"
 #include "iceberg/table.h"
-#include "iceberg/table_identifier.h"
 #include "iceberg/table_metadata.h"
 #include "iceberg/test/arrow_test_util.h"
 #include "iceberg/test/matchers.h"
-#include "iceberg/test/mock_catalog.h"
-#include "iceberg/test/mock_io.h"
+#include "iceberg/test/metadata_table_test_base.h"
 #include "iceberg/type.h"
 
 namespace iceberg {
@@ -66,30 +63,8 @@ class PlannedMetadataScan : public MetadataScan {
 
 }  // namespace
 
-class MetadataTableTest : public ::testing::Test {
+class MetadataTableTest : public MetadataTableTestBase {
  protected:
-  void SetUp() override {
-    auto schema = std::make_shared<Schema>(
-        std::vector<SchemaField>{SchemaField::MakeRequired(1, "id", int64()),
-                                 SchemaField::MakeOptional(2, "name", string())},
-        1);
-    auto metadata = std::make_shared<TableMetadata>(
-        TableMetadata{.format_version = 2,
-                      .schemas = {schema},
-                      .current_schema_id = 1,
-                      .current_snapshot_id = kInvalidSnapshotId});
-
-    TableIdentifier ident{.ns = Namespace{.levels = {"db"}}, .name = "source_table"};
-    ICEBERG_UNWRAP_OR_FAIL(table_, Table::Make(ident, metadata, "s3://bucket/meta.json",
-                                               std::make_shared<MockFileIO>(),
-                                               std::make_shared<MockCatalog>()));
-  }
-
-  static Result<ArrowArrayStream> BuildStream(MetadataScanBuilder& builder) {
-    ICEBERG_ASSIGN_OR_RAISE(auto scan, builder.Build());
-    return scan->ToArrowArrayStream();
-  }
-
   /// \brief Import the schema of a stream and release the stream.
   static Result<std::shared_ptr<::arrow::Schema>> ReadSchema(ArrowArrayStream&& stream) {
     auto reader_result = ::arrow::ImportRecordBatchReader(&stream);
@@ -101,8 +76,6 @@ class MetadataTableTest : public ::testing::Test {
     }
     return reader_result.ValueUnsafe()->schema();
   }
-
-  std::shared_ptr<Table> table_;
 };
 
 TEST_F(MetadataTableTest, FactoryRejectsNullSourceTable) {
