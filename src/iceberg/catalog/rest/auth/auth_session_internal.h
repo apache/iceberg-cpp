@@ -133,8 +133,14 @@ class OAuth2Session final : public AuthSession,
     return expires_at_;
   }
 
-  /// \brief Whether this session can refresh its token automatically.
-  bool IsRefreshable() const { return scheduler_.has_value(); }
+  /// \brief Whether this session will keep refreshing its token.
+  ///
+  /// False if refresh is disabled, was stopped by StopRefreshing() or Close(), or
+  /// gave up after repeated failures.
+  bool IsRefreshable() const {
+    std::lock_guard lock(refresh_mutex_);
+    return scheduler_.has_value() && !closed_ && !refresh_stopped_;
+  }
 
   ~OAuth2Session() override { std::ignore = CloseImpl(); }
 
@@ -250,9 +256,16 @@ class OAuth2Session final : public AuthSession,
     });
     if (!result.has_value()) {
       ICEBERG_LOG_WARN("Failed to refresh OAuth2 token: {}", result.error().message);
+      MarkRefreshStopped();
       return std::nullopt;
     }
     return *result;
+  }
+
+  // Record that no further refresh will be scheduled after a failure.
+  void MarkRefreshStopped() {
+    std::lock_guard lock(refresh_mutex_);
+    refresh_stopped_ = true;
   }
 
   Result<std::optional<std::chrono::milliseconds>> RefreshToken() {
@@ -305,6 +318,9 @@ class OAuth2Session final : public AuthSession,
             ICEBERG_LOG_WARN(
                 "Stopping OAuth2 token refresh after repeated submission failures: {}",
                 status.error().message);
+            if (auto self = weak_self.lock()) {
+              self->MarkRefreshStopped();
+            }
             return;
           }
           if (auto self = weak_self.lock()) {
@@ -342,7 +358,9 @@ class OAuth2Session final : public AuthSession,
   AuthProperties refresh_properties_;
   std::shared_ptr<HttpClient> client_;
   bool closed_ = false;
-  std::mutex refresh_mutex_;
+  // Set when refresh gives up after repeated failures; guarded by refresh_mutex_.
+  bool refresh_stopped_ = false;
+  mutable std::mutex refresh_mutex_;
   std::condition_variable refresh_cv_;
   int active_refresh_count_ = 0;
   std::optional<::iceberg::internal::ScheduledExecutor> scheduler_;

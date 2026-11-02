@@ -80,7 +80,7 @@ class ICEBERG_REST_EXPORT AuthProperties : public ConfigBase<AuthProperties> {
   inline static Entry<bool> kKeepRefreshed{"token-refresh-enabled", true};
 
   /// Whether to use token exchange for refreshing OAuth2 sessions.
-  /// NOTE: Not yet implemented. Config is read but not used in refresh logic.
+  /// NOTE: Not yet implemented; the value is ignored.
   inline static Entry<bool> kExchangeEnabled{"token-exchange-enabled", true};
 
   inline static Entry<std::string> kAudience{"audience", ""};

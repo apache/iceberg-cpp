@@ -17,6 +17,8 @@
  * under the License.
  */
 
+#include <algorithm>
+#include <exception>
 #include <utility>
 
 #include "iceberg/catalog/rest/auth/auth_session_cache_internal.h"
@@ -26,6 +28,28 @@
 
 namespace iceberg::rest::auth::internal {
 
+namespace {
+
+// Bounds of DefaultSweepInterval(): sweeping at least once a minute reclaims idle
+// sessions promptly, and at most once a second keeps a zero timeout from sweeping
+// continuously.
+constexpr auto kMinSweepInterval = std::chrono::seconds(1);
+constexpr auto kMaxSweepInterval = std::chrono::minutes(1);
+
+// The loader may call user-provided code such as an HttpClient, which can throw.
+// Turning exceptions into errors lets Get() always clean up the loading slot.
+Result<std::shared_ptr<AuthSession>> RunLoader(const AuthSessionCache::Loader& loader) {
+  try {
+    return loader();
+  } catch (const std::exception& e) {
+    return UnknownError("Auth session loader threw: {}", e.what());
+  } catch (...) {
+    return UnknownError("Auth session loader threw a non-standard exception");
+  }
+}
+
+}  // namespace
+
 Result<std::shared_ptr<AuthSessionCache>> AuthSessionCache::Make(
     std::chrono::milliseconds session_timeout, RemovalListener on_removal, Clock clock) {
   ICEBERG_PRECHECK(session_timeout >= std::chrono::milliseconds::zero(),
@@ -34,6 +58,12 @@ Result<std::shared_ptr<AuthSessionCache>> AuthSessionCache::Make(
   ICEBERG_PRECHECK(clock != nullptr, "Auth session cache clock must not be null");
   return std::shared_ptr<AuthSessionCache>(
       new AuthSessionCache(session_timeout, std::move(on_removal), std::move(clock)));
+}
+
+std::chrono::milliseconds AuthSessionCache::DefaultSweepInterval(
+    std::chrono::milliseconds session_timeout) {
+  return std::clamp<std::chrono::milliseconds>(session_timeout, kMinSweepInterval,
+                                               kMaxSweepInterval);
 }
 
 AuthSessionCache::AuthSessionCache(std::chrono::milliseconds session_timeout,
@@ -68,12 +98,17 @@ Result<std::shared_ptr<AuthSession>> AuthSessionCache::Get(const std::string& ke
       }
       auto now = clock_();
       if (!IsExpired(*existing, now)) {
-        existing->last_access = now;
+        TouchLocked(it, now);
         return existing->session;
       }
-      removed.push_back(std::move(existing->session));
-      slots_.erase(it);
+      EraseLocked(it, removed);
       break;
+    }
+    if (!sweep_scheduler_.has_value()) {
+      // Without a periodic sweep, keys that are never accessed again would stay
+      // until Close(). Reclaim idle entries before adding one, so the cache grows
+      // with recently used keys rather than with every key ever used.
+      EvictIdleLocked(clock_(), removed);
     }
     // Create loading slot. Other threads calling Get(key) will wait.
     slot = std::make_shared<Slot>();
@@ -82,7 +117,7 @@ Result<std::shared_ptr<AuthSession>> AuthSessionCache::Get(const std::string& ke
 
   // Phase 2: Call loader (lock released)
   NotifyRemoved(removed);
-  auto result = loader();
+  auto result = RunLoader(loader);
   if (result.has_value() && result.value() == nullptr) {
     result = Invalid("Auth session loader returned a null session");
   }
@@ -96,7 +131,8 @@ Result<std::shared_ptr<AuthSession>> AuthSessionCache::Get(const std::string& ke
     bool current = it != slots_.end() && it->second == slot;
 
     if (!result.has_value()) {
-      // Failed loads are not cached. Remove the slot so next Get() can retry.
+      // Failed loads are not cached. Remove the slot so next Get() can retry; a
+      // loading slot is not in access_order_ yet.
       if (current) {
         slots_.erase(it);
       }
@@ -105,7 +141,7 @@ Result<std::shared_ptr<AuthSession>> AuthSessionCache::Get(const std::string& ke
       orphan = result.value();
     } else {
       slot->session = result.value();
-      slot->last_access = clock_();
+      TouchLocked(it, clock_());
     }
   }
   load_finished_.notify_all();
@@ -123,17 +159,46 @@ void AuthSessionCache::Sweep() {
   std::vector<std::shared_ptr<AuthSession>> removed;
   {
     std::lock_guard lock(mutex_);
-    auto now = clock_();
-    for (auto it = slots_.begin(); it != slots_.end();) {
-      if (!it->second->loading && IsExpired(*it->second, now)) {
-        removed.push_back(std::move(it->second->session));
-        it = slots_.erase(it);
-      } else {
-        ++it;
-      }
-    }
+    EvictIdleLocked(clock_(), removed);
   }
   NotifyRemoved(removed);
+}
+
+void AuthSessionCache::TouchLocked(SlotMap::iterator it,
+                                   std::chrono::steady_clock::time_point now) {
+  // Every last_access is read from the clock under the lock and its entry moved to
+  // the back, so access_order_ stays sorted by last access.
+  Slot& slot = *it->second;
+  slot.last_access = now;
+  if (slot.access_pos.has_value()) {
+    access_order_.splice(access_order_.end(), access_order_, *slot.access_pos);
+  } else {
+    slot.access_pos =
+        access_order_.insert(access_order_.end(), AccessEntry{&it->first, &slot});
+  }
+}
+
+void AuthSessionCache::EraseLocked(SlotMap::iterator it,
+                                   std::vector<std::shared_ptr<AuthSession>>& removed) {
+  Slot& slot = *it->second;
+  if (slot.access_pos.has_value()) {
+    access_order_.erase(*slot.access_pos);
+  }
+  removed.push_back(std::move(slot.session));
+  slots_.erase(it);
+}
+
+void AuthSessionCache::EvictIdleLocked(
+    std::chrono::steady_clock::time_point now,
+    std::vector<std::shared_ptr<AuthSession>>& removed) {
+  // Every entry after the first one that is not idle was accessed more recently.
+  while (!access_order_.empty()) {
+    const AccessEntry& oldest = access_order_.front();
+    if (now - oldest.slot->last_access < session_timeout_) {
+      break;
+    }
+    EraseLocked(slots_.find(*oldest.key), removed);
+  }
 }
 
 Status AuthSessionCache::StartPeriodicSweep(Executor& executor,
@@ -166,6 +231,7 @@ void AuthSessionCache::Close() {
       }
     }
     slots_.clear();
+    access_order_.clear();
   }
   load_finished_.notify_all();
   // Shut down outside the lock: Shutdown() waits for an in-progress submission,
@@ -188,11 +254,13 @@ bool AuthSessionCache::IsExpired(const Slot& slot,
     return true;
   }
 
-  // Check 2: Token expiration, for sessions that cannot refresh
-  // Such a session is useless once its token expires, and evicting it is harmless
-  // since stopping its refresh is a no-op. A refreshable session is left alone:
-  // its refresh may still be in flight, and evicting it would stop the refresh
-  // for callers that still hold it.
+  // Check 2: Token expiration, for sessions that will not refresh
+  // This covers sessions without refresh and sessions whose refresh gave up after
+  // repeated failures. Such a session is useless once its token expires, and
+  // evicting it is harmless since stopping its refresh is a no-op; the next Get()
+  // loads a new one. A session that is still refreshing is left alone: its refresh
+  // may be in flight, and evicting it would stop the refresh for callers that
+  // still hold it.
   auto oauth2 = std::dynamic_pointer_cast<internal::OAuth2Session>(slot.session);
   if (oauth2 && !oauth2->IsRefreshable()) {
     auto expires_at = oauth2->ExpiresAt();

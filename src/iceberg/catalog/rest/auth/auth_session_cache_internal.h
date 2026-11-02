@@ -23,6 +23,7 @@
 #include <condition_variable>
 #include <cstddef>
 #include <functional>
+#include <list>
 #include <memory>
 #include <mutex>
 #include <optional>
@@ -44,10 +45,14 @@ namespace iceberg::rest::auth::internal {
 /// \brief Caches child auth sessions and expires them after a period of inactivity.
 ///
 /// Entries expire after `session_timeout` without access. OAuth2 sessions that
-/// cannot refresh also expire once their token does. Each session that leaves the
-/// cache is handed to the removal listener exactly once. Expired entries are
-/// reclaimed when accessed or when Sweep() runs; StartPeriodicSweep() can schedule
-/// Sweep() to run periodically.
+/// will not refresh also expire once their token does; such an entry is replaced
+/// when its key is next accessed. Each session that leaves the cache is handed to
+/// the removal listener exactly once.
+///
+/// Idle entries are reclaimed in access order, least recently used first, so the
+/// cost is proportional to the number of entries removed. Sweep() does this, and
+/// StartPeriodicSweep() runs it in the background; without a periodic sweep, Get()
+/// does it before adding an entry.
 ///
 /// Thread safety: all public methods are thread-safe. Loaders and the removal
 /// listener are always invoked without holding the cache lock.
@@ -56,7 +61,7 @@ class ICEBERG_REST_EXPORT AuthSessionCache
  public:
   using Clock = std::function<std::chrono::steady_clock::time_point()>;
   using Loader = std::function<Result<std::shared_ptr<AuthSession>>()>;
-  /// Called once for every session that leaves the cache. Must not block.
+  /// Called once for every session that leaves the cache. Must not block or throw.
   using RemovalListener = std::function<void(const std::shared_ptr<AuthSession>&)>;
 
   /// \brief Create a cache.
@@ -74,14 +79,22 @@ class ICEBERG_REST_EXPORT AuthSessionCache
   AuthSessionCache(const AuthSessionCache&) = delete;
   AuthSessionCache& operator=(const AuthSessionCache&) = delete;
 
+  /// \brief Suggested StartPeriodicSweep() interval for `session_timeout`: the
+  /// timeout clamped to [1s, 60s].
+  static std::chrono::milliseconds DefaultSweepInterval(
+      std::chrono::milliseconds session_timeout);
+
   /// \brief Return the cached session for `key`, loading it on a miss.
   ///
   /// Concurrent calls for the same key run `loader` at most once; the others wait
-  /// for its result. Failed loads are not cached. Returns an error once the cache
+  /// for its result. Failed loads are not cached; an exception thrown by `loader`
+  /// is returned as an UnknownError. Returns an error once the cache
   /// is closed; a session loaded after Close() is handed to the removal listener.
   Result<std::shared_ptr<AuthSession>> Get(const std::string& key, const Loader& loader);
 
-  /// \brief Remove all expired entries and notify the removal listener.
+  /// \brief Remove entries idle for at least the session timeout and notify the
+  /// removal listener. Entries whose token expired are replaced on their next
+  /// access instead.
   void Sweep();
 
   /// \brief Run Sweep() on `executor` every `interval` until Close().
@@ -98,16 +111,34 @@ class ICEBERG_REST_EXPORT AuthSessionCache
   size_t size() const;
 
  private:
+  struct Slot;
+
+  /// One element per loaded slot. `key` points at the key stored in slots_, which
+  /// stays valid until that element is erased, even when the map rehashes.
+  struct AccessEntry {
+    const std::string* key;
+    Slot* slot;
+  };
+  using AccessOrder = std::list<AccessEntry>;
+
   struct Slot {
     bool loading = true;
     std::shared_ptr<AuthSession> session;
     std::chrono::steady_clock::time_point last_access;
+    /// Position in access_order_; set once the load succeeds.
+    std::optional<AccessOrder::iterator> access_pos;
   };
+  using SlotMap = std::unordered_map<std::string, std::shared_ptr<Slot>>;
 
   AuthSessionCache(std::chrono::milliseconds session_timeout, RemovalListener on_removal,
                    Clock clock);
 
   bool IsExpired(const Slot& slot, std::chrono::steady_clock::time_point now) const;
+  void TouchLocked(SlotMap::iterator it, std::chrono::steady_clock::time_point now);
+  void EraseLocked(SlotMap::iterator it,
+                   std::vector<std::shared_ptr<AuthSession>>& removed);
+  void EvictIdleLocked(std::chrono::steady_clock::time_point now,
+                       std::vector<std::shared_ptr<AuthSession>>& removed);
   void ScheduleSweepLocked();
   void ScheduleNextSweep();
   void RunScheduledSweep();
@@ -119,7 +150,9 @@ class ICEBERG_REST_EXPORT AuthSessionCache
 
   mutable std::mutex mutex_;
   std::condition_variable load_finished_;
-  std::unordered_map<std::string, std::shared_ptr<Slot>> slots_;
+  SlotMap slots_;
+  /// Loaded slots ordered by last access, least recent first.
+  AccessOrder access_order_;
   bool closed_ = false;
   std::optional<::iceberg::internal::ScheduledExecutor> sweep_scheduler_;
   std::chrono::milliseconds sweep_interval_{0};

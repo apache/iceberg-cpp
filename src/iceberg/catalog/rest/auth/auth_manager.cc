@@ -19,11 +19,11 @@
 
 #include "iceberg/catalog/rest/auth/auth_manager.h"
 
-#include <algorithm>
 #include <array>
 #include <chrono>
 #include <mutex>
 #include <optional>
+#include <string>
 #include <string_view>
 #include <utility>
 
@@ -37,6 +37,7 @@
 #include "iceberg/logging/log_macros.h"
 #include "iceberg/util/base64.h"
 #include "iceberg/util/macros.h"
+#include "iceberg/util/string_util.h"
 
 namespace iceberg::rest::auth {
 
@@ -96,6 +97,90 @@ std::optional<ChildCredential> SelectChildCredential(
                            .token_type = std::move(typed_token->first)};
   }
   return std::nullopt;
+}
+
+/// \brief Actor token sent with a token exchange.
+struct ActorToken {
+  std::string token;
+  std::string token_type;
+};
+
+/// \brief The parent session's token, sent as the actor of a token exchange, or
+/// std::nullopt if the parent has no token.
+std::optional<ActorToken> ExchangeActor(const OAuth2SessionInfo& parent_info) {
+  if (parent_info.token.empty()) {
+    return std::nullopt;
+  }
+  return ActorToken{.token = parent_info.token,
+                    .token_type = parent_info.issued_token_type};
+}
+
+void AppendCacheKeyPart(std::string& key, std::string_view part) {
+  key += std::to_string(part.size());
+  key += ':';
+  key += part;
+}
+
+/// \brief Build the cache key of a table session.
+///
+/// The key covers every input that determines how the session authenticates, so
+/// two table sessions are shared only when they would send the same credentials.
+/// With P(s) = "<byte length of s>:<s>", the formats are:
+///
+///   bearer token:   "tbl:" + P("token") + P(token)
+///   token exchange: "tbl:" + P("exchange") + P(subject type) + P(subject)
+///                          + P(actor type) + P(actor)
+///
+/// A bearer token is sent as-is, so its key does not depend on the parent. An
+/// exchanged token also depends on the actor, the parent's token; the actor parts
+/// are empty when the parent has no token, matching the exchange request. The
+/// length prefix keeps the key unambiguous although token types contain ':'.
+///
+/// For example, bearer token "abc" gives "tbl:5:token3:abc", and JWT "eyJ.a.b"
+/// exchanged under the parent access token "tok" gives (on one line):
+///
+///   tbl:8:exchange36:urn:ietf:params:oauth:token-type:jwt7:eyJ.a.b
+///   45:urn:ietf:params:oauth:token-type:access_token3:tok
+///
+/// An empty token gives an empty key, which disables caching.
+std::string TableCacheKey(const ChildCredential& credential,
+                          const OAuth2SessionInfo& parent_info) {
+  if (credential.value.empty()) {
+    return {};
+  }
+  std::string key = "tbl:";
+  switch (credential.kind) {
+    case ChildCredential::Kind::kToken:
+      AppendCacheKeyPart(key, "token");
+      AppendCacheKeyPart(key, credential.value);
+      return key;
+    case ChildCredential::Kind::kTokenExchange: {
+      auto actor = ExchangeActor(parent_info);
+      AppendCacheKeyPart(key, "exchange");
+      AppendCacheKeyPart(key, credential.token_type);
+      AppendCacheKeyPart(key, credential.value);
+      AppendCacheKeyPart(key, actor.has_value() ? actor->token_type : "");
+      AppendCacheKeyPart(key, actor.has_value() ? actor->token : "");
+      return key;
+    }
+    case ChildCredential::Kind::kCredential:
+      // Table sessions never use a client credential.
+      return {};
+  }
+  std::unreachable();
+}
+
+/// \brief Parse auth.session-timeout-ms, returning an error for a malformed or
+/// negative value rather than throwing as AuthProperties::Get() would.
+Result<std::chrono::milliseconds> ParseSessionTimeout(const AuthProperties& config) {
+  const auto& entry = AuthProperties::kSessionTimeoutMs;
+  int64_t timeout_ms = entry.value();
+  if (auto it = config.configs().find(entry.key()); it != config.configs().end()) {
+    ICEBERG_ASSIGN_OR_RAISE(timeout_ms, StringUtils::ParseNumber<int64_t>(it->second));
+  }
+  ICEBERG_PRECHECK(timeout_ms >= 0, "Invalid value for {}: {} (must not be negative)",
+                   entry.key(), timeout_ms);
+  return std::chrono::milliseconds(timeout_ms);
 }
 
 std::unordered_map<std::string, std::string> FilterTableSessionProperties(
@@ -201,11 +286,13 @@ class OAuth2Manager : public AuthManager {
       start_time_ = std::chrono::steady_clock::now();
       ICEBERG_ASSIGN_OR_RAISE(
           auth_response_, OAuth2Util::FetchToken(*init_client, *init_session, config));
+      // TODO(lishuxu): Match Java OAuth2Util.AuthSession.fromTokenResponse here.
       return AuthSession::MakeDefault(
           OAuth2Util::AuthHeaders(auth_response_->access_token));
     }
 
     if (!config.token().empty()) {
+      // TODO(lishuxu): Match Java OAuth2Util.AuthSession.fromAccessToken here.
       return AuthSession::MakeDefault(OAuth2Util::AuthHeaders(config.token()));
     }
 
@@ -222,9 +309,7 @@ class OAuth2Manager : public AuthManager {
 
     // Initialize catalog-level configuration
     keep_refreshed_ = config.keep_refreshed();
-    exchange_enabled_ = config.exchange_enabled();
-    session_timeout_ =
-        std::chrono::milliseconds(config.Get(AuthProperties::kSessionTimeoutMs));
+    ICEBERG_ASSIGN_OR_RAISE(session_timeout_, ParseSessionTimeout(config));
 
     // Create session cache
     ICEBERG_ASSIGN_OR_RAISE(
@@ -237,15 +322,12 @@ class OAuth2Manager : public AuthManager {
               }
             }));
 
-    // Periodically reclaim idle sessions on the refresh executor. Sweep at most once
-    // a minute and at least once a second, so a zero timeout still gets periodic
-    // cleanup. Without an executor, expired sessions are reclaimed only when their key
-    // is accessed again or on Close().
+    // Reclaim idle sessions in the background on the refresh executor. Without an
+    // executor, the cache sweeps from Get() instead.
     if (refresh_executor_ != nullptr) {
-      auto sweep_interval = std::clamp(session_timeout_, std::chrono::milliseconds(1000),
-                                       std::chrono::milliseconds(60000));
-      ICEBERG_RETURN_UNEXPECTED(
-          session_cache_->StartPeriodicSweep(*refresh_executor_, sweep_interval));
+      ICEBERG_RETURN_UNEXPECTED(session_cache_->StartPeriodicSweep(
+          *refresh_executor_,
+          internal::AuthSessionCache::DefaultSweepInterval(session_timeout_)));
     }
 
     // Reuse the token response and start time from the init phase.
@@ -253,8 +335,8 @@ class OAuth2Manager : public AuthManager {
       return MakeSession(*auth_response_, config, config.keep_refreshed(), start_time_);
     }
 
-    // TODO(lishuxu): Honor token-refresh-enabled for catalog bearer tokens.
-    // If token is provided, use it directly.
+    // TODO(lishuxu): Honor token-refresh-enabled for catalog bearer tokens, matching
+    // Java. If token is provided, use it directly.
     if (!config.token().empty()) {
       OAuthTokenResponse token_response{
           .access_token = config.token(),
@@ -285,9 +367,10 @@ class OAuth2Manager : public AuthManager {
     if (!credential.has_value()) {
       return parent;
     }
+    ICEBERG_ASSIGN_OR_RAISE(auto parent_info, ParentInfo(*parent));
     // Contextual sessions are cached by session ID, whatever credential they use.
     std::string cache_key = context.session_id.empty() ? "" : "ctx:" + context.session_id;
-    return GetOrCreateChildSession(*credential, std::move(parent), cache_key);
+    return GetOrCreateChildSession(*credential, parent_info, cache_key);
   }
 
   Result<std::shared_ptr<AuthSession>> TableSession(
@@ -299,9 +382,9 @@ class OAuth2Manager : public AuthManager {
     if (!credential.has_value()) {
       return parent;
     }
-    // Table sessions are cached by the value of the token they use.
-    std::string cache_key = credential->value.empty() ? "" : "tbl:" + credential->value;
-    return GetOrCreateChildSession(*credential, std::move(parent), cache_key);
+    ICEBERG_ASSIGN_OR_RAISE(auto parent_info, ParentInfo(*parent));
+    return GetOrCreateChildSession(*credential, parent_info,
+                                   TableCacheKey(*credential, parent_info));
   }
 
   Status Close() override {
@@ -344,25 +427,28 @@ class OAuth2Manager : public AuthManager {
                                        token_request_started_at, refresh_executor_);
   }
 
-  Result<std::shared_ptr<AuthSession>> GetOrCreateChildSession(
-      const ChildCredential& credential, std::shared_ptr<AuthSession> parent,
-      const std::string& cache_key) {
+  Result<OAuth2SessionInfo> ParentInfo(const AuthSession& parent) const {
     ICEBERG_PRECHECK(refresh_client_ != nullptr,
                      "OAuth2 catalog session must be initialized before child sessions");
-    auto parent_info = parent->OAuth2Info();
+    auto parent_info = parent.OAuth2Info();
     ICEBERG_PRECHECK(parent_info.has_value(),
                      "OAuth2 child session requires OAuth2 parent metadata");
+    return std::move(*parent_info);
+  }
 
+  Result<std::shared_ptr<AuthSession>> GetOrCreateChildSession(
+      const ChildCredential& credential, const OAuth2SessionInfo& parent_info,
+      const std::string& cache_key) {
     // Use cache if we have a valid cache_key
     if (!cache_key.empty() && session_cache_) {
       return session_cache_->Get(
           cache_key, [&]() -> Result<std::shared_ptr<AuthSession>> {
-            return CreateChildSessionUncached(credential, *parent_info);
+            return CreateChildSessionUncached(credential, parent_info);
           });
     }
 
     // No cache, create session directly
-    return CreateChildSessionUncached(credential, *parent_info);
+    return CreateChildSessionUncached(credential, parent_info);
   }
 
   Result<std::shared_ptr<AuthSession>> CreateChildSessionUncached(
@@ -415,9 +501,9 @@ class OAuth2Manager : public AuthManager {
       const OAuth2SessionInfo& parent_info) {
     std::optional<std::string> actor_token;
     std::optional<std::string> actor_token_type;
-    if (!parent_info.token.empty()) {
-      actor_token = parent_info.token;
-      actor_token_type = parent_info.issued_token_type;
+    if (auto actor = ExchangeActor(parent_info); actor.has_value()) {
+      actor_token = std::move(actor->token);
+      actor_token_type = std::move(actor->token_type);
     }
     // Use parent session headers for ExchangeToken authentication
     auto temp_parent = AuthSession::MakeDefault(parent_info.headers);
@@ -440,7 +526,6 @@ class OAuth2Manager : public AuthManager {
 
   // Catalog-level configuration initialized in CatalogSession
   bool keep_refreshed_ = true;
-  bool exchange_enabled_ = true;
   std::chrono::milliseconds session_timeout_{3'600'000};
   std::shared_ptr<internal::AuthSessionCache> session_cache_;
   std::once_flag no_refresh_executor_warning_;

@@ -21,9 +21,11 @@
 #include <chrono>
 #include <condition_variable>
 #include <cstdint>
+#include <future>
 #include <memory>
 #include <mutex>
 #include <set>
+#include <stdexcept>
 #include <string>
 #include <thread>
 #include <vector>
@@ -249,14 +251,16 @@ TEST_F(AuthSessionCacheTest, NonRefreshableSessionExpiresWithToken) {
   ICEBERG_UNWRAP_OR_FAIL(auto hit, cache->Get("tenant-a", loader));
   EXPECT_EQ(hit, first);
 
+  // Sweep() only reclaims idle entries; the expired token is replaced on access.
   clock_.Advance(1ms);
   cache->Sweep();
-  EXPECT_EQ(cache->size(), 0);
-  EXPECT_THAT(recorder_.removed(), ::testing::ElementsAre(first));
+  EXPECT_EQ(cache->size(), 1);
+  EXPECT_TRUE(recorder_.removed().empty());
 
   ICEBERG_UNWRAP_OR_FAIL(auto reloaded, cache->Get("tenant-a", loader));
   EXPECT_NE(reloaded, first);
   EXPECT_EQ(calls, 2);
+  EXPECT_THAT(recorder_.removed(), ::testing::ElementsAre(first));
 }
 
 TEST_F(AuthSessionCacheTest, RefreshableSessionOutlivesToken) {
@@ -277,6 +281,57 @@ TEST_F(AuthSessionCacheTest, RefreshableSessionOutlivesToken) {
   EXPECT_EQ(hit, first);
   EXPECT_EQ(calls, 1);
   EXPECT_TRUE(recorder_.removed().empty());
+}
+
+TEST_F(AuthSessionCacheTest, GetEvictsIdleEntriesWithoutPeriodicSweep) {
+  auto cache = MakeCache();
+  std::atomic<int> calls = 0;
+  ICEBERG_UNWRAP_OR_FAIL(auto a, cache->Get("a", CountingLoader(calls)));
+  ICEBERG_UNWRAP_OR_FAIL(auto b, cache->Get("b", CountingLoader(calls)));
+  ICEBERG_UNWRAP_OR_FAIL(auto c, cache->Get("c", CountingLoader(calls)));
+
+  // Keys that are never accessed again are reclaimed when another key is added.
+  clock_.Advance(kTimeout);
+  ASSERT_THAT(cache->Get("new", CountingLoader(calls)), IsOk());
+
+  EXPECT_EQ(cache->size(), 1);
+  EXPECT_THAT(recorder_.removed(), ::testing::UnorderedElementsAre(a, b, c));
+}
+
+TEST_F(AuthSessionCacheTest, EvictionFollowsAccessOrder) {
+  auto cache = MakeCache();
+  std::atomic<int> calls = 0;
+  ICEBERG_UNWRAP_OR_FAIL(auto a, cache->Get("a", CountingLoader(calls)));
+  ICEBERG_UNWRAP_OR_FAIL(auto b, cache->Get("b", CountingLoader(calls)));
+  ICEBERG_UNWRAP_OR_FAIL(auto c, cache->Get("c", CountingLoader(calls)));
+
+  // Accessing a moves it behind b and c, so only b and c become idle.
+  clock_.Advance(kTimeout / 2);
+  ASSERT_THAT(cache->Get("a", CountingLoader(calls)), IsOk());
+  clock_.Advance(kTimeout * 6 / 10);
+  cache->Sweep();
+
+  EXPECT_EQ(cache->size(), 1);
+  EXPECT_THAT(recorder_.removed(), ::testing::ElementsAre(b, c));
+  ICEBERG_UNWRAP_OR_FAIL(auto still_cached, cache->Get("a", CountingLoader(calls)));
+  EXPECT_EQ(still_cached, a);
+  EXPECT_EQ(calls, 3);
+}
+
+TEST_F(AuthSessionCacheTest, GetDoesNotEvictWithPeriodicSweep) {
+  test::ThreadExecutor executor;  // must outlive the cache
+  auto cache = MakeCache();
+  ASSERT_THAT(cache->StartPeriodicSweep(executor, std::chrono::hours(1)), IsOk());
+  std::atomic<int> calls = 0;
+  ASSERT_THAT(cache->Get("a", CountingLoader(calls)), IsOk());
+
+  // Idle entries are left to the periodic sweep.
+  clock_.Advance(kTimeout * 2);
+  ASSERT_THAT(cache->Get("b", CountingLoader(calls)), IsOk());
+
+  EXPECT_EQ(cache->size(), 2);
+  EXPECT_TRUE(recorder_.removed().empty());
+  cache->Close();
 }
 
 TEST_F(AuthSessionCacheTest, ConcurrentGetsForSameKeyLoadOnce) {
@@ -342,6 +397,43 @@ TEST_F(AuthSessionCacheTest, WaitersRetryAfterFailedLoad) {
 
   EXPECT_THAT(first_result, IsError(ErrorKind::kAuthenticationFailed));
   EXPECT_THAT(waiter_result, IsOk());
+  EXPECT_EQ(calls, 2);
+  EXPECT_EQ(cache->size(), 1);
+}
+
+TEST_F(AuthSessionCacheTest, LoaderExceptionDoesNotBlockLaterGets) {
+  auto cache = MakeCache();
+  std::atomic<int> calls = 0;
+  Gate entered;
+  Gate release;
+  auto loader = [&]() -> Result<std::shared_ptr<AuthSession>> {
+    if (++calls == 1) {
+      entered.Open();
+      release.Wait();
+      throw std::runtime_error("HTTP library failure");
+    }
+    return AuthSession::MakeDefault({});
+  };
+
+  auto first =
+      std::async(std::launch::async, [&] { return cache->Get("tenant-a", loader); });
+  entered.Wait();
+  auto waiter =
+      std::async(std::launch::async, [&] { return cache->Get("tenant-a", loader); });
+  std::this_thread::sleep_for(20ms);
+  release.Open();
+
+  if (waiter.wait_for(5s) != std::future_status::ready) {
+    cache->Close();  // Wake the waiter so the test fails instead of hanging.
+    FAIL() << "a waiter stayed blocked after the loader threw";
+  }
+  auto first_result = first.get();
+  ASSERT_THAT(first_result, IsError(ErrorKind::kUnknownError));
+  EXPECT_THAT(first_result.error().message, ::testing::HasSubstr("HTTP library failure"));
+  ICEBERG_UNWRAP_OR_FAIL(auto loaded, waiter.get());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto hit, cache->Get("tenant-a", loader));
+  EXPECT_EQ(hit, loaded);
   EXPECT_EQ(calls, 2);
   EXPECT_EQ(cache->size(), 1);
 }
@@ -443,8 +535,9 @@ TEST_F(AuthSessionCacheTest, PeriodicSweepRemovesExpiredEntries) {
 
   ASSERT_THAT(cache->StartPeriodicSweep(executor, 10ms), IsOk());
 
+  // Sweep invokes the listener after erasing the entry, so wait for the listener.
   auto deadline = std::chrono::steady_clock::now() + 5s;
-  while (cache->size() != 0 && std::chrono::steady_clock::now() < deadline) {
+  while (recorder_.removed().empty() && std::chrono::steady_clock::now() < deadline) {
     std::this_thread::sleep_for(5ms);
   }
   EXPECT_EQ(cache->size(), 0);
