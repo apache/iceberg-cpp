@@ -195,12 +195,15 @@ Result<std::unique_ptr<LocationProvider>> LocationProvider::Make(
   // Validate once before either provider can derive a data path or table context.
   // An explicit absolute URI is sufficient only for the default provider; object
   // stores also need the table location to derive their context.
-  ICEBERG_PRECHECK(
-      !location.empty() ||
-          (!object_store &&
-           !LocationUtil::ParseScheme(properties.Get(TableProperties::kWriteDataLocation))
-                .empty()),
-      "Cannot create a location provider without a table location");
+  if (location.empty()) {
+    ICEBERG_PRECHECK(!object_store,
+                     "Object-store location provider requires a table location");
+    ICEBERG_PRECHECK(
+        !LocationUtil::ParseScheme(properties.Get(TableProperties::kWriteDataLocation))
+             .empty(),
+        "Default location provider requires a table location or an absolute URI in '{}'",
+        TableProperties::kWriteDataLocation.key());
+  }
   location = LocationUtil::StripTrailingSlash(location);
 
   // TODO(xxx): create location provider specified by "write.location-provider.impl"

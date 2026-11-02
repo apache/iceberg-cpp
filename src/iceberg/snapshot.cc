@@ -170,6 +170,7 @@ Status Snapshot::ValidateForFormatVersion(int8_t format_version,
   if (!root_manifest.has_value()) {
     ICEBERG_CHECK(!is_new_snapshot || format_version < 4,
                   "New v4 snapshots require root-manifest instead of manifest-list");
+    ICEBERG_CHECK(!manifest_list.empty(), "Snapshot manifest-list cannot be empty");
     return {};
   }
 

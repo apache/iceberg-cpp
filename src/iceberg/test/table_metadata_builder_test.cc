@@ -1331,8 +1331,10 @@ TEST(TableMetadataBuilderTest, RemoveSnapshotRef) {
   auto builder = TableMetadataBuilder::BuildFrom(base.get());
 
   // Add multiple snapshots
-  builder->AddSnapshot(std::make_shared<Snapshot>(Snapshot{.snapshot_id = 1}));
-  builder->AddSnapshot(std::make_shared<Snapshot>(Snapshot{.snapshot_id = 2}));
+  builder->AddSnapshot(std::make_shared<Snapshot>(
+      Snapshot{.snapshot_id = 1, .manifest_list = "s3://bucket/manifest-list-1.avro"}));
+  builder->AddSnapshot(std::make_shared<Snapshot>(
+      Snapshot{.snapshot_id = 2, .manifest_list = "s3://bucket/manifest-list-2.avro"}));
 
   // Add multiple refs
   ICEBERG_UNWRAP_OR_FAIL(auto ref1, SnapshotRef::MakeBranch(1));
@@ -1355,7 +1357,8 @@ TEST(TableMetadataBuilderTest, SetRefRejectsTagForMainBranch) {
   auto base = CreateBaseMetadata();
   auto builder = TableMetadataBuilder::BuildFrom(base.get());
 
-  builder->AddSnapshot(std::make_shared<Snapshot>(Snapshot{.snapshot_id = 1}));
+  builder->AddSnapshot(std::make_shared<Snapshot>(
+      Snapshot{.snapshot_id = 1, .manifest_list = "s3://bucket/manifest-list-1.avro"}));
   ICEBERG_UNWRAP_OR_FAIL(auto main_tag, SnapshotRef::MakeTag(1));
 
   builder->SetRef(std::string(SnapshotRef::kMainBranch), std::move(main_tag));
@@ -1371,7 +1374,10 @@ TEST(TableMetadataBuilderTest, SetMainRefToAddedSnapshotUsesSnapshotTimestampFor
 
   auto snapshot_time = TimePointMsFromUnixMs(123456789);
   builder->AddSnapshot(std::make_shared<Snapshot>(
-      Snapshot{.snapshot_id = 1, .sequence_number = 1, .timestamp_ms = snapshot_time}));
+      Snapshot{.snapshot_id = 1,
+               .sequence_number = 1,
+               .timestamp_ms = snapshot_time,
+               .manifest_list = "s3://bucket/manifest-list-1.avro"}));
   ICEBERG_UNWRAP_OR_FAIL(auto main_branch, SnapshotRef::MakeBranch(1));
 
   builder->SetRef(std::string(SnapshotRef::kMainBranch), std::move(main_branch));
@@ -1389,8 +1395,10 @@ TEST(TableMetadataBuilderTest, RemoveSnapshot) {
   auto builder = TableMetadataBuilder::BuildFrom(base.get());
 
   // Add multiple snapshots
-  builder->AddSnapshot(std::make_shared<Snapshot>(Snapshot{.snapshot_id = 1}));
-  builder->AddSnapshot(std::make_shared<Snapshot>(Snapshot{.snapshot_id = 2}));
+  builder->AddSnapshot(std::make_shared<Snapshot>(
+      Snapshot{.snapshot_id = 1, .manifest_list = "s3://bucket/manifest-list-1.avro"}));
+  builder->AddSnapshot(std::make_shared<Snapshot>(
+      Snapshot{.snapshot_id = 2, .manifest_list = "s3://bucket/manifest-list-2.avro"}));
 
   ICEBERG_UNWRAP_OR_FAIL(auto metadata, builder->Build());
   ASSERT_EQ(metadata->snapshots.size(), 2);
@@ -1409,8 +1417,10 @@ TEST(TableMetadataBuilderTest, RemoveSnapshotNotExist) {
   auto builder = TableMetadataBuilder::BuildFrom(base.get());
 
   // Add multiple snapshots
-  builder->AddSnapshot(std::make_shared<Snapshot>(Snapshot{.snapshot_id = 1}));
-  builder->AddSnapshot(std::make_shared<Snapshot>(Snapshot{.snapshot_id = 2}));
+  builder->AddSnapshot(std::make_shared<Snapshot>(
+      Snapshot{.snapshot_id = 1, .manifest_list = "s3://bucket/manifest-list-1.avro"}));
+  builder->AddSnapshot(std::make_shared<Snapshot>(
+      Snapshot{.snapshot_id = 2, .manifest_list = "s3://bucket/manifest-list-2.avro"}));
 
   ICEBERG_UNWRAP_OR_FAIL(auto metadata, builder->Build());
   ASSERT_EQ(metadata->snapshots.size(), 2);

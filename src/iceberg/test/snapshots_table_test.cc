@@ -146,7 +146,7 @@ TEST_F(SnapshotsTableTest, ExposesRootManifestAndNullLegacyManifestList) {
   snapshot.first_row_id = 0;
   snapshot.added_rows = 0;
 
-  ICEBERG_UNWRAP_OR_FAIL(auto stream, snapshots_table_->Scan());
+  ICEBERG_UNWRAP_OR_FAIL(auto stream, Scan(*snapshots_table_));
   ICEBERG_UNWRAP_OR_FAIL(auto batches, ReadAllBatches(std::move(stream)));
   ASSERT_EQ(batches.size(), 1);
   const auto& batch = batches.front();
@@ -160,6 +160,28 @@ TEST_F(SnapshotsTableTest, ExposesRootManifestAndNullLegacyManifestList) {
   EXPECT_TRUE(lists->IsNull(1));
   EXPECT_TRUE(roots->IsNull(0));
   EXPECT_EQ(roots->GetString(1), snapshot.root_manifest.value());
+
+  auto projection = std::make_shared<Schema>(
+      std::vector<SchemaField>{SchemaField::MakeOptional(9, "root_manifest", string()),
+                               SchemaField::MakeOptional(5, "manifest_list", string())});
+  ICEBERG_UNWRAP_OR_FAIL(auto builder, snapshots_table_->NewScan());
+  ICEBERG_UNWRAP_OR_FAIL(auto projected_stream,
+                         BuildStream(builder->Project(projection)));
+  ICEBERG_UNWRAP_OR_FAIL(auto projected_batches,
+                         ReadAllBatches(std::move(projected_stream)));
+  ASSERT_EQ(projected_batches.size(), 1);
+  const auto& projected = projected_batches.front();
+  ASSERT_EQ(projected->num_columns(), 2);
+  EXPECT_EQ(projected->column_name(0), "root_manifest");
+  EXPECT_EQ(projected->column_name(1), "manifest_list");
+  auto projected_roots =
+      std::static_pointer_cast<::arrow::StringArray>(projected->column(0));
+  auto projected_lists =
+      std::static_pointer_cast<::arrow::StringArray>(projected->column(1));
+  EXPECT_TRUE(projected_roots->IsNull(0));
+  EXPECT_EQ(projected_roots->GetString(1), snapshot.root_manifest.value());
+  EXPECT_EQ(projected_lists->GetString(0), "file:/tmp/manifest1.avro");
+  EXPECT_TRUE(projected_lists->IsNull(1));
 }
 
 TEST_F(SnapshotsTableTest, ScanSelectedColumns) {

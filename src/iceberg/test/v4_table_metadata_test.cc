@@ -242,6 +242,32 @@ TEST(V4TableMetadataTest, RejectInvalidSnapshotRoots) {
   EXPECT_THAT(TableMetadataFromJson(json), HasErrorMessage("requires format version 4"));
 }
 
+TEST(V4TableMetadataTest, RejectEmptyLegacyManifestListsAcrossMetadataPaths) {
+  auto legacy_json = RootSnapshotJson();
+  legacy_json.erase("root-manifest");
+  legacy_json["manifest-list"] = "legacy.avro";
+  ICEBERG_UNWRAP_OR_FAIL(auto snapshot, SnapshotFromJson(legacy_json));
+  snapshot->manifest_list.clear();
+  legacy_json["manifest-list"] = "";
+  EXPECT_THAT(SnapshotFromJson(legacy_json), IsError(ErrorKind::kJsonParseError));
+  EXPECT_THAT(SnapshotFromJson(legacy_json),
+              HasErrorMessage("manifest-list cannot be empty"));
+
+  for (int8_t version : {1, 2, 3, 4}) {
+    SCOPED_TRACE(version);
+    EXPECT_THAT(snapshot->ValidateForFormatVersion(version),
+                HasErrorMessage("manifest-list cannot be empty"));
+    ICEBERG_UNWRAP_OR_FAIL(auto metadata, NewMetadata(version));
+    if (version < 4) {
+      auto builder = TableMetadataBuilder::BuildFrom(metadata.get());
+      builder->AddSnapshot(std::make_shared<Snapshot>(*snapshot));
+      EXPECT_THAT(builder->Build(), HasErrorMessage("manifest-list cannot be empty"));
+    }
+    metadata->snapshots.push_back(std::make_shared<Snapshot>(*snapshot));
+    EXPECT_THAT(ToJson(*metadata), HasErrorMessage("manifest-list cannot be empty"));
+  }
+}
+
 TEST(V4TableMetadataTest, NewSnapshotsRequireRootsAndMonotonicTimestamps) {
   auto json = MetadataJson();
   json["snapshots"] = nlohmann::json::array({RootSnapshotJson()});
@@ -301,6 +327,33 @@ TEST(V4TableMetadataTest, IgnoreLegacyIdentifiersAndRejectUnimplementedConstrain
     json = MetadataJson();
     json["schemas"] = nlohmann::json::array({malformed_schema});
     EXPECT_FALSE(TableMetadataFromJson(json).has_value());
+  }
+}
+
+TEST(V4TableMetadataTest, ConstraintFieldsRequireTheirDeclaredJsonTypes) {
+  auto json = MetadataJson();
+  json["constraints"] = nlohmann::json::array();
+  json["last-constraint-id"] = 0;
+  EXPECT_THAT(TableMetadataFromJson(json), IsOk());
+
+  for (const auto& value : std::vector<nlohmann::json>{nullptr, "constraints", true, 0,
+                                                       0.0, nlohmann::json::object()}) {
+    SCOPED_TRACE(value.dump());
+    json = MetadataJson();
+    json["constraints"] = value;
+    auto result = TableMetadataFromJson(json);
+    EXPECT_THAT(result, IsError(ErrorKind::kJsonParseError));
+    EXPECT_THAT(result, HasErrorMessage("constraints"));
+  }
+  for (const auto& value : std::vector<nlohmann::json>{
+           nullptr, "0", true, 0.0, 1.5, 2147483648LL, -2147483649LL,
+           18446744073709551615ULL, nlohmann::json::array(), nlohmann::json::object()}) {
+    SCOPED_TRACE(value.dump());
+    json = MetadataJson();
+    json["last-constraint-id"] = value;
+    auto result = TableMetadataFromJson(json);
+    EXPECT_THAT(result, IsError(ErrorKind::kJsonParseError));
+    EXPECT_THAT(result, HasErrorMessage("last-constraint-id"));
   }
 }
 

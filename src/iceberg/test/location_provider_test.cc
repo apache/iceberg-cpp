@@ -75,8 +75,9 @@ TEST_F(LocationProviderTest, DefaultLocationProviderWithCustomDataLocation) {
 }
 
 TEST_F(LocationProviderTest, MissingTableLocationRequiresAnExplicitDataLocation) {
-  EXPECT_THAT(LocationProvider::Make("", properties_),
-              IsError(ErrorKind::kInvalidArgument));
+  auto missing = LocationProvider::Make("", properties_);
+  EXPECT_THAT(missing, IsError(ErrorKind::kInvalidArgument));
+  EXPECT_THAT(missing, HasErrorMessage("absolute URI in 'write.data.path'"));
   for (const auto* data_location : {"data", "/data"}) {
     properties_.Set(TableProperties::kWriteDataLocation, std::string(data_location));
     EXPECT_THAT(LocationProvider::Make("", properties_),
@@ -89,8 +90,10 @@ TEST_F(LocationProviderTest, MissingTableLocationRequiresAnExplicitDataLocation)
 
 TEST_F(LocationProviderTest, ObjectStoreRequiresTableLocationForPathContext) {
   properties_.Set(TableProperties::kObjectStoreEnabled, true);
-  EXPECT_THAT(LocationProvider::Make("", properties_),
-              IsError(ErrorKind::kInvalidArgument));
+  auto missing = LocationProvider::Make("", properties_);
+  EXPECT_THAT(missing, IsError(ErrorKind::kInvalidArgument));
+  EXPECT_THAT(missing, HasErrorMessage(
+                           "Object-store location provider requires a table location"));
   properties_.Set(TableProperties::kWriteDataLocation, std::string("s3://shared-data"));
   EXPECT_THAT(LocationProvider::Make("", properties_),
               IsError(ErrorKind::kInvalidArgument));

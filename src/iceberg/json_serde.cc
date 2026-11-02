@@ -1662,11 +1662,19 @@ Result<std::unique_ptr<TableMetadata>> TableMetadataFromJson(const nlohmann::jso
   ICEBERG_ASSIGN_OR_RAISE(table_metadata->table_uuid,
                           GetJsonValueOrDefault<std::string>(json, kTableUuid));
   if (table_metadata->format_version >= 4) {
-    if (json.contains("constraints") && !json["constraints"].empty()) {
-      return NotSupported("V4 table constraints are not supported yet");
+    if (json.contains("constraints")) {
+      ICEBERG_ASSIGN_OR_RAISE(auto constraints,
+                              GetJsonValue<nlohmann::json::array_t>(json, "constraints"));
+      if (!constraints.empty()) {
+        return NotSupported("V4 table constraints are not supported yet");
+      }
     }
-    if (json.contains("last-constraint-id") && json["last-constraint-id"] != 0) {
-      return NotSupported("V4 table constraint IDs are not supported yet");
+    if (json.contains("last-constraint-id")) {
+      ICEBERG_ASSIGN_OR_RAISE(auto last_constraint_id,
+                              GetJsonInteger<int32_t>(json, "last-constraint-id"));
+      if (last_constraint_id != 0) {
+        return NotSupported("V4 table constraint IDs are not supported yet");
+      }
     }
   }
   if (table_metadata->format_version >=
