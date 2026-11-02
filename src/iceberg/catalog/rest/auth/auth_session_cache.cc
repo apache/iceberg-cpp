@@ -173,8 +173,8 @@ void AuthSessionCache::TouchLocked(SlotMap::iterator it,
   if (slot.access_pos.has_value()) {
     access_order_.splice(access_order_.end(), access_order_, *slot.access_pos);
   } else {
-    slot.access_pos =
-        access_order_.insert(access_order_.end(), AccessEntry{&it->first, &slot});
+    slot.access_pos = access_order_.insert(access_order_.end(),
+                                           AccessEntry{.key = &it->first, .slot = &slot});
   }
 }
 
