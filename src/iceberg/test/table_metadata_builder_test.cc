@@ -445,12 +445,12 @@ TEST(TableMetadataBuilderTest, UpgradeFormatVersion) {
 
 TEST(TableMetadataBuilderTest, UpgradeFormatVersionRejectsUnsupportedVersions) {
   auto base = CreateBaseMetadata();
-  for (int32_t version : {0, 5, 260, -252, std::numeric_limits<int32_t>::min(),
-                          std::numeric_limits<int32_t>::max()}) {
+  for (int8_t version : std::vector<int8_t>{0, 5, -1, std::numeric_limits<int8_t>::min(),
+                                            std::numeric_limits<int8_t>::max()}) {
     SCOPED_TRACE(version);
     auto empty_builder = TableMetadataBuilder::BuildFromEmpty(version);
     auto empty_result = empty_builder->Build();
-    EXPECT_THAT(empty_result, IsError(ErrorKind::kValidationFailed));
+    EXPECT_THAT(empty_result, IsError(ErrorKind::kInvalidArgument));
     EXPECT_THAT(empty_result, HasErrorMessage("Unsupported table format version: " +
                                               std::to_string(version)));
 

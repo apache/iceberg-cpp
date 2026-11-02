@@ -443,7 +443,7 @@ Result<std::shared_ptr<Table>> SqlCatalog::UpdateTable(
     if (exists) {
       return AlreadyExists("Table already exists: {}", identifier.ToString());
     }
-    int32_t format_version = TableMetadata::kDefaultTableFormatVersion;
+    int8_t format_version = TableMetadata::kDefaultTableFormatVersion;
     for (const auto& update : updates) {
       if (update->kind() == TableUpdate::Kind::kUpgradeFormatVersion) {
         format_version =

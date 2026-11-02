@@ -240,7 +240,7 @@ class ICEBERG_EXPORT TableMetadataBuilder : public ErrorCollector {
   /// \param format_version The format version for the table
   /// \return A new TableMetadataBuilder instance
   static std::unique_ptr<TableMetadataBuilder> BuildFromEmpty(
-      int32_t format_version = TableMetadata::kDefaultTableFormatVersion);
+      int8_t format_version = TableMetadata::kDefaultTableFormatVersion);
 
   /// \brief Create a builder from existing table metadata
   ///
@@ -284,7 +284,7 @@ class ICEBERG_EXPORT TableMetadataBuilder : public ErrorCollector {
   ///
   /// \param new_format_version The new format version (must be >= current version)
   /// \return Reference to this builder for method chaining
-  TableMetadataBuilder& UpgradeFormatVersion(int32_t new_format_version);
+  TableMetadataBuilder& UpgradeFormatVersion(int8_t new_format_version);
 
   /// \brief Set the current schema for the table
   ///

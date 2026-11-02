@@ -646,7 +646,7 @@ class TableMetadataBuilder::Impl {
   }
 
   Status AssignUUID(std::string_view uuid);
-  Status UpgradeFormatVersion(int32_t new_format_version);
+  Status UpgradeFormatVersion(int8_t new_format_version);
   Status SetDefaultSortOrder(int32_t order_id);
   Result<int32_t> AddSortOrder(const SortOrder& order);
   Status SetProperties(const std::unordered_map<std::string, std::string>& updated);
@@ -765,7 +765,7 @@ Status TableMetadataBuilder::Impl::AssignUUID(std::string_view uuid) {
   return {};
 }
 
-Status TableMetadataBuilder::Impl::UpgradeFormatVersion(int32_t new_format_version) {
+Status TableMetadataBuilder::Impl::UpgradeFormatVersion(int8_t new_format_version) {
   // Check that the new format version is supported
   if (new_format_version < 1 ||
       new_format_version > TableMetadata::kSupportedTableFormatVersion) {
@@ -798,7 +798,7 @@ Status TableMetadataBuilder::Impl::UpgradeFormatVersion(int32_t new_format_versi
   }
 
   // Update the format version
-  metadata_.format_version = static_cast<int8_t>(new_format_version);
+  metadata_.format_version = new_format_version;
 
   // Record the change
   changes_.push_back(std::make_unique<table::UpgradeFormatVersion>(new_format_version));
@@ -1616,17 +1616,9 @@ TableMetadataBuilder& TableMetadataBuilder::operator=(TableMetadataBuilder&&) no
     default;
 
 std::unique_ptr<TableMetadataBuilder> TableMetadataBuilder::BuildFromEmpty(
-    int32_t format_version) {
-  if (format_version < 1 ||
-      format_version > TableMetadata::kSupportedTableFormatVersion) {
-    auto builder = std::unique_ptr<TableMetadataBuilder>(
-        new TableMetadataBuilder(TableMetadata::kDefaultTableFormatVersion));  // NOLINT
-    builder->AddError(
-        InvalidArgument("Unsupported table format version: {}", format_version));
-    return builder;
-  }
+    int8_t format_version) {
   return std::unique_ptr<TableMetadataBuilder>(
-      new TableMetadataBuilder(static_cast<int8_t>(format_version)));  // NOLINT
+      new TableMetadataBuilder(format_version));  // NOLINT
 }
 
 std::unique_ptr<TableMetadataBuilder> TableMetadataBuilder::BuildFrom(
@@ -1668,7 +1660,7 @@ TableMetadataBuilder& TableMetadataBuilder::AssignUUID(std::string_view uuid) {
 }
 
 TableMetadataBuilder& TableMetadataBuilder::UpgradeFormatVersion(
-    int32_t new_format_version) {
+    int8_t new_format_version) {
   ICEBERG_BUILDER_RETURN_IF_ERROR(impl_->UpgradeFormatVersion(new_format_version));
   return *this;
 }

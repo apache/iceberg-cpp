@@ -688,8 +688,9 @@ TEST(JsonInternalTest, TableUpdateAssignUUID) {
 }
 
 TEST(JsonInternalTest, TableUpdateUpgradeFormatVersion) {
-  for (int32_t version : {1, 2, 3, 4, 260, -252, std::numeric_limits<int32_t>::min(),
-                          std::numeric_limits<int32_t>::max()}) {
+  for (int8_t version :
+       std::array<int8_t, 8>{1, 2, 3, 4, 0, 5, std::numeric_limits<int8_t>::min(),
+                             std::numeric_limits<int8_t>::max()}) {
     SCOPED_TRACE(version);
     table::UpgradeFormatVersion update(version);
     nlohmann::json expected = {{"action", "upgrade-format-version"},
@@ -717,10 +718,13 @@ TEST(JsonInternalTest, TableUpdateUpgradeFormatVersion) {
 }
 
 TEST(JsonInternalTest, TableUpdateUpgradeFormatVersionRejectsInvalidIntegers) {
-  for (const auto& value : {nlohmann::json(2147483648LL), nlohmann::json(-2147483649LL),
-                            nlohmann::json(std::numeric_limits<uint64_t>::max()),
-                            nlohmann::json(4.0), nlohmann::json(4.5), nlohmann::json("4"),
-                            nlohmann::json(true), nlohmann::json(nullptr)}) {
+  for (const auto& value :
+       {nlohmann::json(128), nlohmann::json(-129), nlohmann::json(260),
+        nlohmann::json(-252), nlohmann::json(4294967300LL), nlohmann::json(-4294967292LL),
+        nlohmann::json(2147483648LL), nlohmann::json(-2147483649LL),
+        nlohmann::json(std::numeric_limits<uint64_t>::max()), nlohmann::json(4.0),
+        nlohmann::json(4.5), nlohmann::json("4"), nlohmann::json(true),
+        nlohmann::json(nullptr)}) {
     SCOPED_TRACE(value.dump());
     nlohmann::json json = {{"action", "upgrade-format-version"},
                            {"format-version", value}};
