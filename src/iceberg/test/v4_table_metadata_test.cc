@@ -111,6 +111,26 @@ TEST(V4TableMetadataTest, CreateAndRoundTrip) {
   EXPECT_EQ(*metadata, *parsed);
 }
 
+TEST(V4TableMetadataTest, SerializationRejectsNullSnapshots) {
+  auto snapshot_json = RootSnapshotJson();
+  snapshot_json.erase("root-manifest");
+  snapshot_json["manifest-list"] = "s3://bucket/metadata/legacy.avro";
+  ICEBERG_UNWRAP_OR_FAIL(auto snapshot, SnapshotFromJson(snapshot_json));
+  auto valid = std::shared_ptr<Snapshot>(std::move(snapshot));
+  for (int version : {1, 2, 3, 4}) {
+    SCOPED_TRACE(version);
+    ICEBERG_UNWRAP_OR_FAIL(auto metadata, NewMetadata(version));
+    for (bool null_first : {false, true}) {
+      metadata->snapshots = null_first
+                                ? std::vector<std::shared_ptr<Snapshot>>{nullptr, valid}
+                                : std::vector<std::shared_ptr<Snapshot>>{valid, nullptr};
+      auto result = ToJson(*metadata);
+      EXPECT_THAT(result, IsError(ErrorKind::kInvalidArgument));
+      EXPECT_THAT(result, HasErrorMessage("Cannot write null snapshot"));
+    }
+  }
+}
+
 TEST(V4TableMetadataTest, CreateFromFormatVersionProperty) {
   ICEBERG_UNWRAP_OR_FAIL(
       auto metadata, TableMetadata::Make(*TestSchema(), *PartitionSpec::Unpartitioned(),
@@ -240,6 +260,27 @@ TEST(V4TableMetadataTest, RejectInvalidSnapshotRoots) {
   json["format-version"] = 3;
   json["snapshots"] = nlohmann::json::array({RootSnapshotJson()});
   EXPECT_THAT(TableMetadataFromJson(json), HasErrorMessage("requires format version 4"));
+}
+
+TEST(V4TableMetadataTest, SnapshotConstraintStatusesRequireAnArray) {
+  for (const auto& value :
+       std::vector<nlohmann::json>{nullptr, nlohmann::json::array()}) {
+    auto json = RootSnapshotJson();
+    json["constraint-statuses"] = value;
+    EXPECT_THAT(SnapshotFromJson(json), IsOk());
+  }
+  for (const auto& value :
+       std::vector<nlohmann::json>{true, 0, 0.0, "statuses", nlohmann::json::object()}) {
+    SCOPED_TRACE(value.dump());
+    auto json = RootSnapshotJson();
+    json["constraint-statuses"] = value;
+    auto result = SnapshotFromJson(json);
+    EXPECT_THAT(result, IsError(ErrorKind::kJsonParseError));
+    EXPECT_THAT(result, HasErrorMessage("constraint-statuses"));
+  }
+  auto json = RootSnapshotJson();
+  json["constraint-statuses"] = nlohmann::json::array({{{"constraint-id", 1}}});
+  EXPECT_THAT(SnapshotFromJson(json), IsError(ErrorKind::kNotSupported));
 }
 
 TEST(V4TableMetadataTest, RejectEmptyLegacyManifestListsAcrossMetadataPaths) {

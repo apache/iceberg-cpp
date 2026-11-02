@@ -42,7 +42,7 @@ Result<FileTrackingStatus> FileTrackingStatusFromInt(int32_t status) {
 }
 
 std::shared_ptr<StructType> FileTracking::Type() {
-  return std::make_shared<StructType>(std::vector<SchemaField>{
+  static const auto kInstance = std::make_shared<StructType>(std::vector<SchemaField>{
       SchemaField::MakeRequired(0, "status", int32()),
       SchemaField::MakeOptional(1, "snapshot_id", int64()),
       SchemaField::MakeOptional(5, "modified_snapshot_id", int64()),
@@ -51,19 +51,21 @@ std::shared_ptr<StructType> FileTracking::Type() {
       SchemaField::MakeOptional(142, "first_row_id", int64()),
       SchemaField::MakeOptional(6, "deleted_positions", binary()),
       SchemaField::MakeOptional(7, "replaced_positions", binary())});
+  return kInstance;
 }
 
 std::shared_ptr<StructType> DeletionVectorMetadata::Type() {
-  return std::make_shared<StructType>(
+  static const auto kInstance = std::make_shared<StructType>(
       std::vector<SchemaField>{SchemaField::MakeRequired(155, "location", string()),
                                SchemaField::MakeRequired(144, "offset", int64()),
                                SchemaField::MakeRequired(145, "size_in_bytes", int64()),
                                SchemaField::MakeRequired(156, "cardinality", int64()),
                                SchemaField::MakeOptional(149, "key_metadata", binary())});
+  return kInstance;
 }
 
 std::shared_ptr<StructType> ManifestInfo::Type() {
-  return std::make_shared<StructType>(std::vector<SchemaField>{
+  static const auto kInstance = std::make_shared<StructType>(std::vector<SchemaField>{
       SchemaField::MakeRequired(521, "format_version", int32()),
       SchemaField::MakeOptional(522, "dv", binary()),
       SchemaField::MakeRequired(504, "added_files_count", int32()),
@@ -77,6 +79,7 @@ std::shared_ptr<StructType> ManifestInfo::Type() {
       SchemaField::MakeRequired(514, "deleted_rows_count", int64()),
       SchemaField::MakeRequired(524, "replaced_rows_count", int64()),
       SchemaField::MakeRequired(516, "min_sequence_number", int64())});
+  return kInstance;
 }
 
 }  // namespace iceberg

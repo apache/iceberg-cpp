@@ -59,7 +59,9 @@ TEST(V4TypesTest, FileTrackingSchema) {
       {"id": 7, "name": "replaced_positions", "type": "binary", "required": false}
     ]
   })");
-  CheckSchema(*FileTracking::Type(), expected);
+  auto type = FileTracking::Type();
+  EXPECT_EQ(type, FileTracking::Type());
+  CheckSchema(*type, expected);
 }
 
 TEST(V4TypesTest, DeletionVectorMetadataSchema) {
@@ -73,7 +75,9 @@ TEST(V4TypesTest, DeletionVectorMetadataSchema) {
       {"id": 149, "name": "key_metadata", "type": "binary", "required": false}
     ]
   })");
-  CheckSchema(*DeletionVectorMetadata::Type(), expected);
+  auto type = DeletionVectorMetadata::Type();
+  EXPECT_EQ(type, DeletionVectorMetadata::Type());
+  CheckSchema(*type, expected);
 }
 
 TEST(V4TypesTest, ManifestInfoSchema) {
@@ -95,7 +99,9 @@ TEST(V4TypesTest, ManifestInfoSchema) {
       {"id": 516, "name": "min_sequence_number", "type": "long", "required": true}
     ]
   })");
-  CheckSchema(*ManifestInfo::Type(), expected);
+  auto type = ManifestInfo::Type();
+  EXPECT_EQ(type, ManifestInfo::Type());
+  CheckSchema(*type, expected);
 }
 
 struct TrackingStatusCase {

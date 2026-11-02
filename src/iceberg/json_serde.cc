@@ -1143,7 +1143,10 @@ Result<std::unique_ptr<Snapshot>> SnapshotFromJson(const nlohmann::json& json) {
     return JsonParseError(
         "Snapshot requires exactly one of manifest-list or root-manifest");
   }
-  if (json.contains("constraint-statuses") && !json["constraint-statuses"].empty()) {
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto constraint_statuses,
+      GetJsonValueOptional<nlohmann::json::array_t>(json, "constraint-statuses"));
+  if (constraint_statuses.has_value() && !constraint_statuses->empty()) {
     return NotSupported("V4 snapshot constraint statuses are not supported yet");
   }
 
@@ -1375,6 +1378,7 @@ Result<nlohmann::json> ToJson(const TableMetadata& table_metadata) {
           table_metadata.format_version <= TableMetadata::kSupportedTableFormatVersion,
       "Unsupported table format version: {}", table_metadata.format_version);
   for (const auto& snapshot : table_metadata.snapshots) {
+    ICEBERG_PRECHECK(snapshot != nullptr, "Cannot write null snapshot");
     if (auto status = snapshot->ValidateForFormatVersion(table_metadata.format_version);
         !status) {
       return InvalidArgument("Cannot write snapshot: {}", status.error().message);

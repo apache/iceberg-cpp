@@ -30,6 +30,7 @@
 #include <gmock/gmock.h>
 
 #include "iceberg/avro/avro_register.h"
+#include "iceberg/logging/logger.h"
 #include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/manifest/manifest_writer.h"
 #include "iceberg/partition_spec.h"
@@ -39,6 +40,7 @@
 #include "iceberg/table_metadata.h"
 #include "iceberg/table_properties.h"
 #include "iceberg/test/executor.h"
+#include "iceberg/test/logging_test_helpers.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/test/mock_catalog.h"
 #include "iceberg/test/update_test_base.h"
@@ -314,7 +316,7 @@ TEST_F(ExpireSnapshotsCleanupTest, V4SupportsNoOpAndExpirationWithoutFileCleanup
   EXPECT_THAT(file_io_->ReadFile(expired_list, std::nullopt), IsOk());
 }
 
-TEST_F(ExpireSnapshotsCleanupTest, SkipsCleanupWhenCommittedMetadataAddsV4Root) {
+TEST_P(ExpireSnapshotsV4CleanupTest, SkipsCleanupWhenCommittedMetadataAddsV4Root) {
   const auto expired_list = table_location_ + "/metadata/expired-list.avro";
   const auto current_list = table_location_ + "/metadata/current-list.avro";
   WriteManifestList(expired_list, kExpiredSnapshotId, 0, kExpiredSequenceNumber, {});
@@ -340,13 +342,21 @@ TEST_F(ExpireSnapshotsCleanupTest, SkipsCleanupWhenCommittedMetadataAddsV4Root) 
                   std::string(table_->metadata_file_location()), file_io_, mock));
   std::vector<std::string> deleted_files;
   ICEBERG_UNWRAP_OR_FAIL(auto update, table->NewExpireSnapshots());
-  update->ExpireSnapshotId(kExpiredSnapshotId).DeleteWith([&](const std::string& path) {
-    deleted_files.push_back(path);
-  });
+  update->ExpireSnapshotId(kExpiredSnapshotId)
+      .CleanupLevel(GetParam())
+      .DeleteWith([&](const std::string& path) { deleted_files.push_back(path); });
+  auto logger = std::make_shared<CapturingLogger>();
+  ScopedLogger scoped_logger(logger);
   ASSERT_THAT(update->Commit(), IsOk());
   EXPECT_TRUE(deleted_files.empty());
-  EXPECT_TRUE(ReloadMetadata()->snapshots.back()->root_manifest.has_value());
+  auto committed = ReloadMetadata();
+  EXPECT_FALSE(committed->SnapshotById(kExpiredSnapshotId).has_value());
+  EXPECT_TRUE(committed->snapshots.back()->root_manifest.has_value());
   EXPECT_THAT(file_io_->ReadFile(expired_list, std::nullopt), IsOk());
+  for (const auto& record : logger->records()) {
+    EXPECT_THAT(record.message,
+                ::testing::Not(::testing::HasSubstr("Update finalization failed")));
+  }
 }
 
 TEST_F(ExpireSnapshotsTest, DefaultExpireByAge) {

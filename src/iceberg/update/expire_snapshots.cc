@@ -1041,11 +1041,10 @@ Status ExpireSnapshots::Finalize(const TableMetadata& metadata_after_expiration)
 
   // Later transaction updates or the catalog's committed result may introduce
   // root manifests after Apply(). Never treat untraversable roots as empty.
+  // The commit has succeeded, so leave files in place without a cleanup error.
   if (HasV4RootManifest(metadata_before_expiration) ||
       HasV4RootManifest(metadata_after_expiration)) {
-    return NotSupported(
-        "Snapshot expiration file cleanup with v4 root manifests "
-        "is not supported yet");
+    return {};
   }
 
   // Pick incremental cleanup when the expiration is a simple linear-ancestry walk:
