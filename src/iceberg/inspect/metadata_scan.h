@@ -20,12 +20,12 @@
 #pragma once
 
 /// \file iceberg/inspect/metadata_scan.h
-/// \brief Scan configuration for Iceberg metadata tables.
+/// \brief Configure metadata scans, plan reusable tasks, and read Arrow batches.
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
-#include <variant>
 #include <vector>
 
 #include "iceberg/arrow_c_data.h"
@@ -33,104 +33,101 @@
 #include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
 #include "iceberg/util/error_collector.h"
-#include "iceberg/util/timepoint.h"
+#include "iceberg/util/stream.h"
 
 namespace iceberg {
 
-/// \brief Snapshot selection parameters for a time-travel scan.
-struct SnapshotSelection {
-  /// \brief Select the current snapshot, a snapshot ID, or an as-of timestamp.
-  ///
-  /// std::monostate selects the current snapshot.
-  std::variant<std::monostate, int64_t, TimePointMs> snapshot;
+using MetadataScanTaskStream = Stream<std::shared_ptr<MetadataScanTask>>;
+using MetadataScanTaskStreamPtr = std::unique_ptr<MetadataScanTaskStream>;
 
-  /// \brief Resolve the snapshot relative to this branch or tag.
-  ///
-  /// An empty string uses the main branch.
+namespace internal {
+
+/// \brief Captured metadata and logical settings shared by a builder and its scans.
+struct MetadataScanContext {
+  MetadataTableKind kind;
+  std::shared_ptr<const TableMetadata> table_metadata;
+  std::shared_ptr<Schema> schema;
+  std::shared_ptr<Schema> projected_schema;
+  bool case_sensitive = true;
+  std::optional<int64_t> snapshot_id;
   std::string ref_name;
+  std::optional<int64_t> as_of_time_in_millis;
 };
 
-/// \brief Configure a scan over a metadata table.
-///
-/// Builders are created by MetadataTable::NewScan(), and the metadata table must
-/// outlive the builder.
-///
-/// \code
-///   ICEBERG_ASSIGN_OR_RAISE(auto builder, snapshots_table->NewScan());
-///   ICEBERG_ASSIGN_OR_RAISE(auto stream, builder->Select({"snapshot_id"}).Build());
-/// \endcode
+}  // namespace internal
+
+/// \brief Configure a scan over captured metadata; the metadata table must outlive it.
 class ICEBERG_EXPORT MetadataScanBuilder : public ErrorCollector {
  public:
   ~MetadataScanBuilder() override;
 
-  /// \brief Select columns by name; nested columns use dot-separated paths.
+  /// \brief Capture the source metadata and schema of a metadata table.
+  static Result<std::unique_ptr<MetadataScanBuilder>> Make(const MetadataTable& table);
+
+  /// \brief Select names using the current CaseSensitive() setting.
   ///
-  /// Columns are returned in schema order, and names that match no column are
-  /// ignored. An empty list selects no columns; `*` selects all columns. Names are
-  /// resolved immediately, using the current CaseSensitive() setting. Selecting a
-  /// map's value returns the whole map; selecting only its key is an error.
-  ///
-  /// \param columns Column names from the metadata table's schema.
+  /// Columns are returned in schema order; unknown names are ignored. An empty
+  /// list selects no columns and `*` selects all columns. Nested names use dots;
+  /// selecting a map value selects the whole map, while selecting only its key fails.
   MetadataScanBuilder& Select(const std::vector<std::string>& columns);
 
-  /// \brief Set the output schema to a projection of the metadata table schema.
+  /// \brief Project whole columns by field ID, optionally reordering them.
   ///
-  /// Each field must select a whole column of the metadata table by field id, with
-  /// the same type and without tightening its nullability. Fields may be reordered.
-  ///
-  /// \param schema The output schema.
+  /// Types must match and nullable columns cannot become required.
   MetadataScanBuilder& Project(std::shared_ptr<Schema> schema);
 
-  /// \brief Use case-sensitive column names in Select(); enabled by default.
-  ///
-  /// \param value Whether column names are matched case-sensitively.
+  /// \brief Match column names case-sensitively; enabled by default.
   MetadataScanBuilder& CaseSensitive(bool value);
 
-  /// \brief Request this scan to use the given snapshot by ID.
-  ///
-  /// Only metadata tables that support time travel accept a snapshot; Build()
-  /// returns NotSupported otherwise. The table resolves the snapshot when the scan
-  /// is built.
-  ///
-  /// \param snapshot_id A snapshot ID.
+  /// \brief Select a snapshot ID; Build rejects tables without time travel.
   MetadataScanBuilder& UseSnapshot(int64_t snapshot_id);
 
-  /// \brief Request this scan to resolve the snapshot on the given branch or tag.
-  ///
-  /// Only metadata tables that support time travel accept a reference; Build()
-  /// returns NotSupported otherwise. The table resolves the reference when the scan
-  /// is built.
-  ///
-  /// \param ref A branch or tag name.
+  /// \brief Select a branch or tag; Build rejects tables without time travel.
   MetadataScanBuilder& UseRef(const std::string& ref);
 
-  /// \brief Request this scan to use the most recent snapshot as of the given time.
+  /// \brief Select the latest snapshot at or before this timestamp on the selected ref.
   ///
-  /// The snapshot is resolved on the branch set by UseRef(), or main if no branch
-  /// is set. Only metadata tables that support time travel accept a timestamp;
-  /// Build() returns NotSupported otherwise.
-  ///
-  /// \param timestamp_millis A timestamp in milliseconds since the Unix epoch.
-  MetadataScanBuilder& AsOfTime(int64_t timestamp_millis);
+  /// The timestamp is milliseconds since the Unix epoch. Build rejects tables
+  /// without time travel.
+  MetadataScanBuilder& AsOfTime(int64_t as_of_time_in_millis);
 
-  /// \brief Validate the settings and scan the metadata table.
+  /// \brief Validate the settings and build a scan with its own copy of them.
   ///
-  /// Each call returns a new stream with the output schema. The caller owns the
-  /// returned stream and must invoke its `release` callback when the stream is no
-  /// longer needed.
-  ///
-  /// \return An Arrow stream containing the selected columns, or an error.
-  Result<ArrowArrayStream> Build();
+  /// Later builder changes and normal source table refreshes do not affect it.
+  Result<std::unique_ptr<MetadataScan>> Build();
 
  private:
-  friend class MetadataTable;
-
   explicit MetadataScanBuilder(const MetadataTable& table);
 
   const MetadataTable* table_;
-  std::shared_ptr<Schema> projected_schema_;
-  bool case_sensitive_ = true;
-  SnapshotSelection snapshot_selection_;
+  internal::MetadataScanContext context_;
+};
+
+/// \brief A metadata scan that plans tasks or reads all of them as Arrow batches.
+class ICEBERG_EXPORT MetadataScan {
+ public:
+  virtual ~MetadataScan();
+
+  /// \brief Return a fresh task stream; consuming it may report planning errors.
+  virtual Result<MetadataScanTaskStreamPtr> PlanTasksStream() const = 0;
+
+  /// \brief Collect every task from PlanTasksStream(), preserving planning order.
+  virtual Result<std::vector<std::shared_ptr<MetadataScanTask>>> PlanTasks() const;
+
+  /// \brief Read every task in planning order as one Arrow stream.
+  ///
+  /// The stream owns its read state and can outlive this scan. Release the stream
+  /// and each returned schema or array independently. To set batch size, open the
+  /// planned tasks with MetadataScanTaskReader; each task retains its projection.
+  virtual Result<ArrowArrayStream> ToArrowArrayStream() const;
+
+ protected:
+  explicit MetadataScan(internal::MetadataScanContext context);
+
+  const internal::MetadataScanContext& context() const { return context_; }
+
+ private:
+  const internal::MetadataScanContext context_;
 };
 
 }  // namespace iceberg

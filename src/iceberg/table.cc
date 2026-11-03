@@ -25,6 +25,7 @@
 #include "iceberg/data_table_scan.h"
 #include "iceberg/incremental_append_scan.h"
 #include "iceberg/incremental_changelog_scan.h"
+#include "iceberg/inspect/metadata_table.h"
 #include "iceberg/labels.h"
 #include "iceberg/location_provider.h"
 #include "iceberg/partition_spec.h"
@@ -292,6 +293,10 @@ Result<std::shared_ptr<UpdatePartitionStatistics>> Table::NewUpdatePartitionStat
 
 Result<std::shared_ptr<SnapshotManager>> Table::NewSnapshotManager() {
   return SnapshotManager::Make(shared_from_this());
+}
+
+Result<std::unique_ptr<MetadataTable>> Table::Inspect(MetadataTableKind kind) const {
+  return MetadataTable::Make(shared_from_this(), kind);
 }
 
 Result<std::shared_ptr<StagedTable>> StagedTable::Make(

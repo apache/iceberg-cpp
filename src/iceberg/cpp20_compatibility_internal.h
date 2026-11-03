@@ -82,6 +82,8 @@
 #include "iceberg/inheritable_metadata.h"
 #include "iceberg/inspect/history_table.h"
 #include "iceberg/inspect/metadata_scan.h"
+#include "iceberg/inspect/metadata_scan_task.h"
+#include "iceberg/inspect/metadata_scan_task_reader.h"
 #include "iceberg/inspect/metadata_table.h"
 #include "iceberg/inspect/snapshots_table.h"
 #include "iceberg/labels.h"

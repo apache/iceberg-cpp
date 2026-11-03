@@ -20,40 +20,56 @@
 #pragma once
 
 /// \file iceberg/inspect/metadata_table.h
-/// \brief Base APIs for inspecting Iceberg metadata tables.
+/// \brief Metadata table factories, schemas, and scan entry points.
 
 #include <concepts>
+#include <cstdint>
 #include <memory>
 #include <utility>
 
-#include "iceberg/arrow_c_data.h"
 #include "iceberg/iceberg_export.h"
-#include "iceberg/inspect/metadata_scan.h"
 #include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
 
 namespace iceberg {
+namespace internal {
+struct MetadataScanContext;
+}  // namespace internal
 
-/// \brief Base interface for an Iceberg metadata table.
+/// \brief Iceberg metadata tables exposed by Table::Inspect().
+enum class MetadataTableKind : uint8_t {
+  kEntries,
+  kFiles,
+  kDataFiles,
+  kDeleteFiles,
+  kHistory,
+  kMetadataLogEntries,
+  kSnapshots,
+  kRefs,
+  kManifests,
+  kPartitions,
+  kPositionDeletes,
+  kAllEntries,
+  kAllFiles,
+  kAllDataFiles,
+  kAllDeleteFiles,
+  kAllManifests,
+};
+
+/// \brief A metadata table backed by a source Iceberg table.
 class ICEBERG_EXPORT MetadataTable {
  public:
-  /// \brief Supported metadata table kinds.
-  enum class Kind {
-    kSnapshots,
-    kHistory,
-  };
+  using Kind = MetadataTableKind;
 
-  /// \brief Maximum number of rows emitted in each Arrow batch.
-  static constexpr int64_t kBatchSize = 1024;
+  /// \brief Create a metadata table; unsupported kinds return NotImplemented.
+  static Result<std::unique_ptr<MetadataTable>> Make(std::shared_ptr<const Table> table,
+                                                     Kind kind);
 
-  /// \brief Create a metadata table of the requested concrete type.
-  ///
-  /// \tparam MetadataTableType Concrete class derived from MetadataTable.
-  /// \param table Source table whose metadata will be exposed.
-  /// \return The constructed metadata table, or an error.
+  /// \brief Create a specific metadata table from its concrete class.
   template <typename MetadataTableType>
     requires std::derived_from<MetadataTableType, MetadataTable>
-  static Result<std::unique_ptr<MetadataTableType>> Make(std::shared_ptr<Table> table) {
+  static Result<std::unique_ptr<MetadataTableType>> Make(
+      std::shared_ptr<const Table> table) {
     return MetadataTableType::Make(std::move(table));
   }
 
@@ -66,70 +82,25 @@ class ICEBERG_EXPORT MetadataTable {
   virtual const std::shared_ptr<Schema>& schema() const = 0;
 
   /// \brief Return the source table whose metadata is exposed.
-  const std::shared_ptr<Table>& source_table() const;
+  const std::shared_ptr<const Table>& source_table() const;
 
-  /// \brief Return whether this metadata table supports time travel.
-  virtual bool supports_time_travel() const noexcept;
-
-  /// \brief Create a builder for configuring a metadata table scan.
+  /// \brief Capture the source metadata and create a scan builder.
   ///
-  /// A builder with no options scans all columns of the current snapshot on the main
-  /// branch. This table must outlive the builder.
+  /// This metadata table must outlive the builder. Built scans retain their own
+  /// inputs and can outlive both tables.
   virtual Result<std::unique_ptr<MetadataScanBuilder>> NewScan() const;
 
  protected:
-  explicit MetadataTable(std::shared_ptr<Table> source_table);
+  explicit MetadataTable(std::shared_ptr<const Table> source_table);
 
-  /// \brief Implement a scan that returns the columns of a projected schema.
-  ///
-  /// \param projected_schema Projection of schema() with the columns to return. It
-  /// is only valid during this call.
-  virtual Result<ArrowArrayStream> ScanProjection(
-      const Schema& projected_schema) const = 0;
-
-  /// \brief Implement a scan for the requested snapshot selection.
-  ///
-  /// The default implementation scans the current snapshot on the main branch with
-  /// ScanProjection() and returns NotSupported for any other selection.
-  /// TimeTravelMetadataTable requires an implementation.
-  ///
-  /// \param snapshot_selection Snapshot ID, timestamp, and optional ref selection.
-  /// \param projected_schema Projection of schema() with the columns to return. It
-  /// is only valid during this call.
-  virtual Result<ArrowArrayStream> ScanSnapshot(
-      const SnapshotSelection& snapshot_selection, const Schema& projected_schema) const;
+  /// \brief Plan a scan using the captured metadata, projection, and snapshot selection.
+  virtual Result<std::unique_ptr<MetadataScan>> MakeScan(
+      internal::MetadataScanContext context) const = 0;
 
  private:
   friend class MetadataScanBuilder;
 
-  std::shared_ptr<Table> source_table_;
-};
-
-/// \brief Base interface for metadata tables that support time travel.
-///
-/// Scans of these tables accept MetadataScanBuilder::UseSnapshot(), UseRef(), and
-/// AsOfTime(), which MetadataScanBuilder::Build() rejects for other tables.
-class ICEBERG_EXPORT TimeTravelMetadataTable : public MetadataTable {
- public:
-  ~TimeTravelMetadataTable() override;
-
-  /// \brief Return true because this interface supports time travel.
-  bool supports_time_travel() const noexcept final;
-
- protected:
-  explicit TimeTravelMetadataTable(std::shared_ptr<Table> source_table);
-
-  /// \brief Scan the current snapshot on the main branch.
-  Result<ArrowArrayStream> ScanProjection(const Schema& projected_schema) const final;
-
-  /// \brief Implement a scan for the requested snapshot selection.
-  ///
-  /// \param snapshot_selection Snapshot ID, timestamp, and optional ref selection.
-  /// \param projected_schema Projection of schema() with the columns to return. It
-  /// is only valid during this call.
-  Result<ArrowArrayStream> ScanSnapshot(const SnapshotSelection& snapshot_selection,
-                                        const Schema& projected_schema) const override =
-      0;
+  const std::shared_ptr<const Table> source_table_;
 };
 
 }  // namespace iceberg

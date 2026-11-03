@@ -221,6 +221,9 @@ class ICEBERG_EXPORT Table : public std::enable_shared_from_this<Table> {
   /// \brief Create a new SnapshotManager to manage snapshots and snapshot references.
   virtual Result<std::shared_ptr<SnapshotManager>> NewSnapshotManager();
 
+  /// \brief Construct a metadata table inspector for this table.
+  Result<std::unique_ptr<MetadataTable>> Inspect(MetadataTableKind kind) const;
+
  protected:
   Table(TableIdentifier identifier, std::shared_ptr<TableMetadata> metadata,
         std::string metadata_location, std::shared_ptr<FileIO> io,
