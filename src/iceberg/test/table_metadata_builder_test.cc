@@ -17,6 +17,7 @@
  * under the License.
  */
 
+#include <array>
 #include <limits>
 #include <memory>
 #include <ranges>
@@ -466,7 +467,7 @@ TEST(TableMetadataBuilderTest, UpgradeFormatVersionRejectsUnsupportedVersions) {
     table::UpgradeFormatVersion update(version);
     auto cloned = update.Clone();
     EXPECT_EQ(*cloned, update);
-    const TableUpdate* updates[] = {&update, cloned.get()};
+    const std::array<const TableUpdate*, 2> updates{&update, cloned.get()};
     for (const auto* candidate : updates) {
       auto update_builder = TableMetadataBuilder::BuildFrom(base.get());
       candidate->ApplyTo(*update_builder);
