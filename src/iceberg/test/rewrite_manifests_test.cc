@@ -1440,6 +1440,8 @@ TEST_P(RewriteManifestsTest, ClosesAndCleansCopiedManifestOnFailure) {
   ASSERT_THAT(adapter.Init(), IsOk());
   ASSERT_THAT(adapter.StartAppending(), IsOk());
   ManifestEntry invalid_entry;
+  // Intentionally use an unknown status to exercise reader rejection and cleanup.
+  // NOLINTNEXTLINE(clang-analyzer-optin.core.EnumCastOutOfRange)
   invalid_entry.status = static_cast<ManifestStatus>(99);
   invalid_entry.snapshot_id = snapshot->snapshot_id;
   invalid_entry.data_file = file_a_;
@@ -1465,17 +1467,27 @@ TEST_P(RewriteManifestsTest, ClosesAndCleansCopiedManifestOnFailure) {
   };
   for (bool explicit_transaction : {false, true}) {
     for (const auto& [source, error_kind, error_message, creates_output] :
-         {FailureCase{&valid_manifest, ErrorKind::kIOError,
-                      "Injected rewrite manifest close failure", true},
-          FailureCase{&added_manifest, ErrorKind::kValidationFailed,
-                      "Invalid manifest entry status: ADDED (allowed status: EXISTING)",
-                      true},
-          FailureCase{&deleted_manifest, ErrorKind::kValidationFailed,
-                      "Invalid manifest entry status: DELETED (allowed status: EXISTING)",
-                      true},
+         {FailureCase{.source = &valid_manifest,
+                      .error_kind = ErrorKind::kIOError,
+                      .error_message = "Injected rewrite manifest close failure",
+                      .creates_output = true},
+          FailureCase{
+              .source = &added_manifest,
+              .error_kind = ErrorKind::kValidationFailed,
+              .error_message =
+                  "Invalid manifest entry status: ADDED (allowed status: EXISTING)",
+              .creates_output = true},
+          FailureCase{
+              .source = &deleted_manifest,
+              .error_kind = ErrorKind::kValidationFailed,
+              .error_message =
+                  "Invalid manifest entry status: DELETED (allowed status: EXISTING)",
+              .creates_output = true},
           // Unknown statuses are rejected by the reader before an output is opened.
-          FailureCase{&unknown_manifest, ErrorKind::kInvalidArgument,
-                      "Invalid manifest status: 99", false}}) {
+          FailureCase{.source = &unknown_manifest,
+                      .error_kind = ErrorKind::kInvalidArgument,
+                      .error_message = "Invalid manifest status: 99",
+                      .creates_output = false}}) {
       SCOPED_TRACE(std::format("explicit_transaction={}, error={}", explicit_transaction,
                                error_message));
       auto state = std::make_shared<ManifestWriteFailureState>();
@@ -2792,7 +2804,6 @@ TEST_P(RewriteManifestsTest, DeleteManifestReplacementConflictingDeleteFileRemov
   ASSERT_THAT(AppendDeleteFiles({delete_a, delete_a2}), IsOk());
   ICEBERG_UNWRAP_OR_FAIL(auto delete_snapshot, table_->current_snapshot());
   const int64_t delete_snapshot_id = delete_snapshot->snapshot_id;
-  const int64_t delete_snapshot_sequence_number = delete_snapshot->sequence_number;
   ICEBERG_UNWRAP_OR_FAIL(auto original_delete_manifests, CurrentDeleteManifests());
   ASSERT_EQ(original_delete_manifests.size(), 1U);
   const auto original_delete_manifest = original_delete_manifests[0];
