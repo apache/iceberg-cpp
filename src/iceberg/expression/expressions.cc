@@ -292,7 +292,8 @@ std::shared_ptr<NamedReference> Expressions::Ref(std::string name) {
   return ref;
 }
 
-Literal Expressions::Lit(Literal::Value value, std::shared_ptr<PrimitiveType> type) {
+Literal Expressions::Lit(Literal::Value /*value*/,
+                         std::shared_ptr<PrimitiveType> /*type*/) {
   throw ExpressionError("Literal creation is not implemented");
 }
 
