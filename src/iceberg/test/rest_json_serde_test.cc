@@ -1265,7 +1265,7 @@ INSTANTIATE_TEST_SUITE_P(
             .test_name = "InvalidMetadataContent",
             .invalid_json_str = R"({"metadata":{"format-version":"invalid"}})",
             .expected_error_message =
-                "Failed to parse 'format-version' (JSON value of type string)"},
+                "'format-version' must be an integer, but is string"},
         LoadTableResultInvalidParam{
             .test_name = "LabelsFieldsNotArray",
             .invalid_json_str = LoadTableJsonWithLabels(R"({"fields":"oops"})"),

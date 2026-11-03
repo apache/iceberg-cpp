@@ -401,9 +401,9 @@ TEST(V4TableMetadataTest, StaleSequenceIsRetryableBeforeParentTimestampValidatio
 TEST(V4TableMetadataTest, RejectsWritingIdentifierFieldsWithoutMigration) {
   for (bool historical_schema : {false, true}) {
     ICEBERG_UNWRAP_OR_FAIL(auto metadata, NewMetadata());
-    ICEBERG_UNWRAP_OR_FAIL(auto schema,
-                           Schema::Make({SchemaField::MakeRequired(1, "id", int64())},
-                                        historical_schema ? 1 : 0, {1}));
+    ICEBERG_UNWRAP_OR_FAIL(
+        auto schema, Schema::Make({SchemaField::MakeRequired(1, "id", int64())},
+                                  historical_schema ? 1 : 0, std::vector<int32_t>{1}));
     if (historical_schema) {
       metadata->schemas.push_back(std::move(schema));
     } else {
