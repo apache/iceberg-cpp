@@ -25,20 +25,11 @@
 namespace iceberg {
 
 Result<FileTrackingStatus> FileTrackingStatusFromInt(int32_t status) {
-  switch (status) {
-    case 0:
-      return FileTrackingStatus::kExisting;
-    case 1:
-      return FileTrackingStatus::kAdded;
-    case 2:
-      return FileTrackingStatus::kDeleted;
-    case 3:
-      return FileTrackingStatus::kReplaced;
-    case 4:
-      return FileTrackingStatus::kModified;
-    default:
-      return InvalidArgument("Invalid file tracking status: {}", status);
+  if (status < static_cast<int32_t>(FileTrackingStatus::kExisting) ||
+      status > static_cast<int32_t>(FileTrackingStatus::kModified)) {
+    return InvalidArgument("Invalid file tracking status: {}", status);
   }
+  return static_cast<FileTrackingStatus>(status);
 }
 
 std::shared_ptr<StructType> FileTracking::Type() {

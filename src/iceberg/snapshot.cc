@@ -27,6 +27,7 @@
 #include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/manifest/manifest_list.h"
 #include "iceberg/manifest/manifest_reader.h"
+#include "iceberg/table_metadata.h"
 #include "iceberg/util/macros.h"
 #include "iceberg/util/string_util.h"
 
@@ -168,13 +169,16 @@ Result<std::optional<int64_t>> Snapshot::AddedRows() const { return added_rows; 
 Status Snapshot::ValidateForFormatVersion(int8_t format_version,
                                           bool is_new_snapshot) const {
   if (!root_manifest.has_value()) {
-    ICEBERG_CHECK(!is_new_snapshot || format_version < 4,
-                  "New v4 snapshots require root-manifest instead of manifest-list");
+    ICEBERG_CHECK(
+        !is_new_snapshot || format_version < TableMetadata::kMinFormatVersionRootManifest,
+        "New v4 snapshots require root-manifest instead of manifest-list");
     ICEBERG_CHECK(!manifest_list.empty(), "Snapshot manifest-list cannot be empty");
     return {};
   }
 
-  ICEBERG_CHECK(format_version >= 4, "root-manifest requires format version 4");
+  ICEBERG_CHECK(format_version >= TableMetadata::kMinFormatVersionRootManifest,
+                "root-manifest requires format version {}",
+                TableMetadata::kMinFormatVersionRootManifest);
   ICEBERG_CHECK(manifest_list.empty(), "root-manifest cannot coexist with manifest-list");
   ICEBERG_CHECK(!root_manifest->empty(), "Snapshot root-manifest cannot be empty");
   ICEBERG_CHECK(sequence_number > 0, "V4 snapshots require a positive sequence-number");

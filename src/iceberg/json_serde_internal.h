@@ -247,9 +247,12 @@ ICEBERG_EXPORT nlohmann::json ToJson(const Snapshot& snapshot);
 /// \brief Deserializes a JSON object into a `Snapshot` object.
 ///
 /// \param json The JSON representation of the snapshot.
+/// \param format_version The table format, or the latest supported version when
+/// parsing a standalone snapshot without table context.
 /// \return A `Snapshot` object or an error if the conversion fails.
 ICEBERG_EXPORT Result<std::unique_ptr<Snapshot>> SnapshotFromJson(
-    const nlohmann::json& json);
+    const nlohmann::json& json,
+    int8_t format_version = TableMetadata::kSupportedTableFormatVersion);
 
 /// \brief Serializes a `StatisticsFile` object to JSON.
 ///

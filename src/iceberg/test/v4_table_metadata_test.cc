@@ -40,6 +40,7 @@
 #include "iceberg/table.h"
 #include "iceberg/table_identifier.h"
 #include "iceberg/table_metadata.h"
+#include "iceberg/table_properties.h"
 #include "iceberg/table_update.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/test/mock_catalog.h"
@@ -103,6 +104,7 @@ TEST(V4TableMetadataTest, CreateAndRoundTrip) {
   EXPECT_EQ(metadata->format_version, 4);
   EXPECT_EQ(metadata->next_row_id, 0);
   EXPECT_TRUE(metadata->snapshots.empty());
+  EXPECT_FALSE(metadata->HasV4RootManifest());
   EXPECT_FALSE(metadata->table_uuid.empty());
   ICEBERG_UNWRAP_OR_FAIL(auto json, ToJson(*metadata));
   EXPECT_EQ(json["format-version"], 4);
@@ -124,6 +126,7 @@ TEST(V4TableMetadataTest, SerializationRejectsNullSnapshots) {
       metadata->snapshots = null_first
                                 ? std::vector<std::shared_ptr<Snapshot>>{nullptr, valid}
                                 : std::vector<std::shared_ptr<Snapshot>>{valid, nullptr};
+      EXPECT_FALSE(metadata->HasV4RootManifest());
       auto result = ToJson(*metadata);
       EXPECT_THAT(result, IsError(ErrorKind::kInvalidArgument));
       EXPECT_THAT(result, HasErrorMessage("Cannot write null snapshot"));
@@ -213,12 +216,15 @@ TEST(V4TableMetadataTest, OptionalLocation) {
 TEST(V4TableMetadataTest, RejectRelativeTableLocationAndMissingRequiredFields) {
   auto json = MetadataJson();
   json["location"] = "relative/table";
+  EXPECT_THAT(TableMetadataFromJson(json), IsError(ErrorKind::kJsonParseError));
   EXPECT_THAT(TableMetadataFromJson(json), HasErrorMessage("location must be absolute"));
   ICEBERG_UNWRAP_OR_FAIL(auto metadata, NewMetadata());
   auto builder = TableMetadataBuilder::BuildFrom(metadata.get());
   builder->SetLocation("relative/table");
   EXPECT_THAT(builder->Build(), HasErrorMessage("location must be absolute"));
   metadata->location = "relative/table";
+  EXPECT_THAT(metadata->ValidateLocation(), IsError(ErrorKind::kInvalidArgument));
+  EXPECT_THAT(ToJson(*metadata), IsError(ErrorKind::kInvalidArgument));
   EXPECT_THAT(ToJson(*metadata), HasErrorMessage("location must be absolute"));
   for (const auto* field : {"next-row-id"}) {
     json = MetadataJson();
@@ -234,6 +240,7 @@ TEST(V4TableMetadataTest, RootManifestRoundTripAndExplicitReaderFailure) {
   json["next-row-id"] = 10;
   ICEBERG_UNWRAP_OR_FAIL(auto metadata, TableMetadataFromJson(json));
   ASSERT_EQ(metadata->snapshots.size(), 1);
+  EXPECT_TRUE(metadata->HasV4RootManifest());
   auto snapshot = metadata->snapshots.front();
   EXPECT_EQ(snapshot->root_manifest, "metadata/root.avro");
   EXPECT_TRUE(snapshot->manifest_list.empty());
@@ -260,6 +267,27 @@ TEST(V4TableMetadataTest, RejectInvalidSnapshotRoots) {
   json["format-version"] = 3;
   json["snapshots"] = nlohmann::json::array({RootSnapshotJson()});
   EXPECT_THAT(TableMetadataFromJson(json), HasErrorMessage("requires format version 4"));
+}
+
+TEST(V4TableMetadataTest, SnapshotParserUsesTheProvidedFormatVersion) {
+  for (int8_t version : {1, 2, 3, 4}) {
+    SCOPED_TRACE(version);
+    auto root = SnapshotFromJson(RootSnapshotJson(), version);
+    if (version < TableMetadata::kMinFormatVersionRootManifest) {
+      EXPECT_THAT(root, IsError(ErrorKind::kJsonParseError));
+      EXPECT_THAT(root, HasErrorMessage("requires format version 4"));
+    } else {
+      EXPECT_THAT(root, IsOk());
+    }
+    auto legacy = RootSnapshotJson();
+    legacy.erase("root-manifest");
+    legacy["manifest-list"] = "legacy.avro";
+    EXPECT_THAT(SnapshotFromJson(legacy, version), IsOk());
+  }
+  for (int8_t version : {0, 5}) {
+    EXPECT_THAT(SnapshotFromJson(RootSnapshotJson(), version),
+                HasErrorMessage("Unsupported snapshot format version"));
+  }
 }
 
 TEST(V4TableMetadataTest, SnapshotConstraintStatusesRequireAnArray) {
@@ -342,6 +370,52 @@ TEST(V4TableMetadataTest, NewSnapshotsRequireRootsAndMonotonicTimestamps) {
               HasErrorMessage("New v4 snapshots require root-manifest"));
 }
 
+TEST(V4TableMetadataTest, StaleSequenceIsRetryableBeforeParentTimestampValidation) {
+  auto json = MetadataJson();
+  json["snapshots"] = nlohmann::json::array({RootSnapshotJson()});
+  json["last-sequence-number"] = 1;
+  json["next-row-id"] = 10;
+  ICEBERG_UNWRAP_OR_FAIL(auto base, TableMetadataFromJson(json));
+  auto child_json = RootSnapshotJson();
+  child_json["snapshot-id"] = 2;
+  child_json["parent-snapshot-id"] = 1;
+  child_json["first-row-id"] = 10;
+  // Both timestamps are invalid; a stale sequence must take retry precedence.
+  for (int64_t timestamp : {999, 1000}) {
+    child_json["timestamp-ms"] = timestamp;
+    for (int64_t sequence : {1, 2}) {
+      child_json["sequence-number"] = sequence;
+      ICEBERG_UNWRAP_OR_FAIL(auto child, SnapshotFromJson(child_json, 4));
+      auto builder = TableMetadataBuilder::BuildFrom(base.get());
+      builder->AddSnapshot(std::move(child));
+      auto result = builder->Build();
+      EXPECT_THAT(result, IsError(sequence == 1 ? ErrorKind::kRetryableValidationFailed
+                                                : ErrorKind::kValidationFailed));
+      EXPECT_THAT(result,
+                  HasErrorMessage(sequence == 1 ? "sequence number" : "timestamp"));
+      EXPECT_TRUE(builder->changes().empty());
+    }
+  }
+}
+
+TEST(V4TableMetadataTest, RejectsWritingIdentifierFieldsWithoutMigration) {
+  for (bool historical_schema : {false, true}) {
+    ICEBERG_UNWRAP_OR_FAIL(auto metadata, NewMetadata());
+    ICEBERG_UNWRAP_OR_FAIL(auto schema,
+                           Schema::Make({SchemaField::MakeRequired(1, "id", int64())},
+                                        historical_schema ? 1 : 0, {1}));
+    if (historical_schema) {
+      metadata->schemas.push_back(std::move(schema));
+    } else {
+      metadata->schemas[0] = std::move(schema);
+    }
+    EXPECT_THAT(ToJson(*metadata), IsError(ErrorKind::kNotSupported));
+    auto builder = TableMetadataBuilder::BuildFrom(metadata.get());
+    EXPECT_THAT(builder->Build(), IsError(ErrorKind::kNotSupported));
+    ASSERT_EQ(metadata->schemas.back()->IdentifierFieldIds(), std::vector<int32_t>{1});
+  }
+}
+
 TEST(V4TableMetadataTest, IgnoreLegacyIdentifiersAndRejectUnimplementedConstraints) {
   auto json = MetadataJson();
   json["schemas"][0]["identifier-field-ids"] = {999};
@@ -376,9 +450,17 @@ TEST(V4TableMetadataTest, ConstraintFieldsRequireTheirDeclaredJsonTypes) {
   json["constraints"] = nlohmann::json::array();
   json["last-constraint-id"] = 0;
   EXPECT_THAT(TableMetadataFromJson(json), IsOk());
+  for (const auto* field : {"constraints", "last-constraint-id"}) {
+    auto nullable = json;
+    nullable[field] = nullptr;
+    EXPECT_THAT(TableMetadataFromJson(nullable), IsOk());
+  }
+  json["constraints"] = nullptr;
+  json["last-constraint-id"] = nullptr;
+  EXPECT_THAT(TableMetadataFromJson(json), IsOk());
 
-  for (const auto& value : std::vector<nlohmann::json>{nullptr, "constraints", true, 0,
-                                                       0.0, nlohmann::json::object()}) {
+  for (const auto& value : std::vector<nlohmann::json>{"constraints", true, 0, 0.0,
+                                                       nlohmann::json::object()}) {
     SCOPED_TRACE(value.dump());
     json = MetadataJson();
     json["constraints"] = value;
@@ -387,8 +469,8 @@ TEST(V4TableMetadataTest, ConstraintFieldsRequireTheirDeclaredJsonTypes) {
     EXPECT_THAT(result, HasErrorMessage("constraints"));
   }
   for (const auto& value : std::vector<nlohmann::json>{
-           nullptr, "0", true, 0.0, 1.5, 2147483648LL, -2147483649LL,
-           18446744073709551615ULL, nlohmann::json::array(), nlohmann::json::object()}) {
+           "0", true, 0.0, 1.5, 2147483648LL, -2147483649LL, 18446744073709551615ULL,
+           nlohmann::json::array(), nlohmann::json::object()}) {
     SCOPED_TRACE(value.dump());
     json = MetadataJson();
     json["last-constraint-id"] = value;
@@ -502,6 +584,20 @@ TEST(V4TableMetadataTest, NullLocationIsAbsentAndCannotProduceDefaultDataPaths) 
     json["format-version"] = version;
     EXPECT_FALSE(TableMetadataFromJson(json).has_value());
   }
+}
+
+TEST(V4TableMetadataTest, MissingTableLocationCanUseAnExplicitMetadataPath) {
+  ICEBERG_UNWRAP_OR_FAIL(auto metadata, NewMetadata());
+  metadata->location.clear();
+  auto io = MemoryIO();
+  auto missing = TableMetadataUtil::Write(*io, nullptr, "", *metadata);
+  EXPECT_THAT(missing, IsError(ErrorKind::kInvalidArgument));
+  EXPECT_THAT(missing, HasErrorMessage(TableProperties::kWriteMetadataLocation.key()));
+  metadata->properties.Set(TableProperties::kWriteMetadataLocation,
+                           std::string("s3://bucket/explicit-metadata"));
+  ICEBERG_UNWRAP_OR_FAIL(auto path,
+                         TableMetadataUtil::Write(*io, nullptr, "", *metadata));
+  EXPECT_THAT(path, ::testing::StartsWith("s3://bucket/explicit-metadata/"));
 }
 
 TEST(V4TableMetadataTest, UpgradeBeforeSelectingCurrentSchema) {

@@ -314,6 +314,20 @@ Result<std::shared_ptr<Snapshot>> TableMetadata::SnapshotById(int64_t snapshot_i
   return *iter;
 }
 
+bool TableMetadata::HasV4RootManifest() const {
+  return std::ranges::any_of(snapshots, [](const auto& snapshot) {
+    return snapshot && snapshot->root_manifest.has_value();
+  });
+}
+
+Status TableMetadata::ValidateLocation() const {
+  if (format_version >= kMinFormatVersionOptionalLocation) {
+    ICEBERG_PRECHECK(location.empty() || !LocationUtil::ParseScheme(location).empty(),
+                     "V4 table location must be absolute: {}", location);
+  }
+  return {};
+}
+
 int64_t TableMetadata::NextSequenceNumber() const {
   return format_version > 1 ? last_sequence_number + 1 : kInitialSequenceNumber;
 }
@@ -574,7 +588,9 @@ Result<std::string> TableMetadataUtil::NewTableMetadataFilePath(const TableMetad
                        filename);
   } else {
     ICEBERG_PRECHECK(!meta.location.empty(),
-                     "Cannot generate a metadata file location without a table location");
+                     "Cannot generate a metadata file location without a table location; "
+                     "provide a table location or set '{}'",
+                     TableProperties::kWriteMetadataLocation.key());
     return std::format("{}/{}/{}", meta.location, kMetadataFolderName, filename);
   }
 }
@@ -787,7 +803,7 @@ Status TableMetadataBuilder::Impl::UpgradeFormatVersion(int8_t new_format_versio
 
   // A create transaction may add schemas before selecting the current schema.
   // Build() will validate the schema selected after this upgrade.
-  if (new_format_version >= 4) {
+  if (new_format_version >= TableMetadata::kMinFormatVersionConstraints) {
     auto current_schema = schemas_by_id_.find(metadata_.current_schema_id);
     if (current_schema != schemas_by_id_.end() &&
         !current_schema->second->IdentifierFieldIds().empty()) {
@@ -1123,6 +1139,13 @@ Status TableMetadataBuilder::Impl::AddSnapshot(std::shared_ptr<Snapshot> snapsho
                 "Snapshot already exists for id: {}", snapshot->snapshot_id);
   ICEBERG_RETURN_UNEXPECTED(
       snapshot->ValidateForFormatVersion(metadata_.format_version, true));
+  if (metadata_.format_version != 1 &&
+      snapshot->sequence_number <= metadata_.last_sequence_number &&
+      snapshot->parent_snapshot_id.has_value()) {
+    return RetryableValidationFailed(
+        "Cannot add snapshot with sequence number {} older than last sequence number {}",
+        snapshot->sequence_number, metadata_.last_sequence_number);
+  }
   if (metadata_.format_version >= TableMetadata::kMinFormatVersionMonotonicTimestamps &&
       snapshot->parent_snapshot_id.has_value()) {
     auto parent = snapshots_by_id_.find(snapshot->parent_snapshot_id.value());
@@ -1132,14 +1155,6 @@ Status TableMetadataBuilder::Impl::AddSnapshot(std::shared_ptr<Snapshot> snapsho
           "V4 snapshot timestamp must be greater than its parent timestamp");
     }
   }
-  if (metadata_.format_version != 1 &&
-      snapshot->sequence_number <= metadata_.last_sequence_number &&
-      snapshot->parent_snapshot_id.has_value()) {
-    return RetryableValidationFailed(
-        "Cannot add snapshot with sequence number {} older than last sequence number {}",
-        snapshot->sequence_number, metadata_.last_sequence_number);
-  }
-
   metadata_.last_sequence_number = snapshot->sequence_number;
   metadata_.snapshots.push_back(snapshot);
   snapshots_by_id_.emplace(snapshot->snapshot_id, snapshot);
@@ -1420,11 +1435,7 @@ Result<std::unique_ptr<TableMetadata>> TableMetadataBuilder::Impl::Build() {
       metadata_.format_version >= 1 &&
           metadata_.format_version <= TableMetadata::kSupportedTableFormatVersion,
       "Unsupported table format version: {}", metadata_.format_version);
-  if (metadata_.format_version >= TableMetadata::kMinFormatVersionOptionalLocation) {
-    ICEBERG_PRECHECK(metadata_.location.empty() ||
-                         !LocationUtil::ParseScheme(metadata_.location).empty(),
-                     "V4 table location must be absolute: {}", metadata_.location);
-  }
+  ICEBERG_RETURN_UNEXPECTED(metadata_.ValidateLocation());
 
   // 2. Update last_updated_ms if there are changes
   if (metadata_.last_updated_ms == kInvalidLastUpdatedMs) {
@@ -1439,7 +1450,10 @@ Result<std::unique_ptr<TableMetadata>> TableMetadataBuilder::Impl::Build() {
                    "Current schema ID {} not found in schemas", current_schema_id);
   {
     const auto& current_schema = schema_it->second;
-    if (metadata_.format_version >= 4 && !current_schema->IdentifierFieldIds().empty()) {
+    if (metadata_.format_version >= TableMetadata::kMinFormatVersionConstraints &&
+        std::ranges::any_of(metadata_.schemas, [](const auto& schema) {
+          return !schema->IdentifierFieldIds().empty();
+        })) {
       return NotSupported(
           "V4 primary-key constraints are not supported yet; "
           "identifier-field-ids cannot be written in v4 schemas");

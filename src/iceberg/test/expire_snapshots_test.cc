@@ -201,6 +201,15 @@ class ExpireSnapshotsCleanupTest : public UpdateTestBase {
 
   void UseV4Root(TableMetadata& metadata) const {
     metadata.format_version = 4;
+    // These fixtures model v4 schemas without primary keys; production identifier
+    // migration remains unsupported and serialization must not drop identifiers.
+    for (auto& schema : metadata.schemas) {
+      if (!schema->IdentifierFieldIds().empty()) {
+        schema = std::make_shared<Schema>(
+            std::vector<SchemaField>(schema->fields().begin(), schema->fields().end()),
+            schema->schema_id());
+      }
+    }
     metadata.location = "file:" + table_location_;
     // Keep the mock filesystem's metadata writes at its existing absolute path.
     metadata.properties.Set(TableProperties::kWriteMetadataLocation,
@@ -316,10 +325,45 @@ TEST_F(ExpireSnapshotsCleanupTest, V4SupportsNoOpAndExpirationWithoutFileCleanup
   EXPECT_THAT(file_io_->ReadFile(expired_list, std::nullopt), IsOk());
 }
 
+TEST_F(ExpireSnapshotsCleanupTest, V4RejectsSchemaSpecPruningBeforeCommit) {
+  auto metadata = ReloadMetadata();
+  UseV4Root(*metadata);
+  RewriteTable(std::move(metadata));
+  const auto location = std::string(table_->metadata_file_location());
+  for (bool expire_snapshot : {false, true}) {
+    SCOPED_TRACE(expire_snapshot);
+    std::vector<std::string> deleted_files;
+    ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewExpireSnapshots());
+    update->CleanupLevel(CleanupLevel::kNone)
+        .CleanExpiredMetadata(true)
+        .DeleteWith([&](const std::string& path) { deleted_files.push_back(path); });
+    if (expire_snapshot) {
+      update->ExpireSnapshotId(kExpiredSnapshotId);
+    } else {
+      update->RetainLast(2);
+    }
+    auto result = update->Apply();
+    EXPECT_THAT(result, IsError(ErrorKind::kNotSupported));
+    EXPECT_THAT(result, HasErrorMessage("disable CleanExpiredMetadata"));
+    EXPECT_THAT(update->Commit(), IsError(ErrorKind::kNotSupported));
+    EXPECT_TRUE(deleted_files.empty());
+    EXPECT_EQ(table_->metadata_file_location(), location);
+    EXPECT_TRUE(ReloadMetadata()->SnapshotById(kExpiredSnapshotId).has_value());
+  }
+}
+
 TEST_P(ExpireSnapshotsV4CleanupTest, SkipsCleanupWhenCommittedMetadataAddsV4Root) {
+  const auto data_path = table_location_ + "/data/expired.parquet";
+  const auto manifest_path = table_location_ + "/metadata/expired-manifest.avro";
   const auto expired_list = table_location_ + "/metadata/expired-list.avro";
   const auto current_list = table_location_ + "/metadata/current-list.avro";
-  WriteManifestList(expired_list, kExpiredSnapshotId, 0, kExpiredSequenceNumber, {});
+  ASSERT_THAT(file_io_->WriteFile(data_path, "data"), IsOk());
+  auto manifest =
+      WriteDataManifest(manifest_path, kExpiredSnapshotId,
+                        {MakeEntry(ManifestStatus::kAdded, kExpiredSnapshotId,
+                                   kExpiredSequenceNumber, MakeDataFile(data_path))});
+  WriteManifestList(expired_list, kExpiredSnapshotId, 0, kExpiredSequenceNumber,
+                    {manifest});
   WriteManifestList(current_list, kCurrentSnapshotId, kExpiredSnapshotId,
                     kCurrentSequenceNumber, {});
   RewriteTableWithManifestLists(expired_list, current_list);
@@ -352,7 +396,15 @@ TEST_P(ExpireSnapshotsV4CleanupTest, SkipsCleanupWhenCommittedMetadataAddsV4Root
   auto committed = ReloadMetadata();
   EXPECT_FALSE(committed->SnapshotById(kExpiredSnapshotId).has_value());
   EXPECT_TRUE(committed->snapshots.back()->root_manifest.has_value());
-  EXPECT_THAT(file_io_->ReadFile(expired_list, std::nullopt), IsOk());
+  for (const auto& path : {expired_list, manifest_path, data_path}) {
+    EXPECT_THAT(file_io_->ReadFile(path, std::nullopt), IsOk());
+  }
+  EXPECT_THAT(logger->records(),
+              ::testing::Contains(::testing::AllOf(
+                  ::testing::Field(&LogMessage::level, LogLevel::kWarn),
+                  ::testing::Field(
+                      &LogMessage::message,
+                      ::testing::HasSubstr("expired snapshot files were retained")))));
   for (const auto& record : logger->records()) {
     EXPECT_THAT(record.message,
                 ::testing::Not(::testing::HasSubstr("Update finalization failed")));

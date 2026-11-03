@@ -62,12 +62,6 @@ Result<std::unique_ptr<ManifestReader>> MakeManifestReader(
   return ManifestReader::Make(manifest, file_io, std::move(schema), specs_by_id.get());
 }
 
-bool HasV4RootManifest(const TableMetadata& metadata) {
-  return std::ranges::any_of(metadata.snapshots, [](const auto& snapshot) {
-    return snapshot && snapshot->root_manifest.has_value();
-  });
-}
-
 /// \brief Abstract strategy for cleaning up files after snapshot expiration.
 class FileCleanupStrategy {
  public:
@@ -973,13 +967,18 @@ Result<ExpireSnapshots::ApplyResult> ExpireSnapshots::Apply() {
   });
 
   if (cleanup_level_ != CleanupLevel::kNone && !result.snapshot_ids_to_remove.empty() &&
-      HasV4RootManifest(base)) {
+      base.HasV4RootManifest()) {
     return NotSupported(
         "Snapshot expiration file cleanup with v4 root manifests "
         "is not supported yet; use CleanupLevel::kNone");
   }
 
   if (clean_expired_metadata_) {
+    if (base.HasV4RootManifest()) {
+      return NotSupported(
+          "Cleaning expired schemas and partition specs with v4 root manifests "
+          "is not supported yet; disable CleanExpiredMetadata to expire snapshots");
+    }
     ICEBERG_ASSIGN_OR_RAISE(
         auto reachable_ids,
         ParallelCollect(
@@ -1041,9 +1040,12 @@ Status ExpireSnapshots::Finalize(const TableMetadata& metadata_after_expiration)
 
   // Later transaction updates or the catalog's committed result may introduce
   // root manifests after Apply(). Never treat untraversable roots as empty.
-  // The commit has succeeded, so leave files in place without a cleanup error.
-  if (HasV4RootManifest(metadata_before_expiration) ||
-      HasV4RootManifest(metadata_after_expiration)) {
+  // The commit has succeeded, so retain files and signal the skipped cleanup.
+  if (metadata_before_expiration.HasV4RootManifest() ||
+      metadata_after_expiration.HasV4RootManifest()) {
+    ICEBERG_LOG_WARN(
+        "Skipped snapshot expiration file cleanup: v4 root manifests prevent "
+        "reachability checks; expired snapshot files were retained");
     return {};
   }
 

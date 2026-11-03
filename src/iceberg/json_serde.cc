@@ -59,7 +59,6 @@
 #include "iceberg/util/checked_cast.h"
 #include "iceberg/util/formatter.h"  // IWYU pragma: keep
 #include "iceberg/util/json_util_internal.h"
-#include "iceberg/util/location_util.h"
 #include "iceberg/util/macros.h"
 #include "iceberg/util/string_util.h"
 #include "iceberg/util/temporal_util.h"
@@ -1129,7 +1128,12 @@ Result<std::unique_ptr<SnapshotRef>> SnapshotRefFromJson(const nlohmann::json& j
   }
 }
 
-Result<std::unique_ptr<Snapshot>> SnapshotFromJson(const nlohmann::json& json) {
+Result<std::unique_ptr<Snapshot>> SnapshotFromJson(const nlohmann::json& json,
+                                                   int8_t format_version) {
+  if (format_version < 1 ||
+      format_version > TableMetadata::kSupportedTableFormatVersion) {
+    return JsonParseError("Unsupported snapshot format version: {}", format_version);
+  }
   ICEBERG_ASSIGN_OR_RAISE(auto snapshot_id, GetJsonValue<int64_t>(json, kSnapshotId));
   ICEBERG_ASSIGN_OR_RAISE(auto sequence_number,
                           GetJsonValueOptional<int64_t>(json, kSequenceNumber));
@@ -1210,9 +1214,7 @@ Result<std::unique_ptr<Snapshot>> SnapshotFromJson(const nlohmann::json& json) {
       sequence_number.value_or(TableMetadata::kInitialSequenceNumber), timestamp_ms,
       manifest_list.value_or(""), std::move(summary), schema_id, first_row_id, added_rows,
       std::move(key_id), std::move(root_manifest));
-  if (auto status =
-          snapshot->ValidateForFormatVersion(snapshot->root_manifest.has_value() ? 4 : 1);
-      !status) {
+  if (auto status = snapshot->ValidateForFormatVersion(format_version); !status) {
     return JsonParseError("Invalid snapshot: {}", status.error().message);
   }
   return snapshot;
@@ -1388,14 +1390,9 @@ Result<nlohmann::json> ToJson(const TableMetadata& table_metadata) {
 
   json[kFormatVersion] = table_metadata.format_version;
   json[kTableUuid] = table_metadata.table_uuid;
+  ICEBERG_RETURN_UNEXPECTED(table_metadata.ValidateLocation());
   if (table_metadata.format_version < TableMetadata::kMinFormatVersionOptionalLocation ||
       !table_metadata.location.empty()) {
-    if (table_metadata.format_version >=
-            TableMetadata::kMinFormatVersionOptionalLocation &&
-        LocationUtil::ParseScheme(table_metadata.location).empty()) {
-      return InvalidArgument("V4 table location must be absolute: {}",
-                             table_metadata.location);
-    }
     json[kLocation] = table_metadata.location;
   }
   if (table_metadata.format_version > 1) {
@@ -1422,10 +1419,13 @@ Result<nlohmann::json> ToJson(const TableMetadata& table_metadata) {
   // infallible ToJson) cannot be used here; build the array with an explicit loop.
   nlohmann::json schemas_json = nlohmann::json::array();
   for (const auto& schema : table_metadata.schemas) {
-    ICEBERG_ASSIGN_OR_RAISE(auto schema_json, ToJson(*schema));
-    if (table_metadata.format_version >= 4) {
-      schema_json.erase(kIdentifierFieldIds);
+    if (table_metadata.format_version >= TableMetadata::kMinFormatVersionConstraints &&
+        !schema->IdentifierFieldIds().empty()) {
+      return NotSupported(
+          "V4 primary-key constraints are not supported yet; "
+          "identifier-field-ids cannot be written in v4 schemas");
     }
+    ICEBERG_ASSIGN_OR_RAISE(auto schema_json, ToJson(*schema));
     schemas_json.push_back(std::move(schema_json));
   }
   json[kSchemas] = std::move(schemas_json);
@@ -1509,8 +1509,8 @@ Result<std::shared_ptr<Schema>> ParseSchemas(
     const auto parse_schema =
         [format_version](
             const nlohmann::json& schema_json) -> Result<std::unique_ptr<Schema>> {
-      if (format_version >= 4 && schema_json.is_object() &&
-          schema_json.contains(kIdentifierFieldIds)) {
+      if (format_version >= TableMetadata::kMinFormatVersionConstraints &&
+          schema_json.is_object() && schema_json.contains(kIdentifierFieldIds)) {
         auto v4_schema_json = schema_json;
         v4_schema_json.erase(kIdentifierFieldIds);
         return SchemaFromJson(v4_schema_json);
@@ -1665,34 +1665,29 @@ Result<std::unique_ptr<TableMetadata>> TableMetadataFromJson(const nlohmann::jso
 
   ICEBERG_ASSIGN_OR_RAISE(table_metadata->table_uuid,
                           GetJsonValueOrDefault<std::string>(json, kTableUuid));
-  if (table_metadata->format_version >= 4) {
-    if (json.contains("constraints")) {
-      ICEBERG_ASSIGN_OR_RAISE(auto constraints,
-                              GetJsonValue<nlohmann::json::array_t>(json, "constraints"));
-      if (!constraints.empty()) {
-        return NotSupported("V4 table constraints are not supported yet");
-      }
+  if (table_metadata->format_version >= TableMetadata::kMinFormatVersionConstraints) {
+    ICEBERG_ASSIGN_OR_RAISE(
+        auto constraints,
+        GetJsonValueOptional<nlohmann::json::array_t>(json, "constraints"));
+    if (constraints.has_value() && !constraints->empty()) {
+      return NotSupported("V4 table constraints are not supported yet");
     }
-    if (json.contains("last-constraint-id")) {
-      ICEBERG_ASSIGN_OR_RAISE(auto last_constraint_id,
-                              GetJsonInteger<int32_t>(json, "last-constraint-id"));
-      if (last_constraint_id != 0) {
-        return NotSupported("V4 table constraint IDs are not supported yet");
-      }
+    ICEBERG_ASSIGN_OR_RAISE(auto last_constraint_id,
+                            GetJsonIntegerOptional<int32_t>(json, "last-constraint-id"));
+    if (last_constraint_id.value_or(0) != 0) {
+      return NotSupported("V4 table constraint IDs are not supported yet");
     }
   }
   if (table_metadata->format_version >=
       TableMetadata::kMinFormatVersionOptionalLocation) {
     ICEBERG_ASSIGN_OR_RAISE(table_metadata->location,
                             GetJsonValueOrDefault<std::string>(json, kLocation));
-    if (!table_metadata->location.empty() &&
-        LocationUtil::ParseScheme(table_metadata->location).empty()) {
-      return JsonParseError("V4 table location must be absolute: {}",
-                            table_metadata->location);
-    }
   } else {
     ICEBERG_ASSIGN_OR_RAISE(table_metadata->location,
                             GetJsonValue<std::string>(json, kLocation));
+  }
+  if (auto status = table_metadata->ValidateLocation(); !status) {
+    return JsonParseError("{}", status.error().message);
   }
 
   if (table_metadata->format_version > 1) {
@@ -1770,14 +1765,13 @@ Result<std::unique_ptr<TableMetadata>> TableMetadataFromJson(const nlohmann::jso
     });
   }
 
-  ICEBERG_ASSIGN_OR_RAISE(table_metadata->snapshots,
-                          FromJsonList<Snapshot>(json, kSnapshots, SnapshotFromJson));
-  for (const auto& snapshot : table_metadata->snapshots) {
-    if (auto status = snapshot->ValidateForFormatVersion(table_metadata->format_version);
-        !status) {
-      return JsonParseError("Invalid snapshot: {}", status.error().message);
-    }
-  }
+  ICEBERG_ASSIGN_OR_RAISE(
+      table_metadata->snapshots,
+      FromJsonList<Snapshot>(json, kSnapshots,
+                             [format_version = table_metadata->format_version](
+                                 const nlohmann::json& snapshot_json) {
+                               return SnapshotFromJson(snapshot_json, format_version);
+                             }));
   ICEBERG_ASSIGN_OR_RAISE(
       table_metadata->statistics,
       FromJsonList<StatisticsFile>(json, kStatistics, StatisticsFileFromJson));

@@ -78,6 +78,7 @@ struct ICEBERG_EXPORT TableMetadata {
   static constexpr int8_t kMinFormatVersionOptionalLocation = 4;
   static constexpr int8_t kMinFormatVersionRootManifest = 4;
   static constexpr int8_t kMinFormatVersionMonotonicTimestamps = 4;
+  static constexpr int8_t kMinFormatVersionConstraints = 4;
   static constexpr int8_t kMinFormatVersionRowLineage = 3;
   static constexpr int8_t kMinFormatVersionDefaultValues = 3;
   static constexpr int64_t kInitialSequenceNumber = 0;
@@ -175,6 +176,13 @@ struct ICEBERG_EXPORT TableMetadata {
   Result<std::shared_ptr<iceberg::Snapshot>> SnapshotById(int64_t snapshot_id) const;
   /// \brief Get the next sequence number
   int64_t NextSequenceNumber() const;
+
+  /// \brief Whether any snapshot references a v4 root manifest.
+  bool HasV4RootManifest() const;
+
+  /// \brief Validate the table location for this format version.
+  /// V4 locations may be absent, but a present location must be absolute.
+  Status ValidateLocation() const;
 
   ICEBERG_EXPORT friend bool operator==(const TableMetadata& lhs,
                                         const TableMetadata& rhs);
