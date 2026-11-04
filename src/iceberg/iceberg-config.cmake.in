@@ -118,6 +118,7 @@ if(TARGET iceberg::arrow_static)
       target_link_libraries(Arrow::arrow_bundled_dependencies
                             INTERFACE ${SECURITY})
     elseif(WIN32)
+      # Unlike Arrow, also link crypt32, which aws-c-io's Windows TLS code uses.
       target_link_libraries(Arrow::arrow_bundled_dependencies
                             INTERFACE "winhttp.lib"
                                       "bcrypt.lib"
@@ -126,7 +127,8 @@ if(TARGET iceberg::arrow_static)
                                       "version.lib"
                                       "ncrypt.lib"
                                       "Secur32.lib"
-                                      "Shlwapi.lib")
+                                      "Shlwapi.lib"
+                                      "crypt32.lib")
     endif()
   endif()
 endif()
