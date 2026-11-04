@@ -482,6 +482,7 @@ class OAuth2Manager : public AuthManager {
     ICEBERG_ASSIGN_OR_RAISE(auto config, ChildConfig(parent_info, credential));
     // Use parent session headers for FetchToken authentication
     auto temp_parent = AuthSession::MakeDefault(parent_info.headers);
+    auto token_request_started_at = std::chrono::steady_clock::now();
     ICEBERG_ASSIGN_OR_RAISE(
         auto response, OAuth2Util::FetchToken(*refresh_client_, *temp_parent, config));
     // Credential child sessions follow the catalog's keep_refreshed, but refreshing
@@ -493,7 +494,8 @@ class OAuth2Manager : public AuthManager {
             "no auth executor was provided");
       });
     }
-    return MakeSession(response, config, keep_refreshed_ && refresh_executor_ != nullptr);
+    return MakeSession(response, config, keep_refreshed_ && refresh_executor_ != nullptr,
+                       token_request_started_at);
   }
 
   Result<std::shared_ptr<AuthSession>> CreateTokenExchangeChildSession(
@@ -507,6 +509,7 @@ class OAuth2Manager : public AuthManager {
     }
     // Use parent session headers for ExchangeToken authentication
     auto temp_parent = AuthSession::MakeDefault(parent_info.headers);
+    auto token_request_started_at = std::chrono::steady_clock::now();
     ICEBERG_ASSIGN_OR_RAISE(
         auto response,
         OAuth2Util::ExchangeToken(*refresh_client_, *temp_parent, {}, subject_token,
@@ -515,7 +518,8 @@ class OAuth2Manager : public AuthManager {
                                   parent_info.optional_oauth_params));
     ICEBERG_ASSIGN_OR_RAISE(auto config,
                             ChildConfig(parent_info, parent_info.credential));
-    return MakeSession(response, config, /*keep_refreshed=*/false);
+    return MakeSession(response, config, /*keep_refreshed=*/false,
+                       token_request_started_at);
   }
 
   /// Token response and start time captured by InitSession.
