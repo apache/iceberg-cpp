@@ -57,7 +57,7 @@ std::optional<int64_t> ParseTimestamp(const EncryptedKey& key) {
   int64_t value = 0;
   const auto& str = it->second;
   auto [ptr, ec] = std::from_chars(str.data(), str.data() + str.size(), value);
-  if (ec != std::errc{} || ptr != str.data() + str.size()) {
+  if (ec != std::errc{} || ptr != str.data() + str.size() || value < 0) {
     return std::nullopt;
   }
   return value;
