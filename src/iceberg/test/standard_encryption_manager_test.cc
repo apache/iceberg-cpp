@@ -171,6 +171,36 @@ TEST(StandardEncryptionManagerTest, RotatesKeyEncryptionKeys) {
   EXPECT_EQ(decrypted, key_metadata.Serialize());
 }
 
+TEST(StandardEncryptionManagerTest, IgnoresOutOfRangeKeyTimestamp) {
+  auto kms = MakeKms();
+  ICEBERG_UNWRAP_OR_FAIL(auto manager, StandardEncryptionManager::Make(
+                                           {.table_key_id = "keyA", .kms = kms}));
+  StandardKeyMetadata key_metadata{.encryption_key = VectorBytes(16, 1),
+                                   .aad_prefix = VectorBytes(16, 2),
+                                   .file_length = 100};
+  ICEBERG_UNWRAP_OR_FAIL(auto first,
+                         manager->RegisterManifestListKeyMetadata(key_metadata));
+  EXPECT_EQ(kms->wraps, 1);
+
+  // A KEK whose KEY_TIMESTAMP is corrupted to INT64_MIN must never reach the
+  // "now - timestamp" subtraction, which would overflow. It should instead be
+  // treated as unparseable, forcing a fresh key encryption key to be created.
+  std::vector<EncryptedKey> keys = manager->encryption_keys();
+  for (auto& key : keys) {
+    if (key.encrypted_by_id == "keyA") {
+      key.properties[std::string(StandardEncryptionManager::kKeyTimestamp)] =
+          "-9223372036854775808";
+    }
+  }
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto reader, StandardEncryptionManager::Make(
+                       {.table_key_id = "keyA", .encryption_keys = keys, .kms = kms}));
+  ICEBERG_UNWRAP_OR_FAIL(auto second,
+                         reader->RegisterManifestListKeyMetadata(key_metadata));
+  EXPECT_NE(second.key_encryption_key.key_id, first.key_encryption_key.key_id);
+  EXPECT_EQ(kms->wraps, 2);
+}
+
 TEST(StandardEncryptionManagerTest, UnwrappedKeyCacheExpires) {
   ICEBERG_UNWRAP_OR_FAIL(
       auto metadata,
