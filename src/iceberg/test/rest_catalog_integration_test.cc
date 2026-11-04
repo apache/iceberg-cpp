@@ -313,6 +313,13 @@ TEST_F(RestCatalogIntegrationTest, OAuthTableTypedTokenEndToEnd) {
   auto info = child->OAuth2Info();
   ASSERT_TRUE(info.has_value());
   EXPECT_EQ(info->issued_token_type, auth::AuthProperties::kAccessTokenType);
+
+  // The same typed token reuses the cached session instead of exchanging again.
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto cached,
+      manager->TableSession(
+          table, {{auth::AuthProperties::kJwtTokenType, "table-jwt-token"}}, parent));
+  EXPECT_EQ(cached, child);
 }
 
 TEST_F(RestCatalogIntegrationTest, OAuthTokenExchangeWithoutActorEndToEnd) {
