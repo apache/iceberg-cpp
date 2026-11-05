@@ -110,28 +110,30 @@ class ICEBERG_DATA_EXPORT DeleteFilter {
       std::string file_path, std::span<const std::shared_ptr<DataFile>> delete_files,
       std::shared_ptr<Schema> table_schema, std::shared_ptr<Schema> requested_schema,
       std::shared_ptr<FileIO> io, bool need_row_pos_col = true,
-      std::shared_ptr<DeleteCounter> counter = nullptr);
+      std::shared_ptr<DeleteCounter> counter = nullptr, bool validate_batch = true);
 
   /// \brief Create a DeleteFilter using table metadata for schema-aware field lookup.
   static Result<std::unique_ptr<DeleteFilter>> Make(
       std::string file_path, std::span<const std::shared_ptr<DataFile>> delete_files,
       std::shared_ptr<TableMetadata> table_metadata,
       std::shared_ptr<Schema> requested_schema, std::shared_ptr<FileIO> io,
-      bool need_row_pos_col = true, std::shared_ptr<DeleteCounter> counter = nullptr);
+      bool need_row_pos_col = true, std::shared_ptr<DeleteCounter> counter = nullptr,
+      bool validate_batch = true);
 
   /// \brief Create a DeleteFilter with table schemas for dropped equality fields.
   static Result<std::unique_ptr<DeleteFilter>> Make(
       std::string file_path, std::span<const std::shared_ptr<DataFile>> delete_files,
       std::shared_ptr<Schema> table_schema, std::shared_ptr<Schema> requested_schema,
       std::shared_ptr<FileIO> io, std::span<const std::shared_ptr<Schema>> schemas,
-      bool need_row_pos_col = true, std::shared_ptr<DeleteCounter> counter = nullptr);
+      bool need_row_pos_col = true, std::shared_ptr<DeleteCounter> counter = nullptr,
+      bool validate_batch = true);
 
   /// \brief Create a DeleteFilter with a custom field lookup.
   static Result<std::unique_ptr<DeleteFilter>> Make(
       std::string file_path, std::span<const std::shared_ptr<DataFile>> delete_files,
       std::shared_ptr<Schema> requested_schema, std::shared_ptr<FileIO> io,
       FieldLookup field_lookup, bool need_row_pos_col = true,
-      std::shared_ptr<DeleteCounter> counter = nullptr);
+      std::shared_ptr<DeleteCounter> counter = nullptr, bool validate_batch = true);
 
   ~DeleteFilter();
 
@@ -191,7 +193,8 @@ class ICEBERG_DATA_EXPORT DeleteFilter {
 
   DeleteFilter(std::string file_path, std::shared_ptr<Schema> requested_schema,
                std::shared_ptr<FileIO> io, FieldLookup field_lookup,
-               bool need_row_pos_col, std::shared_ptr<DeleteCounter> counter);
+               bool need_row_pos_col, std::shared_ptr<DeleteCounter> counter,
+               bool validate_batch);
 
   Status Init(std::span<const std::shared_ptr<DataFile>> delete_files);
   Result<std::shared_ptr<Schema>> ComputeRequiredSchema() const;
@@ -207,6 +210,7 @@ class ICEBERG_DATA_EXPORT DeleteFilter {
   FieldLookup field_lookup_;
 
   const bool need_row_pos_col_;
+  const bool validate_batch_;
   // Position of `_pos` in required_schema_ when existent
   std::optional<size_t> pos_field_position_;
   std::shared_ptr<DeleteCounter> counter_;
