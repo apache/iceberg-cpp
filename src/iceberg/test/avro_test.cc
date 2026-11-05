@@ -481,6 +481,24 @@ class AvroReaderParameterizedTest : public AvroReaderTest,
   }
 };
 
+TEST_P(AvroReaderParameterizedTest, ReadsPartitionConstants) {
+  CreateSimpleAvroFile();
+  auto schema = std::make_shared<Schema>(
+      std::vector<SchemaField>{SchemaField::MakeRequired(1, "id", int32()),
+                               SchemaField::MakeRequired(3, "region", string()),
+                               SchemaField::MakeOptional(4, "missing", string())});
+  ReaderOptions options{.path = temp_avro_file_, .io = file_io_, .projection = schema};
+  options.properties.Set(ReaderProperties::kAvroSkipDatum, skip_datum_);
+  options.id_to_constant = {
+      {1, Literal::Int(999)}, {3, Literal::String("CN")}, {4, Literal::Null(string())}};
+  ICEBERG_UNWRAP_OR_FAIL(auto reader,
+                         ReaderFactoryRegistry::Open(FileFormatType::kAvro, options));
+  VerifyNextBatch(*reader, R"([[999,"CN",null],
+                              [999,"CN",null],
+                              [999,"CN",null]])");
+  VerifyExhausted(*reader);
+}
+
 TEST_P(AvroReaderParameterizedTest, AvroWriterBasicType) {
   auto schema = std::make_shared<iceberg::Schema>(std::vector<SchemaField>{
       SchemaField::MakeRequired(1, "name", std::make_shared<StringType>())});

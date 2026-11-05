@@ -62,9 +62,10 @@ Result<std::shared_ptr<::arrow::io::RandomAccessFile>> OpenInputStream(
   return arrow::OpenArrowInputStream(options.io, options.path, options.length);
 }
 
-Result<SchemaProjection> BuildProjection(::parquet::arrow::FileReader* reader,
-                                         const Schema& read_schema,
-                                         const NameMapping* name_mapping) {
+Result<SchemaProjection> BuildProjection(
+    ::parquet::arrow::FileReader* reader, const Schema& read_schema,
+    const NameMapping* name_mapping,
+    const std::unordered_map<int32_t, Literal>& id_to_constant) {
   auto metadata = reader->parquet_reader()->metadata();
 
   if (!HasFieldIds(metadata->schema()->schema_root())) {
@@ -77,10 +78,11 @@ Result<SchemaProjection> BuildProjection(::parquet::arrow::FileReader* reader,
         metadata->schema(), metadata->key_value_metadata(), reader->properties(),
         &schema_manifest));
     ApplyNameMapping(*name_mapping, &schema_manifest);
-    return Project(read_schema, schema_manifest);
+    return Project(read_schema, schema_manifest, id_to_constant);
   }
 
-  ICEBERG_ASSIGN_OR_RAISE(auto projection, Project(read_schema, reader->manifest()));
+  ICEBERG_ASSIGN_OR_RAISE(auto projection,
+                          Project(read_schema, reader->manifest(), id_to_constant));
   return projection;
 }
 
@@ -305,8 +307,9 @@ class ParquetReader::Impl {
                                                     arrow_reader_properties));
 
     // Project read schema onto the Parquet file schema
-    ICEBERG_ASSIGN_OR_RAISE(projection_, BuildProjection(reader_.get(), *read_schema_,
-                                                         options.name_mapping.get()));
+    ICEBERG_ASSIGN_OR_RAISE(
+        projection_, BuildProjection(reader_.get(), *read_schema_,
+                                     options.name_mapping.get(), options.id_to_constant));
     if (options.filter &&
         options.properties.Get(ReaderProperties::kParquetRowGroupFilter)) {
       auto filter = options.filter;

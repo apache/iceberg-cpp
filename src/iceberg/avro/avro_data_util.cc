@@ -94,7 +94,8 @@ Status AppendStructToBuilder(const ::avro::NodePtr& avro_node,
                                                      metadata_context, field_builder));
     } else if (field_projection.kind == FieldProjection::Kind::kNull) {
       ICEBERG_ARROW_RETURN_NOT_OK(field_builder->AppendNull());
-    } else if (field_projection.kind == FieldProjection::Kind::kDefault) {
+    } else if (field_projection.kind == FieldProjection::Kind::kDefault ||
+               field_projection.kind == FieldProjection::Kind::kConstant) {
       ICEBERG_RETURN_UNEXPECTED(AppendDefaultToBuilder(field_projection, field_builder));
     } else if (field_projection.kind == FieldProjection::Kind::kMetadata) {
       int32_t field_id = expected_field.field_id();
@@ -476,7 +477,8 @@ Status AppendFieldToBuilder(const ::avro::NodePtr& avro_node,
     return {};
   }
 
-  if (projection.kind == FieldProjection::Kind::kDefault) {
+  if (projection.kind == FieldProjection::Kind::kDefault ||
+      projection.kind == FieldProjection::Kind::kConstant) {
     return AppendDefaultToBuilder(projection, array_builder);
   }
 
@@ -593,7 +595,8 @@ Status PrepareStructDefaultScalars(std::span<FieldProjection> projections,
     auto& field_projection = projections[i];
     auto* field_builder = struct_builder->field_builder(static_cast<int>(i));
 
-    if (field_projection.kind == FieldProjection::Kind::kDefault) {
+    if (field_projection.kind == FieldProjection::Kind::kDefault ||
+        field_projection.kind == FieldProjection::Kind::kConstant) {
       // Get-or-create the single Avro attributes container: another Avro attribute may
       // have created it already, so guard on `default_scalar` being unset rather than on
       // the container's presence (otherwise a pre-existing container would skip
