@@ -374,6 +374,22 @@ TEST(HttpClientTest, BuildsRequestUriLikeJavaHttpRequest) {
                                   *DefaultErrorHandler::Instance(), session);
   EXPECT_THAT(absolute, IsError(ErrorKind::kInvalidArgument));
   EXPECT_EQ(session.request().url, "https://auth.example/token/");
+
+  // A different path per method, so a call that fails before authenticating can't
+  // pass by matching the URL left over from the previous call.
+  const auto& handler = *DefaultErrorHandler::Instance();
+  EXPECT_THAT(client.Get("v1/get", {}, {}, handler, session),
+              IsError(ErrorKind::kInvalidArgument));
+  EXPECT_EQ(session.request().url, "https://catalog.example/api/v1/get");
+  EXPECT_THAT(client.Post("v1/post", "{}", {}, handler, session),
+              IsError(ErrorKind::kInvalidArgument));
+  EXPECT_EQ(session.request().url, "https://catalog.example/api/v1/post");
+  EXPECT_THAT(client.Head("v1/head", {}, handler, session),
+              IsError(ErrorKind::kInvalidArgument));
+  EXPECT_EQ(session.request().url, "https://catalog.example/api/v1/head");
+  EXPECT_THAT(client.Delete("v1/delete", {}, {}, handler, session),
+              IsError(ErrorKind::kInvalidArgument));
+  EXPECT_EQ(session.request().url, "https://catalog.example/api/v1/delete");
 }
 
 // Redirect responses must be reported without replaying the request at the target.

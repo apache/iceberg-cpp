@@ -350,9 +350,11 @@ Result<HttpResponse> HttpClient::PostForm(
 Result<HttpResponse> HttpClient::Head(
     const std::string& path, const std::unordered_map<std::string, std::string>& headers,
     const ErrorHandler& error_handler, auth::AuthSession& session) {
-  ICEBERG_ASSIGN_OR_RAISE(auto authenticated,
-                          AuthenticateRequest(session, HttpMethod::kHead, path,
-                                              MergeHeaders(default_headers_, headers)));
+  ICEBERG_ASSIGN_OR_RAISE(auto request_uri, RequestUri(path));
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto authenticated,
+      AuthenticateRequest(session, HttpMethod::kHead, std::move(request_uri),
+                          MergeHeaders(default_headers_, headers)));
   return connection_pools_->Run(
       [&](const cpr::ConnectionPool& pool) {
         return cpr::Head(cpr::Url{authenticated.url}, ToCprHeader(authenticated),
