@@ -584,7 +584,7 @@ Result<bool> StructLikeSet<kValidate>::Contains(const StructLike& row) const {
   if constexpr (kValidate) {
     ICEBERG_RETURN_UNEXPECTED(ValidateRowAgainstTypes(row, field_types_));
   }
-  return set_.find(row) != set_.end();
+  return set_.contains(row);
 }
 
 template <bool kValidate>

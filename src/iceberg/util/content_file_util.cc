@@ -105,7 +105,7 @@ template <typename V>
 void DropUnselectedColumnStats(std::map<int32_t, V>& map,
                                const std::unordered_set<int32_t>& columns) {
   for (auto it = map.begin(); it != map.end();) {
-    if (columns.find(it->first) == columns.end()) {
+    if (!columns.contains(it->first)) {
       it = map.erase(it);
     } else {
       ++it;
