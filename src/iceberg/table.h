@@ -39,6 +39,9 @@
 namespace iceberg {
 
 /// \brief Represents an Iceberg table
+///
+/// Safe to read from several threads, but not while one of them commits through it
+/// or calls Refresh().
 class ICEBERG_EXPORT Table : public std::enable_shared_from_this<Table> {
  public:
   /// \brief Construct a table.
@@ -143,6 +146,9 @@ class ICEBERG_EXPORT Table : public std::enable_shared_from_this<Table> {
   Result<std::unique_ptr<LocationProvider>> location_provider() const;
 
   /// \brief Refresh the current table metadata
+  ///
+  /// Invalidates references returned by accessors such as properties(). Commits made
+  /// through this table call it when they retry.
   virtual Status Refresh();
 
   /// \brief Create a new table scan builder for this table
