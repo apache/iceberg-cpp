@@ -105,8 +105,7 @@ MATCHER_P(JsonBodyLacks, key, "") {
 
 // --------------------------------------------------------------------------
 // Mock HTTP client that overrides the virtual methods of HttpClient.
-// The base class constructor creates a cpr::ConnectionPool, which is a
-// lightweight allocation (no network connections are opened at construction).
+// The base class constructor opens no network connections.
 // --------------------------------------------------------------------------
 class MockHttpClient : public HttpClient {
  public:
