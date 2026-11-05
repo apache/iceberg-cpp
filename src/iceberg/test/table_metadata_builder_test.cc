@@ -163,16 +163,6 @@ TEST_P(TableMetadataFormatVersionTest, MakeWithProperty) {
   EXPECT_EQ(properties.at("format-version"), std::to_string(version));
 }
 
-TEST_P(TableMetadataFormatVersionTest, MakeWithExplicitVersion) {
-  auto schema = CreateTestSchema();
-  auto spec = PartitionSpec::Unpartitioned();
-  auto order = SortOrder::Unsorted();
-  ICEBERG_UNWRAP_OR_FAIL(
-      auto metadata,
-      TableMetadata::Make(*schema, *spec, *order, "s3://bucket/test", {}, GetParam()));
-  EXPECT_EQ(metadata->format_version, GetParam());
-}
-
 INSTANTIATE_TEST_SUITE_P(SupportedVersions, TableMetadataFormatVersionTest,
                          ::testing::Values(1, 2, 3),
                          [](const ::testing::TestParamInfo<int>& info) {
@@ -188,15 +178,6 @@ TEST_P(TableMetadataInvalidFormatVersionTest, MakeRejectsProperty) {
   EXPECT_THAT(TableMetadata::Make(*schema, *spec, *order, "s3://bucket/test",
                                   {{"format-version", std::to_string(GetParam())}}),
               IsError(ErrorKind::kInvalidArgument));
-}
-
-TEST_P(TableMetadataInvalidFormatVersionTest, MakeRejectsExplicitVersion) {
-  auto schema = CreateTestSchema();
-  auto spec = PartitionSpec::Unpartitioned();
-  auto order = SortOrder::Unsorted();
-  EXPECT_THAT(
-      TableMetadata::Make(*schema, *spec, *order, "s3://bucket/test", {}, GetParam()),
-      IsError(ErrorKind::kInvalidArgument));
 }
 
 INSTANTIATE_TEST_SUITE_P(UnsupportedVersions, TableMetadataInvalidFormatVersionTest,
@@ -249,15 +230,6 @@ TEST_P(TableMetadataReservedPropertyTest, MakeWithProperty) {
   } else {
     EXPECT_THAT(result, IsError(ErrorKind::kInvalidArgument));
   }
-}
-
-TEST_P(TableMetadataReservedPropertyTest, ExplicitVersionRejectsReservedProperty) {
-  auto schema = CreateTestSchema();
-  auto spec = PartitionSpec::Unpartitioned();
-  auto order = SortOrder::Unsorted();
-  EXPECT_THAT(TableMetadata::Make(*schema, *spec, *order, "s3://bucket/test",
-                                  {{GetParam(), "1"}}, 2),
-              IsError(ErrorKind::kInvalidArgument));
 }
 
 INSTANTIATE_TEST_SUITE_P(ReservedProperties, TableMetadataReservedPropertyTest,

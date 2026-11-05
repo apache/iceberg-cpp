@@ -141,13 +141,6 @@ struct ICEBERG_EXPORT TableMetadata {
       const iceberg::SortOrder& sort_order, const std::string& location,
       const std::unordered_map<std::string, std::string>& properties);
 
-  /// \brief Create table metadata with an explicit supported format version.
-  /// \note All reserved properties, including format-version, are rejected.
-  static Result<std::unique_ptr<TableMetadata>> Make(
-      const iceberg::Schema& schema, const iceberg::PartitionSpec& spec,
-      const iceberg::SortOrder& sort_order, const std::string& location,
-      const std::unordered_map<std::string, std::string>& properties, int format_version);
-
   /// \brief Get the current schema, return NotFoundError if not found
   /// \note The returned schema is guaranteed to be not null
   Result<std::shared_ptr<iceberg::Schema>> Schema() const;
@@ -178,6 +171,14 @@ struct ICEBERG_EXPORT TableMetadata {
 
   ICEBERG_EXPORT friend bool operator==(const TableMetadata& lhs,
                                         const TableMetadata& rhs);
+
+ private:
+  /// \brief Create table metadata with an explicit supported format version.
+  /// \note All reserved properties, including format-version, are rejected.
+  static Result<std::unique_ptr<TableMetadata>> Make(
+      const iceberg::Schema& schema, const iceberg::PartitionSpec& spec,
+      const iceberg::SortOrder& sort_order, const std::string& location,
+      const std::unordered_map<std::string, std::string>& properties, int format_version);
 };
 
 // Cache for table metadata mappings to facilitate fast lookups.
