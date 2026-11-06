@@ -41,6 +41,7 @@
 #include "iceberg/row/arrow_array_wrapper.h"
 #include "iceberg/schema.h"
 #include "iceberg/test/matchers.h"
+#include "iceberg/transform.h"
 #include "iceberg/type.h"
 
 namespace iceberg {
@@ -157,6 +158,56 @@ TEST_F(EvaluatorTest, LessThan) {
   TestData(
       R"([{"x": 6, "y": 8.0, "z": null, "s1": {"s2": {"s3": {"s4": {"i": 6}}}}, "s5": null}])",
       *struct_evaluator, true);
+}
+
+TEST_F(EvaluatorTest, OutOfRangeComparisonsPreserveNulls) {
+  using Op = Expression::Operation;
+  const int64_t above = int64_t{std::numeric_limits<int32_t>::max()} + 1;
+  const int64_t below = int64_t{std::numeric_limits<int32_t>::min()} - 1;
+  const std::string present =
+      R"([{"x": 1, "y": 0.0, "z": 1, "s1": {"s2": {"s3": {"s4": {"i": 1}}}}}])";
+  const std::string nulls = R"([{"x": 1, "y": 0.0, "z": null, "s1": null}])";
+  for (auto op : {Op::kLt, Op::kLtEq, Op::kGt, Op::kGtEq, Op::kNotEq}) {
+    for (const std::string name : {"x", "z", "s1.s2.s3.s4.i"}) {
+      const int64_t bound = op == Op::kGt || op == Op::kGtEq ? below : above;
+      auto predicate = Expressions::Predicate(op, name, Literal::Long(bound));
+      SCOPED_TRACE(predicate->ToString());
+      ICEBERG_UNWRAP_OR_FAIL(auto evaluator, Evaluator::Make(*schema_, predicate));
+      TestData(present, *evaluator, true);
+      // A required leaf under an optional parent can still be null. NotEq keeps
+      // its existing semantics: null is unequal to the out-of-range literal.
+      TestData(nulls, *evaluator, name == "x" || op == Op::kNotEq);
+    }
+  }
+}
+
+TEST_F(EvaluatorTest, NullPredicatesOnStructsRespectParentValidity) {
+  for (const std::string name : {"s1", "s1.s2", "s1.s2.s3.s4"}) {
+    SCOPED_TRACE(name);
+    ICEBERG_UNWRAP_OR_FAIL(auto is_null,
+                           Evaluator::Make(*schema_, Expressions::IsNull(name)));
+    ICEBERG_UNWRAP_OR_FAIL(auto not_null,
+                           Evaluator::Make(*schema_, Expressions::NotNull(name)));
+    const std::string absent = R"([{"x": 1, "y": 0.0, "s1": null}])";
+    const std::string present =
+        R"([{"x": 1, "y": 0.0, "s1": {"s2": {"s3": {"s4": {"i": 1}}}}}])";
+    TestData(absent, *is_null, true);
+    TestData(absent, *not_null, false);
+    TestData(present, *is_null, false);
+    TestData(present, *not_null, true);
+  }
+}
+
+TEST_F(EvaluatorTest, NullPredicatesEvaluateTransformResults) {
+  auto term = Expressions::Transform("x", Transform::Void());
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto is_null, Evaluator::Make(*schema_, Expressions::IsNull<BoundTransform>(term)));
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto not_null,
+      Evaluator::Make(*schema_, Expressions::NotNull<BoundTransform>(term)));
+  // The source is non-null but the transform result is null.
+  TestData(R"([{"x": 1, "y": 0.0}])", *is_null, true);
+  TestData(R"([{"x": 1, "y": 0.0}])", *not_null, false);
 }
 
 TEST_F(EvaluatorTest, LessThanOrEqual) {
