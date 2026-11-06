@@ -22,15 +22,18 @@
 #include <sqlite3.h>
 
 #include <filesystem>
+#include <fstream>
 #include <memory>
 #include <optional>
 #include <string>
 #include <string_view>
+#include <tuple>
 #include <unordered_map>
 #include <vector>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
+#include <nlohmann/json.hpp>
 
 #include "iceberg/arrow/arrow_io_internal.h"
 #include "iceberg/catalog/sql/catalog_store.h"
@@ -41,8 +44,11 @@
 #include "iceberg/sort_order.h"
 #include "iceberg/table.h"
 #include "iceberg/table_identifier.h"
+#include "iceberg/table_metadata.h"
 #include "iceberg/test/matchers.h"
+#include "iceberg/transaction.h"
 #include "iceberg/type.h"
+#include "iceberg/update/update_properties.h"
 
 namespace iceberg::sql {
 
@@ -290,6 +296,126 @@ TEST_F(SqlCatalogTest, TableLifecycle) {
   EXPECT_THAT(catalog_->TableExists(renamed), HasValue(::testing::Eq(false)));
   EXPECT_THAT(catalog_->DropTable(renamed, false), IsError(ErrorKind::kNoSuchTable));
 }
+
+class SqlCatalogFormatVersionTest
+    : public SqlCatalogTest,
+      public ::testing::WithParamInterface<std::tuple<bool, int>> {};
+
+TEST_P(SqlCatalogFormatVersionTest, CreateTable) {
+  Namespace ns{{"db"}};
+  ASSERT_THAT(catalog_->CreateNamespace(ns, {}), IsOk());
+  const auto [staged, version] = GetParam();
+  TableIdentifier ident{.ns = ns, .name = "versioned_table"};
+  const auto location = MakeTableLocation(ident.name);
+  const std::unordered_map<std::string, std::string> properties = {
+      {"format-version", std::to_string(version)}, {"owner", "alice"}};
+  std::shared_ptr<Table> created;
+  if (staged) {
+    ICEBERG_UNWRAP_OR_FAIL(
+        auto transaction,
+        catalog_->StageCreateTable(ident, MakeSchema(), PartitionSpec::Unpartitioned(),
+                                   SortOrder::Unsorted(), location, properties));
+    EXPECT_EQ(transaction->current().format_version, version);
+    EXPECT_THAT(catalog_->TableExists(ident), HasValue(::testing::Eq(false)));
+    ICEBERG_UNWRAP_OR_FAIL(created, transaction->Commit());
+  } else {
+    ICEBERG_UNWRAP_OR_FAIL(
+        created,
+        catalog_->CreateTable(ident, MakeSchema(), PartitionSpec::Unpartitioned(),
+                              SortOrder::Unsorted(), location, properties));
+  }
+  EXPECT_EQ(created->metadata()->format_version, version);
+  ICEBERG_UNWRAP_OR_FAIL(auto loaded, catalog_->LoadTable(ident));
+  EXPECT_EQ(loaded->metadata()->format_version, version);
+  EXPECT_THAT(loaded->properties().configs(),
+              ::testing::UnorderedElementsAre(::testing::Pair("owner", "alice")));
+  std::ifstream input(std::string(loaded->metadata_file_location()));
+  ASSERT_TRUE(input.is_open());
+  const auto json = nlohmann::json::parse(input);
+  EXPECT_EQ(json.at("format-version"), version);
+  EXPECT_FALSE(json.at("properties").contains("format-version"));
+}
+
+INSTANTIATE_TEST_SUITE_P(SupportedVersions, SqlCatalogFormatVersionTest,
+                         ::testing::Combine(::testing::Bool(),
+                                            ::testing::Values(1, 2, 3)),
+                         [](const ::testing::TestParamInfo<std::tuple<bool, int>>& info) {
+                           return std::string(std::get<0>(info.param) ? "StagedV"
+                                                                      : "CreateV") +
+                                  std::to_string(std::get<1>(info.param));
+                         });
+
+class SqlCatalogStagedFormatUpgradeTest : public SqlCatalogTest,
+                                          public ::testing::WithParamInterface<int> {};
+
+TEST_P(SqlCatalogStagedFormatUpgradeTest, UpgradeBeforeCreateCommit) {
+  Namespace ns{{"db"}};
+  ASSERT_THAT(catalog_->CreateNamespace(ns, {}), IsOk());
+  TableIdentifier ident{.ns = ns, .name = "upgraded_table"};
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto transaction,
+      catalog_->StageCreateTable(ident, MakeSchema(), PartitionSpec::Unpartitioned(),
+                                 SortOrder::Unsorted(), MakeTableLocation(ident.name),
+                                 {{"format-version", std::to_string(GetParam())}}));
+  ICEBERG_UNWRAP_OR_FAIL(auto update, transaction->NewUpdateProperties());
+  ASSERT_THAT(update->Set("format-version", "3").Set("owner", "alice").Commit(), IsOk());
+  EXPECT_EQ(transaction->current().format_version, 3);
+  EXPECT_THAT(catalog_->TableExists(ident), HasValue(::testing::Eq(false)));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto created, transaction->Commit());
+  EXPECT_EQ(created->metadata()->format_version, 3);
+  ICEBERG_UNWRAP_OR_FAIL(auto loaded, catalog_->LoadTable(ident));
+  EXPECT_EQ(loaded->metadata()->format_version, 3);
+  EXPECT_THAT(loaded->properties().configs(),
+              ::testing::UnorderedElementsAre(::testing::Pair("owner", "alice")));
+  std::ifstream input(std::string(loaded->metadata_file_location()));
+  ASSERT_TRUE(input.is_open());
+  const auto json = nlohmann::json::parse(input);
+  EXPECT_EQ(json.at("format-version"), 3);
+  EXPECT_FALSE(json.at("properties").contains("format-version"));
+}
+
+INSTANTIATE_TEST_SUITE_P(StagedUpgrades, SqlCatalogStagedFormatUpgradeTest,
+                         ::testing::Values(1, 2),
+                         [](const ::testing::TestParamInfo<int>& info) {
+                           return "V" + std::to_string(info.param) + "ToV3";
+                         });
+
+class SqlCatalogInvalidFormatVersionTest
+    : public SqlCatalogTest,
+      public ::testing::WithParamInterface<std::tuple<bool, std::string>> {};
+
+TEST_P(SqlCatalogInvalidFormatVersionTest, DoesNotCreateTableOrMetadata) {
+  Namespace ns{{"db"}};
+  ASSERT_THAT(catalog_->CreateNamespace(ns, {}), IsOk());
+  const auto& [staged, version] = GetParam();
+  TableIdentifier ident{.ns = ns, .name = "invalid_version"};
+  const auto location = MakeTableLocation(ident.name);
+  const std::unordered_map<std::string, std::string> properties = {
+      {"format-version", version}};
+  if (staged) {
+    EXPECT_THAT(
+        catalog_->StageCreateTable(ident, MakeSchema(), PartitionSpec::Unpartitioned(),
+                                   SortOrder::Unsorted(), location, properties),
+        IsError(ErrorKind::kInvalidArgument));
+  } else {
+    EXPECT_THAT(catalog_->CreateTable(ident, MakeSchema(), PartitionSpec::Unpartitioned(),
+                                      SortOrder::Unsorted(), location, properties),
+                IsError(ErrorKind::kInvalidArgument));
+  }
+  EXPECT_THAT(catalog_->TableExists(ident), HasValue(::testing::Eq(false)));
+  EXPECT_TRUE(std::filesystem::is_empty(std::filesystem::path(location) / "metadata"));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    InvalidVersions, SqlCatalogInvalidFormatVersionTest,
+    ::testing::Combine(::testing::Bool(),
+                       ::testing::Values("", "abc", "2x", "1.5", "2147483648", "0", "-1",
+                                         "4", "257")),
+    [](const ::testing::TestParamInfo<std::tuple<bool, std::string>>& info) {
+      return std::string(std::get<0>(info.param) ? "StagedCase" : "CreateCase") +
+             std::to_string(info.index);
+    });
 
 TEST_F(SqlCatalogTest, CreateTableRequiresNamespace) {
   TableIdentifier ident{.ns = Namespace{{"missing"}}, .name = "t1"};

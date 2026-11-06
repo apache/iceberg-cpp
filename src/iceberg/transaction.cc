@@ -115,7 +115,8 @@ Result<std::shared_ptr<TransactionContext>> TransactionContext::Make(
   ctx->kind = kind;
   ctx->table = std::move(table);
   if (kind == TransactionKind::kCreate) {
-    ctx->metadata_builder = TableMetadataBuilder::BuildFromEmpty();
+    ctx->metadata_builder =
+        TableMetadataBuilder::BuildFromEmpty(ctx->table->metadata()->format_version);
     std::ignore = ctx->metadata_builder->ApplyChangesForCreate(*ctx->table->metadata());
   } else {
     ctx->metadata_builder = TableMetadataBuilder::BuildFrom(ctx->table->metadata().get());

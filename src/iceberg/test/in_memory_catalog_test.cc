@@ -21,6 +21,7 @@
 
 #include <filesystem>
 #include <string>
+#include <tuple>
 #include <unordered_map>
 
 #include <arrow/filesystem/localfs.h>
@@ -139,6 +140,115 @@ TEST_F(InMemoryCatalogTest, CreateTable) {
                                       metadata_location, {{"property1", "value1"}});
   EXPECT_THAT(table2, IsError(ErrorKind::kAlreadyExists));
 }
+
+class InMemoryCatalogFormatVersionTest
+    : public InMemoryCatalogTest,
+      public ::testing::WithParamInterface<std::tuple<bool, int>> {};
+
+TEST_P(InMemoryCatalogFormatVersionTest, CreateTable) {
+  auto schema = std::make_shared<Schema>(
+      std::vector<SchemaField>{SchemaField::MakeRequired(1, "x", int64())});
+  const auto [staged, version] = GetParam();
+  TableIdentifier ident{.ns = {}, .name = "versioned_table"};
+  const auto location = GenerateTestTableLocation(ident.name);
+  const std::unordered_map<std::string, std::string> properties = {
+      {"format-version", std::to_string(version)}, {"owner", "alice"}};
+  std::shared_ptr<Table> created;
+  if (staged) {
+    ICEBERG_UNWRAP_OR_FAIL(
+        auto transaction,
+        catalog_->StageCreateTable(ident, schema, PartitionSpec::Unpartitioned(),
+                                   SortOrder::Unsorted(), location, properties));
+    EXPECT_EQ(transaction->current().format_version, version);
+    EXPECT_THAT(catalog_->TableExists(ident), HasValue(::testing::Eq(false)));
+    ICEBERG_UNWRAP_OR_FAIL(created, transaction->Commit());
+  } else {
+    ICEBERG_UNWRAP_OR_FAIL(
+        created, catalog_->CreateTable(ident, schema, PartitionSpec::Unpartitioned(),
+                                       SortOrder::Unsorted(), location, properties));
+  }
+  EXPECT_EQ(created->metadata()->format_version, version);
+  ICEBERG_UNWRAP_OR_FAIL(auto loaded, catalog_->LoadTable(ident));
+  EXPECT_EQ(loaded->metadata()->format_version, version);
+  EXPECT_THAT(loaded->properties().configs(),
+              ::testing::UnorderedElementsAre(::testing::Pair("owner", "alice")));
+}
+
+INSTANTIATE_TEST_SUITE_P(SupportedVersions, InMemoryCatalogFormatVersionTest,
+                         ::testing::Combine(::testing::Bool(),
+                                            ::testing::Values(1, 2, 3)),
+                         [](const ::testing::TestParamInfo<std::tuple<bool, int>>& info) {
+                           return std::string(std::get<0>(info.param) ? "StagedV"
+                                                                      : "CreateV") +
+                                  std::to_string(std::get<1>(info.param));
+                         });
+
+class InMemoryCatalogStagedFormatUpgradeTest : public InMemoryCatalogTest,
+                                               public ::testing::WithParamInterface<int> {
+};
+
+TEST_P(InMemoryCatalogStagedFormatUpgradeTest, UpgradeBeforeCreateCommit) {
+  auto schema = std::make_shared<Schema>(
+      std::vector<SchemaField>{SchemaField::MakeRequired(1, "x", int64())});
+  TableIdentifier ident{.ns = {}, .name = "upgraded_table"};
+  ICEBERG_UNWRAP_OR_FAIL(auto transaction,
+                         catalog_->StageCreateTable(
+                             ident, schema, PartitionSpec::Unpartitioned(),
+                             SortOrder::Unsorted(), GenerateTestTableLocation(ident.name),
+                             {{"format-version", std::to_string(GetParam())}}));
+  ICEBERG_UNWRAP_OR_FAIL(auto update, transaction->NewUpdateProperties());
+  ASSERT_THAT(update->Set("format-version", "3").Set("owner", "alice").Commit(), IsOk());
+  EXPECT_EQ(transaction->current().format_version, 3);
+  EXPECT_THAT(catalog_->TableExists(ident), HasValue(::testing::Eq(false)));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto created, transaction->Commit());
+  EXPECT_EQ(created->metadata()->format_version, 3);
+  ICEBERG_UNWRAP_OR_FAIL(auto loaded, catalog_->LoadTable(ident));
+  EXPECT_EQ(loaded->metadata()->format_version, 3);
+  EXPECT_THAT(loaded->properties().configs(),
+              ::testing::UnorderedElementsAre(::testing::Pair("owner", "alice")));
+}
+
+INSTANTIATE_TEST_SUITE_P(StagedUpgrades, InMemoryCatalogStagedFormatUpgradeTest,
+                         ::testing::Values(1, 2),
+                         [](const ::testing::TestParamInfo<int>& info) {
+                           return "V" + std::to_string(info.param) + "ToV3";
+                         });
+
+class InMemoryCatalogInvalidFormatVersionTest
+    : public InMemoryCatalogTest,
+      public ::testing::WithParamInterface<std::tuple<bool, std::string>> {};
+
+TEST_P(InMemoryCatalogInvalidFormatVersionTest, DoesNotCreateTableOrMetadata) {
+  auto schema = std::make_shared<Schema>(
+      std::vector<SchemaField>{SchemaField::MakeRequired(1, "x", int64())});
+  const auto& [staged, version] = GetParam();
+  TableIdentifier ident{.ns = {}, .name = "invalid_version"};
+  const auto location = GenerateTestTableLocation(ident.name);
+  const std::unordered_map<std::string, std::string> properties = {
+      {"format-version", version}};
+  if (staged) {
+    EXPECT_THAT(catalog_->StageCreateTable(ident, schema, PartitionSpec::Unpartitioned(),
+                                           SortOrder::Unsorted(), location, properties),
+                IsError(ErrorKind::kInvalidArgument));
+  } else {
+    EXPECT_THAT(catalog_->CreateTable(ident, schema, PartitionSpec::Unpartitioned(),
+                                      SortOrder::Unsorted(), location, properties),
+                IsError(ErrorKind::kInvalidArgument));
+  }
+  EXPECT_THAT(catalog_->TableExists(ident), HasValue(::testing::Eq(false)));
+  EXPECT_TRUE(std::filesystem::is_empty(std::filesystem::path(location) / "metadata"));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    InvalidVersions, InMemoryCatalogInvalidFormatVersionTest,
+    ::testing::Combine(::testing::Bool(),
+                       ::testing::Values("", "abc", "2x", "1.5", "2147483648", "0", "-1",
+                                         "4", "257")),
+    [](const ::testing::TestParamInfo<std::tuple<bool, std::string>>& info) {
+      return std::string(std::get<0>(info.param) ? "StagedCase" : "CreateCase") +
+             std::to_string(info.index);
+    });
 
 TEST_F(InMemoryCatalogTest, RegisterTable) {
   TableIdentifier tableIdent{.ns = {}, .name = "t1"};
