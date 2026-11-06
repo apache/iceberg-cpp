@@ -21,34 +21,6 @@
 
 `FileIO` reads, writes, and deletes Iceberg data and metadata files.
 
-## Manifest content cache
-
-Manifest content caching is owned by each loaded `Table`. Tables sharing a `FileIO`
-have independent caches and byte budgets. The storage `FileIO` remains usable for
-uncached data-file and table-metadata JSON reads.
-
-| Property | Default | Description |
-|---|---|---|
-| `io.manifest.cache-enabled` | `false` | Cache immutable manifest-list and manifest bytes across scans of a table |
-| `io.manifest.cache.max-total-bytes` | `104857600` | Maximum combined content retained by one table's cache |
-| `io.manifest.cache.max-content-length` | `8388608` | Maximum file size eligible for caching |
-
-Catalog I/O properties provide defaults. Table properties override them. Direct
-`Table::Make` calls can supply defaults through the trailing `io_properties`
-argument; properties exposed by the supplied FileIO are also used as defaults.
-
-Scans and manifest maintenance share the table's cache. Refreshes and transactions
-preserve cached bytes when the table UUID, cache limits, and storage context are
-compatible. Independently loaded table handles start with separate caches.
-
-`Table::ClearManifestCache()` releases retained entries. Active input handles and
-streams can keep their bytes alive after clearing or eviction; those bytes and
-concurrent population buffers are outside the retention budget. Normalized path
-aliases use a separate index retaining at most 64 KiB of alias strings per table
-and do not pin content. Empty files and
-files above either byte limit bypass the cache. Time-based expiration is not
-supported, so `io.manifest.cache.expiration-interval-ms` is ignored.
-
 ## Built-in implementations
 
 Call `iceberg::arrow::RegisterAll()` to register the Arrow-backed FileIO
