@@ -53,6 +53,7 @@
 #include "iceberg/update/delete_files.h"
 #include "iceberg/update/fast_append.h"
 #include "iceberg/update/row_delta.h"
+#include "iceberg/update/snapshot_manager.h"
 #include "iceberg/update/update_partition_spec.h"
 #include "iceberg/update/update_properties.h"
 #include "iceberg/update/update_schema.h"
@@ -178,6 +179,51 @@ class ScopedManifestReadTracking {
 
  private:
   ReaderFactory previous_;
+};
+
+class FailingManifestFlushWriter : public Writer {
+ public:
+  explicit FailingManifestFlushWriter(std::unique_ptr<Writer> delegate)
+      : delegate_(std::move(delegate)) {}
+
+  Status Open(const WriterOptions& options) override { return delegate_->Open(options); }
+
+  Status Close() override { return delegate_->Close(); }
+
+  Status Write(ArrowArray* data) override {
+    if (data->release != nullptr) {
+      data->release(data);
+    }
+    return IOError("Injected rewrite manifest flush failure");
+  }
+
+  Result<Metrics> metrics() override { return delegate_->metrics(); }
+
+  Result<int64_t> length() override { return delegate_->length(); }
+
+  std::vector<int64_t> split_offsets() override { return delegate_->split_offsets(); }
+
+ private:
+  std::unique_ptr<Writer> delegate_;
+};
+
+class ScopedManifestFlushFailure {
+ public:
+  ScopedManifestFlushFailure()
+      : previous_(WriterFactoryRegistry::GetFactory(FileFormatType::kAvro)) {
+    WriterFactoryRegistry::GetFactory(FileFormatType::kAvro) =
+        [factory = previous_]() -> Result<std::unique_ptr<Writer>> {
+      ICEBERG_ASSIGN_OR_RAISE(auto writer, factory());
+      return std::make_unique<FailingManifestFlushWriter>(std::move(writer));
+    };
+  }
+
+  ~ScopedManifestFlushFailure() {
+    WriterFactoryRegistry::GetFactory(FileFormatType::kAvro) = std::move(previous_);
+  }
+
+ private:
+  WriterFactory previous_;
 };
 
 struct ManifestWriteFailureState {
@@ -1284,29 +1330,47 @@ TEST_P(RewriteManifestsTest, ClosesOpenRewriteWritersAfterApplyFailure) {
 
 TEST_P(RewriteManifestsTest, ClosesAllRewriteWritersAfterCloseFailure) {
   ASSERT_THAT(AppendFiles({file_a_, file_b_, file_c_}), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto before, CurrentManifests());
 
-  auto failure_state = std::make_shared<ManifestWriteFailureState>();
-  failure_state->fail_on_manifest_close = 1;
-  BindTableWithFileIO(std::make_shared<ManifestWriteFailureFileIO>(
-      file_io_, table_location_ + "/metadata/", failure_state));
+  enum class Failure { kFlush, kClose, kException };
+  for (auto failure : {Failure::kFlush, Failure::kClose, Failure::kException}) {
+    SCOPED_TRACE(static_cast<int>(failure));
+    auto state = std::make_shared<ManifestWriteFailureState>();
+    state->fail_on_manifest_close = failure == Failure::kClose ? 1 : 0;
+    state->throw_on_manifest_close = failure == Failure::kException ? 1 : 0;
+    BindTableWithFileIO(std::make_shared<ManifestWriteFailureFileIO>(
+        file_io_, table_location_ + "/metadata/", state));
+    std::unique_ptr<ScopedManifestFlushFailure> flush_failure;
+    if (failure == Failure::kFlush) {
+      flush_failure = std::make_unique<ScopedManifestFlushFailure>();
+    }
 
-  ICEBERG_UNWRAP_OR_FAIL(auto rewrite, table_->NewRewriteManifests());
-  rewrite->ClusterBy([](const DataFile& file) { return file.file_path; });
+    ICEBERG_UNWRAP_OR_FAIL(auto rewrite, table_->NewRewriteManifests());
+    rewrite->ClusterBy([](const DataFile& file) { return file.file_path; });
 
-  auto result = rewrite->Commit();
-  EXPECT_THAT(result, IsError(ErrorKind::kIOError));
-  EXPECT_THAT(result, HasErrorMessage("Injected rewrite manifest close failure"));
+    auto result = rewrite->Commit();
+    EXPECT_THAT(result,
+                IsError(failure == Failure::kException ? ErrorKind::kValidationFailed
+                                                       : ErrorKind::kIOError));
+    EXPECT_THAT(result,
+                HasErrorMessage(failure == Failure::kFlush
+                                    ? "Injected rewrite manifest flush failure"
+                                : failure == Failure::kClose
+                                    ? "Injected rewrite manifest close failure"
+                                    : "Injected rewrite manifest close exception"));
 
-  ASSERT_EQ(failure_state->manifest_outputs.size(), 3U);
-  ASSERT_EQ(failure_state->manifest_close_attempts.size(), 3U);
-  EXPECT_THAT(failure_state->manifest_close_attempts,
-              ::testing::UnorderedElementsAre(failure_state->manifest_outputs[0],
-                                              failure_state->manifest_outputs[1],
-                                              failure_state->manifest_outputs[2]));
-  for (size_t i = 0; i < failure_state->manifest_close_attempts.size(); ++i) {
-    const auto& closed_manifest_path = failure_state->manifest_close_attempts[i];
-    EXPECT_THAT(failure_state->deleted_files, ::testing::Contains(closed_manifest_path));
-    EXPECT_FALSE(FileExists(closed_manifest_path));
+    ASSERT_EQ(state->manifest_outputs.size(), 3U);
+    EXPECT_THAT(state->manifest_close_attempts,
+                ::testing::UnorderedElementsAreArray(state->manifest_outputs));
+    // The update is still alive: cleanup must not rely on its destructor.
+    EXPECT_TRUE(state->open_manifest_paths.empty());
+    EXPECT_TRUE(state->deleted_open_files.empty());
+    for (const auto& path : state->manifest_outputs) {
+      EXPECT_THAT(state->deleted_files, ::testing::Contains(path));
+      EXPECT_FALSE(FileExists(path));
+    }
+    ICEBERG_UNWRAP_OR_FAIL(auto after, CurrentManifests());
+    EXPECT_EQ(after, before);
   }
 }
 
@@ -2393,19 +2457,35 @@ TEST_P(RewriteManifestsTest, ManifestReplacementFailureWithSnapshotIdInheritance
   EXPECT_TRUE(FileExists(new_manifest.manifest_path));
 }
 
-TEST_P(RewriteManifestsTest, RewriteManifestsOnBranchUnsupported) {
+TEST_P(RewriteManifestsTest, RewriteManifestsOnBranch) {
   ASSERT_THAT(AppendFiles({file_a_, file_b_}), IsOk());
 
   ICEBERG_UNWRAP_OR_FAIL(auto manifests, CurrentManifests());
   ASSERT_EQ(manifests.size(), 1U);
+  ICEBERG_UNWRAP_OR_FAIL(auto main_snapshot, table_->current_snapshot());
+  const auto main_snapshot_id = main_snapshot->snapshot_id;
+
+  ICEBERG_UNWRAP_OR_FAIL(auto manager, table_->NewSnapshotManager());
+  manager->CreateBranch("audit", main_snapshot_id);
+  ASSERT_THAT(manager->Commit(), IsOk());
+  ASSERT_THAT(table_->Refresh(), IsOk());
 
   ICEBERG_UNWRAP_OR_FAIL(auto rewrite, table_->NewRewriteManifests());
-  rewrite->ToBranch("someBranch");
-  auto result = rewrite->Commit();
-  EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
-  EXPECT_THAT(result,
-              HasErrorMessage("Cannot commit to branch someBranch: RewriteManifests "
-                              "does not support branch commits"));
+  rewrite->ToBranch("audit");
+  rewrite->ClusterBy([](const DataFile&) { return "all"; });
+  ASSERT_THAT(rewrite->Commit(), IsOk());
+
+  ASSERT_THAT(table_->Refresh(), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto current_main, table_->current_snapshot());
+  EXPECT_EQ(current_main->snapshot_id, main_snapshot_id);
+  auto audit_it = table_->metadata()->refs.find("audit");
+  ASSERT_NE(audit_it, table_->metadata()->refs.end());
+  ASSERT_NE(audit_it->second->snapshot_id, main_snapshot_id);
+  ICEBERG_UNWRAP_OR_FAIL(auto audit_snapshot,
+                         table_->metadata()->SnapshotById(audit_it->second->snapshot_id));
+  SnapshotReader audit_reader(audit_snapshot.get());
+  ICEBERG_UNWRAP_OR_FAIL(auto audit_manifests, audit_reader.DataManifests(file_io_));
+  EXPECT_EQ(std::ranges::distance(audit_manifests), 1);
 }
 
 TEST_P(RewriteManifestsTest, RewriteDataManifestsPreservesDeletes) {

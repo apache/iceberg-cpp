@@ -58,39 +58,40 @@ class ICEBERG_EXPORT RewriteManifests : public SnapshotUpdate {
   static Result<std::shared_ptr<RewriteManifests>> Make(
       std::string table_name, std::shared_ptr<TransactionContext> ctx);
 
-  /// \brief Group an existing data file by a cluster key.
+  ~RewriteManifests() override;
+
+  /// \brief Groups an existing data file by a cluster key produced by a function.
   ///
   /// The cluster key determines which data file will be associated with a
   /// particular manifest. All data files with the same cluster key will be written
-  /// to the same manifest unless the manifest is large and split into multiple
-  /// files. Manifests deleted via DeleteManifest or added via AddManifest are
-  /// ignored during the rewrite process.
+  /// to the same manifest unless the file is large and split into multiple files.
+  /// Manifests deleted via DeleteManifest or added via AddManifest are ignored
+  /// during the rewrite process.
   RewriteManifests& ClusterBy(ClusterByFunc func);
 
-  /// \brief Determine which existing data manifests should be rewritten.
+  /// \brief Determines which existing manifest files for the table should be rewritten.
   ///
-  /// When ClusterBy is configured, matching data manifests are rewritten. If no
-  /// predicate is set, all data manifests not explicitly deleted are selected.
-  /// Manifests that do not match the predicate are kept as-is. Delete manifests
-  /// are not rewritten.
+  /// Manifests that do not match the predicate are kept as-is. If this is not
+  /// called and no predicate is set, all manifests are rewritten.
   RewriteManifests& RewriteIf(RewritePredicate predicate);
 
-  /// \brief Delete a manifest file from the table.
+  /// \brief Deletes a manifest file from the table.
   RewriteManifests& DeleteManifest(const ManifestFile& manifest);
 
-  /// \brief Add a manifest file to the table.
+  /// \brief Adds a manifest file to the table.
   ///
   /// The added manifest cannot contain new or deleted files.
   ///
-  /// The manifest is copied unless snapshot ID inheritance is enabled and its
-  /// snapshot ID is unset. A copy may also be required for format compatibility.
-  /// Copies preserve existing entry snapshot IDs. Added manifests are not merged
-  /// with other manifests.
+  /// By default, the manifest is rewritten to ensure all entries have explicit
+  /// snapshot IDs. In that case, the caller manages the original manifest and
+  /// this update manages the copy.
   ///
-  /// When a copy is made, the caller manages the original manifest and this update
-  /// manages the copy. When the original is reused and the commit succeeds, it
-  /// becomes part of the table metadata and must not be deleted manually; it will
-  /// be cleaned up on expiry. This update does not delete the original on failure.
+  /// If manifest entries are allowed to inherit the snapshot ID assigned on
+  /// commit, the original manifest becomes part of the table metadata when the
+  /// commit succeeds and must not be deleted manually. If the manifest gets
+  /// merged while preparing a new snapshot, it is deleted automatically when
+  /// this operation succeeds. If the commit fails, the original manifest is
+  /// retained and may be deleted or reused by the caller.
   RewriteManifests& AddManifest(const ManifestFile& manifest);
 
  protected:
@@ -106,27 +107,43 @@ class ICEBERG_EXPORT RewriteManifests : public SnapshotUpdate {
                             std::shared_ptr<TransactionContext> ctx);
 
  private:
+  struct WriterKey {
+    std::string cluster_key;
+    int32_t partition_spec_id;
+
+    friend bool operator==(const WriterKey&, const WriterKey&) = default;
+  };
+
+  struct WriterKeyHash {
+    size_t operator()(const WriterKey& key) const;
+  };
+
+  class WriterWrapper;
+
   bool RequiresRewrite(const std::unordered_set<ManifestFile>& current_manifests) const;
   bool MatchesPredicate(const ManifestFile& manifest) const;
+  bool ContainsDeletes(const ManifestFile& manifest) const;
+  void KeepActiveManifests(std::span<const ManifestFile> current_manifests);
   Status ValidateDeletedManifests(
       const std::unordered_set<ManifestFile>& current_manifests,
       int64_t current_snapshot_id) const;
   Status ValidateFilesCounts() const;
 
   Result<ManifestFile> CopyManifest(const ManifestFile& manifest);
-  Status Rewrite(std::span<const ManifestFile> current_manifests);
+  Status PerformRewrite(std::span<const ManifestFile> current_manifests);
+  Status AppendEntry(const ManifestEntry& entry, const ManifestFile& manifest,
+                     const std::shared_ptr<PartitionSpec>& spec);
+  Result<WriterWrapper*> GetWriter(const WriterKey& key,
+                                   const std::shared_ptr<PartitionSpec>& spec);
+  Result<std::unique_ptr<ManifestWriter>> NewManifestWriter(
+      const std::shared_ptr<PartitionSpec>& spec);
+  Status CloseWriters();
 
   void DeleteUncommitted(std::vector<ManifestFile>& manifests,
                          const std::unordered_set<std::string>& committed);
-  void ResetRewriteState();
-  Status ValidateTargetBranch(const std::string& branch) const override;
+  void Reset();
 
  private:
-  std::string table_name_;
-  ClusterByFunc cluster_by_func_;
-  RewritePredicate predicate_;
-  bool rewrite_dirty_{true};
-
   std::unordered_set<ManifestFile> deleted_manifests_;
   std::vector<ManifestFile> added_manifests_;
   std::vector<ManifestFile> added_manifests_to_copy_;
@@ -135,7 +152,13 @@ class ICEBERG_EXPORT RewriteManifests : public SnapshotUpdate {
   std::vector<ManifestFile> kept_manifests_;
   std::vector<ManifestFile> new_manifests_;
   std::unordered_set<ManifestFile> rewritten_manifests_;
+  std::unordered_map<WriterKey, std::unique_ptr<WriterWrapper>, WriterKeyHash> writers_;
+
   int64_t entry_count_{0};
+
+  ClusterByFunc cluster_by_func_;
+  RewritePredicate predicate_;
+  bool rewrite_dirty_{true};
 };
 
 }  // namespace iceberg
