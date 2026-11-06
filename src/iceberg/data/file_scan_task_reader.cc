@@ -21,16 +21,25 @@
 
 #include <algorithm>
 #include <memory>
+#include <numeric>
 #include <optional>
+#include <span>
+#include <unordered_set>
 #include <utility>
+#include <vector>
+
+#include <nanoarrow/nanoarrow.h>
 
 #include "iceberg/arrow_c_data_guard_internal.h"
 #include "iceberg/arrow_c_data_util_internal.h"
 #include "iceberg/data/delete_filter.h"
+#include "iceberg/expression/binder.h"
+#include "iceberg/expression/evaluator.h"
 #include "iceberg/file_reader.h"
 #include "iceberg/manifest/manifest_entry.h"
+#include "iceberg/nanoarrow_status_internal.h"
+#include "iceberg/row/arrow_array_wrapper.h"
 #include "iceberg/schema.h"
-#include "iceberg/schema_internal.h"
 #include "iceberg/table_scan.h"
 #include "iceberg/util/macros.h"
 
@@ -64,25 +73,99 @@ ReaderOptions MakeReaderOptions(const FileScanTask& task, std::shared_ptr<FileIO
   };
 }
 
-class MergeOnReadStreamSource {
- public:
-  MergeOnReadStreamSource(std::unique_ptr<Reader> reader,
-                          std::unique_ptr<DeleteFilter> delete_filter,
-                          std::shared_ptr<::iceberg::Schema> required_schema,
-                          std::shared_ptr<::iceberg::Schema> projected_schema,
-                          ProjectionContext projection_context)
-      : reader_(std::move(reader)),
-        delete_filter_(std::move(delete_filter)),
-        required_schema_(std::move(required_schema)),
-        projected_schema_(std::move(projected_schema)),
-        project_all_rows_(required_schema_->SameSchema(*projected_schema_)),
-        projection_context_(std::move(projection_context)) {}
-
-  ~MergeOnReadStreamSource() {
-    if (cached_schema_.has_value() && cached_schema_->release != nullptr) {
-      cached_schema_->release(&cached_schema_.value());
+// Returns the top-level field with the given id, or nullptr when the id belongs
+// to a nested field or is absent.
+const SchemaField* FindTopLevelField(const Schema& schema, int32_t field_id) {
+  for (const auto& field : schema.fields()) {
+    if (field.field_id() == field_id) {
+      return &field;
     }
   }
+  return nullptr;
+}
+
+// Collect original references before binding can fold predicates away. The evaluator
+// binds the original residual again against its own schema, so it needs these fields
+// even when their predicates are constant under the table schema.
+class ResidualBinder : public Binder {
+ public:
+  ResidualBinder(const Schema& schema, bool case_sensitive)
+      : Binder(schema, case_sensitive),
+        schema_(schema),
+        case_sensitive_(case_sensitive) {}
+
+  using Binder::Predicate;
+
+  Result<std::shared_ptr<Expression>> Predicate(
+      const std::shared_ptr<UnboundPredicate>& pred) override {
+    ICEBERG_ASSIGN_OR_RAISE(
+        auto field, schema_.FindFieldByName(pred->reference()->name(), case_sensitive_));
+    if (field.has_value()) {
+      const auto& schema_field = field->get();
+      const bool composite_null_check =
+          schema_field.type()->is_nested() &&
+          pred->unbound_term().kind() == Term::Kind::kReference &&
+          (pred->op() == Expression::Operation::kIsNull ||
+           pred->op() == Expression::Operation::kNotNull);
+      if (!schema_field.type()->is_primitive() && !composite_null_check) {
+        return NotSupported(
+            "Residual filter references non-primitive column '{}' of type {}; "
+            "only null checks are supported for composite residual columns",
+            pred->reference()->name(), schema_field.type()->ToString());
+      }
+      field_ids_.insert(schema_field.field_id());
+    }
+    return Binder::Predicate(pred);
+  }
+
+  const std::unordered_set<int32_t>& field_ids() const { return field_ids_; }
+
+ private:
+  const Schema& schema_;
+  bool case_sensitive_;
+  std::unordered_set<int32_t> field_ids_;
+};
+
+// Exposes residual columns in the order of their planning-schema fields. The read
+// schema can include historical delete columns with colliding names, so positions
+// are resolved by field id once when opening the task.
+class ResidualRow : public StructLike {
+ public:
+  ResidualRow(const StructLike& row, std::span<const size_t> positions)
+      : row_(row), positions_(positions) {}
+
+  Result<Scalar> GetField(size_t pos) const override {
+    ICEBERG_PRECHECK(pos < positions_.size(), "Residual field position {} out of range",
+                     pos);
+    return row_.GetField(positions_[pos]);
+  }
+
+  size_t num_fields() const override { return positions_.size(); }
+
+ private:
+  const StructLike& row_;
+  std::span<const size_t> positions_;
+};
+
+// Streams one task's rows through optional delete filtering, optional residual
+// evaluation, and projection to the caller's schema. Tasks with deletes and
+// tasks whose residual filter is enforced both read a possibly wider schema
+// (delete keys, row positions, residual columns) and project it back.
+class TaskStreamSource {
+ public:
+  // `delete_filter` is null for tasks without delete files; `residual_evaluator`
+  // is null when residual enforcement is disabled or not needed for the task.
+  TaskStreamSource(std::unique_ptr<Reader> reader,
+                   std::unique_ptr<DeleteFilter> delete_filter,
+                   std::unique_ptr<Evaluator> residual_evaluator,
+                   std::vector<size_t> residual_positions, bool project_all_columns,
+                   ProjectionContext projection_context)
+      : reader_(std::move(reader)),
+        delete_filter_(std::move(delete_filter)),
+        residual_evaluator_(std::move(residual_evaluator)),
+        residual_positions_(std::move(residual_positions)),
+        project_all_columns_(project_all_columns),
+        projection_context_(std::move(projection_context)) {}
 
   Status Close() {
     if (reader_ == nullptr) {
@@ -92,11 +175,7 @@ class MergeOnReadStreamSource {
   }
 
   Result<std::optional<ArrowArray>> Next() {
-    if (!cached_schema_.has_value()) {
-      // File readers expose one stable Arrow schema for every batch in the stream.
-      ICEBERG_ASSIGN_OR_RAISE(cached_schema_, reader_->Schema());
-    }
-    ArrowSchema& input_arrow_schema = cached_schema_.value();
+    const auto& input_arrow_schema = projection_context_.input_arrow_schema();
 
     while (true) {
       ICEBERG_ASSIGN_OR_RAISE(auto next_batch, reader_->Next());
@@ -107,37 +186,104 @@ class MergeOnReadStreamSource {
       ArrowArray input_batch = std::move(next_batch.value());
       internal::ArrowArrayGuard input_batch_guard(&input_batch);
 
-      ICEBERG_ASSIGN_OR_RAISE(
-          auto alive, delete_filter_->ComputeAliveRows(input_arrow_schema, input_batch));
-      if (alive.empty()) {
-        continue;
+      // Rows still selected. While `filtered` is false, every row of the batch
+      // is still a candidate and `selection` has not been materialized.
+      std::vector<int32_t> selection;
+      bool filtered = false;
+
+      if (delete_filter_ != nullptr) {
+        ICEBERG_ASSIGN_OR_RAISE(auto alive, delete_filter_->ComputeAliveRows(
+                                                input_arrow_schema, input_batch));
+        if (alive.empty()) {
+          continue;
+        }
+        filtered = alive.alive_count() != input_batch.length;
+        if (filtered) {
+          selection = std::move(alive.indices);
+        }
       }
 
-      if (alive.alive_count() == input_batch.length && project_all_rows_) {
+      if (residual_evaluator_ != nullptr) {
+        const int64_t candidate_count =
+            filtered ? static_cast<int64_t>(selection.size()) : input_batch.length;
+        ICEBERG_ASSIGN_OR_RAISE(
+            auto kept, KeepResidualMatches(input_arrow_schema, input_batch, selection,
+                                           /*all_rows_selected=*/!filtered));
+        filtered = filtered || kept.size() != candidate_count;
+        if (filtered) {
+          selection = std::move(kept);
+          if (selection.empty()) {
+            continue;
+          }
+        }
+      }
+
+      if (!filtered && project_all_columns_) {
         // Transfer ownership to the stream result; the local guard must not release it.
         ArrowArray output_batch = input_batch;
         input_batch.release = nullptr;
         return output_batch;
       }
 
-      return ProjectBatch(&input_batch, alive.indices, projection_context_);
+      if (!filtered) {
+        // Project a fully selected batch, e.g. because columns were pruned or
+        // reordered for evaluation.
+        selection.resize(static_cast<size_t>(input_batch.length));
+        std::iota(selection.begin(), selection.end(), int32_t{0});  // NOLINT
+      }
+      return ProjectBatch(&input_batch, selection, projection_context_);
     }
   }
 
   Result<ArrowSchema> Schema() {
-    ArrowSchema schema;
-    ICEBERG_RETURN_UNEXPECTED(ToArrowSchema(*projected_schema_, &schema));
+    ArrowSchema schema{};
+    ICEBERG_NANOARROW_RETURN_UNEXPECTED(
+        ArrowSchemaDeepCopy(&projection_context_.output_arrow_schema(), &schema));
     return schema;
   }
 
  private:
+  // Returns the candidate rows that match the residual filter: either the
+  // previously selected rows, or every row when no filter has removed a row yet.
+  Result<std::vector<int32_t>> KeepResidualMatches(const ArrowSchema& input_arrow_schema,
+                                                   const ArrowArray& input_batch,
+                                                   const std::vector<int32_t>& selection,
+                                                   bool all_rows_selected) {
+    ICEBERG_PRECHECK(std::in_range<int32_t>(input_batch.length),
+                     "Batch length {} exceeds int32_t row index capacity",
+                     input_batch.length);
+    ICEBERG_ASSIGN_OR_RAISE(auto row,
+                            ArrowArrayStructLike::Make(input_arrow_schema, input_batch));
+    ResidualRow residual_row(*row, residual_positions_);
+    std::vector<int32_t> kept;
+    auto keep = [&](int64_t index) -> Status {
+      ICEBERG_RETURN_UNEXPECTED(row->Reset(index));
+      ICEBERG_ASSIGN_OR_RAISE(bool matches, residual_evaluator_->Evaluate(residual_row));
+      if (matches) {
+        kept.push_back(static_cast<int32_t>(index));
+      }
+      return {};
+    };
+    if (all_rows_selected) {
+      kept.reserve(static_cast<size_t>(input_batch.length));
+      for (int64_t index = 0; index < input_batch.length; ++index) {
+        ICEBERG_RETURN_UNEXPECTED(keep(index));
+      }
+    } else {
+      kept.reserve(selection.size());
+      for (int32_t index : selection) {
+        ICEBERG_RETURN_UNEXPECTED(keep(index));
+      }
+    }
+    return kept;
+  }
+
   std::unique_ptr<Reader> reader_;
   std::unique_ptr<DeleteFilter> delete_filter_;
-  std::shared_ptr<::iceberg::Schema> required_schema_;
-  std::shared_ptr<::iceberg::Schema> projected_schema_;
-  bool project_all_rows_ = false;
+  std::unique_ptr<Evaluator> residual_evaluator_;
+  std::vector<size_t> residual_positions_;
+  bool project_all_columns_ = false;
   ProjectionContext projection_context_;
-  std::optional<ArrowSchema> cached_schema_;
 };
 
 }  // namespace
@@ -160,6 +306,38 @@ class FileScanTaskReader::Impl {
 
     return std::unique_ptr<Impl>(
         new Impl(std::move(options), std::move(field_lookup), std::move(delete_counter)));
+  }
+
+  // Planning-schema fields used by the residual, or nullptr when it is not enforced.
+  // Keep this schema independent of projection aliases and historical delete fields.
+  Result<std::shared_ptr<Schema>> ResidualSchema(const FileScanTask& task) const {
+    if (!apply_residuals_) {
+      return nullptr;
+    }
+    const auto& residual = task.residual_filter();
+    if (residual == nullptr || residual->op() == Expression::Operation::kTrue) {
+      return nullptr;
+    }
+
+    // Residuals are unbound and reference the planning scan's schema: bind them
+    // against the table schema with the scan's case sensitivity.
+    ResidualBinder binder(*table_schema_, case_sensitive_);
+    ICEBERG_RETURN_UNEXPECTED(Visit<std::shared_ptr<Expression>>(residual, binder));
+    std::vector<int32_t> field_ids(binder.field_ids().begin(), binder.field_ids().end());
+    std::ranges::sort(field_ids);
+
+    std::vector<SchemaField> read_columns;
+    for (int32_t field_id : field_ids) {
+      const SchemaField* field = FindTopLevelField(*table_schema_, field_id);
+      if (field == nullptr) {
+        return InvalidArgument(
+            "Residual filter references field id {}, which is not a top-level "
+            "column; nested residual references are not supported",
+            field_id);
+      }
+      read_columns.push_back(*field);
+    }
+    return std::make_shared<Schema>(std::move(read_columns));
   }
 
   Result<ArrowArrayStream> Open(const FileScanTask& task) {
@@ -188,9 +366,16 @@ class FileScanTaskReader::Impl {
       }
     }
 
+    ICEBERG_ASSIGN_OR_RAISE(auto residual_schema, ResidualSchema(task));
     auto filter = task.residual_filter();
+    if (residual_schema != nullptr) {
+      // Pruning readers also need field-id references, independent of projected
+      // names and historical delete columns in the physical read schema.
+      ICEBERG_ASSIGN_OR_RAISE(filter,
+                              Binder::Bind(*residual_schema, filter, case_sensitive_));
+    }
 
-    if (task.delete_files().empty()) {
+    if (task.delete_files().empty() && residual_schema == nullptr) {
       auto options = MakeReaderOptions(
           task, io_, projected_schema_, filter, case_sensitive_, name_mapping_,
           properties_, data_file->first_row_id, data_file->data_sequence_number);
@@ -199,25 +384,35 @@ class FileScanTaskReader::Impl {
       return MakeArrowArrayStream(std::move(reader));
     }
 
-    const bool has_position_deletes =
-        std::any_of(task.delete_files().begin(), task.delete_files().end(),
-                    [](const std::shared_ptr<DataFile>& f) {
-                      return f->content == DataFile::Content::kPositionDeletes;
-                    });
+    // The read schema covers the projection plus any columns needed to enforce
+    // the residual filter; the stream projects back to the caller's schema.
+    std::shared_ptr<Schema> requested_schema = projected_schema_;
+    if (residual_schema != nullptr) {
+      std::vector<SchemaField> fields(projected_schema_->fields().begin(),
+                                      projected_schema_->fields().end());
+      for (const auto& field : residual_schema->fields()) {
+        if (FindTopLevelField(*projected_schema_, field.field_id()) == nullptr) {
+          fields.push_back(field);
+        }
+      }
+      requested_schema = std::make_shared<Schema>(std::move(fields));
+    }
 
-    ICEBERG_ASSIGN_OR_RAISE(
-        auto delete_filter,
-        DeleteFilter::Make(data_file->file_path, task.delete_files(), projected_schema_,
-                           io_, field_lookup_, has_position_deletes, delete_counter_));
+    std::unique_ptr<DeleteFilter> delete_filter;
+    std::shared_ptr<Schema> required_schema = requested_schema;
+    if (!task.delete_files().empty()) {
+      const bool has_position_deletes =
+          std::any_of(task.delete_files().begin(), task.delete_files().end(),
+                      [](const std::shared_ptr<DataFile>& f) {
+                        return f->content == DataFile::Content::kPositionDeletes;
+                      });
 
-    auto required_schema = delete_filter->RequiredSchema();
-    auto project_batch_function = ProjectionContext::ResolveProjectBatchFunction();
-    // ProjectionContext borrows schemas that are kept in MergeOnReadStreamSource.
-    ICEBERG_ASSIGN_OR_RAISE(
-        auto projection_context,
-        ProjectionContext::Make(*required_schema, *projected_schema_,
-                                project_batch_function,
-                                properties_.Get(ReaderProperties::kArrowValidateBatch)));
+      ICEBERG_ASSIGN_OR_RAISE(
+          delete_filter,
+          DeleteFilter::Make(data_file->file_path, task.delete_files(), requested_schema,
+                             io_, field_lookup_, has_position_deletes, delete_counter_));
+      required_schema = delete_filter->RequiredSchema();
+    }
 
     auto options = MakeReaderOptions(task, io_, required_schema, filter, case_sensitive_,
                                      name_mapping_, properties_, data_file->first_row_id,
@@ -225,30 +420,62 @@ class FileScanTaskReader::Impl {
     ICEBERG_ASSIGN_OR_RAISE(auto reader,
                             ReaderFactoryRegistry::Open(data_file->file_format, options));
 
-    auto mor_reader = std::make_unique<MergeOnReadStreamSource>(
-        std::move(reader), std::move(delete_filter), std::move(required_schema),
-        projected_schema_, std::move(projection_context));
-    return MakeArrowArrayStream(std::move(mor_reader));
+    // Use the reader's physical layout for both pass-through and projected batches.
+    ICEBERG_ASSIGN_OR_RAISE(auto input_arrow_schema, reader->Schema());
+    internal::ArrowSchemaGuard input_schema_guard(&input_arrow_schema);
+    ICEBERG_ASSIGN_OR_RAISE(
+        auto projection_context,
+        ProjectionContext::Make(*required_schema, *projected_schema_, input_arrow_schema,
+                                ProjectionContext::ResolveProjectBatchFunction(),
+                                properties_.Get(ReaderProperties::kArrowValidateBatch)));
+
+    std::unique_ptr<Evaluator> residual_evaluator;
+    std::vector<size_t> residual_positions;
+    if (residual_schema != nullptr) {
+      // Bind names only against planning-schema fields, then map to batch positions
+      // by id. Historical equality-delete fields may reuse a current column's name.
+      ICEBERG_ASSIGN_OR_RAISE(
+          residual_evaluator,
+          Evaluator::Make(*residual_schema, task.residual_filter(), case_sensitive_));
+      for (const auto& field : residual_schema->fields()) {
+        auto fields = required_schema->fields();
+        auto it = std::ranges::find(fields, field.field_id(), &SchemaField::field_id);
+        ICEBERG_PRECHECK(it != fields.end(), "Cannot find residual field id {}",
+                         field.field_id());
+        residual_positions.push_back(static_cast<size_t>(it - fields.begin()));
+      }
+    }
+
+    const bool project_all_columns = required_schema->SameSchema(*projected_schema_);
+    auto task_source = std::make_unique<TaskStreamSource>(
+        std::move(reader), std::move(delete_filter), std::move(residual_evaluator),
+        std::move(residual_positions), project_all_columns,
+        std::move(projection_context));
+    return MakeArrowArrayStream(std::move(task_source));
   }
 
  private:
   Impl(Options options, DeleteFilter::FieldLookup field_lookup,
        std::shared_ptr<DeleteCounter> delete_counter)
       : io_(std::move(options.io)),
+        table_schema_(std::move(options.table_schema)),
         schemas_(std::move(options.schemas)),
         projected_schema_(std::move(options.projected_schema)),
         case_sensitive_(options.case_sensitive),
         name_mapping_(std::move(options.name_mapping)),
         properties_(ReaderProperties::FromMap(options.properties)),
+        apply_residuals_(options.apply_residuals),
         field_lookup_(std::move(field_lookup)),
         delete_counter_(std::move(delete_counter)) {}
 
   std::shared_ptr<FileIO> io_;
+  std::shared_ptr<Schema> table_schema_;
   std::vector<std::shared_ptr<Schema>> schemas_;
   std::shared_ptr<Schema> projected_schema_;
   bool case_sensitive_;
   std::shared_ptr<NameMapping> name_mapping_;
   ReaderProperties properties_;
+  bool apply_residuals_ = false;
   DeleteFilter::FieldLookup field_lookup_;
   std::shared_ptr<DeleteCounter> delete_counter_;
 };

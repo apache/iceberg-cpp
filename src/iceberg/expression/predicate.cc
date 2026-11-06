@@ -253,6 +253,11 @@ Result<std::shared_ptr<Expression>> UnboundPredicateImpl<B>::Bind(
     return BindUnaryOperation(schema, std::move(bound_term));
   }
 
+  if (!bound_term->type()->is_primitive()) {
+    return InvalidExpression("Cannot bind {} predicate to non-primitive type {}",
+                             BASE::op(), *bound_term->type());
+  }
+
   if (BASE::op() == Expression::Operation::kIn ||
       BASE::op() == Expression::Operation::kNotIn) {
     return BindInOperation(std::move(bound_term));

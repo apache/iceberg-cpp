@@ -161,7 +161,7 @@ void NameToIdVisitor::Finish() {
   }
 }
 
-Status PositionPathVisitor::Visit(const PrimitiveType& type) {
+Status PositionPathVisitor::RecordPosition(const Type& type) {
   if (current_field_id_ == kUnassignedFieldId) {
     return InvalidSchema("Current field id is not assigned, type: {}", type.ToString());
   }
@@ -173,23 +173,21 @@ Status PositionPathVisitor::Visit(const PrimitiveType& type) {
   }
 
   return {};
+}
+
+Status PositionPathVisitor::Visit(const PrimitiveType& type) {
+  return RecordPosition(type);
 }
 
 Status PositionPathVisitor::Visit(const VariantType& type) {
-  if (current_field_id_ == kUnassignedFieldId) {
-    return InvalidSchema("Current field id is not assigned, type: {}", type.ToString());
-  }
-
-  if (auto ret = position_path_.try_emplace(current_field_id_, current_path_);
-      !ret.second) {
-    return InvalidSchema("Duplicate field id found: {}, prev path: {}, curr path: {}",
-                         current_field_id_, ret.first->second, current_path_);
-  }
-
-  return {};
+  return RecordPosition(type);
 }
 
 Status PositionPathVisitor::Visit(const StructType& type) {
+  // The root schema has no field id; nested structs do and can be tested for null.
+  if (!current_path_.empty()) {
+    ICEBERG_RETURN_UNEXPECTED(RecordPosition(type));
+  }
   for (size_t i = 0; i < type.fields().size(); ++i) {
     const auto& field = type.fields()[i];
     current_field_id_ = field.field_id();
@@ -200,10 +198,10 @@ Status PositionPathVisitor::Visit(const StructType& type) {
   return {};
 }
 
-// Non-struct types are not supported yet, but it is not an error.
-Status PositionPathVisitor::Visit(const ListType& type) { return {}; }
+// Containers are accessible as fields, but their elements are not scalar row fields.
+Status PositionPathVisitor::Visit(const ListType& type) { return RecordPosition(type); }
 
-Status PositionPathVisitor::Visit(const MapType& type) { return {}; }
+Status PositionPathVisitor::Visit(const MapType& type) { return RecordPosition(type); }
 
 std::unordered_map<int32_t, std::vector<size_t>> PositionPathVisitor::Finish() {
   return std::move(position_path_);
