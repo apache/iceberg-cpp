@@ -344,7 +344,8 @@ Result<SnapshotUpdate::ApplyResult> SnapshotUpdate::Apply() {
       continue;
     }
     metadata_tasks.Submit([&manifest, this]() -> Status {
-      ICEBERG_ASSIGN_OR_RAISE(manifest, AddMetadata(manifest, ctx_->table->io(), base()));
+      ICEBERG_ASSIGN_OR_RAISE(manifest,
+                              AddMetadata(manifest, ctx_->table->manifest_io(), base()));
       return {};
     });
   }

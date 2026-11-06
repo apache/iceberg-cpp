@@ -33,6 +33,7 @@
 #include <variant>
 #include <vector>
 
+#include <arrow/result.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 

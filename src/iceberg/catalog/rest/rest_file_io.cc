@@ -25,6 +25,7 @@
 #include <vector>
 
 #include "iceberg/catalog/rest/types.h"
+#include "iceberg/content_cache_internal.h"
 #include "iceberg/file_io.h"
 #include "iceberg/file_io_registry.h"
 #include "iceberg/logging/log_macros.h"
@@ -48,6 +49,8 @@ std::unordered_map<std::string, std::string> MergeFileIOProperties(
 }  // namespace
 
 Result<std::unique_ptr<FileIO>> MakeCatalogFileIO(const RestCatalogProperties& config) {
+  ICEBERG_RETURN_UNEXPECTED(
+      internal::ContentCacheOptions::FromProperties(config.configs()));
   const std::string io_impl = config.Get(RestCatalogProperties::kIOImpl);
   if (io_impl.empty()) {
     return std::make_unique<ResolvingFileIO>(config.configs());
