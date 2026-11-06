@@ -1,0 +1,143 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1HistoryScan" kind="class" language="C++" prot="public" final="yes">
+    <compoundname>iceberg::HistoryScan</compoundname>
+    <basecompoundref refid="classiceberg_1_1MetadataScan" prot="public" virt="non-virtual">iceberg::MetadataScan</basecompoundref>
+    <includes refid="history__table_8h" local="no">history_table.h</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1HistoryScan_1ac947b880d47c3671cb8414fb71887a04" prot="private" static="no" mutable="no">
+        <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1MetadataScanTask" kindref="compound">MetadataScanTask</ref> &gt;</type>
+        <definition>const std::shared_ptr&lt;MetadataScanTask&gt; iceberg::HistoryScan::task_</definition>
+        <argsstring></argsstring>
+        <name>task_</name>
+        <qualifiedname>iceberg::HistoryScan::task_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/inspect/history_table.h" line="79" column="25" bodyfile="iceberg/inspect/history_table.h" bodystart="79" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1HistoryScan_1a41975d1d4486e3a4fca23f0c5e5125d7" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceiceberg_1aac79523734e35ca4d34cced52e56ec9b" kindref="member">Result</ref>&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1HistoryScan" kindref="compound">HistoryScan</ref> &gt; &gt;</type>
+        <definition>static Result&lt; std::unique_ptr&lt; HistoryScan &gt; &gt; iceberg::HistoryScan::Make</definition>
+        <argsstring>(internal::MetadataScanContext context)</argsstring>
+        <name>Make</name>
+        <qualifiedname>iceberg::HistoryScan::Make</qualifiedname>
+        <param>
+          <type><ref refid="structiceberg_1_1internal_1_1MetadataScanContext" kindref="compound">internal::MetadataScanContext</ref></type>
+          <declname>context</declname>
+        </param>
+        <briefdescription>
+<para>Create a scan from captured metadata table settings. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/inspect/history_table.h" line="69" column="17"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1HistoryScan_1abdbf53f5cbf7718d03a0793b159b961b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::HistoryScan::~HistoryScan</definition>
+        <argsstring>() override</argsstring>
+        <name>~HistoryScan</name>
+        <qualifiedname>iceberg::HistoryScan::~HistoryScan</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/inspect/history_table.h" line="71" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1HistoryScan_1aa2c1884c0e2804bd1eee60e31e3e32ae" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type><ref refid="namespaceiceberg_1aac79523734e35ca4d34cced52e56ec9b" kindref="member">Result</ref>&lt; MetadataScanTaskStreamPtr &gt;</type>
+        <definition>Result&lt; MetadataScanTaskStreamPtr &gt; iceberg::HistoryScan::PlanTasksStream</definition>
+        <argsstring>() const override</argsstring>
+        <name>PlanTasksStream</name>
+        <qualifiedname>iceberg::HistoryScan::PlanTasksStream</qualifiedname>
+        <reimplements refid="classiceberg_1_1MetadataScan_1a2feaa036a199133b18823cbb09dc2875">PlanTasksStream</reimplements>
+        <briefdescription>
+<para>Return a fresh task stream; consuming it may report planning errors. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/inspect/history_table.h" line="73" column="10"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classiceberg_1_1HistoryScan_1acb688e3254a2cd9cd5d5df2dc99bfacc" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::HistoryScan::HistoryScan</definition>
+        <argsstring>(internal::MetadataScanContext context, std::shared_ptr&lt; MetadataScanTask &gt; task)</argsstring>
+        <name>HistoryScan</name>
+        <qualifiedname>iceberg::HistoryScan::HistoryScan</qualifiedname>
+        <param>
+          <type><ref refid="structiceberg_1_1internal_1_1MetadataScanContext" kindref="compound">internal::MetadataScanContext</ref></type>
+          <declname>context</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1MetadataScanTask" kindref="compound">MetadataScanTask</ref> &gt;</type>
+          <declname>task</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/inspect/history_table.h" line="76" column="3"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Scan the history metadata captured from a table. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::HistoryScan</label>
+        <link refid="classiceberg_1_1HistoryScan"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::MetadataScan</label>
+        <link refid="classiceberg_1_1MetadataScan"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::HistoryScan</label>
+        <link refid="classiceberg_1_1HistoryScan"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::MetadataScan</label>
+        <link refid="classiceberg_1_1MetadataScan"/>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/inspect/history_table.h" line="66" column="1" bodyfile="iceberg/inspect/history_table.h" bodystart="66" bodyend="80"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1MetadataScan_1abc7f2bce7c8840d125681efe21eff0f5" prot="protected" virt="non-virtual"><scope>iceberg::HistoryScan</scope><name>context</name></member>
+      <member refid="classiceberg_1_1HistoryScan_1acb688e3254a2cd9cd5d5df2dc99bfacc" prot="private" virt="non-virtual"><scope>iceberg::HistoryScan</scope><name>HistoryScan</name></member>
+      <member refid="classiceberg_1_1HistoryScan_1a41975d1d4486e3a4fca23f0c5e5125d7" prot="public" virt="non-virtual"><scope>iceberg::HistoryScan</scope><name>Make</name></member>
+      <member refid="classiceberg_1_1MetadataScan_1ab67ba2a8102780d308d6dd1799a87982" prot="protected" virt="non-virtual"><scope>iceberg::HistoryScan</scope><name>MetadataScan</name></member>
+      <member refid="classiceberg_1_1MetadataScan_1a9c81427384371ba94d45d2e5b647aebe" prot="public" virt="virtual"><scope>iceberg::HistoryScan</scope><name>PlanTasks</name></member>
+      <member refid="classiceberg_1_1HistoryScan_1aa2c1884c0e2804bd1eee60e31e3e32ae" prot="public" virt="virtual"><scope>iceberg::HistoryScan</scope><name>PlanTasksStream</name></member>
+      <member refid="classiceberg_1_1HistoryScan_1ac947b880d47c3671cb8414fb71887a04" prot="private" virt="non-virtual"><scope>iceberg::HistoryScan</scope><name>task_</name></member>
+      <member refid="classiceberg_1_1MetadataScan_1aa136097b30472247deb7dedcd2f1b987" prot="public" virt="virtual"><scope>iceberg::HistoryScan</scope><name>ToArrowArrayStream</name></member>
+      <member refid="classiceberg_1_1HistoryScan_1abdbf53f5cbf7718d03a0793b159b961b" prot="public" virt="non-virtual"><scope>iceberg::HistoryScan</scope><name>~HistoryScan</name></member>
+      <member refid="classiceberg_1_1MetadataScan_1ad71302730db4dcb6e9adba38612997ad" prot="public" virt="virtual"><scope>iceberg::HistoryScan</scope><name>~MetadataScan</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

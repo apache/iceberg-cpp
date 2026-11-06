@@ -1,0 +1,156 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1MetadataScan" kind="class" language="C++" prot="public" abstract="yes">
+    <compoundname>iceberg::MetadataScan</compoundname>
+    <derivedcompoundref refid="classiceberg_1_1HistoryScan" prot="public" virt="non-virtual">iceberg::HistoryScan</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1SnapshotsScan" prot="public" virt="non-virtual">iceberg::SnapshotsScan</derivedcompoundref>
+    <includes refid="metadata__scan_8h" local="no">metadata_scan.h</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1MetadataScan_1af8ad45ff3995a2a45dc1808655379fa0" prot="private" static="no" mutable="no">
+        <type>const <ref refid="structiceberg_1_1internal_1_1MetadataScanContext" kindref="compound">internal::MetadataScanContext</ref></type>
+        <definition>const internal::MetadataScanContext iceberg::MetadataScan::context_</definition>
+        <argsstring></argsstring>
+        <name>context_</name>
+        <qualifiedname>iceberg::MetadataScan::context_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/inspect/metadata_scan.h" line="130" column="39" bodyfile="iceberg/inspect/metadata_scan.h" bodystart="130" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1MetadataScan_1ad71302730db4dcb6e9adba38612997ad" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type></type>
+        <definition>virtual iceberg::MetadataScan::~MetadataScan</definition>
+        <argsstring>()</argsstring>
+        <name>~MetadataScan</name>
+        <qualifiedname>iceberg::MetadataScan::~MetadataScan</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/inspect/metadata_scan.h" line="109" column="11"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1MetadataScan_1a2feaa036a199133b18823cbb09dc2875" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type><ref refid="namespaceiceberg_1aac79523734e35ca4d34cced52e56ec9b" kindref="member">Result</ref>&lt; MetadataScanTaskStreamPtr &gt;</type>
+        <definition>virtual Result&lt; MetadataScanTaskStreamPtr &gt; iceberg::MetadataScan::PlanTasksStream</definition>
+        <argsstring>() const =0</argsstring>
+        <name>PlanTasksStream</name>
+        <qualifiedname>iceberg::MetadataScan::PlanTasksStream</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1HistoryScan_1aa2c1884c0e2804bd1eee60e31e3e32ae">PlanTasksStream</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1SnapshotsScan_1a8467460b1573c5a8978d74acf2c81c6a">PlanTasksStream</reimplementedby>
+        <briefdescription>
+<para>Return a fresh task stream; consuming it may report planning errors. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/inspect/metadata_scan.h" line="112" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1MetadataScan_1a9c81427384371ba94d45d2e5b647aebe" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type><ref refid="namespaceiceberg_1aac79523734e35ca4d34cced52e56ec9b" kindref="member">Result</ref>&lt; std::vector&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1MetadataScanTask" kindref="compound">MetadataScanTask</ref> &gt; &gt; &gt;</type>
+        <definition>virtual Result&lt; std::vector&lt; std::shared_ptr&lt; MetadataScanTask &gt; &gt; &gt; iceberg::MetadataScan::PlanTasks</definition>
+        <argsstring>() const</argsstring>
+        <name>PlanTasks</name>
+        <qualifiedname>iceberg::MetadataScan::PlanTasks</qualifiedname>
+        <briefdescription>
+<para>Collect every task from <ref refid="classiceberg_1_1MetadataScan_1a2feaa036a199133b18823cbb09dc2875" kindref="member">PlanTasksStream()</ref>, preserving planning order. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/inspect/metadata_scan.h" line="115" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1MetadataScan_1aa136097b30472247deb7dedcd2f1b987" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type><ref refid="namespaceiceberg_1aac79523734e35ca4d34cced52e56ec9b" kindref="member">Result</ref>&lt; <ref refid="structArrowArrayStream" kindref="compound">ArrowArrayStream</ref> &gt;</type>
+        <definition>virtual Result&lt; ArrowArrayStream &gt; iceberg::MetadataScan::ToArrowArrayStream</definition>
+        <argsstring>() const</argsstring>
+        <name>ToArrowArrayStream</name>
+        <qualifiedname>iceberg::MetadataScan::ToArrowArrayStream</qualifiedname>
+        <briefdescription>
+<para>Read every task in planning order as one Arrow stream. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The stream owns its read state and can outlive this scan. Release the stream and each returned schema or array independently. To set batch size, open the planned tasks with <ref refid="classiceberg_1_1MetadataScanTaskReader" kindref="compound">MetadataScanTaskReader</ref>; each task retains its projection. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/inspect/metadata_scan.h" line="122" column="18"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-func">
+      <memberdef kind="function" id="classiceberg_1_1MetadataScan_1ab67ba2a8102780d308d6dd1799a87982" prot="protected" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::MetadataScan::MetadataScan</definition>
+        <argsstring>(internal::MetadataScanContext context)</argsstring>
+        <name>MetadataScan</name>
+        <qualifiedname>iceberg::MetadataScan::MetadataScan</qualifiedname>
+        <param>
+          <type><ref refid="structiceberg_1_1internal_1_1MetadataScanContext" kindref="compound">internal::MetadataScanContext</ref></type>
+          <declname>context</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/inspect/metadata_scan.h" line="125" column="12"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1MetadataScan_1abc7f2bce7c8840d125681efe21eff0f5" prot="protected" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const <ref refid="structiceberg_1_1internal_1_1MetadataScanContext" kindref="compound">internal::MetadataScanContext</ref> &amp;</type>
+        <definition>const internal::MetadataScanContext &amp; iceberg::MetadataScan::context</definition>
+        <argsstring>() const</argsstring>
+        <name>context</name>
+        <qualifiedname>iceberg::MetadataScan::context</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/inspect/metadata_scan.h" line="127" column="39" bodyfile="iceberg/inspect/metadata_scan.h" bodystart="127" bodyend="127"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>A metadata scan that plans tasks or reads all of them as Arrow batches. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>iceberg::HistoryScan</label>
+        <link refid="classiceberg_1_1HistoryScan"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::MetadataScan</label>
+        <link refid="classiceberg_1_1MetadataScan"/>
+      </node>
+      <node id="3">
+        <label>iceberg::SnapshotsScan</label>
+        <link refid="classiceberg_1_1SnapshotsScan"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <location file="iceberg/inspect/metadata_scan.h" line="107" column="1" bodyfile="iceberg/inspect/metadata_scan.h" bodystart="107" bodyend="131"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1MetadataScan_1abc7f2bce7c8840d125681efe21eff0f5" prot="protected" virt="non-virtual"><scope>iceberg::MetadataScan</scope><name>context</name></member>
+      <member refid="classiceberg_1_1MetadataScan_1af8ad45ff3995a2a45dc1808655379fa0" prot="private" virt="non-virtual"><scope>iceberg::MetadataScan</scope><name>context_</name></member>
+      <member refid="classiceberg_1_1MetadataScan_1ab67ba2a8102780d308d6dd1799a87982" prot="protected" virt="non-virtual"><scope>iceberg::MetadataScan</scope><name>MetadataScan</name></member>
+      <member refid="classiceberg_1_1MetadataScan_1a9c81427384371ba94d45d2e5b647aebe" prot="public" virt="virtual"><scope>iceberg::MetadataScan</scope><name>PlanTasks</name></member>
+      <member refid="classiceberg_1_1MetadataScan_1a2feaa036a199133b18823cbb09dc2875" prot="public" virt="pure-virtual"><scope>iceberg::MetadataScan</scope><name>PlanTasksStream</name></member>
+      <member refid="classiceberg_1_1MetadataScan_1aa136097b30472247deb7dedcd2f1b987" prot="public" virt="virtual"><scope>iceberg::MetadataScan</scope><name>ToArrowArrayStream</name></member>
+      <member refid="classiceberg_1_1MetadataScan_1ad71302730db4dcb6e9adba38612997ad" prot="public" virt="virtual"><scope>iceberg::MetadataScan</scope><name>~MetadataScan</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

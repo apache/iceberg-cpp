@@ -1,0 +1,1445 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1RewriteManifests" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::RewriteManifests</compoundname>
+    <basecompoundref refid="classiceberg_1_1SnapshotUpdate" prot="public" virt="non-virtual">iceberg::SnapshotUpdate</basecompoundref>
+    <includes refid="rewrite__manifests_8h" local="no">rewrite_manifests.h</includes>
+    <innerclass refid="structiceberg_1_1RewriteManifests_1_1WriterKey" prot="private">iceberg::RewriteManifests::WriterKey</innerclass>
+    <innerclass refid="structiceberg_1_1RewriteManifests_1_1WriterKeyHash" prot="private">iceberg::RewriteManifests::WriterKeyHash</innerclass>
+    <sectiondef kind="public-type">
+      <memberdef kind="typedef" id="classiceberg_1_1RewriteManifests_1af6a0a36166c710cf3a836a6aec97d772" prot="public" static="no">
+        <type>std::function&lt; std::string(const <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &amp;)&gt;</type>
+        <definition>using iceberg::RewriteManifests::ClusterByFunc =  std::function&lt;std::string(const DataFile&amp;)&gt;</definition>
+        <argsstring></argsstring>
+        <name>ClusterByFunc</name>
+        <qualifiedname>iceberg::RewriteManifests::ClusterByFunc</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/rewrite_manifests.h" line="55" column="3" bodyfile="iceberg/update/rewrite_manifests.h" bodystart="55" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="classiceberg_1_1RewriteManifests_1ae51e68f0d1253d404b98064988964659" prot="public" static="no">
+        <type>std::function&lt; bool(const <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref> &amp;)&gt;</type>
+        <definition>using iceberg::RewriteManifests::RewritePredicate =  std::function&lt;bool(const ManifestFile&amp;)&gt;</definition>
+        <argsstring></argsstring>
+        <name>RewritePredicate</name>
+        <qualifiedname>iceberg::RewriteManifests::RewritePredicate</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/rewrite_manifests.h" line="56" column="3" bodyfile="iceberg/update/rewrite_manifests.h" bodystart="56" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1RewriteManifests_1a712abbd67cdc7dba78dbd5e9b31ab99a" prot="private" static="no" mutable="no">
+        <type>std::unordered_set&lt; <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref> &gt;</type>
+        <definition>std::unordered_set&lt;ManifestFile&gt; iceberg::RewriteManifests::deleted_manifests_</definition>
+        <argsstring></argsstring>
+        <name>deleted_manifests_</name>
+        <qualifiedname>iceberg::RewriteManifests::deleted_manifests_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/rewrite_manifests.h" line="147" column="22" bodyfile="iceberg/update/rewrite_manifests.h" bodystart="147" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1RewriteManifests_1a27c0f2d7942ced50dddf1ded775eb89f" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref> &gt;</type>
+        <definition>std::vector&lt;ManifestFile&gt; iceberg::RewriteManifests::added_manifests_</definition>
+        <argsstring></argsstring>
+        <name>added_manifests_</name>
+        <qualifiedname>iceberg::RewriteManifests::added_manifests_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/rewrite_manifests.h" line="148" column="15" bodyfile="iceberg/update/rewrite_manifests.h" bodystart="148" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1RewriteManifests_1a12a2a7ef362402f35cf47d192b1aa425" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref> &gt;</type>
+        <definition>std::vector&lt;ManifestFile&gt; iceberg::RewriteManifests::added_manifests_to_copy_</definition>
+        <argsstring></argsstring>
+        <name>added_manifests_to_copy_</name>
+        <qualifiedname>iceberg::RewriteManifests::added_manifests_to_copy_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/rewrite_manifests.h" line="149" column="15" bodyfile="iceberg/update/rewrite_manifests.h" bodystart="149" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1RewriteManifests_1a21cb5fa5b62524eddedbfeb6a2f50903" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref> &gt;</type>
+        <definition>std::vector&lt;ManifestFile&gt; iceberg::RewriteManifests::rewritten_added_manifests_</definition>
+        <argsstring></argsstring>
+        <name>rewritten_added_manifests_</name>
+        <qualifiedname>iceberg::RewriteManifests::rewritten_added_manifests_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/rewrite_manifests.h" line="150" column="15" bodyfile="iceberg/update/rewrite_manifests.h" bodystart="150" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1RewriteManifests_1ab01655712409dcb102195c619a76b681" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref> &gt;</type>
+        <definition>std::vector&lt;ManifestFile&gt; iceberg::RewriteManifests::kept_manifests_</definition>
+        <argsstring></argsstring>
+        <name>kept_manifests_</name>
+        <qualifiedname>iceberg::RewriteManifests::kept_manifests_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/rewrite_manifests.h" line="152" column="15" bodyfile="iceberg/update/rewrite_manifests.h" bodystart="152" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1RewriteManifests_1a151c38e57854f6a88aa82e5d8dd1adfc" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref> &gt;</type>
+        <definition>std::vector&lt;ManifestFile&gt; iceberg::RewriteManifests::new_manifests_</definition>
+        <argsstring></argsstring>
+        <name>new_manifests_</name>
+        <qualifiedname>iceberg::RewriteManifests::new_manifests_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/rewrite_manifests.h" line="153" column="15" bodyfile="iceberg/update/rewrite_manifests.h" bodystart="153" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1RewriteManifests_1a9938dacb42197496c6704f0c25810e12" prot="private" static="no" mutable="no">
+        <type>std::unordered_set&lt; <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref> &gt;</type>
+        <definition>std::unordered_set&lt;ManifestFile&gt; iceberg::RewriteManifests::rewritten_manifests_</definition>
+        <argsstring></argsstring>
+        <name>rewritten_manifests_</name>
+        <qualifiedname>iceberg::RewriteManifests::rewritten_manifests_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/rewrite_manifests.h" line="154" column="22" bodyfile="iceberg/update/rewrite_manifests.h" bodystart="154" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1RewriteManifests_1a74b8463a216bab356481aeb63725b5b0" prot="private" static="no" mutable="no">
+        <type>std::unordered_map&lt; WriterKey, std::unique_ptr&lt; WriterWrapper &gt;, WriterKeyHash &gt;</type>
+        <definition>std::unordered_map&lt;WriterKey, std::unique_ptr&lt;WriterWrapper&gt;, WriterKeyHash&gt; iceberg::RewriteManifests::writers_</definition>
+        <argsstring></argsstring>
+        <name>writers_</name>
+        <qualifiedname>iceberg::RewriteManifests::writers_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/rewrite_manifests.h" line="155" column="22" bodyfile="iceberg/update/rewrite_manifests.h" bodystart="155" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1RewriteManifests_1aff82cd58c2ff5f4cef70f390159a661b" prot="private" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t iceberg::RewriteManifests::entry_count_</definition>
+        <argsstring></argsstring>
+        <name>entry_count_</name>
+        <qualifiedname>iceberg::RewriteManifests::entry_count_</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/rewrite_manifests.h" line="157" column="11" bodyfile="iceberg/update/rewrite_manifests.h" bodystart="157" bodyend="157"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1RewriteManifests_1aaa308800042532a2ce0188167bad5e9f" prot="private" static="no" mutable="no">
+        <type>ClusterByFunc</type>
+        <definition>ClusterByFunc iceberg::RewriteManifests::cluster_by_func_</definition>
+        <argsstring></argsstring>
+        <name>cluster_by_func_</name>
+        <qualifiedname>iceberg::RewriteManifests::cluster_by_func_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/rewrite_manifests.h" line="159" column="17" bodyfile="iceberg/update/rewrite_manifests.h" bodystart="159" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1RewriteManifests_1a85c932663c91e566b3fa9cce3985b734" prot="private" static="no" mutable="no">
+        <type>RewritePredicate</type>
+        <definition>RewritePredicate iceberg::RewriteManifests::predicate_</definition>
+        <argsstring></argsstring>
+        <name>predicate_</name>
+        <qualifiedname>iceberg::RewriteManifests::predicate_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/rewrite_manifests.h" line="160" column="20" bodyfile="iceberg/update/rewrite_manifests.h" bodystart="160" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1RewriteManifests_1a9e744fae9db55c73f0521f2132412193" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool iceberg::RewriteManifests::rewrite_dirty_</definition>
+        <argsstring></argsstring>
+        <name>rewrite_dirty_</name>
+        <qualifiedname>iceberg::RewriteManifests::rewrite_dirty_</qualifiedname>
+        <initializer>{true}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/rewrite_manifests.h" line="161" column="8" bodyfile="iceberg/update/rewrite_manifests.h" bodystart="161" bodyend="161"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1RewriteManifests_1a074ceb92ad64a611ace049db9252438c" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceiceberg_1aac79523734e35ca4d34cced52e56ec9b" kindref="member">Result</ref>&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1RewriteManifests" kindref="compound">RewriteManifests</ref> &gt; &gt;</type>
+        <definition>static Result&lt; std::shared_ptr&lt; RewriteManifests &gt; &gt; iceberg::RewriteManifests::Make</definition>
+        <argsstring>(std::string table_name, std::shared_ptr&lt; TransactionContext &gt; ctx)</argsstring>
+        <name>Make</name>
+        <qualifiedname>iceberg::RewriteManifests::Make</qualifiedname>
+        <param>
+          <type>std::string</type>
+          <declname>table_name</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1TransactionContext" kindref="compound">TransactionContext</ref> &gt;</type>
+          <declname>ctx</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/rewrite_manifests.h" line="58" column="17"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1RewriteManifests_1aedb682652f0be9727f279881a83b97da" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::RewriteManifests::~RewriteManifests</definition>
+        <argsstring>() override</argsstring>
+        <name>~RewriteManifests</name>
+        <qualifiedname>iceberg::RewriteManifests::~RewriteManifests</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/rewrite_manifests.h" line="61" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1RewriteManifests_1a18eb79d46248cf5eb8dc0787fbcc6d6f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1RewriteManifests" kindref="compound">RewriteManifests</ref> &amp;</type>
+        <definition>RewriteManifests &amp; iceberg::RewriteManifests::ClusterBy</definition>
+        <argsstring>(ClusterByFunc func)</argsstring>
+        <name>ClusterBy</name>
+        <qualifiedname>iceberg::RewriteManifests::ClusterBy</qualifiedname>
+        <param>
+          <type>ClusterByFunc</type>
+          <declname>func</declname>
+        </param>
+        <briefdescription>
+<para>Groups an existing data file by a cluster key produced by a function. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The cluster key determines which data file will be associated with a particular manifest. All data files with the same cluster key will be written to the same manifest unless the file is large and split into multiple files. Manifests deleted via DeleteManifest or added via AddManifest are ignored during the rewrite process. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/rewrite_manifests.h" line="70" column="20"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1RewriteManifests_1a67548bb414360b1074f30fb9dcefe7e7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1RewriteManifests" kindref="compound">RewriteManifests</ref> &amp;</type>
+        <definition>RewriteManifests &amp; iceberg::RewriteManifests::RewriteIf</definition>
+        <argsstring>(RewritePredicate predicate)</argsstring>
+        <name>RewriteIf</name>
+        <qualifiedname>iceberg::RewriteManifests::RewriteIf</qualifiedname>
+        <param>
+          <type>RewritePredicate</type>
+          <declname>predicate</declname>
+        </param>
+        <briefdescription>
+<para>Determines which existing manifest files for the table should be rewritten. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Manifests that do not match the predicate are kept as-is. If this is not called and no predicate is set, all manifests are rewritten. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/rewrite_manifests.h" line="76" column="20"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1RewriteManifests_1ac8c51841b4e89395501f39ec90d6b2e6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1RewriteManifests" kindref="compound">RewriteManifests</ref> &amp;</type>
+        <definition>RewriteManifests &amp; iceberg::RewriteManifests::DeleteManifest</definition>
+        <argsstring>(const ManifestFile &amp;manifest)</argsstring>
+        <name>DeleteManifest</name>
+        <qualifiedname>iceberg::RewriteManifests::DeleteManifest</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref> &amp;</type>
+          <declname>manifest</declname>
+        </param>
+        <briefdescription>
+<para>Deletes a manifest file from the table. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/rewrite_manifests.h" line="79" column="20"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1RewriteManifests_1a66ed725c55fcd8c049fccdb8d4b3fd63" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1RewriteManifests" kindref="compound">RewriteManifests</ref> &amp;</type>
+        <definition>RewriteManifests &amp; iceberg::RewriteManifests::AddManifest</definition>
+        <argsstring>(const ManifestFile &amp;manifest)</argsstring>
+        <name>AddManifest</name>
+        <qualifiedname>iceberg::RewriteManifests::AddManifest</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref> &amp;</type>
+          <declname>manifest</declname>
+        </param>
+        <briefdescription>
+<para>Adds a manifest file to the table. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>The added manifest cannot contain new or deleted files.</para>
+<para>By default, the manifest is rewritten to ensure all entries have explicit snapshot IDs. In that case, the caller manages the original manifest and this update manages the copy.</para>
+<para>If manifest entries are allowed to inherit the snapshot ID assigned on commit, the original manifest becomes part of the table metadata when the commit succeeds and must not be deleted manually. If the manifest gets merged while preparing a new snapshot, it is deleted automatically when this operation succeeds. If the commit fails, the original manifest is retained and may be deleted or reused by the caller. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/rewrite_manifests.h" line="95" column="20"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-func">
+      <memberdef kind="function" id="classiceberg_1_1RewriteManifests_1a578b9010c5e8b28334a54e30b7105156" prot="protected" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>std::string</type>
+        <definition>std::string iceberg::RewriteManifests::operation</definition>
+        <argsstring>() override</argsstring>
+        <name>operation</name>
+        <qualifiedname>iceberg::RewriteManifests::operation</qualifiedname>
+        <reimplements refid="classiceberg_1_1SnapshotUpdate_1a7e5cb52a426032eebf3b602b5674c5e0">operation</reimplements>
+        <briefdescription>
+<para>A string that describes the action that produced the new snapshot. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>A string operation name </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/rewrite_manifests.h" line="98" column="15"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1RewriteManifests_1aae047a9f4ff4520d0a5ce975b82a475d" prot="protected" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type><ref refid="namespaceiceberg_1aac79523734e35ca4d34cced52e56ec9b" kindref="member">Result</ref>&lt; std::vector&lt; <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::vector&lt; ManifestFile &gt; &gt; iceberg::RewriteManifests::Apply</definition>
+        <argsstring>(const TableMetadata &amp;metadata_to_update, const std::shared_ptr&lt; Snapshot &gt; &amp;snapshot) override</argsstring>
+        <name>Apply</name>
+        <qualifiedname>iceberg::RewriteManifests::Apply</qualifiedname>
+        <reimplements refid="classiceberg_1_1SnapshotUpdate_1a0d1e461184dd3aa553269ef736202ced">Apply</reimplements>
+        <param>
+          <type>const <ref refid="structiceberg_1_1TableMetadata" kindref="compound">TableMetadata</ref> &amp;</type>
+          <declname>metadata_to_update</declname>
+        </param>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="structiceberg_1_1Snapshot" kindref="compound">Snapshot</ref> &gt; &amp;</type>
+          <declname>snapshot</declname>
+        </param>
+        <briefdescription>
+<para>Apply the update&apos;s changes to the given metadata and snapshot. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>metadata_to_update</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The base table metadata to apply changes to </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>snapshot</parametername>
+</parameternamelist>
+<parameterdescription>
+<para><ref refid="structiceberg_1_1Snapshot" kindref="compound">Snapshot</ref> to apply the changes to </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A vector of manifest files for the new snapshot </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/rewrite_manifests.h" line="100" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1RewriteManifests_1aed6265eb76379db1f0493c9c5ac4158f" prot="protected" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>std::unordered_map&lt; std::string, std::string &gt;</type>
+        <definition>std::unordered_map&lt; std::string, std::string &gt; iceberg::RewriteManifests::Summary</definition>
+        <argsstring>() override</argsstring>
+        <name>Summary</name>
+        <qualifiedname>iceberg::RewriteManifests::Summary</qualifiedname>
+        <reimplements refid="classiceberg_1_1SnapshotUpdate_1a193bc595ce86911870731a8eebf5950e">Summary</reimplements>
+        <briefdescription>
+<para>Get the summary map for this operation. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>A map of summary properties </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/rewrite_manifests.h" line="103" column="22"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1RewriteManifests_1a517b39e6db16b9b322e2775b332d9ac8" prot="protected" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type><ref refid="classiceberg_1_1expected" kindref="compound">Status</ref></type>
+        <definition>Status iceberg::RewriteManifests::CleanUncommitted</definition>
+        <argsstring>(const std::unordered_set&lt; std::string &gt; &amp;committed) override</argsstring>
+        <name>CleanUncommitted</name>
+        <qualifiedname>iceberg::RewriteManifests::CleanUncommitted</qualifiedname>
+        <reimplements refid="classiceberg_1_1SnapshotUpdate_1a8bf7d3ae4432a24f0d9a0887b5d2ed0b">CleanUncommitted</reimplements>
+        <param>
+          <type>const std::unordered_set&lt; std::string &gt; &amp;</type>
+          <declname>committed</declname>
+        </param>
+        <briefdescription>
+<para>Clean up any uncommitted manifests that were created. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Manifests may not be committed if Apply is called multiple times because a commit conflict has occurred. Implementations may keep around manifests because the same changes will be made by both Apply calls. This method instructs the implementation to clean up those manifests and passes the paths of the manifests that were actually committed.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>committed</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>A set of manifest paths that were actually committed </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/rewrite_manifests.h" line="104" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1RewriteManifests_1a9a22811f2e71cc8429923faf2695e827" prot="protected" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::RewriteManifests::RewriteManifests</definition>
+        <argsstring>(std::string table_name, std::shared_ptr&lt; TransactionContext &gt; ctx)</argsstring>
+        <name>RewriteManifests</name>
+        <qualifiedname>iceberg::RewriteManifests::RewriteManifests</qualifiedname>
+        <param>
+          <type>std::string</type>
+          <declname>table_name</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1TransactionContext" kindref="compound">TransactionContext</ref> &gt;</type>
+          <declname>ctx</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/rewrite_manifests.h" line="106" column="12"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classiceberg_1_1RewriteManifests_1ac1f6a84b21a42b5f69a6e27d9176336c" prot="private" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::RewriteManifests::RequiresRewrite</definition>
+        <argsstring>(const std::unordered_set&lt; ManifestFile &gt; &amp;current_manifests) const</argsstring>
+        <name>RequiresRewrite</name>
+        <qualifiedname>iceberg::RewriteManifests::RequiresRewrite</qualifiedname>
+        <param>
+          <type>const std::unordered_set&lt; <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref> &gt; &amp;</type>
+          <declname>current_manifests</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/rewrite_manifests.h" line="123" column="8"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1RewriteManifests_1a31ad94b030a208c6eba7c477287283a7" prot="private" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::RewriteManifests::MatchesPredicate</definition>
+        <argsstring>(const ManifestFile &amp;manifest) const</argsstring>
+        <name>MatchesPredicate</name>
+        <qualifiedname>iceberg::RewriteManifests::MatchesPredicate</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref> &amp;</type>
+          <declname>manifest</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/rewrite_manifests.h" line="124" column="8"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1RewriteManifests_1ad5554198f5f84d906b0a2b146b1fc780" prot="private" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::RewriteManifests::ContainsDeletes</definition>
+        <argsstring>(const ManifestFile &amp;manifest) const</argsstring>
+        <name>ContainsDeletes</name>
+        <qualifiedname>iceberg::RewriteManifests::ContainsDeletes</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref> &amp;</type>
+          <declname>manifest</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/rewrite_manifests.h" line="125" column="8"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1RewriteManifests_1a6f8bec66614a1da4e5c68f46097bd2f8" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::RewriteManifests::KeepActiveManifests</definition>
+        <argsstring>(std::span&lt; const ManifestFile &gt; current_manifests)</argsstring>
+        <name>KeepActiveManifests</name>
+        <qualifiedname>iceberg::RewriteManifests::KeepActiveManifests</qualifiedname>
+        <param>
+          <type>std::span&lt; const <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref> &gt;</type>
+          <declname>current_manifests</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/rewrite_manifests.h" line="126" column="8"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1RewriteManifests_1a5add829327a68b4b9ea30949c578fb7e" prot="private" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1expected" kindref="compound">Status</ref></type>
+        <definition>Status iceberg::RewriteManifests::ValidateDeletedManifests</definition>
+        <argsstring>(const std::unordered_set&lt; ManifestFile &gt; &amp;current_manifests, int64_t current_snapshot_id) const</argsstring>
+        <name>ValidateDeletedManifests</name>
+        <qualifiedname>iceberg::RewriteManifests::ValidateDeletedManifests</qualifiedname>
+        <param>
+          <type>const std::unordered_set&lt; <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref> &gt; &amp;</type>
+          <declname>current_manifests</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>current_snapshot_id</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/rewrite_manifests.h" line="127" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1RewriteManifests_1a91320b7a290977eb2f87b57b6739fe0a" prot="private" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1expected" kindref="compound">Status</ref></type>
+        <definition>Status iceberg::RewriteManifests::ValidateFilesCounts</definition>
+        <argsstring>() const</argsstring>
+        <name>ValidateFilesCounts</name>
+        <qualifiedname>iceberg::RewriteManifests::ValidateFilesCounts</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/rewrite_manifests.h" line="130" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1RewriteManifests_1a7a7a77446304e503ef0265c80360c972" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceiceberg_1aac79523734e35ca4d34cced52e56ec9b" kindref="member">Result</ref>&lt; <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref> &gt;</type>
+        <definition>Result&lt; ManifestFile &gt; iceberg::RewriteManifests::CopyManifest</definition>
+        <argsstring>(const ManifestFile &amp;manifest)</argsstring>
+        <name>CopyManifest</name>
+        <qualifiedname>iceberg::RewriteManifests::CopyManifest</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref> &amp;</type>
+          <declname>manifest</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/rewrite_manifests.h" line="132" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1RewriteManifests_1a98b388316b021d3966d46719a51a7da6" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1expected" kindref="compound">Status</ref></type>
+        <definition>Status iceberg::RewriteManifests::PerformRewrite</definition>
+        <argsstring>(std::span&lt; const ManifestFile &gt; current_manifests)</argsstring>
+        <name>PerformRewrite</name>
+        <qualifiedname>iceberg::RewriteManifests::PerformRewrite</qualifiedname>
+        <param>
+          <type>std::span&lt; const <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref> &gt;</type>
+          <declname>current_manifests</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/rewrite_manifests.h" line="133" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1RewriteManifests_1a10b8ccad8114b57e4ae1423ecd7d4571" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1expected" kindref="compound">Status</ref></type>
+        <definition>Status iceberg::RewriteManifests::AppendEntry</definition>
+        <argsstring>(const ManifestEntry &amp;entry, const ManifestFile &amp;manifest, const std::shared_ptr&lt; PartitionSpec &gt; &amp;spec)</argsstring>
+        <name>AppendEntry</name>
+        <qualifiedname>iceberg::RewriteManifests::AppendEntry</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1ManifestEntry" kindref="compound">ManifestEntry</ref> &amp;</type>
+          <declname>entry</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref> &amp;</type>
+          <declname>manifest</declname>
+        </param>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1PartitionSpec" kindref="compound">PartitionSpec</ref> &gt; &amp;</type>
+          <declname>spec</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/rewrite_manifests.h" line="134" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1RewriteManifests_1a4025792455e8681d2b066e40d645a3fc" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceiceberg_1aac79523734e35ca4d34cced52e56ec9b" kindref="member">Result</ref>&lt; WriterWrapper * &gt;</type>
+        <definition>Result&lt; WriterWrapper * &gt; iceberg::RewriteManifests::GetWriter</definition>
+        <argsstring>(const WriterKey &amp;key, const std::shared_ptr&lt; PartitionSpec &gt; &amp;spec)</argsstring>
+        <name>GetWriter</name>
+        <qualifiedname>iceberg::RewriteManifests::GetWriter</qualifiedname>
+        <param>
+          <type>const WriterKey &amp;</type>
+          <declname>key</declname>
+        </param>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1PartitionSpec" kindref="compound">PartitionSpec</ref> &gt; &amp;</type>
+          <declname>spec</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/rewrite_manifests.h" line="136" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1RewriteManifests_1a8a6957c0ad3ba14082d7def2a9590dc0" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceiceberg_1aac79523734e35ca4d34cced52e56ec9b" kindref="member">Result</ref>&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1ManifestWriter" kindref="compound">ManifestWriter</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::unique_ptr&lt; ManifestWriter &gt; &gt; iceberg::RewriteManifests::NewManifestWriter</definition>
+        <argsstring>(const std::shared_ptr&lt; PartitionSpec &gt; &amp;spec)</argsstring>
+        <name>NewManifestWriter</name>
+        <qualifiedname>iceberg::RewriteManifests::NewManifestWriter</qualifiedname>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1PartitionSpec" kindref="compound">PartitionSpec</ref> &gt; &amp;</type>
+          <declname>spec</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/rewrite_manifests.h" line="138" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1RewriteManifests_1aacf22b3f8ecb5db79ede9ba4d2f6b415" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1expected" kindref="compound">Status</ref></type>
+        <definition>Status iceberg::RewriteManifests::CloseWriters</definition>
+        <argsstring>()</argsstring>
+        <name>CloseWriters</name>
+        <qualifiedname>iceberg::RewriteManifests::CloseWriters</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/rewrite_manifests.h" line="140" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1RewriteManifests_1aeb7107fd1e03b78ff5d56790662066ed" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::RewriteManifests::DeleteUncommitted</definition>
+        <argsstring>(std::vector&lt; ManifestFile &gt; &amp;manifests, const std::unordered_set&lt; std::string &gt; &amp;committed)</argsstring>
+        <name>DeleteUncommitted</name>
+        <qualifiedname>iceberg::RewriteManifests::DeleteUncommitted</qualifiedname>
+        <param>
+          <type>std::vector&lt; <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref> &gt; &amp;</type>
+          <declname>manifests</declname>
+        </param>
+        <param>
+          <type>const std::unordered_set&lt; std::string &gt; &amp;</type>
+          <declname>committed</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/rewrite_manifests.h" line="142" column="8"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1RewriteManifests_1a5ef2b0a0b6647dc665819b15983e8418" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::RewriteManifests::Reset</definition>
+        <argsstring>()</argsstring>
+        <name>Reset</name>
+        <qualifiedname>iceberg::RewriteManifests::Reset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/rewrite_manifests.h" line="144" column="8"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>API for rewriting manifests for a table. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>This API accumulates manifest files, produces a new snapshot of the table described only by the manifest files that were added, and commits that snapshot as the current.</para>
+<para>This API can be used to rewrite matching manifests according to a clustering function as well as to replace specific manifests. Manifests that are deleted or added directly are ignored during the rewrite process. The set of active files in replaced manifests must be the same as in new manifests.</para>
+<para>When committing, these changes will be applied to the latest table snapshot. Commit conflicts will be resolved by applying the changes to the new latest snapshot and reattempting the commit. </para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="4">
+        <label>iceberg::ErrorCollector</label>
+        <link refid="classiceberg_1_1ErrorCollector"/>
+      </node>
+      <node id="3">
+        <label>iceberg::PendingUpdate</label>
+        <link refid="classiceberg_1_1PendingUpdate"/>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::RewriteManifests</label>
+        <link refid="classiceberg_1_1RewriteManifests"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::SnapshotUpdate</label>
+        <link refid="classiceberg_1_1SnapshotUpdate"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>std::enable_shared_from_this&lt; PendingUpdate &gt;</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="39">
+        <label>iceberg::ConfigBase&lt; TableProperties &gt;</label>
+        <link refid="classiceberg_1_1ConfigBase"/>
+        <childnode refid="40" relation="usage">
+          <edgelabel>configs_</edgelabel>
+        </childnode>
+      </node>
+      <node id="30">
+        <label>iceberg::Lazy&lt; InitFieldById &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="32">
+        <label>iceberg::Lazy&lt; InitFieldByLowerCaseName &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="31">
+        <label>iceberg::Lazy&lt; InitFieldByName &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="58">
+        <label>iceberg::BlobMetadata</label>
+        <link refid="structiceberg_1_1BlobMetadata"/>
+        <childnode refid="7" relation="usage">
+          <edgelabel>type</edgelabel>
+        </childnode>
+        <childnode refid="59" relation="usage">
+          <edgelabel>fields</edgelabel>
+        </childnode>
+        <childnode refid="40" relation="usage">
+          <edgelabel>properties</edgelabel>
+        </childnode>
+      </node>
+      <node id="68">
+        <label>iceberg::Catalog</label>
+        <link refid="classiceberg_1_1Catalog"/>
+      </node>
+      <node id="64">
+        <label>iceberg::EncryptedKey</label>
+        <link refid="structiceberg_1_1EncryptedKey"/>
+        <childnode refid="7" relation="usage">
+          <edgelabel>encrypted_key_metadata</edgelabel>
+          <edgelabel>key_id</edgelabel>
+        </childnode>
+        <childnode refid="40" relation="usage">
+          <edgelabel>properties</edgelabel>
+        </childnode>
+      </node>
+      <node id="6">
+        <label>iceberg::Error</label>
+        <link refid="structiceberg_1_1Error"/>
+        <childnode refid="7" relation="usage">
+          <edgelabel>message</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>iceberg::ErrorCollector</label>
+        <link refid="classiceberg_1_1ErrorCollector"/>
+        <childnode refid="5" relation="usage">
+          <edgelabel>errors_</edgelabel>
+        </childnode>
+      </node>
+      <node id="76">
+        <label>iceberg::FieldLabel</label>
+        <link refid="structiceberg_1_1FieldLabel"/>
+        <childnode refid="40" relation="usage">
+          <edgelabel>labels</edgelabel>
+        </childnode>
+      </node>
+      <node id="66">
+        <label>iceberg::FileIO</label>
+        <link refid="classiceberg_1_1FileIO"/>
+      </node>
+      <node id="74">
+        <label>iceberg::Labels</label>
+        <link refid="structiceberg_1_1Labels"/>
+        <childnode refid="40" relation="usage">
+          <edgelabel>object_labels</edgelabel>
+        </childnode>
+        <childnode refid="75" relation="usage">
+          <edgelabel>fields</edgelabel>
+        </childnode>
+      </node>
+      <node id="47">
+        <label>iceberg::MetadataLogEntry</label>
+        <link refid="structiceberg_1_1MetadataLogEntry"/>
+        <childnode refid="7" relation="usage">
+          <edgelabel>metadata_file</edgelabel>
+        </childnode>
+      </node>
+      <node id="70">
+        <label>iceberg::MetricsReporter</label>
+        <link refid="classiceberg_1_1MetricsReporter"/>
+      </node>
+      <node id="16">
+        <label>iceberg::Namespace</label>
+        <link refid="structiceberg_1_1Namespace"/>
+        <childnode refid="17" relation="usage">
+          <edgelabel>levels</edgelabel>
+        </childnode>
+      </node>
+      <node id="25">
+        <label>iceberg::NestedType</label>
+        <link refid="classiceberg_1_1NestedType"/>
+        <childnode refid="26" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="37">
+        <label>iceberg::PartitionSpec</label>
+        <link refid="classiceberg_1_1PartitionSpec"/>
+        <childnode refid="27" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="62">
+        <label>iceberg::PartitionStatisticsFile</label>
+        <link refid="structiceberg_1_1PartitionStatisticsFile"/>
+        <childnode refid="7" relation="usage">
+          <edgelabel>path</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>iceberg::PendingUpdate</label>
+        <link refid="classiceberg_1_1PendingUpdate"/>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+        <childnode refid="9" relation="public-inheritance">
+        </childnode>
+        <childnode refid="10" relation="usage">
+          <edgelabel>ctx_</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::RewriteManifests</label>
+        <link refid="classiceberg_1_1RewriteManifests"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="23">
+        <label>iceberg::Schema</label>
+        <link refid="classiceberg_1_1Schema"/>
+        <childnode refid="24" relation="public-inheritance">
+        </childnode>
+        <childnode refid="33" relation="usage">
+          <edgelabel>kAllColumns</edgelabel>
+        </childnode>
+      </node>
+      <node id="29">
+        <label>iceberg::SchemaField</label>
+        <link refid="classiceberg_1_1SchemaField"/>
+        <childnode refid="27" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="43">
+        <label>iceberg::Snapshot</label>
+        <link refid="structiceberg_1_1Snapshot"/>
+        <childnode refid="7" relation="usage">
+          <edgelabel>manifest_list</edgelabel>
+        </childnode>
+        <childnode refid="40" relation="usage">
+          <edgelabel>summary</edgelabel>
+        </childnode>
+      </node>
+      <node id="45">
+        <label>iceberg::SnapshotLogEntry</label>
+        <link refid="structiceberg_1_1SnapshotLogEntry"/>
+      </node>
+      <node id="53">
+        <label>iceberg::SnapshotRef</label>
+        <link refid="structiceberg_1_1SnapshotRef"/>
+        <childnode refid="33" relation="usage">
+          <edgelabel>kMainBranch</edgelabel>
+        </childnode>
+      </node>
+      <node id="79">
+        <label>iceberg::SnapshotSummaryBuilder</label>
+        <link refid="classiceberg_1_1SnapshotSummaryBuilder"/>
+      </node>
+      <node id="2">
+        <label>iceberg::SnapshotUpdate</label>
+        <link refid="classiceberg_1_1SnapshotUpdate"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="79" relation="usage">
+          <edgelabel>summary_</edgelabel>
+        </childnode>
+      </node>
+      <node id="50">
+        <label>iceberg::SortOrder</label>
+        <link refid="classiceberg_1_1SortOrder"/>
+        <childnode refid="27" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="56">
+        <label>iceberg::StatisticsFile</label>
+        <link refid="structiceberg_1_1StatisticsFile"/>
+        <childnode refid="7" relation="usage">
+          <edgelabel>path</edgelabel>
+        </childnode>
+        <childnode refid="57" relation="usage">
+          <edgelabel>blob_metadata</edgelabel>
+        </childnode>
+      </node>
+      <node id="24">
+        <label>iceberg::StructType</label>
+        <link refid="classiceberg_1_1StructType"/>
+        <childnode refid="25" relation="public-inheritance">
+        </childnode>
+        <childnode refid="28" relation="usage">
+          <edgelabel>fields_</edgelabel>
+        </childnode>
+        <childnode refid="30" relation="usage">
+          <edgelabel>field_by_id_</edgelabel>
+        </childnode>
+        <childnode refid="31" relation="usage">
+          <edgelabel>field_by_name_</edgelabel>
+        </childnode>
+        <childnode refid="32" relation="usage">
+          <edgelabel>field_by_lowercase_name_</edgelabel>
+        </childnode>
+      </node>
+      <node id="13">
+        <label>iceberg::Table</label>
+        <link refid="classiceberg_1_1Table"/>
+        <childnode refid="14" relation="public-inheritance">
+        </childnode>
+        <childnode refid="15" relation="usage">
+          <edgelabel>identifier_</edgelabel>
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>full_name_</edgelabel>
+          <edgelabel>metadata_location_</edgelabel>
+        </childnode>
+        <childnode refid="18" relation="usage">
+          <edgelabel>metadata_</edgelabel>
+        </childnode>
+        <childnode refid="65" relation="usage">
+          <edgelabel>io_</edgelabel>
+        </childnode>
+        <childnode refid="67" relation="usage">
+          <edgelabel>catalog_</edgelabel>
+        </childnode>
+        <childnode refid="69" relation="usage">
+          <edgelabel>reporter_</edgelabel>
+        </childnode>
+        <childnode refid="71" relation="usage">
+          <edgelabel>metadata_cache_</edgelabel>
+        </childnode>
+        <childnode refid="73" relation="usage">
+          <edgelabel>labels_</edgelabel>
+        </childnode>
+      </node>
+      <node id="15">
+        <label>iceberg::TableIdentifier</label>
+        <link refid="structiceberg_1_1TableIdentifier"/>
+        <childnode refid="16" relation="usage">
+          <edgelabel>ns</edgelabel>
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>name</edgelabel>
+        </childnode>
+      </node>
+      <node id="19">
+        <label>iceberg::TableMetadata</label>
+        <link refid="structiceberg_1_1TableMetadata"/>
+        <childnode refid="20" relation="usage">
+          <edgelabel>kMinFormatVersions</edgelabel>
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>location</edgelabel>
+          <edgelabel>table_uuid</edgelabel>
+        </childnode>
+        <childnode refid="21" relation="usage">
+          <edgelabel>schemas</edgelabel>
+        </childnode>
+        <childnode refid="35" relation="usage">
+          <edgelabel>partition_specs</edgelabel>
+        </childnode>
+        <childnode refid="38" relation="usage">
+          <edgelabel>properties</edgelabel>
+        </childnode>
+        <childnode refid="41" relation="usage">
+          <edgelabel>snapshots</edgelabel>
+        </childnode>
+        <childnode refid="44" relation="usage">
+          <edgelabel>snapshot_log</edgelabel>
+        </childnode>
+        <childnode refid="46" relation="usage">
+          <edgelabel>metadata_log</edgelabel>
+        </childnode>
+        <childnode refid="48" relation="usage">
+          <edgelabel>sort_orders</edgelabel>
+        </childnode>
+        <childnode refid="51" relation="usage">
+          <edgelabel>refs</edgelabel>
+        </childnode>
+        <childnode refid="54" relation="usage">
+          <edgelabel>statistics</edgelabel>
+        </childnode>
+        <childnode refid="60" relation="usage">
+          <edgelabel>partition_statistics</edgelabel>
+        </childnode>
+        <childnode refid="63" relation="usage">
+          <edgelabel>encryption_keys</edgelabel>
+        </childnode>
+      </node>
+      <node id="78">
+        <label>iceberg::TableMetadataBuilder</label>
+        <link refid="classiceberg_1_1TableMetadataBuilder"/>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="72">
+        <label>iceberg::TableMetadataCache</label>
+        <link refid="classiceberg_1_1TableMetadataCache"/>
+      </node>
+      <node id="38">
+        <label>iceberg::TableProperties</label>
+        <link refid="classiceberg_1_1TableProperties"/>
+        <childnode refid="39" relation="public-inheritance">
+        </childnode>
+        <childnode refid="33" relation="usage">
+          <edgelabel>kDefaultNameMapping</edgelabel>
+          <edgelabel>kMetricModeColumnConfPrefix</edgelabel>
+          <edgelabel>kParquetBloomFilterColumnEnabledPrefix</edgelabel>
+          <edgelabel>kParquetBloomFilterColumnFppPrefix</edgelabel>
+          <edgelabel>kParquetColumnStatsEnabledPrefix</edgelabel>
+        </childnode>
+      </node>
+      <node id="11">
+        <label>iceberg::TransactionContext</label>
+        <link refid="classiceberg_1_1TransactionContext"/>
+        <childnode refid="12" relation="usage">
+          <edgelabel>table</edgelabel>
+        </childnode>
+        <childnode refid="77" relation="usage">
+          <edgelabel>metadata_builder</edgelabel>
+        </childnode>
+      </node>
+      <node id="26">
+        <label>iceberg::Type</label>
+        <link refid="classiceberg_1_1Type"/>
+        <childnode refid="27" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="27">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+      <node id="67">
+        <label>std::shared_ptr&lt; iceberg::Catalog &gt;</label>
+        <childnode refid="68" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="65">
+        <label>std::shared_ptr&lt; iceberg::FileIO &gt;</label>
+        <childnode refid="66" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="69">
+        <label>std::shared_ptr&lt; iceberg::MetricsReporter &gt;</label>
+        <childnode refid="70" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="36">
+        <label>std::shared_ptr&lt; iceberg::PartitionSpec &gt;</label>
+        <childnode refid="37" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="22">
+        <label>std::shared_ptr&lt; iceberg::Schema &gt;</label>
+        <childnode refid="23" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="42">
+        <label>std::shared_ptr&lt; iceberg::Snapshot &gt;</label>
+        <childnode refid="43" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="52">
+        <label>std::shared_ptr&lt; iceberg::SnapshotRef &gt;</label>
+        <childnode refid="53" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="49">
+        <label>std::shared_ptr&lt; iceberg::SortOrder &gt;</label>
+        <childnode refid="50" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="12">
+        <label>std::shared_ptr&lt; iceberg::Table &gt;</label>
+        <childnode refid="13" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="18">
+        <label>std::shared_ptr&lt; iceberg::TableMetadata &gt;</label>
+        <childnode refid="19" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="10">
+        <label>std::shared_ptr&lt; iceberg::TransactionContext &gt;</label>
+        <childnode refid="11" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="61">
+        <label>std::shared_ptr&lt; struct iceberg::PartitionStatisticsFile &gt;</label>
+        <childnode refid="62" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="55">
+        <label>std::shared_ptr&lt; struct iceberg::StatisticsFile &gt;</label>
+        <childnode refid="56" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="8">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="34">
+        <label>std::basic_string_view&lt; Char &gt;</label>
+      </node>
+      <node id="9">
+        <label>std::enable_shared_from_this&lt; PendingUpdate &gt;</label>
+      </node>
+      <node id="14">
+        <label>std::enable_shared_from_this&lt; Table &gt;</label>
+      </node>
+      <node id="7">
+        <label>std::string</label>
+        <childnode refid="8" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="33">
+        <label>std::string_view</label>
+        <childnode refid="34" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="71">
+        <label>std::unique_ptr&lt; class iceberg::TableMetadataCache &gt;</label>
+        <childnode refid="72" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="73">
+        <label>std::unique_ptr&lt; const iceberg::Labels &gt;</label>
+        <childnode refid="74" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="77">
+        <label>std::unique_ptr&lt; iceberg::TableMetadataBuilder &gt;</label>
+        <childnode refid="78" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="20">
+        <label>std::unordered_map&lt; TypeId, int8_t &gt;</label>
+      </node>
+      <node id="51">
+        <label>std::unordered_map&lt; std::string, std::shared_ptr&lt; iceberg::SnapshotRef &gt; &gt;</label>
+        <childnode refid="7" relation="usage">
+          <edgelabel>keys</edgelabel>
+        </childnode>
+        <childnode refid="52" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="40">
+        <label>std::unordered_map&lt; std::string, std::string &gt;</label>
+        <childnode refid="7" relation="usage">
+          <edgelabel>elements</edgelabel>
+          <edgelabel>keys</edgelabel>
+        </childnode>
+      </node>
+      <node id="57">
+        <label>std::vector&lt; iceberg::BlobMetadata &gt;</label>
+        <childnode refid="58" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="63">
+        <label>std::vector&lt; iceberg::EncryptedKey &gt;</label>
+        <childnode refid="64" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>std::vector&lt; iceberg::Error &gt;</label>
+        <childnode refid="6" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="75">
+        <label>std::vector&lt; iceberg::FieldLabel &gt;</label>
+        <childnode refid="76" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="46">
+        <label>std::vector&lt; iceberg::MetadataLogEntry &gt;</label>
+        <childnode refid="47" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="28">
+        <label>std::vector&lt; iceberg::SchemaField &gt;</label>
+        <childnode refid="29" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="44">
+        <label>std::vector&lt; iceberg::SnapshotLogEntry &gt;</label>
+        <childnode refid="45" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="59">
+        <label>std::vector&lt; int32_t &gt;</label>
+      </node>
+      <node id="35">
+        <label>std::vector&lt; std::shared_ptr&lt; iceberg::PartitionSpec &gt; &gt;</label>
+        <childnode refid="36" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="21">
+        <label>std::vector&lt; std::shared_ptr&lt; iceberg::Schema &gt; &gt;</label>
+        <childnode refid="22" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="41">
+        <label>std::vector&lt; std::shared_ptr&lt; iceberg::Snapshot &gt; &gt;</label>
+        <childnode refid="42" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="48">
+        <label>std::vector&lt; std::shared_ptr&lt; iceberg::SortOrder &gt; &gt;</label>
+        <childnode refid="49" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="60">
+        <label>std::vector&lt; std::shared_ptr&lt; struct iceberg::PartitionStatisticsFile &gt; &gt;</label>
+        <childnode refid="61" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="54">
+        <label>std::vector&lt; std::shared_ptr&lt; struct iceberg::StatisticsFile &gt; &gt;</label>
+        <childnode refid="55" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="17">
+        <label>std::vector&lt; std::string &gt;</label>
+        <childnode refid="7" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/update/rewrite_manifests.h" line="53" column="1" bodyfile="iceberg/update/rewrite_manifests.h" bodystart="53" bodyend="162"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1RewriteManifests_1a27c0f2d7942ced50dddf1ded775eb89f" prot="private" virt="non-virtual"><scope>iceberg::RewriteManifests</scope><name>added_manifests_</name></member>
+      <member refid="classiceberg_1_1RewriteManifests_1a12a2a7ef362402f35cf47d192b1aa425" prot="private" virt="non-virtual"><scope>iceberg::RewriteManifests</scope><name>added_manifests_to_copy_</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a3a20345150b136c918ffe8947a7d75e1" prot="public" virt="non-virtual"><scope>iceberg::RewriteManifests</scope><name>AddError</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a5e555954de121d0908dcf4648da446e3" prot="public" virt="non-virtual"><scope>iceberg::RewriteManifests</scope><name>AddError</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a327f1f9349c32665057465b3dd401fd7" prot="public" virt="non-virtual"><scope>iceberg::RewriteManifests</scope><name>AddError</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a5749264a2234092a5246056a1c72ee51" prot="public" virt="non-virtual"><scope>iceberg::RewriteManifests</scope><name>AddError</name></member>
+      <member refid="classiceberg_1_1RewriteManifests_1a66ed725c55fcd8c049fccdb8d4b3fd63" prot="public" virt="non-virtual"><scope>iceberg::RewriteManifests</scope><name>AddManifest</name></member>
+      <member refid="classiceberg_1_1RewriteManifests_1a10b8ccad8114b57e4ae1423ecd7d4571" prot="private" virt="non-virtual"><scope>iceberg::RewriteManifests</scope><name>AppendEntry</name></member>
+      <member refid="classiceberg_1_1RewriteManifests_1aae047a9f4ff4520d0a5ce975b82a475d" prot="protected" virt="virtual"><scope>iceberg::RewriteManifests</scope><name>Apply</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1ad3b7dc7c45c41c982f8b56fa299623ab" prot="protected" virt="virtual" ambiguityscope="iceberg::SnapshotUpdate::"><scope>iceberg::RewriteManifests</scope><name>Apply</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1a7d049f4c752864f55d75ece4b6119a48" prot="protected" virt="non-virtual"><scope>iceberg::RewriteManifests</scope><name>attempt</name></member>
+      <member refid="classiceberg_1_1PendingUpdate_1a93721051561748b1a29e75b7d4cbbd86" prot="protected" virt="non-virtual"><scope>iceberg::RewriteManifests</scope><name>base</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1aa2881fd613e348e49fe00b07713b701f" prot="protected" virt="non-virtual"><scope>iceberg::RewriteManifests</scope><name>BuildManifestCountSummary</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1a0f15ea5399c070c05a401df3427cf4ba" prot="protected" virt="non-virtual"><scope>iceberg::RewriteManifests</scope><name>can_inherit_snapshot_id</name></member>
+      <member refid="classiceberg_1_1PendingUpdate_1a0b916303d6586f1f26ade1108ea21e19" prot="protected" virt="non-virtual"><scope>iceberg::RewriteManifests</scope><name>CheckCommitAllowed</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a16cbe7b6d423a372c9e68d970ff2c3ea" prot="public" virt="non-virtual"><scope>iceberg::RewriteManifests</scope><name>CheckErrors</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1a0c3718f8f310824b76d766cb5ec85042" prot="protected" virt="virtual"><scope>iceberg::RewriteManifests</scope><name>CleanStaged</name></member>
+      <member refid="classiceberg_1_1RewriteManifests_1a517b39e6db16b9b322e2775b332d9ac8" prot="protected" virt="virtual"><scope>iceberg::RewriteManifests</scope><name>CleanUncommitted</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a274df2b90b0c22156a4c339aa30a4401" prot="public" virt="non-virtual"><scope>iceberg::RewriteManifests</scope><name>ClearErrors</name></member>
+      <member refid="classiceberg_1_1RewriteManifests_1aacf22b3f8ecb5db79ede9ba4d2f6b415" prot="private" virt="non-virtual"><scope>iceberg::RewriteManifests</scope><name>CloseWriters</name></member>
+      <member refid="classiceberg_1_1RewriteManifests_1aaa308800042532a2ce0188167bad5e9f" prot="private" virt="non-virtual"><scope>iceberg::RewriteManifests</scope><name>cluster_by_func_</name></member>
+      <member refid="classiceberg_1_1RewriteManifests_1a18eb79d46248cf5eb8dc0787fbcc6d6f" prot="public" virt="non-virtual"><scope>iceberg::RewriteManifests</scope><name>ClusterBy</name></member>
+      <member refid="classiceberg_1_1RewriteManifests_1af6a0a36166c710cf3a836a6aec97d772" prot="public" virt="non-virtual"><scope>iceberg::RewriteManifests</scope><name>ClusterByFunc</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1af9a810bc1da767ff0c9a613267e6f6f1" prot="public" virt="virtual"><scope>iceberg::RewriteManifests</scope><name>Commit</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1a32d03afeb074db14119b5e1f1efcf279" prot="protected" virt="non-virtual"><scope>iceberg::RewriteManifests</scope><name>commit_uuid</name></member>
+      <member refid="classiceberg_1_1RewriteManifests_1ad5554198f5f84d906b0a2b146b1fc780" prot="private" virt="non-virtual"><scope>iceberg::RewriteManifests</scope><name>ContainsDeletes</name></member>
+      <member refid="classiceberg_1_1RewriteManifests_1a7a7a77446304e503ef0265c80360c972" prot="private" virt="non-virtual"><scope>iceberg::RewriteManifests</scope><name>CopyManifest</name></member>
+      <member refid="classiceberg_1_1PendingUpdate_1a48306a581b00f16c85af172a41b7dcee" prot="protected" virt="non-virtual"><scope>iceberg::RewriteManifests</scope><name>ctx_</name></member>
+      <member refid="classiceberg_1_1RewriteManifests_1a712abbd67cdc7dba78dbd5e9b31ab99a" prot="private" virt="non-virtual"><scope>iceberg::RewriteManifests</scope><name>deleted_manifests_</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1aeb1acbcf3a1609c0a8b7ca0afb912ec1" prot="protected" virt="non-virtual"><scope>iceberg::RewriteManifests</scope><name>DeleteFile</name></member>
+      <member refid="classiceberg_1_1RewriteManifests_1ac8c51841b4e89395501f39ec90d6b2e6" prot="public" virt="non-virtual"><scope>iceberg::RewriteManifests</scope><name>DeleteManifest</name></member>
+      <member refid="classiceberg_1_1RewriteManifests_1aeb7107fd1e03b78ff5d56790662066ed" prot="private" virt="non-virtual"><scope>iceberg::RewriteManifests</scope><name>DeleteUncommitted</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1af5a84c539ec3c559260b3c6b868943c7" prot="public" virt="non-virtual"><scope>iceberg::RewriteManifests</scope><name>DeleteWith</name></member>
+      <member refid="classiceberg_1_1RewriteManifests_1aff82cd58c2ff5f4cef70f390159a661b" prot="private" virt="non-virtual"><scope>iceberg::RewriteManifests</scope><name>entry_count_</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1afae10739a78bbffc2609a63e52821195" prot="public" virt="non-virtual"><scope>iceberg::RewriteManifests</scope><name>error_count</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a690c840a35a03af0f94eea092ca65aaa" prot="public" virt="non-virtual"><scope>iceberg::RewriteManifests</scope><name>ErrorCollector</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a827c296a8527f87f76d7f9321e7ee68f" prot="public" virt="non-virtual"><scope>iceberg::RewriteManifests</scope><name>ErrorCollector</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1ab3fa546cd2748fe418db9c0933542755" prot="public" virt="non-virtual"><scope>iceberg::RewriteManifests</scope><name>ErrorCollector</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a101fb70f2ad50a6023de932dc2eca96c" prot="public" virt="non-virtual"><scope>iceberg::RewriteManifests</scope><name>errors</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a354d1e7287bb45926a4b563f80d0c623" prot="protected" virt="non-virtual"><scope>iceberg::RewriteManifests</scope><name>errors_</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1aa199dbd57cbe9c03519b580ccc0a9048" prot="protected" virt="virtual"><scope>iceberg::RewriteManifests</scope><name>Finalize</name></member>
+      <member refid="classiceberg_1_1RewriteManifests_1a4025792455e8681d2b066e40d645a3fc" prot="private" virt="non-virtual"><scope>iceberg::RewriteManifests</scope><name>GetWriter</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a8813b3fe2a3cc112e6db19c87b8422ae" prot="public" virt="non-virtual"><scope>iceberg::RewriteManifests</scope><name>has_errors</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1a97b2753654e1304914509f29dcf0a7ff" prot="public" virt="virtual"><scope>iceberg::RewriteManifests</scope><name>IsRetryable</name></member>
+      <member refid="classiceberg_1_1RewriteManifests_1a6f8bec66614a1da4e5c68f46097bd2f8" prot="private" virt="non-virtual"><scope>iceberg::RewriteManifests</scope><name>KeepActiveManifests</name></member>
+      <member refid="classiceberg_1_1RewriteManifests_1ab01655712409dcb102195c619a76b681" prot="private" virt="non-virtual"><scope>iceberg::RewriteManifests</scope><name>kept_manifests_</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1ae194773e0ce37df3780121314322f440" prot="public" virt="virtual"><scope>iceberg::RewriteManifests</scope><name>kind</name></member>
+      <member refid="classiceberg_1_1PendingUpdate_1a5bac3f32c6a0790ba222399fed5c1944" prot="public" virt="non-virtual"><scope>iceberg::RewriteManifests</scope><name>Kind</name></member>
+      <member refid="classiceberg_1_1RewriteManifests_1a074ceb92ad64a611ace049db9252438c" prot="public" virt="non-virtual"><scope>iceberg::RewriteManifests</scope><name>Make</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1a89c7e7a09d3c094859f22b3e50a26ae6" prot="protected" virt="non-virtual"><scope>iceberg::RewriteManifests</scope><name>manifest_count</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1a0478c16b077f60262329f50bb606746e" prot="protected" virt="non-virtual"><scope>iceberg::RewriteManifests</scope><name>ManifestListPath</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1af474cf9191b5a05ea99ed8d9c01bbda0" prot="protected" virt="non-virtual"><scope>iceberg::RewriteManifests</scope><name>ManifestPath</name></member>
+      <member refid="classiceberg_1_1RewriteManifests_1a31ad94b030a208c6eba7c477287283a7" prot="private" virt="non-virtual"><scope>iceberg::RewriteManifests</scope><name>MatchesPredicate</name></member>
+      <member refid="classiceberg_1_1RewriteManifests_1a151c38e57854f6a88aa82e5d8dd1adfc" prot="private" virt="non-virtual"><scope>iceberg::RewriteManifests</scope><name>new_manifests_</name></member>
+      <member refid="classiceberg_1_1RewriteManifests_1a8a6957c0ad3ba14082d7def2a9590dc0" prot="private" virt="non-virtual"><scope>iceberg::RewriteManifests</scope><name>NewManifestWriter</name></member>
+      <member refid="classiceberg_1_1RewriteManifests_1a578b9010c5e8b28334a54e30b7105156" prot="protected" virt="virtual"><scope>iceberg::RewriteManifests</scope><name>operation</name></member>
+      <member refid="classiceberg_1_1PendingUpdate_1a3314053bba6a86931feb39c1487e2c8b" prot="public" virt="non-virtual"><scope>iceberg::RewriteManifests</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1PendingUpdate_1a94e6a335f23de45b7c1bf394800398b4" prot="public" virt="non-virtual"><scope>iceberg::RewriteManifests</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a22311658715152d8e6e27834240ce446" prot="public" virt="non-virtual" ambiguityscope="iceberg::ErrorCollector::"><scope>iceberg::RewriteManifests</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1aaba366560be481bfa9538735f3a38e3e" prot="public" virt="non-virtual" ambiguityscope="iceberg::ErrorCollector::"><scope>iceberg::RewriteManifests</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1PendingUpdate_1ac5c3549e22869ad7f6abd417ffcabbe2" prot="public" virt="non-virtual"><scope>iceberg::RewriteManifests</scope><name>PendingUpdate</name></member>
+      <member refid="classiceberg_1_1PendingUpdate_1aa7d813ed853e28ab706ddeb88a023294" prot="public" virt="non-virtual"><scope>iceberg::RewriteManifests</scope><name>PendingUpdate</name></member>
+      <member refid="classiceberg_1_1PendingUpdate_1a1bc9b1eb7bfa1c832c65331b2e6bba6f" prot="protected" virt="non-virtual"><scope>iceberg::RewriteManifests</scope><name>PendingUpdate</name></member>
+      <member refid="classiceberg_1_1RewriteManifests_1a98b388316b021d3966d46719a51a7da6" prot="private" virt="non-virtual"><scope>iceberg::RewriteManifests</scope><name>PerformRewrite</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1a143769b4a86b39990be8d61498804622" prot="protected" virt="non-virtual"><scope>iceberg::RewriteManifests</scope><name>plan_executor</name></member>
+      <member refid="classiceberg_1_1RewriteManifests_1a85c932663c91e566b3fa9cce3985b734" prot="private" virt="non-virtual"><scope>iceberg::RewriteManifests</scope><name>predicate_</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1aa5714932e5b676395876b1a5388ed38a" prot="protected" virt="non-virtual"><scope>iceberg::RewriteManifests</scope><name>RegisterStagedFile</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1afc2c4005cd4f087d2eb3108819de483d" prot="public" virt="non-virtual"><scope>iceberg::RewriteManifests</scope><name>ReportWith</name></member>
+      <member refid="classiceberg_1_1RewriteManifests_1ac1f6a84b21a42b5f69a6e27d9176336c" prot="private" virt="non-virtual"><scope>iceberg::RewriteManifests</scope><name>RequiresRewrite</name></member>
+      <member refid="classiceberg_1_1RewriteManifests_1a5ef2b0a0b6647dc665819b15983e8418" prot="private" virt="non-virtual"><scope>iceberg::RewriteManifests</scope><name>Reset</name></member>
+      <member refid="classiceberg_1_1RewriteManifests_1a9e744fae9db55c73f0521f2132412193" prot="private" virt="non-virtual"><scope>iceberg::RewriteManifests</scope><name>rewrite_dirty_</name></member>
+      <member refid="classiceberg_1_1RewriteManifests_1a67548bb414360b1074f30fb9dcefe7e7" prot="public" virt="non-virtual"><scope>iceberg::RewriteManifests</scope><name>RewriteIf</name></member>
+      <member refid="classiceberg_1_1RewriteManifests_1a9a22811f2e71cc8429923faf2695e827" prot="protected" virt="non-virtual"><scope>iceberg::RewriteManifests</scope><name>RewriteManifests</name></member>
+      <member refid="classiceberg_1_1RewriteManifests_1ae51e68f0d1253d404b98064988964659" prot="public" virt="non-virtual"><scope>iceberg::RewriteManifests</scope><name>RewritePredicate</name></member>
+      <member refid="classiceberg_1_1RewriteManifests_1a21cb5fa5b62524eddedbfeb6a2f50903" prot="private" virt="non-virtual"><scope>iceberg::RewriteManifests</scope><name>rewritten_added_manifests_</name></member>
+      <member refid="classiceberg_1_1RewriteManifests_1a9938dacb42197496c6704f0c25810e12" prot="private" virt="non-virtual"><scope>iceberg::RewriteManifests</scope><name>rewritten_manifests_</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1ab6d8924f99e5ecc2d54a050b7e986ec7" prot="public" virt="non-virtual"><scope>iceberg::RewriteManifests</scope><name>ScanManifestsWith</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1ae19b638ceb6b7e57e4096ec943db223b" prot="public" virt="non-virtual"><scope>iceberg::RewriteManifests</scope><name>Set</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1afef5bfd67c340f8dc2bc6096b7bb47ca" prot="protected" virt="virtual"><scope>iceberg::RewriteManifests</scope><name>SetSummaryProperty</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1aae99085da77d04a9314e8c4773cfb731" prot="protected" virt="non-virtual"><scope>iceberg::RewriteManifests</scope><name>SnapshotId</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1afa840d8e4fac4b35a0e5147ebe0a24bd" prot="protected" virt="non-virtual"><scope>iceberg::RewriteManifests</scope><name>SnapshotUpdate</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1a43f427fe952631fffdd3c19e0c5ef434" prot="public" virt="non-virtual"><scope>iceberg::RewriteManifests</scope><name>StageOnly</name></member>
+      <member refid="classiceberg_1_1RewriteManifests_1aed6265eb76379db1f0493c9c5ac4158f" prot="protected" virt="virtual"><scope>iceberg::RewriteManifests</scope><name>Summary</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1a169ac960678daaef3ef8cc793f47d1a3" prot="protected" virt="non-virtual"><scope>iceberg::RewriteManifests</scope><name>summary_</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1a89096f41f8602f1d05f6bddc06c9d8e6" prot="protected" virt="non-virtual"><scope>iceberg::RewriteManifests</scope><name>summary_builder</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1ac1d1956ed16f817a44c0f3f081eb4c5c" prot="protected" virt="non-virtual"><scope>iceberg::RewriteManifests</scope><name>target_branch</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1abe2bd4f83fb5d90e70bfff6d1f28a40b" prot="protected" virt="non-virtual"><scope>iceberg::RewriteManifests</scope><name>target_manifest_size_bytes</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1a9a05380cb12c07b3b868df790ef0f829" prot="public" virt="non-virtual"><scope>iceberg::RewriteManifests</scope><name>ToBranch</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1a85905886ff5189fe4d88b95e1c7201b7" prot="protected" virt="non-virtual"><scope>iceberg::RewriteManifests</scope><name>UnregisterStagedFile</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1aa2d22d7708df6b17bfa53e40abb32f86" prot="protected" virt="virtual"><scope>iceberg::RewriteManifests</scope><name>Validate</name></member>
+      <member refid="classiceberg_1_1RewriteManifests_1a5add829327a68b4b9ea30949c578fb7e" prot="private" virt="non-virtual"><scope>iceberg::RewriteManifests</scope><name>ValidateDeletedManifests</name></member>
+      <member refid="classiceberg_1_1RewriteManifests_1a91320b7a290977eb2f87b57b6739fe0a" prot="private" virt="non-virtual"><scope>iceberg::RewriteManifests</scope><name>ValidateFilesCounts</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1ad839a5b6b8cd54ceb3d013ddadae9fc5" prot="protected" virt="non-virtual"><scope>iceberg::RewriteManifests</scope><name>WriteDataManifests</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1aaf6092cc542454c4137d9b73212a8373" prot="protected" virt="non-virtual"><scope>iceberg::RewriteManifests</scope><name>WriteDeleteManifests</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1ad7521b2d10189e112d7c3197c0f6ae4e" prot="public" virt="non-virtual"><scope>iceberg::RewriteManifests</scope><name>WriteManifestsWith</name></member>
+      <member refid="classiceberg_1_1RewriteManifests_1a74b8463a216bab356481aeb63725b5b0" prot="private" virt="non-virtual"><scope>iceberg::RewriteManifests</scope><name>writers_</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1ae84ca7242062cb3e3b86ce4cb81b368d" prot="public" virt="virtual"><scope>iceberg::RewriteManifests</scope><name>~ErrorCollector</name></member>
+      <member refid="classiceberg_1_1PendingUpdate_1ace0dfef0058a64109f51e2638429a9f2" prot="public" virt="non-virtual"><scope>iceberg::RewriteManifests</scope><name>~PendingUpdate</name></member>
+      <member refid="classiceberg_1_1RewriteManifests_1aedb682652f0be9727f279881a83b97da" prot="public" virt="non-virtual"><scope>iceberg::RewriteManifests</scope><name>~RewriteManifests</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1a1473c50bc74b2c0e596c677dfecf95ff" prot="public" virt="non-virtual"><scope>iceberg::RewriteManifests</scope><name>~SnapshotUpdate</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

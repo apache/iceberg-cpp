@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="dir_a5b29b5da04404bbc950d262d6fa2438" kind="dir">
+    <compoundname>iceberg/encryption</compoundname>
+    <innerfile refid="aes__gcm__stream_8h">aes_gcm_stream.h</innerfile>
+    <innerfile refid="encrypted__key_8h">encrypted_key.h</innerfile>
+    <innerfile refid="in__memory__kms_8h">in_memory_kms.h</innerfile>
+    <innerfile refid="key__management__client_8h">key_management_client.h</innerfile>
+    <innerfile refid="standard__key__metadata_8h">standard_key_metadata.h</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/encryption/"/>
+  </compounddef>
+</doxygen>

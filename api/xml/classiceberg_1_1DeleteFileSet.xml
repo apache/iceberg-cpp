@@ -1,0 +1,487 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1DeleteFileSet" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::DeleteFileSet</compoundname>
+    <includes refid="data__file__set_8h" local="no">data_file_set.h</includes>
+    <innerclass refid="structiceberg_1_1DeleteFileSet_1_1DeleteFileKey" prot="private">iceberg::DeleteFileSet::DeleteFileKey</innerclass>
+    <innerclass refid="structiceberg_1_1DeleteFileSet_1_1DeleteFileKeyHash" prot="private">iceberg::DeleteFileSet::DeleteFileKeyHash</innerclass>
+    <sectiondef kind="public-type">
+      <memberdef kind="typedef" id="classiceberg_1_1DeleteFileSet_1a0568c52925f13b389c53c9edd55d4e4d" prot="public" static="no">
+        <type>std::shared_ptr&lt; <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &gt;</type>
+        <definition>using iceberg::DeleteFileSet::value_type =  std::shared_ptr&lt;DataFile&gt;</definition>
+        <argsstring></argsstring>
+        <name>value_type</name>
+        <qualifiedname>iceberg::DeleteFileSet::value_type</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/data_file_set.h" line="146" column="3" bodyfile="iceberg/util/data_file_set.h" bodystart="146" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="classiceberg_1_1DeleteFileSet_1a2a6bffed860ffaa704a6be9e15992c51" prot="public" static="no">
+        <type>typename std::vector&lt; value_type &gt;::iterator</type>
+        <definition>using iceberg::DeleteFileSet::iterator =  typename std::vector&lt;value_type&gt;::iterator</definition>
+        <argsstring></argsstring>
+        <name>iterator</name>
+        <qualifiedname>iceberg::DeleteFileSet::iterator</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/data_file_set.h" line="147" column="3" bodyfile="iceberg/util/data_file_set.h" bodystart="147" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="classiceberg_1_1DeleteFileSet_1a0b22213304a136cc5aa93f352c27d538" prot="public" static="no">
+        <type>typename std::vector&lt; value_type &gt;::const_iterator</type>
+        <definition>using iceberg::DeleteFileSet::const_iterator =  typename std::vector&lt;value_type&gt;::const_iterator</definition>
+        <argsstring></argsstring>
+        <name>const_iterator</name>
+        <qualifiedname>iceberg::DeleteFileSet::const_iterator</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/data_file_set.h" line="148" column="3" bodyfile="iceberg/util/data_file_set.h" bodystart="148" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="classiceberg_1_1DeleteFileSet_1ae606a9fa0e1024afdf2030475c1825e7" prot="public" static="no">
+        <type>typename std::vector&lt; value_type &gt;::difference_type</type>
+        <definition>using iceberg::DeleteFileSet::difference_type =  typename std::vector&lt;value_type&gt;::difference_type</definition>
+        <argsstring></argsstring>
+        <name>difference_type</name>
+        <qualifiedname>iceberg::DeleteFileSet::difference_type</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/data_file_set.h" line="149" column="3" bodyfile="iceberg/util/data_file_set.h" bodystart="149" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1DeleteFileSet_1a985b3496b0763a883b91f13e2ac688cb" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; value_type &gt;</type>
+        <definition>std::vector&lt;value_type&gt; iceberg::DeleteFileSet::elements_</definition>
+        <argsstring></argsstring>
+        <name>elements_</name>
+        <qualifiedname>iceberg::DeleteFileSet::elements_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/data_file_set.h" line="264" column="15" bodyfile="iceberg/util/data_file_set.h" bodystart="264" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1DeleteFileSet_1a2a0464357cf25d10f4f48befeaa0cf33" prot="private" static="no" mutable="no">
+        <type>std::unordered_map&lt; DeleteFileKey, size_t, DeleteFileKeyHash &gt;</type>
+        <definition>std::unordered_map&lt;DeleteFileKey, size_t, DeleteFileKeyHash&gt; iceberg::DeleteFileSet::index_by_file_</definition>
+        <argsstring></argsstring>
+        <name>index_by_file_</name>
+        <qualifiedname>iceberg::DeleteFileSet::index_by_file_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/data_file_set.h" line="265" column="22" bodyfile="iceberg/util/data_file_set.h" bodystart="265" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1DeleteFileSet_1a035912d97ea6bceb91aa48572248935a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::DeleteFileSet::DeleteFileSet</definition>
+        <argsstring>()=default</argsstring>
+        <name>DeleteFileSet</name>
+        <qualifiedname>iceberg::DeleteFileSet::DeleteFileSet</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/data_file_set.h" line="151" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DeleteFileSet_1a295be5df19c6c53cdab491ea80a43f4b" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::DeleteFileSet::DeleteFileSet</definition>
+        <argsstring>(const DeleteFileSet &amp;other)</argsstring>
+        <name>DeleteFileSet</name>
+        <qualifiedname>iceberg::DeleteFileSet::DeleteFileSet</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1DeleteFileSet" kindref="compound">DeleteFileSet</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/data_file_set.h" line="152" column="3" bodyfile="iceberg/util/data_file_set.h" bodystart="152" bodyend="154"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DeleteFileSet_1a9e5e50caed505c7598577e679b4d3d03" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1DeleteFileSet" kindref="compound">DeleteFileSet</ref> &amp;</type>
+        <definition>DeleteFileSet &amp; iceberg::DeleteFileSet::operator=</definition>
+        <argsstring>(const DeleteFileSet &amp;other)</argsstring>
+        <name>operator=</name>
+        <qualifiedname>iceberg::DeleteFileSet::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1DeleteFileSet" kindref="compound">DeleteFileSet</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/data_file_set.h" line="155" column="17" bodyfile="iceberg/util/data_file_set.h" bodystart="155" bodyend="161"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DeleteFileSet_1a71fe51636320e8c85d96aa5edadfc0e2" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::DeleteFileSet::DeleteFileSet</definition>
+        <argsstring>(DeleteFileSet &amp;&amp;) noexcept=default</argsstring>
+        <name>DeleteFileSet</name>
+        <qualifiedname>iceberg::DeleteFileSet::DeleteFileSet</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1DeleteFileSet" kindref="compound">DeleteFileSet</ref> &amp;&amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/data_file_set.h" line="162" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DeleteFileSet_1a4ea494a7fadfadfa3a4ab46b34a85771" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1DeleteFileSet" kindref="compound">DeleteFileSet</ref> &amp;</type>
+        <definition>DeleteFileSet &amp; iceberg::DeleteFileSet::operator=</definition>
+        <argsstring>(DeleteFileSet &amp;&amp;) noexcept=default</argsstring>
+        <name>operator=</name>
+        <qualifiedname>iceberg::DeleteFileSet::operator=</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1DeleteFileSet" kindref="compound">DeleteFileSet</ref> &amp;&amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/data_file_set.h" line="163" column="17"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DeleteFileSet_1a599375be334003015fb451be84653b82" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::pair&lt; iterator, bool &gt;</type>
+        <definition>std::pair&lt; iterator, bool &gt; iceberg::DeleteFileSet::insert</definition>
+        <argsstring>(const value_type &amp;file)</argsstring>
+        <name>insert</name>
+        <qualifiedname>iceberg::DeleteFileSet::insert</qualifiedname>
+        <param>
+          <type>const value_type &amp;</type>
+          <declname>file</declname>
+        </param>
+        <briefdescription>
+<para>Insert a delete file into the set. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>file</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The delete file to insert </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A pair with an iterator to the inserted element (or the existing one) and a bool indicating whether insertion took place </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/data_file_set.h" line="169" column="13" bodyfile="iceberg/util/data_file_set.h" bodystart="169" bodyend="169"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DeleteFileSet_1a6a4fc301f6b97e1e1325a283c55e5fc6" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::pair&lt; iterator, bool &gt;</type>
+        <definition>std::pair&lt; iterator, bool &gt; iceberg::DeleteFileSet::insert</definition>
+        <argsstring>(value_type &amp;&amp;file)</argsstring>
+        <name>insert</name>
+        <qualifiedname>iceberg::DeleteFileSet::insert</qualifiedname>
+        <param>
+          <type>value_type &amp;&amp;</type>
+          <declname>file</declname>
+        </param>
+        <briefdescription>
+<para>Insert a delete file into the set (move version). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/data_file_set.h" line="172" column="13" bodyfile="iceberg/util/data_file_set.h" bodystart="172" bodyend="174"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DeleteFileSet_1a12ef0c2728148ef2106b9eb5a89773f9" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::DeleteFileSet::contains</definition>
+        <argsstring>(const DataFile &amp;file) const</argsstring>
+        <name>contains</name>
+        <qualifiedname>iceberg::DeleteFileSet::contains</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &amp;</type>
+          <declname>file</declname>
+        </param>
+        <briefdescription>
+<para>Returns whether an equivalent delete file exists in the set. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/data_file_set.h" line="177" column="8" bodyfile="iceberg/util/data_file_set.h" bodystart="177" bodyend="179"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DeleteFileSet_1a3e708d8da7ece8dcc759c1e889c14ded" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::DeleteFileSet::contains</definition>
+        <argsstring>(const value_type &amp;file) const</argsstring>
+        <name>contains</name>
+        <qualifiedname>iceberg::DeleteFileSet::contains</qualifiedname>
+        <param>
+          <type>const value_type &amp;</type>
+          <declname>file</declname>
+        </param>
+        <briefdescription>
+<para>Returns whether an equivalent delete file exists in the set. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/data_file_set.h" line="182" column="8" bodyfile="iceberg/util/data_file_set.h" bodystart="182" bodyend="184"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DeleteFileSet_1ae9b4c866286b8ed33f8c1bb68ac6a9d1" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>size_t</type>
+        <definition>size_t iceberg::DeleteFileSet::size</definition>
+        <argsstring>() const</argsstring>
+        <name>size</name>
+        <qualifiedname>iceberg::DeleteFileSet::size</qualifiedname>
+        <briefdescription>
+<para>Get the number of elements in the set. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/data_file_set.h" line="187" column="10" bodyfile="iceberg/util/data_file_set.h" bodystart="187" bodyend="187"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DeleteFileSet_1ad0277408394b2ee6a4b9d2ede1744e2c" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::DeleteFileSet::empty</definition>
+        <argsstring>() const</argsstring>
+        <name>empty</name>
+        <qualifiedname>iceberg::DeleteFileSet::empty</qualifiedname>
+        <briefdescription>
+<para>Check if the set is empty. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/data_file_set.h" line="190" column="8" bodyfile="iceberg/util/data_file_set.h" bodystart="190" bodyend="190"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DeleteFileSet_1ae60211a89ac8deabc72876b415f5ea91" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::DeleteFileSet::clear</definition>
+        <argsstring>()</argsstring>
+        <name>clear</name>
+        <qualifiedname>iceberg::DeleteFileSet::clear</qualifiedname>
+        <briefdescription>
+<para>Clear all elements from the set. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/data_file_set.h" line="193" column="8" bodyfile="iceberg/util/data_file_set.h" bodystart="193" bodyend="196"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DeleteFileSet_1a6e40a5aaeeeeea2348bd153a65aba458" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>iterator</type>
+        <definition>iterator iceberg::DeleteFileSet::begin</definition>
+        <argsstring>()</argsstring>
+        <name>begin</name>
+        <qualifiedname>iceberg::DeleteFileSet::begin</qualifiedname>
+        <briefdescription>
+<para>Get iterator to the beginning. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/data_file_set.h" line="199" column="12" bodyfile="iceberg/util/data_file_set.h" bodystart="199" bodyend="199"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DeleteFileSet_1a9b8db6905e25455489aee8eff590203e" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const_iterator</type>
+        <definition>const_iterator iceberg::DeleteFileSet::begin</definition>
+        <argsstring>() const</argsstring>
+        <name>begin</name>
+        <qualifiedname>iceberg::DeleteFileSet::begin</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/data_file_set.h" line="200" column="18" bodyfile="iceberg/util/data_file_set.h" bodystart="200" bodyend="200"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DeleteFileSet_1a229b782e233a46efdb6fac42ac872fb6" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const_iterator</type>
+        <definition>const_iterator iceberg::DeleteFileSet::cbegin</definition>
+        <argsstring>() const</argsstring>
+        <name>cbegin</name>
+        <qualifiedname>iceberg::DeleteFileSet::cbegin</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/data_file_set.h" line="201" column="18" bodyfile="iceberg/util/data_file_set.h" bodystart="201" bodyend="201"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DeleteFileSet_1ad8955f2480aa869ca5c04b724fb92af0" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>iterator</type>
+        <definition>iterator iceberg::DeleteFileSet::end</definition>
+        <argsstring>()</argsstring>
+        <name>end</name>
+        <qualifiedname>iceberg::DeleteFileSet::end</qualifiedname>
+        <briefdescription>
+<para>Get iterator to the end. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/data_file_set.h" line="204" column="12" bodyfile="iceberg/util/data_file_set.h" bodystart="204" bodyend="204"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DeleteFileSet_1a27b6301c8433b7e991492b2c7543637a" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const_iterator</type>
+        <definition>const_iterator iceberg::DeleteFileSet::end</definition>
+        <argsstring>() const</argsstring>
+        <name>end</name>
+        <qualifiedname>iceberg::DeleteFileSet::end</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/data_file_set.h" line="205" column="18" bodyfile="iceberg/util/data_file_set.h" bodystart="205" bodyend="205"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DeleteFileSet_1adb050f17189739168d8647283c1bb58a" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const_iterator</type>
+        <definition>const_iterator iceberg::DeleteFileSet::cend</definition>
+        <argsstring>() const</argsstring>
+        <name>cend</name>
+        <qualifiedname>iceberg::DeleteFileSet::cend</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/data_file_set.h" line="206" column="18" bodyfile="iceberg/util/data_file_set.h" bodystart="206" bodyend="206"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DeleteFileSet_1a657ba84b6e391ed375dac46cb7a473b8" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::span&lt; const value_type &gt;</type>
+        <definition>std::span&lt; const value_type &gt; iceberg::DeleteFileSet::as_span</definition>
+        <argsstring>() const</argsstring>
+        <name>as_span</name>
+        <qualifiedname>iceberg::DeleteFileSet::as_span</qualifiedname>
+        <briefdescription>
+<para>Get a non-owning view of the delete files in insertion order. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/data_file_set.h" line="209" column="13" bodyfile="iceberg/util/data_file_set.h" bodystart="209" bodyend="209"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classiceberg_1_1DeleteFileSet_1a0501e69b07a92f8fed7152050dcc1687" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::pair&lt; iterator, bool &gt;</type>
+        <definition>std::pair&lt; iterator, bool &gt; iceberg::DeleteFileSet::InsertImpl</definition>
+        <argsstring>(value_type file)</argsstring>
+        <name>InsertImpl</name>
+        <qualifiedname>iceberg::DeleteFileSet::InsertImpl</qualifiedname>
+        <param>
+          <type>value_type</type>
+          <declname>file</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/data_file_set.h" line="238" column="13" bodyfile="iceberg/util/data_file_set.h" bodystart="238" bodyend="252"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DeleteFileSet_1a9621ea07d5e8877083f99480d956d8cd" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::DeleteFileSet::RebuildIndex</definition>
+        <argsstring>()</argsstring>
+        <name>RebuildIndex</name>
+        <qualifiedname>iceberg::DeleteFileSet::RebuildIndex</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/data_file_set.h" line="254" column="8" bodyfile="iceberg/util/data_file_set.h" bodystart="254" bodyend="261"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>A set of delete-file pointers deduplicated by delete-file identity. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>Delete files, especially deletion vectors, are identified by location plus content offset and content size. This mirrors Java&apos;s <ref refid="classiceberg_1_1DeleteFileSet" kindref="compound">DeleteFileSet</ref> behavior. </para>
+    </detaileddescription>
+    <location file="iceberg/util/data_file_set.h" line="144" column="1" bodyfile="iceberg/util/data_file_set.h" bodystart="144" bodyend="266"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1DeleteFileSet_1a657ba84b6e391ed375dac46cb7a473b8" prot="public" virt="non-virtual"><scope>iceberg::DeleteFileSet</scope><name>as_span</name></member>
+      <member refid="classiceberg_1_1DeleteFileSet_1a6e40a5aaeeeeea2348bd153a65aba458" prot="public" virt="non-virtual"><scope>iceberg::DeleteFileSet</scope><name>begin</name></member>
+      <member refid="classiceberg_1_1DeleteFileSet_1a9b8db6905e25455489aee8eff590203e" prot="public" virt="non-virtual"><scope>iceberg::DeleteFileSet</scope><name>begin</name></member>
+      <member refid="classiceberg_1_1DeleteFileSet_1a229b782e233a46efdb6fac42ac872fb6" prot="public" virt="non-virtual"><scope>iceberg::DeleteFileSet</scope><name>cbegin</name></member>
+      <member refid="classiceberg_1_1DeleteFileSet_1adb050f17189739168d8647283c1bb58a" prot="public" virt="non-virtual"><scope>iceberg::DeleteFileSet</scope><name>cend</name></member>
+      <member refid="classiceberg_1_1DeleteFileSet_1ae60211a89ac8deabc72876b415f5ea91" prot="public" virt="non-virtual"><scope>iceberg::DeleteFileSet</scope><name>clear</name></member>
+      <member refid="classiceberg_1_1DeleteFileSet_1a0b22213304a136cc5aa93f352c27d538" prot="public" virt="non-virtual"><scope>iceberg::DeleteFileSet</scope><name>const_iterator</name></member>
+      <member refid="classiceberg_1_1DeleteFileSet_1a12ef0c2728148ef2106b9eb5a89773f9" prot="public" virt="non-virtual"><scope>iceberg::DeleteFileSet</scope><name>contains</name></member>
+      <member refid="classiceberg_1_1DeleteFileSet_1a3e708d8da7ece8dcc759c1e889c14ded" prot="public" virt="non-virtual"><scope>iceberg::DeleteFileSet</scope><name>contains</name></member>
+      <member refid="classiceberg_1_1DeleteFileSet_1a035912d97ea6bceb91aa48572248935a" prot="public" virt="non-virtual"><scope>iceberg::DeleteFileSet</scope><name>DeleteFileSet</name></member>
+      <member refid="classiceberg_1_1DeleteFileSet_1a295be5df19c6c53cdab491ea80a43f4b" prot="public" virt="non-virtual"><scope>iceberg::DeleteFileSet</scope><name>DeleteFileSet</name></member>
+      <member refid="classiceberg_1_1DeleteFileSet_1a71fe51636320e8c85d96aa5edadfc0e2" prot="public" virt="non-virtual"><scope>iceberg::DeleteFileSet</scope><name>DeleteFileSet</name></member>
+      <member refid="classiceberg_1_1DeleteFileSet_1ae606a9fa0e1024afdf2030475c1825e7" prot="public" virt="non-virtual"><scope>iceberg::DeleteFileSet</scope><name>difference_type</name></member>
+      <member refid="classiceberg_1_1DeleteFileSet_1a985b3496b0763a883b91f13e2ac688cb" prot="private" virt="non-virtual"><scope>iceberg::DeleteFileSet</scope><name>elements_</name></member>
+      <member refid="classiceberg_1_1DeleteFileSet_1ad0277408394b2ee6a4b9d2ede1744e2c" prot="public" virt="non-virtual"><scope>iceberg::DeleteFileSet</scope><name>empty</name></member>
+      <member refid="classiceberg_1_1DeleteFileSet_1ad8955f2480aa869ca5c04b724fb92af0" prot="public" virt="non-virtual"><scope>iceberg::DeleteFileSet</scope><name>end</name></member>
+      <member refid="classiceberg_1_1DeleteFileSet_1a27b6301c8433b7e991492b2c7543637a" prot="public" virt="non-virtual"><scope>iceberg::DeleteFileSet</scope><name>end</name></member>
+      <member refid="classiceberg_1_1DeleteFileSet_1a2a0464357cf25d10f4f48befeaa0cf33" prot="private" virt="non-virtual"><scope>iceberg::DeleteFileSet</scope><name>index_by_file_</name></member>
+      <member refid="classiceberg_1_1DeleteFileSet_1a599375be334003015fb451be84653b82" prot="public" virt="non-virtual"><scope>iceberg::DeleteFileSet</scope><name>insert</name></member>
+      <member refid="classiceberg_1_1DeleteFileSet_1a6a4fc301f6b97e1e1325a283c55e5fc6" prot="public" virt="non-virtual"><scope>iceberg::DeleteFileSet</scope><name>insert</name></member>
+      <member refid="classiceberg_1_1DeleteFileSet_1a0501e69b07a92f8fed7152050dcc1687" prot="private" virt="non-virtual"><scope>iceberg::DeleteFileSet</scope><name>InsertImpl</name></member>
+      <member refid="classiceberg_1_1DeleteFileSet_1a2a6bffed860ffaa704a6be9e15992c51" prot="public" virt="non-virtual"><scope>iceberg::DeleteFileSet</scope><name>iterator</name></member>
+      <member refid="classiceberg_1_1DeleteFileSet_1a9e5e50caed505c7598577e679b4d3d03" prot="public" virt="non-virtual"><scope>iceberg::DeleteFileSet</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1DeleteFileSet_1a4ea494a7fadfadfa3a4ab46b34a85771" prot="public" virt="non-virtual"><scope>iceberg::DeleteFileSet</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1DeleteFileSet_1a9621ea07d5e8877083f99480d956d8cd" prot="private" virt="non-virtual"><scope>iceberg::DeleteFileSet</scope><name>RebuildIndex</name></member>
+      <member refid="classiceberg_1_1DeleteFileSet_1ae9b4c866286b8ed33f8c1bb68ac6a9d1" prot="public" virt="non-virtual"><scope>iceberg::DeleteFileSet</scope><name>size</name></member>
+      <member refid="classiceberg_1_1DeleteFileSet_1a0568c52925f13b389c53c9edd55d4e4d" prot="public" virt="non-virtual"><scope>iceberg::DeleteFileSet</scope><name>value_type</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

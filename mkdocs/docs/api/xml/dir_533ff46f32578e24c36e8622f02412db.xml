@@ -1,0 +1,19 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="dir_533ff46f32578e24c36e8622f02412db" kind="dir">
+    <compoundname>iceberg/manifest</compoundname>
+    <innerfile refid="manifest__entry_8h">manifest_entry.h</innerfile>
+    <innerfile refid="manifest__filter__manager_8h">manifest_filter_manager.h</innerfile>
+    <innerfile refid="manifest__group_8h">manifest_group.h</innerfile>
+    <innerfile refid="manifest__list_8h">manifest_list.h</innerfile>
+    <innerfile refid="manifest__merge__manager_8h">manifest_merge_manager.h</innerfile>
+    <innerfile refid="manifest__reader_8h">manifest_reader.h</innerfile>
+    <innerfile refid="manifest__writer_8h">manifest_writer.h</innerfile>
+    <innerfile refid="rolling__manifest__writer_8h">rolling_manifest_writer.h</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/manifest/"/>
+  </compounddef>
+</doxygen>

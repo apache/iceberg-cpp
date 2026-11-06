@@ -1,0 +1,92 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1FieldLabel" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::FieldLabel</compoundname>
+    <includes refid="labels_8h" local="no">labels.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1FieldLabel_1af515d179032ab9e7fc78e562b4a4cd9f" prot="public" static="no" mutable="no">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::FieldLabel::field_id</definition>
+        <argsstring></argsstring>
+        <name>field_id</name>
+        <qualifiedname>iceberg::FieldLabel::field_id</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/labels.h" line="36" column="11" bodyfile="iceberg/labels.h" bodystart="36" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1FieldLabel_1a92e2e7df3d1bc85a5946e67ba8a7e0c5" prot="public" static="no" mutable="no">
+        <type>std::unordered_map&lt; std::string, std::string &gt;</type>
+        <definition>std::unordered_map&lt;std::string, std::string&gt; iceberg::FieldLabel::labels</definition>
+        <argsstring></argsstring>
+        <name>labels</name>
+        <qualifiedname>iceberg::FieldLabel::labels</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/labels.h" line="37" column="22" bodyfile="iceberg/labels.h" bodystart="37" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structiceberg_1_1FieldLabel_1a78dbf63f1cbab4818a2a4697d2169468" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::FieldLabel::operator==</definition>
+        <argsstring>(const FieldLabel &amp;) const =default</argsstring>
+        <name>operator==</name>
+        <qualifiedname>iceberg::FieldLabel::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1FieldLabel" kindref="compound">FieldLabel</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/labels.h" line="39" column="8"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Catalog-provided labels for a single field, identified by its field ID. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::FieldLabel</label>
+        <link refid="structiceberg_1_1FieldLabel"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>labels</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::string</label>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>std::unordered_map&lt; std::string, std::string &gt;</label>
+        <childnode refid="3" relation="usage">
+          <edgelabel>elements</edgelabel>
+          <edgelabel>keys</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/labels.h" line="35" column="1" bodyfile="iceberg/labels.h" bodystart="35" bodyend="40"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1FieldLabel_1af515d179032ab9e7fc78e562b4a4cd9f" prot="public" virt="non-virtual"><scope>iceberg::FieldLabel</scope><name>field_id</name></member>
+      <member refid="structiceberg_1_1FieldLabel_1a92e2e7df3d1bc85a5946e67ba8a7e0c5" prot="public" virt="non-virtual"><scope>iceberg::FieldLabel</scope><name>labels</name></member>
+      <member refid="structiceberg_1_1FieldLabel_1a78dbf63f1cbab4818a2a4697d2169468" prot="public" virt="non-virtual"><scope>iceberg::FieldLabel</scope><name>operator==</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

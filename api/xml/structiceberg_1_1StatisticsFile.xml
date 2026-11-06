@@ -1,0 +1,172 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1StatisticsFile" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::StatisticsFile</compoundname>
+    <includes refid="statistics__file_8h" local="no">statistics_file.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1StatisticsFile_1a9aa6dd74b3c76db5333572b28f9efb1c" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t iceberg::StatisticsFile::snapshot_id</definition>
+        <argsstring></argsstring>
+        <name>snapshot_id</name>
+        <qualifiedname>iceberg::StatisticsFile::snapshot_id</qualifiedname>
+        <briefdescription>
+<para>ID of the Iceberg table&apos;s snapshot the statistics file is associated with. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/statistics_file.h" line="54" column="11" bodyfile="iceberg/statistics_file.h" bodystart="54" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1StatisticsFile_1a032a5ea20ec4a7b3f5eb535de8479580" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::StatisticsFile::path</definition>
+        <argsstring></argsstring>
+        <name>path</name>
+        <qualifiedname>iceberg::StatisticsFile::path</qualifiedname>
+        <briefdescription>
+<para>Fully qualified path to the file. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/statistics_file.h" line="56" column="15" bodyfile="iceberg/statistics_file.h" bodystart="56" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1StatisticsFile_1a8054a05cbecaf8e231154d7a6e6d44b3" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t iceberg::StatisticsFile::file_size_in_bytes</definition>
+        <argsstring></argsstring>
+        <name>file_size_in_bytes</name>
+        <qualifiedname>iceberg::StatisticsFile::file_size_in_bytes</qualifiedname>
+        <briefdescription>
+<para>The size of the file in bytes. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/statistics_file.h" line="58" column="11" bodyfile="iceberg/statistics_file.h" bodystart="58" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1StatisticsFile_1a20af7d8ad92b638206a0297d2b54146c" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t iceberg::StatisticsFile::file_footer_size_in_bytes</definition>
+        <argsstring></argsstring>
+        <name>file_footer_size_in_bytes</name>
+        <qualifiedname>iceberg::StatisticsFile::file_footer_size_in_bytes</qualifiedname>
+        <briefdescription>
+<para>The size of the file footer in bytes. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/statistics_file.h" line="60" column="11" bodyfile="iceberg/statistics_file.h" bodystart="60" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1StatisticsFile_1ad6facf9ebad5b69d7dbbd65b416b001b" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="structiceberg_1_1BlobMetadata" kindref="compound">BlobMetadata</ref> &gt;</type>
+        <definition>std::vector&lt;BlobMetadata&gt; iceberg::StatisticsFile::blob_metadata</definition>
+        <argsstring></argsstring>
+        <name>blob_metadata</name>
+        <qualifiedname>iceberg::StatisticsFile::blob_metadata</qualifiedname>
+        <briefdescription>
+<para>List of statistics contained in the file. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/statistics_file.h" line="62" column="15" bodyfile="iceberg/statistics_file.h" bodystart="62" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="friend">
+      <memberdef kind="friend" id="structiceberg_1_1StatisticsFile_1a55122ff2dcdb43cdb1dcd4fc66e87967" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool operator==</definition>
+        <argsstring>(const StatisticsFile &amp;lhs, const StatisticsFile &amp;rhs)=default</argsstring>
+        <name>operator==</name>
+        <qualifiedname>iceberg::StatisticsFile::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1StatisticsFile" kindref="compound">StatisticsFile</ref> &amp;</type>
+          <declname>lhs</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structiceberg_1_1StatisticsFile" kindref="compound">StatisticsFile</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+<para>Compare two StatisticsFiles for equality. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/statistics_file.h" line="65" column="15"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Represents a statistics file in the Puffin format. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="5">
+        <label>iceberg::BlobMetadata</label>
+        <link refid="structiceberg_1_1BlobMetadata"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>type</edgelabel>
+        </childnode>
+        <childnode refid="6" relation="usage">
+          <edgelabel>fields</edgelabel>
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>properties</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::StatisticsFile</label>
+        <link refid="structiceberg_1_1StatisticsFile"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>path</edgelabel>
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>blob_metadata</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>std::unordered_map&lt; std::string, std::string &gt;</label>
+        <childnode refid="2" relation="usage">
+          <edgelabel>elements</edgelabel>
+          <edgelabel>keys</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>std::vector&lt; iceberg::BlobMetadata &gt;</label>
+        <childnode refid="5" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="6">
+        <label>std::vector&lt; int32_t &gt;</label>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/statistics_file.h" line="52" column="1" bodyfile="iceberg/statistics_file.h" bodystart="52" bodyend="66"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1StatisticsFile_1ad6facf9ebad5b69d7dbbd65b416b001b" prot="public" virt="non-virtual"><scope>iceberg::StatisticsFile</scope><name>blob_metadata</name></member>
+      <member refid="structiceberg_1_1StatisticsFile_1a20af7d8ad92b638206a0297d2b54146c" prot="public" virt="non-virtual"><scope>iceberg::StatisticsFile</scope><name>file_footer_size_in_bytes</name></member>
+      <member refid="structiceberg_1_1StatisticsFile_1a8054a05cbecaf8e231154d7a6e6d44b3" prot="public" virt="non-virtual"><scope>iceberg::StatisticsFile</scope><name>file_size_in_bytes</name></member>
+      <member refid="structiceberg_1_1StatisticsFile_1a55122ff2dcdb43cdb1dcd4fc66e87967" prot="public" virt="non-virtual"><scope>iceberg::StatisticsFile</scope><name>operator==</name></member>
+      <member refid="structiceberg_1_1StatisticsFile_1a032a5ea20ec4a7b3f5eb535de8479580" prot="public" virt="non-virtual"><scope>iceberg::StatisticsFile</scope><name>path</name></member>
+      <member refid="structiceberg_1_1StatisticsFile_1a9aa6dd74b3c76db5333572b28f9efb1c" prot="public" virt="non-virtual"><scope>iceberg::StatisticsFile</scope><name>snapshot_id</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,126 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1expected__detail_1_1ReinitGuard" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::expected_detail::ReinitGuard</compoundname>
+    <templateparamlist>
+      <param>
+        <type>class T</type>
+      </param>
+    </templateparamlist>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1expected__detail_1_1ReinitGuard_1a4b68c462a28116686add35fa31e4f2df" prot="public" static="no" mutable="no">
+        <type>T *</type>
+        <definition>T* iceberg::expected_detail::ReinitGuard&lt; T &gt;::_target</definition>
+        <argsstring></argsstring>
+        <name>_target</name>
+        <qualifiedname>iceberg::expected_detail::ReinitGuard::_target</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/compat/expected.h" line="487" column="5" bodyfile="iceberg/compat/expected.h" bodystart="487" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1expected__detail_1_1ReinitGuard_1aa5ca7de2b3bb4a78eb8262e71026e2ae" prot="public" static="no" mutable="no">
+        <type>T *</type>
+        <definition>T* iceberg::expected_detail::ReinitGuard&lt; T &gt;::_tmp</definition>
+        <argsstring></argsstring>
+        <name>_tmp</name>
+        <qualifiedname>iceberg::expected_detail::ReinitGuard::_tmp</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/compat/expected.h" line="488" column="5" bodyfile="iceberg/compat/expected.h" bodystart="488" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structiceberg_1_1expected__detail_1_1ReinitGuard_1a52404e8fef2b6d336a8100708eec183d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::expected_detail::ReinitGuard&lt; T &gt;::ReinitGuard</definition>
+        <argsstring>(ReinitGuard const &amp;)=delete</argsstring>
+        <name>ReinitGuard</name>
+        <qualifiedname>iceberg::expected_detail::ReinitGuard::ReinitGuard</qualifiedname>
+        <param>
+          <type><ref refid="structiceberg_1_1expected__detail_1_1ReinitGuard" kindref="compound">ReinitGuard</ref> const &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/compat/expected.h" line="478" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1expected__detail_1_1ReinitGuard_1a7be89eeef38431cf8e1c69faca293a33" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="structiceberg_1_1expected__detail_1_1ReinitGuard" kindref="compound">ReinitGuard</ref> &amp;</type>
+        <definition>ReinitGuard &amp; iceberg::expected_detail::ReinitGuard&lt; T &gt;::operator=</definition>
+        <argsstring>(ReinitGuard const &amp;)=delete</argsstring>
+        <name>operator=</name>
+        <qualifiedname>iceberg::expected_detail::ReinitGuard::operator=</qualifiedname>
+        <param>
+          <type><ref refid="structiceberg_1_1expected__detail_1_1ReinitGuard" kindref="compound">ReinitGuard</ref> const &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/compat/expected.h" line="479" column="15"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1expected__detail_1_1ReinitGuard_1a9100958020c39862fa225f9e92d5e2ac" prot="public" static="no" constexpr="yes" const="no" explicit="no" inline="yes" noexcept="yes" virt="non-virtual">
+        <type>constexpr</type>
+        <definition>constexpr iceberg::expected_detail::ReinitGuard&lt; T &gt;::ReinitGuard</definition>
+        <argsstring>(T *target, T *tmp) noexcept</argsstring>
+        <name>ReinitGuard</name>
+        <qualifiedname>iceberg::expected_detail::ReinitGuard::ReinitGuard</qualifiedname>
+        <param>
+          <type>T *</type>
+          <declname>target</declname>
+        </param>
+        <param>
+          <type>T *</type>
+          <declname>tmp</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/compat/expected.h" line="481" column="13" bodyfile="iceberg/compat/expected.h" bodystart="481" bodyend="481"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1expected__detail_1_1ReinitGuard_1ad1d786409d1300292e07d4060ab587b4" prot="public" static="no" const="no" explicit="no" inline="yes" noexcept="yes" virt="non-virtual">
+        <type>ICEBERG_EXPECTED_CONSTEXPR_DTOR</type>
+        <definition>ICEBERG_EXPECTED_CONSTEXPR_DTOR iceberg::expected_detail::ReinitGuard&lt; T &gt;::~ReinitGuard</definition>
+        <argsstring>() noexcept</argsstring>
+        <name>~ReinitGuard</name>
+        <qualifiedname>iceberg::expected_detail::ReinitGuard::~ReinitGuard</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/compat/expected.h" line="482" column="35" bodyfile="iceberg/compat/expected.h" bodystart="482" bodyend="486"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/compat/expected.h" line="475" column="1" bodyfile="iceberg/compat/expected.h" bodystart="475" bodyend="489"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1expected__detail_1_1ReinitGuard_1a4b68c462a28116686add35fa31e4f2df" prot="public" virt="non-virtual"><scope>iceberg::expected_detail::ReinitGuard</scope><name>_target</name></member>
+      <member refid="structiceberg_1_1expected__detail_1_1ReinitGuard_1aa5ca7de2b3bb4a78eb8262e71026e2ae" prot="public" virt="non-virtual"><scope>iceberg::expected_detail::ReinitGuard</scope><name>_tmp</name></member>
+      <member refid="structiceberg_1_1expected__detail_1_1ReinitGuard_1a7be89eeef38431cf8e1c69faca293a33" prot="public" virt="non-virtual"><scope>iceberg::expected_detail::ReinitGuard</scope><name>operator=</name></member>
+      <member refid="structiceberg_1_1expected__detail_1_1ReinitGuard_1a52404e8fef2b6d336a8100708eec183d" prot="public" virt="non-virtual"><scope>iceberg::expected_detail::ReinitGuard</scope><name>ReinitGuard</name></member>
+      <member refid="structiceberg_1_1expected__detail_1_1ReinitGuard_1a9100958020c39862fa225f9e92d5e2ac" prot="public" virt="non-virtual"><scope>iceberg::expected_detail::ReinitGuard</scope><name>ReinitGuard</name></member>
+      <member refid="structiceberg_1_1expected__detail_1_1ReinitGuard_1ad1d786409d1300292e07d4060ab587b4" prot="public" virt="non-virtual"><scope>iceberg::expected_detail::ReinitGuard</scope><name>~ReinitGuard</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

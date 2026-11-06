@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1unexpect__t" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::unexpect_t</compoundname>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structiceberg_1_1unexpect__t_1af90870ef89e7bdd460d3f1f00e6b9bf3" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::unexpect_t::unexpect_t</definition>
+        <argsstring>()=default</argsstring>
+        <name>unexpect_t</name>
+        <qualifiedname>iceberg::unexpect_t::unexpect_t</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/compat/expected.h" line="319" column="12"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/compat/expected.h" line="318" column="1" bodyfile="iceberg/compat/expected.h" bodystart="318" bodyend="320"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1unexpect__t_1af90870ef89e7bdd460d3f1f00e6b9bf3" prot="public" virt="non-virtual"><scope>iceberg::unexpect_t</scope><name>unexpect_t</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>
