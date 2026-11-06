@@ -164,8 +164,12 @@ Result<FileScanTaskStreamPtr> DataTableScan::PlanFilesStream() const {
   ICEBERG_ASSIGN_OR_RAISE(auto specs_by_id, metadata_cache.GetPartitionSpecsById());
 
   SnapshotReader snapshot_reader(snapshot.get());
-  ICEBERG_ASSIGN_OR_RAISE(auto data_manifests, snapshot_reader.DataManifests(io_));
-  ICEBERG_ASSIGN_OR_RAISE(auto delete_manifests, snapshot_reader.DeleteManifests(io_));
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto data_manifests,
+      snapshot_reader.DataManifests(context_.manifest_io ? context_.manifest_io : io_));
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto delete_manifests,
+      snapshot_reader.DeleteManifests(context_.manifest_io ? context_.manifest_io : io_));
 
   if (scan_metrics) {
     scan_metrics->total_data_manifests->Increment(
@@ -183,7 +187,8 @@ Result<FileScanTaskStreamPtr> DataTableScan::PlanFilesStream() const {
 
   ICEBERG_ASSIGN_OR_RAISE(
       auto manifest_group,
-      ManifestGroup::Make(io_, schema_, specs_by_id, std::move(owned_data_manifests),
+      ManifestGroup::Make(context_.manifest_io ? context_.manifest_io : io_, schema_,
+                          specs_by_id, std::move(owned_data_manifests),
                           std::move(owned_delete_manifests)));
   manifest_group->CaseSensitive(context_.case_sensitive)
       .Select(ScanColumns())

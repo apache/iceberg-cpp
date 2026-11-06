@@ -113,7 +113,7 @@ Status ReplacePartitions::Validate(const TableMetadata& current_metadata,
     return {};
   }
 
-  auto io = ctx_->table->io();
+  auto io = ctx_->table->manifest_io();
   if (validate_conflicting_data_) {
     if (data_spec->IsUnpartitioned()) {
       ICEBERG_RETURN_UNEXPECTED(ValidateAddedDataFiles(

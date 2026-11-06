@@ -241,7 +241,7 @@ CherryPickOperation& CherryPickOperation::Cherrypick(int64_t snapshot_id) {
     replaced_partitions_.emplace();
   }
 
-  auto io = ctx_->table->io();
+  auto io = ctx_->table->manifest_io();
   ICEBERG_BUILDER_ASSIGN_OR_RETURN(
       auto changes, ReadSnapshotChanges(*cherrypick_snapshot_, io, current));
 
@@ -306,7 +306,7 @@ Status CherryPickOperation::ValidateReplacedPartitions(const TableMetadata& meta
 
   // Walk back from the current snapshot to the picked snapshot's parent and
   // reject any file added into a partition this pick replaces.
-  auto io = ctx_->table->io();
+  auto io = ctx_->table->manifest_io();
   ICEBERG_ASSIGN_OR_RAISE(auto snapshots, SnapshotUtil::AncestorsBetween(
                                               meta, meta.current_snapshot_id, parent_id));
   // TODO: Parallelize added-file validation using the planning executor.

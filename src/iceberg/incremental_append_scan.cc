@@ -75,7 +75,9 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> IncrementalAppendScan::PlanFi
   std::unordered_set<ManifestFile> data_manifests;
   for (const auto& snapshot : append_snapshots) {
     SnapshotReader snapshot_reader(snapshot.get());
-    ICEBERG_ASSIGN_OR_RAISE(auto manifests, snapshot_reader.DataManifests(io_));
+    ICEBERG_ASSIGN_OR_RAISE(
+        auto manifests,
+        snapshot_reader.DataManifests(context_.manifest_io ? context_.manifest_io : io_));
     std::ranges::copy_if(
         manifests, std::inserter(data_manifests, data_manifests.end()),
         [&snapshot_ids](const ManifestFile& manifest) {
@@ -93,7 +95,7 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> IncrementalAppendScan::PlanFi
   ICEBERG_ASSIGN_OR_RAISE(
       auto manifest_group,
       ManifestGroup::Make(
-          io_, schema_, specs_by_id,
+          context_.manifest_io ? context_.manifest_io : io_, schema_, specs_by_id,
           std::vector<ManifestFile>(data_manifests.begin(), data_manifests.end()), {}));
 
   manifest_group->CaseSensitive(context_.case_sensitive)
