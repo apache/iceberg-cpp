@@ -311,6 +311,9 @@ int64_t SnapshotUpdate::SnapshotId() {
 Result<SnapshotUpdate::ApplyResult> SnapshotUpdate::Apply() {
   commit_metrics_->attempts->Increment();
   ICEBERG_RETURN_UNEXPECTED(CheckErrors());
+  if (base().format_version >= TableMetadata::kMinFormatVersionRootManifest) {
+    return NotSupported("Writing v4 manifest trees is not supported yet");
+  }
 
   ICEBERG_ASSIGN_OR_RAISE(auto parent_snapshot,
                           SnapshotUtil::OptionalLatestSnapshot(base(), target_branch_));
