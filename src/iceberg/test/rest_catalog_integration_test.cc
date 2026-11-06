@@ -26,6 +26,7 @@
 #include <string>
 #include <thread>
 #include <unordered_map>
+#include <vector>
 
 #include <arpa/inet.h>
 #include <gmock/gmock.h>
@@ -422,6 +423,31 @@ TEST_F(RestCatalogIntegrationTest, FetchServerConfigDirect) {
     ICEBERG_UNWRAP_OR_FAIL(auto config, CatalogConfigFromJson(json));
     std::println("[INFO] Server provided {} endpoints", config.endpoints.size());
     EXPECT_GT(config.endpoints.size(), 0);
+  }
+}
+
+// RestCatalog shares its HttpClient with token refresh and metrics reporting.
+TEST_F(RestCatalogIntegrationTest, ConcurrentHttpClientRequests) {
+  constexpr int kThreads = 32;
+  constexpr int kRequestsPerThread = 200;
+
+  HttpClient client({}, std::chrono::seconds(30), std::chrono::seconds(30));
+  auto noop_session = auth::AuthSession::MakeDefault({});
+  const std::string config_url = std::format("{}/v1/config", CatalogUri());
+
+  std::vector<std::thread> threads;
+  threads.reserve(kThreads);
+  for (int i = 0; i < kThreads; ++i) {
+    threads.emplace_back([&] {
+      for (int j = 0; j < kRequestsPerThread; ++j) {
+        ASSERT_THAT(client.Get(config_url, {}, /*headers=*/{},
+                               *DefaultErrorHandler::Instance(), *noop_session),
+                    IsOk());
+      }
+    });
+  }
+  for (auto& thread : threads) {
+    thread.join();
   }
 }
 

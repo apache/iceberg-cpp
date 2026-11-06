@@ -26,6 +26,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <format>
+#include <memory>
 #include <string>
 #include <string_view>
 #include <thread>
@@ -301,7 +302,6 @@ TEST(HttpClientTest, PostReportsTransferFailureAfterSuccessfulStatus) {
   ASSERT_NO_FATAL_FAILURE(Listen(listener));
   const auto url = std::format("http://127.0.0.1:{}/v1/commit", listener.port);
 
-  // Outlives the response, which keeps a curl handle in its connection pool.
   HttpClient client;
   auto session = auth::AuthSession::MakeDefault({});
   std::thread server([&] { ServeOnce(listener.fd, response_bytes, /*end=*/true); });
@@ -310,6 +310,40 @@ TEST(HttpClientTest, PostReportsTransferFailureAfterSuccessfulStatus) {
   server.join();
   EXPECT_THAT(response, IsError(ErrorKind::kIOError));
   EXPECT_THAT(response, HasErrorMessage("failed after status 200"));
+}
+
+TEST(HttpClientTest, ResponseOutlivesLaterRequestsAndClient) {
+  constexpr std::string_view kBody = R"({"defaults":{}})";
+  const auto response_bytes = std::format(
+      "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nX-Test: kept\r\n"
+      "Content-Length: {}\r\nConnection: close\r\n\r\n{}",
+      kBody.size(), kBody);
+  Listener listener;
+  ASSERT_NO_FATAL_FAILURE(Listen(listener));
+  const auto url = std::format("http://127.0.0.1:{}/v1/config", listener.port);
+
+  auto client = std::make_unique<HttpClient>();
+  auto session = auth::AuthSession::MakeDefault({});
+  std::thread server([&] {
+    ServeOnce(listener.fd, response_bytes, /*end=*/true);
+    ServeOnce(listener.fd, response_bytes, /*end=*/true);
+  });
+  auto first = client->Get(url, /*params=*/{}, /*headers=*/{},
+                           *DefaultErrorHandler::Instance(), *session);
+  auto second = client->Get(url, /*params=*/{}, /*headers=*/{},
+                            *DefaultErrorHandler::Instance(), *session);
+  server.join();
+  client.reset();
+
+  auto expect_intact = [&](const Result<HttpResponse>& response) {
+    ASSERT_THAT(response, IsOk());
+    EXPECT_EQ(response->status_code(), 200);
+    EXPECT_EQ(response->body(), kBody);
+    EXPECT_THAT(response->headers(),
+                ::testing::Contains(::testing::Pair("X-Test", "kept")));
+  };
+  expect_intact(first);
+  expect_intact(second);
 }
 
 #endif
@@ -340,6 +374,22 @@ TEST(HttpClientTest, BuildsRequestUriLikeJavaHttpRequest) {
                                   *DefaultErrorHandler::Instance(), session);
   EXPECT_THAT(absolute, IsError(ErrorKind::kInvalidArgument));
   EXPECT_EQ(session.request().url, "https://auth.example/token/");
+
+  // A different path per method, so a call that fails before authenticating can't
+  // pass by matching the URL left over from the previous call.
+  const auto& handler = *DefaultErrorHandler::Instance();
+  EXPECT_THAT(client.Get("v1/get", {}, {}, handler, session),
+              IsError(ErrorKind::kInvalidArgument));
+  EXPECT_EQ(session.request().url, "https://catalog.example/api/v1/get");
+  EXPECT_THAT(client.Post("v1/post", "{}", {}, handler, session),
+              IsError(ErrorKind::kInvalidArgument));
+  EXPECT_EQ(session.request().url, "https://catalog.example/api/v1/post");
+  EXPECT_THAT(client.Head("v1/head", {}, handler, session),
+              IsError(ErrorKind::kInvalidArgument));
+  EXPECT_EQ(session.request().url, "https://catalog.example/api/v1/head");
+  EXPECT_THAT(client.Delete("v1/delete", {}, {}, handler, session),
+              IsError(ErrorKind::kInvalidArgument));
+  EXPECT_EQ(session.request().url, "https://catalog.example/api/v1/delete");
 }
 
 // Redirect responses must be reported without replaying the request at the target.
