@@ -17,12 +17,13 @@
  * under the License.
  */
 
+#include "iceberg/content_cache_internal.h"
+
 #include <algorithm>
 #include <cstring>
 #include <limits>
 #include <utility>
 
-#include "iceberg/content_cache_internal.h"
 #include "iceberg/util/macros.h"
 #include "iceberg/util/string_util.h"
 
