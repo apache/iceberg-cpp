@@ -172,7 +172,7 @@ Status RewriteFiles::Validate(const TableMetadata& current_metadata,
   if (!replaced_data_files_.empty()) {
     // If there are replaced data files, there cannot be any new row-level deletes
     // for those data files.
-    auto io = ctx_->table->io();
+    auto io = ctx_->table->manifest_io();
     ICEBERG_RETURN_UNEXPECTED(MergingSnapshotUpdate::ValidateNoNewDeletesForDataFiles(
         current_metadata, starting_snapshot_id_, replaced_data_files_, snapshot,
         std::move(io), HasDataSequenceNumber()));

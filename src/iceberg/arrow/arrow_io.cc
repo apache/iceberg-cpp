@@ -22,6 +22,7 @@
 #include <limits>
 #include <mutex>
 #include <optional>
+#include <utility>
 #include <vector>
 
 #include <arrow/buffer.h>
@@ -428,24 +429,41 @@ class ArrowInputFile : public InputFile {
     }
     ::arrow::fs::FileInfo file_info(path_, ::arrow::fs::FileType::File);
     ICEBERG_ARROW_ASSIGN_OR_RETURN(auto input, fs_->OpenInputFile(file_info));
-    ICEBERG_ARROW_ASSIGN_OR_RETURN(auto size, input->GetSize());
+    auto size_result = input->GetSize();
+    auto close_status = input->Close();
+    if (!size_result.ok() && !close_status.ok()) {
+      auto status = size_result.status().WithMessage(
+          size_result.status().message(),
+          "; additionally failed to close file: ", close_status.ToString());
+      ICEBERG_ARROW_RETURN_NOT_OK(status);
+    }
+    ICEBERG_ARROW_ASSIGN_OR_RETURN(auto size, std::move(size_result));
+    ICEBERG_ARROW_RETURN_NOT_OK(close_status);
+    file_size_ = size;
     return size;
   }
 
   Result<std::unique_ptr<SeekableInputStream>> Open() override {
+    ICEBERG_ASSIGN_OR_RAISE(auto input, OpenArrowFile());
+    return std::make_unique<ArrowSeekableInputStream>(std::move(input));
+  }
+
+  Result<std::shared_ptr<::arrow::io::RandomAccessFile>> OpenArrowFile() {
     ::arrow::fs::FileInfo file_info(path_, ::arrow::fs::FileType::File);
     if (file_size_.has_value()) {
       file_info.set_size(*file_size_);
     }
     ICEBERG_ARROW_ASSIGN_OR_RETURN(auto input, fs_->OpenInputFile(file_info));
-    return std::make_unique<ArrowSeekableInputStream>(std::move(input));
+    return input;
   }
 
  private:
   std::shared_ptr<::arrow::fs::FileSystem> fs_;
   std::string location_;
   std::string path_;
-  std::optional<int64_t> file_size_;
+  // Set by Size() so a later Open() can skip the size lookup. Not synchronized: like
+  // other InputFile handles, this one is not shared across threads.
+  mutable std::optional<int64_t> file_size_;
 };
 
 class ArrowOutputFile : public OutputFile {
@@ -529,6 +547,9 @@ Result<std::shared_ptr<::arrow::io::RandomAccessFile>> OpenArrowInputStream(
     ICEBERG_ASSIGN_OR_RAISE(input_file, io->NewInputFile(path, *length));
   } else {
     ICEBERG_ASSIGN_OR_RAISE(input_file, io->NewInputFile(path));
+  }
+  if (auto* arrow_input = dynamic_cast<ArrowInputFile*>(input_file.get())) {
+    return arrow_input->OpenArrowFile();
   }
   ICEBERG_ASSIGN_OR_RAISE(size, input_file->Size());
   if (size < 0) {

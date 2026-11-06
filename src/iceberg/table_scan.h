@@ -277,6 +277,9 @@ struct ICEBERG_EXPORT TableScanContext {
   std::string table_name;
   std::shared_ptr<MetricsReporter> metrics_reporter;
 
+  // Table-owned manifest content cache, independent from data-file I/O.
+  std::shared_ptr<FileIO> manifest_io;
+
   // Validate the context parameters to see if they have conflicts.
   [[nodiscard]] Status Validate() const;
 };
