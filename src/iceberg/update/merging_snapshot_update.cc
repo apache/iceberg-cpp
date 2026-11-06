@@ -409,7 +409,7 @@ MergingSnapshotUpdate::MergingSnapshotUpdate(std::string table_name,
     : SnapshotUpdate(std::move(ctx)),
       table_name_(std::move(table_name)),
       delete_expression_(Expressions::AlwaysFalse()) {
-  auto file_io = ctx_->table->io();
+  auto file_io = ctx_->table->manifest_io();
   auto data_filter_manager = ManifestFilterManager::Make(
       ManifestContent::kData, file_io,
       [this](const std::string& location) { return DeleteFile(location); });
@@ -675,8 +675,9 @@ Result<ManifestFile> MergingSnapshotUpdate::CopyManifest(const ManifestFile& man
   ICEBERG_ASSIGN_OR_RAISE(auto spec,
                           current.PartitionSpecById(manifest.partition_spec_id));
   std::string path = ManifestPath();
-  return CopyAppendManifest(manifest, ctx_->table->io(), schema, spec, SnapshotId(), path,
-                            current.format_version, &appended_manifests_summary_);
+  return CopyAppendManifest(manifest, ctx_->table->manifest_io(), schema, spec,
+                            SnapshotId(), path, current.format_version,
+                            &appended_manifests_summary_);
 }
 
 // -------------------------------------------------------------------------

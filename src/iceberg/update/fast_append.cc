@@ -130,7 +130,7 @@ Result<std::vector<ManifestFile>> FastAppend::Apply(
   if (snapshot != nullptr) {
     auto snapshot_reader = SnapshotReader(snapshot.get());
     ICEBERG_ASSIGN_OR_RAISE(auto snapshot_manifests,
-                            snapshot_reader.Manifests(ctx_->table->io()));
+                            snapshot_reader.Manifests(ctx_->table->manifest_io()));
     manifests.insert(manifests.end(), snapshot_manifests.begin(),
                      snapshot_manifests.end());
   }
@@ -200,8 +200,8 @@ Result<ManifestFile> FastAppend::CopyManifest(const ManifestFile& manifest) {
   int64_t snapshot_id = SnapshotId();
 
   // Copy the manifest with the new snapshot ID.
-  return CopyAppendManifest(manifest, ctx_->table->io(), schema, spec, snapshot_id,
-                            new_manifest_path, current.format_version,
+  return CopyAppendManifest(manifest, ctx_->table->manifest_io(), schema, spec,
+                            snapshot_id, new_manifest_path, current.format_version,
                             &appended_manifests_summary_);
 }
 

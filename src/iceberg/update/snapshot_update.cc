@@ -328,7 +328,8 @@ Result<SnapshotUpdate::ApplyResult> SnapshotUpdate::Apply() {
       continue;
     }
     metadata_tasks.Submit([&manifest, this]() -> Status {
-      ICEBERG_ASSIGN_OR_RAISE(manifest, AddMetadata(manifest, ctx_->table->io(), base()));
+      ICEBERG_ASSIGN_OR_RAISE(manifest,
+                              AddMetadata(manifest, ctx_->table->manifest_io(), base()));
       return {};
     });
   }
@@ -392,7 +393,8 @@ Status SnapshotUpdate::Finalize([[maybe_unused]] const TableMetadata& metadata) 
   // Only files created by this update are tracked, and committed paths are kept below.
   internal::LogAndIgnoreFailure("Snapshot cleanup", [this]() -> Status {
     auto snapshot_reader = SnapshotReader(staged_snapshot_.get());
-    ICEBERG_ASSIGN_OR_RAISE(auto manifests, snapshot_reader.Manifests(ctx_->table->io()));
+    ICEBERG_ASSIGN_OR_RAISE(auto manifests,
+                            snapshot_reader.Manifests(ctx_->table->manifest_io()));
     auto committed = manifests | std::views::transform([](const auto& manifest) {
                        return manifest.manifest_path;
                      }) |

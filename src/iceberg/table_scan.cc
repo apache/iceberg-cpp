@@ -299,6 +299,7 @@ Result<std::unique_ptr<TableScanBuilder<ScanType>>> TableScanBuilder<ScanType>::
   auto builder =
       std::unique_ptr<TableScanBuilder<ScanType>>(new TableScanBuilder<ScanType>(
           table.metadata(), table.io(), table.full_name(), table.reporter()));
+  builder->context_.manifest_io = table.manifest_io();
   return builder;
 }
 
