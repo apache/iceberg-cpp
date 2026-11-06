@@ -584,6 +584,7 @@ RestCatalog::RestCatalog(RestCatalogProperties config, std::shared_ptr<FileIO> f
 std::string_view RestCatalog::name() const { return name_; }
 
 Result<std::shared_ptr<Catalog>> RestCatalog::AsCatalog() {
+  std::lock_guard lock(default_catalog_mutex_);
   if (auto catalog = default_catalog_.lock()) {
     return catalog;
   }
