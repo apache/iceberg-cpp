@@ -51,7 +51,7 @@ cmake --install build
 ### Bundle Library (with vendored dependencies)
 
 ```bash
-cmake -S . -B build -G Ninja -DCMAKE_INSTALL_PREFIX=/path/to/install -DICEBERG_BUILD_BUNDLE=ON
+cmake -S . -B build -G Ninja -DCMAKE_INSTALL_PREFIX=/path/to/install -DICEBERG_BUILD_BUNDLE=ON -DFETCHCONTENT_TRY_FIND_PACKAGE_MODE=NEVER
 cmake --build build
 cmake --install build
 ```
@@ -72,6 +72,8 @@ cmake --install build
 | `ICEBERG_BUILD_SHARED` | `OFF` | Build shared library |
 | `ICEBERG_BUILD_TESTS` | `ON` | Build tests |
 | `ICEBERG_BUILD_BUNDLE` | `ON` | Build the battery-included library |
+| `ICEBERG_USE_BUNDLED_ARROW` | `OFF` | Force the pinned Arrow source; CI enables this |
+| `ICEBERG_REQUIRE_ARROW_VARIANT` | `ON` | Require Arrow variant APIs in the bundle; CI enforces this |
 | `ICEBERG_BUILD_REST` | `ON` | Build REST catalog client |
 | `ICEBERG_BUILD_REST_INTEGRATION_TESTS` | `OFF` | Build REST catalog integration tests |
 | `ICEBERG_BUILD_HIVE` | `OFF` | Build Hive (HMS) catalog client |
@@ -159,6 +161,9 @@ If you experience network issues when downloading dependencies, you can override
 Example:
 
 ```bash
-export ICEBERG_ARROW_URL="https://your-mirror.com/apache-arrow-22.0.0.tar.gz"
+export ICEBERG_ARROW_URL="https://your-mirror.com/arrow-0f16412bb1c39611aeed7393eba09e637f4d86fa.tar.gz"
 cmake -S . -B build -G Ninja
 ```
+
+The Arrow mirror must serve the same pinned source archive: its SHA256 is checked
+against the value in `cmake_modules/IcebergThirdpartyToolchain.cmake`.

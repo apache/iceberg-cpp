@@ -30,7 +30,7 @@ namespace iceberg::parquet {
 /// \brief A reader that reads ArrowArray from Parquet files.
 class ICEBERG_BUNDLE_EXPORT ParquetReader : public Reader {
  public:
-  ParquetReader() = default;
+  ParquetReader();
 
   ~ParquetReader() override;
 

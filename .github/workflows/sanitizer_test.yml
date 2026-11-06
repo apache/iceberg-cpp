@@ -70,6 +70,8 @@ jobs:
         run: |
           mkdir build && cd build
           cmake .. -G Ninja -DCMAKE_BUILD_TYPE=Debug -DICEBERG_ENABLE_ASAN=ON -DICEBERG_ENABLE_UBSAN=ON \
+            -DICEBERG_REQUIRE_ARROW_VARIANT=ON \
+            -DICEBERG_USE_BUNDLED_ARROW=ON \
             -DCMAKE_C_COMPILER_LAUNCHER=sccache -DCMAKE_CXX_COMPILER_LAUNCHER=sccache
           cmake --build . --verbose
       - name: Save sccache

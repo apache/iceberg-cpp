@@ -30,6 +30,7 @@
 
 #include <arrow/api.h>
 #include <arrow/c/bridge.h>
+#include <arrow/extension/parquet_variant.h>
 #include <arrow/extension/uuid.h>
 #include <arrow/result.h>
 #include <arrow/type_fwd.h>
@@ -38,6 +39,7 @@
 #include <arrow/util/thread_pool.h>
 #include <gtest/gtest.h>
 
+#include "iceberg/arrow/arrow_register.h"
 #include "iceberg/arrow/arrow_status_internal.h"
 #include "iceberg/arrow/metadata_column_util_internal.h"
 #include "iceberg/constants.h"
@@ -139,28 +141,145 @@ INSTANTIATE_TEST_SUITE_P(
         ToArrowSchemaParam{.iceberg_type = iceberg::unknown(),
                            .arrow_type = ::arrow::null()}));
 
-TEST(ToArrowSchemaTest, UnsupportedV3Types) {
-  const std::vector<std::shared_ptr<Type>> unsupported_types = {iceberg::variant()};
+TEST(ToArrowSchemaTest, VariantRoundtrip) {
+  arrow::RegisterAll();
+  auto list_type = std::make_shared<ListType>(3, variant(), true);
+  Schema schema({SchemaField::MakeOptional(1, "payload", variant()),
+                 SchemaField::MakeRequired(2, "events", list_type)});
+  ArrowSchema c_schema;
+  ASSERT_THAT(ToArrowSchema(schema, &c_schema), IsOk());
+  auto imported = ::arrow::ImportSchema(&c_schema).ValueOrDie();
+  ASSERT_EQ(imported->field(0)->type()->id(), ::arrow::Type::EXTENSION);
+  const auto& extension =
+      static_cast<const ::arrow::ExtensionType&>(*imported->field(0)->type());
+  EXPECT_EQ(extension.extension_name(), kArrowVariantExtensionName);
+  const auto& storage = extension.storage_type();
+  ASSERT_EQ(storage->num_fields(), 2);
+  for (const auto& child : storage->fields()) {
+    EXPECT_EQ(child->type()->id(), ::arrow::Type::BINARY);
+    EXPECT_FALSE(child->nullable());
+    EXPECT_TRUE(child->metadata() == nullptr ||
+                !child->metadata()->Contains(kParquetFieldIdKey));
+  }
+  ASSERT_TRUE(::arrow::ExportSchema(*imported, &c_schema).ok());
+  auto roundtrip = FromArrowSchema(c_schema, 0);
+  c_schema.release(&c_schema);
+  ASSERT_THAT(roundtrip, IsOk());
+  EXPECT_EQ(*roundtrip.value(), schema);
+}
 
-  for (const auto& unsupported_type : unsupported_types) {
-    Schema schema(
-        {SchemaField::MakeOptional(/*field_id=*/1, "unsupported", unsupported_type)},
-        /*schema_id=*/0);
-    ArrowSchema arrow_schema{};
-    ASSERT_THAT(ToArrowSchema(schema, &arrow_schema),
-                HasErrorMessage("is not supported by Arrow conversion"));
-    EXPECT_EQ(arrow_schema.release, nullptr);
+TEST(FromArrowSchemaTest, RejectMalformedVariantStorage) {
+  auto metadata =
+      ::arrow::key_value_metadata({"ARROW:extension:name"}, {kArrowVariantExtensionName});
+  for (const auto& storage :
+       {::arrow::struct_({::arrow::field("metadata", ::arrow::binary(), false)}),
+        ::arrow::struct_({::arrow::field("metadata", ::arrow::binary()),
+                          ::arrow::field("value", ::arrow::binary(), false)}),
+        ::arrow::struct_({::arrow::field("metadata", ::arrow::binary(), false),
+                          ::arrow::field("value", ::arrow::int32(), false)})}) {
+    auto schema =
+        ::arrow::schema({::arrow::field("payload", storage)->WithMetadata(metadata)});
+    ArrowSchema c_schema;
+    ASSERT_TRUE(::arrow::ExportSchema(*schema, &c_schema).ok());
+    auto result = FromArrowSchema(c_schema, 0);
+    c_schema.release(&c_schema);
+    EXPECT_THAT(result, IsError(ErrorKind::kInvalidSchema));
   }
 }
 
 TEST(ToArrowSchemaTest, ReleasesSchemaOnConversionFailure) {
-  // fixed(0) passes CheckArrowCompatible but nanoarrow rejects its non-positive width.
+  // nanoarrow rejects fixed(0) after initializing the output schema.
   Schema schema({SchemaField::MakeOptional(/*field_id=*/1, "invalid_fixed", fixed(0))},
                 /*schema_id=*/0);
   ArrowSchema arrow_schema{};
 
   EXPECT_THAT(ToArrowSchema(schema, &arrow_schema), IsError(ErrorKind::kInvalidSchema));
   EXPECT_EQ(arrow_schema.release, nullptr);
+}
+
+TEST(FromArrowSchemaTest, RejectMalformedVariantTypedValue) {
+  auto metadata = ::arrow::key_value_metadata(
+      {"ARROW:extension:name", std::string(kParquetFieldIdKey)},
+      {kArrowVariantExtensionName, "1"});
+  auto value = ::arrow::field("value", ::arrow::binary());
+  for (const auto& typed :
+       {::arrow::field("typed_value", ::arrow::int32(), false),
+        ::arrow::field("typed_value", ::arrow::map(::arrow::utf8(), ::arrow::int32())),
+        ::arrow::field("typed_value", ::arrow::struct_({})),
+        ::arrow::field("typed_value",
+                       ::arrow::struct_({::arrow::field("x", ::arrow::int32())})),
+        ::arrow::field("typed_value", ::arrow::list(::arrow::field(
+                                          "element", ::arrow::struct_({value})))),
+        ::arrow::field(
+            "typed_value",
+            ::arrow::struct_({::arrow::field(
+                "x",
+                ::arrow::struct_({::arrow::field("value", ::arrow::binary(), false)}),
+                false)})),
+        ::arrow::field("typed_value",
+                       ::arrow::struct_({::arrow::field(
+                           "x", ::arrow::struct_({value, value}), false)})),
+        ::arrow::field(
+            "typed_value",
+            ::arrow::struct_({::arrow::field(
+                "x", ::arrow::struct_({::arrow::field("typed_value", ::arrow::uint64())}),
+                false)})),
+        ::arrow::field("typed_value", ::arrow::timestamp(::arrow::TimeUnit::MILLI)),
+        ::arrow::field("typed_value", ::arrow::decimal128(10, -1))}) {
+    SCOPED_TRACE(typed->ToString());
+    auto storage = ::arrow::struct_(
+        {::arrow::field("metadata", ::arrow::binary(), false), value, typed});
+    auto schema =
+        ::arrow::schema({::arrow::field("payload", storage)->WithMetadata(metadata)});
+    ArrowSchema c_schema;
+    ASSERT_TRUE(::arrow::ExportSchema(*schema, &c_schema).ok());
+    auto result = FromArrowSchema(c_schema, 0);
+    c_schema.release(&c_schema);
+    EXPECT_THAT(result, IsError(ErrorKind::kInvalidSchema));
+  }
+}
+
+TEST(FromArrowSchemaTest, AcceptShreddedVariantTypedValue) {
+  auto metadata = ::arrow::key_value_metadata(
+      {"ARROW:extension:name", std::string(kParquetFieldIdKey)},
+      {kArrowVariantExtensionName, "1"});
+  auto value = ::arrow::field("value", ::arrow::binary());
+  auto group = ::arrow::struct_({value, ::arrow::field("typed_value", ::arrow::int64())});
+  for (const auto& type :
+       {::arrow::int64(), ::arrow::extension::uuid(), ::arrow::decimal128(30, 2),
+        ::arrow::struct_({::arrow::field("count", group, false)}),
+        ::arrow::list(::arrow::field("element", group, false)),
+        ::arrow::large_list(::arrow::field("element", group, false))}) {
+    for (bool typed_only : {false, true}) {
+      ::arrow::FieldVector fields{::arrow::field("metadata", ::arrow::binary(), false)};
+      if (!typed_only) fields.push_back(value);
+      fields.push_back(::arrow::field("typed_value", type));
+      auto schema = ::arrow::schema(
+          {::arrow::field("payload", ::arrow::struct_(fields))->WithMetadata(metadata)});
+      ArrowSchema c_schema;
+      ASSERT_TRUE(::arrow::ExportSchema(*schema, &c_schema).ok());
+      auto result = FromArrowSchema(c_schema, 0);
+      c_schema.release(&c_schema);
+      ASSERT_THAT(result, IsOk());
+      EXPECT_TRUE(result.value()->fields()[0].type()->is_variant());
+    }
+  }
+}
+
+TEST(FromArrowSchemaTest, VariantWithoutFieldId) {
+  auto metadata =
+      ::arrow::key_value_metadata({"ARROW:extension:name"}, {kArrowVariantExtensionName});
+  auto storage = ::arrow::struct_({::arrow::field("metadata", ::arrow::binary(), false),
+                                   ::arrow::field("value", ::arrow::binary(), false)});
+  auto schema =
+      ::arrow::schema({::arrow::field("payload", storage)->WithMetadata(metadata)});
+  ArrowSchema c_schema;
+  ASSERT_TRUE(::arrow::ExportSchema(*schema, &c_schema).ok());
+  auto result = FromArrowSchema(c_schema, 0);
+  c_schema.release(&c_schema);
+  ASSERT_THAT(result, IsOk());
+  EXPECT_TRUE(result.value()->fields()[0].type()->is_variant());
+  EXPECT_EQ(result.value()->fields()[0].field_id(), -1);
 }
 
 namespace {

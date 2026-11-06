@@ -32,6 +32,8 @@ namespace iceberg {
 
 /// \brief Canonical Arrow extension name used for Iceberg UUID values.
 inline constexpr const char* kArrowUuidExtensionName = "arrow.uuid";
+/// \brief Canonical Arrow extension name used for Iceberg variant values.
+inline constexpr const char* kArrowVariantExtensionName = "arrow.parquet.variant";
 
 /// \brief Convert an Iceberg schema to an Arrow schema.
 ///
