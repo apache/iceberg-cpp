@@ -519,6 +519,16 @@ TEST(TypeTest, Decimal) {
     ASSERT_EQ(10, decimal.precision());
     ASSERT_EQ(-10, decimal.scale());
   }
+  {
+    iceberg::DecimalType decimal(38, 100);
+    ASSERT_EQ(38, decimal.precision());
+    ASSERT_EQ(100, decimal.scale());
+  }
+  {
+    iceberg::DecimalType decimal(38, -100);
+    ASSERT_EQ(38, decimal.precision());
+    ASSERT_EQ(-100, decimal.scale());
+  }
   ASSERT_THAT([]() { iceberg::DecimalType decimal(-1, 10); },
               ::testing::ThrowsMessage<iceberg::IcebergError>(
                   ::testing::HasSubstr("precision must be in [0, 38], was -1")));
