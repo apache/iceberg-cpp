@@ -21,6 +21,7 @@ Checks: |
   clang-analyzer-*,
   google-*,
   modernize-*,
+  misc-include-cleaner,
   readability-identifier-naming,
   readability-isolate-declaration,
   -modernize-use-nodiscard,
@@ -41,5 +42,11 @@ CheckOptions:
     value:  '_'
   - key:    modernize-use-scoped-lock.WarnOnSingleLocks
     value:  'false'
+  # misc-include-cleaner is scoped to standard-library headers only. Project
+  # headers (iceberg/) and third-party headers are ignored so the check does
+  # not demand a direct include for every symbol that an already-included
+  # project header provides (the noise that led to its removal in #708).
+  - key:    misc-include-cleaner.IgnoreHeaders
+    value:  'iceberg/.*;arrow/.*;avro/.*;aws/.*;benchmark/.*;cpr/.*;curl/.*;gmock/.*;gtest/.*;nanoarrow/.*;nlohmann/.*;openssl/.*;parquet/.*;roaring/.*;spdlog/.*;sqlpp23/.*;thrift/.*;libpq-fe\.h;mysql\.h;sqlite3\.h;utf8proc\.h;zlib\.h'
 
 HeaderFilterRegex: 'src/iceberg|example'
