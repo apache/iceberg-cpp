@@ -21,6 +21,7 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <functional>
 #include <iterator>
 #include <ranges>
 #include <utility>
@@ -288,6 +289,45 @@ int32_t ChangelogScanTask::files_count() const { return 1 + delete_files_.size()
 
 int64_t ChangelogScanTask::estimated_row_count() const {
   return data_file_->record_count;
+}
+
+// DeletedRowsScanTask implementation
+
+DeletedRowsScanTask::DeletedRowsScanTask(
+    int32_t change_ordinal, int64_t commit_snapshot_id,
+    std::shared_ptr<DataFile> data_file,
+    std::vector<std::shared_ptr<DataFile>> added_deletes,
+    std::vector<std::shared_ptr<DataFile>> existing_deletes,
+    std::shared_ptr<Expression> residual_filter)
+    : ChangelogScanTask(change_ordinal, commit_snapshot_id, std::move(data_file),
+                        std::move(added_deletes), std::move(residual_filter)),
+      existing_deletes_(std::move(existing_deletes)) {}
+
+int64_t DeletedRowsScanTask::size_bytes() const {
+  int64_t total_size = ChangelogScanTask::size_bytes();
+  for (const auto& delete_file : existing_deletes_) {
+    total_size += ContentFileUtil::ContentSizeInBytes(*delete_file);
+  }
+  return total_size;
+}
+
+int32_t DeletedRowsScanTask::files_count() const {
+  return ChangelogScanTask::files_count() +
+         static_cast<int32_t>(existing_deletes_.size());
+}
+
+// The record count of a deletion vector is its cardinality. A deletion vector that
+// replaces another one keeps the positions it deleted, so the rows this task produces are
+// those of the added deletes minus those of the existing deletes.
+int64_t DeletedRowsScanTask::estimated_row_count() const {
+  int64_t deleted_rows = 0;
+  for (const auto& delete_file : delete_files_) {
+    deleted_rows += delete_file->record_count;
+  }
+  for (const auto& delete_file : existing_deletes_) {
+    deleted_rows -= delete_file->record_count;
+  }
+  return std::clamp<int64_t>(deleted_rows, 0, data_file_->record_count);
 }
 
 // Generic template implementation for Make
