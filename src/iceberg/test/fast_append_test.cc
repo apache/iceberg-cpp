@@ -39,7 +39,6 @@
 #include "iceberg/exception.h"
 #include "iceberg/expression/expressions.h"
 #include "iceberg/manifest/manifest_entry.h"
-#include "iceberg/manifest/manifest_reader.h"
 #include "iceberg/manifest/manifest_writer.h"
 #include "iceberg/metrics/commit_report.h"
 #include "iceberg/metrics/metrics_reporter.h"
@@ -175,14 +174,6 @@ class FastAppendTest : public UpdateTestBase {
     return std::vector<ManifestFile>(manifests.begin(), manifests.end());
   }
 
-  Result<std::vector<ManifestEntry>> ReadEntries(const ManifestFile& manifest) {
-    ICEBERG_ASSIGN_OR_RAISE(
-        auto spec, table_->metadata()->PartitionSpecById(manifest.partition_spec_id));
-    ICEBERG_ASSIGN_OR_RAISE(auto reader,
-                            ManifestReader::Make(manifest, file_io_, schema_, spec));
-    return reader->Entries();
-  }
-
   std::shared_ptr<PartitionSpec> spec_;
   std::shared_ptr<Schema> schema_;
   std::shared_ptr<DataFile> file_a_;
@@ -292,7 +283,7 @@ TEST_F(FastAppendTest, WriteManifestGroups) {
     ASSERT_TRUE(manifests[group_index].added_files_count.has_value());
     EXPECT_EQ(manifests[group_index].added_files_count.value(), kGroupSize);
 
-    ICEBERG_UNWRAP_OR_FAIL(auto entries, ReadEntries(manifests[group_index]));
+    ICEBERG_UNWRAP_OR_FAIL(auto entries, ReadManifestEntries(manifests[group_index]));
     ASSERT_EQ(entries.size(), kGroupSize);
     const size_t offset = group_index * kGroupSize;
     for (size_t entry_index = 0; entry_index < entries.size(); ++entry_index) {
@@ -457,10 +448,7 @@ TEST_F(FastAppendTest, RebaseCopiesAppendManifestAgain) {
     EXPECT_THAT(attempt_manifests, ::testing::Not(::testing::Contains(manifest_path)));
     attempt_manifests.push_back(manifest_path);
     attempt_lists.push_back(snapshot->manifest_list);
-    ICEBERG_UNWRAP_OR_FAIL(auto entries, ReadEntries(manifests[0]));
-    ASSERT_THAT(entries, ::testing::SizeIs(1));
-    ASSERT_NE(entries[0].data_file, nullptr);
-    EXPECT_EQ(entries[0].data_file->file_path, file_a_->file_path);
+    ExpectManifestEntries(manifests[0], {file_a_->file_path}, {ManifestStatus::kAdded});
   });
   ICEBERG_UNWRAP_OR_FAIL(txn, table_->NewTransaction());
   ICEBERG_UNWRAP_OR_FAIL(auto fast_append, txn->NewFastAppend());
@@ -511,10 +499,10 @@ TEST_F(FastAppendTest, AppendManifestWithSnapshotIdInheritance) {
   ASSERT_THAT(manifests, ::testing::SizeIs(1));
   EXPECT_EQ(manifests[0].manifest_path, path);
   EXPECT_EQ(manifests[0].added_snapshot_id, snapshot->snapshot_id);
-  ICEBERG_UNWRAP_OR_FAIL(auto entries, ReadEntries(manifests[0]));
-  ASSERT_THAT(entries, ::testing::SizeIs(2));
-  EXPECT_EQ(entries[0].snapshot_id, snapshot->snapshot_id);
-  EXPECT_EQ(entries[1].snapshot_id, snapshot->snapshot_id);
+  ExpectManifestEntriesWithSnapshotIds(manifests[0],
+                                       {file_a_->file_path, file_b_->file_path},
+                                       {ManifestStatus::kAdded, ManifestStatus::kAdded},
+                                       {snapshot->snapshot_id, snapshot->snapshot_id});
 }
 
 TEST_F(FastAppendTest, AppendManifestWithExplicitInvalidSnapshotIdIsCopied) {
@@ -533,10 +521,10 @@ TEST_F(FastAppendTest, AppendManifestWithExplicitInvalidSnapshotIdIsCopied) {
   ASSERT_THAT(manifests, ::testing::SizeIs(1));
   EXPECT_NE(manifests[0].manifest_path, path);
   EXPECT_EQ(manifests[0].added_snapshot_id, snapshot->snapshot_id);
-  ICEBERG_UNWRAP_OR_FAIL(auto entries, ReadEntries(manifests[0]));
-  ASSERT_THAT(entries, ::testing::SizeIs(2));
-  EXPECT_EQ(entries[0].snapshot_id, snapshot->snapshot_id);
-  EXPECT_EQ(entries[1].snapshot_id, snapshot->snapshot_id);
+  ExpectManifestEntriesWithSnapshotIds(manifests[0],
+                                       {file_a_->file_path, file_b_->file_path},
+                                       {ManifestStatus::kAdded, ManifestStatus::kAdded},
+                                       {snapshot->snapshot_id, snapshot->snapshot_id});
 }
 
 TEST_F(FastAppendTest, AppendDuplicateFile) {
