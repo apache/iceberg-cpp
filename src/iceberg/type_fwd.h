@@ -291,6 +291,7 @@ class MetadataTable;
 class MetadataScan;
 class MetadataScanTask;
 class MetadataScanTaskReader;
+class RefsTable;
 class SnapshotsTable;
 
 /// \brief Table encryption
