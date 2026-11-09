@@ -160,7 +160,8 @@ if [ "${RELEASE_SIGN}" -gt 0 ]; then
     echo "Failed to decompress ${tar_gz}. Not signing."
     exit 1
   fi
-  if ! git archive "${rc_hash}" --format=tar --prefix "${id}/" > "${verify_dir}/expected.tar"; then
+  if ! git -c core.autocrlf=false -c core.eol=lf -c tar.umask=0002 \
+      archive "${rc_hash}" --format=tar --prefix "${id}/" > "${verify_dir}/expected.tar"; then
     echo "Failed to archive RC commit ${rc_hash}. Not signing."
     exit 1
   fi

@@ -107,7 +107,8 @@ class ReleaseRcTest(unittest.TestCase):
         self.git("init", "--quiet")
         self.git("remote", "add", "origin", "https://github.com/example/iceberg-cpp.git")
         (self.repo / "source.txt").write_text("original source\n")
-        self.git("add", "source.txt")
+        (self.repo / ".gitattributes").write_text("source.txt text\n")
+        self.git("add", "source.txt", ".gitattributes")
         self.git("commit", "--quiet", "-m", "Initial source")
         self.git("tag", "-a", "v1.2.3-rc0", "-m", "Release candidate")
         self.archive = self.git("archive", "HEAD", "--prefix", self.name + "/")
@@ -151,7 +152,7 @@ class ReleaseRcTest(unittest.TestCase):
         self.assertFalse(self.calls.exists(), "Signing or upload was attempted")
         self.assertEqual(list(self.scratch.iterdir()), [])
 
-    def test_valid_archive_with_different_gzip_metadata(self):
+    def assert_release_succeeds(self):
         result = self.release()
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertEqual(
@@ -165,6 +166,21 @@ class ReleaseRcTest(unittest.TestCase):
         calls = self.calls.read_text().splitlines()
         self.assertEqual([line.split()[0] for line in calls], ["gpg", "gh", "svn"])
         self.assertEqual(list(self.scratch.iterdir()), [])
+
+    def test_valid_archive_with_different_gzip_metadata(self):
+        self.assert_release_succeeds()
+
+    def test_local_autocrlf_does_not_change_archive(self):
+        self.git("config", "core.autocrlf", "true")
+        self.assert_release_succeeds()
+
+    def test_local_eol_does_not_change_archive(self):
+        self.git("config", "core.eol", "crlf")
+        self.assert_release_succeeds()
+
+    def test_local_tar_umask_does_not_change_archive(self):
+        self.git("config", "tar.umask", "022")
+        self.assert_release_succeeds()
 
     def test_replaced_archive_and_checksum(self):
         (self.repo / "source.txt").write_text("modified source\n")

@@ -55,7 +55,8 @@ jobs:
           ARCHIVE_FILE_NAME="apache-iceberg-cpp-${VERSION}"
           tar_gz="${ARCHIVE_FILE_NAME}.tar.gz"
           echo "TAR_GZ=${tar_gz}" >> ${GITHUB_ENV}
-          git archive HEAD --prefix "${ARCHIVE_FILE_NAME}/" --output "${tar_gz}"
+          git -c core.autocrlf=false -c core.eol=lf -c tar.umask=0002 \
+            archive HEAD --prefix "${ARCHIVE_FILE_NAME}/" --output "${tar_gz}"
           sha512sum "${tar_gz}" > "${tar_gz}.sha512"
 
       - name: Audit
