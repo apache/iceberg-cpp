@@ -236,16 +236,14 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
   int32_t attempt() const { return attempt_.load(std::memory_order_relaxed); }
   int64_t target_manifest_size_bytes() const { return target_manifest_size_bytes_; }
 
-  /// \brief Clean up any uncommitted manifests that were created.
+  /// \brief Clear operation caches and register any remaining owned files.
   ///
-  /// Manifests may not be committed if Apply is called multiple times
-  /// because a commit conflict has occurred. Implementations may keep
-  /// around manifests because the same changes will be made by both
-  /// Apply calls. This method instructs the implementation to clean up
-  /// those manifests and passes the paths of the manifests that were
-  /// actually committed.
+  /// Do not delete files here. SnapshotUpdate deletes uncommitted paths through
+  /// its staging registry. Generated paths must be registered before writing.
+  /// External inputs become table-owned only after a successful commit.
   ///
-  /// \param committed A set of manifest paths that were actually committed
+  /// \param committed File paths protected by retained transaction snapshots.
+  /// Empty when discarding all staged files.
   virtual Status CleanUncommitted(const std::unordered_set<std::string>& committed) = 0;
 
   /// \brief A string that describes the action that produced the new snapshot.
@@ -287,11 +285,9 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
   /// \brief Get or generate the snapshot ID for the new snapshot.
   int64_t SnapshotId();
 
-  /// Best-effort delete. Failed paths remain registered for later cleanup.
-  Status DeleteFile(const std::string& path) noexcept;
   void RegisterStagedFile(const std::string& path);
-  /// Transfer cleanup ownership to the derived update.
-  void UnregisterStagedFile(const std::string& path);
+  /// Track an owned content file as well as its cleanup path.
+  void RegisterStagedContentFile(const std::string& path);
 
   std::string ManifestPath();
   std::string ManifestListPath();
@@ -306,6 +302,8 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
       const TableMetadata& previous);
 
   Status ReportCommit() const;
+  Status CleanUncommittedFiles(const std::unordered_set<std::string>& committed);
+  Status DeleteStagedFile(const std::string& path) noexcept;
 
  protected:
   SnapshotSummaryBuilder summary_;
@@ -364,9 +362,16 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
   int32_t write_manifest_parallelism_{1};
   std::atomic<int32_t> manifest_count_{0};
   std::atomic<int32_t> attempt_{0};
-  // All paths are registered before writes, including partial/failed writes.
+  // Protect both staging sets. All paths are registered before writes, including
+  // partial and failed writes.
   std::mutex staging_mutex_;
+  // Every file path created or owned by this update: manifests, manifest lists,
+  // and content files. Terminal cleanup may delete paths from this set.
   std::unordered_set<std::string> staged_files_;
+  // A subset of staged_files_ containing owned content files, such as merged
+  // deletion vectors. Successful cleanup keeps these only when a retained
+  // manifest still references them.
+  std::unordered_set<std::string> staged_content_files_;
   const int64_t target_manifest_size_bytes_;
   std::optional<int64_t> snapshot_id_;
   OptionalExecutor plan_executor_;

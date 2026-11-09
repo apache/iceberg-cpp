@@ -411,8 +411,10 @@ MergingSnapshotUpdate::MergingSnapshotUpdate(std::string table_name,
       delete_expression_(Expressions::AlwaysFalse()) {
   auto file_io = ctx_->table->io();
   auto data_filter_manager = ManifestFilterManager::Make(
-      ManifestContent::kData, file_io,
-      [this](const std::string& location) { return DeleteFile(location); });
+      ManifestContent::kData, file_io, [this](const std::string& location) {
+        RegisterStagedFile(location);
+        return Status{};
+      });
   if (!data_filter_manager.has_value()) {
     AddError(data_filter_manager.error());
   } else {
@@ -420,8 +422,10 @@ MergingSnapshotUpdate::MergingSnapshotUpdate(std::string table_name,
   }
 
   auto delete_filter_manager = ManifestFilterManager::Make(
-      ManifestContent::kDeletes, file_io,
-      [this](const std::string& location) { return DeleteFile(location); });
+      ManifestContent::kDeletes, file_io, [this](const std::string& location) {
+        RegisterStagedFile(location);
+        return Status{};
+      });
   if (!delete_filter_manager.has_value()) {
     AddError(delete_filter_manager.error());
   } else {
@@ -437,7 +441,10 @@ MergingSnapshotUpdate::MergingSnapshotUpdate(std::string table_name,
   auto data_merge_manager = ManifestMergeManager::Make(
       ManifestContent::kData, target_size_bytes, min_count_to_merge, merge_enabled,
       file_io, [this] { return SnapshotId(); },
-      [this](const std::string& location) { return DeleteFile(location); });
+      [this](const std::string& location) {
+        RegisterStagedFile(location);
+        return Status{};
+      });
   if (!data_merge_manager.has_value()) {
     AddError(data_merge_manager.error());
   } else {
@@ -447,7 +454,10 @@ MergingSnapshotUpdate::MergingSnapshotUpdate(std::string table_name,
   auto delete_merge_manager = ManifestMergeManager::Make(
       ManifestContent::kDeletes, target_size_bytes, min_count_to_merge, merge_enabled,
       file_io, [this] { return SnapshotId(); },
-      [this](const std::string& location) { return DeleteFile(location); });
+      [this](const std::string& location) {
+        RegisterStagedFile(location);
+        return Status{};
+      });
   if (!delete_merge_manager.has_value()) {
     AddError(delete_merge_manager.error());
   } else {
@@ -675,8 +685,14 @@ Result<ManifestFile> MergingSnapshotUpdate::CopyManifest(const ManifestFile& man
   ICEBERG_ASSIGN_OR_RAISE(auto spec,
                           current.PartitionSpecById(manifest.partition_spec_id));
   std::string path = ManifestPath();
-  return CopyAppendManifest(manifest, ctx_->table->io(), schema, spec, SnapshotId(), path,
-                            current.format_version, &appended_manifests_summary_);
+  // A failed copy must not leave partial counts in the cached summary.
+  SnapshotSummaryBuilder summary;
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto copied,
+      CopyAppendManifest(manifest, ctx_->table->io(), schema, spec, SnapshotId(), path,
+                         current.format_version, &summary));
+  copied_manifests_summary_.Merge(summary);
+  return copied;
 }
 
 // -------------------------------------------------------------------------
@@ -729,11 +745,8 @@ ManifestWriterFactory MergingSnapshotUpdate::MakeWriterFactory(
 }
 
 Result<std::vector<ManifestFile>> MergingSnapshotUpdate::WriteNewDataManifests() {
-  // If new files were staged after the cache was populated (commit retry), invalidate.
+  // New additions invalidate the cache. Old paths stay staged until cleanup.
   if (has_new_data_files_ && !cached_new_data_manifests_.empty()) {
-    for (const auto& m : cached_new_data_manifests_) {
-      std::ignore = DeleteFile(m.manifest_path);
-    }
     cached_new_data_manifests_.clear();
   }
 
@@ -819,10 +832,9 @@ MergingSnapshotUpdate::MergeDVs() {
   auto output_path = location_provider->NewDataLocation(
       std::format("merged-dvs-{}-{}.puffin", SnapshotId(), ++dv_merge_attempt_));
 
-  RegisterStagedFile(output_path);
+  RegisterStagedContentFile(output_path);
   auto merged_files = DVUtil::MergeAndWriteDVs(groups, output_path, ctx_->table->io());
   if (!merged_files) {
-    std::ignore = DeleteFile(output_path);
     return ::iceberg::unexpected<Error>(std::move(merged_files.error()));
   }
 
@@ -846,30 +858,16 @@ MergingSnapshotUpdate::MergeDVs() {
                   groups[pos].referenced_data_file);
     PendingDeleteFile merged{.file = std::move(iter->second),
                              .data_sequence_number = data_sequence_numbers[pos]};
-    merged_dvs_.push_back(merged);
     result.push_back(std::move(merged));
   }
-
-  // The operation-specific merged DV cache now owns cleanup for this file.
-  UnregisterStagedFile(output_path);
 
   return result;
 }
 
 Result<std::vector<ManifestFile>> MergingSnapshotUpdate::WriteNewDeleteManifests() {
-  // If new files were staged after the cache was populated (commit retry), invalidate.
+  // New additions invalidate the cache. Old paths stay staged until cleanup.
   if (has_new_delete_files_ && !cached_new_delete_manifests_.empty()) {
-    for (const auto& m : cached_new_delete_manifests_) {
-      std::ignore = DeleteFile(m.manifest_path);
-    }
     cached_new_delete_manifests_.clear();
-    std::unordered_set<std::string> deleted_merged_dv_paths;
-    for (const auto& dv : merged_dvs_) {
-      if (deleted_merged_dv_paths.insert(dv.file->file_path).second) {
-        std::ignore = DeleteFile(dv.file->file_path);
-      }
-    }
-    merged_dvs_.clear();
     added_delete_files_summary_.Clear();
   }
 
@@ -919,6 +917,12 @@ Result<std::vector<ManifestFile>> MergingSnapshotUpdate::WriteNewDeleteManifests
   cached_new_delete_manifests_ = result;
   has_new_delete_files_ = false;
   return result;
+}
+
+Status MergingSnapshotUpdate::PrepareForReplay() {
+  // The same path can inherit new sequence numbers and row IDs on replay.
+  // Drop derived caches, but keep their files staged for terminal cleanup.
+  return CleanUncommittedManagers({});
 }
 
 Result<std::vector<ManifestFile>> MergingSnapshotUpdate::Apply(
@@ -990,11 +994,10 @@ Result<std::vector<ManifestFile>> MergingSnapshotUpdate::Apply(
 
   // Step 4: Write (or retrieve cached) new data manifests.
   ICEBERG_ASSIGN_OR_RAISE(auto written_data_manifests, WriteNewDataManifests());
-  if (rewritten_append_manifests_.empty() && !append_manifests_to_copy_.empty()) {
-    for (const auto& manifest : append_manifests_to_copy_) {
-      ICEBERG_ASSIGN_OR_RAISE(auto copied, CopyManifest(manifest));
-      rewritten_append_manifests_.push_back(std::move(copied));
-    }
+  for (size_t i = rewritten_append_manifests_.size();
+       i < append_manifests_to_copy_.size(); ++i) {
+    ICEBERG_ASSIGN_OR_RAISE(auto copied, CopyManifest(append_manifests_to_copy_[i]));
+    rewritten_append_manifests_.push_back(std::move(copied));
   }
 
   // Incorporate append manifests (from AddManifest), stamping each with the
@@ -1027,6 +1030,7 @@ Result<std::vector<ManifestFile>> MergingSnapshotUpdate::Apply(
   summary_builder().Merge(added_data_files_summary_);
   summary_builder().Merge(added_delete_files_summary_);
   summary_builder().Merge(appended_manifests_summary_);
+  summary_builder().Merge(copied_manifests_summary_);
   for (const auto& [property, value] : custom_summary_properties_) {
     summary_builder().Set(property, value);
   }
@@ -1061,57 +1065,39 @@ Result<std::vector<ManifestFile>> MergingSnapshotUpdate::Apply(
 
 Status MergingSnapshotUpdate::CleanUncommitted(
     const std::unordered_set<std::string>& committed) {
+  ICEBERG_RETURN_UNEXPECTED(CleanUncommittedManagers(committed));
+  CleanUncommittedAppends(committed);
+  return {};
+}
+
+Status MergingSnapshotUpdate::CleanUncommittedManagers(
+    const std::unordered_set<std::string>& committed) {
   ICEBERG_RETURN_UNEXPECTED(ManagersReady());
   ICEBERG_RETURN_UNEXPECTED(data_merge_manager_->CleanUncommitted(committed));
   ICEBERG_RETURN_UNEXPECTED(data_filter_manager_->CleanUncommitted(committed));
   ICEBERG_RETURN_UNEXPECTED(delete_merge_manager_->CleanUncommitted(committed));
-  ICEBERG_RETURN_UNEXPECTED(delete_filter_manager_->CleanUncommitted(committed));
-  ICEBERG_RETURN_UNEXPECTED(CleanUncommittedAppends(committed));
-  return {};
+  return delete_filter_manager_->CleanUncommitted(committed);
 }
 
-Status MergingSnapshotUpdate::CleanUncommittedAppends(
+void MergingSnapshotUpdate::CleanUncommittedAppends(
     const std::unordered_set<std::string>& committed) {
-  ICEBERG_RETURN_UNEXPECTED(
-      DeleteUncommitted(cached_new_data_manifests_, committed, /*clear=*/true));
-  ICEBERG_RETURN_UNEXPECTED(
-      DeleteUncommitted(cached_new_delete_manifests_, committed, /*clear=*/true));
-  // rewritten_append_manifests_ are always owned by the table.
-  ICEBERG_RETURN_UNEXPECTED(
-      DeleteUncommitted(rewritten_append_manifests_, committed, /*clear=*/true));
-  if (committed.empty()) {
-    std::unordered_set<std::string> deleted_merged_dv_paths;
-    for (const auto& dv : merged_dvs_) {
-      if (deleted_merged_dv_paths.insert(dv.file->file_path).second) {
-        std::ignore = DeleteFile(dv.file->file_path);
+  // Generated files are already tracked by SnapshotUpdate.
+  cached_new_data_manifests_.clear();
+  cached_new_delete_manifests_.clear();
+  rewritten_append_manifests_.clear();
+  copied_manifests_summary_.Clear();
+
+  // External append manifests become table-owned only after a successful commit.
+  if (!committed.empty()) {
+    for (const auto& manifest : append_manifests_) {
+      if (!committed.contains(manifest.manifest_path)) {
+        RegisterStagedFile(manifest.manifest_path);
       }
     }
-  }
-  merged_dvs_.clear();
-
-  // append_manifests_ are only owned by the table if the commit succeeded.
-  if (!committed.empty()) {
-    ICEBERG_RETURN_UNEXPECTED(
-        DeleteUncommitted(append_manifests_, committed, /*clear=*/false));
   }
 
   has_new_data_files_ = false;
   has_new_delete_files_ = false;
-  return {};
-}
-
-Status MergingSnapshotUpdate::DeleteUncommitted(
-    std::vector<ManifestFile>& manifests,
-    const std::unordered_set<std::string>& committed, bool clear) {
-  for (const auto& manifest : manifests) {
-    if (!committed.contains(manifest.manifest_path)) {
-      std::ignore = DeleteFile(manifest.manifest_path);
-    }
-  }
-  if (clear) {
-    manifests.clear();
-  }
-  return {};
 }
 
 std::unordered_map<std::string, std::string> MergingSnapshotUpdate::Summary() {
