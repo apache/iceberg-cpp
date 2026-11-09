@@ -89,7 +89,7 @@ TEST(ViewMetadataTest, ValidateAcceptsValidMetadata) {
 
 TEST(ViewMetadataTest, ValidateAcceptsUnknownRepresentation) {
   ViewMetadata metadata = MakeValidMetadata();
-  metadata.versions[0]->representations.push_back(
+  metadata.versions[0]->representations.emplace_back(
       UnknownViewRepresentation{.type = "cypher"});
   EXPECT_THAT(metadata.Validate(), IsOk());
 }
@@ -262,12 +262,12 @@ TEST(ViewMetadataTest, EqualityComparesAllFields) {
   EXPECT_NE(lhs, rhs);
 
   ViewMetadata changed = MakeValidMetadata();
-  changed.versions[0]->representations.push_back(
+  changed.versions[0]->representations.emplace_back(
       UnknownViewRepresentation{.type = "cypher"});
   EXPECT_NE(lhs, changed);
 
   ViewMetadata unknown = lhs;
-  unknown.versions[0]->representations.push_back(
+  unknown.versions[0]->representations.emplace_back(
       UnknownViewRepresentation{.type = "cypher"});
   EXPECT_EQ(unknown, changed);
 }
