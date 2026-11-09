@@ -384,43 +384,33 @@ Result<SnapshotUpdate::ApplyResult> SnapshotUpdate::Apply() {
                      .stage_only = stage_only_};
 }
 
-Status SnapshotUpdate::Finalize([[maybe_unused]] const TableMetadata& metadata) {
-  if (staged_snapshot_ == nullptr) {
-    return {};
-  }
-
-  // Only files created by this update are tracked, and committed paths are kept below.
-  internal::LogAndIgnoreFailure("Snapshot cleanup", [this]() -> Status {
-    auto snapshot_reader = SnapshotReader(staged_snapshot_.get());
-    ICEBERG_ASSIGN_OR_RAISE(auto manifests, snapshot_reader.Manifests(ctx_->table->io()));
-    auto committed = manifests | std::views::transform([](const auto& manifest) {
-                       return manifest.manifest_path;
-                     }) |
-                     std::ranges::to<std::unordered_set<std::string>>();
-    internal::LogAndIgnoreFailure("Snapshot operation cleanup", [this, &committed] {
-      return CleanUncommitted(committed);
-    });
-    committed.insert(staged_snapshot_->manifest_list);
-    std::vector<std::string> unused;
-    {
-      std::lock_guard lock(staging_mutex_);
-      for (const auto& path : staged_files_) {
-        if (!committed.contains(path)) {
-          unused.push_back(path);
-        }
-      }
-    }
-    for (const auto& path : unused) {
-      std::ignore = DeleteFile(path);
-    }
-    return {};
+Status SnapshotUpdate::CleanUncommittedFiles(
+    const std::unordered_set<std::string>& committed) {
+  // All retained snapshots share this set. A later update may reuse our output.
+  internal::LogAndIgnoreFailure("Snapshot operation cleanup", [this, &committed] {
+    return CleanUncommitted(committed);
   });
-
+  std::vector<std::string> unused;
   {
     std::lock_guard lock(staging_mutex_);
-    staged_files_.clear();
+    for (const auto& path : staged_files_) {
+      if (!committed.contains(path)) {
+        unused.push_back(path);
+      }
+    }
+    for (const auto& path : committed) {
+      staged_files_.erase(path);
+      staged_content_files_.erase(path);
+    }
   }
-  auto report_status = ReportCommit();
+  for (const auto& path : unused) {
+    std::ignore = DeleteStagedFile(path);
+  }
+  return {};
+}
+
+Status SnapshotUpdate::Finalize([[maybe_unused]] const TableMetadata& committed) {
+  auto report_status = staged_snapshot_ ? ReportCommit() : Status{};
   staged_snapshot_.reset();
   summary_.Clear();
   return report_status;
@@ -479,14 +469,14 @@ Result<std::unordered_map<std::string, std::string>> SnapshotUpdate::ComputeSumm
 Status SnapshotUpdate::CleanStaged() {
   internal::LogAndIgnoreFailure("Snapshot staging cleanup",
                                 [this] { return CleanUncommitted({}); });
-  // Retry paths that operation-specific cleanup did not delete.
+  // Delete all remaining staged paths, including partial writes.
   std::vector<std::string> paths;
   {
     std::lock_guard lock(staging_mutex_);
     paths.assign(staged_files_.begin(), staged_files_.end());
   }
   for (const auto& path : paths) {
-    std::ignore = DeleteFile(path);
+    std::ignore = DeleteStagedFile(path);
   }
   staged_snapshot_.reset();
   summary_.Clear();
@@ -498,26 +488,25 @@ void SnapshotUpdate::RegisterStagedFile(const std::string& path) {
   staged_files_.insert(path);
 }
 
-void SnapshotUpdate::UnregisterStagedFile(const std::string& path) {
+void SnapshotUpdate::RegisterStagedContentFile(const std::string& path) {
   std::lock_guard lock(staging_mutex_);
-  staged_files_.erase(path);
+  staged_files_.insert(path);
+  staged_content_files_.insert(path);
 }
 
-Status SnapshotUpdate::DeleteFile(const std::string& path) noexcept {
+Status SnapshotUpdate::DeleteStagedFile(const std::string& path) noexcept {
   try {
     auto result = delete_func_ ? delete_func_(path) : ctx_->table->io()->DeleteFile(path);
     if (!result && result.error().kind != ErrorKind::kNotFound) {
-      RegisterStagedFile(path);
       ICEBERG_LOG_WARN("Cannot clean staged file {}: {}", path, result.error().message);
       return {};
     }
     std::lock_guard lock(staging_mutex_);
     staged_files_.erase(path);
+    staged_content_files_.erase(path);
   } catch (const std::exception& e) {
-    RegisterStagedFile(path);
     ICEBERG_LOG_WARN("Cannot clean staged file {}: {}", path, e.what());
   } catch (...) {
-    RegisterStagedFile(path);
     ICEBERG_LOG_WARN("Cannot clean staged file {}: unknown exception", path);
   }
   return {};

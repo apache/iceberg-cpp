@@ -97,13 +97,12 @@ Result<std::vector<ManifestFile>> FastAppend::Apply(
   }
 
   ICEBERG_ASSIGN_OR_RAISE(auto new_written_manifests, WriteNewManifests());
-  // A retry cleanup deletes copied append manifests and clears the rewritten
-  // list; rebuild them from the original appended manifests before re-applying.
-  if (rewritten_append_manifests_.empty() && !append_manifests_to_copy_.empty()) {
-    for (const auto& manifest : append_manifests_to_copy_) {
-      ICEBERG_ASSIGN_OR_RAISE(auto copied_manifest, CopyManifest(manifest));
-      rewritten_append_manifests_.push_back(std::move(copied_manifest));
-    }
+  // Immutable copies and their summaries are reused across replay attempts.
+  for (size_t i = rewritten_append_manifests_.size();
+       i < append_manifests_to_copy_.size(); ++i) {
+    ICEBERG_ASSIGN_OR_RAISE(auto copied_manifest,
+                            CopyManifest(append_manifests_to_copy_[i]));
+    rewritten_append_manifests_.push_back(std::move(copied_manifest));
   }
 
   manifests.reserve(new_written_manifests.size() + append_manifests_.size() +
@@ -147,6 +146,7 @@ std::unordered_map<std::string, std::string> FastAppend::Summary() {
       base().properties.Get(TableProperties::kWritePartitionSummaryLimit));
   summary_.Merge(added_data_files_summary_);
   summary_.Merge(appended_manifests_summary_);
+  summary_.Merge(copied_manifests_summary_);
   for (const auto& [property, value] : custom_summary_properties_) {
     summary_.Set(property, value);
   }
@@ -160,28 +160,11 @@ void FastAppend::SetSummaryProperty(const std::string& property,
   SnapshotUpdate::SetSummaryProperty(property, value);
 }
 
-Status FastAppend::CleanUncommitted(const std::unordered_set<std::string>& committed) {
-  // Clean up new manifests that were written but not committed
-  if (!new_manifests_.empty()) {
-    for (const auto& manifest : new_manifests_) {
-      if (!committed.contains(manifest.manifest_path)) {
-        std::ignore = DeleteFile(manifest.manifest_path);
-      }
-    }
-    new_manifests_.clear();
-  }
-
-  // Clean up only rewritten append manifests as they are always owned by the table
-  // Don't clean up append manifests as they are added to the manifest list and are
-  // not compacted
-  if (!rewritten_append_manifests_.empty()) {
-    for (const auto& manifest : rewritten_append_manifests_) {
-      if (!committed.contains(manifest.manifest_path)) {
-        std::ignore = DeleteFile(manifest.manifest_path);
-      }
-    }
-    rewritten_append_manifests_.clear();
-  }
+Status FastAppend::CleanUncommitted(
+    const std::unordered_set<std::string>& /*committed*/) {
+  new_manifests_.clear();
+  rewritten_append_manifests_.clear();
+  copied_manifests_summary_.Clear();
   return {};
 }
 
@@ -199,18 +182,19 @@ Result<ManifestFile> FastAppend::CopyManifest(const ManifestFile& manifest) {
   std::string new_manifest_path = ManifestPath();
   int64_t snapshot_id = SnapshotId();
 
-  // Copy the manifest with the new snapshot ID.
-  return CopyAppendManifest(manifest, ctx_->table->io(), schema, spec, snapshot_id,
-                            new_manifest_path, current.format_version,
-                            &appended_manifests_summary_);
+  // A failed copy must not leave partial counts in the cached summary.
+  SnapshotSummaryBuilder summary;
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto copied,
+      CopyAppendManifest(manifest, ctx_->table->io(), schema, spec, snapshot_id,
+                         new_manifest_path, current.format_version, &summary));
+  copied_manifests_summary_.Merge(summary);
+  return copied;
 }
 
 Result<std::vector<ManifestFile>> FastAppend::WriteNewManifests() {
-  // If there are new files and manifests were already written, clean them up
+  // New additions invalidate the cache. Old paths stay staged until cleanup.
   if (has_new_files_ && !new_manifests_.empty()) {
-    for (const auto& manifest : new_manifests_) {
-      std::ignore = DeleteFile(manifest.manifest_path);
-    }
     new_manifests_.clear();
   }
 

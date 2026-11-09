@@ -918,6 +918,8 @@ Result<ExpireSnapshots::SnapshotToRef> ExpireSnapshots::ComputeRetainedRefs(
 }
 
 Result<ExpireSnapshots::ApplyResult> ExpireSnapshots::Apply() {
+  // A no-op apply must not leave an earlier cleanup plan active.
+  apply_result_.reset();
   ICEBERG_RETURN_UNEXPECTED(CheckErrors());
 
   const TableMetadata& base = this->base();

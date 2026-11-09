@@ -2488,6 +2488,87 @@ TEST_P(RewriteManifestsTest, RewriteManifestsOnBranch) {
   EXPECT_EQ(std::ranges::distance(audit_manifests), 1);
 }
 
+TEST_P(RewriteManifestsTest, ReplaysReplacementAfterEarlierStagedAppend) {
+  SetCommitRetryProperties(2);
+  FailCommits(2, [&](int attempt) {
+    if (attempt < 2) {
+      ICEBERG_UNWRAP_OR_FAIL(auto concurrent, catalog_->LoadTable(table_ident_));
+      ICEBERG_UNWRAP_OR_FAIL(auto properties, concurrent->NewUpdateProperties());
+      properties->Set(std::format("replay-conflict-{}", attempt), "true");
+      ASSERT_THAT(properties->Commit(), IsOk());
+    }
+  });
+
+  ICEBERG_UNWRAP_OR_FAIL(auto txn, table_->NewTransaction());
+  ICEBERG_UNWRAP_OR_FAIL(auto append, txn->NewFastAppend());
+  append->AppendFile(file_a_);
+  ASSERT_THAT(append->Commit(), IsOk());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto staged_snapshot, txn->current().Snapshot());
+  SnapshotReader staged_reader(staged_snapshot.get());
+  ICEBERG_UNWRAP_OR_FAIL(auto staged_manifests, staged_reader.DataManifests(file_io_));
+  ASSERT_THAT(staged_manifests, ::testing::SizeIs(1));
+  ICEBERG_UNWRAP_OR_FAIL(auto entries, ReadManifestEntries(staged_manifests[0]));
+  ASSERT_THAT(entries, ::testing::SizeIs(1));
+  ICEBERG_UNWRAP_OR_FAIL(auto replacement,
+                         WriteExistingManifest("txn-replay-replacement", entries));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto rewrite, txn->NewRewriteManifests());
+  rewrite->DeleteManifest(staged_manifests[0]).AddManifest(replacement);
+  ASSERT_THAT(rewrite->Commit(), IsOk());
+
+  ASSERT_THAT(txn->Commit(), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto manifests, CurrentManifests());
+  ASSERT_THAT(manifests, ::testing::SizeIs(1));
+  ICEBERG_UNWRAP_OR_FAIL(auto final_entries, ReadManifestEntries(manifests[0]));
+  ASSERT_THAT(final_entries, ::testing::SizeIs(1));
+  EXPECT_EQ(final_entries[0].data_file->file_path, file_a_->file_path);
+
+  // The append snapshot still needs the manifest replaced by the rewrite.
+  ICEBERG_UNWRAP_OR_FAIL(auto committed_append,
+                         table_->metadata()->SnapshotById(staged_snapshot->snapshot_id));
+  SnapshotReader committed_reader(committed_append.get());
+  EXPECT_THAT(committed_reader.DataManifests(file_io_), IsOk());
+  EXPECT_TRUE(FileExists(staged_manifests[0].manifest_path));
+}
+
+TEST_P(RewriteManifestsTest, RejectsReplacementAfterStagedManifestMetadataChanges) {
+  if (GetParam() == 1) {
+    GTEST_SKIP() << "Sequence and row-ID inheritance require format v2 or higher";
+  }
+  ASSERT_THAT(AppendFiles({file_c_}), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto base_snapshot, table_->current_snapshot());
+  ICEBERG_UNWRAP_OR_FAIL(auto manager, table_->NewSnapshotManager());
+  manager->CreateBranch("audit", base_snapshot->snapshot_id);
+  ASSERT_THAT(manager->Commit(), IsOk());
+  ASSERT_THAT(table_->Refresh(), IsOk());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto txn, table_->NewTransaction());
+  ICEBERG_UNWRAP_OR_FAIL(auto append, txn->NewFastAppend());
+  append->AppendFile(file_a_);
+  ASSERT_THAT(append->Commit(), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto staged, txn->current().Snapshot());
+  SnapshotReader reader(staged.get());
+  ICEBERG_UNWRAP_OR_FAIL(auto manifests, reader.DataManifests(file_io_));
+  ICEBERG_UNWRAP_OR_FAIL(auto entries, ReadManifestEntries(manifests.front()));
+  ICEBERG_UNWRAP_OR_FAIL(auto replacement,
+                         WriteExistingManifest("stale-inheritance", entries));
+  ICEBERG_UNWRAP_OR_FAIL(auto rewrite, txn->NewRewriteManifests());
+  rewrite->DeleteManifest(manifests.front()).AddManifest(replacement);
+  ASSERT_THAT(rewrite->Commit(), IsOk());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto concurrent, table_->NewFastAppend());
+  concurrent->ToBranch("audit");
+  concurrent->AppendFile(file_d_);
+  ASSERT_THAT(concurrent->Commit(), IsOk());
+  ASSERT_THAT(table_->Refresh(), IsOk());
+  auto result = txn->Commit();
+  EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
+  EXPECT_THAT(result, HasErrorMessage("Deleted manifest metadata changed"));
+  EXPECT_EQ(txn->state(), TransactionState::kFailed);
+  EXPECT_TRUE(FileExists(replacement.manifest_path));
+}
+
 TEST_P(RewriteManifestsTest, RewriteDataManifestsPreservesDeletes) {
   if (GetParam() == 1) {
     GTEST_SKIP() << "Delete manifests require format version 2 or higher";

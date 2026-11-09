@@ -93,6 +93,10 @@ class ICEBERG_EXPORT PendingUpdate : public ErrorCollector,
 
   /// \brief Discard this generation's staging, retaining applied operation intent.
   virtual Status CleanStaged() { return {}; }
+
+  /// \brief Prepare retry-safe state after the transaction metadata is refreshed.
+  virtual Status PrepareForReplay() { return {}; }
+
   /// \brief Complete a known successful commit. Called only by Transaction with the
   /// final committed table metadata.
   virtual Status Finalize(const TableMetadata& committed);

@@ -84,6 +84,19 @@ Status CatchStatus(std::string_view operation, Fn&& fn) {
   }
 }
 
+Status FinishWithCloseStatus(Status rewrite_status, Status close_status) {
+  // Keep the rewrite error when both operations fail.
+  if (!rewrite_status.has_value()) {
+    auto error = std::move(rewrite_status).error();
+    if (!close_status.has_value()) {
+      error.message += "; additionally failed to close manifest writer: ";
+      error.message += close_status.error().message;
+    }
+    return ::iceberg::unexpected<Error>(std::move(error));
+  }
+  return close_status;
+}
+
 }  // namespace
 
 class RewriteManifests::WriterWrapper {
@@ -177,13 +190,18 @@ RewriteManifests& RewriteManifests::AddManifest(const ManifestFile& manifest) {
   if (can_inherit_snapshot_id() && !manifest.added_snapshot_id.has_value()) {
     added_manifests_.push_back(manifest);
   } else {
-    // Retain the input so Apply can recreate the copy after retry cleanup.
+    // Retain the input so replay can rebuild the copy.
     added_manifests_to_copy_.push_back(manifest);
   }
   return *this;
 }
 
 std::string RewriteManifests::operation() { return DataOperation::kReplace; }
+
+Status RewriteManifests::PrepareForReplay() {
+  // Rebuild against the latest manifest list on every replay.
+  return CleanUncommitted({});
+}
 
 Result<std::vector<ManifestFile>> RewriteManifests::Apply(
     const TableMetadata& /*metadata_to_update*/,
@@ -262,12 +280,9 @@ std::unordered_map<std::string, std::string> RewriteManifests::Summary() {
 }
 
 Status RewriteManifests::CleanUncommitted(
-    const std::unordered_set<std::string>& committed) {
-  DeleteUncommitted(new_manifests_, committed);
-  DeleteUncommitted(rewritten_added_manifests_, committed);
-  entry_count_ = 0;
-  kept_manifests_.clear();
-  rewritten_manifests_.clear();
+    const std::unordered_set<std::string>& /*committed*/) {
+  Reset();
+  rewritten_added_manifests_.clear();
   return {};
 }
 
@@ -311,10 +326,19 @@ Status RewriteManifests::ValidateDeletedManifests(
     int64_t current_snapshot_id) const {
   // Directly deleted manifests must still be present in the current snapshot.
   for (const auto& manifest : deleted_manifests_) {
-    if (!current_manifests.contains(manifest)) {
+    auto current = current_manifests.find(manifest);
+    if (current == current_manifests.end()) {
       return ValidationFailed(
           "Deleted manifest {} could not be found in the latest snapshot {}",
           manifest.manifest_path, current_snapshot_id);
+    }
+    // A prior update may reuse this path with new inherited values on replay.
+    // The caller's replacement still contains the original values.
+    if (manifest.sequence_number != current->sequence_number ||
+        manifest.min_sequence_number != current->min_sequence_number ||
+        manifest.first_row_id != current->first_row_id) {
+      return ValidationFailed("Deleted manifest metadata changed for {} in snapshot {}",
+                              manifest.manifest_path, current_snapshot_id);
     }
   }
   return {};
@@ -467,36 +491,19 @@ Status RewriteManifests::PerformRewrite(std::span<const ManifestFile> current_ma
     return process_batch();
   });
 
-  auto close_status = CloseWriters();
-
-  if (!write_status.has_value()) {
-    auto error = std::move(write_status).error();
-    if (!close_status.has_value()) {
-      error.message += "; additionally failed to close manifest writer: ";
-      error.message += close_status.error().message;
-    }
-    return ::iceberg::unexpected<Error>(std::move(error));
-  }
-  if (!close_status.has_value()) {
-    return close_status;
+  // Close every writer before returning the first failure.
+  auto status = FinishWithCloseStatus(std::move(write_status), CloseWriters());
+  if (!status.has_value()) {
+    return status;
   }
   rewrite_dirty_ = false;
   return {};
 }
 
-void RewriteManifests::DeleteUncommitted(
-    std::vector<ManifestFile>& manifests,
-    const std::unordered_set<std::string>& committed) {
-  for (const auto& manifest : manifests) {
-    if (!committed.contains(manifest.manifest_path)) {
-      std::ignore = DeleteFile(manifest.manifest_path);
-    }
-  }
-  manifests.clear();
-}
-
 void RewriteManifests::Reset() {
-  DeleteUncommitted(new_manifests_, {});
+  // Replay keeps staged outputs alive until the transaction reaches a terminal
+  // state. Clear only the in-memory generation.
+  new_manifests_.clear();
   entry_count_ = 0;
   kept_manifests_.clear();
   rewritten_manifests_.clear();
