@@ -113,11 +113,11 @@ std::string FormatCommittedSnapshots(
 /// \param metadata The metadata after the transaction commit.
 /// \param io FileIO used to read manifest lists and delete manifests.
 /// \param snapshot_ids Snapshot IDs in the committed AddSnapshot changes.
-/// \param content_paths Owned content files that may need live-entry checks.
+/// \param content_paths Owned files whose live references have not been found.
 Result<std::unordered_set<std::string>> CommittedTransactionFiles(
     const TableMetadata& metadata, const std::shared_ptr<FileIO>& io,
     std::unordered_set<int64_t> snapshot_ids,
-    const std::unordered_set<std::string>& content_paths) {
+    std::unordered_set<std::string> content_paths) {
   std::unordered_set<std::string> committed;
   for (const auto& snapshot : metadata.snapshots) {
     if (!snapshot || snapshot_ids.erase(snapshot->snapshot_id) == 0) {
@@ -138,7 +138,7 @@ Result<std::unordered_set<std::string>> CommittedTransactionFiles(
       ICEBERG_ASSIGN_OR_RAISE(auto reader,
                               ManifestReader::Make(manifest, io, schema, spec));
       ICEBERG_ASSIGN_OR_RAISE(auto entries, reader->LiveEntriesStream());
-      while (true) {
+      while (!content_paths.empty()) {
         ICEBERG_ASSIGN_OR_RAISE(auto entry, entries->Next());
         if (!entry) {
           break;
@@ -146,7 +146,7 @@ Result<std::unordered_set<std::string>> CommittedTransactionFiles(
         ICEBERG_CHECK(entry->data_file != nullptr,
                       "Missing content file in committed manifest {}",
                       manifest.manifest_path);
-        if (content_paths.contains(entry->data_file->file_path)) {
+        if (content_paths.erase(entry->data_file->file_path) != 0) {
           committed.insert(entry->data_file->file_path);
         }
       }
@@ -614,9 +614,10 @@ void Transaction::FinalizeUpdates(const TableMetadata& committed) noexcept {
       content_paths.insert(snapshot_update.staged_content_files_.begin(),
                            snapshot_update.staged_content_files_.end());
     }
-    ICEBERG_ASSIGN_OR_RAISE(committed_files, CommittedTransactionFiles(
-                                                 committed, ctx_->table->io(),
-                                                 std::move(snapshot_ids), content_paths));
+    ICEBERG_ASSIGN_OR_RAISE(
+        committed_files,
+        CommittedTransactionFiles(committed, ctx_->table->io(), std::move(snapshot_ids),
+                                  std::move(content_paths)));
     return {};
   });
   for (const auto& update : pending_updates_) {

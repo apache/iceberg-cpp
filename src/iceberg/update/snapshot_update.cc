@@ -23,6 +23,7 @@
 #include <format>
 #include <ranges>
 #include <span>
+#include <unordered_set>
 
 #include "iceberg/constants.h"
 #include "iceberg/file_io.h"
@@ -193,6 +194,18 @@ Result<ManifestFile> AddMetadata(const ManifestFile& manifest, std::shared_ptr<F
   return enriched;
 }
 
+// Cached files can outlive a spec removed by concurrent metadata cleanup.
+Status ValidateManifestPartitionSpecs(std::span<const ManifestFile> manifests,
+                                      const TableMetadata& metadata) {
+  std::unordered_set<int32_t> checked_spec_ids;
+  for (const auto& manifest : manifests) {
+    if (checked_spec_ids.insert(manifest.partition_spec_id).second) {
+      ICEBERG_RETURN_UNEXPECTED(metadata.PartitionSpecById(manifest.partition_spec_id));
+    }
+  }
+  return {};
+}
+
 }  // anonymous namespace
 
 SnapshotUpdate::~SnapshotUpdate() = default;
@@ -322,6 +335,7 @@ Result<SnapshotUpdate::ApplyResult> SnapshotUpdate::Apply() {
   ICEBERG_RETURN_UNEXPECTED(Validate(base(), parent_snapshot));
 
   ICEBERG_ASSIGN_OR_RAISE(auto manifests, Apply(base(), parent_snapshot));
+  ICEBERG_RETURN_UNEXPECTED(ValidateManifestPartitionSpecs(manifests, base()));
   auto metadata_tasks = TaskGroup().SetExecutor(plan_executor_);
   for (auto& manifest : manifests) {
     if (manifest.added_snapshot_id.has_value()) {
