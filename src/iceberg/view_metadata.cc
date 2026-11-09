@@ -69,6 +69,11 @@ Status ViewMetadata::Validate() const {
     return Invalid("Current version ID {} is not a listed view version",
                    current_version_id);
   }
+  for (const auto& entry : version_log) {
+    if (!version_ids.contains(entry.version_id)) {
+      return Invalid("View history references unlisted version ID {}", entry.version_id);
+    }
+  }
 
   for (const auto& version : versions) {
     if (!schema_ids.contains(version->schema_id)) {

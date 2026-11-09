@@ -185,6 +185,27 @@ TEST(ViewMetadataTest, ValidateRejectsUnlistedSchemaReference) {
   EXPECT_THAT(metadata.Validate(), IsError(ErrorKind::kInvalid));
 }
 
+TEST(ViewMetadataTest, ValidateRejectsUnlistedHistoryVersion) {
+  ViewMetadata metadata = MakeValidMetadata();
+  metadata.version_log[0].version_id = 999;
+  auto result = metadata.Validate();
+  EXPECT_THAT(result, IsError(ErrorKind::kInvalid));
+  EXPECT_THAT(result, HasErrorMessage("View history references unlisted version ID 999"));
+}
+
+TEST(ViewMetadataTest, ValidateAcceptsHistoryWithRollback) {
+  ViewMetadata metadata = MakeValidMetadata();
+  metadata.versions.push_back(std::make_shared<ViewVersion>(
+      MakeVersion(1, 0, {SqlRepr("SELECT country FROM customers", "spark")})));
+  metadata.version_log.push_back(ViewHistoryEntry{
+      .timestamp_ms = TimePointMsFromUnixMs(1600000001000), .version_id = 1});
+  metadata.version_log.push_back(ViewHistoryEntry{
+      .timestamp_ms = TimePointMsFromUnixMs(1600000002000), .version_id = 0});
+  ViewMetadata before = metadata;
+  EXPECT_THAT(metadata.Validate(), IsOk());
+  EXPECT_EQ(metadata, before);
+}
+
 TEST(ViewMetadataTest, ValidateRejectsEmptyDefaultNamespace) {
   ViewMetadata metadata = MakeValidMetadata();
   metadata.versions[0]->default_namespace = Namespace{};
