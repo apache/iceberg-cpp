@@ -56,10 +56,12 @@
 #include "iceberg/test/update_test_base.h"
 #include "iceberg/transaction.h"
 #include "iceberg/update/delete_files.h"
+#include "iceberg/update/expire_snapshots.h"
 #include "iceberg/update/fast_append.h"
 #include "iceberg/update/merge_append.h"
 #include "iceberg/update/row_delta.h"
 #include "iceberg/update/snapshot_manager.h"
+#include "iceberg/update/update_partition_spec.h"
 #include "iceberg/update/update_properties.h"
 #include "iceberg/util/macros.h"
 
@@ -1378,6 +1380,81 @@ TEST_F(MergingSnapshotUpdateTest, AddManifestCopiesManifestWithAssignedSnapshotI
   ICEBERG_UNWRAP_OR_FAIL(auto data_manifests, snapshot_reader.DataManifests(file_io_));
   ASSERT_EQ(data_manifests.size(), 1U);
   EXPECT_NE(data_manifests[0].manifest_path, path);
+}
+
+TEST_F(MergingSnapshotUpdateTest, ReplayRejectsRemovedPartitionSpec) {
+  for (bool fast_append : {true, false}) {
+    SCOPED_TRACE(fast_append);
+    RegisterTableFromResource(MetadataResource());
+    const auto original_metadata = table_->metadata();
+    ICEBERG_UNWRAP_OR_FAIL(auto txn, table_->NewTransaction());
+    if (fast_append) {
+      ICEBERG_UNWRAP_OR_FAIL(auto append, txn->NewFastAppend());
+      append->AppendFile(file_a_);
+      ASSERT_THAT(append->Commit(), IsOk());
+    } else {
+      ICEBERG_UNWRAP_OR_FAIL(auto append, txn->NewMergeAppend());
+      append->AppendFile(file_a_);
+      ASSERT_THAT(append->Commit(), IsOk());
+    }
+
+    ICEBERG_UNWRAP_OR_FAIL(auto update_spec, table_->NewUpdatePartitionSpec());
+    update_spec->AddField("y");
+    ASSERT_THAT(update_spec->Commit(), IsOk());
+    ASSERT_THAT(table_->Refresh(), IsOk());
+    ICEBERG_UNWRAP_OR_FAIL(auto expire, table_->NewExpireSnapshots());
+    expire->CleanExpiredMetadata(true);
+    ASSERT_THAT(expire->Commit(), IsOk());
+    ASSERT_THAT(table_->Refresh(), IsOk());
+    ASSERT_THAT(table_->metadata()->PartitionSpecById(spec_->spec_id()),
+                IsError(ErrorKind::kNotFound));
+    ASSERT_NE(original_metadata, table_->metadata());
+
+    EXPECT_THAT(txn->Commit(), ::testing::AllOf(IsError(ErrorKind::kValidationFailed),
+                                                HasErrorMessage("Partition spec")));
+    EXPECT_EQ(txn->state(), TransactionState::kFailed);
+    EXPECT_TRUE(ReloadMetadata()->snapshots.empty());
+  }
+}
+
+TEST_F(MergingSnapshotUpdateTest, ReplayKeepsMergedDVReferencedOnlyByStagedSnapshot) {
+  UpgradeTableToV3();
+  CommitFileA();
+  const auto main_snapshot_id = table_->metadata()->current_snapshot_id;
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto first,
+      WriteDeletionVector(table_location_ + "/data/first.puffin", file_a_, {1}));
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto second,
+      WriteDeletionVector(table_location_ + "/data/second.puffin", file_a_, {2, 3}));
+  FailCommits(1, [&](int attempt) {
+    if (attempt != 0) return;
+    ICEBERG_UNWRAP_OR_FAIL(auto concurrent, catalog_->LoadTable(table_ident_));
+    ICEBERG_UNWRAP_OR_FAIL(auto properties, concurrent->NewUpdateProperties());
+    properties->Set("replay-conflict", "true");
+    ASSERT_THAT(properties->Commit(), IsOk());
+  });
+
+  ICEBERG_UNWRAP_OR_FAIL(auto txn, table_->NewTransaction());
+  ICEBERG_UNWRAP_OR_FAIL(auto delta, txn->NewRowDelta());
+  delta->AddDeletes(first).AddDeletes(second).StageOnly();
+  ASSERT_THAT(delta->Commit(), IsOk());
+  auto staged = txn->current().snapshots.back();
+  ICEBERG_UNWRAP_OR_FAIL(auto committed, txn->Commit());
+  ICEBERG_UNWRAP_OR_FAIL(auto retained,
+                         committed->metadata()->SnapshotById(staged->snapshot_id));
+  SnapshotReader reader(retained.get());
+  ICEBERG_UNWRAP_OR_FAIL(auto manifests, reader.DeleteManifests(file_io_));
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto entries,
+      ReadAllEntries({manifests.begin(), manifests.end()}, *committed->metadata()));
+  ASSERT_THAT(entries, ::testing::SizeIs(1));
+  EXPECT_THAT(entries[0].data_file->file_path, ::testing::HasSubstr("merged-dvs-"));
+  ICEBERG_UNWRAP_OR_FAIL(auto positions, DVUtil::ReadDV(entries[0].data_file, file_io_));
+  EXPECT_EQ(positions.Cardinality(), 3);
+  EXPECT_EQ(committed->metadata()->current_snapshot_id, main_snapshot_id);
+  EXPECT_NE(retained->manifest_list, staged->manifest_list);
+  EXPECT_FALSE(file_io_->ReadFile(staged->manifest_list, std::nullopt).has_value());
 }
 
 TEST_F(MergingSnapshotUpdateTest, ReplayRefreshesInheritedManifestMetadata) {
