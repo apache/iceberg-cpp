@@ -623,6 +623,10 @@ Status DecodeFieldToBuilder(const ::avro::NodePtr& avro_node, ::avro::Decoder& d
 
     const auto& branch_node = avro_node->leafAt(branch_index);
     if (branch_node->type() == ::avro::AVRO_NULL) {
+      // A no-op for the binary decoder, but the resolving decoder used when the reader
+      // schema differs from the file's (for example after applying a name mapping)
+      // expects the null to be consumed.
+      decoder.decodeNull();
       if (is_row_lineage) {
         return arrow::AppendInheritedRowLineageValue(projected_field.field_id(),
                                                      metadata_context, array_builder);

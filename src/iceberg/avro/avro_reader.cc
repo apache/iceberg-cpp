@@ -312,18 +312,19 @@ class AvroReader::Impl {
     ICEBERG_RETURN_UNEXPECTED(has_id_visitor.Visit(file_schema));
 
     if (has_id_visitor.HasNoIds()) {
-      // Apply field IDs based on name mapping if available
-      if (options.name_mapping) {
-        ICEBERG_ASSIGN_OR_RAISE(
-            auto new_root_node,
-            MakeAvroNodeWithFieldIds(file_schema.root(), *options.name_mapping));
-
-        // Update the file schema to use the new schema with field IDs
-        file_schema = ::avro::ValidSchema(new_root_node);
-      } else {
-        return InvalidSchema(
-            "Avro file schema has no field IDs and no name mapping provided");
+      // Apply field IDs from the name mapping. Like Java's ProjectionDatumReader, fall
+      // back to the read schema's names when the table has no name mapping.
+      const NameMapping* name_mapping = options.name_mapping.get();
+      std::unique_ptr<NameMapping> fallback_mapping;
+      if (name_mapping == nullptr) {
+        ICEBERG_ASSIGN_OR_RAISE(fallback_mapping, CreateMapping(*read_schema_));
+        name_mapping = fallback_mapping.get();
       }
+      ICEBERG_ASSIGN_OR_RAISE(auto new_root_node, MakeAvroNodeWithFieldIds(
+                                                      file_schema.root(), *name_mapping));
+
+      // Update the file schema to use the new schema with field IDs
+      file_schema = ::avro::ValidSchema(new_root_node);
     } else if (!has_id_visitor.AllHaveIds()) {
       return InvalidSchema("Not all fields in the Avro file schema have field IDs");
     }

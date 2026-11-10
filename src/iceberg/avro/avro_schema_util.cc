@@ -538,6 +538,20 @@ Result<int32_t> GetFieldId(const ::avro::NodePtr& node, size_t field_idx) {
   return GetId(node, kFieldIdKey, field_idx);
 }
 
+// Like GetId, but returns nullopt when the attribute is absent, for example on a field
+// that a name mapping does not cover.
+Result<std::optional<int32_t>> FindId(const ::avro::NodePtr& node,
+                                      const std::string& attr_name, size_t field_idx) {
+  if (field_idx >= node->customAttributes()) {
+    return std::nullopt;
+  }
+  auto id_str = node->customAttributesAt(field_idx).getAttribute(attr_name);
+  if (!id_str.has_value()) {
+    return std::nullopt;
+  }
+  return StringUtils::ParseNumber<int32_t>(id_str.value());
+}
+
 Status ValidateAvroSchemaEvolution(const Type& expected_type,
                                    const ::avro::NodePtr& avro_node) {
   if (avro_node->type() == ::avro::AVRO_NULL) {
@@ -683,6 +697,69 @@ Status UnwrapUnion(const ::avro::NodePtr& node, ::avro::NodePtr* result) {
   return {};
 }
 
+// Lists and maps are matched to the file by the IDs of their element, key and value.
+// Returns false when the Avro node leaves any of them without an ID, for example when a
+// name mapping does not cover them. Like Java's PruneColumns, the caller then reads the
+// container as if it were missing from the file. A node of the wrong shape returns true
+// so that projection reports the mismatch.
+Result<bool> HasNestedIds(const Type& expected_type, const ::avro::NodePtr& avro_node) {
+  static const std::string kFieldIdKey{kFieldIdProp};
+  static const std::string kElementIdKey{kElementIdProp};
+  static const std::string kKeyIdKey{kKeyIdProp};
+  static const std::string kValueIdKey{kValueIdProp};
+  if (expected_type.type_id() != TypeId::kList &&
+      expected_type.type_id() != TypeId::kMap) {
+    return true;
+  }
+
+  ::avro::NodePtr node;
+  ICEBERG_RETURN_UNEXPECTED(UnwrapUnion(avro_node, &node));
+
+  if (expected_type.type_id() == TypeId::kList) {
+    if (node->type() != ::avro::AVRO_ARRAY || HasMapLogicalType(node) ||
+        node->leaves() != 1) {
+      return true;
+    }
+    ICEBERG_ASSIGN_OR_RAISE(auto element_id, FindId(node, kElementIdKey, 0));
+    if (!element_id.has_value()) {
+      return false;
+    }
+    const auto& list_type = internal::checked_cast<const ListType&>(expected_type);
+    return HasNestedIds(*list_type.element().type(), node->leafAt(0));
+  }
+
+  const auto& map_type = internal::checked_cast<const MapType&>(expected_type);
+  std::optional<int32_t> key_id;
+  std::optional<int32_t> value_id;
+  ::avro::NodePtr key_node;
+  ::avro::NodePtr value_node;
+  if (node->type() == ::avro::AVRO_MAP && node->leaves() == 2) {
+    ICEBERG_ASSIGN_OR_RAISE(key_id, FindId(node, kKeyIdKey, 0));
+    ICEBERG_ASSIGN_OR_RAISE(value_id, FindId(node, kValueIdKey, 0));
+    key_node = node->leafAt(0);
+    value_node = node->leafAt(1);
+  } else if (node->type() == ::avro::AVRO_ARRAY && HasMapLogicalType(node) &&
+             node->leaves() == 1 && node->leafAt(0)->type() == ::avro::AVRO_RECORD &&
+             node->leafAt(0)->leaves() == 2) {
+    const auto& entry_node = node->leafAt(0);
+    ICEBERG_ASSIGN_OR_RAISE(key_id, FindId(entry_node, kFieldIdKey, 0));
+    ICEBERG_ASSIGN_OR_RAISE(value_id, FindId(entry_node, kFieldIdKey, 1));
+    key_node = entry_node->leafAt(0);
+    value_node = entry_node->leafAt(1);
+  } else {
+    return true;
+  }
+  if (!key_id.has_value() || !value_id.has_value()) {
+    return false;
+  }
+  ICEBERG_ASSIGN_OR_RAISE(auto key_has_ids,
+                          HasNestedIds(*map_type.key().type(), key_node));
+  if (!key_has_ids) {
+    return false;
+  }
+  return HasNestedIds(*map_type.value().type(), value_node);
+}
+
 // Forward declaration
 Result<FieldProjection> ProjectNested(const Type& expected_type,
                                       const ::avro::NodePtr& avro_node,
@@ -733,14 +810,19 @@ Result<FieldProjection> ProjectStruct(const StructType& struct_type,
   std::unordered_map<int32_t, NodeInfo> node_info_map;
   node_info_map.reserve(avro_node->leaves());
 
+  static const std::string kFieldIdKey{kFieldIdProp};
   for (size_t i = 0; i < avro_node->leaves(); ++i) {
-    ICEBERG_ASSIGN_OR_RAISE(int32_t field_id, GetFieldId(avro_node, i));
-    ::avro::NodePtr field_node = avro_node->leafAt(i);
-    if (const auto [iter, inserted] = node_info_map.emplace(
-            std::piecewise_construct, std::forward_as_tuple(field_id),
-            std::forward_as_tuple(i, field_node));
-        !inserted) [[unlikely]] {
-      return InvalidSchema("Duplicate field id found in Avro schema: {}", field_id);
+    // Like Java's PruneColumns, a field without an ID (one that a name mapping does not
+    // cover) is not read.
+    ICEBERG_ASSIGN_OR_RAISE(auto field_id, FindId(avro_node, kFieldIdKey, i));
+    if (field_id.has_value()) {
+      ::avro::NodePtr field_node = avro_node->leafAt(i);
+      if (const auto [iter, inserted] = node_info_map.emplace(
+              std::piecewise_construct, std::forward_as_tuple(*field_id),
+              std::forward_as_tuple(i, field_node));
+          !inserted) [[unlikely]] {
+        return InvalidSchema("Duplicate field id found in Avro schema: {}", *field_id);
+      }
     }
   }
 
@@ -751,7 +833,16 @@ Result<FieldProjection> ProjectStruct(const StructType& struct_type,
     int32_t field_id = expected_field.field_id();
     FieldProjection child_projection;
 
-    if (auto iter = node_info_map.find(field_id); iter != node_info_map.cend()) {
+    auto iter = node_info_map.find(field_id);
+    if (iter != node_info_map.cend()) {
+      ICEBERG_ASSIGN_OR_RAISE(auto has_nested_ids, HasNestedIds(*expected_field.type(),
+                                                                iter->second.field_node));
+      if (!has_nested_ids) {
+        iter = node_info_map.end();
+      }
+    }
+
+    if (iter != node_info_map.cend()) {
       ICEBERG_ASSIGN_OR_RAISE(child_projection,
                               ProjectField(expected_field, iter->second.field_node,
                                            iter->second.local_index, prune_source));
@@ -926,38 +1017,35 @@ void CopyCustomAttributes(const ::avro::CustomAttributes& source,
   }
 }
 
-Result<MappedFieldConstRef> FindMappedField(const NameMapping& mapping,
-                                            const std::vector<std::string>& names) {
-  auto field_opt = mapping.Find(names);
-  if (!field_opt.has_value()) {
-    return InvalidSchema("Field '{}' not found in name mapping", names.back());
+// Returns the ID the name mapping assigns to the field at `names`. Like Java's
+// ApplyNameMapping, a field the mapping does not cover, or maps without an ID, is kept
+// without an ID, so projection skips it.
+std::optional<int32_t> FindMappedFieldId(const NameMapping& mapping,
+                                         const std::vector<std::string>& names) {
+  auto field = mapping.Find(names);
+  if (!field.has_value()) {
+    return std::nullopt;
   }
-
-  const MappedField& field = field_opt.value().get();
-  if (!field.field_id.has_value()) {
-    return InvalidSchema("Field ID is missing for field '{}' in name mapping",
-                         names.back());
-  }
-
-  return field_opt.value();
+  return field->get().field_id;
 }
 
 template <typename NodeType>
 Status ProcessChildNode(const ::avro::NodePtr& parent_node, size_t child_index,
-                        const std::string& child_name, std::string_view fieldIdPropKy,
+                        const std::string& child_name, std::string_view field_id_prop,
                         const NameMapping& mapping, std::vector<std::string>& names,
                         NodeType& new_parent_node) {
   NamesGuard guard(names, child_name);
-  ICEBERG_ASSIGN_OR_RAISE(auto mapped_field, FindMappedField(mapping, names));
+  auto field_id = FindMappedFieldId(mapping, names);
 
   ICEBERG_ASSIGN_OR_RAISE(
       auto new_child_node,
       MakeAvroNodeWithFieldIds(parent_node->leafAt(child_index), mapping, names));
 
   ::avro::CustomAttributes attributes;
-  attributes.addAttribute(std::string(fieldIdPropKy),
-                          std::to_string(*mapped_field.get().field_id),
-                          /*addQuote=*/false);
+  if (field_id.has_value()) {
+    attributes.addAttribute(std::string(field_id_prop), std::to_string(*field_id),
+                            /*addQuote=*/false);
+  }
   if (parent_node->customAttributes() > child_index) {
     CopyCustomAttributes(parent_node->customAttributesAt(child_index), attributes);
   }
@@ -998,6 +1086,7 @@ Result<::avro::NodePtr> MakeArrayNodeWithFieldIds(const ::avro::NodePtr& origina
   }
 
   auto new_array_node = std::make_shared<::avro::NodeArray>();
+  new_array_node->setLogicalType(original_node->logicalType());
 
   // Check if this is a map represented as array
   if (HasMapLogicalType(original_node)) {
@@ -1013,8 +1102,9 @@ Result<::avro::NodePtr> MakeArrayNodeWithFieldIds(const ::avro::NodePtr& origina
     return new_array_node;
   }
 
-  ICEBERG_RETURN_UNEXPECTED(ProcessChildNode(original_node, 0, "element", kElementIdProp,
-                                             mapping, names, new_array_node));
+  ICEBERG_RETURN_UNEXPECTED(
+      ProcessChildNode(original_node, 0, std::string(ListType::kElementName),
+                       kElementIdProp, mapping, names, new_array_node));
 
   return new_array_node;
 }
@@ -1026,11 +1116,32 @@ Result<::avro::NodePtr> MakeMapNodeWithFieldIds(const ::avro::NodePtr& original_
     return InvalidSchema("Map type must have exactly two leaves");
   }
 
+  // Like ToAvroNodeVisitor, keep the implicit string key that NodeMap creates and put
+  // both IDs in the map's single set of custom attributes.
+  ::avro::CustomAttributes attributes;
+  if (original_node->customAttributes() > 0) {
+    CopyCustomAttributes(original_node->customAttributesAt(0), attributes);
+  }
+  {
+    NamesGuard guard(names, std::string(MapType::kKeyName));
+    if (auto key_id = FindMappedFieldId(mapping, names); key_id.has_value()) {
+      attributes.addAttribute(std::string(kKeyIdProp), std::to_string(*key_id),
+                              /*addQuote=*/false);
+    }
+  }
+
+  NamesGuard guard(names, std::string(MapType::kValueName));
+  if (auto value_id = FindMappedFieldId(mapping, names); value_id.has_value()) {
+    attributes.addAttribute(std::string(kValueIdProp), std::to_string(*value_id),
+                            /*addQuote=*/false);
+  }
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto new_value_node,
+      MakeAvroNodeWithFieldIds(original_node->leafAt(1), mapping, names));
+
   auto new_map_node = std::make_shared<::avro::NodeMap>();
-  ICEBERG_RETURN_UNEXPECTED(ProcessChildNode(original_node, 0, "key", kKeyIdProp, mapping,
-                                             names, new_map_node));
-  ICEBERG_RETURN_UNEXPECTED(ProcessChildNode(original_node, 1, "value", kValueIdProp,
-                                             mapping, names, new_map_node));
+  new_map_node->addLeaf(new_value_node);
+  new_map_node->addCustomAttributesForField(attributes);
   return new_map_node;
 }
 
