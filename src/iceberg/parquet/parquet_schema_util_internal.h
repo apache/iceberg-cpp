@@ -74,7 +74,8 @@ bool HasFieldIds(const ::parquet::schema::NodePtr& root_node);
 /// \brief Assign field IDs from a name mapping to a Parquet schema without field IDs.
 ///
 /// List elements use "element"; map keys and values use "key" and "value".
-/// Fields without a mapped ID remain unassigned.
+/// Fields without a mapped ID remain unassigned. When aliases map several sibling
+/// fields to the same ID, only the last of them keeps it, matching Java's reader.
 ///
 /// \param mapping The name mapping to apply.
 /// \param parquet_schema The Parquet schema to update in place.

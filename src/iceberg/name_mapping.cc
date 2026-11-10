@@ -20,7 +20,6 @@
 #include "iceberg/name_mapping.h"
 
 #include <format>
-#include <sstream>
 
 #include "iceberg/util/formatter_internal.h"
 #include "iceberg/util/macros.h"
@@ -32,14 +31,14 @@ namespace {
 
 // Helper function to join a list of field names with a dot
 std::string JoinByDot(std::span<const std::string> parts) {
-  std::stringstream ss;
-  for (size_t i = 0; i < parts.size(); ++i) {
-    if (i > 0) {
-      ss << ".";
+  std::string joined;
+  for (const auto& part : parts) {
+    if (!joined.empty()) {
+      joined.push_back('.');
     }
-    ss << parts[i];
+    joined.append(part);
   }
-  return ss.str();
+  return joined;
 }
 
 // Helper class to recursively index MappedField by field id
@@ -79,8 +78,8 @@ struct IndexByNameVisitor {
 
       for (const auto& [name, mapped_field] : nested_visitor.field_by_name) {
         for (const auto& prefix : field.names) {
-          std::vector<std::string> parts = {prefix, name};
-          field_by_name.emplace(JoinByDot(parts), std::cref(mapped_field));
+          field_by_name.emplace(std::format("{}.{}", prefix, name),
+                                std::cref(mapped_field));
         }
       }
     }
@@ -97,24 +96,31 @@ struct IndexByNameVisitor {
 
 }  // namespace
 
-MappedFields::MappedFields(std::vector<MappedField> fields)
-    : fields_(std::move(fields)) {}
+MappedFields::MappedFields(std::vector<MappedField> fields) : fields_(std::move(fields)) {
+  for (const auto& field : fields_) {
+    if (!field.field_id.has_value()) {
+      continue;
+    }
+    id_to_field_.emplace(field.field_id.value(), std::cref(field));
+    for (const auto& name : field.names) {
+      name_to_id_.emplace(name, field.field_id.value());
+    }
+  }
+}
 
 std::unique_ptr<MappedFields> MappedFields::Make(std::vector<MappedField> fields) {
   return std::unique_ptr<MappedFields>(new MappedFields(std::move(fields)));
 }
 
 std::optional<MappedFieldConstRef> MappedFields::Field(int32_t id) const {
-  const auto& id_to_field = LazyIdToField();
-  if (auto it = id_to_field.find(id); it != id_to_field.cend()) {
+  if (auto it = id_to_field_.find(id); it != id_to_field_.cend()) {
     return it->second;
   }
   return std::nullopt;
 }
 
 std::optional<int32_t> MappedFields::Id(std::string_view name) const {
-  const auto& name_to_id = LazyNameToId();
-  if (auto it = name_to_id.find(name); it != name_to_id.cend()) {
+  if (auto it = name_to_id_.find(name); it != name_to_id_.cend()) {
     return it->second;
   }
   return std::nullopt;
@@ -124,37 +130,19 @@ size_t MappedFields::Size() const { return fields_.size(); }
 
 std::span<const MappedField> MappedFields::fields() const { return fields_; }
 
-const std::unordered_map<std::string_view, int32_t>& MappedFields::LazyNameToId() const {
-  if (name_to_id_.empty() && !fields_.empty()) {
-    for (const auto& field : fields_) {
-      for (const auto& name : field.names) {
-        if (field.field_id.has_value()) {
-          name_to_id_.emplace(name, field.field_id.value());
-        }
-      }
-    }
-  }
-  return name_to_id_;
-}
-
-const std::unordered_map<int32_t, MappedFieldConstRef>& MappedFields::LazyIdToField()
-    const {
-  if (id_to_field_.empty() && !fields_.empty()) {
-    for (const auto& field : fields_) {
-      if (field.field_id.has_value()) {
-        id_to_field_.emplace(field.field_id.value(), std::cref(field));
-      }
-    }
-  }
-  return id_to_field_;
-}
-
 NameMapping::NameMapping(std::unique_ptr<MappedFields> mapping)
-    : mapping_(std::move(mapping)) {}
+    : mapping_(std::move(mapping)) {
+  IndexByIdVisitor id_visitor;
+  id_visitor.Visit(AsMappedFields());
+  fields_by_id_ = std::move(id_visitor.field_by_id);
+
+  IndexByNameVisitor name_visitor;
+  name_visitor.Visit(AsMappedFields());
+  fields_by_name_ = std::move(name_visitor.field_by_name);
+}
 
 std::optional<MappedFieldConstRef> NameMapping::Find(int32_t id) const {
-  const auto& fields_by_id = LazyFieldsById();
-  if (auto iter = fields_by_id.find(id); iter != fields_by_id.cend()) {
+  if (auto iter = fields_by_id_.find(id); iter != fields_by_id_.cend()) {
     return iter->second;
   }
   return std::nullopt;
@@ -169,8 +157,7 @@ std::optional<MappedFieldConstRef> NameMapping::Find(
 }
 
 std::optional<MappedFieldConstRef> NameMapping::Find(const std::string& name) const {
-  const auto& fields_by_name = LazyFieldsByName();
-  if (auto iter = fields_by_name.find(name); iter != fields_by_name.cend()) {
+  if (auto iter = fields_by_name_.find(name); iter != fields_by_name_.cend()) {
     return iter->second;
   }
   return std::nullopt;
@@ -182,26 +169,6 @@ const MappedFields& NameMapping::AsMappedFields() const {
     return *kEmptyFields;
   }
   return *mapping_;
-}
-
-const std::unordered_map<int32_t, MappedFieldConstRef>& NameMapping::LazyFieldsById()
-    const {
-  if (fields_by_id_.empty()) {
-    IndexByIdVisitor visitor;
-    visitor.Visit(AsMappedFields());
-    fields_by_id_ = std::move(visitor.field_by_id);
-  }
-  return fields_by_id_;
-}
-
-const std::unordered_map<std::string, MappedFieldConstRef>&
-NameMapping::LazyFieldsByName() const {
-  if (fields_by_name_.empty()) {
-    IndexByNameVisitor visitor;
-    visitor.Visit(AsMappedFields());
-    fields_by_name_ = std::move(visitor.field_by_name);
-  }
-  return fields_by_name_;
 }
 
 std::unique_ptr<NameMapping> NameMapping::MakeEmpty() {
