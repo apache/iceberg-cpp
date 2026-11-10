@@ -694,26 +694,26 @@ TEST_F(FileScanTaskReaderTest, OpenAppliesResidualFilterWithoutDeletes) {
       Expressions::GreaterThan("id", Literal::Int(1)), R"([[2, "Bar"], [3, "Baz"]])"));
 }
 
-TEST_F(FileScanTaskReaderTest, OpenAppliesFoldedResidualsOnUnprojectedRequiredColumn) {
+TEST_F(FileScanTaskReaderTest, OpenAppliesFoldedResidualsOnProjectedRequiredColumn) {
   table_schema_ = std::make_shared<Schema>(
       std::vector<SchemaField>{SchemaField::MakeRequired(1, "flag", boolean()),
                                SchemaField::MakeRequired(2, "id", int32())});
   projected_schema_ = std::make_shared<Schema>(
-      std::vector<SchemaField>{SchemaField::MakeRequired(2, "id", int32())});
+      std::vector<SchemaField>{table_schema_->fields()[1], table_schema_->fields()[0]});
   constexpr std::string_view data = "[[true, 1], [false, 2], [true, 3]]";
 
   ASSERT_NO_FATAL_FAILURE(VerifyResidualStream(Expressions::NotNull("flag"),
-                                               "[[1], [2], [3]]", {}, true, data));
-  // Binding against the table folds away flag, but id's position also changes in
-  // the read schema. The evaluator must bind using the final read positions.
+                                               "[[1, true], [2, false], [3, true]]", {},
+                                               true, data));
+  // The projection reorders the fields; folding must preserve the read positions.
   ASSERT_NO_FATAL_FAILURE(VerifyResidualStream(
       Expressions::And(Expressions::NotNull("flag"),
                        Expressions::GreaterThan("id", Literal::Int(1))),
-      "[[2], [3]]", {}, true, data));
+      "[[2, false], [3, true]]", {}, true, data));
   ASSERT_NO_FATAL_FAILURE(VerifyResidualStream(
       Expressions::Or(Expressions::IsNull("flag"),
                       Expressions::GreaterThan("id", Literal::Int(1))),
-      "[[2], [3]]", {}, true, data));
+      "[[2, false], [3, true]]", {}, true, data));
 
   ICEBERG_UNWRAP_OR_FAIL(
       auto stream, OpenResidualTask(Expressions::IsNull("flag"), {}, true, true, data));
@@ -727,8 +727,7 @@ TEST_F(FileScanTaskReaderTest, OpenAppliesNullableOutOfRangeResiduals) {
   table_schema_ = std::make_shared<Schema>(
       std::vector<SchemaField>{SchemaField::MakeRequired(1, "id", int32()),
                                SchemaField::MakeOptional(2, "n", int32())});
-  projected_schema_ =
-      std::make_shared<Schema>(std::vector<SchemaField>{table_schema_->fields()[0]});
+  projected_schema_ = table_schema_;
   const int64_t above = int64_t{std::numeric_limits<int32_t>::max()} + 1;
   const int64_t below = int64_t{std::numeric_limits<int32_t>::min()} - 1;
   for (auto residual : {Expressions::LessThan("n", Literal::Long(above)),
@@ -736,91 +735,9 @@ TEST_F(FileScanTaskReaderTest, OpenAppliesNullableOutOfRangeResiduals) {
                         Expressions::GreaterThan("n", Literal::Long(below)),
                         Expressions::GreaterThanOrEqual("n", Literal::Long(below))}) {
     SCOPED_TRACE(residual->ToString());
-    VerifyResidualStream(residual, "[[1]]", {}, true, "[[1, 1], [2, null]]");
+    VerifyResidualStream(residual, "[[1, 1]]", {}, true, "[[1, 1], [2, null]]");
   }
 }
-
-class FileScanTaskResidualPhysicalSchemaTest
-    : public FileScanTaskReaderTest,
-      public ::testing::WithParamInterface<std::tuple<bool, bool, bool>> {};
-
-TEST_P(FileScanTaskResidualPhysicalSchemaTest, PreservesLargeListAcrossResidualBatches) {
-  const auto [filter_rows, prune_columns, with_deletes] = GetParam();
-  table_schema_ = std::make_shared<Schema>(std::vector<SchemaField>{
-      SchemaField::MakeRequired(1, "id", int32()),
-      SchemaField::MakeOptional(
-          2, "values",
-          std::make_shared<ListType>(SchemaField::MakeOptional(3, "element", int32())))});
-  projected_schema_ =
-      prune_columns
-          ? std::make_shared<Schema>(std::vector<SchemaField>{table_schema_->fields()[1]})
-          : table_schema_;
-  ICEBERG_UNWRAP_OR_FAIL(auto data_file,
-                         MakeDataFile(table_schema_,
-                                      std::vector<std::string>{"[[1, [10, 20]], [2, []]]",
-                                                               "[[3, [30]], [4, null]]"},
-                                      /*record_count=*/4, /*max_row_group_length=*/2));
-  std::vector<std::shared_ptr<DataFile>> deletes;
-  if (with_deletes) {
-    ICEBERG_UNWRAP_OR_FAIL(
-        auto deletion, MakePositionDeleteFile(CreateNewTempFilePathWithSuffix(".parquet"),
-                                              {99}, data_file->file_path));
-    deletes.push_back(std::move(deletion));
-  }
-  // The first batch always passes unchanged. The second is either all-matching
-  // or partially filtered, so one stream exercises both paths with the same schema.
-  auto residual = filter_rows ? Expressions::NotEqual("id", Literal::Int(3))
-                              : Expressions::GreaterThan("id", Literal::Int(0));
-  FileScanTask task(data_file, std::move(deletes), std::move(residual));
-  ICEBERG_UNWRAP_OR_FAIL(
-      auto reader,
-      FileScanTaskReader::Make({
-          .io = file_io_,
-          .table_schema = table_schema_,
-          .projected_schema = projected_schema_,
-          .properties = {{"read.batch-size", "2"}, {"read.arrow.use-large-list", "true"}},
-          .apply_residuals = true,
-      }));
-  ICEBERG_UNWRAP_OR_FAIL(auto stream, reader->Open(task));
-  reader.reset();
-  ArrowSchema declared_schema{};
-  internal::ArrowSchemaGuard schema_guard(&declared_schema);
-  ASSERT_EQ(stream.get_schema(&stream, &declared_schema), 0);
-  const int list_index = prune_columns ? 0 : 1;
-  EXPECT_STREQ(declared_schema.children[list_index]->format, "+L");
-  auto batches = ::arrow::ImportRecordBatchReader(&stream).ValueOrDie();
-  std::vector<std::shared_ptr<::arrow::RecordBatch>> retained_batches;
-  const std::array<std::string_view, 2> expected_json =
-      prune_columns
-          ? std::array<std::string_view, 2>{"[[[10, 20]], [[]]]",
-                                            filter_rows ? "[[null]]" : "[[[30]], [null]]"}
-          : std::array<std::string_view, 2>{
-                "[[1, [10, 20]], [2, []]]",
-                filter_rows ? "[[4, null]]" : "[[3, [30]], [4, null]]"};
-  for (auto json : expected_json) {
-    auto result = batches->Next();
-    ASSERT_TRUE(result.ok()) << result.status();
-    auto batch = result.ValueOrDie();
-    ASSERT_NE(batch, nullptr);
-    ASSERT_TRUE(batch->ValidateFull().ok()) << batch->ValidateFull();
-    ASSERT_EQ(batch->column(list_index)->type_id(), ::arrow::Type::LARGE_LIST);
-    ICEBERG_UNWRAP_OR_FAIL(auto expected,
-                           MakeRecordBatch(batches->schema(), std::string(json)));
-    EXPECT_TRUE(batch->Equals(*expected)) << batch->ToString();
-    retained_batches.push_back(std::move(batch));
-  }
-  auto next = batches->Next();
-  ASSERT_TRUE(next.ok()) << next.status();
-  EXPECT_EQ(next.ValueOrDie(), nullptr);
-  batches.reset();
-  for (const auto& batch : retained_batches) {
-    EXPECT_TRUE(batch->ValidateFull().ok()) << batch->ValidateFull();
-  }
-}
-
-INSTANTIATE_TEST_SUITE_P(ResidualsAndProjections, FileScanTaskResidualPhysicalSchemaTest,
-                         ::testing::Combine(::testing::Bool(), ::testing::Bool(),
-                                            ::testing::Bool()));
 
 TEST_F(FileScanTaskReaderTest, OpenAppliesResidualFilterWithPositionDeletes) {
   ICEBERG_UNWRAP_OR_FAIL(
@@ -850,6 +767,8 @@ TEST_F(FileScanTaskReaderTest, OpenAppliesResidualFilterWithPositionDeletes) {
 }
 
 TEST_F(FileScanTaskReaderTest, OpenAppliesResidualFilterWithEqualityDeletes) {
+  projected_schema_ = std::make_shared<Schema>(
+      std::vector<SchemaField>{table_schema_->fields()[0], table_schema_->fields()[2]});
   ICEBERG_UNWRAP_OR_FAIL(
       auto eq_delete,
       MakeEqualityDeleteFile(CreateNewTempFilePathWithSuffix(".parquet"), table_schema_,
@@ -858,31 +777,62 @@ TEST_F(FileScanTaskReaderTest, OpenAppliesResidualFilterWithEqualityDeletes) {
   // The residual removes "Foo"; the equality delete removes "Bar".
   ASSERT_NO_FATAL_FAILURE(
       VerifyResidualStream(Expressions::NotEqual("category", Literal::String("blue")),
-                           R"([[3, "Baz"]])", {eq_delete}));
+                           R"([[3, "green"]])", {eq_delete}));
 }
 
-TEST_F(FileScanTaskReaderTest, OpenAppliesResidualFilterOnColumnAbsentFromProjection) {
-  ICEBERG_UNWRAP_OR_FAIL(auto stream, OpenResidualTask(Expressions::Equal(
-                                          "category", Literal::String("blue"))));
+TEST_F(FileScanTaskReaderTest, OpenRejectsResidualOnColumnAbsentFromProjection) {
+  EXPECT_THAT(OpenResidualTask(Expressions::Equal("category", Literal::String("blue"))),
+              HasErrorMessage("Cannot find field 'category'"));
+  // Missing references are rejected even if the table schema would fold them away.
+  projected_schema_ =
+      std::make_shared<Schema>(std::vector<SchemaField>{table_schema_->fields()[1]});
+  EXPECT_THAT(OpenResidualTask(Expressions::NotNull("id")),
+              HasErrorMessage("Cannot find field 'id'"));
+}
 
-  // The filter column is read for evaluation but must not leak into the output.
-  auto record_batch_reader = ::arrow::ImportRecordBatchReader(&stream).ValueOrDie();
-  auto result = record_batch_reader->Next();
-  ASSERT_TRUE(result.ok()) << result.status().message();
-  auto actual_batch = result.ValueOrDie();
-  ASSERT_NE(actual_batch, nullptr);
-  ICEBERG_UNWRAP_OR_FAIL(auto expected_schema, MakeArrowSchema(*projected_schema_));
-  ASSERT_TRUE(actual_batch->schema()->Equals(*expected_schema))
-      << actual_batch->schema()->ToString();
-  ICEBERG_UNWRAP_OR_FAIL(auto expected_batch,
-                         MakeRecordBatch(expected_schema, R"([[1, "Foo"]])"));
-  ASSERT_TRUE(actual_batch->Equals(*expected_batch))
-      << actual_batch->ToString() << "\nExpected:\n"
-      << expected_batch->ToString();
+TEST_F(FileScanTaskReaderTest, ScanProjectionKeepsFilterColumnsInOutput) {
+  internal::TableScanContext context;
+  context.selected_columns = std::vector<std::string>{"id"};
+  context.filter = Expressions::Equal("category", Literal::String("blue"));
+  auto metadata = std::make_shared<TableMetadata>();
+  metadata->schemas = {table_schema_};
+  metadata->current_schema_id = table_schema_->schema_id();
+  ICEBERG_UNWRAP_OR_FAIL(auto scan,
+                         DataTableScan::Make(metadata, table_schema_, file_io_, context));
+  ICEBERG_UNWRAP_OR_FAIL(auto projection, scan->schema());
+  ASSERT_EQ(projection->fields().size(), 2);
+  EXPECT_EQ(projection->fields()[0].field_id(), 1);
+  EXPECT_EQ(projection->fields()[1].field_id(), 3);
 
-  result = record_batch_reader->Next();
-  ASSERT_TRUE(result.ok()) << result.status().message();
-  ASSERT_EQ(result.ValueOrDie(), nullptr);
+  ICEBERG_UNWRAP_OR_FAIL(auto data_file,
+                         MakeDataFile(table_schema_, std::string(kResidualDataJson)));
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto pos_delete, MakePositionDeleteFile(CreateNewTempFilePathWithSuffix(".parquet"),
+                                              {1}, data_file->file_path));
+  for (bool with_deletes : {false, true}) {
+    SCOPED_TRACE(with_deletes);
+    FileScanTask task(
+        data_file,
+        with_deletes ? std::vector{pos_delete} : std::vector<std::shared_ptr<DataFile>>{},
+        scan->filter());
+    ICEBERG_UNWRAP_OR_FAIL(auto reader, FileScanTaskReader::Make({
+                                            .io = scan->io(),
+                                            .table_schema = table_schema_,
+                                            .projected_schema = projection,
+                                            .case_sensitive = scan->is_case_sensitive(),
+                                            .apply_residuals = true,
+                                        }));
+    ICEBERG_UNWRAP_OR_FAIL(auto stream, reader->Open(task));
+    auto batches = ::arrow::ImportRecordBatchReader(&stream).ValueOrDie();
+    ICEBERG_UNWRAP_OR_FAIL(auto expected_schema, MakeArrowSchema(*projection));
+    ASSERT_TRUE(batches->schema()->Equals(*expected_schema));
+    auto batch = batches->Next().ValueOrDie();
+    ASSERT_NE(batch, nullptr);
+    ICEBERG_UNWRAP_OR_FAIL(auto expected,
+                           MakeRecordBatch(expected_schema, R"([[1, "blue"]])"));
+    EXPECT_TRUE(batch->Equals(*expected)) << batch->ToString();
+    EXPECT_EQ(batches->Next().ValueOrDie(), nullptr);
+  }
 }
 
 TEST_F(FileScanTaskReaderTest, OpenAppliesCaseInsensitiveResidualFilter) {
@@ -959,42 +909,140 @@ TEST_F(FileScanTaskReaderTest, OpenRejectsResidualWithUnknownColumn) {
               HasErrorMessage("Cannot find field 'missing'"));
 }
 
-TEST_F(FileScanTaskReaderTest, OpenRejectsResidualOnNestedColumn) {
+TEST_F(FileScanTaskReaderTest, OpenAppliesResidualOnNestedColumn) {
   table_schema_ = std::make_shared<Schema>(std::vector<SchemaField>{
       SchemaField::MakeRequired(1, "id", int32()),
       SchemaField::MakeOptional(2, "s",
                                 std::make_shared<StructType>(std::vector<SchemaField>{
                                     SchemaField::MakeOptional(3, "tags", string())}))});
   projected_schema_ = table_schema_;
-  EXPECT_THAT(OpenResidualTask(Expressions::NotNull("s.tags"), {},
-                               /*case_sensitive=*/true, /*apply_residuals=*/true,
-                               R"([[1, {"tags": "a"}]])"),
-              HasErrorMessage("which is not a top-level column"));
+  constexpr std::string_view data =
+      R"([[1, {"tags": "a"}], [2, null], [3, {"tags": null}]])";
+  VerifyResidualStream(Expressions::NotNull("s.tags"), R"([[1, {"tags": "a"}]])", {},
+                       true, data);
+  VerifyResidualStream(Expressions::IsNull("s.tags"),
+                       R"([[2, null], [3, {"tags": null}]])", {}, true, data);
+}
+
+TEST_F(FileScanTaskReaderTest, NestedResidualsPreserveReadPositionsWithDeletes) {
+  auto value = SchemaField::MakeOptional(3, "value", string());
+  auto key = SchemaField::MakeRequired(4, "key", int32());
+  table_schema_ = std::make_shared<Schema>(std::vector<SchemaField>{
+      SchemaField::MakeRequired(1, "id", int32()),
+      SchemaField::MakeOptional(2, "record", struct_({value, key}))});
+  // Reorder both the top-level fields and the nested children in the read schema.
+  projected_schema_ = std::make_shared<Schema>(
+      std::vector<SchemaField>{table_schema_->fields()[1].WithType(struct_({key, value})),
+                               table_schema_->fields()[0]});
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto data_file,
+      MakeDataFile(table_schema_,
+                   R"([[1, {"value": "a", "key": 1}], [2, {"value": "b", "key": 2}],
+                       [3, null], [4, {"value": "d", "key": 3}],
+                       [5, {"value": "e", "key": 4}]])"));
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto pos_delete, MakePositionDeleteFile(CreateNewTempFilePathWithSuffix(".parquet"),
+                                              {1}, data_file->file_path));
+  auto delete_schema =
+      std::make_shared<Schema>(std::vector<SchemaField>{table_schema_->fields()[0]});
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto eq_delete, MakeEqualityDeleteFile(CreateNewTempFilePathWithSuffix(".parquet"),
+                                             delete_schema, "[[4]]", {1}));
+  for (bool case_sensitive : {true, false}) {
+    for (const std::string deletes : {"none", "position", "equality", "mixed"}) {
+      SCOPED_TRACE(case_sensitive);
+      SCOPED_TRACE(deletes);
+      std::vector<std::shared_ptr<DataFile>> delete_files;
+      if (deletes == "position" || deletes == "mixed") {
+        delete_files.push_back(pos_delete);
+      }
+      if (deletes == "equality" || deletes == "mixed") {
+        delete_files.push_back(eq_delete);
+      }
+      FileScanTask task(
+          data_file, std::move(delete_files),
+          Expressions::GreaterThan(case_sensitive ? "record.key" : "RECORD.KEY",
+                                   Literal::Int(1)));
+      ICEBERG_UNWRAP_OR_FAIL(auto reader, FileScanTaskReader::Make({
+                                              .io = file_io_,
+                                              .table_schema = table_schema_,
+                                              .projected_schema = projected_schema_,
+                                              .case_sensitive = case_sensitive,
+                                              .apply_residuals = true,
+                                          }));
+      ICEBERG_UNWRAP_OR_FAIL(auto stream, reader->Open(task));
+      const std::string_view expected =
+          deletes == "none"
+              ? R"([[{"key": 2, "value": "b"}, 2], [{"key": 3, "value": "d"}, 4],
+                     [{"key": 4, "value": "e"}, 5]])"
+          : deletes == "position"
+              ? R"([[{"key": 3, "value": "d"}, 4], [{"key": 4, "value": "e"}, 5]])"
+          : deletes == "equality"
+              ? R"([[{"key": 2, "value": "b"}, 2], [{"key": 4, "value": "e"}, 5]])"
+              : R"([[{"key": 4, "value": "e"}, 5]])";
+      VerifyStream(&stream, expected);
+    }
+  }
+}
+
+TEST_F(FileScanTaskReaderTest, OpenRejectsResidualOnListElement) {
+  table_schema_ = std::make_shared<Schema>(std::vector<SchemaField>{
+      SchemaField::MakeRequired(1, "id", int32()),
+      SchemaField::MakeOptional(
+          2, "items",
+          list(SchemaField::MakeOptional(
+              3, "element",
+              struct_({SchemaField::MakeOptional(4, "value", int32())}))))});
+  projected_schema_ = table_schema_;
+  EXPECT_THAT(
+      OpenResidualTask(Expressions::GreaterThan("items.element.value", Literal::Int(0)),
+                       {}, true, true, R"([[1, [{"value": 1}]]])"),
+      IsError(ErrorKind::kNotFound));
+}
+
+TEST_F(FileScanTaskReaderTest, OpenRejectsResidualComparisonOnCompositeColumn) {
+  table_schema_ = std::make_shared<Schema>(std::vector<SchemaField>{
+      SchemaField::MakeRequired(1, "id", int32()),
+      SchemaField::MakeOptional(
+          2, "s", struct_({SchemaField::MakeOptional(3, "value", int32())}))});
+  projected_schema_ = table_schema_;
+  EXPECT_THAT(OpenResidualTask(Expressions::Equal("s", Literal::Int(1)), {}, true, true,
+                               R"([[1, {"value": 1}]])"),
+              IsError(ErrorKind::kInvalidExpression));
 }
 
 TEST_F(FileScanTaskReaderTest, OpenAppliesNullPredicatesOnCompositeColumns) {
-  const std::vector<std::pair<std::shared_ptr<Type>, std::string>> cases = {
+  struct Case {
+    std::shared_ptr<Type> type;
+    std::string data;
+    std::string non_null_rows;
+    std::string matching_row;
+  };
+  const std::vector<Case> cases = {
       {struct_({SchemaField::MakeOptional(3, "value", int32())}),
-       R"([[1, null], [2, {"value": null}], [3, {"value": 10}], [4, null]])"},
+       R"([[1, null], [2, {"value": null}], [3, {"value": 10}], [4, null]])",
+       R"([[2, {"value": null}], [3, {"value": 10}]])", R"([[3, {"value": 10}]])"},
       {list(SchemaField::MakeOptional(3, "element", int32())),
-       "[[1, null], [2, []], [3, [10]], [4, null]]"},
+       "[[1, null], [2, []], [3, [10]], [4, null]]", "[[2, []], [3, [10]]]",
+       "[[3, [10]]]"},
       {map(SchemaField::MakeRequired(3, "key", string()),
            SchemaField::MakeOptional(4, "value", int32())),
-       R"([[1, null], [2, []], [3, [["a", 10]]], [4, null]])"},
+       R"([[1, null], [2, []], [3, [["a", 10]]], [4, null]])",
+       R"([[2, []], [3, [["a", 10]]]])", R"([[3, [["a", 10]]]])"},
   };
-  for (const auto& [type, data] : cases) {
+  for (const auto& [type, data, non_null_rows, matching_row] : cases) {
     SCOPED_TRACE(type->ToString());
     table_schema_ = std::make_shared<Schema>(
         std::vector<SchemaField>{SchemaField::MakeRequired(1, "id", int32()),
                                  SchemaField::MakeOptional(2, "value", type)});
-    projected_schema_ =
-        std::make_shared<Schema>(std::vector<SchemaField>{table_schema_->fields()[0]});
-    VerifyResidualStream(Expressions::IsNull("value"), "[[1], [4]]", {}, true, data);
-    VerifyResidualStream(Expressions::NotNull("value"), "[[2], [3]]", {}, true, data);
+    projected_schema_ = table_schema_;
+    VerifyResidualStream(Expressions::IsNull("value"), "[[1, null], [4, null]]", {}, true,
+                         data);
+    VerifyResidualStream(Expressions::NotNull("value"), non_null_rows, {}, true, data);
     VerifyResidualStream(
         Expressions::And(Expressions::NotNull("value"),
                          Expressions::GreaterThan("id", Literal::Int(2))),
-        "[[3]]", {}, true, data);
+        matching_row, {}, true, data);
   }
 }
 
@@ -1008,8 +1056,7 @@ TEST_F(FileScanTaskReaderTest, OpenAppliesGeospatialNullPredicates) {
     table_schema_ = std::make_shared<Schema>(
         std::vector<SchemaField>{SchemaField::MakeRequired(1, "id", int32()),
                                  SchemaField::MakeOptional(2, "geom", type)});
-    projected_schema_ =
-        std::make_shared<Schema>(std::vector<SchemaField>{table_schema_->fields()[0]});
+    projected_schema_ = table_schema_;
     ::arrow::Int32Builder ids;
     ASSERT_TRUE(ids.AppendValues({1, 2}).ok());
     ::arrow::BinaryBuilder values;
@@ -1045,7 +1092,26 @@ TEST_F(FileScanTaskReaderTest, OpenAppliesGeospatialNullPredicates) {
                                               .apply_residuals = true,
                                           }));
       ICEBERG_UNWRAP_OR_FAIL(auto stream, reader->Open(task));
-      VerifyStream(&stream, is_null ? "[[2]]" : "[[1]]");
+      auto batches = ::arrow::ImportRecordBatchReader(&stream).ValueOrDie();
+      ICEBERG_UNWRAP_OR_FAIL(auto expected_schema, MakeArrowSchema(*projected_schema_));
+      ASSERT_TRUE(batches->schema()->Equals(*expected_schema));
+      auto result = batches->Next().ValueOrDie();
+      ASSERT_NE(result, nullptr);
+      ASSERT_EQ(result->num_rows(), 1);
+      ASSERT_EQ(result->num_columns(), 2);
+      auto result_ids = std::static_pointer_cast<::arrow::Int32Array>(result->column(0));
+      EXPECT_EQ(result_ids->Value(0), is_null ? 2 : 1);
+      auto result_values =
+          std::static_pointer_cast<::arrow::BinaryArray>(result->column(1));
+      if (is_null) {
+        EXPECT_TRUE(result_values->IsNull(0));
+      } else {
+        EXPECT_FALSE(result_values->IsNull(0));
+        EXPECT_EQ(
+            result_values->GetView(0),
+            std::string_view(reinterpret_cast<const char*>(point.data()), point.size()));
+      }
+      EXPECT_EQ(batches->Next().ValueOrDie(), nullptr);
     }
   }
 }

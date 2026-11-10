@@ -38,11 +38,8 @@ namespace iceberg {
 ///
 /// FileScanTaskReader chooses the copy-on-write path for tasks without deletes and
 /// the merge-on-read path for tasks with v2 position or equality deletes. The returned
-/// stream exposes the fields of `projected_schema` in one stable physical Arrow layout,
-/// which may depend on the file format and reader properties (for example, `large_list`
-/// instead of `list`). Every batch matches the schema reported by the stream. When
-/// `apply_residuals` is enabled, each task's residual filter is enforced after deletes
-/// and before final projection.
+/// stream always exposes `projected_schema`. When `apply_residuals` is enabled, each
+/// task's residual filter is enforced after deletes and before final projection.
 ///
 /// TODO(gangwu): Add a mode that emits a `_deleted` column instead of filtering rows.
 class ICEBERG_DATA_EXPORT FileScanTaskReader {
@@ -55,8 +52,13 @@ class ICEBERG_DATA_EXPORT FileScanTaskReader {
     std::shared_ptr<Schema> table_schema;
     /// Optional list of historical table schemas for field lookup.
     std::vector<std::shared_ptr<Schema>> schemas;
-    /// The output schema for the returned ArrowArrayStream. Must be a
-    /// projection of table_schema.
+    /// The read and output projection; this need not be the full table schema.
+    /// Must be a projection of table_schema. With apply_residuals enabled, callers
+    /// must include every field referenced by each task's original residual, even
+    /// if binding would fold its predicate to a constant. Open() fails on missing
+    /// references rather than adding fields from table_schema. Filter-only columns
+    /// remain in the output; delete-only columns are added internally as needed
+    /// and removed before returning batches.
     std::shared_ptr<Schema> projected_schema;
     /// Case sensitivity for residual binding and reader field name resolution.
     /// Must match TableScan::is_case_sensitive(); tasks do not carry this setting.
@@ -66,13 +68,8 @@ class ICEBERG_DATA_EXPORT FileScanTaskReader {
     /// Format-specific or implementation-specific options for data readers.
     std::unordered_map<std::string, std::string> properties;
     /// Whether to enforce each task's residual filter row by row, after deletes
-    /// and before final projection. The default keeps the serial reader's
-    /// results unchanged; the parallel reader always enables it. Columns used
-    /// only by the residual are read for evaluation and removed by the final
-    /// projection. Format readers may ignore `ReaderOptions.filter`, so this is
-    /// the only guaranteed enforcement path. Residual references must be top-level
-    /// primitive columns or null checks on top-level struct, list, or map columns;
-    /// other references fail when opening the task.
+    /// and before final projection. Residuals are bound against projected_schema;
+    /// invalid references and unsupported expressions return errors.
     bool apply_residuals{false};
   };
 
@@ -83,9 +80,10 @@ class ICEBERG_DATA_EXPORT FileScanTaskReader {
 
   /// \brief Open a task and return an Arrow C stream for its projected live rows.
   ///
-  /// When Options::apply_residuals is set, the task's residual filter is enforced
-  /// row by row after deletes and before the final projection; unsupported
-  /// residual references fail with an explicit error.
+  /// When Options::apply_residuals is set, Options::projected_schema must contain
+  /// all fields referenced by the task's original residual. Missing references
+  /// cause Open() to fail; they are not added from the table schema. Rows are
+  /// filtered after deletes and before final projection.
   ///
   /// Partial tasks are supported for Parquet, with each row group assigned to the
   /// half-open range containing its midpoint, as in Java Iceberg. Row positions and
