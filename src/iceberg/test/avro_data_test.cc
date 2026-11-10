@@ -1640,6 +1640,40 @@ TEST(ExtractDatumFromArrayTest, LargeString) {
   }
 }
 
+TEST(ExtractDatumFromArrayTest, LargeBinary) {
+  Schema iceberg_schema({
+      SchemaField::MakeRequired(1, "data", binary()),
+  });
+
+  ::avro::NodePtr avro_node;
+  ASSERT_THAT(ToAvroNodeVisitor{}.Visit(iceberg_schema, &avro_node), IsOk());
+
+  // Build a LargeBinaryArray manually
+  ::arrow::LargeBinaryBuilder builder;
+  ASSERT_TRUE(builder.Append("abc").ok());
+  ASSERT_TRUE(builder.Append("bcd").ok());
+  ASSERT_TRUE(builder.Append("cde").ok());
+  std::shared_ptr<::arrow::Array> large_binary_array;
+  ASSERT_TRUE(builder.Finish(&large_binary_array).ok());
+
+  auto arrow_array =
+      ::arrow::StructArray::Make(::arrow::ArrayVector{large_binary_array},
+                                 std::vector<std::shared_ptr<::arrow::Field>>{
+                                     ::arrow::field("data", ::arrow::large_binary())})
+          .ValueOrDie();
+
+  for (int64_t i = 0; i < 3; ++i) {
+    ::avro::GenericDatum extracted_datum(avro_node);
+    ASSERT_THAT(ExtractDatumFromArray(*arrow_array, i, &extracted_datum), IsOk());
+    const auto& record = extracted_datum.value<::avro::GenericRecord>();
+    const auto& bytes = record.fieldAt(0).value<std::vector<uint8_t>>();
+    ASSERT_EQ(bytes.size(), 3);
+    EXPECT_EQ(bytes[0], static_cast<uint8_t>('a' + i));
+    EXPECT_EQ(bytes[1], static_cast<uint8_t>('b' + i));
+    EXPECT_EQ(bytes[2], static_cast<uint8_t>('c' + i));
+  }
+}
+
 TEST(ExtractDatumFromArrayTest, ErrorHandling) {
   Schema iceberg_schema({SchemaField::MakeRequired(1, "a", int32())});
   ::avro::NodePtr avro_node;
