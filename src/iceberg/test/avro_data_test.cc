@@ -1632,7 +1632,7 @@ TEST(ExtractDatumFromArrayTest, LargeString) {
 
   std::vector<std::string> expected = {"hello", "world", "iceberg"};
 
-  for (int64_t i = 0; i < static_cast<int64_t>(expected.size()); ++i) {
+  for (int64_t i = 0; std::cmp_less(i, expected.size()); ++i) {
     ::avro::GenericDatum extracted_datum(avro_node);
     ASSERT_THAT(ExtractDatumFromArray(*arrow_array, i, &extracted_datum), IsOk());
     const auto& record = extracted_datum.value<::avro::GenericRecord>();
