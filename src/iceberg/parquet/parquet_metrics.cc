@@ -34,13 +34,12 @@
 
 #include "iceberg/expression/literal.h"
 #include "iceberg/parquet/parquet_metrics_internal.h"
+#include "iceberg/parquet/parquet_value_util_internal.h"
 #include "iceberg/result.h"
 #include "iceberg/schema.h"
 #include "iceberg/type.h"
 #include "iceberg/util/checked_cast.h"
-#include "iceberg/util/decimal.h"
 #include "iceberg/util/truncate_util.h"
-#include "iceberg/util/uuid.h"
 #include "iceberg/util/visit_type.h"
 
 namespace iceberg::parquet {
@@ -84,99 +83,6 @@ Result<Literal> TypedStatsLiteral(const ::parquet::Statistics& stats, bool is_mi
                                   Converter&& converter) {
   const auto& typed_stats = internal::checked_cast<const StatsType&>(stats);
   return converter(is_min ? typed_stats.min() : typed_stats.max());
-}
-
-std::vector<uint8_t> BytesFromByteArray(const ::parquet::ByteArray& value) {
-  return std::vector<uint8_t>{value.ptr, value.ptr + value.len};
-}
-
-std::vector<uint8_t> BytesFromFLBA(const ::parquet::FixedLenByteArray& value,
-                                   int32_t length) {
-  return std::vector<uint8_t>{value.ptr, value.ptr + length};
-}
-
-Literal DecimalLiteral(int128_t value, const PrimitiveType& iceberg_type) {
-  const auto& decimal_type = internal::checked_cast<const DecimalType&>(iceberg_type);
-  return Literal::Decimal(value, decimal_type.precision(), decimal_type.scale());
-}
-
-Result<Literal> DecimalLiteralFromBytes(std::span<const uint8_t> bytes,
-                                        const PrimitiveType& iceberg_type) {
-  ICEBERG_ASSIGN_OR_RAISE(auto decimal,
-                          Decimal::FromBigEndian(bytes.data(), bytes.size()));
-  return DecimalLiteral(decimal.value(), iceberg_type);
-}
-
-Result<Literal> BinaryStatsLiteral(std::vector<uint8_t> bytes,
-                                   const PrimitiveType& iceberg_type) {
-  switch (iceberg_type.type_id()) {
-    case TypeId::kString:
-      return Literal::String(std::string(bytes.begin(), bytes.end()));
-    case TypeId::kBinary:
-      return Literal::Binary(std::move(bytes));
-    case TypeId::kFixed:
-      return Literal::Fixed(std::move(bytes));
-    case TypeId::kUuid: {
-      ICEBERG_ASSIGN_OR_RAISE(auto uuid, Uuid::FromBytes(bytes));
-      return Literal::UUID(std::move(uuid));
-    }
-    case TypeId::kDecimal:
-      return DecimalLiteralFromBytes(bytes, iceberg_type);
-    default:
-      return InvalidArgument(
-          "Cannot convert Parquet binary statistics to Iceberg type {}",
-          iceberg_type.ToString());
-  }
-}
-
-Result<Literal> Int32StatsLiteral(int32_t value, const PrimitiveType& iceberg_type) {
-  switch (iceberg_type.type_id()) {
-    case TypeId::kInt:
-      return Literal::Int(value);
-    case TypeId::kLong:
-      return Literal::Long(value);
-    case TypeId::kDate:
-      return Literal::Date(value);
-    case TypeId::kDecimal:
-      return DecimalLiteral(value, iceberg_type);
-    default:
-      return InvalidArgument("Cannot convert Parquet INT32 statistics to Iceberg type {}",
-                             iceberg_type.ToString());
-  }
-}
-
-Result<Literal> Int64StatsLiteral(int64_t value, const PrimitiveType& iceberg_type) {
-  switch (iceberg_type.type_id()) {
-    case TypeId::kLong:
-      return Literal::Long(value);
-    case TypeId::kTime:
-      return Literal::Time(value);
-    case TypeId::kTimestamp:
-      return Literal::Timestamp(value);
-    case TypeId::kTimestampTz:
-      return Literal::TimestampTz(value);
-    case TypeId::kTimestampNs:
-      return Literal::TimestampNs(value);
-    case TypeId::kTimestampTzNs:
-      return Literal::TimestampTzNs(value);
-    case TypeId::kDecimal:
-      return DecimalLiteral(value, iceberg_type);
-    default:
-      return InvalidArgument("Cannot convert Parquet INT64 statistics to Iceberg type {}",
-                             iceberg_type.ToString());
-  }
-}
-
-Result<Literal> FloatStatsLiteral(float value, const PrimitiveType& iceberg_type) {
-  switch (iceberg_type.type_id()) {
-    case TypeId::kFloat:
-      return Literal::Float(value);
-    case TypeId::kDouble:
-      return Literal::Double(value);
-    default:
-      return InvalidArgument("Cannot convert Parquet FLOAT statistics to Iceberg type {}",
-                             iceberg_type.ToString());
-  }
 }
 
 bool IsFloatingType(const PrimitiveType& type) {
@@ -468,33 +374,34 @@ Result<Literal> ParquetMetrics::StatsValueToLiteral(
     const ::parquet::Statistics& stats, bool is_min) {
   switch (column.physical_type()) {
     case ::parquet::Type::BOOLEAN:
-      return TypedStatsLiteral<::parquet::BoolStatistics>(
-          stats, is_min, [](bool value) { return Literal::Boolean(value); });
+      return TypedStatsLiteral<::parquet::BoolStatistics>(stats, is_min, [&](bool value) {
+        return ParquetValueToLiteral(value, iceberg_type);
+      });
     case ::parquet::Type::INT32:
       return TypedStatsLiteral<::parquet::Int32Statistics>(
           stats, is_min,
-          [&](int32_t value) { return Int32StatsLiteral(value, iceberg_type); });
+          [&](int32_t value) { return ParquetValueToLiteral(value, iceberg_type); });
     case ::parquet::Type::INT64:
       return TypedStatsLiteral<::parquet::Int64Statistics>(
           stats, is_min,
-          [&](int64_t value) { return Int64StatsLiteral(value, iceberg_type); });
+          [&](int64_t value) { return ParquetValueToLiteral(value, iceberg_type); });
     case ::parquet::Type::FLOAT:
       return TypedStatsLiteral<::parquet::FloatStatistics>(
           stats, is_min,
-          [&](float value) { return FloatStatsLiteral(value, iceberg_type); });
+          [&](float value) { return ParquetValueToLiteral(value, iceberg_type); });
     case ::parquet::Type::DOUBLE:
       return TypedStatsLiteral<::parquet::DoubleStatistics>(
-          stats, is_min, [](double value) { return Literal::Double(value); });
+          stats, is_min,
+          [&](double value) { return ParquetValueToLiteral(value, iceberg_type); });
     case ::parquet::Type::BYTE_ARRAY:
       return TypedStatsLiteral<::parquet::ByteArrayStatistics>(
           stats, is_min, [&](const ::parquet::ByteArray& value) {
-            return BinaryStatsLiteral(BytesFromByteArray(value), iceberg_type);
+            return ParquetValueToLiteral(value, iceberg_type);
           });
     case ::parquet::Type::FIXED_LEN_BYTE_ARRAY:
       return TypedStatsLiteral<::parquet::FLBAStatistics>(
           stats, is_min, [&](const ::parquet::FixedLenByteArray& value) {
-            return BinaryStatsLiteral(BytesFromFLBA(value, column.type_length()),
-                                      iceberg_type);
+            return ParquetValueToLiteral(value, iceberg_type, column.type_length());
           });
     case ::parquet::Type::INT96:
     case ::parquet::Type::UNDEFINED:

@@ -88,7 +88,7 @@ class ICEBERG_EXPORT ReaderProperties : public ConfigBase<ReaderProperties> {
   /// \brief Validate Arrow batches before merge-on-read projection.
   /// Default: true. Disable only when the reader is trusted to produce valid arrays.
   inline static Entry<bool> kArrowValidateBatch{"read.arrow.validate-batch", true};
-  /// \brief Use footer statistics to prune Parquet row groups.
+  /// \brief Use footer statistics and dictionaries to prune Parquet row groups.
   inline static Entry<bool> kParquetRowGroupFilter{
       "read.parquet.row-group-filter.enabled", true};
   /// \brief Skip GenericDatum in Avro reader for better performance.

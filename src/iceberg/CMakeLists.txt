@@ -326,11 +326,13 @@ if(ICEBERG_BUILD_BUNDLE)
       avro/avro_schema_util.cc
       avro/avro_stream_internal.cc
       parquet/parquet_data_util.cc
+      parquet/parquet_dictionary_row_group_filter.cc
       parquet/parquet_metrics.cc
       parquet/parquet_metrics_row_group_filter.cc
       parquet/parquet_reader.cc
       parquet/parquet_register.cc
       parquet/parquet_schema_util.cc
+      parquet/parquet_value_util.cc
       parquet/parquet_writer.cc
       parquet/row_number_reader.cc)
 
