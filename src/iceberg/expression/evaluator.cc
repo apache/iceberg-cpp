@@ -21,6 +21,7 @@
 
 #include "iceberg/expression/binder.h"
 #include "iceberg/expression/expression_visitor.h"
+#include "iceberg/row/struct_like.h"
 #include "iceberg/schema.h"
 #include "iceberg/util/macros.h"
 
@@ -45,6 +46,13 @@ class EvalVisitor : public BoundVisitor<bool> {
   }
 
   Result<bool> IsNull(const std::shared_ptr<Bound>& expr) override {
+    // References can expose validity without converting their value to a literal.
+    // This also supports composite and geospatial fields. Transforms must still
+    // evaluate their result, which may be null even when the input is not.
+    if (auto ref = std::dynamic_pointer_cast<BoundReference>(expr)) {
+      ICEBERG_ASSIGN_OR_RAISE(auto value, ref->accessor().Get(row_));
+      return std::holds_alternative<std::monostate>(value);
+    }
     ICEBERG_ASSIGN_OR_RAISE(auto value, expr->Evaluate(row_));
     return value.IsNull();
   }
