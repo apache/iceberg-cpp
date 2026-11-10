@@ -797,16 +797,16 @@ class NameMappingApplier {
     for (size_t i = 0; i < fields.size(); ++i) {
       auto unmapped_field = fields[i].field;
       auto field_id = ApplyToChild(unmapped_field->name(), &fields[i]);
-      if (!field_id.has_value()) {
-        continue;
-      }
-      auto [iter, inserted] = mapped_siblings.try_emplace(
-          field_id.value(), MappedSibling{.index = i, .unmapped_field = unmapped_field});
-      if (!inserted) {
-        // Aliases can map two sibling columns to the same ID. Java's reader keeps the
-        // last one, so drop the ID from the earlier column.
-        fields[iter->second.index].field = std::move(iter->second.unmapped_field);
-        iter->second = MappedSibling{.index = i, .unmapped_field = unmapped_field};
+      if (field_id.has_value()) {
+        auto [iter, inserted] = mapped_siblings.try_emplace(
+            field_id.value(),
+            MappedSibling{.index = i, .unmapped_field = unmapped_field});
+        if (!inserted) {
+          // Aliases can map two sibling columns to the same ID. Java's reader keeps the
+          // last one, so drop the ID from the earlier column.
+          fields[iter->second.index].field = std::move(iter->second.unmapped_field);
+          iter->second = MappedSibling{.index = i, .unmapped_field = unmapped_field};
+        }
       }
     }
   }
