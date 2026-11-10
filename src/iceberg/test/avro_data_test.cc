@@ -21,6 +21,7 @@
 #include <ranges>
 #include <vector>
 
+#include <arrow/array/array_nested.h>
 #include <arrow/array/builder_decimal.h>
 #include <arrow/array/builder_nested.h>
 #include <arrow/array/builder_primitive.h>
@@ -1539,6 +1540,65 @@ TEST(ExtractDatumFromArrayTest, MapStringToInt) {
     for (size_t i = 0; i < expected_entries.size(); ++i) {
       EXPECT_EQ(entries[i].first, expected_entries[i].first);
       EXPECT_EQ(entries[i].second.value<int32_t>(), expected_entries[i].second);
+    }
+  };
+
+  for (size_t i = 0; i < expected.size(); ++i) {
+    verify_record(i, expected[i]);
+  }
+}
+
+TEST(ExtractDatumFromArrayTest, LargeListOfIntegers) {
+  Schema iceberg_schema({
+      SchemaField::MakeRequired(
+          1, "numbers",
+          std::make_shared<ListType>(SchemaField::MakeRequired(2, "element", int32()))),
+  });
+
+  ::avro::NodePtr avro_node;
+  ASSERT_THAT(ToAvroNodeVisitor{}.Visit(iceberg_schema, &avro_node), IsOk());
+
+  // Build a LargeListArray manually — JSON parsing always produces regular ListArray,
+  // so we use builders to get the large-offset variant.
+  auto int32_builder = std::make_shared<::arrow::Int32Builder>();
+  ::arrow::LargeListBuilder list_builder(::arrow::default_memory_pool(), int32_builder);
+
+  ASSERT_TRUE(list_builder.Append().ok());
+  ASSERT_TRUE(int32_builder->Append(10).ok());
+  ASSERT_TRUE(int32_builder->Append(11).ok());
+  ASSERT_TRUE(int32_builder->Append(12).ok());
+
+  ASSERT_TRUE(list_builder.Append().ok());
+  ASSERT_TRUE(int32_builder->Append(20).ok());
+  ASSERT_TRUE(int32_builder->Append(21).ok());
+
+  ASSERT_TRUE(list_builder.Append().ok());
+  ASSERT_TRUE(int32_builder->Append(30).ok());
+  ASSERT_TRUE(int32_builder->Append(31).ok());
+  ASSERT_TRUE(int32_builder->Append(32).ok());
+  ASSERT_TRUE(int32_builder->Append(33).ok());
+
+  std::shared_ptr<::arrow::Array> large_list_array;
+  ASSERT_TRUE(list_builder.Finish(&large_list_array).ok());
+
+  auto arrow_array = ::arrow::StructArray::Make(
+                         ::arrow::ArrayVector{large_list_array},
+                         std::vector<std::shared_ptr<::arrow::Field>>{::arrow::field(
+                             "numbers", ::arrow::large_list(::arrow::int32()))})
+                         .ValueOrDie();
+
+  std::vector<std::vector<int32_t>> expected = {{10, 11, 12}, {20, 21}, {30, 31, 32, 33}};
+
+  auto verify_record = [&](int64_t index, const std::vector<int32_t>& expected_numbers) {
+    ::avro::GenericDatum extracted_datum(avro_node);
+    ASSERT_THAT(ExtractDatumFromArray(*arrow_array, index, &extracted_datum), IsOk());
+    const auto& record = extracted_datum.value<::avro::GenericRecord>();
+    const auto& avro_arr = record.fieldAt(0).value<::avro::GenericArray>();
+    const auto& elements = avro_arr.value();
+
+    ASSERT_EQ(elements.size(), expected_numbers.size());
+    for (size_t i = 0; i < expected_numbers.size(); ++i) {
+      EXPECT_EQ(elements[i].value<int32_t>(), expected_numbers[i]);
     }
   };
 
