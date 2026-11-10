@@ -22,6 +22,7 @@
 #include <vector>
 
 #include <arrow/array/array_nested.h>
+#include <arrow/array/builder_binary.h>
 #include <arrow/array/builder_decimal.h>
 #include <arrow/array/builder_nested.h>
 #include <arrow/array/builder_primitive.h>
@@ -1604,6 +1605,38 @@ TEST(ExtractDatumFromArrayTest, LargeListOfIntegers) {
 
   for (size_t i = 0; i < expected.size(); ++i) {
     verify_record(i, expected[i]);
+  }
+}
+
+TEST(ExtractDatumFromArrayTest, LargeString) {
+  Schema iceberg_schema({
+      SchemaField::MakeRequired(1, "name", string()),
+  });
+
+  ::avro::NodePtr avro_node;
+  ASSERT_THAT(ToAvroNodeVisitor{}.Visit(iceberg_schema, &avro_node), IsOk());
+
+  // Build a LargeStringArray manually
+  ::arrow::LargeStringBuilder builder;
+  ASSERT_TRUE(builder.Append("hello").ok());
+  ASSERT_TRUE(builder.Append("world").ok());
+  ASSERT_TRUE(builder.Append("iceberg").ok());
+  std::shared_ptr<::arrow::Array> large_string_array;
+  ASSERT_TRUE(builder.Finish(&large_string_array).ok());
+
+  auto arrow_array =
+      ::arrow::StructArray::Make(::arrow::ArrayVector{large_string_array},
+                                 std::vector<std::shared_ptr<::arrow::Field>>{
+                                     ::arrow::field("name", ::arrow::large_utf8())})
+          .ValueOrDie();
+
+  std::vector<std::string> expected = {"hello", "world", "iceberg"};
+
+  for (int64_t i = 0; i < static_cast<int64_t>(expected.size()); ++i) {
+    ::avro::GenericDatum extracted_datum(avro_node);
+    ASSERT_THAT(ExtractDatumFromArray(*arrow_array, i, &extracted_datum), IsOk());
+    const auto& record = extracted_datum.value<::avro::GenericRecord>();
+    EXPECT_EQ(record.fieldAt(0).value<std::string>(), expected[i]);
   }
 }
 
