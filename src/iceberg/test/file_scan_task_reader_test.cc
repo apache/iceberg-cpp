@@ -1019,16 +1019,19 @@ TEST_F(FileScanTaskReaderTest, OpenAppliesNullPredicatesOnCompositeColumns) {
     std::string matching_row;
   };
   const std::vector<Case> cases = {
-      {struct_({SchemaField::MakeOptional(3, "value", int32())}),
-       R"([[1, null], [2, {"value": null}], [3, {"value": 10}], [4, null]])",
-       R"([[2, {"value": null}], [3, {"value": 10}]])", R"([[3, {"value": 10}]])"},
-      {list(SchemaField::MakeOptional(3, "element", int32())),
-       "[[1, null], [2, []], [3, [10]], [4, null]]", "[[2, []], [3, [10]]]",
-       "[[3, [10]]]"},
-      {map(SchemaField::MakeRequired(3, "key", string()),
-           SchemaField::MakeOptional(4, "value", int32())),
-       R"([[1, null], [2, []], [3, [["a", 10]]], [4, null]])",
-       R"([[2, []], [3, [["a", 10]]]])", R"([[3, [["a", 10]]]])"},
+      {.type = struct_({SchemaField::MakeOptional(3, "value", int32())}),
+       .data = R"([[1, null], [2, {"value": null}], [3, {"value": 10}], [4, null]])",
+       .non_null_rows = R"([[2, {"value": null}], [3, {"value": 10}]])",
+       .matching_row = R"([[3, {"value": 10}]])"},
+      {.type = list(SchemaField::MakeOptional(3, "element", int32())),
+       .data = "[[1, null], [2, []], [3, [10]], [4, null]]",
+       .non_null_rows = "[[2, []], [3, [10]]]",
+       .matching_row = "[[3, [10]]]"},
+      {.type = map(SchemaField::MakeRequired(3, "key", string()),
+                   SchemaField::MakeOptional(4, "value", int32())),
+       .data = R"([[1, null], [2, []], [3, [["a", 10]]], [4, null]])",
+       .non_null_rows = R"([[2, []], [3, [["a", 10]]]])",
+       .matching_row = R"([[3, [["a", 10]]]])"},
   };
   for (const auto& [type, data, non_null_rows, matching_row] : cases) {
     SCOPED_TRACE(type->ToString());
