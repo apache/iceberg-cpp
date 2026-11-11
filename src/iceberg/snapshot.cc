@@ -27,6 +27,7 @@
 #include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/manifest/manifest_list.h"
 #include "iceberg/manifest/manifest_reader.h"
+#include "iceberg/table_metadata.h"
 #include "iceberg/util/macros.h"
 #include "iceberg/util/string_util.h"
 
@@ -165,6 +166,35 @@ Result<std::optional<int64_t>> Snapshot::FirstRowId() const { return first_row_i
 
 Result<std::optional<int64_t>> Snapshot::AddedRows() const { return added_rows; }
 
+Status Snapshot::ValidateForFormatVersion(int8_t format_version,
+                                          bool is_new_snapshot) const {
+  if (!root_manifest.has_value()) {
+    ICEBERG_CHECK(
+        !is_new_snapshot || format_version < TableMetadata::kMinFormatVersionRootManifest,
+        "New v4 snapshots require root-manifest instead of manifest-list");
+    ICEBERG_CHECK(!manifest_list.empty(), "Snapshot manifest-list cannot be empty");
+    return {};
+  }
+
+  ICEBERG_CHECK(format_version >= TableMetadata::kMinFormatVersionRootManifest,
+                "root-manifest requires format version {}",
+                TableMetadata::kMinFormatVersionRootManifest);
+  ICEBERG_CHECK(manifest_list.empty(), "root-manifest cannot coexist with manifest-list");
+  ICEBERG_CHECK(!root_manifest->empty(), "Snapshot root-manifest cannot be empty");
+  ICEBERG_CHECK(sequence_number > 0, "V4 snapshots require a positive sequence-number");
+  ICEBERG_CHECK(first_row_id.has_value() && first_row_id.value() >= 0,
+                "V4 snapshots require a non-negative first-row-id");
+  ICEBERG_CHECK(added_rows.has_value() && added_rows.value() >= 0,
+                "V4 snapshots require non-negative added-rows");
+  const auto operation = Operation();
+  ICEBERG_CHECK(
+      operation.has_value() &&
+          (operation == DataOperation::kAppend || operation == DataOperation::kReplace ||
+           operation == DataOperation::kOverwrite || operation == DataOperation::kDelete),
+      "V4 snapshots require a valid operation in summary");
+  return {};
+}
+
 bool Snapshot::Equals(const Snapshot& other) const {
   if (this == &other) {
     return true;
@@ -173,7 +203,8 @@ bool Snapshot::Equals(const Snapshot& other) const {
          parent_snapshot_id == other.parent_snapshot_id &&
          sequence_number == other.sequence_number && timestamp_ms == other.timestamp_ms &&
          schema_id == other.schema_id && first_row_id == other.first_row_id &&
-         added_rows == other.added_rows && key_id == other.key_id;
+         added_rows == other.added_rows && key_id == other.key_id &&
+         root_manifest == other.root_manifest;
 }
 
 Result<std::unique_ptr<Snapshot>> Snapshot::Make(
@@ -205,6 +236,9 @@ Result<std::unique_ptr<Snapshot>> Snapshot::Make(
 
 Result<SnapshotReader::ManifestsCache> SnapshotReader::InitManifestsCache(
     const Snapshot* snapshot, std::shared_ptr<FileIO> file_io) {
+  if (snapshot->root_manifest.has_value()) {
+    return NotSupported("Reading v4 root manifests is not supported yet");
+  }
   if (file_io == nullptr) {
     return InvalidArgument("Cannot cache manifests: FileIO is null");
   }

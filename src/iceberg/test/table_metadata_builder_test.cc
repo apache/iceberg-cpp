@@ -17,6 +17,8 @@
  * under the License.
  */
 
+#include <array>
+#include <limits>
 #include <memory>
 #include <ranges>
 #include <string>
@@ -432,7 +434,7 @@ TEST(TableMetadataBuilderTest, UpgradeFormatVersion) {
 
   // Unsupported format version should fail
   builder = TableMetadataBuilder::BuildFromEmpty(3);
-  builder->UpgradeFormatVersion(4);
+  builder->UpgradeFormatVersion(5);
   EXPECT_THAT(builder->Build(),
               HasErrorMessage("Cannot upgrade table to unsupported format version"));
 
@@ -440,6 +442,44 @@ TEST(TableMetadataBuilderTest, UpgradeFormatVersion) {
   builder = TableMetadataBuilder::BuildFromEmpty(2);
   builder->UpgradeFormatVersion(1);
   EXPECT_THAT(builder->Build(), HasErrorMessage("Cannot downgrade"));
+}
+
+TEST(TableMetadataBuilderTest, UpgradeFormatVersionRejectsUnsupportedVersions) {
+  auto base = CreateBaseMetadata();
+  for (int8_t version : std::vector<int8_t>{0, 5, -1, std::numeric_limits<int8_t>::min(),
+                                            std::numeric_limits<int8_t>::max()}) {
+    SCOPED_TRACE(version);
+    auto empty_builder = TableMetadataBuilder::BuildFromEmpty(version);
+    auto empty_result = empty_builder->Build();
+    EXPECT_THAT(empty_result, IsError(ErrorKind::kInvalidArgument));
+    EXPECT_THAT(empty_result, HasErrorMessage("Unsupported table format version: " +
+                                              std::to_string(version)));
+
+    auto builder = TableMetadataBuilder::BuildFrom(base.get());
+    builder->UpgradeFormatVersion(version);
+    auto result = builder->Build();
+    EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
+    EXPECT_THAT(result,
+                HasErrorMessage("Cannot upgrade table to unsupported format version: v" +
+                                std::to_string(version)));
+    EXPECT_TRUE(builder->changes().empty());
+
+    table::UpgradeFormatVersion update(version);
+    auto cloned = update.Clone();
+    EXPECT_EQ(*cloned, update);
+    const std::array<const TableUpdate*, 2> updates{&update, cloned.get()};
+    for (const auto* candidate : updates) {
+      auto update_builder = TableMetadataBuilder::BuildFrom(base.get());
+      candidate->ApplyTo(*update_builder);
+      auto update_result = update_builder->Build();
+      EXPECT_THAT(update_result, IsError(ErrorKind::kValidationFailed));
+      EXPECT_THAT(
+          update_result,
+          HasErrorMessage("Cannot upgrade table to unsupported format version: v" +
+                          std::to_string(version)));
+      EXPECT_TRUE(update_builder->changes().empty());
+    }
+  }
 }
 
 // Test AddSortOrder
@@ -1292,8 +1332,10 @@ TEST(TableMetadataBuilderTest, RemoveSnapshotRef) {
   auto builder = TableMetadataBuilder::BuildFrom(base.get());
 
   // Add multiple snapshots
-  builder->AddSnapshot(std::make_shared<Snapshot>(Snapshot{.snapshot_id = 1}));
-  builder->AddSnapshot(std::make_shared<Snapshot>(Snapshot{.snapshot_id = 2}));
+  builder->AddSnapshot(std::make_shared<Snapshot>(
+      Snapshot{.snapshot_id = 1, .manifest_list = "s3://bucket/manifest-list-1.avro"}));
+  builder->AddSnapshot(std::make_shared<Snapshot>(
+      Snapshot{.snapshot_id = 2, .manifest_list = "s3://bucket/manifest-list-2.avro"}));
 
   // Add multiple refs
   ICEBERG_UNWRAP_OR_FAIL(auto ref1, SnapshotRef::MakeBranch(1));
@@ -1316,7 +1358,8 @@ TEST(TableMetadataBuilderTest, SetRefRejectsTagForMainBranch) {
   auto base = CreateBaseMetadata();
   auto builder = TableMetadataBuilder::BuildFrom(base.get());
 
-  builder->AddSnapshot(std::make_shared<Snapshot>(Snapshot{.snapshot_id = 1}));
+  builder->AddSnapshot(std::make_shared<Snapshot>(
+      Snapshot{.snapshot_id = 1, .manifest_list = "s3://bucket/manifest-list-1.avro"}));
   ICEBERG_UNWRAP_OR_FAIL(auto main_tag, SnapshotRef::MakeTag(1));
 
   builder->SetRef(std::string(SnapshotRef::kMainBranch), std::move(main_tag));
@@ -1332,7 +1375,10 @@ TEST(TableMetadataBuilderTest, SetMainRefToAddedSnapshotUsesSnapshotTimestampFor
 
   auto snapshot_time = TimePointMsFromUnixMs(123456789);
   builder->AddSnapshot(std::make_shared<Snapshot>(
-      Snapshot{.snapshot_id = 1, .sequence_number = 1, .timestamp_ms = snapshot_time}));
+      Snapshot{.snapshot_id = 1,
+               .sequence_number = 1,
+               .timestamp_ms = snapshot_time,
+               .manifest_list = "s3://bucket/manifest-list-1.avro"}));
   ICEBERG_UNWRAP_OR_FAIL(auto main_branch, SnapshotRef::MakeBranch(1));
 
   builder->SetRef(std::string(SnapshotRef::kMainBranch), std::move(main_branch));
@@ -1350,8 +1396,10 @@ TEST(TableMetadataBuilderTest, RemoveSnapshot) {
   auto builder = TableMetadataBuilder::BuildFrom(base.get());
 
   // Add multiple snapshots
-  builder->AddSnapshot(std::make_shared<Snapshot>(Snapshot{.snapshot_id = 1}));
-  builder->AddSnapshot(std::make_shared<Snapshot>(Snapshot{.snapshot_id = 2}));
+  builder->AddSnapshot(std::make_shared<Snapshot>(
+      Snapshot{.snapshot_id = 1, .manifest_list = "s3://bucket/manifest-list-1.avro"}));
+  builder->AddSnapshot(std::make_shared<Snapshot>(
+      Snapshot{.snapshot_id = 2, .manifest_list = "s3://bucket/manifest-list-2.avro"}));
 
   ICEBERG_UNWRAP_OR_FAIL(auto metadata, builder->Build());
   ASSERT_EQ(metadata->snapshots.size(), 2);
@@ -1370,8 +1418,10 @@ TEST(TableMetadataBuilderTest, RemoveSnapshotNotExist) {
   auto builder = TableMetadataBuilder::BuildFrom(base.get());
 
   // Add multiple snapshots
-  builder->AddSnapshot(std::make_shared<Snapshot>(Snapshot{.snapshot_id = 1}));
-  builder->AddSnapshot(std::make_shared<Snapshot>(Snapshot{.snapshot_id = 2}));
+  builder->AddSnapshot(std::make_shared<Snapshot>(
+      Snapshot{.snapshot_id = 1, .manifest_list = "s3://bucket/manifest-list-1.avro"}));
+  builder->AddSnapshot(std::make_shared<Snapshot>(
+      Snapshot{.snapshot_id = 2, .manifest_list = "s3://bucket/manifest-list-2.avro"}));
 
   ICEBERG_UNWRAP_OR_FAIL(auto metadata, builder->Build());
   ASSERT_EQ(metadata->snapshots.size(), 2);
