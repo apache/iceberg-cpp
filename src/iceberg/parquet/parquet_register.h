@@ -29,6 +29,13 @@ namespace iceberg::parquet {
 /// \brief Register Parquet reader implementation.
 ICEBERG_BUNDLE_EXPORT void RegisterReader();
 
+/// \brief Register the Parquet split policy used by task group planning.
+///
+/// The policy uses manifest split offsets when they are present, strictly increasing,
+/// and in bounds, and otherwise inspects the file footer once for canonical row-group
+/// starts.
+ICEBERG_BUNDLE_EXPORT void RegisterSplitPolicy();
+
 /// \brief Register Parquet writer implementation.
 ICEBERG_BUNDLE_EXPORT void RegisterWriter();
 

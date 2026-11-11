@@ -30,6 +30,7 @@
 #include "iceberg/metrics/metrics_context.h"
 #include "iceberg/metrics/metrics_reporter.h"
 #include "iceberg/metrics/scan_report.h"
+#include "iceberg/scan_task_planning_internal.h"
 #include "iceberg/schema.h"
 #include "iceberg/snapshot.h"
 #include "iceberg/table_metadata.h"
@@ -215,6 +216,21 @@ Result<FileScanTaskStreamPtr> DataTableScan::PlanFilesStream() const {
   return std::make_unique<ReportingFileTaskStream>(
       std::move(stream), std::move(scan_metrics), planning_duration,
       context_.metrics_reporter, std::move(report).value());
+}
+
+Result<std::vector<std::shared_ptr<FileScanTaskGroup>>> DataTableScan::PlanTasks() const {
+  ICEBERG_ASSIGN_OR_RAISE(auto stream, PlanTasksStream());
+  return stream->ToVector();
+}
+
+Result<FileScanTaskGroupStreamPtr> DataTableScan::PlanTasksStream() const {
+  // Resolve the settings before planning so invalid values fail before any
+  // planning resources are created.
+  ICEBERG_ASSIGN_OR_RAISE(auto options,
+                          internal::ResolveTaskGroupPlanningOptions(
+                              context_.options, metadata_->properties.configs()));
+  ICEBERG_ASSIGN_OR_RAISE(auto tasks, PlanFilesStream());
+  return internal::PlanTaskGroupStream(std::move(tasks), options, io_);
 }
 
 }  // namespace iceberg
