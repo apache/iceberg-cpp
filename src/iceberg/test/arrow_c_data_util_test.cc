@@ -80,18 +80,16 @@ ProjectionContext::ProjectBatchFunction ArrowComputeFunction() {
 std::shared_ptr<::arrow::RecordBatch> RunProjectBatch(
     const ::arrow::RecordBatch& batch, const std::vector<int32_t>& alive_indices,
     const Schema& required_schema, const Schema& projected_schema,
-    ProjectionContext::ProjectBatchFunction project_batch_function, bool validate_batch) {
-  ArrowSchema c_schema;
+    ProjectionContext::ProjectBatchFunction project_batch_function,
+    bool validate_batch = true, bool use_large_list = false) {
   ArrowArray c_array;
-  EXPECT_TRUE(::arrow::ExportRecordBatch(batch, &c_array, &c_schema).ok());
-  ArrowSchemaGuard schema_guard(&c_schema);
+  EXPECT_TRUE(::arrow::ExportRecordBatch(batch, &c_array).ok());
   ArrowArrayGuard array_guard(&c_array);
 
-  auto projection = ProjectionContext::Make(required_schema, projected_schema, c_schema,
-                                            project_batch_function, validate_batch);
+  auto projection =
+      ProjectionContext::Make(required_schema, projected_schema, project_batch_function,
+                              validate_batch, use_large_list);
   EXPECT_THAT(projection, IsOk());
-  // The context must own its Arrow schemas independently of the caller.
-  c_schema.release(&c_schema);
 
   auto result = ProjectBatch(&c_array, alive_indices, projection.value());
   EXPECT_THAT(result, IsOk());
@@ -227,7 +225,7 @@ TEST(ProjectBatchTest, EmptyProjectionPreservesRowCount) {
   }
 }
 
-TEST(ProjectBatchTest, PreservesPhysicalListLayoutsWithBothBackends) {
+TEST(ProjectBatchTest, ConfiguredListWidthsWithBothBackends) {
   auto nested_list = std::make_shared<ListType>(SchemaField::MakeOptional(
       3, "element",
       std::make_shared<ListType>(SchemaField::MakeOptional(4, "element", int32()))));
@@ -237,57 +235,31 @@ TEST(ProjectBatchTest, PreservesPhysicalListLayoutsWithBothBackends) {
                                SchemaField::MakeOptional(5, "unused", string())});
   Schema projected(std::vector<SchemaField>{required.fields()[1].WithName("renamed"),
                                             required.fields()[0]});
-  ArrowSchema c_schema;
-  ASSERT_THAT(ToArrowSchema(required, &c_schema), IsOk());
-  auto physical_schema = ::arrow::ImportSchema(&c_schema).ValueOrDie();
-  auto fields = physical_schema->fields();
-  // Keep the inner list at 32-bit offsets while the outer list uses 64-bit offsets.
-  fields[1] = fields[1]->WithType(::arrow::large_list(fields[1]->type()->field(0)));
-  physical_schema = ::arrow::schema(std::move(fields));
-  auto batch = MakeBatch(physical_schema,
-                         R"([[1, [[10, null], []], "a"], [2, [], "b"],
-                             [3, [[30]], "c"], [4, null, "d"]])");
-  auto expected_schema = ::arrow::schema(
-      {physical_schema->field(1)->WithName("renamed"), physical_schema->field(0)});
-  auto expected =
-      MakeBatch(expected_schema, R"([[[[10, null], []], 1], [[], 2], [null, 4]])");
+  for (bool use_large_list : {false, true}) {
+    SCOPED_TRACE(use_large_list);
+    ArrowSchema c_schema;
+    ASSERT_THAT(ToArrowSchema(required, &c_schema, use_large_list), IsOk());
+    auto input_schema = ::arrow::ImportSchema(&c_schema).ValueOrDie();
+    auto batch = MakeBatch(input_schema,
+                           R"([[1, [[10, null], []], "a"], [2, [], "b"],
+                               [3, [[30]], "c"], [4, null, "d"]])");
+    auto expected_schema = ::arrow::schema(
+        {input_schema->field(1)->WithName("renamed"), input_schema->field(0)});
+    auto expected =
+        MakeBatch(expected_schema, R"([[[[10, null], []], 1], [[], 2], [null, 4]])");
 
-  for (auto backend :
-       {ProjectionContext::ProjectBatchFunction{nullptr}, ArrowComputeFunction()}) {
-    SCOPED_TRACE(backend == nullptr ? "nanoarrow" : "Arrow compute");
-    const std::vector<int32_t> alive{0, 1, 3};
-    auto actual = RunProjectBatch(*batch, alive, required, projected, backend);
-    ASSERT_TRUE(actual->schema()->Equals(*expected_schema));
-    ASSERT_TRUE(actual->ValidateFull().ok()) << actual->ValidateFull().ToString();
-    EXPECT_TRUE(actual->Equals(*expected)) << actual->ToString();
-  }
-}
-
-TEST(ProjectBatchTest, PreservesPhysicalMapFlagsWhenChangingNullability) {
-  auto map_type = map(SchemaField::MakeRequired(2, "key", int32()),
-                      SchemaField::MakeOptional(3, "value", string()));
-  Schema required(
-      std::vector<SchemaField>{SchemaField::MakeRequired(1, "values", map_type)});
-  Schema projected(
-      std::vector<SchemaField>{SchemaField::MakeOptional(1, "renamed", map_type)});
-  auto canonical = MakeBatch(required, "[]")->schema();
-  const auto& canonical_map =
-      static_cast<const ::arrow::MapType&>(*canonical->field(0)->type());
-  auto physical_field = canonical->field(0)->WithType(std::make_shared<::arrow::MapType>(
-      canonical_map.key_field(), canonical_map.item_field(), /*keys_sorted=*/true));
-  auto batch =
-      MakeBatch(::arrow::schema({physical_field}), R"([[[[1, "a"], [2, "b"]]], [[]]])");
-  auto expected_schema =
-      ::arrow::schema({physical_field->WithName("renamed")->WithNullable(true)});
-  auto expected = MakeBatch(expected_schema, R"([[[[1, "a"], [2, "b"]]]])");
-
-  for (auto backend :
-       {ProjectionContext::ProjectBatchFunction{nullptr}, ArrowComputeFunction()}) {
-    SCOPED_TRACE(backend == nullptr ? "nanoarrow" : "Arrow compute");
-    auto actual = RunProjectBatch(*batch, {0}, required, projected, backend);
-    EXPECT_TRUE(actual->schema()->Equals(*expected_schema));
-    EXPECT_TRUE(actual->ValidateFull().ok()) << actual->ValidateFull().ToString();
-    EXPECT_TRUE(actual->Equals(*expected)) << actual->ToString();
+    for (auto backend :
+         {ProjectionContext::ProjectBatchFunction{nullptr}, ArrowComputeFunction()}) {
+      SCOPED_TRACE(backend == nullptr ? "nanoarrow" : "Arrow compute");
+      for (bool validate_batch : {false, true}) {
+        SCOPED_TRACE(validate_batch);
+        auto actual = RunProjectBatch(*batch, {0, 1, 3}, required, projected, backend,
+                                      validate_batch, use_large_list);
+        ASSERT_TRUE(actual->schema()->Equals(*expected_schema));
+        ASSERT_TRUE(actual->ValidateFull().ok()) << actual->ValidateFull().ToString();
+        EXPECT_TRUE(actual->Equals(*expected)) << actual->ToString();
+      }
+    }
   }
 }
 
@@ -306,33 +278,8 @@ TEST(ProjectBatchTest, ProjectionRejectsNestedPruning) {
                                 })),
   });
 
-  ArrowSchema physical_schema;
-  ASSERT_THAT(ToArrowSchema(input_schema, &physical_schema), IsOk());
-  ArrowSchemaGuard schema_guard(&physical_schema);
-  EXPECT_THAT(
-      ProjectionContext::Make(input_schema, output_schema, physical_schema, nullptr),
-      IsError(ErrorKind::kInvalidArgument));
-}
-
-TEST(ProjectBatchTest, PhysicalSchemaMustMatchLogicalFieldCount) {
-  auto required = MakeFullSchema();
-  Schema projected(std::vector<SchemaField>{required->fields()[0]});
-  ArrowSchema physical_schema;
-  ASSERT_THAT(ToArrowSchema(projected, &physical_schema), IsOk());
-  ArrowSchemaGuard schema_guard(&physical_schema);
-
-  EXPECT_THAT(ProjectionContext::Make(*required, projected, physical_schema, nullptr),
-              HasErrorMessage("Physical input schema must have 3 fields"));
-}
-
-TEST(ProjectBatchTest, PhysicalSchemaMustBeAStruct) {
-  Schema schema(std::vector<SchemaField>{});
-  ArrowSchema physical_schema;
-  ASSERT_EQ(ArrowSchemaInitFromType(&physical_schema, NANOARROW_TYPE_INT32), 0);
-  ArrowSchemaGuard schema_guard(&physical_schema);
-
-  EXPECT_THAT(ProjectionContext::Make(schema, schema, physical_schema, nullptr),
-              HasErrorMessage("Physical input schema must be a struct"));
+  EXPECT_THAT(ProjectionContext::Make(input_schema, output_schema, nullptr),
+              IsError(ErrorKind::kInvalidArgument));
 }
 
 TEST(ProjectBatchTest, ValidateBatchControlsNonMonotonicStringOffsets) {

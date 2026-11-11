@@ -38,9 +38,8 @@ namespace iceberg {
 ///
 /// FileScanTaskReader chooses the copy-on-write path for tasks without deletes and
 /// the merge-on-read path for tasks with v2 position or equality deletes. The returned
-/// stream exposes the fields of `projected_schema` in one stable physical Arrow layout,
-/// which may depend on the file format and reader properties (for example, `large_list`
-/// instead of `list`). Every batch matches the schema reported by the stream. When
+/// stream exposes the fields of `projected_schema` with list widths determined by
+/// `read.arrow.use-large-list`, or fails if the reader cannot honor that setting. When
 /// `apply_residuals` is enabled, each task's residual filter is enforced after deletes
 /// and before final projection.
 ///

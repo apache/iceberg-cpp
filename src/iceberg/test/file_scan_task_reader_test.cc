@@ -1345,14 +1345,16 @@ TEST_F(FileScanTaskReaderTest, OpenWithEqualityDeletesKeepsInputBatchWhenAllRows
       VerifyStream(&stream, R"([[1, "Foo"], [2, "Bar"], [3, "Baz"]])"));
 }
 
-enum class PhysicalListLayout { kList, kLargeList, kStoredMixed };
+enum class PhysicalListLayout { kList, kLargeList, kStoredMixed, kStoredMixedLargeList };
 enum class DeleteBatchSelection {
   kFirstRow,
   kSecondBatchRow,
   kNoOp,
   kFirstBatch,
   kAll,
-  kEmptySplit
+  kEmptySplit,
+  kNone,
+  kPosition
 };
 
 class FileScanTaskPhysicalSchemaTest
@@ -1362,14 +1364,14 @@ class FileScanTaskPhysicalSchemaTest
  public:
   static std::string ParamName(const ::testing::TestParamInfo<ParamType>& info) {
     const auto& [deletes, prune, layout] = info.param;
-    constexpr std::array names{"DeleteFirst",      "DeleteSecond", "NoOp",
-                               "DeleteFirstBatch", "DeleteAll",    "EmptySplit"};
+    constexpr std::array names{"DeleteFirst",      "DeleteSecond",  "NoOp",
+                               "DeleteFirstBatch", "DeleteAll",     "EmptySplit",
+                               "NoDeletes",        "PositionDelete"};
     std::string name = names[static_cast<size_t>(deletes)];
     name += prune ? "Pruned" : "AllColumns";
-    name +=
-        layout == PhysicalListLayout::kList
-            ? "List"
-            : (layout == PhysicalListLayout::kLargeList ? "LargeList" : "StoredMixed");
+    constexpr std::array layouts{"List", "LargeList", "StoredMixed",
+                                 "StoredMixedLargeList"};
+    name += layouts[static_cast<size_t>(layout)];
     return name;
   }
 
@@ -1395,7 +1397,10 @@ class FileScanTaskPhysicalSchemaTest
 
 TEST_P(FileScanTaskPhysicalSchemaTest, StablePhysicalSchemaAcrossDeleteBatches) {
   const auto [deletes, prune_columns, layout] = GetParam();
-  const bool use_large_list = layout == PhysicalListLayout::kLargeList;
+  const bool use_large_list = layout == PhysicalListLayout::kLargeList ||
+                              layout == PhysicalListLayout::kStoredMixedLargeList;
+  const bool stored_mixed = layout == PhysicalListLayout::kStoredMixed ||
+                            layout == PhysicalListLayout::kStoredMixedLargeList;
   table_schema_ = std::make_shared<Schema>(std::vector<SchemaField>{
       SchemaField::MakeRequired(1, "id", int32()),
       SchemaField::MakeOptional(
@@ -1415,7 +1420,7 @@ TEST_P(FileScanTaskPhysicalSchemaTest, StablePhysicalSchemaAcrossDeleteBatches) 
   if (layout != PhysicalListLayout::kList) {
     auto fields = expected_schema->fields();
     fields[1] = fields[1]->WithType(::arrow::large_list(fields[1]->type()->field(0)));
-    if (use_large_list) {
+    if (use_large_list && !stored_mixed) {
       auto tags = fields[2]->type()->field(0);
       fields[2] = fields[2]->WithType(::arrow::struct_(
           {tags->WithType(::arrow::large_list(tags->type()->field(0)))}));
@@ -1431,6 +1436,7 @@ TEST_P(FileScanTaskPhysicalSchemaTest, StablePhysicalSchemaAcrossDeleteBatches) 
       R"([[3, [], null], [4, [40], {"tags": null}]])"};
   switch (deletes) {
     case DeleteBatchSelection::kFirstRow:
+    case DeleteBatchSelection::kPosition:
       delete_json = "[[1]]";
       expected_json[0] = R"([[2, null, {"tags": []}]])";
       break;
@@ -1438,6 +1444,7 @@ TEST_P(FileScanTaskPhysicalSchemaTest, StablePhysicalSchemaAcrossDeleteBatches) 
       delete_json = "[[3]]";
       expected_json[1] = R"([[4, [40], {"tags": null}]])";
       break;
+    case DeleteBatchSelection::kNone:
     case DeleteBatchSelection::kNoOp:
       delete_json = "[[99]]";
       break;
@@ -1455,19 +1462,30 @@ TEST_P(FileScanTaskPhysicalSchemaTest, StablePhysicalSchemaAcrossDeleteBatches) 
       break;
   }
   ICEBERG_UNWRAP_OR_FAIL(auto data_file,
-                         layout == PhysicalListLayout::kStoredMixed
+                         stored_mixed
                              ? MakeDataFileWithStoredSchema(expected_schema, json)
                              : MakeDataFile(table_schema_, json, /*record_count=*/4));
-  auto delete_schema =
-      std::make_shared<Schema>(std::vector<SchemaField>{table_schema_->fields()[0]});
-  ICEBERG_UNWRAP_OR_FAIL(
-      auto eq_delete, MakeEqualityDeleteFile(CreateNewTempFilePathWithSuffix(".parquet"),
-                                             delete_schema, delete_json, {1}));
   // A split covering only the first Parquet magic byte selects no row groups.
   const int64_t length =
       deletes == DeleteBatchSelection::kEmptySplit ? 1 : data_file->file_size_in_bytes;
+  std::vector<std::shared_ptr<DataFile>> delete_files;
+  if (deletes == DeleteBatchSelection::kPosition) {
+    ICEBERG_UNWRAP_OR_FAIL(
+        auto pos_delete,
+        MakePositionDeleteFile(CreateNewTempFilePathWithSuffix(".parquet"), {0},
+                               data_file->file_path));
+    delete_files.push_back(pos_delete);
+  } else if (deletes != DeleteBatchSelection::kNone) {
+    auto delete_schema =
+        std::make_shared<Schema>(std::vector<SchemaField>{table_schema_->fields()[0]});
+    ICEBERG_UNWRAP_OR_FAIL(
+        auto eq_delete,
+        MakeEqualityDeleteFile(CreateNewTempFilePathWithSuffix(".parquet"), delete_schema,
+                               delete_json, {1}));
+    delete_files.push_back(eq_delete);
+  }
   ICEBERG_UNWRAP_OR_FAIL(auto task,
-                         FileScanTask::MakeSplit(data_file, 0, length, {eq_delete}));
+                         FileScanTask::MakeSplit(data_file, 0, length, delete_files));
 
   ReaderProperties properties;
   properties.Set(ReaderProperties::kBatchSize, int64_t{2});
@@ -1477,7 +1495,14 @@ TEST_P(FileScanTaskPhysicalSchemaTest, StablePhysicalSchemaAcrossDeleteBatches) 
                                       .projected_schema = projected_schema_,
                                       .properties = properties.configs()};
   ICEBERG_UNWRAP_OR_FAIL(auto reader, FileScanTaskReader::Make(std::move(options)));
-  ICEBERG_UNWRAP_OR_FAIL(auto opened_stream, reader->Open(*task));
+  auto result = reader->Open(*task);
+  if (stored_mixed) {
+    EXPECT_THAT(result, IsError(ErrorKind::kNotSupported));
+    EXPECT_THAT(result, HasErrorMessage("read.arrow.use-large-list="));
+    EXPECT_THAT(result, HasErrorMessage(use_large_list ? "nested.tags" : "numbers"));
+    return;
+  }
+  ICEBERG_UNWRAP_OR_FAIL(auto opened_stream, std::move(result));
   nanoarrow::UniqueArrayStream stream(&opened_stream);
   // The stream owns everything it needs after the task reader is destroyed.
   reader.reset();
@@ -1551,10 +1576,12 @@ INSTANTIATE_TEST_SUITE_P(
         ::testing::Values(DeleteBatchSelection::kFirstRow,
                           DeleteBatchSelection::kSecondBatchRow,
                           DeleteBatchSelection::kNoOp, DeleteBatchSelection::kFirstBatch,
-                          DeleteBatchSelection::kAll, DeleteBatchSelection::kEmptySplit),
+                          DeleteBatchSelection::kAll, DeleteBatchSelection::kEmptySplit,
+                          DeleteBatchSelection::kNone, DeleteBatchSelection::kPosition),
         ::testing::Bool(),
         ::testing::Values(PhysicalListLayout::kList, PhysicalListLayout::kLargeList,
-                          PhysicalListLayout::kStoredMixed)),
+                          PhysicalListLayout::kStoredMixed,
+                          PhysicalListLayout::kStoredMixedLargeList)),
     FileScanTaskPhysicalSchemaTest::ParamName);
 
 TEST_F(FileScanTaskReaderTest, OpenWithSchemasResolvesDroppedEqualityField) {

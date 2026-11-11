@@ -61,20 +61,16 @@ class ICEBERG_EXPORT ProjectionContext {
   /// \brief Resolve the registered ProjectBatch implementation.
   static auto ResolveProjectBatchFunction() -> ProjectBatchFunction;
 
-  /// \brief Build reusable projection state using the reader's physical Arrow layout.
+  /// \brief Build reusable projection state using the configured Arrow list type.
   ///
   /// \param input_schema Schema that describes every input batch.
   /// \param output_schema Final schema and column order requested by the caller.
-  /// \param physical_input_schema Physical fields corresponding to input_schema in
-  ///   the same order. Each selected output field becomes a deep copy of its physical
-  ///   counterpart, preserving the physical layout, nested list offset widths,
-  ///   metadata, and type-specific flags; only the top-level name and nullability come
-  ///   from output_schema.
   /// \param project_batch_function Optional implementation returned by
   ///   ProjectionContext::ResolveProjectBatchFunction, or nullptr to use the nanoarrow
   ///   path.
   /// \param validate_batch Whether to perform full content validation. Disable only for
   /// trusted input.
+  /// \param use_large_list Whether lists use 64-bit offsets. Must match the reader.
   /// \note It validates that output_schema selects or reorders complete top-level fields
   /// by field id. Nested pruning and type changes are rejected. Schema inputs are only
   /// used during construction; the context owns its physical Arrow schemas.
@@ -82,9 +78,9 @@ class ICEBERG_EXPORT ProjectionContext {
   /// concurrent calls.
   static Result<ProjectionContext> Make(const Schema& input_schema,
                                         const Schema& output_schema,
-                                        const ArrowSchema& physical_input_schema,
                                         ProjectBatchFunction project_batch_function,
-                                        bool validate_batch = true);
+                                        bool validate_batch = true,
+                                        bool use_large_list = false);
 
   ProjectionContext(ProjectionContext&&) noexcept;
   ProjectionContext& operator=(ProjectionContext&&) noexcept;

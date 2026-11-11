@@ -94,8 +94,8 @@ class TaskStreamSource {
   }
 
   Result<std::optional<ArrowArray>> Next() {
-    // The context owns a deep copy of the reader's physical schema, resolved once at
-    // Open, so every batch is interpreted in the layout the stream declares.
+    // The context owns the physical Arrow schema in the layout the reader enforces,
+    // so every batch is interpreted in the layout the stream declares.
     const ArrowSchema& input_arrow_schema = projection_context_.input_arrow_schema();
 
     while (true) {
@@ -293,15 +293,14 @@ class FileScanTaskReader::Impl {
     ICEBERG_ASSIGN_OR_RAISE(auto reader,
                             ReaderFactoryRegistry::Open(data_file->file_format, options));
 
-    // Resolve the physical layout before emitting any batch. Both pass-through and
-    // projected batches must use the same types, including nested list offset widths.
-    ICEBERG_ASSIGN_OR_RAISE(auto input_arrow_schema, reader->Schema());
-    internal::ArrowSchemaGuard input_schema_guard(&input_arrow_schema);
+    // Readers enforce the configured list type. Use the same setting for projection
+    // so pass-through and filtered batches match the stream's declared schema.
     ICEBERG_ASSIGN_OR_RAISE(
         auto projection_context,
-        ProjectionContext::Make(*required_schema, *projected_schema_, input_arrow_schema,
+        ProjectionContext::Make(*required_schema, *projected_schema_,
                                 ProjectionContext::ResolveProjectBatchFunction(),
-                                properties_.Get(ReaderProperties::kArrowValidateBatch)));
+                                properties_.Get(ReaderProperties::kArrowValidateBatch),
+                                properties_.Get(ReaderProperties::kArrowUseLargeList)));
 
     std::unique_ptr<Evaluator> residual_evaluator;
     if (apply_residual) {
