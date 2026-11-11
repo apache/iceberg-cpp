@@ -56,6 +56,27 @@ class ICEBERG_EXPORT DataTableScan : public TableScan {
   /// work to it.
   virtual Result<FileScanTaskStreamPtr> PlanFilesStream() const;
 
+  /// \brief Plans this scan's task groups by splitting and grouping PlanTasksStream().
+  ///
+  /// Collects PlanTasksStream() into a vector.
+  /// \return A Result containing task groups or an error.
+  Result<std::vector<std::shared_ptr<FileScanTaskGroup>>> PlanTasks() const;
+
+  /// \brief Lazily splits and groups this scan's planned tasks.
+  ///
+  /// Data files at or below read.split.target-size stay whole. Larger files of formats
+  /// with a registered split policy are split at the policy's boundaries, coalesced
+  /// toward the target size; other files stay whole. Tasks are packed into groups like
+  /// Java Iceberg's bin packing, bounded by read.split.planning-lookback and
+  /// read.split.open-file-cost.
+  ///
+  /// The returned fallible, single-pass stream owns the underlying task stream and its
+  /// metrics, and can outlive this scan. An executor configured through PlanWith() is
+  /// borrowed and must remain alive until the group stream is destroyed, as later
+  /// Next() calls may submit work to it. Split settings resolve from scan options,
+  /// then table properties, then their defaults.
+  virtual Result<FileScanTaskGroupStreamPtr> PlanTasksStream() const;
+
  protected:
   using TableScan::TableScan;
 };
