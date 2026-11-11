@@ -36,8 +36,11 @@
 #include <arrow/extension/uuid.h>
 #include <arrow/filesystem/filesystem.h>
 #include <arrow/json/from_string.h>
+#include <avro/Compiler.hh>
 #include <avro/DataFile.hh>
+#include <avro/Decoder.hh>
 #include <avro/Generic.hh>
+#include <avro/Stream.hh>
 #include <gtest/gtest.h>
 
 #include "iceberg/arrow/arrow_io_internal.h"
@@ -48,6 +51,7 @@
 #include "iceberg/expression/literal.h"
 #include "iceberg/file_reader.h"
 #include "iceberg/metadata_columns.h"
+#include "iceberg/name_mapping.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_internal.h"
 #include "iceberg/test/matchers.h"
@@ -217,6 +221,41 @@ class AvroReaderTest : public TempFileTestBase {
                                         .projection = schema,
                                         .first_row_id = first_row_id,
                                         .data_sequence_number = data_sequence_number,
+                                        .properties = std::move(properties)});
+  }
+
+  // Writes an Avro file whose schema has no Iceberg field IDs, as a non-Iceberg writer
+  // would. `json_records` use Avro's JSON encoding.
+  void CreateAvroFileWithoutFieldIds(const std::string& schema_json,
+                                     const std::vector<std::string>& json_records) {
+    auto avro_schema = ::avro::compileJsonSchemaFromString(schema_json);
+    auto& io = internal::checked_cast<arrow::ArrowFileSystemFileIO&>(*file_io_);
+    auto output = io.fs()->OpenOutputStream(temp_avro_file_).ValueOrDie();
+    ::avro::DataFileWriter<::avro::GenericDatum> writer(
+        std::make_unique<AvroOutputStream>(output, /*buffer_size=*/1024), avro_schema);
+    for (const auto& json : json_records) {
+      auto input = ::avro::memoryInputStream(
+          reinterpret_cast<const uint8_t*>(json.data()), json.size());
+      auto decoder = ::avro::jsonDecoder(avro_schema);
+      decoder->init(*input);
+      ::avro::GenericDatum datum(avro_schema);
+      ::avro::decode(*decoder, datum);
+      writer.write(datum);
+    }
+    writer.close();
+    ASSERT_TRUE(output->Close().ok());
+  }
+
+  Result<std::unique_ptr<Reader>> OpenReader(
+      const std::shared_ptr<Schema>& schema,
+      std::shared_ptr<NameMapping> name_mapping = nullptr) {
+    ReaderProperties properties;
+    properties.Set(ReaderProperties::kAvroSkipDatum, skip_datum_);
+    return ReaderFactoryRegistry::Open(FileFormatType::kAvro,
+                                       {.path = temp_avro_file_,
+                                        .io = file_io_,
+                                        .projection = schema,
+                                        .name_mapping = std::move(name_mapping),
                                         .properties = std::move(properties)});
   }
 
@@ -921,6 +960,129 @@ TEST_P(AvroReaderParameterizedTest, SplitWithRowIdNotSupported) {
   ASSERT_THAT(reader_result, IsError(ErrorKind::kNotSupported));
   EXPECT_THAT(reader_result,
               HasErrorMessage("'_row_id' metadata column with split is not supported"));
+}
+
+constexpr std::string_view kFlatSchemaWithoutIds = R"({
+  "type": "record",
+  "name": "flat",
+  "fields": [
+    {"name": "id", "type": "int"},
+    {"name": "name", "type": ["null", "string"]},
+    {"name": "extra", "type": "long"}
+  ]
+})";
+
+constexpr std::string_view kNestedSchemaWithoutIds = R"({
+  "type": "record",
+  "name": "nested",
+  "fields": [
+    {"name": "profile", "type": {
+      "type": "record", "name": "profile_t", "fields": [{"name": "age", "type": "int"}]
+    }},
+    {"name": "tags", "type": {"type": "array", "items": "string"}},
+    {"name": "counts", "type": {"type": "map", "values": "long"}}
+  ]
+})";
+
+TEST_P(AvroReaderParameterizedTest, ReadWithoutFieldIdsOrNameMapping) {
+  // Without a name mapping, fields are matched by the read schema's names.
+  ASSERT_NO_FATAL_FAILURE(CreateAvroFileWithoutFieldIds(
+      std::string(kFlatSchemaWithoutIds),
+      {R"({"id": 1, "name": {"string": "Alice"}, "extra": 10})",
+       R"({"id": 2, "name": null, "extra": 20})"}));
+  auto schema = std::make_shared<Schema>(std::vector<SchemaField>{
+      SchemaField::MakeOptional(2, "name", string()),
+      SchemaField::MakeRequired(7, "id", int32()),
+      SchemaField::MakeOptional(3, "full_name", string()),
+  });
+
+  ICEBERG_UNWRAP_OR_FAIL(auto reader, OpenReader(schema));
+  ASSERT_NO_FATAL_FAILURE(
+      VerifyNextBatch(*reader, R"([["Alice", 1, null], [null, 2, null]])"));
+  ASSERT_NO_FATAL_FAILURE(VerifyExhausted(*reader));
+}
+
+TEST_P(AvroReaderParameterizedTest, ReadWithNameMappingWithoutFieldIds) {
+  ASSERT_NO_FATAL_FAILURE(CreateAvroFileWithoutFieldIds(
+      std::string(kFlatSchemaWithoutIds),
+      {R"({"id": 1, "name": {"string": "Alice"}, "extra": 10})",
+       R"({"id": 2, "name": null, "extra": 20})"}));
+  auto schema = std::make_shared<Schema>(std::vector<SchemaField>{
+      SchemaField::MakeOptional(2, "full_name", string()),
+      SchemaField::MakeRequired(1, "id", int32()),
+  });
+  // "extra" is not mapped, so it is not read.
+  std::shared_ptr<NameMapping> mapping = NameMapping::Make({
+      MappedField{.names = {"id"}, .field_id = 1},
+      MappedField{.names = {"name", "full_name"}, .field_id = 2},
+  });
+
+  ICEBERG_UNWRAP_OR_FAIL(auto reader, OpenReader(schema, mapping));
+  ASSERT_NO_FATAL_FAILURE(VerifyNextBatch(*reader, R"([["Alice", 1], [null, 2]])"));
+  ASSERT_NO_FATAL_FAILURE(VerifyExhausted(*reader));
+}
+
+TEST_P(AvroReaderParameterizedTest, ReadNestedFieldsWithoutFieldIds) {
+  ASSERT_NO_FATAL_FAILURE(CreateAvroFileWithoutFieldIds(
+      std::string(kNestedSchemaWithoutIds),
+      {R"({"profile": {"age": 30}, "tags": ["a", "b"], "counts": {"x": 1}})",
+       R"({"profile": {"age": 40}, "tags": [], "counts": {}})"}));
+  auto schema = std::make_shared<Schema>(std::vector<SchemaField>{
+      SchemaField::MakeRequired(1, "profile",
+                                std::make_shared<StructType>(std::vector<SchemaField>{
+                                    SchemaField::MakeRequired(10, "age", int32()),
+                                })),
+      SchemaField::MakeRequired(
+          2, "tags",
+          std::make_shared<ListType>(SchemaField::MakeRequired(20, "element", string()))),
+      SchemaField::MakeRequired(
+          3, "counts",
+          std::make_shared<MapType>(SchemaField::MakeRequired(30, "key", string()),
+                                    SchemaField::MakeRequired(31, "value", int64()))),
+  });
+
+  ICEBERG_UNWRAP_OR_FAIL(auto reader, OpenReader(schema));
+  ASSERT_NO_FATAL_FAILURE(
+      VerifyNextBatch(*reader, R"([[[30], ["a", "b"], [["x", 1]]], [[40], [], []]])"));
+  ASSERT_NO_FATAL_FAILURE(VerifyExhausted(*reader));
+}
+
+TEST_P(AvroReaderParameterizedTest, ReadContainersWithUnmappedChildrenAsMissing) {
+  ASSERT_NO_FATAL_FAILURE(CreateAvroFileWithoutFieldIds(
+      std::string(kNestedSchemaWithoutIds),
+      {R"({"profile": {"age": 30}, "tags": ["a", "b"], "counts": {"x": 1}})"}));
+  auto schema = std::make_shared<Schema>(std::vector<SchemaField>{
+      SchemaField::MakeOptional(1, "profile",
+                                std::make_shared<StructType>(std::vector<SchemaField>{
+                                    SchemaField::MakeOptional(10, "age", int32()),
+                                })),
+      SchemaField::MakeOptional(
+          2, "tags",
+          std::make_shared<ListType>(SchemaField::MakeOptional(20, "element", string()))),
+      SchemaField::MakeOptional(
+          3, "counts",
+          std::make_shared<MapType>(SchemaField::MakeRequired(30, "key", string()),
+                                    SchemaField::MakeOptional(31, "value", int64()))),
+  });
+  // The list element and the map value are not mapped, so both containers are read as
+  // missing.
+  std::shared_ptr<NameMapping> mapping = NameMapping::Make({
+      MappedField{.names = {"profile"},
+                  .field_id = 1,
+                  .nested_mapping = MappedFields::Make({
+                      MappedField{.names = {"age"}, .field_id = 10},
+                  })},
+      MappedField{.names = {"tags"}, .field_id = 2},
+      MappedField{.names = {"counts"},
+                  .field_id = 3,
+                  .nested_mapping = MappedFields::Make({
+                      MappedField{.names = {"key"}, .field_id = 30},
+                  })},
+  });
+
+  ICEBERG_UNWRAP_OR_FAIL(auto reader, OpenReader(schema, mapping));
+  ASSERT_NO_FATAL_FAILURE(VerifyNextBatch(*reader, R"([[[30], null, null]])"));
+  ASSERT_NO_FATAL_FAILURE(VerifyExhausted(*reader));
 }
 
 INSTANTIATE_TEST_SUITE_P(DirectDecoderModes, AvroReaderParameterizedTest,

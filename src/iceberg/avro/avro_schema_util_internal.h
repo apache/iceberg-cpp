@@ -101,9 +101,10 @@ class HasIdVisitor {
     return total_fields_ == fields_with_id_ && fields_with_id_ != 0;
   }
 
-  /// \brief Check if all fields in the visited schema have field IDs.
-  /// \return True if all fields have IDs, false otherwise.
-  bool HasNoIds() const { return total_fields_ == 0; }
+  /// \brief Check if no field in the visited schema has a field ID.
+  /// \return True if no field has an ID (including when there are no fields), false
+  /// otherwise.
+  bool HasNoIds() const { return fields_with_id_ == 0; }
 
  private:
   /// \brief Visit a record node to check for field IDs.
