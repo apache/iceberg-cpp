@@ -31,6 +31,7 @@
 #include "iceberg/avro/avro_register.h"
 #include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/manifest/manifest_reader.h"
+#include "iceberg/metrics/metrics_reporter.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/row/partition_values.h"
 #include "iceberg/schema.h"
@@ -653,6 +654,18 @@ TEST_F(CherryPickOperationTest, CherryPickReplayedAsFastForwardAfterRollback) {
   ICEBERG_UNWRAP_OR_FAIL(auto parent_id, CommitAppend(file_a_));
   ICEBERG_UNWRAP_OR_FAIL(auto staged_id, StageAppend(file_b_));
   ASSERT_THAT(CommitAppend(conflict_a_), IsOk());
+
+  class MockReporter : public MetricsReporter {
+   public:
+    MOCK_METHOD(Status, Report, (const MetricsReport&), (override));
+  };
+  auto reporter = std::make_shared<MockReporter>();
+  EXPECT_CALL(*reporter, Report(::testing::_)).Times(0);
+  ICEBERG_UNWRAP_OR_FAIL(
+      table_, Table::Make(table_->name(), table_->metadata(),
+                          std::string(table_->metadata_file_location()), file_io_,
+                          catalog_, table_->full_name(), reporter));
+
   ICEBERG_UNWRAP_OR_FAIL(auto transaction, StageCherrypick(staged_id));
   ICEBERG_UNWRAP_OR_FAIL(auto draft, transaction->current().Snapshot());
   ASSERT_NE(draft->snapshot_id, staged_id);

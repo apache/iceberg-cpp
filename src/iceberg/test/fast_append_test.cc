@@ -420,7 +420,7 @@ TEST_F(FastAppendTest, TransactionApplyFailureCleansUpStagedFiles) {
   EXPECT_THAT(deleted_paths, ::testing::SizeIs(2U));
 }
 
-TEST_F(FastAppendTest, RebaseCopiesAppendManifestAgain) {
+TEST_F(FastAppendTest, RebaseReusesCopiedAppendManifest) {
   table_->metadata()->format_version = 1;
   ASSERT_THAT(
       TableMetadataUtil::Write(*file_io_, std::string(table_->metadata_file_location()),
@@ -440,12 +440,20 @@ TEST_F(FastAppendTest, RebaseCopiesAppendManifestAgain) {
       ASSERT_THAT(properties->Commit(), IsOk());
     }
     ICEBERG_UNWRAP_OR_FAIL(auto snapshot, txn->current().Snapshot());
+    EXPECT_THAT(snapshot->summary,
+                ::testing::Contains(::testing::Pair(
+                    std::string(SnapshotSummaryFields::kAddedRecords), "100")));
     SnapshotReader snapshot_reader(snapshot.get());
     ICEBERG_UNWRAP_OR_FAIL(auto manifests, snapshot_reader.DataManifests(file_io_));
     ASSERT_THAT(manifests, ::testing::SizeIs(1));
     const auto& manifest_path = manifests[0].manifest_path;
     EXPECT_NE(manifest_path, path);
-    EXPECT_THAT(attempt_manifests, ::testing::Not(::testing::Contains(manifest_path)));
+    if (!attempt_manifests.empty()) {
+      EXPECT_EQ(manifest_path, attempt_manifests.front());
+    }
+    // The copy is immutable, but each attempt needs a new manifest list.
+    EXPECT_THAT(attempt_lists,
+                ::testing::Not(::testing::Contains(snapshot->manifest_list)));
     attempt_manifests.push_back(manifest_path);
     attempt_lists.push_back(snapshot->manifest_list);
     ExpectManifestEntries(manifests[0], {file_a_->file_path}, {ManifestStatus::kAdded});
@@ -475,12 +483,13 @@ TEST_F(FastAppendTest, RebaseCopiesAppendManifestAgain) {
   std::unordered_set<std::string> unique_deleted_paths(deleted_paths.begin(),
                                                        deleted_paths.end());
   EXPECT_THAT(unique_deleted_paths,
-              ::testing::UnorderedElementsAre(attempt_manifests[0], attempt_lists[0],
-                                              attempt_manifests[1], attempt_lists[1]));
+              ::testing::UnorderedElementsAre(attempt_lists[0], attempt_lists[1]));
+  EXPECT_THAT(deleted_paths, ::testing::SizeIs(2));
   EXPECT_THAT(deleted_paths, ::testing::Not(::testing::Contains(path)));
   EXPECT_THAT(deleted_paths,
               ::testing::Not(::testing::Contains(manifests[0].manifest_path)));
   EXPECT_THAT(file_io_->ReadFile(path, std::nullopt), IsOk());
+  EXPECT_THAT(file_io_->ReadFile(manifests[0].manifest_path, std::nullopt), IsOk());
   EXPECT_THAT(file_io_->ReadFile(attempt_lists[2], std::nullopt), IsOk());
 }
 
@@ -1229,10 +1238,10 @@ TEST_F(FastAppendTest, ReplayBecomingNoopCleansStagingWithoutReporting) {
       EXPECT_EQ(committed->properties().configs().at("effective"), "value");
       EXPECT_EQ(txn->state(), TransactionState::kCommitted);
     }
-    EXPECT_EQ(deletes, 4);
+    EXPECT_EQ(deletes, 3);
     EXPECT_EQ(reports, 0);
     EXPECT_THAT(append->Commit(), IsError(ErrorKind::kValidationFailed));
-    EXPECT_EQ(deletes, 4);
+    EXPECT_EQ(deletes, 3);
   }
 }
 
