@@ -18,6 +18,7 @@
  */
 
 #include <algorithm>
+#include <limits>
 #include <map>
 
 #include <arrow/array.h>
@@ -1092,6 +1093,16 @@ TEST_F(ParquetDictionaryFilterTest, FloatingPointNaNAndSignedZero) {
     auto zero =
         type->type_id() == TypeId::kFloat ? Literal::Float(0) : Literal::Double(0);
     CheckDictionaries(Expressions::Equal("key", zero), {false, false, true, false});
+    auto one = type->type_id() == TypeId::kFloat ? Literal::Float(1) : Literal::Double(1);
+    auto nan = type->type_id() == TypeId::kFloat
+                   ? Literal::Float(std::numeric_limits<float>::quiet_NaN())
+                   : Literal::Double(std::numeric_limits<double>::quiet_NaN());
+    CheckDictionaries(Expressions::In("key", {zero, one}), {false, false, true, true});
+    CheckDictionaries(Expressions::NotIn("key", {zero, one}), {true, true, true, true});
+    CheckDictionaries(Expressions::In("key", {nan, one}), {true, true, false, true});
+    CheckDictionaries(Expressions::NotIn("key", {nan, one}), {false, true, true, false});
+    Check(Options(Expressions::In("key", {nan, one})), {0, 1, 2, 3, 6, 7});
+    Check(Options(Expressions::NotIn("key", {nan, one})), {2, 3, 4, 5});
     CheckDictionaries(Expressions::Not(Expressions::IsNaN("key")),
                       {false, true, true, true});
   }
@@ -1451,6 +1462,10 @@ TEST_F(ParquetDictionaryFilterTest, OpenReadsOnlyDictionaryPage) {
   auto column = metadata_->RowGroup(0)->ColumnChunk(0);
   ASSERT_EQ(metadata_->num_row_groups(), 1);
   ASSERT_GT(column->total_compressed_size(), 2 * 1024 * 1024);
+  // Project only metadata columns so eager reader initialization cannot prefetch
+  // output data. This isolates the I/O needed for dictionary pruning.
+  projection_ = std::make_shared<Schema>(
+      std::vector<SchemaField>{MetadataColumns::kRowPosition, MetadataColumns::kRowId});
   auto io = std::static_pointer_cast<DictionaryRecordingFileIO>(io_);
   io->reads.clear();
   ICEBERG_UNWRAP_OR_FAIL(
