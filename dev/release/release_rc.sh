@@ -19,12 +19,21 @@
 
 set -eu
 
-for cmd in git gh gpg svn; do
+for cmd in git gh gpg svn gzip cmp mktemp; do
   if ! command -v ${cmd} &> /dev/null; then
     echo "This script requires '${cmd}' but it's not installed. Aborting."
     exit 1
   fi
 done
+
+if command -v shasum > /dev/null 2>&1; then
+  sha512_verify=(shasum -a 512 -c)
+elif command -v sha512sum > /dev/null 2>&1; then
+  sha512_verify=(sha512sum -c)
+else
+  echo "This script requires 'shasum' or 'sha512sum'. Aborting."
+  exit 1
+fi
 
 SOURCE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SOURCE_TOP_DIR="$(cd "${SOURCE_DIR}/../../" && pwd)"
@@ -78,6 +87,11 @@ rc_id="${id}-rc${rc}"
 tar_gz="${id}.tar.gz"
 
 if [ "${RELEASE_SIGN}" -gt 0 ]; then
+  if [ -e "${rc_id}" ] || [ -L "${rc_id}" ]; then
+    echo "Release directory ${rc_id} already exists. Move it aside before retrying."
+    exit 1
+  fi
+
   git_origin_url="$(git remote get-url origin)"
   repository="${git_origin_url#*github.com?}"
   repository="${repository%.git}"
@@ -126,15 +140,38 @@ if [ "${RELEASE_SIGN}" -gt 0 ]; then
     done
   fi
 
-  mkdir -p "${rc_id}"
+  verify_dir="$(mktemp -d "${TMPDIR:-/tmp}/iceberg-cpp-rc.XXXXXX")"
+  trap 'rm -rf "${verify_dir}"' EXIT
+  mkdir "${verify_dir}/artifacts"
 
   echo "Downloading .tar.gz and .sha512 from GitHub Releases"
   gh release download "${rc_tag}" \
-    --dir "${rc_id}" \
+    --dir "${verify_dir}/artifacts" \
     --pattern "${tar_gz}" \
     --pattern "${tar_gz}.sha512" \
-    --repo "${repository}" \
-    --skip-existing
+    --repo "${repository}"
+
+  echo "Verifying downloaded tar.gz before signing"
+  if ! (cd "${verify_dir}/artifacts" && "${sha512_verify[@]}" "${tar_gz}.sha512"); then
+    echo "Downloaded ${tar_gz} failed SHA-512 verification. Not signing."
+    exit 1
+  fi
+  if ! gzip -dc "${verify_dir}/artifacts/${tar_gz}" > "${verify_dir}/downloaded.tar"; then
+    echo "Failed to decompress ${tar_gz}. Not signing."
+    exit 1
+  fi
+  if ! git -c core.autocrlf=false -c core.eol=lf -c tar.umask=0002 \
+      archive "${rc_hash}" --format=tar --prefix "${id}/" > "${verify_dir}/expected.tar"; then
+    echo "Failed to archive RC commit ${rc_hash}. Not signing."
+    exit 1
+  fi
+  # The checksum can be replaced along with the asset; anchor it to the RC commit.
+  if ! cmp -s "${verify_dir}/expected.tar" "${verify_dir}/downloaded.tar"; then
+    echo "Downloaded ${tar_gz} does not match RC commit ${rc_hash}. Not signing."
+    exit 1
+  fi
+
+  mv "${verify_dir}/artifacts" "${rc_id}"
 
   echo "Signing tar.gz"
   cd "${rc_id}"

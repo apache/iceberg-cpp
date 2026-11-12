@@ -50,6 +50,13 @@ Requirements to run `release_rc.sh`:
     * You must be an Apache Iceberg committer or PMC member
     * You must prepare your PGP key for signing
 
+The signing step also requires `gzip`, `cmp`, `mktemp`, and either `shasum` or
+`sha512sum`. It verifies the downloaded checksum and compares the uncompressed
+archive against `git archive` of the RC commit before signing. Both CI and local
+verification pin line endings and archive permissions. Differences in Git's tar
+output across versions can still cause verification to fail.
+An existing RC output directory must be moved aside before retrying.
+
 If you don't have a PGP key, https://infra.apache.org/release-signing.html#generate
 may be helpful.
 
@@ -108,3 +115,10 @@ $ dev/release/verify_rc.sh ${VERSION} ${RC}
 ```
 
 If the verification is successful, the message `RC looks good!` is shown.
+
+The release script's regression tests run in CI on Ubuntu and macOS with
+simulated signing and upload commands. To run them locally:
+
+```console
+$ python3 -B -m unittest discover -s dev/release -p 'test_release_rc.py' -v
+```
