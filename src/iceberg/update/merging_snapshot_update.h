@@ -158,7 +158,7 @@ class ICEBERG_EXPORT MergingSnapshotUpdate : public SnapshotUpdate {
   /// \brief Returns true if any delete files have been registered for removal.
   bool DeletesDeleteFiles() const;
 
-  /// \brief Returns the row-filter expression set via DeleteByRowFilter, or nullptr.
+  /// \brief Returns the row-filter expression set via DeleteByRowFilter, or AlwaysFalse.
   const std::shared_ptr<Expression>& RowFilter() const { return delete_expression_; }
 
   /// \brief Returns the single partition spec for all staged data files.
@@ -275,13 +275,18 @@ class ICEBERG_EXPORT MergingSnapshotUpdate : public SnapshotUpdate {
                                          const std::shared_ptr<Snapshot>& parent,
                                          std::shared_ptr<FileIO> io);
 
-  /// \brief Build a DeleteFileIndex of delete files added since starting_snapshot_id.
-  static Result<std::unique_ptr<DeleteFileIndex>> AddedDeleteFiles(
-      const TableMetadata& metadata, std::optional<int64_t> starting_snapshot_id,
-      std::shared_ptr<Expression> data_filter,
-      std::shared_ptr<PartitionSet> partition_set,
-      const std::shared_ptr<Snapshot>& parent, std::shared_ptr<FileIO> io,
-      bool case_sensitive = true);
+  /// \brief Build one delete index per snapshot in the validation window.
+  ///
+  /// An index allows at most one DV per data file. Successive snapshots may replace
+  /// that DV, so callers must check every index instead of combining the window.
+  static Result<std::vector<std::unique_ptr<DeleteFileIndex>>>
+  AddedDeleteFilesIndexedPerSnapshot(const TableMetadata& metadata,
+                                     std::optional<int64_t> starting_snapshot_id,
+                                     std::shared_ptr<Expression> data_filter,
+                                     std::shared_ptr<PartitionSet> partition_set,
+                                     const std::shared_ptr<Snapshot>& parent,
+                                     std::shared_ptr<FileIO> io,
+                                     bool case_sensitive = true);
 
   /// \brief Return an error if any snapshot after starting_snapshot_id, or from
   /// the beginning if unset, added a deletion vector that conflicts with DVs being
@@ -291,7 +296,7 @@ class ICEBERG_EXPORT MergingSnapshotUpdate : public SnapshotUpdate {
       std::shared_ptr<Expression> conflict_filter,
       const std::unordered_set<std::string>& referenced_data_files,
       const std::shared_ptr<Snapshot>& parent, std::shared_ptr<FileIO> io,
-      bool case_sensitive = true);
+      bool case_sensitive = true, OptionalExecutor executor = std::nullopt);
 
   /// \brief Return an error if a staged deletion vector conflicts with a deletion
   /// vector added since starting_snapshot_id.
@@ -337,16 +342,21 @@ class ICEBERG_EXPORT MergingSnapshotUpdate : public SnapshotUpdate {
                        std::optional<int64_t> data_sequence_number);
 
   Status ManagersReady() const;
+  Status EnsureRewrittenAppendManifests();
 
   void SetSummaryProperty(const std::string& property, const std::string& value) override;
 
+  Status ValidateDeleteFilesForVersion(const TableMetadata& current);
+
+  Result<std::vector<ManifestFile>> PrepareNewDataManifests();
+  Result<std::vector<ManifestFile>> PrepareDeleteManifests();
   Result<std::vector<PendingDeleteFile>> MergeDVs();
 
   /// \brief Write new data manifests for staged data files; caches the result.
-  Result<std::vector<ManifestFile>> WriteNewDataManifests();
+  Result<std::vector<ManifestFile>> NewDataFilesAsManifests();
 
   /// \brief Write new delete manifests for staged delete files; caches the result.
-  Result<std::vector<ManifestFile>> WriteNewDeleteManifests();
+  Result<std::vector<ManifestFile>> NewDeleteFilesAsManifests();
 
   Status CleanUncommittedAppends(const std::unordered_set<std::string>& committed);
 
@@ -363,7 +373,6 @@ class ICEBERG_EXPORT MergingSnapshotUpdate : public SnapshotUpdate {
   SnapshotSummaryBuilder added_data_files_summary_;
   SnapshotSummaryBuilder added_delete_files_summary_;
   SnapshotSummaryBuilder appended_manifests_summary_;
-  std::unordered_map<std::string, std::string> custom_summary_properties_;
 
   std::unique_ptr<ManifestFilterManager> data_filter_manager_;
   std::unique_ptr<ManifestFilterManager> delete_filter_manager_;

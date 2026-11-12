@@ -52,7 +52,9 @@ struct PartitionValuesHash {
     std::size_t hash = 0;
     LiteralHash literal_hash;
     for (const auto& literal : partition.values()) {
-      hash ^= literal_hash(literal) + kHashPrime + (hash << 6) + (hash >> 2);
+      // Java partition comparison considers all NaNs equal, regardless of payload.
+      const size_t value_hash = literal.IsNaN() ? kHashPrime : literal_hash(literal);
+      hash ^= value_hash + kHashPrime + (hash << 6) + (hash >> 2);
     }
     return hash;
   }
@@ -61,7 +63,16 @@ struct PartitionValuesHash {
 /// \brief Equality functor for PartitionValues.
 struct PartitionValuesEqual {
   bool operator()(const PartitionValues& lhs, const PartitionValues& rhs) const {
-    return lhs == rhs;
+    if (lhs.num_fields() != rhs.num_fields()) return false;
+    for (size_t pos = 0; pos < lhs.num_fields(); ++pos) {
+      const auto& left = lhs.values()[pos];
+      const auto& right = rhs.values()[pos];
+      if (left.IsNull() && right.IsNull()) continue;
+      if (left.IsNaN() && right.IsNaN() && left.value().index() == right.value().index())
+        continue;
+      if (!(left == right)) return false;
+    }
+    return true;
   }
 };
 
@@ -89,22 +100,22 @@ struct PartitionKeyEqual {
 
   // Equality for PartitionKey vs PartitionKey
   bool operator()(const PartitionKey& lhs, const PartitionKey& rhs) const {
-    return lhs.first == rhs.first && lhs.second == rhs.second;
+    return lhs.first == rhs.first && PartitionValuesEqual{}(lhs.second, rhs.second);
   }
 
   // Equality for PartitionKey vs PartitionKeyRef (heterogeneous lookup)
   bool operator()(const PartitionKey& lhs, const PartitionKeyRef& rhs) const {
-    return lhs.first == rhs.spec_id && lhs.second == rhs.values;
+    return lhs.first == rhs.spec_id && PartitionValuesEqual{}(lhs.second, rhs.values);
   }
 
   // Equality for PartitionKeyRef vs PartitionKey (heterogeneous lookup)
   bool operator()(const PartitionKeyRef& lhs, const PartitionKey& rhs) const {
-    return lhs.spec_id == rhs.first && lhs.values == rhs.second;
+    return lhs.spec_id == rhs.first && PartitionValuesEqual{}(lhs.values, rhs.second);
   }
 
   // Equality for PartitionKeyRef vs PartitionKeyRef (heterogeneous lookup)
   bool operator()(const PartitionKeyRef& lhs, const PartitionKeyRef& rhs) const {
-    return lhs.spec_id == rhs.spec_id && lhs.values == rhs.values;
+    return lhs.spec_id == rhs.spec_id && PartitionValuesEqual{}(lhs.values, rhs.values);
   }
 };
 
