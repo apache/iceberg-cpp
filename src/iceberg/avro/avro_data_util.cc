@@ -748,7 +748,6 @@ Status ExtractDatumFromArray(const ::arrow::Array& array, int64_t index,
       return {};
     }
 
-    // TODO(gangwu): support LARGE_STRING.
     case ::arrow::Type::STRING: {
       const auto& string_array =
           internal::checked_cast<const ::arrow::StringArray&>(array);
@@ -756,11 +755,27 @@ Status ExtractDatumFromArray(const ::arrow::Array& array, int64_t index,
       return {};
     }
 
-    // TODO(gangwu): support LARGE_BINARY.
+    case ::arrow::Type::LARGE_STRING: {
+      const auto& large_string_array =
+          internal::checked_cast<const ::arrow::LargeStringArray&>(array);
+      datum->value<std::string>() = large_string_array.GetString(index);
+      return {};
+    }
+
     case ::arrow::Type::BINARY: {
       const auto& binary_array =
           internal::checked_cast<const ::arrow::BinaryArray&>(array);
       std::string_view value = binary_array.GetView(index);
+      datum->value<std::vector<uint8_t>>().assign(
+          reinterpret_cast<const uint8_t*>(value.data()),
+          reinterpret_cast<const uint8_t*>(value.data()) + value.size());
+      return {};
+    }
+
+    case ::arrow::Type::LARGE_BINARY: {
+      const auto& large_binary_array =
+          internal::checked_cast<const ::arrow::LargeBinaryArray&>(array);
+      std::string_view value = large_binary_array.GetView(index);
       datum->value<std::vector<uint8_t>>().assign(
           reinterpret_cast<const uint8_t*>(value.data()),
           reinterpret_cast<const uint8_t*>(value.data()) + value.size());
@@ -835,7 +850,6 @@ Status ExtractDatumFromArray(const ::arrow::Array& array, int64_t index,
       return {};
     }
 
-    // TODO(gangwu): support LARGE_LIST.
     case ::arrow::Type::LIST: {
       const auto& list_array = internal::checked_cast<const ::arrow::ListArray&>(array);
       auto& avro_array = datum->value<::avro::GenericArray>();
@@ -846,6 +860,26 @@ Status ExtractDatumFromArray(const ::arrow::Array& array, int64_t index,
       auto length = end - start;
 
       auto values = list_array.values();
+      elements.resize(length, ::avro::GenericDatum(avro_array.schema()->leafAt(0)));
+
+      for (int64_t i = 0; i < length; ++i) {
+        ICEBERG_RETURN_UNEXPECTED(
+            ExtractDatumFromArray(*values, start + i, &elements[i]));
+      }
+      return {};
+    }
+
+    case ::arrow::Type::LARGE_LIST: {
+      const auto& large_list_array =
+          internal::checked_cast<const ::arrow::LargeListArray&>(array);
+      auto& avro_array = datum->value<::avro::GenericArray>();
+      auto& elements = avro_array.value();
+
+      auto start = large_list_array.value_offset(index);
+      auto end = large_list_array.value_offset(index + 1);
+      auto length = end - start;
+
+      auto values = large_list_array.values();
       elements.resize(length, ::avro::GenericDatum(avro_array.schema()->leafAt(0)));
 
       for (int64_t i = 0; i < length; ++i) {
