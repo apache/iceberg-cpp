@@ -1186,6 +1186,93 @@ TEST_F(FileScanTaskReaderTest, ReadsArrowValidateBatchProperty) {
   }
 }
 
+TEST_F(FileScanTaskReaderTest, ConfiguresWrapperValidationThroughOpen) {
+  ICEBERG_UNWRAP_OR_FAIL(auto data_file,
+                         MakeDataFile(table_schema_, std::string(kResidualDataJson)));
+  auto delete_schema =
+      std::make_shared<Schema>(std::vector<SchemaField>{table_schema_->fields()[0]});
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto eq_delete, MakeEqualityDeleteFile(CreateNewTempFilePathWithSuffix(".parquet"),
+                                             delete_schema, "[[999]]", {1}));
+
+  class CorruptingReader : public Reader {
+   public:
+    explicit CorruptingReader(std::unique_ptr<Reader> reader)
+        : reader_(std::move(reader)) {}
+
+    Status Open(const ReaderOptions& options) override { return reader_->Open(options); }
+    Status Close() override { return reader_->Close(); }
+    Result<ArrowSchema> Schema() override { return reader_->Schema(); }
+    Result<std::unordered_map<std::string, std::string>> Metadata() override {
+      return reader_->Metadata();
+    }
+    Result<std::optional<ArrowArray>> Next() override {
+      ICEBERG_ASSIGN_OR_RAISE(auto batch, reader_->Next());
+      if (batch.has_value() && batch->length == 3 && batch->n_children == 3) {
+        // Only full validation should inspect the unused column's offsets.
+        auto* offsets = const_cast<int32_t*>(
+            static_cast<const int32_t*>(batch->children[1]->buffers[1]));
+        offsets[2] = offsets[1] - 1;
+      }
+      return batch;
+    }
+
+   private:
+    std::unique_ptr<Reader> reader_;
+  };
+
+  struct RestoreFactory {
+    ReaderFactory factory = ReaderFactoryRegistry::GetFactory(FileFormatType::kParquet);
+    ~RestoreFactory() {
+      ReaderFactoryRegistry::GetFactory(FileFormatType::kParquet) = std::move(factory);
+    }
+  } restore;
+  ReaderFactoryRegistry::GetFactory(FileFormatType::kParquet) =
+      [&restore]() -> Result<std::unique_ptr<Reader>> {
+    ICEBERG_ASSIGN_OR_RAISE(auto reader, restore.factory());
+    return std::make_unique<CorruptingReader>(std::move(reader));
+  };
+
+  for (auto [with_deletes, apply_residuals] :
+       {std::pair{false, true}, std::pair{true, false}, std::pair{true, true}}) {
+    SCOPED_TRACE(with_deletes);
+    SCOPED_TRACE(apply_residuals);
+    for (bool validate_batch : {true, false}) {
+      SCOPED_TRACE(validate_batch);
+      FileScanTask task(data_file,
+                        with_deletes ? std::vector{eq_delete}
+                                     : std::vector<std::shared_ptr<DataFile>>{},
+                        Expressions::GreaterThanOrEqual("id", Literal::Int(1)));
+      FileScanTaskReader::Options options{
+          .io = file_io_,
+          .table_schema = table_schema_,
+          .projected_schema = table_schema_,
+          .apply_residuals = apply_residuals,
+      };
+      if (!validate_batch) {
+        options.properties[ReaderProperties::kArrowValidateBatch.key()] = "false";
+      }
+      ICEBERG_UNWRAP_OR_FAIL(auto reader, FileScanTaskReader::Make(std::move(options)));
+      ICEBERG_UNWRAP_OR_FAIL(auto stream, reader->Open(task));
+      auto release_stream = [](ArrowArrayStream* stream) { stream->release(stream); };
+      std::unique_ptr<ArrowArrayStream, decltype(release_stream)> stream_guard(
+          &stream, release_stream);
+      ArrowArray batch{};
+      internal::ArrowArrayGuard batch_guard(&batch);
+      if (validate_batch) {
+        EXPECT_NE(stream.get_next(&stream, &batch), 0);
+        EXPECT_THAT(stream.get_last_error(&stream),
+                    ::testing::HasSubstr("Expected element size >= 0"));
+      } else {
+        ASSERT_EQ(stream.get_next(&stream, &batch), 0) << stream.get_last_error(&stream);
+        ASSERT_EQ(batch.length, 3);
+        const auto* ids = static_cast<const int32_t*>(batch.children[0]->buffers[1]);
+        EXPECT_THAT(std::span(ids, 3), ::testing::ElementsAre(1, 2, 3));
+      }
+    }
+  }
+}
+
 TEST_F(FileScanTaskReaderTest, OpenWithEqualityDeletesAddsAndPrunesDeleteOnlyColumns) {
   ICEBERG_UNWRAP_OR_FAIL(
       auto data_file,

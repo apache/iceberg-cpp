@@ -85,18 +85,22 @@ Result<Scalar> ExtractValue(const ArrowSchema* schema, const ArrowArray* array,
       return Decimal(int_value);
     }
     case NANOARROW_TYPE_STRUCT: {
+      // The parent view validates nested children recursively; avoid rescanning them.
       ICEBERG_ASSIGN_OR_RAISE(std::shared_ptr<StructLike> struct_like,
-                              ArrowArrayStructLike::Make(*schema, *array, index));
+                              ArrowArrayStructLike::Make(*schema, *array, index,
+                                                         /*validate_batch=*/false));
       return struct_like;
     }
     case NANOARROW_TYPE_LIST: {
       ICEBERG_ASSIGN_OR_RAISE(std::shared_ptr<ArrayLike> array_like,
-                              ArrowArrayArrayLike::Make(*schema, *array, index));
+                              ArrowArrayArrayLike::Make(*schema, *array, index,
+                                                        /*validate_batch=*/false));
       return array_like;
     }
     case NANOARROW_TYPE_MAP: {
       ICEBERG_ASSIGN_OR_RAISE(std::shared_ptr<MapLike> map_like,
-                              ArrowArrayMapLike::Make(*schema, *array, index));
+                              ArrowArrayMapLike::Make(*schema, *array, index,
+                                                      /*validate_batch=*/false));
       return map_like;
     }
     case NANOARROW_TYPE_EXTENSION:
@@ -113,8 +117,12 @@ Result<Scalar> ExtractValue(const ArrowSchema* schema, const ArrowArray* array,
 
 class ArrowArrayStructLike::Impl {
  public:
-  Impl(const ArrowSchema& schema, const ArrowArray& array, int64_t row_index)
-      : schema_(schema), array_(std::cref(array)), row_index_(row_index) {}
+  Impl(const ArrowSchema& schema, const ArrowArray& array, int64_t row_index,
+       bool validate_batch)
+      : schema_(schema),
+        array_(std::cref(array)),
+        row_index_(row_index),
+        validate_batch_(validate_batch) {}
 
   ~Impl() = default;
 
@@ -147,6 +155,10 @@ class ArrowArrayStructLike::Impl {
     ArrowError error;
     NANOARROW_RETURN_IF_NOT_OK(
         ArrowArrayViewSetArray(&array_view_, &array_.get(), &error));
+    if (validate_batch_) {
+      NANOARROW_RETURN_IF_NOT_OK(
+          ArrowArrayViewValidate(&array_view_, NANOARROW_VALIDATION_LEVEL_FULL, &error));
+    }
     return {};
   }
 
@@ -161,6 +173,10 @@ class ArrowArrayStructLike::Impl {
         ArrowArrayViewInitFromSchema(&array_view_, &schema_, &error));
     NANOARROW_RETURN_IF_NOT_OK(
         ArrowArrayViewSetArray(&array_view_, &array_.get(), &error));
+    if (validate_batch_) {
+      NANOARROW_RETURN_IF_NOT_OK(
+          ArrowArrayViewValidate(&array_view_, NANOARROW_VALIDATION_LEVEL_FULL, &error));
+    }
     return {};
   }
 
@@ -171,11 +187,13 @@ class ArrowArrayStructLike::Impl {
   const ArrowSchema& schema_;
   std::reference_wrapper<const ArrowArray> array_;
   int64_t row_index_;
+  const bool validate_batch_;
 };
 
 Result<std::unique_ptr<ArrowArrayStructLike>> ArrowArrayStructLike::Make(
-    const ArrowSchema& schema, const ArrowArray& array, int64_t row_index) {
-  auto impl = std::make_unique<Impl>(schema, array, row_index);
+    const ArrowSchema& schema, const ArrowArray& array, int64_t row_index,
+    bool validate_batch) {
+  auto impl = std::make_unique<Impl>(schema, array, row_index, validate_batch);
   ICEBERG_RETURN_UNEXPECTED(impl->Init());
   return std::unique_ptr<ArrowArrayStructLike>(new ArrowArrayStructLike(std::move(impl)));
 }
@@ -201,8 +219,12 @@ Status ArrowArrayStructLike::Reset(const ArrowArray& array, int64_t row_index) {
 
 class ArrowArrayArrayLike::Impl {
  public:
-  Impl(const ArrowSchema& schema, const ArrowArray& array, int64_t row_index)
-      : schema_(schema), array_(std::cref(array)), row_index_(row_index) {}
+  Impl(const ArrowSchema& schema, const ArrowArray& array, int64_t row_index,
+       bool validate_batch)
+      : schema_(schema),
+        array_(std::cref(array)),
+        row_index_(row_index),
+        validate_batch_(validate_batch) {}
 
   ~Impl() = default;
 
@@ -229,6 +251,10 @@ class ArrowArrayArrayLike::Impl {
     ArrowError error;
     NANOARROW_RETURN_IF_NOT_OK(
         ArrowArrayViewSetArray(&array_view_, &array_.get(), &error));
+    if (validate_batch_) {
+      NANOARROW_RETURN_IF_NOT_OK(
+          ArrowArrayViewValidate(&array_view_, NANOARROW_VALIDATION_LEVEL_FULL, &error));
+    }
     return UpdateOffsets();
   }
 
@@ -243,6 +269,10 @@ class ArrowArrayArrayLike::Impl {
         ArrowArrayViewInitFromSchema(&array_view_, &schema_, &error));
     NANOARROW_RETURN_IF_NOT_OK(
         ArrowArrayViewSetArray(&array_view_, &array_.get(), &error));
+    if (validate_batch_) {
+      NANOARROW_RETURN_IF_NOT_OK(
+          ArrowArrayViewValidate(&array_view_, NANOARROW_VALIDATION_LEVEL_FULL, &error));
+    }
     return UpdateOffsets();
   }
 
@@ -268,11 +298,13 @@ class ArrowArrayArrayLike::Impl {
 
   int64_t offset_ = 0;
   int64_t length_ = 0;
+  const bool validate_batch_;
 };
 
 Result<std::unique_ptr<ArrowArrayArrayLike>> ArrowArrayArrayLike::Make(
-    const ArrowSchema& schema, const ArrowArray& array, int64_t row_index) {
-  auto impl = std::make_unique<Impl>(schema, array, row_index);
+    const ArrowSchema& schema, const ArrowArray& array, int64_t row_index,
+    bool validate_batch) {
+  auto impl = std::make_unique<Impl>(schema, array, row_index, validate_batch);
   ICEBERG_RETURN_UNEXPECTED(impl->Init());
   return std::unique_ptr<ArrowArrayArrayLike>(new ArrowArrayArrayLike(std::move(impl)));
 }
@@ -298,8 +330,12 @@ Status ArrowArrayArrayLike::Reset(const ArrowArray& array, int64_t row_index) {
 
 class ArrowArrayMapLike::Impl {
  public:
-  Impl(const ArrowSchema& schema, const ArrowArray& array, int64_t row_index)
-      : schema_(schema), array_(std::cref(array)), row_index_(row_index) {}
+  Impl(const ArrowSchema& schema, const ArrowArray& array, int64_t row_index,
+       bool validate_batch)
+      : schema_(schema),
+        array_(std::cref(array)),
+        row_index_(row_index),
+        validate_batch_(validate_batch) {}
 
   ~Impl() = default;
 
@@ -340,6 +376,10 @@ class ArrowArrayMapLike::Impl {
     ArrowError error;
     NANOARROW_RETURN_IF_NOT_OK(
         ArrowArrayViewSetArray(&array_view_, &array_.get(), &error));
+    if (validate_batch_) {
+      NANOARROW_RETURN_IF_NOT_OK(
+          ArrowArrayViewValidate(&array_view_, NANOARROW_VALIDATION_LEVEL_FULL, &error));
+    }
     return UpdateOffsets();
   }
 
@@ -354,6 +394,10 @@ class ArrowArrayMapLike::Impl {
         ArrowArrayViewInitFromSchema(&array_view_, &schema_, &error));
     NANOARROW_RETURN_IF_NOT_OK(
         ArrowArrayViewSetArray(&array_view_, &array_.get(), &error));
+    if (validate_batch_) {
+      NANOARROW_RETURN_IF_NOT_OK(
+          ArrowArrayViewValidate(&array_view_, NANOARROW_VALIDATION_LEVEL_FULL, &error));
+    }
     return UpdateOffsets();
   }
 
@@ -387,11 +431,13 @@ class ArrowArrayMapLike::Impl {
 
   int64_t offset_ = 0;
   int64_t length_ = 0;
+  const bool validate_batch_;
 };
 
 Result<std::unique_ptr<ArrowArrayMapLike>> ArrowArrayMapLike::Make(
-    const ArrowSchema& schema, const ArrowArray& array, int64_t row_index) {
-  auto impl = std::make_unique<Impl>(schema, array, row_index);
+    const ArrowSchema& schema, const ArrowArray& array, int64_t row_index,
+    bool validate_batch) {
+  auto impl = std::make_unique<Impl>(schema, array, row_index, validate_batch);
   ICEBERG_RETURN_UNEXPECTED(impl->Init());
   return std::unique_ptr<ArrowArrayMapLike>(new ArrowArrayMapLike(std::move(impl)));
 }
