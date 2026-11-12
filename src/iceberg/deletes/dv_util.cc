@@ -17,6 +17,7 @@
  * under the License.
  */
 
+#include <atomic>
 #include <cstddef>
 #include <cstdint>
 #include <format>
@@ -39,16 +40,40 @@
 #include "iceberg/result.h"
 #include "iceberg/util/content_file_util.h"
 #include "iceberg/util/macros.h"
+#include "iceberg/util/task_group.h"
 #include "iceberg/version.h"
 
 namespace iceberg {
 
 Result<std::vector<std::shared_ptr<DataFile>>> DVUtil::MergeAndWriteDVs(
     std::span<const DeletionVectorMergeGroup> groups, std::string_view output_path,
-    const std::shared_ptr<FileIO>& io) {
+    const std::shared_ptr<FileIO>& io, OptionalExecutor executor) {
   if (groups.empty()) {
     return std::vector<std::shared_ptr<DataFile>>{};
   }
+
+  // Read all duplicate DVs in parallel, retaining their original order.
+  std::vector<std::shared_ptr<DataFile>> duplicate_dvs;
+  for (const auto& group : groups) {
+    duplicate_dvs.insert(duplicate_dvs.end(), group.delete_files.begin(),
+                         group.delete_files.end());
+  }
+  std::vector<PositionDeleteIndex> duplicated_dv_positions(duplicate_dvs.size());
+  std::atomic<bool> failed{false};
+  auto tasks = TaskGroup().SetExecutor(executor);
+  for (size_t index = 0; index < duplicate_dvs.size(); ++index) {
+    tasks.Submit([&, index]() -> Status {
+      if (failed.load()) return {};
+      auto positions = ReadDV(duplicate_dvs[index], io);
+      if (!positions) {
+        failed.store(true);
+        return ::iceberg::unexpected(std::move(positions.error()));
+      }
+      duplicated_dv_positions[index] = std::move(positions.value());
+      return {};
+    });
+  }
+  ICEBERG_RETURN_UNEXPECTED(std::move(tasks).Run());
 
   ICEBERG_ASSIGN_OR_RAISE(
       auto writer,
@@ -58,11 +83,11 @@ Result<std::vector<std::shared_ptr<DataFile>>> DVUtil::MergeAndWriteDVs(
           .load_previous_deletes = [](std::string_view)
               -> Result<std::optional<PositionDeleteIndex>> { return std::nullopt; }}));
 
+  size_t index = 0;
   for (const auto& group : groups) {
     PositionDeleteIndex merged;
-    for (const auto& delete_file : group.delete_files) {
-      ICEBERG_ASSIGN_OR_RAISE(auto index, DVUtil::ReadDV(delete_file, io));
-      merged.Merge(index);
+    for (size_t pos = 0; pos < group.delete_files.size(); ++pos) {
+      merged.Merge(duplicated_dv_positions[index++]);
     }
     ICEBERG_RETURN_UNEXPECTED(
         writer->Delete(group.referenced_data_file, merged, group.spec, group.partition));

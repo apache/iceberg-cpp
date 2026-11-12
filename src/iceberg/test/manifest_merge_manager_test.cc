@@ -22,6 +22,7 @@
 #include <cstdint>
 #include <functional>
 #include <memory>
+#include <mutex>
 #include <string>
 #include <vector>
 
@@ -42,6 +43,7 @@
 #include "iceberg/schema_field.h"
 #include "iceberg/sort_order.h"
 #include "iceberg/table_metadata.h"
+#include "iceberg/test/executor.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/transform.h"
 #include "iceberg/type.h"
@@ -524,6 +526,252 @@ TEST_F(ManifestMergeManagerTest, PackEndOlderManifestsMergedNotNewest) {
   EXPECT_NE(result[1].manifest_path, m2.manifest_path);
   ICEBERG_UNWRAP_OR_FAIL(auto count, CountEntries(result));
   EXPECT_EQ(count, 3);
+}
+
+TEST_F(ManifestMergeManagerTest, EmptyAndDisabledMergeDoNotUseWorkerPool) {
+  test::InlineExecutor executor;
+  int supplier_calls = 0;
+  auto supplier = [&]() -> OptionalExecutor {
+    ++supplier_calls;
+    return std::ref(executor);
+  };
+  ICEBERG_UNWRAP_OR_FAIL(auto enabled,
+                         ManifestMergeManager::Make(
+                             ManifestContent::kData, 1000, 2, true, file_io_,
+                             [] { return kSnapshotId; }, {}, supplier));
+  ICEBERG_UNWRAP_OR_FAIL(auto empty,
+                         enabled->MergeManifests({}, *metadata_, MakeWriterFactory()));
+  EXPECT_TRUE(empty.empty());
+  ICEBERG_UNWRAP_OR_FAIL(auto m0, WriteManifest(kSpecId0, 1));
+  ICEBERG_UNWRAP_OR_FAIL(auto m1, WriteManifest(kSpecId1, 1));
+  ICEBERG_UNWRAP_OR_FAIL(auto disabled,
+                         ManifestMergeManager::Make(
+                             ManifestContent::kData, 1000, 2, false, file_io_,
+                             [] { return kSnapshotId; }, {}, supplier));
+  const std::vector<ManifestFile> manifests{m0, m1};
+  ICEBERG_UNWRAP_OR_FAIL(auto unchanged, disabled->MergeManifests(manifests, *metadata_,
+                                                                  MakeWriterFactory()));
+  EXPECT_EQ(unchanged, manifests);
+  EXPECT_EQ(supplier_calls, 0);
+  EXPECT_EQ(executor.submit_count(), 0);
+  EXPECT_EQ(factory_call_count_, 0);
+}
+
+// Java TestMergeAppend.testManifestMergeMinCount and ManifestMergeManager.mergeGroup:
+// threshold protection follows ManifestFile equality, including repeated descriptors.
+TEST_F(ManifestMergeManagerTest, MinCountUsesManifestEqualityAcrossBins) {
+  ICEBERG_UNWRAP_OR_FAIL(auto m0, WriteManifest(kSpecId0, 1, 100));
+  ICEBERG_UNWRAP_OR_FAIL(auto m1, WriteManifest(kSpecId0, 1, 100));
+  ICEBERG_UNWRAP_OR_FAIL(auto m2, WriteManifest(kSpecId0, 1, 100));
+  const std::vector<ManifestFile> manifests{m0, m1, m0, m2};
+  ICEBERG_UNWRAP_OR_FAIL(auto mgr, MakeMergeManager(200, 3, true));
+  ICEBERG_UNWRAP_OR_FAIL(auto result,
+                         mgr->MergeManifests(manifests, *metadata_, MakeWriterFactory()));
+  EXPECT_EQ(result, manifests);
+  EXPECT_EQ(factory_call_count_, 0);
+}
+
+TEST_F(ManifestMergeManagerTest, GroupsNewestSpecFirstWithoutReorderingFiles) {
+  ICEBERG_UNWRAP_OR_FAIL(auto m0, WriteManifest(kSpecId0, 1, 100));
+  ICEBERG_UNWRAP_OR_FAIL(auto m1, WriteManifest(kSpecId1, 1, 100));
+  ICEBERG_UNWRAP_OR_FAIL(auto m2, WriteManifest(kSpecId0, 1, 100));
+  ICEBERG_UNWRAP_OR_FAIL(auto m3, WriteManifest(kSpecId1, 1, 100));
+  ICEBERG_UNWRAP_OR_FAIL(auto mgr, MakeMergeManager(1000, 3, true));
+  ICEBERG_UNWRAP_OR_FAIL(auto result, mgr->MergeManifests({m0, m1, m2, m3}, *metadata_,
+                                                          MakeWriterFactory()));
+  ASSERT_EQ(result.size(), 3U);
+  EXPECT_EQ(result[0].partition_spec_id, kSpecId1);
+  EXPECT_EQ(result[1], m0);
+  EXPECT_EQ(result[2], m2);
+  ICEBERG_UNWRAP_OR_FAIL(auto reader,
+                         ManifestReader::Make(result[0], file_io_, schema_, spec1_));
+  ICEBERG_UNWRAP_OR_FAIL(auto entries, reader->Entries());
+  ICEBERG_UNWRAP_OR_FAIL(auto first_reader,
+                         ManifestReader::Make(m1, file_io_, schema_, spec1_));
+  ICEBERG_UNWRAP_OR_FAIL(auto first_entries, first_reader->Entries());
+  ICEBERG_UNWRAP_OR_FAIL(auto second_reader,
+                         ManifestReader::Make(m3, file_io_, schema_, spec1_));
+  ICEBERG_UNWRAP_OR_FAIL(auto second_entries, second_reader->Entries());
+  ASSERT_EQ(entries.size(), 2U);
+  EXPECT_EQ(entries[0].data_file->file_path, first_entries[0].data_file->file_path);
+  EXPECT_EQ(entries[1].data_file->file_path, second_entries[0].data_file->file_path);
+}
+
+TEST_F(ManifestMergeManagerTest, CacheKeyPreservesBinOrderAndManifestIdentity) {
+  ICEBERG_UNWRAP_OR_FAIL(auto m0, WriteManifest(kSpecId0, 1, 100));
+  ICEBERG_UNWRAP_OR_FAIL(auto m1, WriteManifest(kSpecId0, 1, 100));
+  ICEBERG_UNWRAP_OR_FAIL(auto mgr, MakeMergeManager(1000, 2, true));
+  ICEBERG_UNWRAP_OR_FAIL(auto first,
+                         mgr->MergeManifests({m0, m1}, *metadata_, MakeWriterFactory()));
+  ICEBERG_UNWRAP_OR_FAIL(auto reversed,
+                         mgr->MergeManifests({m1, m0}, *metadata_, MakeWriterFactory()));
+  EXPECT_NE(first[0], reversed[0]);
+  m0.manifest_length = 101;
+  ICEBERG_UNWRAP_OR_FAIL(auto retried,
+                         mgr->MergeManifests({m0, m1}, *metadata_, MakeWriterFactory()));
+  EXPECT_EQ(first, retried);
+  EXPECT_EQ(factory_call_count_, 2);
+}
+
+TEST_F(ManifestMergeManagerTest, ParallelBinsPreserveOrderAndCacheResults) {
+  std::vector<ManifestFile> manifests;
+  std::vector<std::string> file_paths;
+  for (int i = 0; i < 6; ++i) {
+    ICEBERG_UNWRAP_OR_FAIL(auto manifest, WriteManifest(kSpecId0, 1, 100));
+    ICEBERG_UNWRAP_OR_FAIL(auto entries, ReadEntries(manifest));
+    file_paths.push_back(entries[0].data_file->file_path);
+    manifest.added_snapshot_id = kSnapshotId - 1;
+    manifests.push_back(std::move(manifest));
+  }
+  test::ThreadExecutor executor;
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto mgr,
+      ManifestMergeManager::Make(
+          ManifestContent::kData, 200, 2, true, file_io_, [] { return kSnapshotId; }, {},
+          [&]() -> OptionalExecutor { return std::ref(executor); }));
+  std::mutex factory_mutex;
+  auto factory = MakeWriterFactory();
+  ManifestWriterFactory synchronized_factory = [&](int32_t spec_id,
+                                                   ManifestContent content) {
+    std::lock_guard lock(factory_mutex);
+    return factory(spec_id, content);
+  };
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto result, mgr->MergeManifests(manifests, *metadata_, synchronized_factory));
+  ASSERT_EQ(result.size(), 3U);
+  EXPECT_EQ(executor.submit_count(), 3);
+  EXPECT_EQ(mgr->ReplacedManifestsCount(), 6);
+  for (size_t i = 0; i < result.size(); ++i) {
+    ICEBERG_UNWRAP_OR_FAIL(auto entries, ReadEntries(result[i]));
+    ASSERT_EQ(entries.size(), 2U);
+    EXPECT_EQ(entries[0].data_file->file_path, file_paths[2 * i]);
+    EXPECT_EQ(entries[1].data_file->file_path, file_paths[2 * i + 1]);
+  }
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto retried, mgr->MergeManifests(manifests, *metadata_, synchronized_factory));
+  EXPECT_EQ(result, retried);
+  EXPECT_EQ(factory_call_count_, 3);
+  EXPECT_EQ(mgr->ReplacedManifestsCount(), 6);
+  ASSERT_THAT(mgr->CleanUncommitted({result[0].manifest_path}), IsOk());
+  EXPECT_EQ(mgr->ReplacedManifestsCount(), 2);
+}
+
+TEST_F(ManifestMergeManagerTest, StopsRemainingBinsAfterWriterFailure) {
+  std::vector<ManifestFile> manifests;
+  for (int i = 0; i < 6; ++i) {
+    ICEBERG_UNWRAP_OR_FAIL(auto manifest, WriteManifest(kSpecId0, 1, 100));
+    manifests.push_back(std::move(manifest));
+  }
+  ICEBERG_UNWRAP_OR_FAIL(auto mgr, MakeMergeManager(200, 2, true));
+  int calls = 0;
+  ManifestWriterFactory factory =
+      [&](int32_t, ManifestContent) -> Result<std::unique_ptr<ManifestWriter>> {
+    ++calls;
+    return IOError("writer failed");
+  };
+  EXPECT_THAT(mgr->MergeManifests(manifests, *metadata_, factory),
+              IsError(ErrorKind::kIOError));
+  EXPECT_EQ(calls, 1);
+  EXPECT_EQ(mgr->ReplacedManifestsCount(), 0);
+}
+
+TEST_F(ManifestMergeManagerTest, ExecutorSubmissionFailureDoesNotCreateManifest) {
+  ICEBERG_UNWRAP_OR_FAIL(auto m0, WriteManifest(kSpecId0, 1, 100));
+  ICEBERG_UNWRAP_OR_FAIL(auto m1, WriteManifest(kSpecId0, 1, 100));
+  test::ThreadExecutor executor(ServiceUnavailable("executor rejected merge"));
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto mgr,
+      ManifestMergeManager::Make(
+          ManifestContent::kData, 200, 2, true, file_io_, [] { return kSnapshotId; }, {},
+          [&]() -> OptionalExecutor { return std::ref(executor); }));
+  EXPECT_THAT(mgr->MergeManifests({m0, m1}, *metadata_, MakeWriterFactory()),
+              HasErrorMessage("executor rejected merge"));
+  EXPECT_EQ(factory_call_count_, 0);
+  EXPECT_EQ(mgr->ReplacedManifestsCount(), 0);
+}
+
+// Java createManifest closes the writer in finally even when a later reader fails.
+TEST_F(ManifestMergeManagerTest, ClosesAndFlushesWriterOnReadFailureWithoutCaching) {
+  ICEBERG_UNWRAP_OR_FAIL(auto m0, WriteManifest(kSpecId0, 1, 100));
+  ICEBERG_UNWRAP_OR_FAIL(auto entries, ReadEntries(m0));
+  auto missing = m0;
+  missing.manifest_path = "missing.avro";
+  ICEBERG_UNWRAP_OR_FAIL(auto mgr, MakeMergeManager(200, 2, true));
+  std::string output_path = "partial-merge.avro";
+  ManifestWriterFactory factory = [&](int32_t, ManifestContent content) {
+    return ManifestWriter::MakeWriter(kFormatVersion, kSnapshotId, output_path, file_io_,
+                                      spec0_, schema_, content);
+  };
+  EXPECT_FALSE(mgr->MergeManifests({m0, missing}, *metadata_, factory).has_value());
+  EXPECT_EQ(mgr->ReplacedManifestsCount(), 0);
+  auto output = m0;
+  output.manifest_path = output_path;
+  ICEBERG_UNWRAP_OR_FAIL(auto input, file_io_->NewInputFile(output_path));
+  ICEBERG_UNWRAP_OR_FAIL(output.manifest_length, input->Size());
+  ICEBERG_UNWRAP_OR_FAIL(auto partial_entries, ReadEntries(output));
+  ASSERT_EQ(partial_entries.size(), 1U);
+  EXPECT_EQ(partial_entries[0].data_file->file_path, entries[0].data_file->file_path);
+  ASSERT_THAT(mgr->CleanUncommitted({}), IsOk());
+  // The unsuccessful writer has no cached ManifestFile; its owner handles cleanup.
+  ICEBERG_UNWRAP_OR_FAIL(auto remaining_input, file_io_->NewInputFile(output_path));
+  EXPECT_TRUE(remaining_input->Size().has_value());
+}
+
+// Java TestMergeAppend validates snapshot-aware status and sequence preservation.
+TEST_F(ManifestMergeManagerTest, PreservesEntryStatusAndSequenceNumbers) {
+  for (const auto content : {ManifestContent::kData, ManifestContent::kDeletes}) {
+    SCOPED_TRACE(content == ManifestContent::kData ? "data" : "deletes");
+    std::vector<ManifestFile> manifests;
+    for (const int64_t snapshot_id : {kSnapshotId, kSnapshotId - 1}) {
+      auto path = std::format("statuses-{}.avro", manifest_counter_++);
+      ICEBERG_UNWRAP_OR_FAIL(
+          auto writer, ManifestWriter::MakeWriter(kFormatVersion, snapshot_id, path,
+                                                  file_io_, spec0_, schema_, content));
+      for (const auto status : {ManifestStatus::kAdded, ManifestStatus::kExisting,
+                                ManifestStatus::kDeleted}) {
+        auto file = std::make_shared<DataFile>();
+        file->file_path =
+            std::format("{}-{}.parquet", snapshot_id, static_cast<int>(status));
+        file->content = content == ManifestContent::kData
+                            ? DataFile::Content::kData
+                            : DataFile::Content::kPositionDeletes;
+        file->partition_spec_id = kSpecId0;
+        file->partition = PartitionValues({Literal::Long(0)});
+        file->record_count = 10;
+        file->file_size_in_bytes = 100;
+        ASSERT_THAT(writer->WriteEntry(ManifestEntry{.status = status,
+                                                     .snapshot_id = snapshot_id,
+                                                     .sequence_number = 7,
+                                                     .file_sequence_number = 8,
+                                                     .data_file = file}),
+                    IsOk());
+      }
+      ASSERT_THAT(writer->Close(), IsOk());
+      ICEBERG_UNWRAP_OR_FAIL(auto manifest, writer->ToManifestFile());
+      manifest.manifest_length = 100;
+      manifests.push_back(std::move(manifest));
+    }
+    ICEBERG_UNWRAP_OR_FAIL(auto mgr, MakeMergeManager(200, 2, true, content));
+    ICEBERG_UNWRAP_OR_FAIL(
+        auto result, mgr->MergeManifests(manifests, *metadata_, MakeWriterFactory()));
+    ASSERT_EQ(result.size(), 1U);
+    auto committed = result[0];
+    committed.sequence_number = 9;
+    ICEBERG_UNWRAP_OR_FAIL(auto entries, ReadEntries(committed));
+    ASSERT_EQ(entries.size(), 5U);
+    EXPECT_EQ(entries[0].status, ManifestStatus::kAdded);
+    EXPECT_EQ(entries[0].file_sequence_number, 9);
+    EXPECT_EQ(entries[1].status, ManifestStatus::kExisting);
+    EXPECT_EQ(entries[2].status, ManifestStatus::kDeleted);
+    EXPECT_EQ(entries[3].status, ManifestStatus::kExisting);
+    EXPECT_EQ(entries[4].status, ManifestStatus::kExisting);
+    for (size_t i = 0; i < entries.size(); ++i) {
+      EXPECT_EQ(entries[i].snapshot_id, i < 3 ? kSnapshotId : kSnapshotId - 1);
+      EXPECT_EQ(entries[i].sequence_number, 7);
+      if (i != 0) EXPECT_EQ(entries[i].file_sequence_number, 8);
+    }
+    EXPECT_EQ(mgr->ReplacedManifestsCount(), 1);
+  }
 }
 
 }  // namespace iceberg
