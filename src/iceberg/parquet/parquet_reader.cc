@@ -35,6 +35,7 @@
 #include <arrow/util/key_value_metadata.h>
 #include <parquet/arrow/reader.h>
 #include <parquet/arrow/schema.h>
+#include <parquet/bloom_filter_reader.h>
 #include <parquet/file_reader.h>
 #include <parquet/properties.h>
 
@@ -42,6 +43,7 @@
 #include "iceberg/arrow/arrow_status_internal.h"
 #include "iceberg/arrow/metadata_column_util_internal.h"
 #include "iceberg/expression/binder.h"
+#include "iceberg/parquet/parquet_bloom_row_group_filter_internal.h"
 #include "iceberg/parquet/parquet_data_util_internal.h"
 #include "iceberg/parquet/parquet_metrics_row_group_filter_internal.h"
 #include "iceberg/parquet/parquet_register.h"
@@ -284,6 +286,7 @@ class ParquetReader::Impl {
 
     read_schema_ = options.projection;
     stats_filter_.reset();
+    bloom_filter_.reset();
 
     // Prepare reader properties
     ::parquet::ReaderProperties reader_properties(pool_);
@@ -316,6 +319,8 @@ class ParquetReader::Impl {
             filter, Binder::Bind(*options.projection, filter, options.case_sensitive));
       }
       ICEBERG_ASSIGN_OR_RAISE(stats_filter_, ParquetMetricsRowGroupFilter::Make(
+                                                 filter, *reader_->manifest().descr));
+      ICEBERG_ASSIGN_OR_RAISE(bloom_filter_, ParquetBloomRowGroupFilter::Make(
                                                  filter, *reader_->manifest().descr));
     }
 
@@ -452,6 +457,13 @@ class ParquetReader::Impl {
         auto row_group = metadata->RowGroup(row_group_index);
         ICEBERG_ASSIGN_OR_RAISE(
             auto should_read, stats_filter_->ShouldRead(reader_->manifest(), *row_group));
+        if (should_read && bloom_filter_) {
+          auto bloom_reader =
+              reader_->parquet_reader()->GetBloomFilterReader().RowGroup(row_group_index);
+          ICEBERG_ASSIGN_OR_RAISE(
+              should_read, bloom_filter_->ShouldRead(reader_->manifest(), *row_group,
+                                                     bloom_reader.get()));
+        }
         if (should_read) {
           row_group_indices_[selected_count++] = row_group_index;
         }
@@ -513,6 +525,7 @@ class ParquetReader::Impl {
   std::shared_ptr<::iceberg::Schema> read_schema_;
   // Footer-statistics filter for row group pruning, if enabled.
   std::unique_ptr<ParquetMetricsRowGroupFilter> stats_filter_;
+  std::unique_ptr<ParquetBloomRowGroupFilter> bloom_filter_;
   // The projection result to apply to the read schema.
   SchemaProjection projection_;
   // The input stream to read Parquet file.
