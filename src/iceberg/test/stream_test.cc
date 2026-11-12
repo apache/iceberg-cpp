@@ -104,6 +104,43 @@ static_assert(std::is_move_assignable_v<CopyOnlyStream>);
 static_assert(std::is_move_constructible_v<MoveOnlyStream>);
 static_assert(std::is_move_assignable_v<MoveOnlyStream>);
 
+TEST(StreamTest, FromVectorPreservesOrderAndEndOfStream) {
+  auto stream = Stream<int>::FromVector({3, 1, 2});
+  ICEBERG_UNWRAP_OR_FAIL(auto first, stream->Next());
+  ASSERT_TRUE(first.has_value());
+  EXPECT_EQ(*first, 3);
+  ICEBERG_UNWRAP_OR_FAIL(auto remaining, stream->ToVector());
+  EXPECT_EQ(remaining, (std::vector<int>{1, 2}));
+  for (int i = 0; i < 2; ++i) {
+    ICEBERG_UNWRAP_OR_FAIL(auto end, stream->Next());
+    EXPECT_FALSE(end.has_value());
+  }
+  auto empty = Stream<int>::FromVector({});
+  ICEBERG_UNWRAP_OR_FAIL(auto end, empty->Next());
+  EXPECT_FALSE(end.has_value());
+}
+
+TEST(StreamTest, FromVectorSupportsBooleans) {
+  auto stream = Stream<bool>::FromVector({true, false, true});
+  ICEBERG_UNWRAP_OR_FAIL(auto values, stream->ToVector());
+  EXPECT_EQ(values, (std::vector<bool>{true, false, true}));
+}
+
+TEST(StreamTest, FromVectorSupportsMoveAndCopyOnlyValues) {
+  std::vector<std::unique_ptr<int>> values;
+  values.push_back(std::make_unique<int>(42));
+  auto stream = Stream<std::unique_ptr<int>>::FromVector(std::move(values));
+  ICEBERG_UNWRAP_OR_FAIL(auto result, stream->ToVector());
+  ASSERT_EQ(result.size(), 1);
+  EXPECT_EQ(*result.front(), 42);
+
+  std::vector<CopyOnly> copy_values(1, CopyOnly(42));
+  auto copy_stream = Stream<CopyOnly>::FromVector(std::move(copy_values));
+  ICEBERG_UNWRAP_OR_FAIL(auto copied, copy_stream->ToVector());
+  ASSERT_EQ(copied.size(), 1);
+  EXPECT_EQ(copied.front().value(), 42);
+}
+
 TEST(StreamTest, SupportsIncompleteSharedPointerValue) {
   class IncompleteType;
   std::unique_ptr<Stream<std::shared_ptr<IncompleteType>>> stream;

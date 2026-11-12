@@ -21,46 +21,37 @@
 
 #include <memory>
 #include <utility>
-#include <variant>
 
+#include "iceberg/inspect/history_table.h"
 #include "iceberg/inspect/metadata_scan.h"
+#include "iceberg/inspect/snapshots_table.h"
 
 namespace iceberg {
 
-MetadataTable::MetadataTable(std::shared_ptr<Table> source_table)
+MetadataTable::MetadataTable(std::shared_ptr<const Table> source_table)
     : source_table_(std::move(source_table)) {}
 
 MetadataTable::~MetadataTable() = default;
 
-bool MetadataTable::supports_time_travel() const noexcept { return false; }
+Result<std::unique_ptr<MetadataTable>> MetadataTable::Make(
+    std::shared_ptr<const Table> table, MetadataTableKind kind) {
+  switch (kind) {
+    case MetadataTableKind::kSnapshots:
+      return SnapshotsTable::Make(std::move(table));
+    case MetadataTableKind::kHistory:
+      return HistoryTable::Make(std::move(table));
+    default:
+      break;
+  }
+  return NotImplemented("Metadata table kind is not implemented");
+}
 
-const std::shared_ptr<Table>& MetadataTable::source_table() const {
+const std::shared_ptr<const Table>& MetadataTable::source_table() const {
   return source_table_;
 }
 
 Result<std::unique_ptr<MetadataScanBuilder>> MetadataTable::NewScan() const {
-  return std::unique_ptr<MetadataScanBuilder>(new MetadataScanBuilder(*this));
-}
-
-Result<ArrowArrayStream> MetadataTable::ScanSnapshot(
-    const SnapshotSelection& snapshot_selection, const Schema& projected_schema) const {
-  if (!std::holds_alternative<std::monostate>(snapshot_selection.snapshot) ||
-      !snapshot_selection.ref_name.empty()) {
-    return NotSupported("Metadata table does not support time travel");
-  }
-  return ScanProjection(projected_schema);
-}
-
-TimeTravelMetadataTable::TimeTravelMetadataTable(std::shared_ptr<Table> source_table)
-    : MetadataTable(std::move(source_table)) {}
-
-TimeTravelMetadataTable::~TimeTravelMetadataTable() = default;
-
-bool TimeTravelMetadataTable::supports_time_travel() const noexcept { return true; }
-
-Result<ArrowArrayStream> TimeTravelMetadataTable::ScanProjection(
-    const Schema& projected_schema) const {
-  return ScanSnapshot(SnapshotSelection{}, projected_schema);
+  return MetadataScanBuilder::Make(*this);
 }
 
 }  // namespace iceberg

@@ -39,6 +39,7 @@
 #include <gtest/gtest.h>
 
 #include "iceberg/constants.h"
+#include "iceberg/inspect/metadata_scan.h"
 #include "iceberg/inspect/metadata_table.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_field.h"
@@ -81,10 +82,16 @@ class MetadataTableTestBase : public ::testing::Test {
                                                "s3://bucket/meta.json", io_, catalog_));
   }
 
+  /// \brief Build a scan and open its projected rows.
+  static Result<ArrowArrayStream> BuildStream(MetadataScanBuilder& builder) {
+    ICEBERG_ASSIGN_OR_RAISE(auto scan, builder.Build());
+    return scan->ToArrowArrayStream();
+  }
+
   /// \brief Scan all columns of a metadata table.
   static Result<ArrowArrayStream> Scan(MetadataTable& table) {
     ICEBERG_ASSIGN_OR_RAISE(auto builder, table.NewScan());
-    return builder->Build();
+    return BuildStream(*builder);
   }
 
   /// \brief Scan the selected columns of a metadata table.
@@ -92,7 +99,7 @@ class MetadataTableTestBase : public ::testing::Test {
                                               const std::vector<std::string>& columns,
                                               bool case_sensitive = true) {
     ICEBERG_ASSIGN_OR_RAISE(auto builder, table.NewScan());
-    return builder->CaseSensitive(case_sensitive).Select(columns).Build();
+    return BuildStream(builder->CaseSensitive(case_sensitive).Select(columns));
   }
 
   /// \brief Import and consume a scan-produced ArrowArrayStream.

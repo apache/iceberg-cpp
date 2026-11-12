@@ -85,6 +85,7 @@ Result<std::vector<int32_t>> BuildSelectedFieldIndices(
                             FindFieldIndexById(input_fields, output_field.field_id()));
     const auto& input_field = input_fields[input_index];
     if (*input_field.type() != *output_field.type()) {
+      // TODO(gangwu): Support nested pruning when input and output structs differ.
       return InvalidArgument(
           "ProjectBatch only supports complete top-level fields, but field id "
           "{} changes type from {} to {}",

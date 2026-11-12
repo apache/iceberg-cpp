@@ -39,6 +39,9 @@
 namespace iceberg {
 
 /// \brief Represents an Iceberg table
+///
+/// Safe to read from several threads, but not while one of them commits through it
+/// or calls Refresh().
 class ICEBERG_EXPORT Table : public std::enable_shared_from_this<Table> {
  public:
   /// \brief Construct a table.
@@ -143,6 +146,9 @@ class ICEBERG_EXPORT Table : public std::enable_shared_from_this<Table> {
   Result<std::unique_ptr<LocationProvider>> location_provider() const;
 
   /// \brief Refresh the current table metadata
+  ///
+  /// Invalidates references returned by accessors such as properties(). Commits made
+  /// through this table call it when they retry.
   virtual Status Refresh();
 
   /// \brief Create a new table scan builder for this table
@@ -218,8 +224,14 @@ class ICEBERG_EXPORT Table : public std::enable_shared_from_this<Table> {
   /// the changes.
   virtual Result<std::shared_ptr<ReplacePartitions>> NewReplacePartitions();
 
+  /// \brief Create a new RewriteManifests to rewrite manifest layout.
+  virtual Result<std::shared_ptr<RewriteManifests>> NewRewriteManifests();
+
   /// \brief Create a new SnapshotManager to manage snapshots and snapshot references.
   virtual Result<std::shared_ptr<SnapshotManager>> NewSnapshotManager();
+
+  /// \brief Construct a metadata table inspector for this table.
+  Result<std::unique_ptr<MetadataTable>> Inspect(MetadataTableKind kind) const;
 
  protected:
   Table(TableIdentifier identifier, std::shared_ptr<TableMetadata> metadata,
@@ -303,6 +315,8 @@ class ICEBERG_EXPORT StaticTable : public Table {
   Result<std::shared_ptr<RewriteFiles>> NewRewriteFiles() override;
 
   Result<std::shared_ptr<ReplacePartitions>> NewReplacePartitions() override;
+
+  Result<std::shared_ptr<RewriteManifests>> NewRewriteManifests() override;
 
   Result<std::shared_ptr<SnapshotManager>> NewSnapshotManager() override;
 

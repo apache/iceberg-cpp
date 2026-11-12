@@ -92,8 +92,8 @@ Result<std::shared_ptr<CatalogStore>> MakeMySqlCatalogStore(
     sqlpp::mysql::connection connection(config);
     return std::make_shared<MysqlSingleCatalogStore>(options.catalog_name,
                                                      std::move(connection));
-  } catch (const std::exception& e) {
-    return IOError("Failed to connect to MySQL '{}': {}", options.uri, e.what());
+  } catch (const std::exception&) {
+    return IOError("Failed to connect to MySQL '{}'", RedactConnectionUri(options.uri));
   }
 }
 

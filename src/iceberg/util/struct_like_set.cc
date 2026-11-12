@@ -39,8 +39,6 @@ template <class... Ts>
 struct Overloaded : Ts... {
   using Ts::operator()...;
 };
-template <class... Ts>
-Overloaded(Ts...) -> Overloaded<Ts...>;
 
 /// \brief A StructLike that owns its field values in a vector of Scalars.
 class ArenaStructLike : public StructLike {
@@ -584,7 +582,7 @@ Result<bool> StructLikeSet<kValidate>::Contains(const StructLike& row) const {
   if constexpr (kValidate) {
     ICEBERG_RETURN_UNEXPECTED(ValidateRowAgainstTypes(row, field_types_));
   }
-  return set_.find(row) != set_.end();
+  return set_.contains(row);
 }
 
 template <bool kValidate>

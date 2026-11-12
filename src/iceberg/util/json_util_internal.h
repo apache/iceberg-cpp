@@ -230,21 +230,23 @@ Result<std::vector<Integer>> IntegerVectorFromJson(const nlohmann::json& json,
 /// Note that ToJson(const T&) is required for this function to work.
 template <typename T>
 nlohmann::json::array_t ToJsonList(const std::vector<T>& list) {
-  return std::accumulate(list.cbegin(), list.cend(), nlohmann::json::array(),
-                         [](nlohmann::json::array_t arr, const T& item) {
-                           arr.push_back(ToJson(item));
-                           return arr;
-                         });
+  nlohmann::json::array_t arr;
+  arr.reserve(list.size());
+  for (const auto& item : list) {
+    arr.push_back(ToJson(item));
+  }
+  return arr;
 }
 
 /// \brief Overload of the above function for a list of shared pointers.
 template <typename T>
 nlohmann::json::array_t ToJsonList(const std::vector<std::shared_ptr<T>>& list) {
-  return std::accumulate(list.cbegin(), list.cend(), nlohmann::json::array(),
-                         [](nlohmann::json::array_t arr, const std::shared_ptr<T>& item) {
-                           arr.push_back(ToJson(*item));
-                           return arr;
-                         });
+  nlohmann::json::array_t arr;
+  arr.reserve(list.size());
+  for (const auto& item : list) {
+    arr.push_back(ToJson(*item));
+  }
+  return arr;
 }
 
 /// \brief Parse a list of items from a JSON object.
@@ -302,11 +304,11 @@ Result<std::vector<std::shared_ptr<T>>> FromJsonList(
 /// Note that ToJson(const T&) is required for this function to work.
 template <typename T>
 nlohmann::json::object_t ToJsonMap(const std::unordered_map<std::string, T>& map) {
-  return std::accumulate(map.cbegin(), map.cend(), nlohmann::json::object(),
-                         [](nlohmann::json::object_t obj, const auto& item) {
-                           obj[item.first] = ToJson(item.second);
-                           return obj;
-                         });
+  nlohmann::json::object_t obj;
+  for (const auto& [key, value] : map) {
+    obj[key] = ToJson(value);
+  }
+  return obj;
 }
 
 /// \brief Overload of the above function for a map of type <std::string,
@@ -314,11 +316,11 @@ nlohmann::json::object_t ToJsonMap(const std::unordered_map<std::string, T>& map
 template <typename T>
 nlohmann::json::object_t ToJsonMap(
     const std::unordered_map<std::string, std::shared_ptr<T>>& map) {
-  return std::accumulate(map.cbegin(), map.cend(), nlohmann::json::object(),
-                         [](nlohmann::json::object_t obj, const auto& item) {
-                           obj[item.first] = ToJson(*item.second);
-                           return obj;
-                         });
+  nlohmann::json::object_t obj;
+  for (const auto& [key, value] : map) {
+    obj[key] = ToJson(*value);
+  }
+  return obj;
 }
 
 /// \brief Parse a map of type <std::string, T> from a JSON object.

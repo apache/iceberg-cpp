@@ -50,9 +50,37 @@ Result<uint32_t> ParsePort(std::string_view port_str, std::string_view uri) {
 
 }  // namespace
 
+std::string RedactConnectionUri(std::string_view uri) {
+  // Locate the authority section, mirroring ParseConnectionUri: after
+  // "scheme://" when present, up to the first '/'.
+  size_t authority_begin = 0;
+  if (const auto scheme = uri.find("://"); scheme != std::string_view::npos) {
+    authority_begin = scheme + 3;
+  }
+  std::string_view authority = uri.substr(authority_begin);
+  if (const auto slash = authority.find('/'); slash != std::string_view::npos) {
+    authority = authority.substr(0, slash);
+  }
+  const auto at = authority.rfind('@');
+  if (at == std::string_view::npos) {
+    return std::string(uri);
+  }
+  const std::string_view userinfo = authority.substr(0, at);
+  const auto colon = userinfo.find(':');
+  if (colon == std::string_view::npos) {
+    return std::string(uri);  // no password present
+  }
+  const size_t password_begin = authority_begin + colon + 1;
+  const size_t password_end = authority_begin + at;
+  std::string redacted(uri);
+  redacted.replace(password_begin, password_end - password_begin, "***");
+  return redacted;
+}
+
 Result<ConnectionUri> ParseConnectionUri(std::string_view uri) {
   ConnectionUri result;
-  const std::string original(uri);
+  // Error messages must never echo an embedded password.
+  const std::string redacted = RedactConnectionUri(uri);
 
   const bool has_scheme = uri.find("://") != std::string_view::npos;
   if (const auto scheme = uri.find("://"); scheme != std::string_view::npos) {
@@ -67,7 +95,7 @@ Result<ConnectionUri> ParseConnectionUri(std::string_view uri) {
   }
   if (has_scheme && authority.empty()) {
     return InvalidArgument("Invalid SQL connection URI '{}': authority is empty",
-                           original);
+                           redacted);
   }
 
   // Split userinfo from host at the last '@'.
@@ -87,7 +115,7 @@ Result<ConnectionUri> ParseConnectionUri(std::string_view uri) {
   if (const auto colon = host_port.rfind(':'); colon != std::string_view::npos) {
     result.host = std::string(host_port.substr(0, colon));
     ICEBERG_ASSIGN_OR_RAISE(result.port,
-                            ParsePort(host_port.substr(colon + 1), original));
+                            ParsePort(host_port.substr(colon + 1), redacted));
   } else {
     result.host = std::string(host_port);
   }

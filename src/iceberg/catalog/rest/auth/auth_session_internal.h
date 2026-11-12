@@ -102,10 +102,45 @@ class OAuth2Session final : public AuthSession,
         .scope = config_.scope,
         .oauth2_server_uri = config_.token_endpoint,
         .optional_oauth_params = config_.optional_oauth_params,
+        .headers = headers_,
     };
   }
 
   Status Close() override { return CloseImpl(); }
+
+  /// \brief Stop scheduling token refreshes without waiting.
+  ///
+  /// Unlike Close(), this does not wait for an in-flight refresh to finish, so it
+  /// is safe to call from any thread, including refresh executor workers. The
+  /// session keeps its current token and remains usable; an in-flight refresh may
+  /// still update the token but will not schedule further refreshes.
+  void StopRefreshing() {
+    {
+      std::lock_guard lock(refresh_mutex_);
+      closed_ = true;
+    }
+    if (scheduler_) {
+      scheduler_->Shutdown();
+    }
+  }
+
+  /// \brief Expiration time of the current token, or std::nullopt if unknown.
+  std::optional<std::chrono::steady_clock::time_point> ExpiresAt() const {
+    std::shared_lock lock(mutex_);
+    if (expires_at_ == std::chrono::steady_clock::time_point{}) {
+      return std::nullopt;
+    }
+    return expires_at_;
+  }
+
+  /// \brief Whether this session will keep refreshing its token.
+  ///
+  /// False if refresh is disabled, was stopped by StopRefreshing() or Close(), or
+  /// gave up after repeated failures.
+  bool IsRefreshable() const {
+    std::lock_guard lock(refresh_mutex_);
+    return scheduler_.has_value() && !closed_ && !refresh_stopped_;
+  }
 
   ~OAuth2Session() override { std::ignore = CloseImpl(); }
 
@@ -221,9 +256,16 @@ class OAuth2Session final : public AuthSession,
     });
     if (!result.has_value()) {
       ICEBERG_LOG_WARN("Failed to refresh OAuth2 token: {}", result.error().message);
+      MarkRefreshStopped();
       return std::nullopt;
     }
     return *result;
+  }
+
+  // Record that no further refresh will be scheduled after a failure.
+  void MarkRefreshStopped() {
+    std::lock_guard lock(refresh_mutex_);
+    refresh_stopped_ = true;
   }
 
   Result<std::optional<std::chrono::milliseconds>> RefreshToken() {
@@ -276,6 +318,9 @@ class OAuth2Session final : public AuthSession,
             ICEBERG_LOG_WARN(
                 "Stopping OAuth2 token refresh after repeated submission failures: {}",
                 status.error().message);
+            if (auto self = weak_self.lock()) {
+              self->MarkRefreshStopped();
+            }
             return;
           }
           if (auto self = weak_self.lock()) {
@@ -313,7 +358,9 @@ class OAuth2Session final : public AuthSession,
   AuthProperties refresh_properties_;
   std::shared_ptr<HttpClient> client_;
   bool closed_ = false;
-  std::mutex refresh_mutex_;
+  // Set when refresh gives up after repeated failures; guarded by refresh_mutex_.
+  bool refresh_stopped_ = false;
+  mutable std::mutex refresh_mutex_;
   std::condition_variable refresh_cv_;
   int active_refresh_count_ = 0;
   std::optional<::iceberg::internal::ScheduledExecutor> scheduler_;

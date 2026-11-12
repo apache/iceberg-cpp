@@ -61,6 +61,8 @@ set(ICEBERG_SOURCES
     inspect/history_table.cc
     inspect/metadata_scan.cc
     inspect/metadata_table.cc
+    inspect/metadata_scan_task.cc
+    inspect/metadata_scan_task_reader.cc
     inspect/snapshots_table.cc
     inheritable_metadata.cc
     json_serde.cc
@@ -135,6 +137,7 @@ set(ICEBERG_SOURCES
     update/overwrite_files.cc
     update/pending_update.cc
     update/rewrite_files.cc
+    update/rewrite_manifests.cc
     update/row_delta.cc
     update/set_snapshot.cc
     update/snapshot_manager.cc

@@ -22,7 +22,9 @@
 /// \file iceberg/util/stream.h
 /// \brief Pull-based stream interface for fallible, lazily produced values.
 
+#include <cstddef>
 #include <deque>
+#include <memory>
 #include <optional>
 #include <type_traits>
 #include <utility>
@@ -61,6 +63,9 @@ class Stream {
 
   /// \brief Move-assign a stream and its terminal state.
   Stream& operator=(Stream&&) noexcept = default;
+
+  /// \brief Create a stream that owns and consumes the given values in order.
+  static std::unique_ptr<Stream<T>> FromVector(std::vector<T> values);
 
   /// \brief Return the next value, or std::nullopt when the stream is exhausted.
   ///
@@ -135,5 +140,28 @@ class Stream {
   bool finished_ = false;
   std::optional<Error> error_;
 };
+
+template <typename T>
+std::unique_ptr<Stream<T>> Stream<T>::FromVector(std::vector<T> values) {
+  class VectorStream final : public Stream<T> {
+   public:
+    explicit VectorStream(std::vector<T> values) : values_(std::move(values)) {}
+
+   protected:
+    Result<std::optional<T>> NextImpl() override {
+      if (index_ == values_.size()) {
+        return std::nullopt;
+      }
+      auto&& value = values_[index_++];
+      return Result<std::optional<T>>(std::in_place, std::in_place,
+                                      std::move_if_noexcept(value));
+    }
+
+   private:
+    std::vector<T> values_;
+    size_t index_ = 0;
+  };
+  return std::make_unique<VectorStream>(std::move(values));
+}
 
 }  // namespace iceberg

@@ -19,6 +19,8 @@
 
 #pragma once
 
+#include <cstdint>
+
 /// \file iceberg/type_fwd.h
 /// Forward declarations and enum definitions.  When writing your own headers,
 /// you can include this instead of the "full" headers to help reduce compile
@@ -262,6 +264,7 @@ class OverwriteFiles;
 class PendingUpdate;
 class ReplacePartitions;
 class RewriteFiles;
+class RewriteManifests;
 class RowDelta;
 class SetSnapshot;
 class SnapshotManager;
@@ -280,9 +283,14 @@ class DeleteLoader;
 class PositionDeleteIndex;
 
 /// \brief Metadata tables.
+enum class MetadataTableKind : uint8_t;
+
 class HistoryTable;
 class MetadataScanBuilder;
 class MetadataTable;
+class MetadataScan;
+class MetadataScanTask;
+class MetadataScanTaskReader;
 class SnapshotsTable;
 
 /// \brief Table encryption
