@@ -187,7 +187,7 @@ class ArrowArrayStructLike::Impl {
   const ArrowSchema& schema_;
   std::reference_wrapper<const ArrowArray> array_;
   int64_t row_index_;
-  bool validate_batch_;
+  const bool validate_batch_;
 };
 
 Result<std::unique_ptr<ArrowArrayStructLike>> ArrowArrayStructLike::Make(
@@ -298,7 +298,7 @@ class ArrowArrayArrayLike::Impl {
 
   int64_t offset_ = 0;
   int64_t length_ = 0;
-  bool validate_batch_;
+  const bool validate_batch_;
 };
 
 Result<std::unique_ptr<ArrowArrayArrayLike>> ArrowArrayArrayLike::Make(
@@ -431,7 +431,7 @@ class ArrowArrayMapLike::Impl {
 
   int64_t offset_ = 0;
   int64_t length_ = 0;
-  bool validate_batch_;
+  const bool validate_batch_;
 };
 
 Result<std::unique_ptr<ArrowArrayMapLike>> ArrowArrayMapLike::Make(
