@@ -71,11 +71,11 @@ class DictionaryRecordingStream : public SeekableInputStream {
   Status Seek(int64_t position) override { return stream_->Seek(position); }
   Result<int64_t> Read(std::span<std::byte> out) override {
     ICEBERG_ASSIGN_OR_RAISE(auto position, stream_->Position());
-    reads_.push_back({position, static_cast<int64_t>(out.size())});
+    reads_.push_back({.offset = position, .length = static_cast<int64_t>(out.size())});
     return stream_->Read(out);
   }
   Status ReadFully(int64_t position, std::span<std::byte> out) override {
-    reads_.push_back({position, static_cast<int64_t>(out.size())});
+    reads_.push_back({.offset = position, .length = static_cast<int64_t>(out.size())});
     return stream_->ReadFully(position, out);
   }
   Status Close() override { return stream_->Close(); }
@@ -1399,14 +1399,15 @@ TEST_F(ParquetDictionaryFilterTest, MissingAndTruncatedDictionaryReturnErrors) {
   int64_t start = column->dictionary_page_offset();
   int64_t end = column->data_page_offset();
   int64_t size = input->GetSize().ValueOrDie();
-  for (const auto& range : std::vector<DictionaryReadRange>{{-1, end},
-                                                            {0, end},
-                                                            {start, start},
-                                                            {end, start},
-                                                            {start, size + 1},
-                                                            {start, start + 1},
-                                                            {start, end - 1},
-                                                            {end, end + 1}}) {
+  for (const auto& range :
+       std::vector<DictionaryReadRange>{{.offset = -1, .length = end},
+                                        {.offset = 0, .length = end},
+                                        {.offset = start, .length = start},
+                                        {.offset = end, .length = start},
+                                        {.offset = start, .length = size + 1},
+                                        {.offset = start, .length = start + 1},
+                                        {.offset = start, .length = end - 1},
+                                        {.offset = end, .length = end + 1}}) {
     SCOPED_TRACE(std::to_string(range.offset) + ":" + std::to_string(range.length));
     auto rebuilt = RebuildMetadata(false, true, range.offset, range.length);
     EXPECT_FALSE(filter
@@ -1464,8 +1465,9 @@ TEST_F(ParquetDictionaryFilterTest, OpenReadsOnlyDictionaryPage) {
                                FileFormatType::kParquet,
                                Options(Expressions::Equal("key", Literal::Int(value)))));
     auto expected = footer_reads;
-    expected.push_back({column->dictionary_page_offset(),
-                        column->data_page_offset() - column->dictionary_page_offset()});
+    expected.push_back(
+        {.offset = column->dictionary_page_offset(),
+         .length = column->data_page_offset() - column->dictionary_page_offset()});
     EXPECT_EQ(io->reads, expected);
     ASSERT_THAT(reader->Close(), IsOk());
   }
@@ -1477,15 +1479,18 @@ TEST_F(ParquetDictionaryFilterTest, UnreadableStatisticsRetainNegativePredicates
     std::string json;
     std::vector<std::shared_ptr<Expression>> predicates;
   };
-  for (const auto& test : std::vector<Case>{
-           {int32(),
-            "[[5,0],[5,1]]",
-            {Expressions::NotEqual("key", Literal::Int(5)),
-             Expressions::NotIn("key", {Literal::Int(5), Literal::Int(6)})}},
-           {float64(), "[[NaN,0],[NaN,1]]", {Expressions::NotNaN("key")}},
-           {string(),
-            R"([["abc",0],["abc",1]])",
-            {Expressions::NotStartsWith("key", "a")}}}) {
+  for (const auto& test :
+       std::vector<Case>{{.type = int32(),
+                          .json = "[[5,0],[5,1]]",
+                          .predicates = {Expressions::NotEqual("key", Literal::Int(5)),
+                                         Expressions::NotIn(
+                                             "key", {Literal::Int(5), Literal::Int(6)})}},
+                         {.type = float64(),
+                          .json = "[[NaN,0],[NaN,1]]",
+                          .predicates = {Expressions::NotNaN("key")}},
+                         {.type = string(),
+                          .json = R"([["abc",0],["abc",1]])",
+                          .predicates = {Expressions::NotStartsWith("key", "a")}}}) {
     SetKeyType(test.type);
     ASSERT_THAT(Write(true, test.json), IsOk());
     auto rebuilt = RebuildMetadata(true);
