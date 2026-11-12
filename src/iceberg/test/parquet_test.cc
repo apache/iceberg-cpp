@@ -395,6 +395,24 @@ class ParquetReaderTest : public TempFileTestBase {
                                         .data_sequence_number = data_sequence_number});
   }
 
+  void CreateParquetFileWithArrowSchema(const std::shared_ptr<::arrow::DataType>& type,
+                                        std::string_view json) {
+    auto array = ::arrow::json::ArrayFromJSONString(type, json).ValueOrDie();
+    auto batch = ::arrow::RecordBatch::FromStructArray(array).ValueOrDie();
+    auto table =
+        ::arrow::Table::FromRecordBatches(::arrow::schema(type->fields()), {batch})
+            .ValueOrDie();
+    ICEBERG_UNWRAP_OR_FAIL(auto output,
+                           arrow::OpenArrowOutputStream(file_io_, temp_parquet_file_));
+    auto writer_properties =
+        ::parquet::ArrowWriterProperties::Builder().store_schema()->build();
+    ASSERT_TRUE(::parquet::arrow::WriteTable(
+                    *table, ::arrow::default_memory_pool(), output, table->num_rows(),
+                    ::parquet::default_writer_properties(), writer_properties)
+                    .ok());
+    ASSERT_TRUE(output->Close().ok());
+  }
+
   // Writes a list parquet file through parquet::arrow::WriteTable, which serializes the
   // Arrow schema of the table into the ARROW:schema key value metadata of the file.
   void CreateListParquetFileWithArrowSchema() {
@@ -409,35 +427,8 @@ class ParquetReaderTest : public TempFileTestBase {
                  ::arrow::KeyValueMetadata::Make({kParquetFieldIdKey}, {"101"}))),
              /*nullable=*/true,
              ::arrow::KeyValueMetadata::Make({kParquetFieldIdKey}, {"2"}))});
-    auto batch =
-        ::arrow::RecordBatch::FromStructArray(
-            ::arrow::json::ArrayFromJSONString(::arrow::struct_(arrow_schema->fields()),
-                                               R"([[1, [1, 2]], [2, [3]]])")
-                .ValueOrDie())
-            .ValueOrDie();
-    auto table = ::arrow::Table::FromRecordBatches(arrow_schema, {batch}).ValueOrDie();
-
-    auto io = internal::checked_cast<arrow::ArrowFileSystemFileIO&>(*file_io_);
-    auto outfile = io.fs()->OpenOutputStream(temp_parquet_file_).ValueOrDie();
-
-    // Build ArrowWriterProperties to store the Arrow schema in ARROW:schema metadata
-    auto arrow_writer_props =
-        ::parquet::ArrowWriterProperties::Builder().store_schema()->build();
-
-    // write a single row group so that one batch holds every row
-    ASSERT_TRUE(::parquet::arrow::WriteTable(
-                    *table, ::arrow::default_memory_pool(), outfile, table->num_rows(),
-                    ::parquet::default_writer_properties(), arrow_writer_props)
-                    .ok());
-    ASSERT_TRUE(outfile->Close().ok());
-
-    // Verify ARROW:schema is stored
-    auto input_file = io.fs()->OpenInputFile(temp_parquet_file_).ValueOrDie();
-    auto metadata = ::parquet::ReadMetaData(input_file);
-    const auto& kv_metadata = metadata->key_value_metadata();
-    ASSERT_TRUE(kv_metadata != nullptr);
-    ASSERT_TRUE(kv_metadata->FindKey("ARROW:schema") >= 0)
-        << "ARROW:schema not found in file metadata";
+    ASSERT_NO_FATAL_FAILURE(CreateParquetFileWithArrowSchema(
+        ::arrow::struct_(arrow_schema->fields()), R"([[1, [1, 2]], [2, [3]]])"));
   }
 
   // Writes a mixed list/large_list parquet file with stored ARROW:schema.
@@ -460,35 +451,9 @@ class ParquetReaderTest : public TempFileTestBase {
                  ::arrow::KeyValueMetadata::Make({kParquetFieldIdKey}, {"102"}))),
              /*nullable=*/true,
              ::arrow::KeyValueMetadata::Make({kParquetFieldIdKey}, {"3"}))});
-    auto batch = ::arrow::RecordBatch::FromStructArray(
-                     ::arrow::json::ArrayFromJSONString(
-                         ::arrow::struct_(arrow_schema->fields()),
-                         R"([[1, [10, 20], [100, 200]], [2, [30], [300]]])")
-                         .ValueOrDie())
-                     .ValueOrDie();
-    auto table = ::arrow::Table::FromRecordBatches(arrow_schema, {batch}).ValueOrDie();
-
-    auto io = internal::checked_cast<arrow::ArrowFileSystemFileIO&>(*file_io_);
-    auto outfile = io.fs()->OpenOutputStream(temp_parquet_file_).ValueOrDie();
-
-    // Build ArrowWriterProperties to store the Arrow schema in ARROW:schema metadata
-    auto arrow_writer_props =
-        ::parquet::ArrowWriterProperties::Builder().store_schema()->build();
-
-    // write a single row group so that one batch holds every row
-    ASSERT_TRUE(::parquet::arrow::WriteTable(
-                    *table, ::arrow::default_memory_pool(), outfile, table->num_rows(),
-                    ::parquet::default_writer_properties(), arrow_writer_props)
-                    .ok());
-    ASSERT_TRUE(outfile->Close().ok());
-
-    // Verify ARROW:schema is stored
-    auto input_file = io.fs()->OpenInputFile(temp_parquet_file_).ValueOrDie();
-    auto metadata = ::parquet::ReadMetaData(input_file);
-    const auto& kv_metadata = metadata->key_value_metadata();
-    ASSERT_TRUE(kv_metadata != nullptr);
-    ASSERT_TRUE(kv_metadata->FindKey("ARROW:schema") >= 0)
-        << "ARROW:schema not found in file metadata";
+    ASSERT_NO_FATAL_FAILURE(CreateParquetFileWithArrowSchema(
+        ::arrow::struct_(arrow_schema->fields()),
+        R"([[1, [10, 20], [100, 200]], [2, [30], [300]]])"));
   }
 
   void VerifyNextBatch(Reader& reader, std::string_view expected_json) {
@@ -927,154 +892,170 @@ TEST_F(ParquetReaderTest, ReadListAsLargeList) {
   ASSERT_NO_FATAL_FAILURE(VerifyExhausted(*reader));
 }
 
-TEST_F(ParquetReaderTest, ReadListAsLargeListWithArrowSchema) {
-  // Reading a file that carries serialized ARROW:schema metadata must report an output
-  // schema that describes the arrays the reader actually produces. Arrow decides the list
-  // type of the arrays, so the output schema follows the schema of the reader instead of
-  // assuming that the requested large_list type was applied.
-  CreateListParquetFileWithArrowSchema();
-
+TEST_F(ParquetReaderTest, StoredListSchemaMustMatchRequestedWidth) {
+  ASSERT_NO_FATAL_FAILURE(CreateListParquetFileWithArrowSchema());
   auto schema = std::make_shared<Schema>(std::vector<SchemaField>{
       SchemaField::MakeRequired(1, "id", int32()),
-      SchemaField::MakeOptional(2, "numbers",
-                                std::make_shared<ListType>(SchemaField::MakeOptional(
-                                    /*field_id=*/101, "element", int32())))});
-
-  ReaderProperties reader_properties;
-  reader_properties.Set(ReaderProperties::kArrowUseLargeList, true);
-
-  auto reader_result = ReaderFactoryRegistry::Open(
-      FileFormatType::kParquet, {.path = temp_parquet_file_,
-                                 .io = file_io_,
-                                 .projection = schema,
-                                 .properties = std::move(reader_properties)});
-  ASSERT_THAT(reader_result, IsOk());
-  auto reader = std::move(reader_result.value());
-
-  auto schema_result = reader->Schema();
-  ASSERT_THAT(schema_result, IsOk());
-  auto arrow_c_schema = std::move(schema_result.value());
-  auto arrow_type = ::arrow::ImportType(&arrow_c_schema).ValueOrDie();
-  auto list_type_id = arrow_type->field(1)->type()->id();
-  ASSERT_TRUE(list_type_id == ::arrow::Type::LIST ||
-              list_type_id == ::arrow::Type::LARGE_LIST)
-      << "unexpected list type: " << arrow_type->field(1)->type()->ToString();
-
-  auto data = reader->Next();
-  ASSERT_THAT(data, IsOk());
-  ASSERT_TRUE(data.value().has_value());
-  auto arrow_c_array = data.value().value();
-
-  // Importing the array against the reported schema fails if the two disagree, which is
-  // what this test guards: the output schema must not claim a list type that the reader
-  // did not produce.
-  auto import_result = ::arrow::ImportArray(&arrow_c_array, arrow_type);
-  ASSERT_TRUE(import_result.ok()) << import_result.status().ToString();
-  auto arrow_array = import_result.ValueOrDie();
-  ASSERT_TRUE(arrow_array->ValidateFull().ok());
-
-  const auto& struct_array =
-      internal::checked_cast<const ::arrow::StructArray&>(*arrow_array);
-  ASSERT_EQ(struct_array.length(), 2);
-
-  const auto& id_array =
-      internal::checked_cast<const ::arrow::Int32Array&>(*struct_array.field(0));
-  ASSERT_EQ(id_array.Value(0), 1);
-  ASSERT_EQ(id_array.Value(1), 2);
-
-  // The list offsets are 32 or 64 bit wide depending on the type the reader produced.
-  ASSERT_EQ(struct_array.field(1)->type()->id(), list_type_id);
-  if (list_type_id == ::arrow::Type::LARGE_LIST) {
-    const auto& numbers_array =
-        internal::checked_cast<const ::arrow::LargeListArray&>(*struct_array.field(1));
-    ASSERT_EQ(numbers_array.value_slice(0)->length(), 2);
-    ASSERT_EQ(numbers_array.value_slice(1)->length(), 1);
-  } else {
-    const auto& numbers_array =
-        internal::checked_cast<const ::arrow::ListArray&>(*struct_array.field(1));
-    ASSERT_EQ(numbers_array.value_slice(0)->length(), 2);
-    ASSERT_EQ(numbers_array.value_slice(1)->length(), 1);
+      SchemaField::MakeOptional(
+          2, "numbers", list(SchemaField::MakeOptional(101, "element", int32())))});
+  for (bool use_large_list : {false, true}) {
+    SCOPED_TRACE(use_large_list);
+    ReaderProperties properties;
+    properties.Set(ReaderProperties::kArrowUseLargeList, use_large_list);
+    auto result =
+        ReaderFactoryRegistry::Open(FileFormatType::kParquet, {.path = temp_parquet_file_,
+                                                               .io = file_io_,
+                                                               .projection = schema,
+                                                               .properties = properties});
+    if (use_large_list) {
+      EXPECT_THAT(result, IsError(ErrorKind::kNotSupported));
+      EXPECT_THAT(result, HasErrorMessage("expected large_list"));
+      EXPECT_THAT(result, HasErrorMessage("numbers"));
+      continue;
+    }
+    ASSERT_THAT(result, IsOk());
+    auto reader = std::move(result.value());
+    ICEBERG_UNWRAP_OR_FAIL(auto c_schema, reader->Schema());
+    auto arrow_schema = ::arrow::ImportSchema(&c_schema).ValueOrDie();
+    ASSERT_EQ(arrow_schema->field(1)->type()->id(), ::arrow::Type::LIST);
+    ICEBERG_UNWRAP_OR_FAIL(auto batch, reader->Next());
+    ASSERT_TRUE(batch.has_value());
+    auto imported = ::arrow::ImportRecordBatch(&batch.value(), arrow_schema).ValueOrDie();
+    ASSERT_TRUE(imported->ValidateFull().ok());
+    EXPECT_EQ(imported->num_rows(), 2);
   }
 }
 
-TEST_F(ParquetReaderTest, ReadMixedListAndLargeListWithArrowSchema) {
-  // Reading a file with both list and large_list fields (stored via ARROW:schema
-  // metadata) must report an output schema that describes the actual types of each field,
-  // preserving the per-field list type. This tests the per-field mapping logic.
-  CreateMixedListParquetFileWithArrowSchema();
-
+TEST_F(ParquetReaderTest, StoredNestedListWidthsRespectProjection) {
   auto schema = std::make_shared<Schema>(std::vector<SchemaField>{
       SchemaField::MakeRequired(1, "id", int32()),
+      SchemaField::MakeOptional(
+          2, "mapping",
+          map(SchemaField::MakeRequired(3, "key", string()),
+              SchemaField::MakeOptional(
+                  4, "value",
+                  list(SchemaField::MakeOptional(
+                      5, "element",
+                      list(SchemaField::MakeOptional(6, "element", int32())))))))});
+  auto id_only = std::make_shared<Schema>(std::vector<SchemaField>{schema->fields()[0]});
+  const std::string json = R"([[1, [["a", [[10, null], []]]]], [2, []], [3, null]])";
+  for (bool stored_large_list : {false, true}) {
+    SCOPED_TRACE(stored_large_list);
+    ArrowSchema c_schema;
+    ASSERT_THAT(ToArrowSchema(*schema, &c_schema, stored_large_list), IsOk());
+    auto arrow_type = ::arrow::ImportType(&c_schema).ValueOrDie();
+    ASSERT_NO_FATAL_FAILURE(CreateParquetFileWithArrowSchema(arrow_type, json));
+
+    for (bool project_lists : {false, true}) {
+      SCOPED_TRACE(project_lists);
+      for (bool use_large_list : {false, true}) {
+        SCOPED_TRACE(use_large_list);
+        ReaderProperties properties;
+        properties.Set(ReaderProperties::kArrowUseLargeList, use_large_list);
+        auto result = ReaderFactoryRegistry::Open(
+            FileFormatType::kParquet, {.path = temp_parquet_file_,
+                                       .io = file_io_,
+                                       .projection = project_lists ? schema : id_only,
+                                       .properties = properties});
+        if (project_lists && use_large_list != stored_large_list) {
+          EXPECT_THAT(result, IsError(ErrorKind::kNotSupported));
+          EXPECT_THAT(result, HasErrorMessage("read.arrow.use-large-list="));
+          EXPECT_THAT(result, HasErrorMessage("mapping."));
+          EXPECT_THAT(result, HasErrorMessage(".value"));
+          continue;
+        }
+        ASSERT_THAT(result, IsOk());
+        auto reader = std::move(result.value());
+        ICEBERG_UNWRAP_OR_FAIL(auto read_schema, reader->Schema());
+        auto read_type = ::arrow::ImportType(&read_schema).ValueOrDie();
+        auto expected_type =
+            project_lists ? arrow_type : ::arrow::struct_({arrow_type->field(0)});
+        ASSERT_TRUE(read_type->Equals(expected_type));
+        ASSERT_NO_FATAL_FAILURE(
+            VerifyNextBatch(*reader, project_lists ? json : "[[1], [2], [3]]"));
+        ASSERT_NO_FATAL_FAILURE(VerifyExhausted(*reader));
+      }
+    }
+  }
+}
+
+TEST_F(ParquetReaderTest, RejectsUnsupportedStoredListLayouts) {
+  auto schema = std::make_shared<Schema>(std::vector<SchemaField>{
+      SchemaField::MakeRequired(1, "id", int32()),
+      SchemaField::MakeOptional(2, "numbers",
+                                list(SchemaField::MakeOptional(3, "element", int32())))});
+  ArrowSchema c_schema;
+  ASSERT_THAT(ToArrowSchema(*schema, &c_schema), IsOk());
+  auto arrow_type = ::arrow::ImportType(&c_schema).ValueOrDie();
+  auto numbers = arrow_type->field(1);
+  auto element = numbers->type()->field(0);
+  auto id_only = std::make_shared<Schema>(std::vector<SchemaField>{schema->fields()[0]});
+  for (auto list_type :
+       {::arrow::fixed_size_list(element, 2), ::arrow::list_view(element),
+        ::arrow::large_list_view(element)}) {
+    SCOPED_TRACE(list_type->ToString());
+    ASSERT_NO_FATAL_FAILURE(CreateParquetFileWithArrowSchema(
+        ::arrow::struct_({arrow_type->field(0), numbers->WithType(list_type)}),
+        R"([[1, [10, 11]], [2, [20, null]]])"));
+    for (bool use_large_list : {false, true}) {
+      SCOPED_TRACE(use_large_list);
+      ReaderProperties properties;
+      properties.Set(ReaderProperties::kArrowUseLargeList, use_large_list);
+      ReaderOptions options{.path = temp_parquet_file_,
+                            .io = file_io_,
+                            .projection = schema,
+                            .properties = properties};
+      auto result = ReaderFactoryRegistry::Open(FileFormatType::kParquet, options);
+      EXPECT_THAT(result, IsError(ErrorKind::kInvalidSchema));
+      EXPECT_THAT(result, HasErrorMessage(list_type->name()));
+
+      options.projection = id_only;
+      ICEBERG_UNWRAP_OR_FAIL(
+          auto reader, ReaderFactoryRegistry::Open(FileFormatType::kParquet, options));
+      ASSERT_NO_FATAL_FAILURE(VerifyNextBatch(*reader, "[[1], [2]]"));
+      ASSERT_NO_FATAL_FAILURE(VerifyExhausted(*reader));
+    }
+  }
+}
+
+TEST_F(ParquetReaderTest, RejectsMixedStoredListWidths) {
+  ASSERT_NO_FATAL_FAILURE(CreateMixedListParquetFileWithArrowSchema());
+  auto schema = std::make_shared<Schema>(std::vector<SchemaField>{
       SchemaField::MakeOptional(2, "small_lists",
-                                std::make_shared<ListType>(SchemaField::MakeOptional(
-                                    /*field_id=*/101, "element", int32()))),
-      SchemaField::MakeOptional(3, "large_lists",
-                                std::make_shared<ListType>(SchemaField::MakeOptional(
-                                    /*field_id=*/102, "element", int32())))});
-
-  // Read with default setting (use_large_list=false)
-  auto reader_result = ReaderFactoryRegistry::Open(
-      FileFormatType::kParquet,
-      {.path = temp_parquet_file_, .io = file_io_, .projection = schema});
-  ASSERT_THAT(reader_result, IsOk());
-  auto reader = std::move(reader_result.value());
-
-  // Verify the output schema has the correct per-field list types
-  auto schema_result = reader->Schema();
-  ASSERT_THAT(schema_result, IsOk());
-  auto arrow_c_schema = std::move(schema_result.value());
-  auto arrow_type = ::arrow::ImportType(&arrow_c_schema).ValueOrDie();
-
-  // small_lists should be LIST (as stored in the file)
-  ASSERT_EQ(arrow_type->field(1)->type()->id(), ::arrow::Type::LIST)
-      << "small_lists field should be LIST";
-
-  // large_lists should be LARGE_LIST (as stored in the file)
-  ASSERT_EQ(arrow_type->field(2)->type()->id(), ::arrow::Type::LARGE_LIST)
-      << "large_lists field should be LARGE_LIST";
-
-  // Verify the arrays are readable with the reported schema
-  auto data = reader->Next();
-  ASSERT_THAT(data, IsOk());
-  ASSERT_TRUE(data.value().has_value());
-  auto arrow_c_array = data.value().value();
-
-  auto import_result = ::arrow::ImportArray(&arrow_c_array, arrow_type);
-  ASSERT_TRUE(import_result.ok()) << import_result.status().ToString();
-  auto arrow_array = import_result.ValueOrDie();
-  ASSERT_TRUE(arrow_array->ValidateFull().ok());
-
-  const auto& struct_array =
-      internal::checked_cast<const ::arrow::StructArray&>(*arrow_array);
-  ASSERT_EQ(struct_array.length(), 2);
-
-  // Verify the field types in the actual arrays
-  ASSERT_EQ(struct_array.field(1)->type()->id(), ::arrow::Type::LIST);
-  ASSERT_EQ(struct_array.field(2)->type()->id(), ::arrow::Type::LARGE_LIST);
-
-  ASSERT_NO_FATAL_FAILURE(VerifyExhausted(*reader));
+                                list(SchemaField::MakeOptional(101, "element", int32()))),
+      SchemaField::MakeOptional(
+          3, "large_lists", list(SchemaField::MakeOptional(102, "element", int32())))});
+  for (bool use_large_list : {false, true}) {
+    SCOPED_TRACE(use_large_list);
+    ReaderProperties properties;
+    properties.Set(ReaderProperties::kArrowUseLargeList, use_large_list);
+    auto result =
+        ReaderFactoryRegistry::Open(FileFormatType::kParquet, {.path = temp_parquet_file_,
+                                                               .io = file_io_,
+                                                               .projection = schema,
+                                                               .properties = properties});
+    EXPECT_THAT(result, IsError(ErrorKind::kNotSupported));
+    EXPECT_THAT(result, HasErrorMessage("read.arrow.use-large-list="));
+    EXPECT_THAT(result, HasErrorMessage(use_large_list ? "small_lists" : "large_lists"));
+  }
 }
 
 TEST_F(ParquetReaderTest, ReadRenamedLargeListColumnWithArrowSchema) {
-  // The projected column has a different name than the file but the same field id. The
-  // output schema must be aligned to the reader by field id, not by name: the file stores
-  // this column as large_list (via ARROW:schema), so a name-based match would miss the
-  // rename, report the column as list while the array is large_list, and fail to import
-  // it.
-  CreateMixedListParquetFileWithArrowSchema();
-
-  // field id 3 is stored in the file as a large_list named "large_lists"; project it
-  // under a different name to force matching by field id
+  ASSERT_NO_FATAL_FAILURE(CreateMixedListParquetFileWithArrowSchema());
+  // Select only the stored large_list column. The unselected list column must not
+  // cause a mismatch, and field-id projection must still support renames.
   auto schema = std::make_shared<Schema>(std::vector<SchemaField>{
       SchemaField::MakeOptional(3, "renamed",
                                 std::make_shared<ListType>(SchemaField::MakeOptional(
                                     /*field_id=*/102, "element", int32())))});
 
-  // read with the default use_large_list=false, so only field-id matching can preserve
-  // large_list
-  auto reader_result = ReaderFactoryRegistry::Open(
-      FileFormatType::kParquet,
-      {.path = temp_parquet_file_, .io = file_io_, .projection = schema});
+  ReaderProperties properties;
+  properties.Set(ReaderProperties::kArrowUseLargeList, true);
+  auto reader_result =
+      ReaderFactoryRegistry::Open(FileFormatType::kParquet, {.path = temp_parquet_file_,
+                                                             .io = file_io_,
+                                                             .projection = schema,
+                                                             .properties = properties});
   ASSERT_THAT(reader_result, IsOk());
   auto reader = std::move(reader_result.value());
 
@@ -1083,7 +1064,7 @@ TEST_F(ParquetReaderTest, ReadRenamedLargeListColumnWithArrowSchema) {
   auto arrow_c_schema = std::move(schema_result.value());
   auto arrow_type = ::arrow::ImportType(&arrow_c_schema).ValueOrDie();
 
-  // the renamed column keeps the file's large_list type because it is matched by field id
+  // The renamed column has the configured large_list type.
   ASSERT_EQ(arrow_type->field(0)->type()->id(), ::arrow::Type::LARGE_LIST)
       << "renamed column must keep the file's large_list type, matched by field id";
 
@@ -1119,23 +1100,25 @@ TEST_F(ParquetReaderTest, EmptySplitReadsListsAsLargeListWhenRequested) {
   }
 }
 
-TEST_F(ParquetReaderTest, EmptySplitKeepsStoredListTypes) {
+TEST_F(ParquetReaderTest, EmptySplitRejectsStoredListMismatch) {
   ASSERT_NO_FATAL_FAILURE(CreateMixedListParquetFileWithArrowSchema());
   auto schema = std::make_shared<Schema>(std::vector<SchemaField>{
       SchemaField::MakeOptional(3, "renamed",
                                 list(SchemaField::MakeOptional(102, "element", int32()))),
       SchemaField::MakeOptional(
           2, "small_lists", list(SchemaField::MakeOptional(101, "element", int32())))});
-  auto element = ::arrow::field("element", ::arrow::int32());
-  auto expected_type =
-      ::arrow::struct_({::arrow::field("renamed", ::arrow::large_list(element)),
-                        ::arrow::field("small_lists", ::arrow::list(element))});
-
   for (bool use_large_list : {false, true}) {
     SCOPED_TRACE(use_large_list);
     ReaderProperties properties;
     properties.Set(ReaderProperties::kArrowUseLargeList, use_large_list);
-    ASSERT_NO_FATAL_FAILURE(VerifyEmptySplitSchema(schema, properties, expected_type));
+    auto result = ReaderFactoryRegistry::Open(FileFormatType::kParquet,
+                                              {.path = temp_parquet_file_,
+                                               .split = Split{.offset = 0, .length = 1},
+                                               .io = file_io_,
+                                               .projection = schema,
+                                               .properties = properties});
+    EXPECT_THAT(result, IsError(ErrorKind::kNotSupported));
+    EXPECT_THAT(result, HasErrorMessage("read.arrow.use-large-list="));
   }
 }
 

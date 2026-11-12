@@ -61,7 +61,7 @@ class ICEBERG_EXPORT ProjectionContext {
   /// \brief Resolve the registered ProjectBatch implementation.
   static auto ResolveProjectBatchFunction() -> ProjectBatchFunction;
 
-  /// \brief Build reusable projection state for a validated schema pair.
+  /// \brief Build reusable projection state using the configured Arrow list type.
   ///
   /// \param input_schema Schema that describes every input batch.
   /// \param output_schema Final schema and column order requested by the caller.
@@ -70,14 +70,17 @@ class ICEBERG_EXPORT ProjectionContext {
   ///   path.
   /// \param validate_batch Whether to perform full content validation. Disable only for
   /// trusted input.
+  /// \param use_large_list Whether lists use 64-bit offsets. Must match the reader.
   /// \note It validates that output_schema selects or reorders complete top-level fields
-  /// by field id. Nested pruning and type changes are rejected. The input_schema and
-  /// output_schema passed to Make must outlive the context. ProjectBatch may lazily
-  /// initialize backend cache; do not share one context across concurrent calls.
+  /// by field id. Nested pruning and type changes are rejected. Schema inputs are only
+  /// used during construction; the context owns its physical Arrow schemas.
+  /// ProjectBatch may lazily initialize backend cache; do not share one context across
+  /// concurrent calls.
   static Result<ProjectionContext> Make(const Schema& input_schema,
                                         const Schema& output_schema,
                                         ProjectBatchFunction project_batch_function,
-                                        bool validate_batch = true);
+                                        bool validate_batch = true,
+                                        bool use_large_list = false);
 
   ProjectionContext(ProjectionContext&&) noexcept;
   ProjectionContext& operator=(ProjectionContext&&) noexcept;
@@ -85,10 +88,6 @@ class ICEBERG_EXPORT ProjectionContext {
 
   ProjectionContext(const ProjectionContext&) = delete;
   ProjectionContext& operator=(const ProjectionContext&) = delete;
-
-  const Schema& input_schema() const;
-
-  const Schema& output_schema() const;
 
   const ArrowSchema& input_arrow_schema() const;
 
@@ -105,10 +104,6 @@ class ICEBERG_EXPORT ProjectionContext {
  private:
   ProjectionContext() = default;
 
-  // Raw schema pointers are borrowed from caller-owned schemas. FileScanTaskReader
-  // keeps those schema objects alive in the same stream source that owns this context.
-  const Schema* input_schema_ = nullptr;
-  const Schema* output_schema_ = nullptr;
   std::vector<int32_t> selected_field_indices_;
   ArrowSchema input_arrow_schema_{};
   ArrowSchema output_arrow_schema_{};
@@ -244,7 +239,7 @@ ICEBERG_EXPORT Result<ArrowArrayStream> MakeArrowArrayStream(
 /// \param row_indices Zero-based row positions to copy from `input_batch`.
 /// \param projection Reusable schema/projection state created by
 ///   ProjectionContext::Make.
-/// \return A newly owned ArrowArray matching `projection.output_schema()`.
+/// \return A newly owned ArrowArray matching `projection.output_arrow_schema()`.
 ICEBERG_EXPORT Result<ArrowArray> ProjectBatch(ArrowArray* input_batch,
                                                std::span<const int32_t> row_indices,
                                                ProjectionContext& projection);

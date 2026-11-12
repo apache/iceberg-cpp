@@ -55,6 +55,8 @@ class ICEBERG_EXPORT Reader {
   virtual Result<std::optional<ArrowArray>> Next() = 0;
 
   /// \brief Get the schema of the data.
+  /// Every batch must match this schema and the configured Arrow list width.
+  /// Readers must reject unsupported list widths before emitting any batches.
   virtual Result<ArrowSchema> Schema() = 0;
 
   /// \brief Get the metadata of the file.
@@ -77,7 +79,10 @@ class ICEBERG_EXPORT ReaderProperties : public ConfigBase<ReaderProperties> {
   /// \brief The batch size to read.
   inline static Entry<int64_t> kBatchSize{"read.batch-size", 4096};
   /// \brief Read list columns as Arrow large_list (64-bit offsets) instead of list.
-  /// Only the Parquet reader honors this option; other readers ignore it.
+  /// Applies to every projected list, including nested lists. Readers return an error
+  /// if they cannot produce the requested type. In particular, valid Parquet files
+  /// whose stored ARROW:schema conflicts with this setting are rejected; list widths
+  /// are not converted. Avro currently supports only ordinary lists.
   /// Default: false (use 32-bit offset list).
   inline static Entry<bool> kArrowUseLargeList{"read.arrow.use-large-list", false};
   /// \brief Validate Arrow batches before merge-on-read projection.

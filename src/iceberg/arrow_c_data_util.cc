@@ -233,9 +233,7 @@ Status AppendValue(const ArrowSchema& input_schema, const ArrowArray& input_arra
 }  // namespace
 
 ProjectionContext::ProjectionContext(ProjectionContext&& other) noexcept
-    : input_schema_(std::exchange(other.input_schema_, nullptr)),
-      output_schema_(std::exchange(other.output_schema_, nullptr)),
-      selected_field_indices_(std::move(other.selected_field_indices_)),
+    : selected_field_indices_(std::move(other.selected_field_indices_)),
       input_arrow_schema_(other.input_arrow_schema_),
       output_arrow_schema_(other.output_arrow_schema_),
       project_batch_function_(std::exchange(other.project_batch_function_, nullptr)),
@@ -257,8 +255,6 @@ ProjectionContext& ProjectionContext::operator=(ProjectionContext&& other) noexc
     output_arrow_schema_.release(&output_arrow_schema_);
   }
 
-  input_schema_ = std::exchange(other.input_schema_, nullptr);
-  output_schema_ = std::exchange(other.output_schema_, nullptr);
   selected_field_indices_ = std::move(other.selected_field_indices_);
   input_arrow_schema_ = other.input_arrow_schema_;
   other.input_arrow_schema_.release = nullptr;
@@ -281,26 +277,21 @@ ProjectionContext::~ProjectionContext() {
 
 Result<ProjectionContext> ProjectionContext::Make(
     const Schema& input_schema, const Schema& output_schema,
-    ProjectionContext::ProjectBatchFunction project_batch_function, bool validate_batch) {
+    ProjectionContext::ProjectBatchFunction project_batch_function, bool validate_batch,
+    bool use_large_list) {
   ICEBERG_ASSIGN_OR_RAISE(
       auto selected_field_indices,
       BuildSelectedFieldIndices(input_schema.fields(), output_schema.fields()));
-
   ProjectionContext context;
-  context.input_schema_ = &input_schema;
-  context.output_schema_ = &output_schema;
   context.selected_field_indices_ = std::move(selected_field_indices);
-  ICEBERG_RETURN_UNEXPECTED(ToArrowSchema(input_schema, &context.input_arrow_schema_));
-  ICEBERG_RETURN_UNEXPECTED(ToArrowSchema(output_schema, &context.output_arrow_schema_));
   context.project_batch_function_ = project_batch_function;
   context.validate_batch_ = validate_batch;
-
+  ICEBERG_RETURN_UNEXPECTED(
+      ToArrowSchema(input_schema, &context.input_arrow_schema_, use_large_list));
+  ICEBERG_RETURN_UNEXPECTED(
+      ToArrowSchema(output_schema, &context.output_arrow_schema_, use_large_list));
   return context;
 }
-
-const Schema& ProjectionContext::input_schema() const { return *input_schema_; }
-
-const Schema& ProjectionContext::output_schema() const { return *output_schema_; }
 
 const ArrowSchema& ProjectionContext::input_arrow_schema() const {
   return input_arrow_schema_;

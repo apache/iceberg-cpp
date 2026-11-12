@@ -245,6 +245,34 @@ TEST(ToArrowSchemaTest, ListType) {
                                           /*nullable=*/true, kElemFieldId));
 }
 
+TEST(ToArrowSchemaTest, ConfiguredListWidthsInNestedTypes) {
+  auto numbers = list(SchemaField::MakeOptional(4, "element", iceberg::int32()));
+  auto mapping = map(SchemaField::MakeRequired(2, "key", iceberg::string()),
+                     SchemaField::MakeOptional(3, "value", numbers));
+  auto nested = list(SchemaField::MakeOptional(
+      6, "element", list(SchemaField::MakeOptional(7, "element", iceberg::int32()))));
+  Schema schema(
+      {SchemaField::MakeOptional(8, "parent",
+                                 std::make_shared<StructType>(std::vector<SchemaField>{
+                                     SchemaField::MakeOptional(1, "mapping", mapping),
+                                     SchemaField::MakeOptional(5, "nested", nested)}))});
+
+  for (bool use_large_list : {false, true}) {
+    SCOPED_TRACE(use_large_list);
+    ArrowSchema c_schema;
+    ASSERT_THAT(ToArrowSchema(schema, &c_schema, use_large_list), IsOk());
+    auto imported = ::arrow::ImportSchema(&c_schema).ValueOrDie();
+    auto parent = imported->field(0)->type();
+    auto map_type = std::static_pointer_cast<::arrow::MapType>(parent->field(0)->type());
+    auto expected = use_large_list ? ::arrow::Type::LARGE_LIST : ::arrow::Type::LIST;
+    ASSERT_NO_FATAL_FAILURE(CheckArrowField(*map_type->item_field(), expected, "value",
+                                            /*nullable=*/true, 3));
+    ASSERT_EQ(parent->field(1)->type()->id(), expected);
+    ASSERT_EQ(parent->field(1)->type()->field(0)->type()->id(), expected);
+    ASSERT_EQ(map_type->key_type()->id(), ::arrow::Type::STRING);
+  }
+}
+
 TEST(ToArrowSchemaTest, MapType) {
   constexpr std::string_view kMapFieldName = "map_field";
   constexpr std::string_view kKeyFieldName = "key";

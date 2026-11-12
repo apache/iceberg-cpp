@@ -37,8 +37,10 @@ inline constexpr const char* kArrowUuidExtensionName = "arrow.uuid";
 ///
 /// \param[in] schema The Iceberg schema to convert.
 /// \param[out] out The Arrow schema to convert to.
+/// \param[in] use_large_list Use 64-bit offsets for every list, including nested lists.
 /// \return An error if the conversion fails.
-ICEBERG_EXPORT Status ToArrowSchema(const Schema& schema, ArrowSchema* out);
+ICEBERG_EXPORT Status ToArrowSchema(const Schema& schema, ArrowSchema* out,
+                                    bool use_large_list = false);
 
 /// \brief Convert an Arrow schema to an Iceberg schema.
 ///

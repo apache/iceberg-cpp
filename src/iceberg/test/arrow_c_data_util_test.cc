@@ -54,17 +54,20 @@ namespace iceberg::internal {
 
 namespace {
 
-std::shared_ptr<::arrow::RecordBatch> MakeBatch(const Schema& schema,
-                                                std::string_view json) {
-  ArrowSchema c_schema;
-  EXPECT_THAT(ToArrowSchema(schema, &c_schema), IsOk());
-  // ImportSchema takes ownership of c_schema and calls release.
-  auto arrow_schema = ::arrow::ImportSchema(&c_schema).ValueOrDie();
+std::shared_ptr<::arrow::RecordBatch> MakeBatch(
+    const std::shared_ptr<::arrow::Schema>& arrow_schema, std::string_view json) {
   auto struct_type = ::arrow::struct_(arrow_schema->fields());
   return ::arrow::RecordBatch::FromStructArray(
              ::arrow::json::ArrayFromJSONString(struct_type, std::string(json))
                  .ValueOrDie())
       .ValueOrDie();
+}
+
+std::shared_ptr<::arrow::RecordBatch> MakeBatch(const Schema& schema,
+                                                std::string_view json) {
+  ArrowSchema c_schema;
+  EXPECT_THAT(ToArrowSchema(schema, &c_schema), IsOk());
+  return MakeBatch(::arrow::ImportSchema(&c_schema).ValueOrDie(), json);
 }
 
 ProjectionContext::ProjectBatchFunction ArrowComputeFunction() {
@@ -77,22 +80,22 @@ ProjectionContext::ProjectBatchFunction ArrowComputeFunction() {
 std::shared_ptr<::arrow::RecordBatch> RunProjectBatch(
     const ::arrow::RecordBatch& batch, const std::vector<int32_t>& alive_indices,
     const Schema& required_schema, const Schema& projected_schema,
-    ProjectionContext::ProjectBatchFunction project_batch_function, bool validate_batch) {
-  ArrowSchema c_schema;
+    ProjectionContext::ProjectBatchFunction project_batch_function,
+    bool validate_batch = true, bool use_large_list = false) {
   ArrowArray c_array;
-  EXPECT_TRUE(::arrow::ExportRecordBatch(batch, &c_array, &c_schema).ok());
-  ArrowSchemaGuard schema_guard(&c_schema);
+  EXPECT_TRUE(::arrow::ExportRecordBatch(batch, &c_array).ok());
   ArrowArrayGuard array_guard(&c_array);
 
-  auto projection = ProjectionContext::Make(required_schema, projected_schema,
-                                            project_batch_function, validate_batch);
+  auto projection =
+      ProjectionContext::Make(required_schema, projected_schema, project_batch_function,
+                              validate_batch, use_large_list);
   EXPECT_THAT(projection, IsOk());
 
   auto result = ProjectBatch(&c_array, alive_indices, projection.value());
   EXPECT_THAT(result, IsOk());
 
   ArrowSchema out_c_schema;
-  EXPECT_THAT(ToArrowSchema(projected_schema, &out_c_schema), IsOk());
+  EXPECT_EQ(ArrowSchemaDeepCopy(&projection->output_arrow_schema(), &out_c_schema), 0);
   auto arrow_out_schema = ::arrow::ImportSchema(&out_c_schema).ValueOrDie();
 
   ArrowArray out_array = std::exchange(result.value(), ArrowArray{});
@@ -205,6 +208,61 @@ TEST(ProjectBatchTest, EmptyRowSelection) {
   ExpectProjectBatch(*batch, alive, *schema, *schema, R"([])");
 }
 
+TEST(ProjectBatchTest, EmptyProjectionPreservesRowCount) {
+  auto required = MakeFullSchema();
+  Schema projected(std::vector<SchemaField>{});
+  auto batch = MakeBatch(*required, R"([[1,"a",1.0],[2,"b",2.0],[3,"c",3.0]])");
+
+  for (auto backend :
+       {ProjectionContext::ProjectBatchFunction{nullptr}, ArrowComputeFunction()}) {
+    SCOPED_TRACE(backend == nullptr ? "nanoarrow" : "Arrow compute");
+    for (const auto& alive : {std::vector<int32_t>{}, std::vector<int32_t>{0, 2}}) {
+      auto actual = RunProjectBatch(*batch, alive, *required, projected, backend);
+      EXPECT_EQ(actual->num_columns(), 0);
+      EXPECT_EQ(actual->num_rows(), alive.size());
+      EXPECT_TRUE(actual->ValidateFull().ok()) << actual->ValidateFull().ToString();
+    }
+  }
+}
+
+TEST(ProjectBatchTest, ConfiguredListWidthsWithBothBackends) {
+  auto nested_list = std::make_shared<ListType>(SchemaField::MakeOptional(
+      3, "element",
+      std::make_shared<ListType>(SchemaField::MakeOptional(4, "element", int32()))));
+  Schema required(
+      std::vector<SchemaField>{SchemaField::MakeRequired(1, "id", int32()),
+                               SchemaField::MakeOptional(2, "numbers", nested_list),
+                               SchemaField::MakeOptional(5, "unused", string())});
+  Schema projected(std::vector<SchemaField>{required.fields()[1].WithName("renamed"),
+                                            required.fields()[0]});
+  for (bool use_large_list : {false, true}) {
+    SCOPED_TRACE(use_large_list);
+    ArrowSchema c_schema;
+    ASSERT_THAT(ToArrowSchema(required, &c_schema, use_large_list), IsOk());
+    auto input_schema = ::arrow::ImportSchema(&c_schema).ValueOrDie();
+    auto batch = MakeBatch(input_schema,
+                           R"([[1, [[10, null], []], "a"], [2, [], "b"],
+                               [3, [[30]], "c"], [4, null, "d"]])");
+    auto expected_schema = ::arrow::schema(
+        {input_schema->field(1)->WithName("renamed"), input_schema->field(0)});
+    auto expected =
+        MakeBatch(expected_schema, R"([[[[10, null], []], 1], [[], 2], [null, 4]])");
+
+    for (auto backend :
+         {ProjectionContext::ProjectBatchFunction{nullptr}, ArrowComputeFunction()}) {
+      SCOPED_TRACE(backend == nullptr ? "nanoarrow" : "Arrow compute");
+      for (bool validate_batch : {false, true}) {
+        SCOPED_TRACE(validate_batch);
+        auto actual = RunProjectBatch(*batch, {0, 1, 3}, required, projected, backend,
+                                      validate_batch, use_large_list);
+        ASSERT_TRUE(actual->schema()->Equals(*expected_schema));
+        ASSERT_TRUE(actual->ValidateFull().ok()) << actual->ValidateFull().ToString();
+        EXPECT_TRUE(actual->Equals(*expected)) << actual->ToString();
+      }
+    }
+  }
+}
+
 TEST(ProjectBatchTest, ProjectionRejectsNestedPruning) {
   auto input_schema = Schema(std::vector<SchemaField>{
       SchemaField::MakeOptional(1, "person",
@@ -220,9 +278,8 @@ TEST(ProjectBatchTest, ProjectionRejectsNestedPruning) {
                                 })),
   });
 
-  auto projection = ProjectionContext::Make(input_schema, output_schema, nullptr);
-
-  EXPECT_THAT(projection, IsError(ErrorKind::kInvalidArgument));
+  EXPECT_THAT(ProjectionContext::Make(input_schema, output_schema, nullptr),
+              IsError(ErrorKind::kInvalidArgument));
 }
 
 TEST(ProjectBatchTest, ValidateBatchControlsNonMonotonicStringOffsets) {

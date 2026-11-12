@@ -51,6 +51,20 @@ namespace iceberg::avro {
 
 namespace {
 
+bool HasList(const Type& type) {
+  if (type.is_list()) {
+    return true;
+  }
+  if (type.is_nested()) {
+    for (const auto& field : static_cast<const NestedType&>(type).fields()) {
+      if (HasList(*field.type())) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 Result<std::unique_ptr<AvroInputStream>> CreateInputStream(const ReaderOptions& options,
                                                            int64_t buffer_size) {
   ICEBERG_ASSIGN_OR_RAISE(
@@ -291,6 +305,12 @@ class AvroReader::Impl {
 
     batch_size_ = options.properties.Get(ReaderProperties::kBatchSize);
     read_schema_ = options.projection;
+    if (options.properties.Get(ReaderProperties::kArrowUseLargeList) &&
+        HasList(*read_schema_)) {
+      return NotSupported(
+          "Avro reader cannot honor read.arrow.use-large-list=true: "
+          "projected list columns require large_list, but Avro only supports list");
+    }
 
     // Open the input stream and adapt to the avro interface.
     ICEBERG_ASSIGN_OR_RAISE(

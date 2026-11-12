@@ -36,6 +36,7 @@
 #include <arrow/extension/uuid.h>
 #include <arrow/filesystem/filesystem.h>
 #include <arrow/json/from_string.h>
+#include <arrow/record_batch.h>
 #include <avro/DataFile.hh>
 #include <avro/Generic.hh>
 #include <gtest/gtest.h>
@@ -305,6 +306,91 @@ class AvroReaderTest : public TempFileTestBase {
   std::shared_ptr<FileIO> file_io_;
   std::string temp_avro_file_;
 };
+
+TEST_F(AvroReaderTest, LargeListSettingRejectsMissingNestedLists) {
+  ASSERT_NO_FATAL_FAILURE(CreateSimpleAvroFile());
+  auto id = SchemaField::MakeRequired(1, "id", int32());
+  auto nested_list = SchemaField::MakeOptional(
+      3, "missing",
+      std::make_shared<StructType>(std::vector<SchemaField>{SchemaField::MakeOptional(
+          4, "values",
+          map(SchemaField::MakeRequired(5, "key", string()),
+              SchemaField::MakeOptional(
+                  6, "value",
+                  list(SchemaField::MakeOptional(7, "element", int32())))))}));
+  for (bool skip_datum : {false, true}) {
+    SCOPED_TRACE(skip_datum);
+    for (bool project_lists : {false, true}) {
+      SCOPED_TRACE(project_lists);
+      auto fields = project_lists ? std::vector<SchemaField>{id, nested_list}
+                                  : std::vector<SchemaField>{id};
+      auto schema = std::make_shared<Schema>(std::move(fields));
+      for (bool use_large_list : {false, true}) {
+        SCOPED_TRACE(use_large_list);
+        ReaderProperties properties;
+        properties.Set(ReaderProperties::kAvroSkipDatum, skip_datum);
+        properties.Set(ReaderProperties::kArrowUseLargeList, use_large_list);
+        auto result = ReaderFactoryRegistry::Open(FileFormatType::kAvro,
+                                                  {.path = temp_avro_file_,
+                                                   .io = file_io_,
+                                                   .projection = schema,
+                                                   .properties = properties});
+        if (project_lists && use_large_list) {
+          EXPECT_THAT(result, IsError(ErrorKind::kNotSupported));
+          EXPECT_THAT(result, HasErrorMessage("read.arrow.use-large-list=true"));
+          continue;
+        }
+        ASSERT_THAT(result, IsOk());
+        auto reader = std::move(result.value());
+        ICEBERG_UNWRAP_OR_FAIL(auto c_schema, reader->Schema());
+        auto arrow_schema = ::arrow::ImportSchema(&c_schema).ValueOrDie();
+        ICEBERG_UNWRAP_OR_FAIL(auto batch, reader->Next());
+        ASSERT_TRUE(batch.has_value());
+        auto imported =
+            ::arrow::ImportRecordBatch(&batch.value(), arrow_schema).ValueOrDie();
+        ASSERT_TRUE(imported->ValidateFull().ok());
+        EXPECT_EQ(imported->num_rows(), 3);
+      }
+    }
+  }
+}
+
+TEST_F(AvroReaderTest, LargeListSettingRejectsOnlyProjectedLists) {
+  auto schema = std::make_shared<Schema>(std::vector<SchemaField>{
+      SchemaField::MakeRequired(1, "id", int32()),
+      SchemaField::MakeOptional(2, "numbers",
+                                list(SchemaField::MakeOptional(3, "element", int32())))});
+  const std::string json = R"([[1, [10, null]], [2, []], [3, null]])";
+  ASSERT_NO_FATAL_FAILURE(WriteAndVerify(schema, json));
+  auto id_only = std::make_shared<Schema>(std::vector<SchemaField>{schema->fields()[0]});
+  for (bool skip_datum : {false, true}) {
+    SCOPED_TRACE(skip_datum);
+    for (bool project_lists : {false, true}) {
+      SCOPED_TRACE(project_lists);
+      for (bool use_large_list : {false, true}) {
+        SCOPED_TRACE(use_large_list);
+        ReaderProperties properties;
+        properties.Set(ReaderProperties::kAvroSkipDatum, skip_datum);
+        properties.Set(ReaderProperties::kArrowUseLargeList, use_large_list);
+        auto result = ReaderFactoryRegistry::Open(
+            FileFormatType::kAvro, {.path = temp_avro_file_,
+                                    .io = file_io_,
+                                    .projection = project_lists ? schema : id_only,
+                                    .properties = properties});
+        if (project_lists && use_large_list) {
+          EXPECT_THAT(result, IsError(ErrorKind::kNotSupported));
+          EXPECT_THAT(result, HasErrorMessage("read.arrow.use-large-list=true"));
+          continue;
+        }
+        ASSERT_THAT(result, IsOk());
+        auto reader = std::move(result.value());
+        ASSERT_NO_FATAL_FAILURE(
+            VerifyNextBatch(*reader, project_lists ? json : "[[1], [2], [3]]"));
+        ASSERT_NO_FATAL_FAILURE(VerifyExhausted(*reader));
+      }
+    }
+  }
+}
 
 TEST_F(AvroReaderTest, ReadTwoFields) {
   CreateSimpleAvroFile();
