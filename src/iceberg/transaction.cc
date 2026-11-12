@@ -507,6 +507,7 @@ Result<std::shared_ptr<Table>> Transaction::Commit() {
     return commit_result;
   }
 
+  commit_result.value()->ReuseManifestCache(*ctx_->table);
   ctx_->table = std::move(commit_result.value());
   state_ = TransactionState::kCommitted;
   FinalizeUpdates(*ctx_->table->metadata());

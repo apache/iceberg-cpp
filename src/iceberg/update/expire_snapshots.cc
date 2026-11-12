@@ -978,8 +978,8 @@ Result<ExpireSnapshots::ApplyResult> ExpireSnapshots::Apply() {
               std::unordered_set<int32_t> schema_ids;
               ICEBERG_ASSIGN_OR_RAISE(auto snapshot, base.SnapshotById(snapshot_id));
               SnapshotReader snapshot_reader(snapshot.get());
-              ICEBERG_ASSIGN_OR_RAISE(auto manifests,
-                                      snapshot_reader.Manifests(ctx_->table->io()));
+              ICEBERG_ASSIGN_OR_RAISE(
+                  auto manifests, snapshot_reader.Manifests(ctx_->table->manifest_io()));
               for (const auto& manifest : manifests) {
                 spec_ids.insert(manifest.partition_spec_id);
               }
@@ -1038,12 +1038,12 @@ Status ExpireSnapshots::Finalize(const TableMetadata& metadata_after_expiration)
       !HasNonMainSnapshots(metadata_after_expiration);
 
   if (can_use_incremental) {
-    return IncrementalFileCleanup(ctx_->table->io(), delete_func_, delete_executor_,
-                                  plan_executor_)
+    return IncrementalFileCleanup(ctx_->table->manifest_io(), delete_func_,
+                                  delete_executor_, plan_executor_)
         .CleanFiles(metadata_before_expiration, metadata_after_expiration,
                     cleanup_level_);
   }
-  return ReachableFileCleanup(ctx_->table->io(), delete_func_, delete_executor_,
+  return ReachableFileCleanup(ctx_->table->manifest_io(), delete_func_, delete_executor_,
                               plan_executor_)
       .CleanFiles(metadata_before_expiration, metadata_after_expiration, cleanup_level_);
 }

@@ -923,12 +923,14 @@ Result<std::shared_ptr<Transaction>> RestCatalog::StageCreateTable(
   auto table_catalog = std::make_shared<TableScopedCatalog>(
       shared_from_this(), context, identifier, table_config, std::move(table_session),
       table_io);
+  auto manifest_properties = config_.configs();
+  for (const auto& [key, value] : table_config) manifest_properties[key] = value;
   ICEBERG_ASSIGN_OR_RAISE(
       auto staged_table,
       StagedTable::Make(identifier, std::move(result.metadata),
                         std::move(result.metadata_location), std::move(table_io),
                         std::move(table_catalog), RestTableName(name_, identifier),
-                        std::move(reporter)));
+                        std::move(reporter), manifest_properties));
   return Transaction::Make(std::move(staged_table), TransactionKind::kCreate);
 }
 
@@ -1074,6 +1076,8 @@ Result<std::shared_ptr<Table>> RestCatalog::MakeTable(
     std::shared_ptr<Catalog> table_catalog, std::shared_ptr<MetricsReporter> reporter,
     const std::unordered_map<std::string, std::string>& table_config,
     std::shared_ptr<auth::AuthSession> table_session, std::unique_ptr<Labels> labels) {
+  auto manifest_properties = config_.configs();
+  for (const auto& [key, value] : table_config) manifest_properties[key] = value;
   // Table config overrides client config.
   ICEBERG_ASSIGN_OR_RAISE(auto server_mode,
                           RestCatalogProperties::ScanPlanningModeFrom(table_config));
@@ -1127,7 +1131,7 @@ Result<std::shared_ptr<Table>> RestCatalog::MakeTable(
   return Table::Make(identifier, std::move(metadata), std::move(metadata_location),
                      std::move(table_io), std::move(table_catalog),
                      RestTableName(name_, identifier), std::move(reporter),
-                     std::move(labels));
+                     std::move(labels), manifest_properties);
 }
 
 }  // namespace iceberg::rest

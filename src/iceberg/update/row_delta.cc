@@ -139,7 +139,7 @@ Status RowDelta::Validate(const TableMetadata& current_metadata,
                   starting_snapshot_id_.value(), snapshot->snapshot_id);
   }
 
-  auto io = ctx_->table->io();
+  auto io = ctx_->table->manifest_io();
   if (!referenced_data_files_.empty()) {
     ICEBERG_RETURN_UNEXPECTED(MergingSnapshotUpdate::ValidateDataFilesExist(
         current_metadata, starting_snapshot_id_, referenced_data_files_,

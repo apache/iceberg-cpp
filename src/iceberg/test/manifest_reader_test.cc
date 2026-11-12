@@ -24,16 +24,22 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 #include <arrow/array.h>
 #include <arrow/c/bridge.h>
+#include <arrow/filesystem/mockfs.h>
 #include <arrow/json/from_string.h>
 #include <gtest/gtest.h>
 
+#include "iceberg/arrow/arrow_io_internal.h"
 #include "iceberg/arrow/arrow_io_util.h"
 #include "iceberg/avro/avro_register.h"
+#include "iceberg/content_cache_internal.h"
+#include "iceberg/data_table_scan.h"
 #include "iceberg/expression/expressions.h"
+#include "iceberg/file_io.h"
 #include "iceberg/file_writer.h"
 #include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/manifest/manifest_list.h"
@@ -41,11 +47,35 @@
 #include "iceberg/partition_spec.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_internal.h"
+#include "iceberg/table.h"
+#include "iceberg/table_metadata.h"
+#include "iceberg/table_scan.h"
 #include "iceberg/test/matchers.h"
+#include "iceberg/test/mock_catalog.h"
 #include "iceberg/transform.h"
 #include "iceberg/type.h"
 
 namespace iceberg {
+
+namespace {
+
+// Counts how often each path is opened for reading. FileSystem::OpenInputFile(FileInfo)
+// forwards to the path overload, so every open is counted exactly once.
+class CountingMockFileSystem : public ::arrow::fs::internal::MockFileSystem {
+ public:
+  using ::arrow::fs::internal::MockFileSystem::MockFileSystem;
+  using ::arrow::fs::internal::MockFileSystem::OpenInputFile;
+
+  ::arrow::Result<std::shared_ptr<::arrow::io::RandomAccessFile>> OpenInputFile(
+      const std::string& path) override {
+    ++open_counts[path];
+    return ::arrow::fs::internal::MockFileSystem::OpenInputFile(path);
+  }
+
+  std::unordered_map<std::string, int> open_counts;
+};
+
+}  // namespace
 
 class TestManifestReader : public testing::TestWithParam<int8_t> {
  protected:
@@ -763,6 +793,130 @@ TEST(ManifestReaderStaticTest, WithStatsColumnsHandlesEmptyAndSelectAll) {
                   "upper_bounds", "column_sizes", "record_count"));
   EXPECT_THAT(ManifestReader::WithStatsColumns({std::string(Schema::kAllColumns)}),
               testing::ElementsAre(Schema::kAllColumns));
+}
+
+TEST_P(TestManifestReader, ReadsManifestListAndManifestFromCachedContent) {
+  const auto version = GetParam();
+  auto fs = std::make_shared<CountingMockFileSystem>(std::chrono::system_clock::now());
+  file_io_ = std::make_shared<arrow::ArrowFileSystemFileIO>(fs);
+  auto table_metadata = std::make_shared<TableMetadata>();
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto table,
+      Table::Make({.ns = {}, .name = "test"}, table_metadata, "metadata.json", file_io_,
+                  std::make_shared<MockCatalog>(), "", nullptr, nullptr,
+                  {{std::string(internal::ContentCacheOptions::kEnabled), "true"}}));
+
+  std::vector<ManifestEntry> entries;
+  entries.push_back(MakeEntry(
+      ManifestStatus::kAdded, /*snapshot_id=*/1000L,
+      MakeDataFile("/path/to/data-a.parquet", PartitionValues({Literal::Int(0)}))));
+  entries.push_back(MakeEntry(
+      ManifestStatus::kAdded, /*snapshot_id=*/1000L,
+      MakeDataFile("/path/to/data-b.parquet", PartitionValues({Literal::Int(1)}))));
+  auto written_manifest = WriteManifest(version, /*snapshot_id=*/1000L, entries);
+
+  const std::string manifest_list_path = std::format("snap-{}.avro", MakeManifestPath());
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto list_writer,
+      ManifestListWriter::MakeWriter(version, /*snapshot_id=*/1000L,
+                                     /*parent_snapshot_id=*/std::nullopt,
+                                     manifest_list_path, file_io_,
+                                     /*sequence_number=*/1, /*first_row_id=*/0L));
+  ASSERT_THAT(list_writer->Add(written_manifest), IsOk());
+  ASSERT_THAT(list_writer->Close(), IsOk());
+
+  auto read_manifest_list = [&]() -> std::vector<ManifestFile> {
+    auto reader = ManifestListReader::Make(manifest_list_path, table->manifest_io());
+    EXPECT_THAT(reader, IsOk());
+    if (!reader.has_value()) {
+      return {};
+    }
+    auto files = reader.value()->Files();
+    EXPECT_THAT(files, IsOk());
+    return files.has_value() ? std::move(files).value() : std::vector<ManifestFile>{};
+  };
+  auto read_data_file_paths = [&](const ManifestFile& manifest) {
+    std::vector<std::string> paths;
+    auto reader = ManifestReader::Make(manifest, table->manifest_io(), schema_, spec_);
+    EXPECT_THAT(reader, IsOk());
+    if (!reader.has_value()) {
+      return paths;
+    }
+    auto read_entries = reader.value()->Entries();
+    EXPECT_THAT(read_entries, IsOk());
+    if (read_entries.has_value()) {
+      for (const auto& entry : read_entries.value()) {
+        EXPECT_EQ(entry.status, ManifestStatus::kAdded);
+        EXPECT_EQ(entry.snapshot_id, 1000L);
+        paths.push_back(entry.data_file->file_path);
+      }
+    }
+    return paths;
+  };
+  const std::vector<std::string> expected_paths = {"/path/to/data-a.parquet",
+                                                   "/path/to/data-b.parquet"};
+
+  // First read: both files are loaded from the file system into the cache.
+  auto first_files = read_manifest_list();
+  ASSERT_EQ(first_files.size(), 1);
+  EXPECT_EQ(first_files[0].manifest_path, written_manifest.manifest_path);
+  EXPECT_EQ(first_files[0].added_snapshot_id, 1000L);
+  EXPECT_EQ(read_data_file_paths(first_files[0]), expected_paths);
+  const int list_opens = fs->open_counts[manifest_list_path];
+  const int manifest_opens = fs->open_counts[written_manifest.manifest_path];
+  EXPECT_GT(list_opens, 0);
+  EXPECT_GT(manifest_opens, 0);
+
+  // Second read: the same rows are decoded from cached content without opening either
+  // file again.
+  auto second_files = read_manifest_list();
+  ASSERT_EQ(second_files.size(), 1);
+  EXPECT_EQ(second_files[0], first_files[0]);
+  EXPECT_EQ(read_data_file_paths(second_files[0]), expected_paths);
+  EXPECT_EQ(fs->open_counts[manifest_list_path], list_opens);
+  EXPECT_EQ(fs->open_counts[written_manifest.manifest_path], manifest_opens);
+
+  // The public scan builder must carry this same table-owned cache into both
+  // manifest-list and manifest readers. Each builder captures its own read context.
+  table_metadata->format_version = version;
+  table_metadata->schemas = {schema_};
+  table_metadata->current_schema_id = schema_->schema_id();
+  table_metadata->partition_specs = {spec_};
+  table_metadata->default_spec_id = spec_->spec_id();
+  table_metadata->current_snapshot_id = 1000;
+  table_metadata->snapshots = {std::make_shared<Snapshot>(Snapshot{
+      .snapshot_id = 1000,
+      .sequence_number = 1,
+      .manifest_list = manifest_list_path,
+      .summary = {{"operation", "append"}},
+      .schema_id = schema_->schema_id(),
+  })};
+  for (int iteration = 0; iteration < 2; ++iteration) {
+    ICEBERG_UNWRAP_OR_FAIL(auto builder, table->NewScan());
+    ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
+    EXPECT_EQ(scan->io(), file_io_);
+    ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
+    ASSERT_EQ(tasks.size(), 2);
+    EXPECT_EQ(tasks[0]->data_file()->file_path, expected_paths[0]);
+    EXPECT_EQ(tasks[1]->data_file()->file_path, expected_paths[1]);
+  }
+  EXPECT_EQ(fs->open_counts[manifest_list_path], list_opens);
+  EXPECT_EQ(fs->open_counts[written_manifest.manifest_path], manifest_opens);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto captured_builder, table->NewScan());
+  table.reset();
+  ICEBERG_UNWRAP_OR_FAIL(auto captured_scan, captured_builder->Build());
+  ICEBERG_UNWRAP_OR_FAIL(auto captured_tasks, captured_scan->PlanFiles());
+  EXPECT_EQ(captured_tasks.size(), 2);
+  EXPECT_EQ(fs->open_counts[manifest_list_path], list_opens);
+  EXPECT_EQ(fs->open_counts[written_manifest.manifest_path], manifest_opens);
+
+  // Control: without caching, reading the manifest opens it again.
+  ICEBERG_UNWRAP_OR_FAIL(
+      table, Table::Make({.ns = {}, .name = "test"}, table_metadata, "metadata.json",
+                         file_io_, std::make_shared<MockCatalog>()));
+  EXPECT_EQ(read_data_file_paths(second_files[0]), expected_paths);
+  EXPECT_GT(fs->open_counts[written_manifest.manifest_path], manifest_opens);
 }
 
 INSTANTIATE_TEST_SUITE_P(ManifestReaderVersions, TestManifestReader,

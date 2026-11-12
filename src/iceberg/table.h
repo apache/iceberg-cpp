@@ -38,6 +38,10 @@
 
 namespace iceberg {
 
+namespace internal {
+class ContentCache;
+}
+
 /// \brief Represents an Iceberg table
 ///
 /// Safe to read from several threads, but not while one of them commits through it
@@ -55,12 +59,15 @@ class ICEBERG_EXPORT Table : public std::enable_shared_from_this<Table> {
   /// \param[in] reporter Optional metrics reporter for this table. Defaults to nullptr
   ///            (noop).
   /// \param[in] labels Labels for this table, or nullptr when it has none.
+  /// \param[in] io_properties Catalog I/O defaults for the table manifest cache.
+  /// Table properties override these defaults; the budget is per loaded table.
   static Result<std::shared_ptr<Table>> Make(
       TableIdentifier identifier, std::shared_ptr<TableMetadata> metadata,
       std::string metadata_location, std::shared_ptr<FileIO> io,
       std::shared_ptr<Catalog> catalog, std::string full_name = "",
       std::shared_ptr<MetricsReporter> reporter = nullptr,
-      std::unique_ptr<Labels> labels = nullptr);
+      std::unique_ptr<Labels> labels = nullptr,
+      const std::unordered_map<std::string, std::string>& io_properties = {});
 
   virtual ~Table();
 
@@ -126,6 +133,16 @@ class ICEBERG_EXPORT Table : public std::enable_shared_from_this<Table> {
 
   /// \brief Returns a FileIO to read and write table data and metadata files
   const std::shared_ptr<FileIO>& io() const;
+
+  /// \brief I/O context for immutable manifest lists and manifests only.
+  /// Each loaded table has its own optional content cache, shared by its readers.
+  const std::shared_ptr<FileIO>& manifest_io() const { return manifest_io_; }
+
+  /// \brief Return whether this table caches manifest content.
+  bool ManifestCacheEnabled() const { return content_cache_ != nullptr; }
+
+  /// \brief Release manifest content retained by this table.
+  void ClearManifestCache();
 
   /// \brief Returns the current metadata for this table
   const std::shared_ptr<TableMetadata>& metadata() const;
@@ -234,6 +251,9 @@ class ICEBERG_EXPORT Table : public std::enable_shared_from_this<Table> {
   Result<std::unique_ptr<MetadataTable>> Inspect(MetadataTableKind kind) const;
 
  protected:
+  Status InitializeManifestCache(
+      const std::unordered_map<std::string, std::string>& io_properties = {});
+
   Table(TableIdentifier identifier, std::shared_ptr<TableMetadata> metadata,
         std::string metadata_location, std::shared_ptr<FileIO> io,
         std::shared_ptr<Catalog> catalog, std::string full_name,
@@ -245,10 +265,16 @@ class ICEBERG_EXPORT Table : public std::enable_shared_from_this<Table> {
   std::shared_ptr<TableMetadata> metadata_;
   std::string metadata_location_;
   std::shared_ptr<FileIO> io_;
+  std::shared_ptr<internal::ContentCache> content_cache_;
+  std::shared_ptr<FileIO> manifest_io_;
   std::shared_ptr<Catalog> catalog_;
   std::shared_ptr<MetricsReporter> reporter_;
   std::unique_ptr<class TableMetadataCache> metadata_cache_;
   const std::unique_ptr<const Labels> labels_;
+
+ private:
+  friend class Transaction;
+  void ReuseManifestCache(const Table& source);
 };
 
 /// \brief A table created by stage-create and not yet committed.
@@ -258,7 +284,8 @@ class ICEBERG_EXPORT StagedTable final : public Table {
       TableIdentifier identifier, std::shared_ptr<TableMetadata> metadata,
       std::string metadata_location, std::shared_ptr<FileIO> io,
       std::shared_ptr<Catalog> catalog, std::string full_name = "",
-      std::shared_ptr<MetricsReporter> reporter = nullptr);
+      std::shared_ptr<MetricsReporter> reporter = nullptr,
+      const std::unordered_map<std::string, std::string>& io_properties = {});
 
   ~StagedTable() override;
 

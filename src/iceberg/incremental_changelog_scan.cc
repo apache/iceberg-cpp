@@ -67,7 +67,8 @@ IncrementalChangelogScan::PlanFiles(std::optional<int64_t> from_snapshot_id_excl
     if (!operation.has_value() || operation.value() != DataOperation::kReplace) {
       auto snapshot_reader = std::make_unique<SnapshotReader>(snapshot.get());
       ICEBERG_ASSIGN_OR_RAISE(auto delete_manifests,
-                              snapshot_reader->DeleteManifests(io_));
+                              snapshot_reader->DeleteManifests(
+                                  context_.manifest_io ? context_.manifest_io : io_));
       if (!delete_manifests.empty()) {
         return NotSupported(
             "Delete files are currently not supported in changelog scans");
@@ -93,7 +94,9 @@ IncrementalChangelogScan::PlanFiles(std::optional<int64_t> from_snapshot_id_excl
   std::vector<ManifestFile> data_manifests;
   std::unordered_set<std::string> seen_manifest_paths;
   for (const auto& snapshot : changelog_snapshots) {
-    ICEBERG_ASSIGN_OR_RAISE(auto manifests, snapshot.second->DataManifests(io_));
+    ICEBERG_ASSIGN_OR_RAISE(auto manifests,
+                            snapshot.second->DataManifests(
+                                context_.manifest_io ? context_.manifest_io : io_));
     for (auto& manifest : manifests) {
       if (manifest.added_snapshot_id.has_value() &&
           snapshot_ids.contains(manifest.added_snapshot_id.value()) &&
@@ -111,7 +114,8 @@ IncrementalChangelogScan::PlanFiles(std::optional<int64_t> from_snapshot_id_excl
 
   ICEBERG_ASSIGN_OR_RAISE(
       auto manifest_group,
-      ManifestGroup::Make(io_, schema_, specs_by_id, std::move(data_manifests),
+      ManifestGroup::Make(context_.manifest_io ? context_.manifest_io : io_, schema_,
+                          specs_by_id, std::move(data_manifests),
                           /*delete_manifests=*/{}));
 
   manifest_group->CaseSensitive(context_.case_sensitive)

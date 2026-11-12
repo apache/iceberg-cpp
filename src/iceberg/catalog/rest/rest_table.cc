@@ -48,13 +48,20 @@ Result<std::shared_ptr<RestTable>> RestTable::Make(
     std::shared_ptr<Catalog> catalog, std::string full_name,
     std::shared_ptr<MetricsReporter> reporter, RestScanContext rest_context,
     std::unique_ptr<Labels> labels) {
+  ICEBERG_PRECHECK(io != nullptr, "FileIO cannot be null");
   if (metadata == nullptr) {
     return InvalidArgument("Metadata cannot be null");
   }
-  return std::shared_ptr<RestTable>(new RestTable(
+  auto table = std::shared_ptr<RestTable>(new RestTable(
       std::move(identifier), std::move(metadata), std::move(metadata_location),
       std::move(io), std::move(catalog), std::move(full_name), std::move(reporter),
       std::move(rest_context), std::move(labels)));
+  auto properties = table->rest_context_->catalog_config;
+  for (const auto& [key, value] : table->rest_context_->table_config) {
+    properties[key] = value;
+  }
+  ICEBERG_RETURN_UNEXPECTED(table->InitializeManifestCache(properties));
+  return table;
 }
 
 Result<std::unique_ptr<DataTableScanBuilder>> RestTable::NewScan() const {

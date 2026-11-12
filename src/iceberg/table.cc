@@ -22,7 +22,9 @@
 #include <memory>
 
 #include "iceberg/catalog.h"
+#include "iceberg/content_cache_internal.h"
 #include "iceberg/data_table_scan.h"
+#include "iceberg/file_io.h"
 #include "iceberg/incremental_append_scan.h"
 #include "iceberg/incremental_changelog_scan.h"
 #include "iceberg/inspect/metadata_table.h"
@@ -63,7 +65,8 @@ Result<std::shared_ptr<Table>> Table::Make(
     TableIdentifier identifier, std::shared_ptr<TableMetadata> metadata,
     std::string metadata_location, std::shared_ptr<FileIO> io,
     std::shared_ptr<Catalog> catalog, std::string full_name,
-    std::shared_ptr<MetricsReporter> reporter, std::unique_ptr<Labels> labels) {
+    std::shared_ptr<MetricsReporter> reporter, std::unique_ptr<Labels> labels,
+    const std::unordered_map<std::string, std::string>& io_properties) {
   if (metadata == nullptr) [[unlikely]] {
     return InvalidArgument("Metadata cannot be null");
   }
@@ -76,10 +79,12 @@ Result<std::shared_ptr<Table>> Table::Make(
   if (catalog == nullptr) [[unlikely]] {
     return InvalidArgument("Catalog cannot be null");
   }
-  return std::shared_ptr<Table>(new Table(std::move(identifier), std::move(metadata),
-                                          std::move(metadata_location), std::move(io),
-                                          std::move(catalog), std::move(full_name),
-                                          std::move(reporter), std::move(labels)));
+  auto table = std::shared_ptr<Table>(
+      new Table(std::move(identifier), std::move(metadata), std::move(metadata_location),
+                std::move(io), std::move(catalog), std::move(full_name),
+                std::move(reporter), std::move(labels)));
+  ICEBERG_RETURN_UNEXPECTED(table->InitializeManifestCache(io_properties));
+  return table;
 }
 
 Table::~Table() = default;
@@ -93,16 +98,55 @@ Table::Table(TableIdentifier identifier, std::shared_ptr<TableMetadata> metadata
       metadata_(std::move(metadata)),
       metadata_location_(std::move(metadata_location)),
       io_(std::move(io)),
+      manifest_io_(io_),
       catalog_(std::move(catalog)),
       reporter_(std::move(reporter)),
       metadata_cache_(std::make_unique<TableMetadataCache>(metadata_.get())),
       labels_(labels && !labels->empty() ? std::move(labels) : nullptr) {}
+
+Status Table::InitializeManifestCache(
+    const std::unordered_map<std::string, std::string>& io_properties) {
+  auto properties = io_->properties();
+  for (const auto& [key, value] : io_properties) properties[key] = value;
+  for (const auto& [key, value] : metadata_->properties.configs()) {
+    properties[key] = value;
+  }
+  ICEBERG_ASSIGN_OR_RAISE(auto options,
+                          internal::ContentCacheOptions::FromProperties(properties));
+  if (options.enabled) {
+    content_cache_ = std::make_shared<internal::ContentCache>(options);
+    manifest_io_ = content_cache_->Wrap(io_);
+  }
+  return {};
+}
+
+void Table::ClearManifestCache() {
+  if (content_cache_) content_cache_->Clear();
+}
+
+void Table::ReuseManifestCache(const Table& source) {
+  if (!content_cache_ || !source.content_cache_ || uuid() != source.uuid() ||
+      content_cache_->options() != source.content_cache_->options()) {
+    return;
+  }
+  // A replaced storage context with no comparable properties may represent a different
+  // endpoint or filesystem. Only preserve bytes when its identity is known to match.
+  if (io_ != source.io_ &&
+      (io_->properties().empty() || io_->properties() != source.io_->properties())) {
+    return;
+  }
+  content_cache_ = source.content_cache_;
+  manifest_io_ = content_cache_->Wrap(io_);
+}
 
 const std::string& Table::uuid() const { return metadata_->table_uuid; }
 
 Status Table::Refresh() {
   ICEBERG_ASSIGN_OR_RAISE(auto refreshed_table, catalog_->LoadTable(identifier_));
   if (metadata_location_ != refreshed_table->metadata_file_location()) {
+    refreshed_table->ReuseManifestCache(*this);
+    content_cache_ = std::move(refreshed_table->content_cache_);
+    manifest_io_ = std::move(refreshed_table->manifest_io_);
     metadata_ = std::move(refreshed_table->metadata_);
     metadata_location_ = std::string(refreshed_table->metadata_file_location());
     io_ = std::move(refreshed_table->io_);
@@ -310,7 +354,8 @@ Result<std::shared_ptr<StagedTable>> StagedTable::Make(
     TableIdentifier identifier, std::shared_ptr<TableMetadata> metadata,
     std::string metadata_location, std::shared_ptr<FileIO> io,
     std::shared_ptr<Catalog> catalog, std::string full_name,
-    std::shared_ptr<MetricsReporter> reporter) {
+    std::shared_ptr<MetricsReporter> reporter,
+    const std::unordered_map<std::string, std::string>& io_properties) {
   if (metadata == nullptr) [[unlikely]] {
     return InvalidArgument("Metadata cannot be null");
   }
@@ -320,10 +365,12 @@ Result<std::shared_ptr<StagedTable>> StagedTable::Make(
   if (catalog == nullptr) [[unlikely]] {
     return InvalidArgument("Catalog cannot be null");
   }
-  return std::shared_ptr<StagedTable>(
+  auto table = std::shared_ptr<StagedTable>(
       new StagedTable(std::move(identifier), std::move(metadata),
                       std::move(metadata_location), std::move(io), std::move(catalog),
                       std::move(full_name), std::move(reporter), /*labels=*/nullptr));
+  ICEBERG_RETURN_UNEXPECTED(table->InitializeManifestCache(io_properties));
+  return table;
 }
 
 StagedTable::~StagedTable() = default;
@@ -341,10 +388,12 @@ Result<std::shared_ptr<StaticTable>> StaticTable::Make(
   if (io == nullptr) [[unlikely]] {
     return InvalidArgument("FileIO cannot be null");
   }
-  return std::shared_ptr<StaticTable>(
+  auto table = std::shared_ptr<StaticTable>(
       new StaticTable(std::move(identifier), std::move(metadata),
                       std::move(metadata_location), std::move(io), /*catalog=*/nullptr,
                       std::move(full_name), /*reporter=*/nullptr, /*labels=*/nullptr));
+  ICEBERG_RETURN_UNEXPECTED(table->InitializeManifestCache());
+  return table;
 }
 
 StaticTable::~StaticTable() = default;
