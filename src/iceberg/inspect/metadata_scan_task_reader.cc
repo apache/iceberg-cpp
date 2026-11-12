@@ -25,6 +25,7 @@
 #include "iceberg/inspect/history_table.h"
 #include "iceberg/inspect/metadata_scan_task.h"
 #include "iceberg/inspect/metadata_table.h"
+#include "iceberg/inspect/refs_table.h"
 #include "iceberg/inspect/snapshots_table.h"
 #include "iceberg/util/checked_cast.h"
 #include "iceberg/util/macros.h"
@@ -53,6 +54,9 @@ Result<ArrowArrayStream> MetadataScanTaskReader::Open(
           return SnapshotsTable::ReadRows(static_task.metadata(),
                                           static_task.projected_schema(),
                                           options_.batch_size);
+        case MetadataTableKind::kRefs:
+          return RefsTable::ReadRows(static_task.metadata(),
+                                     static_task.projected_schema(), options_.batch_size);
         case MetadataTableKind::kHistory:
           return HistoryTable::ReadRows(static_task.metadata(),
                                         static_task.projected_schema(),

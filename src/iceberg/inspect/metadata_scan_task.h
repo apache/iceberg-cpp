@@ -35,7 +35,7 @@ class ICEBERG_EXPORT MetadataScanTask {
  public:
   /// \brief Task category, determines how the reader opens the task.
   enum class TaskKind {
-    /// StaticMetadataTask reads in-memory table metadata (snapshots, history).
+    /// StaticMetadataTask reads in-memory table metadata (snapshots, history, refs).
     kStatic,
   };
 
@@ -48,7 +48,7 @@ class ICEBERG_EXPORT MetadataScanTask {
   virtual MetadataTableKind table_kind() const = 0;
 };
 
-/// \brief Task for static metadata tables (snapshots, history).
+/// \brief Task for static metadata tables (snapshots, history, refs).
 ///
 /// Holds the metadata captured for a table scan; readers produce Arrow batches
 /// on demand. The metadata and its nested objects must not be modified while
@@ -57,7 +57,7 @@ class ICEBERG_EXPORT StaticMetadataTask : public MetadataScanTask {
  public:
   /// \brief Create a static metadata task.
   ///
-  /// \param table_kind The metadata table kind (kSnapshots or kHistory)
+  /// \param table_kind The metadata table kind (kSnapshots, kHistory, or kRefs)
   /// \param metadata The table metadata to scan
   /// \param projected_schema The planned output schema
   /// \return A task, or an error for null metadata or an unsupported table kind.

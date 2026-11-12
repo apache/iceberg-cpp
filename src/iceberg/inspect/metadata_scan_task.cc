@@ -34,7 +34,8 @@ Result<std::shared_ptr<StaticMetadataTask>> StaticMetadataTask::Make(
   ICEBERG_PRECHECK(metadata != nullptr, "Table metadata cannot be null");
   ICEBERG_PRECHECK(projected_schema != nullptr, "Projected schema cannot be null");
   if (table_kind != MetadataTableKind::kSnapshots &&
-      table_kind != MetadataTableKind::kHistory) {
+      table_kind != MetadataTableKind::kHistory &&
+      table_kind != MetadataTableKind::kRefs) {
     return NotImplemented("Static metadata table kind is not implemented");
   }
   return std::shared_ptr<StaticMetadataTask>(new StaticMetadataTask(

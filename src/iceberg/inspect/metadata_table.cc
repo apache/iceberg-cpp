@@ -24,6 +24,7 @@
 
 #include "iceberg/inspect/history_table.h"
 #include "iceberg/inspect/metadata_scan.h"
+#include "iceberg/inspect/refs_table.h"
 #include "iceberg/inspect/snapshots_table.h"
 
 namespace iceberg {
@@ -38,6 +39,8 @@ Result<std::unique_ptr<MetadataTable>> MetadataTable::Make(
   switch (kind) {
     case MetadataTableKind::kSnapshots:
       return SnapshotsTable::Make(std::move(table));
+    case MetadataTableKind::kRefs:
+      return RefsTable::Make(std::move(table));
     case MetadataTableKind::kHistory:
       return HistoryTable::Make(std::move(table));
     default:
