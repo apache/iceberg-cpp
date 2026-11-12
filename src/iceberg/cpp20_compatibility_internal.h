@@ -49,6 +49,7 @@
 #include "iceberg/deletes/position_delete_range_consumer.h"
 #include "iceberg/deletes/roaring_position_bitmap.h"
 #include "iceberg/encryption/encrypted_key.h"
+#include "iceberg/encryption/encryption_manager.h"
 #include "iceberg/encryption/key_management_client.h"
 #include "iceberg/encryption/standard_key_metadata.h"
 #include "iceberg/exception.h"
@@ -216,6 +217,7 @@
 #  include "iceberg/avro/avro_reader.h"
 #  include "iceberg/avro/avro_register.h"
 #  include "iceberg/avro/avro_writer.h"
+#  include "iceberg/encryption/encryption_register.h"
 #  include "iceberg/parquet/parquet_reader.h"
 #  include "iceberg/parquet/parquet_register.h"
 #  include "iceberg/parquet/parquet_writer.h"
@@ -224,6 +226,7 @@
 #ifdef ICEBERG_PUBLIC_HEADERS_ENCRYPTION
 #  include "iceberg/encryption/aes_gcm_stream.h"
 #  include "iceberg/encryption/in_memory_kms.h"
+#  include "iceberg/encryption/standard_encryption_manager.h"
 #endif  // ICEBERG_PUBLIC_HEADERS_ENCRYPTION
 
 #ifdef ICEBERG_PUBLIC_HEADERS_HIVE
