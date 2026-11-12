@@ -41,8 +41,11 @@ class ICEBERG_BUNDLE_EXPORT ParquetDictionaryRowGroupFilter {
       const std::shared_ptr<Expression>& filter,
       const ::parquet::SchemaDescriptor& file_schema);
 
+  // Reads only dictionary-page byte ranges. Input and properties must match metadata.
   Result<bool> ShouldRead(const ::parquet::arrow::SchemaManifest& manifest,
-                          ::parquet::RowGroupReader& row_group) const;
+                          const ::parquet::FileMetaData& metadata, int row_group_index,
+                          const std::shared_ptr<::arrow::io::RandomAccessFile>& input,
+                          const ::parquet::ReaderProperties& properties) const;
 
  private:
   ParquetDictionaryRowGroupFilter() = default;

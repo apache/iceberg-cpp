@@ -23,11 +23,13 @@
 #include <type_traits>
 #include <vector>
 
+#include <arrow/io/memory.h>
 #include <parquet/column_page.h>
 #include <parquet/column_reader.h>
 #include <parquet/encoding.h>
 #include <parquet/statistics.h>
 
+#include "iceberg/arrow/arrow_status_internal.h"
 #include "iceberg/expression/expression_visitor.h"
 #include "iceberg/expression/rewrite_not.h"
 #include "iceberg/metadata_columns.h"
@@ -110,9 +112,17 @@ Result<std::vector<Literal>> DecodeDictionary(const ::parquet::DictionaryPage& p
 class DictionaryVisitor : public BoundVisitor<bool> {
  public:
   DictionaryVisitor(const ::parquet::arrow::SchemaManifest& manifest,
-                    ::parquet::RowGroupReader& row_group,
-                    const std::unordered_map<int32_t, int>& columns)
-      : manifest_(manifest), row_group_(row_group), columns_(columns) {}
+                    const ::parquet::RowGroupMetaData& row_group,
+                    const std::unordered_map<int32_t, int>& columns,
+                    const std::shared_ptr<::arrow::io::RandomAccessFile>& input,
+                    const ::parquet::ReaderProperties& properties,
+                    const ::parquet::ApplicationVersion& writer_version)
+      : manifest_(manifest),
+        row_group_(row_group),
+        columns_(columns),
+        input_(input),
+        properties_(properties),
+        writer_version_(writer_version) {}
 
   Result<bool> AlwaysTrue() override { return true; }
   Result<bool> AlwaysFalse() override { return false; }
@@ -120,7 +130,8 @@ class DictionaryVisitor : public BoundVisitor<bool> {
   Result<bool> Not(bool) override { return true; }
   Result<bool> And(bool left, bool right) override { return left && right; }
   Result<bool> Or(bool left, bool right) override { return left || right; }
-  // Dictionaries contain only non-null values.
+  // Dictionaries contain only non-null values. A rewritten NOT(range) includes
+  // IS_NULL, which stays inclusive here; footer statistics may rule it out.
   Result<bool> IsNull(const std::shared_ptr<Bound>&) override { return true; }
   Result<bool> NotNull(const std::shared_ptr<Bound>&) override { return true; }
 
@@ -213,9 +224,14 @@ class DictionaryVisitor : public BoundVisitor<bool> {
   }
 
   bool MayContainNull(const BoundReference& ref) const {
-    const auto column = row_group_.metadata()->ColumnChunk(columns_.at(ref.field_id()));
-    auto stats = column->statistics();
-    return !stats || !stats->HasNullCount() || stats->null_count() != 0;
+    const auto column = row_group_.ColumnChunk(columns_.at(ref.field_id()));
+    try {
+      auto stats = column->statistics();
+      return !stats || !stats->HasNullCount() || stats->null_count() != 0;
+    } catch (const ::parquet::ParquetException&) {
+      // Optional, unusable statistics cannot prove that nulls are absent.
+      return true;
+    }
   }
 
   Result<const std::vector<Literal>*> GetDictionary(
@@ -237,15 +253,37 @@ class DictionaryVisitor : public BoundVisitor<bool> {
     }
     auto [cached, inserted] = dictionaries_.try_emplace(ref->field_id());
     if (inserted) {
-      const auto column = row_group_.metadata()->ColumnChunk(index->second);
+      const auto column = row_group_.ColumnChunk(index->second);
       const auto* descriptor = manifest_.descr->Column(index->second);
+      // A raw dictionary slice has no Parquet column decryption context. Leave
+      // encrypted columns to the normal reader rather than interpreting ciphertext.
       if (descriptor->max_repetition_level() > 0 ||
           descriptor->physical_type() == ::parquet::Type::INT96 ||
           descriptor->physical_type() == ::parquet::Type::BOOLEAN ||
-          !IsFullyDictionaryEncoded(*column)) {
+          column->crypto_metadata() || !IsFullyDictionaryEncoded(*column)) {
         return nullptr;
       }
-      auto pages = row_group_.GetColumnPageReader(index->second);
+      // GetColumnPageReader eagerly reads the entire column chunk by default.
+      // Restrict planning I/O to the dictionary page, including its header.
+      const int64_t start = column->dictionary_page_offset();
+      const int64_t end = column->data_page_offset();
+      ICEBERG_ARROW_ASSIGN_OR_RETURN(auto file_size, input_->GetSize());
+      if (!column->has_dictionary_page() || start < 4 || end <= start ||
+          end > file_size) {
+        return Invalid("Invalid Parquet dictionary offsets [{}, {}) for field {}", start,
+                       end, ref->field_id());
+      }
+      ICEBERG_ARROW_ASSIGN_OR_RETURN(auto data, input_->ReadAt(start, end - start));
+      if (data->size() != end - start) {
+        return Invalid("Truncated Parquet dictionary page for field {}", ref->field_id());
+      }
+      auto stream = std::make_shared<::arrow::io::BufferReader>(std::move(data));
+      // Preserve Arrow's compatibility behavior for old compressed page headers.
+      bool always_compressed = writer_version_.VersionLt(
+          ::parquet::ApplicationVersion::PARQUET_CPP_10353_FIXED_VERSION());
+      auto pages =
+          ::parquet::PageReader::Open(stream, column->num_values(), column->compression(),
+                                      properties_, *descriptor, always_compressed);
       auto page = pages->NextPage();
       if (!page || page->type() != ::parquet::PageType::DICTIONARY_PAGE) {
         return Invalid("Missing Parquet dictionary page for field {}", ref->field_id());
@@ -281,8 +319,11 @@ class DictionaryVisitor : public BoundVisitor<bool> {
   }
 
   const ::parquet::arrow::SchemaManifest& manifest_;
-  ::parquet::RowGroupReader& row_group_;
+  const ::parquet::RowGroupMetaData& row_group_;
   const std::unordered_map<int32_t, int>& columns_;
+  const std::shared_ptr<::arrow::io::RandomAccessFile>& input_;
+  const ::parquet::ReaderProperties& properties_;
+  const ::parquet::ApplicationVersion& writer_version_;
   std::unordered_map<int32_t, std::optional<std::vector<Literal>>> dictionaries_;
 };
 
@@ -308,12 +349,16 @@ ParquetDictionaryRowGroupFilter::Make(const std::shared_ptr<Expression>& filter,
 
 Result<bool> ParquetDictionaryRowGroupFilter::ShouldRead(
     const ::parquet::arrow::SchemaManifest& manifest,
-    ::parquet::RowGroupReader& row_group) const {
-  if (row_group.metadata()->num_rows() <= 0) {
+    const ::parquet::FileMetaData& metadata, int row_group_index,
+    const std::shared_ptr<::arrow::io::RandomAccessFile>& input,
+    const ::parquet::ReaderProperties& properties) const {
+  auto row_group = metadata.RowGroup(row_group_index);
+  if (row_group->num_rows() <= 0) {
     return false;
   }
   try {
-    DictionaryVisitor visitor(manifest, row_group, field_id_to_column_idx_);
+    DictionaryVisitor visitor(manifest, *row_group, field_id_to_column_idx_, input,
+                              properties, metadata.writer_version());
     return Visit<bool>(bound_, visitor);
   } catch (const ::parquet::ParquetException& e) {
     return Invalid("Cannot read Parquet dictionary: {}", e.what());

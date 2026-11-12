@@ -172,7 +172,7 @@ class ParquetReader::Impl {
           ParquetDictionaryRowGroupFilter::Make(filter, *reader_->manifest().descr));
     }
 
-    ICEBERG_RETURN_UNEXPECTED(PlanRowGroups(options));
+    ICEBERG_RETURN_UNEXPECTED(PlanRowGroups(options, reader_properties));
 
     metadata_context_ = {.file_path = options.path,
                          .first_row_id = options.first_row_id,
@@ -262,7 +262,8 @@ class ParquetReader::Impl {
   }
 
  private:
-  Status PlanRowGroups(const ReaderOptions& options) {
+  Status PlanRowGroups(const ReaderOptions& options,
+                       const ::parquet::ReaderProperties& reader_properties) {
     auto metadata = reader_->parquet_reader()->metadata();
     if (options.split.has_value()) {
       const auto& split = *options.split;
@@ -306,9 +307,10 @@ class ParquetReader::Impl {
         ICEBERG_ASSIGN_OR_RAISE(
             auto should_read, stats_filter_->ShouldRead(reader_->manifest(), *row_group));
         if (should_read && dictionary_filter_) {
-          auto group_reader = reader_->parquet_reader()->RowGroup(row_group_index);
-          ICEBERG_ASSIGN_OR_RAISE(should_read, dictionary_filter_->ShouldRead(
-                                                   reader_->manifest(), *group_reader));
+          ICEBERG_ASSIGN_OR_RAISE(
+              should_read, dictionary_filter_->ShouldRead(reader_->manifest(), *metadata,
+                                                          row_group_index, input_stream_,
+                                                          reader_properties));
         }
         if (should_read) {
           row_group_indices_[selected_count++] = row_group_index;
