@@ -324,6 +324,7 @@ if(ICEBERG_BUILD_BUNDLE)
       avro/avro_register.cc
       avro/avro_schema_util.cc
       avro/avro_stream_internal.cc
+      parquet/parquet_bloom_row_group_filter.cc
       parquet/parquet_data_util.cc
       parquet/parquet_metrics.cc
       parquet/parquet_metrics_row_group_filter.cc

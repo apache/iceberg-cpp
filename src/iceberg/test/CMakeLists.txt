@@ -232,6 +232,7 @@ if(ICEBERG_BUILD_BUNDLE)
                    USE_BUNDLE
                    SOURCES
                    metrics_test_base.cc
+                   parquet_bloom_row_group_filter_test.cc
                    parquet_data_test.cc
                    parquet_row_group_filter_test.cc
                    parquet_metrics_test.cc
