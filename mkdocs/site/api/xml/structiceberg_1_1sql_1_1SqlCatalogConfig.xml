@@ -1,0 +1,128 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1sql_1_1SqlCatalogConfig" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::sql::SqlCatalogConfig</compoundname>
+    <includes refid="sql__catalog_8h" local="no">sql_catalog.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1sql_1_1SqlCatalogConfig_1a8b1dad5745a2992d54dbdda57bbcdc8d" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::sql::SqlCatalogConfig::name</definition>
+        <argsstring></argsstring>
+        <name>name</name>
+        <qualifiedname>iceberg::sql::SqlCatalogConfig::name</qualifiedname>
+        <initializer>= &quot;sql_catalog&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Logical catalog name. Scopes all rows via the <computeroutput>catalog_name</computeroutput> column so that multiple catalogs can share one database. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/sql_catalog.h" line="52" column="15" bodyfile="iceberg/catalog/sql/sql_catalog.h" bodystart="52" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1sql_1_1SqlCatalogConfig_1a5d9bf833e7f272a9bdeaf9f1fd21ba34" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::sql::SqlCatalogConfig::uri</definition>
+        <argsstring></argsstring>
+        <name>uri</name>
+        <qualifiedname>iceberg::sql::SqlCatalogConfig::uri</qualifiedname>
+        <briefdescription>
+<para>Database connection string interpreted by the chosen <computeroutput><ref refid="classiceberg_1_1sql_1_1CatalogStore" kindref="compound">CatalogStore</ref></computeroutput>. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/sql_catalog.h" line="54" column="15" bodyfile="iceberg/catalog/sql/sql_catalog.h" bodystart="54" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1sql_1_1SqlCatalogConfig_1a4327acffe86325125214edeb8674bd16" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::sql::SqlCatalogConfig::warehouse_location</definition>
+        <argsstring></argsstring>
+        <name>warehouse_location</name>
+        <qualifiedname>iceberg::sql::SqlCatalogConfig::warehouse_location</qualifiedname>
+        <briefdescription>
+<para>Base location used to derive table locations when none is supplied. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/sql_catalog.h" line="56" column="15" bodyfile="iceberg/catalog/sql/sql_catalog.h" bodystart="56" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1sql_1_1SqlCatalogConfig_1a769c1181fc06413257ded26a915a6839" prot="public" static="no" mutable="no">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::sql::SqlCatalogConfig::max_connections</definition>
+        <argsstring></argsstring>
+        <name>max_connections</name>
+        <qualifiedname>iceberg::sql::SqlCatalogConfig::max_connections</qualifiedname>
+        <initializer>= kMaxConnections</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Maximum number of database connections. Built-in stores use a single connection when this is 1 and a bounded sqlpp23 connection pool otherwise. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/sql_catalog.h" line="59" column="11" bodyfile="iceberg/catalog/sql/sql_catalog.h" bodystart="59" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1sql_1_1SqlCatalogConfig_1ae9aa26b126dd678fb63d89f690cb0f51" prot="public" static="no" mutable="no">
+        <type>std::unordered_map&lt; std::string, std::string &gt;</type>
+        <definition>std::unordered_map&lt;std::string, std::string&gt; iceberg::sql::SqlCatalogConfig::props</definition>
+        <argsstring></argsstring>
+        <name>props</name>
+        <qualifiedname>iceberg::sql::SqlCatalogConfig::props</qualifiedname>
+        <briefdescription>
+<para>Additional connector-specific properties. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/sql/sql_catalog.h" line="61" column="22" bodyfile="iceberg/catalog/sql/sql_catalog.h" bodystart="61" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Configuration for the SQL catalog. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::sql::SqlCatalogConfig</label>
+        <link refid="structiceberg_1_1sql_1_1SqlCatalogConfig"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>name</edgelabel>
+          <edgelabel>uri</edgelabel>
+          <edgelabel>warehouse_location</edgelabel>
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>props</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>std::unordered_map&lt; std::string, std::string &gt;</label>
+        <childnode refid="2" relation="usage">
+          <edgelabel>elements</edgelabel>
+          <edgelabel>keys</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/sql/sql_catalog.h" line="49" column="1" bodyfile="iceberg/catalog/sql/sql_catalog.h" bodystart="49" bodyend="62"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1sql_1_1SqlCatalogConfig_1a769c1181fc06413257ded26a915a6839" prot="public" virt="non-virtual"><scope>iceberg::sql::SqlCatalogConfig</scope><name>max_connections</name></member>
+      <member refid="structiceberg_1_1sql_1_1SqlCatalogConfig_1a8b1dad5745a2992d54dbdda57bbcdc8d" prot="public" virt="non-virtual"><scope>iceberg::sql::SqlCatalogConfig</scope><name>name</name></member>
+      <member refid="structiceberg_1_1sql_1_1SqlCatalogConfig_1ae9aa26b126dd678fb63d89f690cb0f51" prot="public" virt="non-virtual"><scope>iceberg::sql::SqlCatalogConfig</scope><name>props</name></member>
+      <member refid="structiceberg_1_1sql_1_1SqlCatalogConfig_1a5d9bf833e7f272a9bdeaf9f1fd21ba34" prot="public" virt="non-virtual"><scope>iceberg::sql::SqlCatalogConfig</scope><name>uri</name></member>
+      <member refid="structiceberg_1_1sql_1_1SqlCatalogConfig_1a4327acffe86325125214edeb8674bd16" prot="public" virt="non-virtual"><scope>iceberg::sql::SqlCatalogConfig</scope><name>warehouse_location</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

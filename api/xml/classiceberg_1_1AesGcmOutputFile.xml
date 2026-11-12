@@ -1,0 +1,168 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1AesGcmOutputFile" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::AesGcmOutputFile</compoundname>
+    <basecompoundref refid="classiceberg_1_1OutputFile" prot="public" virt="non-virtual">iceberg::OutputFile</basecompoundref>
+    <includes refid="aes__gcm__stream_8h" local="no">aes_gcm_stream.h</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1AesGcmOutputFile_1af6531bbe8ac59ca609d19287e5a5d64f" prot="private" static="no" mutable="no">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1OutputFile" kindref="compound">OutputFile</ref> &gt;</type>
+        <definition>std::unique_ptr&lt;OutputFile&gt; iceberg::AesGcmOutputFile::target_</definition>
+        <argsstring></argsstring>
+        <name>target_</name>
+        <qualifiedname>iceberg::AesGcmOutputFile::target_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/encryption/aes_gcm_stream.h" line="94" column="19" bodyfile="iceberg/encryption/aes_gcm_stream.h" bodystart="94" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1AesGcmOutputFile_1a6d9d9b8eb48894a28f4f316649540ee4" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; uint8_t &gt;</type>
+        <definition>std::vector&lt;uint8_t&gt; iceberg::AesGcmOutputFile::key_</definition>
+        <argsstring></argsstring>
+        <name>key_</name>
+        <qualifiedname>iceberg::AesGcmOutputFile::key_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/encryption/aes_gcm_stream.h" line="95" column="15" bodyfile="iceberg/encryption/aes_gcm_stream.h" bodystart="95" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1AesGcmOutputFile_1a6d382e97d7e17f80d192d489f40963e1" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; uint8_t &gt;</type>
+        <definition>std::vector&lt;uint8_t&gt; iceberg::AesGcmOutputFile::aad_prefix_</definition>
+        <argsstring></argsstring>
+        <name>aad_prefix_</name>
+        <qualifiedname>iceberg::AesGcmOutputFile::aad_prefix_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/encryption/aes_gcm_stream.h" line="96" column="15" bodyfile="iceberg/encryption/aes_gcm_stream.h" bodystart="96" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1AesGcmOutputFile_1afa3d77114e777e113630a9f17dc7e577" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::AesGcmOutputFile::AesGcmOutputFile</definition>
+        <argsstring>(std::unique_ptr&lt; OutputFile &gt; target, std::vector&lt; uint8_t &gt; key, std::vector&lt; uint8_t &gt; aad_prefix)</argsstring>
+        <name>AesGcmOutputFile</name>
+        <qualifiedname>iceberg::AesGcmOutputFile::AesGcmOutputFile</qualifiedname>
+        <param>
+          <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1OutputFile" kindref="compound">OutputFile</ref> &gt;</type>
+          <declname>target</declname>
+        </param>
+        <param>
+          <type>std::vector&lt; uint8_t &gt;</type>
+          <declname>key</declname>
+        </param>
+        <param>
+          <type>std::vector&lt; uint8_t &gt;</type>
+          <declname>aad_prefix</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/encryption/aes_gcm_stream.h" line="86" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1AesGcmOutputFile_1a6622bbeba4afba88d2e0f6fbefef9ebc" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+        <type>std::string_view</type>
+        <definition>std::string_view iceberg::AesGcmOutputFile::location</definition>
+        <argsstring>() const override</argsstring>
+        <name>location</name>
+        <qualifiedname>iceberg::AesGcmOutputFile::location</qualifiedname>
+        <reimplements refid="classiceberg_1_1OutputFile_1a9b91b6756cda5efce0c4a82ffdf062c2">location</reimplements>
+        <briefdescription>
+<para>File location represented by this handle. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/encryption/aes_gcm_stream.h" line="89" column="20" bodyfile="iceberg/encryption/aes_gcm_stream.h" bodystart="89" bodyend="89"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1AesGcmOutputFile_1ae551b0d0e33c7e6f3ed081eff9ad3db4" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type><ref refid="namespaceiceberg_1aac79523734e35ca4d34cced52e56ec9b" kindref="member">Result</ref>&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1PositionOutputStream" kindref="compound">PositionOutputStream</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::unique_ptr&lt; PositionOutputStream &gt; &gt; iceberg::AesGcmOutputFile::Create</definition>
+        <argsstring>() override</argsstring>
+        <name>Create</name>
+        <qualifiedname>iceberg::AesGcmOutputFile::Create</qualifiedname>
+        <reimplements refid="classiceberg_1_1OutputFile_1ac051688db9914d35a75fb178427d38b8">Create</reimplements>
+        <briefdescription>
+<para>Create a new output stream and fail if the file already exists. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/encryption/aes_gcm_stream.h" line="90" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1AesGcmOutputFile_1acdc203cb9bcfb214ac0911bb024bdef4" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type><ref refid="namespaceiceberg_1aac79523734e35ca4d34cced52e56ec9b" kindref="member">Result</ref>&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1PositionOutputStream" kindref="compound">PositionOutputStream</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::unique_ptr&lt; PositionOutputStream &gt; &gt; iceberg::AesGcmOutputFile::CreateOrOverwrite</definition>
+        <argsstring>() override</argsstring>
+        <name>CreateOrOverwrite</name>
+        <qualifiedname>iceberg::AesGcmOutputFile::CreateOrOverwrite</qualifiedname>
+        <reimplements refid="classiceberg_1_1OutputFile_1a7bc8474d8acaeb7a3df73c348d4fb99a">CreateOrOverwrite</reimplements>
+        <briefdescription>
+<para>Create a new output stream, replacing any existing file. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/encryption/aes_gcm_stream.h" line="91" column="10"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>An <ref refid="classiceberg_1_1OutputFile" kindref="compound">OutputFile</ref> that writes an AGS1 file. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::AesGcmOutputFile</label>
+        <link refid="classiceberg_1_1AesGcmOutputFile"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::OutputFile</label>
+        <link refid="classiceberg_1_1OutputFile"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::AesGcmOutputFile</label>
+        <link refid="classiceberg_1_1AesGcmOutputFile"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::OutputFile</label>
+        <link refid="classiceberg_1_1OutputFile"/>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/encryption/aes_gcm_stream.h" line="84" column="1" bodyfile="iceberg/encryption/aes_gcm_stream.h" bodystart="84" bodyend="97"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1AesGcmOutputFile_1a6d382e97d7e17f80d192d489f40963e1" prot="private" virt="non-virtual"><scope>iceberg::AesGcmOutputFile</scope><name>aad_prefix_</name></member>
+      <member refid="classiceberg_1_1AesGcmOutputFile_1afa3d77114e777e113630a9f17dc7e577" prot="public" virt="non-virtual"><scope>iceberg::AesGcmOutputFile</scope><name>AesGcmOutputFile</name></member>
+      <member refid="classiceberg_1_1AesGcmOutputFile_1ae551b0d0e33c7e6f3ed081eff9ad3db4" prot="public" virt="virtual"><scope>iceberg::AesGcmOutputFile</scope><name>Create</name></member>
+      <member refid="classiceberg_1_1AesGcmOutputFile_1acdc203cb9bcfb214ac0911bb024bdef4" prot="public" virt="virtual"><scope>iceberg::AesGcmOutputFile</scope><name>CreateOrOverwrite</name></member>
+      <member refid="classiceberg_1_1AesGcmOutputFile_1a6d9d9b8eb48894a28f4f316649540ee4" prot="private" virt="non-virtual"><scope>iceberg::AesGcmOutputFile</scope><name>key_</name></member>
+      <member refid="classiceberg_1_1AesGcmOutputFile_1a6622bbeba4afba88d2e0f6fbefef9ebc" prot="public" virt="virtual"><scope>iceberg::AesGcmOutputFile</scope><name>location</name></member>
+      <member refid="classiceberg_1_1AesGcmOutputFile_1af6531bbe8ac59ca609d19287e5a5d64f" prot="private" virt="non-virtual"><scope>iceberg::AesGcmOutputFile</scope><name>target_</name></member>
+      <member refid="classiceberg_1_1OutputFile_1a48a76fcb369ba6920d30c99c84f7b1e1" prot="public" virt="virtual"><scope>iceberg::AesGcmOutputFile</scope><name>~OutputFile</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

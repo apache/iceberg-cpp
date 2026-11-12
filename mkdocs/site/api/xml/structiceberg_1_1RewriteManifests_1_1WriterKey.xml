@@ -1,0 +1,84 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1RewriteManifests_1_1WriterKey" kind="struct" language="C++" prot="private">
+    <compoundname>iceberg::RewriteManifests::WriterKey</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1RewriteManifests_1_1WriterKey_1a38cabfb80339f45138af152b323ebb44" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::RewriteManifests::WriterKey::cluster_key</definition>
+        <argsstring></argsstring>
+        <name>cluster_key</name>
+        <qualifiedname>iceberg::RewriteManifests::WriterKey::cluster_key</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/rewrite_manifests.h" line="111" column="17" bodyfile="iceberg/update/rewrite_manifests.h" bodystart="111" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1RewriteManifests_1_1WriterKey_1a7b2e27d179df34002a7038d37aec2f4f" prot="public" static="no" mutable="no">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::RewriteManifests::WriterKey::partition_spec_id</definition>
+        <argsstring></argsstring>
+        <name>partition_spec_id</name>
+        <qualifiedname>iceberg::RewriteManifests::WriterKey::partition_spec_id</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/rewrite_manifests.h" line="112" column="13" bodyfile="iceberg/update/rewrite_manifests.h" bodystart="112" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="friend">
+      <memberdef kind="friend" id="structiceberg_1_1RewriteManifests_1_1WriterKey_1ada7a5d6c9a12639430ee3ae226947faa" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool operator==</definition>
+        <argsstring>(const WriterKey &amp;, const WriterKey &amp;)=default</argsstring>
+        <name>operator==</name>
+        <qualifiedname>iceberg::RewriteManifests::WriterKey::operator==</qualifiedname>
+        <param>
+          <type>const WriterKey &amp;</type>
+        </param>
+        <param>
+          <type>const WriterKey &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/rewrite_manifests.h" line="114" column="17"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::RewriteManifests::WriterKey</label>
+        <childnode refid="2" relation="usage">
+          <edgelabel>cluster_key</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/update/rewrite_manifests.h" line="110" column="3" bodyfile="iceberg/update/rewrite_manifests.h" bodystart="110" bodyend="115"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1RewriteManifests_1_1WriterKey_1a38cabfb80339f45138af152b323ebb44" prot="public" virt="non-virtual"><scope>iceberg::RewriteManifests::WriterKey</scope><name>cluster_key</name></member>
+      <member refid="structiceberg_1_1RewriteManifests_1_1WriterKey_1ada7a5d6c9a12639430ee3ae226947faa" prot="public" virt="non-virtual"><scope>iceberg::RewriteManifests::WriterKey</scope><name>operator==</name></member>
+      <member refid="structiceberg_1_1RewriteManifests_1_1WriterKey_1a7b2e27d179df34002a7038d37aec2f4f" prot="public" virt="non-virtual"><scope>iceberg::RewriteManifests::WriterKey</scope><name>partition_spec_id</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,45 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1FileScanTask_1_1Range" kind="struct" language="C++" prot="private">
+    <compoundname>iceberg::FileScanTask::Range</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1FileScanTask_1_1Range_1a2a2b74c3e86f01083a30806224199b63" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t iceberg::FileScanTask::Range::start</definition>
+        <argsstring></argsstring>
+        <name>start</name>
+        <qualifiedname>iceberg::FileScanTask::Range::start</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_scan.h" line="124" column="13" bodyfile="iceberg/table_scan.h" bodystart="124" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1FileScanTask_1_1Range_1af24d634a3343a18481f9d5b16092efe5" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t iceberg::FileScanTask::Range::length</definition>
+        <argsstring></argsstring>
+        <name>length</name>
+        <qualifiedname>iceberg::FileScanTask::Range::length</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_scan.h" line="125" column="13" bodyfile="iceberg/table_scan.h" bodystart="125" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/table_scan.h" line="123" column="3" bodyfile="iceberg/table_scan.h" bodystart="123" bodyend="126"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1FileScanTask_1_1Range_1af24d634a3343a18481f9d5b16092efe5" prot="public" virt="non-virtual"><scope>iceberg::FileScanTask::Range</scope><name>length</name></member>
+      <member refid="structiceberg_1_1FileScanTask_1_1Range_1a2a2b74c3e86f01083a30806224199b63" prot="public" virt="non-virtual"><scope>iceberg::FileScanTask::Range</scope><name>start</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

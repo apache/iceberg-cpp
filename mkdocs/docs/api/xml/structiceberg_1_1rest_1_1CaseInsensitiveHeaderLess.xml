@@ -1,0 +1,58 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1rest_1_1CaseInsensitiveHeaderLess" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::rest::CaseInsensitiveHeaderLess</compoundname>
+    <includes refid="http__request_8h" local="no">http_request.h</includes>
+    <sectiondef kind="public-type">
+      <memberdef kind="typedef" id="structiceberg_1_1rest_1_1CaseInsensitiveHeaderLess_1a1a9a9cf8a05045ce5cffa84b5ca767a3" prot="public" static="no">
+        <type>void</type>
+        <definition>using iceberg::rest::CaseInsensitiveHeaderLess::is_transparent =  void</definition>
+        <argsstring></argsstring>
+        <name>is_transparent</name>
+        <qualifiedname>iceberg::rest::CaseInsensitiveHeaderLess::is_transparent</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/http_request.h" line="62" column="3" bodyfile="iceberg/catalog/rest/http_request.h" bodystart="62" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structiceberg_1_1rest_1_1CaseInsensitiveHeaderLess_1a954a92125fc7c4526ebdf651f9691f78" prot="public" static="no" const="yes" explicit="no" inline="yes" noexcept="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::rest::CaseInsensitiveHeaderLess::operator()</definition>
+        <argsstring>(std::string_view lhs, std::string_view rhs) const noexcept</argsstring>
+        <name>operator()</name>
+        <qualifiedname>iceberg::rest::CaseInsensitiveHeaderLess::operator()</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>lhs</declname>
+        </param>
+        <param>
+          <type>std::string_view</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/http_request.h" line="64" column="8" bodyfile="iceberg/catalog/rest/http_request.h" bodystart="64" bodyend="75"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Case-insensitive ordering for HTTP header names. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>HTTP header names are case-insensitive. This comparator also matches cpr::Header&apos;s single-value map model. </para>
+    </detaileddescription>
+    <location file="iceberg/catalog/rest/http_request.h" line="61" column="1" bodyfile="iceberg/catalog/rest/http_request.h" bodystart="61" bodyend="76"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1rest_1_1CaseInsensitiveHeaderLess_1a1a9a9cf8a05045ce5cffa84b5ca767a3" prot="public" virt="non-virtual"><scope>iceberg::rest::CaseInsensitiveHeaderLess</scope><name>is_transparent</name></member>
+      <member refid="structiceberg_1_1rest_1_1CaseInsensitiveHeaderLess_1a954a92125fc7c4526ebdf651f9691f78" prot="public" virt="non-virtual"><scope>iceberg::rest::CaseInsensitiveHeaderLess</scope><name>operator()</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

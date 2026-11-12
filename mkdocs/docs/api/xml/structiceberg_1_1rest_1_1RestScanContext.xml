@@ -1,0 +1,243 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1rest_1_1RestScanContext" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::rest::RestScanContext</compoundname>
+    <includes refid="rest__table__scan_8h" local="no">rest_table_scan.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1RestScanContext_1a5deb655451f7865aa28a6e87a2e52ac7" prot="public" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1rest_1_1HttpClient" kindref="compound">HttpClient</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;HttpClient&gt; iceberg::rest::RestScanContext::client</definition>
+        <argsstring></argsstring>
+        <name>client</name>
+        <qualifiedname>iceberg::rest::RestScanContext::client</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/rest_table_scan.h" line="48" column="19" bodyfile="iceberg/catalog/rest/rest_table_scan.h" bodystart="48" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1RestScanContext_1aa871ee93ddea89b97e76d0ed7175e714" prot="public" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1rest_1_1ResourcePaths" kindref="compound">ResourcePaths</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;ResourcePaths&gt; iceberg::rest::RestScanContext::paths</definition>
+        <argsstring></argsstring>
+        <name>paths</name>
+        <qualifiedname>iceberg::rest::RestScanContext::paths</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/rest_table_scan.h" line="49" column="19" bodyfile="iceberg/catalog/rest/rest_table_scan.h" bodystart="49" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1RestScanContext_1af7d760cf9daab7cae797abc1ea67ac3c" prot="public" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1rest_1_1auth_1_1AuthSession" kindref="compound">auth::AuthSession</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;auth::AuthSession&gt; iceberg::rest::RestScanContext::session</definition>
+        <argsstring></argsstring>
+        <name>session</name>
+        <qualifiedname>iceberg::rest::RestScanContext::session</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/rest_table_scan.h" line="50" column="19" bodyfile="iceberg/catalog/rest/rest_table_scan.h" bodystart="50" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1RestScanContext_1ac4171c54e3a789241a30b272c4d7d20e" prot="public" static="no" mutable="no">
+        <type>std::unordered_set&lt; <ref refid="classiceberg_1_1rest_1_1Endpoint" kindref="compound">Endpoint</ref> &gt;</type>
+        <definition>std::unordered_set&lt;Endpoint&gt; iceberg::rest::RestScanContext::supported_endpoints</definition>
+        <argsstring></argsstring>
+        <name>supported_endpoints</name>
+        <qualifiedname>iceberg::rest::RestScanContext::supported_endpoints</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/rest_table_scan.h" line="51" column="22" bodyfile="iceberg/catalog/rest/rest_table_scan.h" bodystart="51" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1RestScanContext_1add7cb9d52d3b3fd140ca1ff06ce70d63" prot="public" static="no" mutable="no">
+        <type><ref refid="structiceberg_1_1TableIdentifier" kindref="compound">TableIdentifier</ref></type>
+        <definition>TableIdentifier iceberg::rest::RestScanContext::identifier</definition>
+        <argsstring></argsstring>
+        <name>identifier</name>
+        <qualifiedname>iceberg::rest::RestScanContext::identifier</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/rest_table_scan.h" line="52" column="19" bodyfile="iceberg/catalog/rest/rest_table_scan.h" bodystart="52" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1RestScanContext_1a9c1cedbddf3929e4ccc0e0ad1afc0c16" prot="public" static="no" mutable="no">
+        <type>std::unordered_map&lt; std::string, std::string &gt;</type>
+        <definition>std::unordered_map&lt;std::string, std::string&gt; iceberg::rest::RestScanContext::catalog_config</definition>
+        <argsstring></argsstring>
+        <name>catalog_config</name>
+        <qualifiedname>iceberg::rest::RestScanContext::catalog_config</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Catalog-level config, used with table_config to build a scan-scoped <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> when the server vends storage credentials in a planning response. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/rest_table_scan.h" line="55" column="22" bodyfile="iceberg/catalog/rest/rest_table_scan.h" bodystart="55" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1RestScanContext_1acf3cbf44ae7c54eab73dc4ff1ce6fbc6" prot="public" static="no" mutable="no">
+        <type>std::unordered_map&lt; std::string, std::string &gt;</type>
+        <definition>std::unordered_map&lt;std::string, std::string&gt; iceberg::rest::RestScanContext::table_config</definition>
+        <argsstring></argsstring>
+        <name>table_config</name>
+        <qualifiedname>iceberg::rest::RestScanContext::table_config</qualifiedname>
+        <briefdescription>
+<para>Table-level config merged with catalog_config for scan-scoped <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> creation. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/rest_table_scan.h" line="57" column="22" bodyfile="iceberg/catalog/rest/rest_table_scan.h" bodystart="57" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1RestScanContext_1a85d50ed0b211083d2e117200b7129c92" prot="public" static="no" mutable="no">
+        <type>std::function&lt; <ref refid="namespaceiceberg_1aac79523734e35ca4d34cced52e56ec9b" kindref="member">Result</ref>&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1StorageCredentialProvider" kindref="compound">StorageCredentialProvider</ref> &gt; &gt;(const std::string &amp;plan_id)&gt;</type>
+        <definition>std::function&lt;Result&lt;std::shared_ptr&lt;StorageCredentialProvider&gt; &gt;( const std::string&amp; plan_id)&gt; iceberg::rest::RestScanContext::credential_provider_factory</definition>
+        <argsstring></argsstring>
+        <name>credential_provider_factory</name>
+        <qualifiedname>iceberg::rest::RestScanContext::credential_provider_factory</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Builds a plan-scoped provider for refreshing vended credentials; may be empty. A null provider means credential refresh is unavailable. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/rest_table_scan.h" line="62" column="7" bodyfile="iceberg/catalog/rest/rest_table_scan.h" bodystart="62" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>REST table context shared by its builders, scans and task streams. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="11">
+        <label>iceberg::Namespace</label>
+        <link refid="structiceberg_1_1Namespace"/>
+        <childnode refid="12" relation="usage">
+          <edgelabel>levels</edgelabel>
+        </childnode>
+      </node>
+      <node id="10">
+        <label>iceberg::TableIdentifier</label>
+        <link refid="structiceberg_1_1TableIdentifier"/>
+        <childnode refid="11" relation="usage">
+          <edgelabel>ns</edgelabel>
+        </childnode>
+        <childnode refid="13" relation="usage">
+          <edgelabel>name</edgelabel>
+        </childnode>
+      </node>
+      <node id="9">
+        <label>iceberg::rest::Endpoint</label>
+        <link refid="classiceberg_1_1rest_1_1Endpoint"/>
+      </node>
+      <node id="3">
+        <label>iceberg::rest::HttpClient</label>
+        <link refid="classiceberg_1_1rest_1_1HttpClient"/>
+      </node>
+      <node id="5">
+        <label>iceberg::rest::ResourcePaths</label>
+        <link refid="classiceberg_1_1rest_1_1ResourcePaths"/>
+      </node>
+      <node id="1">
+        <label>iceberg::rest::RestScanContext</label>
+        <link refid="structiceberg_1_1rest_1_1RestScanContext"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>client</edgelabel>
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>paths</edgelabel>
+        </childnode>
+        <childnode refid="6" relation="usage">
+          <edgelabel>session</edgelabel>
+        </childnode>
+        <childnode refid="8" relation="usage">
+          <edgelabel>supported_endpoints</edgelabel>
+        </childnode>
+        <childnode refid="10" relation="usage">
+          <edgelabel>identifier</edgelabel>
+        </childnode>
+        <childnode refid="15" relation="usage">
+          <edgelabel>catalog_config</edgelabel>
+          <edgelabel>table_config</edgelabel>
+        </childnode>
+      </node>
+      <node id="7">
+        <label>iceberg::rest::auth::AuthSession</label>
+        <link refid="classiceberg_1_1rest_1_1auth_1_1AuthSession"/>
+      </node>
+      <node id="2">
+        <label>std::shared_ptr&lt; iceberg::rest::HttpClient &gt;</label>
+        <childnode refid="3" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>std::shared_ptr&lt; iceberg::rest::ResourcePaths &gt;</label>
+        <childnode refid="5" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="6">
+        <label>std::shared_ptr&lt; iceberg::rest::auth::AuthSession &gt;</label>
+        <childnode refid="7" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="14">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="13">
+        <label>std::string</label>
+        <childnode refid="14" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="15">
+        <label>std::unordered_map&lt; std::string, std::string &gt;</label>
+        <childnode refid="13" relation="usage">
+          <edgelabel>elements</edgelabel>
+          <edgelabel>keys</edgelabel>
+        </childnode>
+      </node>
+      <node id="8">
+        <label>std::unordered_set&lt; iceberg::rest::Endpoint &gt;</label>
+        <childnode refid="9" relation="usage">
+          <edgelabel>keys</edgelabel>
+        </childnode>
+      </node>
+      <node id="12">
+        <label>std::vector&lt; std::string &gt;</label>
+        <childnode refid="13" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/rest/rest_table_scan.h" line="47" column="1" bodyfile="iceberg/catalog/rest/rest_table_scan.h" bodystart="47" bodyend="63"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1rest_1_1RestScanContext_1a9c1cedbddf3929e4ccc0e0ad1afc0c16" prot="public" virt="non-virtual"><scope>iceberg::rest::RestScanContext</scope><name>catalog_config</name></member>
+      <member refid="structiceberg_1_1rest_1_1RestScanContext_1a5deb655451f7865aa28a6e87a2e52ac7" prot="public" virt="non-virtual"><scope>iceberg::rest::RestScanContext</scope><name>client</name></member>
+      <member refid="structiceberg_1_1rest_1_1RestScanContext_1a85d50ed0b211083d2e117200b7129c92" prot="public" virt="non-virtual"><scope>iceberg::rest::RestScanContext</scope><name>credential_provider_factory</name></member>
+      <member refid="structiceberg_1_1rest_1_1RestScanContext_1add7cb9d52d3b3fd140ca1ff06ce70d63" prot="public" virt="non-virtual"><scope>iceberg::rest::RestScanContext</scope><name>identifier</name></member>
+      <member refid="structiceberg_1_1rest_1_1RestScanContext_1aa871ee93ddea89b97e76d0ed7175e714" prot="public" virt="non-virtual"><scope>iceberg::rest::RestScanContext</scope><name>paths</name></member>
+      <member refid="structiceberg_1_1rest_1_1RestScanContext_1af7d760cf9daab7cae797abc1ea67ac3c" prot="public" virt="non-virtual"><scope>iceberg::rest::RestScanContext</scope><name>session</name></member>
+      <member refid="structiceberg_1_1rest_1_1RestScanContext_1ac4171c54e3a789241a30b272c4d7d20e" prot="public" virt="non-virtual"><scope>iceberg::rest::RestScanContext</scope><name>supported_endpoints</name></member>
+      <member refid="structiceberg_1_1rest_1_1RestScanContext_1acf3cbf44ae7c54eab73dc4ff1ce6fbc6" prot="public" virt="non-virtual"><scope>iceberg::rest::RestScanContext</scope><name>table_config</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,34 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1RewriteManifests_1_1WriterKeyHash" kind="struct" language="C++" prot="private">
+    <compoundname>iceberg::RewriteManifests::WriterKeyHash</compoundname>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structiceberg_1_1RewriteManifests_1_1WriterKeyHash_1a3fbbc67453e2b0dfa98408acd971082b" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>size_t</type>
+        <definition>size_t iceberg::RewriteManifests::WriterKeyHash::operator()</definition>
+        <argsstring>(const WriterKey &amp;key) const</argsstring>
+        <name>operator()</name>
+        <qualifiedname>iceberg::RewriteManifests::WriterKeyHash::operator()</qualifiedname>
+        <param>
+          <type>const WriterKey &amp;</type>
+          <declname>key</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/rewrite_manifests.h" line="118" column="12"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/update/rewrite_manifests.h" line="117" column="3" bodyfile="iceberg/update/rewrite_manifests.h" bodystart="117" bodyend="119"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1RewriteManifests_1_1WriterKeyHash_1a3fbbc67453e2b0dfa98408acd971082b" prot="public" virt="non-virtual"><scope>iceberg::RewriteManifests::WriterKeyHash</scope><name>operator()</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

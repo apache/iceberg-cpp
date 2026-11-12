@@ -1,0 +1,122 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1expected__detail_1_1operations__base_3_01void_00_01E_01_4" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::expected_detail::operations_base&lt; void, E &gt;</compoundname>
+    <basecompoundref refid="structiceberg_1_1expected__detail_1_1storage__base" prot="public" virt="non-virtual">iceberg::expected_detail::storage_base&lt; void, E &gt;</basecompoundref>
+    <templateparamlist>
+      <param>
+        <type>class E</type>
+      </param>
+    </templateparamlist>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structiceberg_1_1expected__detail_1_1operations__base_3_01void_00_01E_01_4_1a027d3a2013edb5f753617bb923b4c500" prot="public" static="no" constexpr="yes" const="no" explicit="no" inline="yes" refqual="lvalue" noexcept="yes" virt="non-virtual">
+        <type>constexpr E &amp;</type>
+        <definition>constexpr E &amp; iceberg::expected_detail::operations_base&lt; void, E &gt;::geterr</definition>
+        <argsstring>() &amp;noexcept</argsstring>
+        <name>geterr</name>
+        <qualifiedname>iceberg::expected_detail::operations_base&lt; void, E &gt;::geterr</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/compat/expected.h" line="865" column="15" bodyfile="iceberg/compat/expected.h" bodystart="865" bodyend="865"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1expected__detail_1_1operations__base_3_01void_00_01E_01_4_1a4fcb13c67af861dcc67c4fad659fa477" prot="public" static="no" constexpr="yes" const="yes" explicit="no" inline="yes" refqual="lvalue" noexcept="yes" virt="non-virtual">
+        <type>constexpr const E &amp;</type>
+        <definition>constexpr const E &amp; iceberg::expected_detail::operations_base&lt; void, E &gt;::geterr</definition>
+        <argsstring>() const &amp;noexcept</argsstring>
+        <name>geterr</name>
+        <qualifiedname>iceberg::expected_detail::operations_base&lt; void, E &gt;::geterr</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/compat/expected.h" line="866" column="21" bodyfile="iceberg/compat/expected.h" bodystart="866" bodyend="866"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1expected__detail_1_1operations__base_3_01void_00_01E_01_4_1afee2d1b34eeaede21867dcb1f50f1452" prot="public" static="no" constexpr="yes" const="no" explicit="no" inline="yes" refqual="rvalue" noexcept="yes" virt="non-virtual">
+        <type>constexpr E &amp;&amp;</type>
+        <definition>constexpr E &amp;&amp; iceberg::expected_detail::operations_base&lt; void, E &gt;::geterr</definition>
+        <argsstring>() &amp;&amp;noexcept(std::is_nothrow_move_constructible_v&lt; E &gt;)</argsstring>
+        <name>geterr</name>
+        <qualifiedname>iceberg::expected_detail::operations_base&lt; void, E &gt;::geterr</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/compat/expected.h" line="867" column="15" bodyfile="iceberg/compat/expected.h" bodystart="867" bodyend="869"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1expected__detail_1_1operations__base_3_01void_00_01E_01_4_1a6295083ed0bb84ed5a687ef3a70cdb93" prot="public" static="no" constexpr="yes" const="yes" explicit="no" inline="yes" refqual="rvalue" noexcept="yes" virt="non-virtual">
+        <type>constexpr const E &amp;&amp;</type>
+        <definition>constexpr const E &amp;&amp; iceberg::expected_detail::operations_base&lt; void, E &gt;::geterr</definition>
+        <argsstring>() const &amp;&amp;noexcept(std::is_nothrow_move_constructible_v&lt; E &gt;)</argsstring>
+        <name>geterr</name>
+        <qualifiedname>iceberg::expected_detail::operations_base&lt; void, E &gt;::geterr</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/compat/expected.h" line="870" column="21" bodyfile="iceberg/compat/expected.h" bodystart="870" bodyend="872"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::expected_detail::operations_base&lt; void, E &gt;</label>
+        <link refid="structiceberg_1_1expected__detail_1_1operations__base_3_01void_00_01E_01_4"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::expected_detail::storage_base&lt; void, E &gt;</label>
+        <link refid="structiceberg_1_1expected__detail_1_1storage__base"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::expected_detail::operations_base&lt; void, E &gt;</label>
+        <link refid="structiceberg_1_1expected__detail_1_1operations__base_3_01void_00_01E_01_4"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::expected_detail::storage_base&lt; void, E &gt;</label>
+        <link refid="structiceberg_1_1expected__detail_1_1storage__base"/>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/compat/expected.h" line="862" column="1" bodyfile="iceberg/compat/expected.h" bodystart="862" bodyend="873"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1expected__detail_1_1operations__base_3_01void_00_01E_01_4_1a027d3a2013edb5f753617bb923b4c500" prot="public" virt="non-virtual"><scope>iceberg::expected_detail::operations_base&lt; void, E &gt;</scope><name>geterr</name></member>
+      <member refid="structiceberg_1_1expected__detail_1_1operations__base_3_01void_00_01E_01_4_1a4fcb13c67af861dcc67c4fad659fa477" prot="public" virt="non-virtual"><scope>iceberg::expected_detail::operations_base&lt; void, E &gt;</scope><name>geterr</name></member>
+      <member refid="structiceberg_1_1expected__detail_1_1operations__base_3_01void_00_01E_01_4_1afee2d1b34eeaede21867dcb1f50f1452" prot="public" virt="non-virtual"><scope>iceberg::expected_detail::operations_base&lt; void, E &gt;</scope><name>geterr</name></member>
+      <member refid="structiceberg_1_1expected__detail_1_1operations__base_3_01void_00_01E_01_4_1a6295083ed0bb84ed5a687ef3a70cdb93" prot="public" virt="non-virtual"><scope>iceberg::expected_detail::operations_base&lt; void, E &gt;</scope><name>geterr</name></member>
+      <member refid="structiceberg_1_1expected__detail_1_1storage__base_1ab46e17d3bc8925924d4827b158d55b5e" prot="public" virt="non-virtual"><scope>iceberg::expected_detail::operations_base&lt; void, E &gt;</scope><name>m_dummy</name></member>
+      <member refid="structiceberg_1_1expected__detail_1_1storage__base_1a58f5ac0804bf0797d8f71ed80ce6c4ed" prot="public" virt="non-virtual"><scope>iceberg::expected_detail::operations_base&lt; void, E &gt;</scope><name>m_has_val</name></member>
+      <member refid="structiceberg_1_1expected__detail_1_1storage__base_1a630bf1e4bb4646af3f0011a2a3ed83c3" prot="public" virt="non-virtual"><scope>iceberg::expected_detail::operations_base&lt; void, E &gt;</scope><name>m_unexpect</name></member>
+      <member refid="structiceberg_1_1expected__detail_1_1storage__base_1a23ce28e5b16e5387fafa9a11a78639fc" prot="public" virt="non-virtual"><scope>iceberg::expected_detail::operations_base&lt; void, E &gt;</scope><name>m_val</name></member>
+      <member refid="structiceberg_1_1expected__detail_1_1storage__base_1acf4da3f0874e1ace142de7e4ea489f56" prot="public" virt="non-virtual"><scope>iceberg::expected_detail::operations_base&lt; void, E &gt;</scope><name>operator=</name></member>
+      <member refid="structiceberg_1_1expected__detail_1_1storage__base_1a57375fef32c9507d443a200372837d6e" prot="public" virt="non-virtual"><scope>iceberg::expected_detail::operations_base&lt; void, E &gt;</scope><name>operator=</name></member>
+      <member refid="structiceberg_1_1expected__detail_1_1storage__base_1a1df9a972fb549a9796e50d493364c97d" prot="public" virt="non-virtual"><scope>iceberg::expected_detail::operations_base&lt; void, E &gt;</scope><name>storage_base</name></member>
+      <member refid="structiceberg_1_1expected__detail_1_1storage__base_1a21de15774544b5dda8fbd6c0b5f8b478" prot="public" virt="non-virtual"><scope>iceberg::expected_detail::operations_base&lt; void, E &gt;</scope><name>storage_base</name></member>
+      <member refid="structiceberg_1_1expected__detail_1_1storage__base_1a79be2b3206c6aad3211812c5bcdda79a" prot="public" virt="non-virtual"><scope>iceberg::expected_detail::operations_base&lt; void, E &gt;</scope><name>storage_base</name></member>
+      <member refid="structiceberg_1_1expected__detail_1_1storage__base_1ac220b014d516caa9b5b10afdbec5e623" prot="public" virt="non-virtual"><scope>iceberg::expected_detail::operations_base&lt; void, E &gt;</scope><name>storage_base</name></member>
+      <member refid="structiceberg_1_1expected__detail_1_1storage__base_1a871e97e1f79245090c69722fc84cc9f6" prot="public" virt="non-virtual"><scope>iceberg::expected_detail::operations_base&lt; void, E &gt;</scope><name>storage_base</name></member>
+      <member refid="structiceberg_1_1expected__detail_1_1storage__base_1ad85c5751b1594cb29b122de63fcb08ae" prot="public" virt="non-virtual"><scope>iceberg::expected_detail::operations_base&lt; void, E &gt;</scope><name>storage_base</name></member>
+      <member refid="structiceberg_1_1expected__detail_1_1storage__base_1a66bc29e2d88551c984c3bdfa265f5bdd" prot="public" virt="non-virtual"><scope>iceberg::expected_detail::operations_base&lt; void, E &gt;</scope><name>storage_base</name></member>
+      <member refid="structiceberg_1_1expected__detail_1_1storage__base_1ad387db1d7d6d9e63a15523e8afd75bc2" prot="public" virt="non-virtual"><scope>iceberg::expected_detail::operations_base&lt; void, E &gt;</scope><name>storage_base</name></member>
+      <member refid="structiceberg_1_1expected__detail_1_1storage__base_1a2d9b8b4d0c6bd0a30201607c5c9be848" prot="public" virt="non-virtual"><scope>iceberg::expected_detail::operations_base&lt; void, E &gt;</scope><name>storage_base</name></member>
+      <member refid="structiceberg_1_1expected__detail_1_1storage__base_1aa11713725ab73dd45a3dac1e8d8c306e" prot="public" virt="non-virtual"><scope>iceberg::expected_detail::operations_base&lt; void, E &gt;</scope><name>storage_base</name></member>
+      <member refid="structiceberg_1_1expected__detail_1_1storage__base_1a8b3c9d602032feaf7bafb822bf43a66e" prot="public" virt="non-virtual"><scope>iceberg::expected_detail::operations_base&lt; void, E &gt;</scope><name>~storage_base</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

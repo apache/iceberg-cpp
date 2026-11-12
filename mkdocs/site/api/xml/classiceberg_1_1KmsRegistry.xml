@@ -1,0 +1,231 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1KmsRegistry" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::KmsRegistry</compoundname>
+    <includes refid="key__management__client_8h" local="no">key_management_client.h</includes>
+    <sectiondef kind="public-type">
+      <memberdef kind="typedef" id="classiceberg_1_1KmsRegistry_1a0d9fb0aca04bc23670b8b79c853fdeae" prot="public" static="no">
+        <type>std::unordered_map&lt; std::string, std::string &gt;</type>
+        <definition>using iceberg::KmsRegistry::Properties =  std::unordered_map&lt;std::string, std::string&gt;</definition>
+        <argsstring></argsstring>
+        <name>Properties</name>
+        <qualifiedname>iceberg::KmsRegistry::Properties</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/encryption/key_management_client.h" line="101" column="3" bodyfile="iceberg/encryption/key_management_client.h" bodystart="101" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="classiceberg_1_1KmsRegistry_1a2611b32b32d22d9a25fa7841b1c443e5" prot="public" static="no">
+        <type>std::function&lt; <ref refid="namespaceiceberg_1aac79523734e35ca4d34cced52e56ec9b" kindref="member">Result</ref>&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1KeyManagementClient" kindref="compound">KeyManagementClient</ref> &gt; &gt;()&gt;</type>
+        <definition>using iceberg::KmsRegistry::Factory =  std::function&lt;Result&lt;std::unique_ptr&lt;KeyManagementClient&gt; &gt;()&gt;</definition>
+        <argsstring></argsstring>
+        <name>Factory</name>
+        <qualifiedname>iceberg::KmsRegistry::Factory</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/encryption/key_management_client.h" line="102" column="3" bodyfile="iceberg/encryption/key_management_client.h" bodystart="102" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1KmsRegistry_1a9de32e7666e5c23002c7069b49bf1536" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr std::string_view</type>
+        <definition>constexpr std::string_view iceberg::KmsRegistry::kKmsType</definition>
+        <argsstring></argsstring>
+        <name>kKmsType</name>
+        <qualifiedname>iceberg::KmsRegistry::kKmsType</qualifiedname>
+        <initializer>= &quot;encryption.kms-type&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/encryption/key_management_client.h" line="95" column="37" bodyfile="iceberg/encryption/key_management_client.h" bodystart="95" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1KmsRegistry_1aa86a5a295aeda5822225e5025235a7aa" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr std::string_view</type>
+        <definition>constexpr std::string_view iceberg::KmsRegistry::kKmsImpl</definition>
+        <argsstring></argsstring>
+        <name>kKmsImpl</name>
+        <qualifiedname>iceberg::KmsRegistry::kKmsImpl</qualifiedname>
+        <initializer>= &quot;encryption.kms-impl&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/encryption/key_management_client.h" line="96" column="37" bodyfile="iceberg/encryption/key_management_client.h" bodystart="96" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1KmsRegistry_1a821914e54885b2ba27bad6d91628574c" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr std::string_view</type>
+        <definition>constexpr std::string_view iceberg::KmsRegistry::kKmsTypeAws</definition>
+        <argsstring></argsstring>
+        <name>kKmsTypeAws</name>
+        <qualifiedname>iceberg::KmsRegistry::kKmsTypeAws</qualifiedname>
+        <initializer>= &quot;aws&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/encryption/key_management_client.h" line="97" column="37" bodyfile="iceberg/encryption/key_management_client.h" bodystart="97" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1KmsRegistry_1ab8742641d0a4abe169fe72849feb7cb3" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr std::string_view</type>
+        <definition>constexpr std::string_view iceberg::KmsRegistry::kKmsTypeGcp</definition>
+        <argsstring></argsstring>
+        <name>kKmsTypeGcp</name>
+        <qualifiedname>iceberg::KmsRegistry::kKmsTypeGcp</qualifiedname>
+        <initializer>= &quot;gcp&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/encryption/key_management_client.h" line="98" column="37" bodyfile="iceberg/encryption/key_management_client.h" bodystart="98" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1KmsRegistry_1ad8bef434351fa4fc6efcb1bee2583be5" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr std::string_view</type>
+        <definition>constexpr std::string_view iceberg::KmsRegistry::kKmsTypeAzure</definition>
+        <argsstring></argsstring>
+        <name>kKmsTypeAzure</name>
+        <qualifiedname>iceberg::KmsRegistry::kKmsTypeAzure</qualifiedname>
+        <initializer>= &quot;azure&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/encryption/key_management_client.h" line="99" column="37" bodyfile="iceberg/encryption/key_management_client.h" bodystart="99" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1KmsRegistry_1a8e01cd77c1f95dc518b418c9cb0c0fb7" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>static void iceberg::KmsRegistry::Register</definition>
+        <argsstring>(std::string name, Factory factory)</argsstring>
+        <name>Register</name>
+        <qualifiedname>iceberg::KmsRegistry::Register</qualifiedname>
+        <param>
+          <type>std::string</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type>Factory</type>
+          <declname>factory</declname>
+        </param>
+        <briefdescription>
+<para>Register a client factory under <computeroutput>name</computeroutput>, replacing any previous one. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>An empty <computeroutput>factory</computeroutput> is accepted here but makes the corresponding Load fail with an invalid-argument error rather than being invoked. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/encryption/key_management_client.h" line="108" column="15"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1KmsRegistry_1a40acb33f21d38a4ce26be7e32fa95148" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceiceberg_1aac79523734e35ca4d34cced52e56ec9b" kindref="member">Result</ref>&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1KeyManagementClient" kindref="compound">KeyManagementClient</ref> &gt; &gt;</type>
+        <definition>static Result&lt; std::shared_ptr&lt; KeyManagementClient &gt; &gt; iceberg::KmsRegistry::Load</definition>
+        <argsstring>(std::string_view name, const Properties &amp;properties)</argsstring>
+        <name>Load</name>
+        <qualifiedname>iceberg::KmsRegistry::Load</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type>const Properties &amp;</type>
+          <declname>properties</declname>
+        </param>
+        <briefdescription>
+<para>Create and initialize the client registered under <computeroutput>name</computeroutput>. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/encryption/key_management_client.h" line="111" column="17"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1KmsRegistry_1acf41ee2567acb2e25b6e2232d2f052c6" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceiceberg_1aac79523734e35ca4d34cced52e56ec9b" kindref="member">Result</ref>&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1KeyManagementClient" kindref="compound">KeyManagementClient</ref> &gt; &gt;</type>
+        <definition>static Result&lt; std::shared_ptr&lt; KeyManagementClient &gt; &gt; iceberg::KmsRegistry::FromCatalogProperties</definition>
+        <argsstring>(const Properties &amp;properties)</argsstring>
+        <name>FromCatalogProperties</name>
+        <qualifiedname>iceberg::KmsRegistry::FromCatalogProperties</qualifiedname>
+        <param>
+          <type>const Properties &amp;</type>
+          <declname>properties</declname>
+        </param>
+        <briefdescription>
+<para>Create the KMS client configured by catalog properties. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>the initialized client, or nullptr if neither <computeroutput>encryption.kms-type</computeroutput> nor <computeroutput>encryption.kms-impl</computeroutput> is set. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/encryption/key_management_client.h" line="118" column="17"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Creates KMS clients by name. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>Catalogs create their KMS client from the catalog properties, with the same property names as Java:<itemizedlist>
+<listitem><para><computeroutput>encryption.kms-type</computeroutput>: a built-in client, <computeroutput>aws</computeroutput>, <computeroutput>gcp</computeroutput> or <computeroutput>azure</computeroutput>;</para>
+</listitem><listitem><para><computeroutput>encryption.kms-impl</computeroutput>: the name a custom client was registered under.</para>
+</listitem></itemizedlist>
+</para>
+<para>Java has no built-in clients yet and rejects every <computeroutput>encryption.kms-type</computeroutput> (EncryptionUtil.createKmsClient); here the type names resolve through the same registry, so a client registered under one of them is used.</para>
+<para>Built-in clients register themselves when their library is linked and initialized; applications register custom clients before creating catalogs. </para>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::KmsRegistry</label>
+        <link refid="classiceberg_1_1KmsRegistry"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>kKmsImpl</edgelabel>
+          <edgelabel>kKmsType</edgelabel>
+          <edgelabel>kKmsTypeAws</edgelabel>
+          <edgelabel>kKmsTypeAzure</edgelabel>
+          <edgelabel>kKmsTypeGcp</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string_view&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string_view</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/encryption/key_management_client.h" line="93" column="1" bodyfile="iceberg/encryption/key_management_client.h" bodystart="93" bodyend="120"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1KmsRegistry_1a2611b32b32d22d9a25fa7841b1c443e5" prot="public" virt="non-virtual"><scope>iceberg::KmsRegistry</scope><name>Factory</name></member>
+      <member refid="classiceberg_1_1KmsRegistry_1acf41ee2567acb2e25b6e2232d2f052c6" prot="public" virt="non-virtual"><scope>iceberg::KmsRegistry</scope><name>FromCatalogProperties</name></member>
+      <member refid="classiceberg_1_1KmsRegistry_1aa86a5a295aeda5822225e5025235a7aa" prot="public" virt="non-virtual"><scope>iceberg::KmsRegistry</scope><name>kKmsImpl</name></member>
+      <member refid="classiceberg_1_1KmsRegistry_1a9de32e7666e5c23002c7069b49bf1536" prot="public" virt="non-virtual"><scope>iceberg::KmsRegistry</scope><name>kKmsType</name></member>
+      <member refid="classiceberg_1_1KmsRegistry_1a821914e54885b2ba27bad6d91628574c" prot="public" virt="non-virtual"><scope>iceberg::KmsRegistry</scope><name>kKmsTypeAws</name></member>
+      <member refid="classiceberg_1_1KmsRegistry_1ad8bef434351fa4fc6efcb1bee2583be5" prot="public" virt="non-virtual"><scope>iceberg::KmsRegistry</scope><name>kKmsTypeAzure</name></member>
+      <member refid="classiceberg_1_1KmsRegistry_1ab8742641d0a4abe169fe72849feb7cb3" prot="public" virt="non-virtual"><scope>iceberg::KmsRegistry</scope><name>kKmsTypeGcp</name></member>
+      <member refid="classiceberg_1_1KmsRegistry_1a40acb33f21d38a4ce26be7e32fa95148" prot="public" virt="non-virtual"><scope>iceberg::KmsRegistry</scope><name>Load</name></member>
+      <member refid="classiceberg_1_1KmsRegistry_1a0d9fb0aca04bc23670b8b79c853fdeae" prot="public" virt="non-virtual"><scope>iceberg::KmsRegistry</scope><name>Properties</name></member>
+      <member refid="classiceberg_1_1KmsRegistry_1a8e01cd77c1f95dc518b418c9cb0c0fb7" prot="public" virt="non-virtual"><scope>iceberg::KmsRegistry</scope><name>Register</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

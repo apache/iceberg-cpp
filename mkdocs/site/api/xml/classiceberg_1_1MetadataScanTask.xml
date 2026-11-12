@@ -1,0 +1,104 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1MetadataScanTask" kind="class" language="C++" prot="public" abstract="yes">
+    <compoundname>iceberg::MetadataScanTask</compoundname>
+    <derivedcompoundref refid="classiceberg_1_1StaticMetadataTask" prot="public" virt="non-virtual">iceberg::StaticMetadataTask</derivedcompoundref>
+    <includes refid="metadata__scan__task_8h" local="no">metadata_scan_task.h</includes>
+    <sectiondef kind="public-type">
+      <memberdef kind="enum" id="classiceberg_1_1MetadataScanTask_1a632e6eaf32f46b8e1e8f118c7b513291" prot="public" static="no" strong="yes">
+        <type></type>
+        <name>TaskKind</name>
+        <qualifiedname>iceberg::MetadataScanTask::TaskKind</qualifiedname>
+        <enumvalue id="classiceberg_1_1MetadataScanTask_1a632e6eaf32f46b8e1e8f118c7b513291aeb9af1ba35d0a6f48fd1e6218a4d82c9" prot="public">
+          <name>kStatic</name>
+          <briefdescription>
+<para><ref refid="classiceberg_1_1StaticMetadataTask" kindref="compound">StaticMetadataTask</ref> reads in-memory table metadata (snapshots, history, refs). </para>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+<para>Task category, determines how the reader opens the task. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/inspect/metadata_scan_task.h" line="37" column="3" bodyfile="iceberg/inspect/metadata_scan_task.h" bodystart="37" bodyend="40"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1MetadataScanTask_1a263c577aa08c356e64527559b036d6b8" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type></type>
+        <definition>virtual iceberg::MetadataScanTask::~MetadataScanTask</definition>
+        <argsstring>()=default</argsstring>
+        <name>~MetadataScanTask</name>
+        <qualifiedname>iceberg::MetadataScanTask::~MetadataScanTask</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/inspect/metadata_scan_task.h" line="42" column="11"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1MetadataScanTask_1a811f3bdb3dce348aa718266232628226" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type><ref refid="classiceberg_1_1MetadataScanTask_1a632e6eaf32f46b8e1e8f118c7b513291" kindref="member">TaskKind</ref></type>
+        <definition>virtual TaskKind iceberg::MetadataScanTask::task_kind</definition>
+        <argsstring>() const =0</argsstring>
+        <name>task_kind</name>
+        <qualifiedname>iceberg::MetadataScanTask::task_kind</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1StaticMetadataTask_1ac03e97d877b653b89ba38eb594b0da15">task_kind</reimplementedby>
+        <briefdescription>
+<para>Return how this task is read. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/inspect/metadata_scan_task.h" line="45" column="20"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1MetadataScanTask_1a1be16438cb67796533e87c9c0b1c8b67" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type><ref refid="namespaceiceberg_1afd874214b2b513aad12d482976163b85" kindref="member">MetadataTableKind</ref></type>
+        <definition>virtual MetadataTableKind iceberg::MetadataScanTask::table_kind</definition>
+        <argsstring>() const =0</argsstring>
+        <name>table_kind</name>
+        <qualifiedname>iceberg::MetadataScanTask::table_kind</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1StaticMetadataTask_1a5afa82edf06dac3973704802ae2673fd">table_kind</reimplementedby>
+        <briefdescription>
+<para>Return the metadata table whose rows this task produces. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/inspect/metadata_scan_task.h" line="48" column="29"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Base class for metadata table scan tasks. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>Metadata tables expose table metadata (snapshots, history, etc.) as queryable Arrow tables. A task is a unit of work opened by <ref refid="classiceberg_1_1MetadataScanTaskReader" kindref="compound">MetadataScanTaskReader</ref>. </para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::MetadataScanTask</label>
+        <link refid="classiceberg_1_1MetadataScanTask"/>
+      </node>
+      <node id="2">
+        <label>iceberg::StaticMetadataTask</label>
+        <link refid="classiceberg_1_1StaticMetadataTask"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <location file="iceberg/inspect/metadata_scan_task.h" line="34" column="1" bodyfile="iceberg/inspect/metadata_scan_task.h" bodystart="34" bodyend="49"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1MetadataScanTask_1a1be16438cb67796533e87c9c0b1c8b67" prot="public" virt="pure-virtual"><scope>iceberg::MetadataScanTask</scope><name>table_kind</name></member>
+      <member refid="classiceberg_1_1MetadataScanTask_1a811f3bdb3dce348aa718266232628226" prot="public" virt="pure-virtual"><scope>iceberg::MetadataScanTask</scope><name>task_kind</name></member>
+      <member refid="classiceberg_1_1MetadataScanTask_1a632e6eaf32f46b8e1e8f118c7b513291" prot="public" virt="non-virtual"><scope>iceberg::MetadataScanTask</scope><name>TaskKind</name></member>
+      <member refid="classiceberg_1_1MetadataScanTask_1a263c577aa08c356e64527559b036d6b8" prot="public" virt="virtual"><scope>iceberg::MetadataScanTask</scope><name>~MetadataScanTask</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

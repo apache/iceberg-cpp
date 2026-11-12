@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="dir_c69715e845db0a3a505d9b985062ede4" kind="dir">
+    <compoundname>iceberg/catalog/sql</compoundname>
+    <innerfile refid="catalog__store_8h">catalog_store.h</innerfile>
+    <innerfile refid="iceberg__sql__catalog__export_8h">iceberg_sql_catalog_export.h</innerfile>
+    <innerfile refid="sql__catalog_8h">sql_catalog.h</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/sql/"/>
+  </compounddef>
+</doxygen>
