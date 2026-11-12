@@ -45,18 +45,18 @@ class ICEBERG_EXPORT PartitionField : public util::Formattable {
                  std::shared_ptr<Transform> transform);
 
   /// \brief Get the source field ID.
-  int32_t source_id() const;
+  [[nodiscard]] int32_t source_id() const;
 
   /// \brief Get the partition field ID.
-  int32_t field_id() const;
+  [[nodiscard]] int32_t field_id() const;
 
   /// \brief Get the partition field name.
-  std::string_view name() const;
+  [[nodiscard]] std::string_view name() const;
 
   /// \brief Get the transform type.
-  std::shared_ptr<Transform> const& transform() const;
+  [[nodiscard]] std::shared_ptr<Transform> const& transform() const;
 
-  std::string ToString() const override;
+  [[nodiscard]] std::string ToString() const override;
 
   friend bool operator==(const PartitionField& lhs, const PartitionField& rhs) {
     return lhs.Equals(rhs);

@@ -96,21 +96,21 @@ class ICEBERG_EXPORT SortField : public util::Formattable {
             SortDirection direction, NullOrder null_order);
 
   /// \brief Get the source field ID.
-  int32_t source_id() const;
+  [[nodiscard]] int32_t source_id() const;
 
   /// \brief Get the transform type.
-  const std::shared_ptr<Transform>& transform() const;
+  [[nodiscard]] const std::shared_ptr<Transform>& transform() const;
 
   /// \brief Get the sort direction.
-  SortDirection direction() const;
+  [[nodiscard]] SortDirection direction() const;
 
   /// \brief Get the null order.
-  NullOrder null_order() const;
+  [[nodiscard]] NullOrder null_order() const;
 
   /// \brief Checks whether this field's order satisfies another field's order.
-  bool Satisfies(const SortField& other) const;
+  [[nodiscard]] bool Satisfies(const SortField& other) const;
 
-  std::string ToString() const override;
+  [[nodiscard]] std::string ToString() const override;
 
   friend bool operator==(const SortField& lhs, const SortField& rhs) {
     if (&lhs == &rhs) {
