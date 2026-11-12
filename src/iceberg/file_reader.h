@@ -80,7 +80,8 @@ class ICEBERG_EXPORT ReaderProperties : public ConfigBase<ReaderProperties> {
   /// Only the Parquet reader honors this option; other readers ignore it.
   /// Default: false (use 32-bit offset list).
   inline static Entry<bool> kArrowUseLargeList{"read.arrow.use-large-list", false};
-  /// \brief Validate Arrow batches before merge-on-read projection.
+  /// \brief Fully validate Arrow batches for delete filtering, equality-delete
+  /// loading, residual evaluation, and projection.
   /// Default: true. Disable only when the reader is trusted to produce valid arrays.
   inline static Entry<bool> kArrowValidateBatch{"read.arrow.validate-batch", true};
   /// \brief Use footer statistics to prune Parquet row groups.

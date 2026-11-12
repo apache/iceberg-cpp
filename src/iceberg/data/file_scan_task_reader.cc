@@ -80,14 +80,15 @@ class TaskStreamSource {
                    std::unique_ptr<Evaluator> residual_evaluator,
                    std::shared_ptr<::iceberg::Schema> required_schema,
                    std::shared_ptr<::iceberg::Schema> projected_schema,
-                   ProjectionContext projection_context)
+                   ProjectionContext projection_context, bool validate_batch)
       : reader_(std::move(reader)),
         delete_filter_(std::move(delete_filter)),
         residual_evaluator_(std::move(residual_evaluator)),
         required_schema_(std::move(required_schema)),
         projected_schema_(std::move(projected_schema)),
         project_all_columns_(required_schema_->SameSchema(*projected_schema_)),
-        projection_context_(std::move(projection_context)) {}
+        projection_context_(std::move(projection_context)),
+        validate_batch_(validate_batch) {}
 
   ~TaskStreamSource() {
     if (cached_schema_.has_value() && cached_schema_->release != nullptr) {
@@ -185,7 +186,8 @@ class TaskStreamSource {
                      input_batch.length);
     // DeleteFilter preserves existing field positions when adding delete keys.
     ICEBERG_ASSIGN_OR_RAISE(auto row,
-                            ArrowArrayStructLike::Make(input_arrow_schema, input_batch));
+                            ArrowArrayStructLike::Make(input_arrow_schema, input_batch,
+                                                       /*row_index=*/0, validate_batch_));
     std::vector<int32_t> kept;
     auto keep = [&](int64_t index) -> Status {
       ICEBERG_RETURN_UNEXPECTED(row->Reset(index));
@@ -216,6 +218,7 @@ class TaskStreamSource {
   std::shared_ptr<::iceberg::Schema> projected_schema_;
   bool project_all_columns_ = false;
   ProjectionContext projection_context_;
+  const bool validate_batch_;
   std::optional<ArrowSchema> cached_schema_;
 };
 
@@ -323,7 +326,8 @@ class FileScanTaskReader::Impl {
 
     auto task_source = std::make_unique<TaskStreamSource>(
         std::move(reader), std::move(delete_filter), std::move(residual_evaluator),
-        std::move(required_schema), projected_schema_, std::move(projection_context));
+        std::move(required_schema), projected_schema_, std::move(projection_context),
+        properties_.Get(ReaderProperties::kArrowValidateBatch));
     return MakeArrowArrayStream(std::move(task_source));
   }
 

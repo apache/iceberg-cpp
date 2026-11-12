@@ -41,6 +41,8 @@ class ICEBERG_EXPORT ArrowArrayStructLike : public StructLike {
 
   Status Reset(const ArrowArray& array, int64_t row_index = 0);
 
+  /// \param validate_batch Fully validate the array and children on creation and
+  /// Reset to a new array (default true). Disable only for validated or trusted input.
   static Result<std::unique_ptr<ArrowArrayStructLike>> Make(const ArrowSchema& schema,
                                                             const ArrowArray& array,
                                                             int64_t row_index = 0,
@@ -69,6 +71,8 @@ class ICEBERG_EXPORT ArrowArrayArrayLike : public ArrayLike {
 
   Status Reset(const ArrowArray& array, int64_t row_index = 0);
 
+  /// \param validate_batch Fully validate the array and children on creation and
+  /// Reset to a new array (default true). Disable only for validated or trusted input.
   static Result<std::unique_ptr<ArrowArrayArrayLike>> Make(const ArrowSchema& schema,
                                                            const ArrowArray& array,
                                                            int64_t row_index = 0,
@@ -99,6 +103,8 @@ class ICEBERG_EXPORT ArrowArrayMapLike : public MapLike {
 
   Status Reset(const ArrowArray& array, int64_t row_index = 0);
 
+  /// \param validate_batch Fully validate the array and children on creation and
+  /// Reset to a new array (default true). Disable only for validated or trusted input.
   static Result<std::unique_ptr<ArrowArrayMapLike>> Make(const ArrowSchema& schema,
                                                          const ArrowArray& array,
                                                          int64_t row_index = 0,
