@@ -61,6 +61,7 @@ nav:
     - Verify a Release Candidate: verify-rc.md
   - API Documentation: api/index.html
   - SQL Catalog: sql-catalog.md
+  - REST Catalog: rest-catalog.md
 
 extra:
   social:
