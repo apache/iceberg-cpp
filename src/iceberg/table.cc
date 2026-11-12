@@ -107,8 +107,9 @@ Status Table::InitializeManifestCache(
     const std::unordered_map<std::string, std::string>& io_properties) {
   auto properties = io_->properties();
   for (const auto& [key, value] : io_properties) properties[key] = value;
-  for (const auto& [key, value] : metadata_->properties.configs())
+  for (const auto& [key, value] : metadata_->properties.configs()) {
     properties[key] = value;
+  }
   ICEBERG_ASSIGN_OR_RAISE(auto options,
                           internal::ContentCacheOptions::FromProperties(properties));
   if (options.enabled) {
@@ -124,13 +125,15 @@ void Table::ClearManifestCache() {
 
 void Table::ReuseManifestCache(const Table& source) {
   if (!content_cache_ || !source.content_cache_ || uuid() != source.uuid() ||
-      content_cache_->options() != source.content_cache_->options())
+      content_cache_->options() != source.content_cache_->options()) {
     return;
+  }
   // A replaced storage context with no comparable properties may represent a different
   // endpoint or filesystem. Only preserve bytes when its identity is known to match.
   if (io_ != source.io_ &&
-      (io_->properties().empty() || io_->properties() != source.io_->properties()))
+      (io_->properties().empty() || io_->properties() != source.io_->properties())) {
     return;
+  }
   content_cache_ = source.content_cache_;
   manifest_io_ = content_cache_->Wrap(io_);
 }

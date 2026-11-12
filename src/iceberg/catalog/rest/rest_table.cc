@@ -57,8 +57,9 @@ Result<std::shared_ptr<RestTable>> RestTable::Make(
       std::move(io), std::move(catalog), std::move(full_name), std::move(reporter),
       std::move(rest_context), std::move(labels)));
   auto properties = table->rest_context_->catalog_config;
-  for (const auto& [key, value] : table->rest_context_->table_config)
+  for (const auto& [key, value] : table->rest_context_->table_config) {
     properties[key] = value;
+  }
   ICEBERG_RETURN_UNEXPECTED(table->InitializeManifestCache(properties));
   return table;
 }

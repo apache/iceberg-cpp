@@ -474,6 +474,8 @@ TEST(MetadataCacheTest, RejectsInvalidNumericPropertyWhenDisabled) {
 TEST(MetadataCacheTest, ReaderOptionsKeepsPositionalAggregateInitialization) {
   auto io = std::make_shared<MockFileIO>();
   auto schema = std::make_shared<Schema>(std::vector<SchemaField>{});
+  // Verify positional initialization remains compatible with the existing API.
+  // NOLINTNEXTLINE(modernize-use-designated-initializers)
   ReaderOptions options{"manifest.avro", {}, {}, io, schema};
   EXPECT_EQ(options.path, "manifest.avro");
   EXPECT_EQ(options.io, io);

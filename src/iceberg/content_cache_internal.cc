@@ -37,9 +37,10 @@ Result<T> ParseNumberProperty(
   auto it = properties.find(std::string(key));
   if (it == properties.end()) return fallback;
   auto result = StringUtils::ParseNumber<T>(it->second);
-  if (!result)
+  if (!result) {
     return InvalidArgument("Invalid numeric value '{}' for property '{}': {}", it->second,
                            key, result.error().message);
+  }
   return result;
 }
 
@@ -146,8 +147,9 @@ class CachedInputFile : public InputFile {
   Result<int64_t> Size() const override { return size_; }
   Result<std::unique_ptr<SeekableInputStream>> Open() override {
     if (content_) return std::make_unique<CachedSeekableInputStream>(content_);
-    if (auto cached = cache_->Find(location_))
+    if (auto cached = cache_->Find(location_)) {
       return std::make_unique<CachedSeekableInputStream>(std::move(cached));
+    }
     auto loaded = ReadInputFile(*input_, size_, location_);
     if (!loaded) {
       auto error = std::move(loaded).error();
@@ -209,8 +211,9 @@ class ManifestFileIO : public FileIO {
 Result<ContentCacheOptions> ContentCacheOptions::FromProperties(
     const std::unordered_map<std::string, std::string>& properties) {
   ContentCacheOptions options;
-  if (auto it = properties.find(std::string(kEnabled)); it != properties.end())
+  if (auto it = properties.find(std::string(kEnabled)); it != properties.end()) {
     options.enabled = StringUtils::ParseBoolean(it->second);
+  }
   ICEBERG_ASSIGN_OR_RAISE(
       options.max_total_bytes,
       ParseNumberProperty(properties, kMaxTotalBytes, options.max_total_bytes));
@@ -269,13 +272,15 @@ void ContentCache::Clear() {
 Result<std::unique_ptr<InputFile>> ContentCache::NewInputFile(
     const std::shared_ptr<FileIO>& io, std::string location,
     std::optional<size_t> length) {
-  if (length && std::cmp_greater(*length, std::numeric_limits<int64_t>::max()))
+  if (length && std::cmp_greater(*length, std::numeric_limits<int64_t>::max())) {
     return InvalidArgument("File length {} exceeds int64_t max", *length);
+  }
   // A hit needs neither storage resolution nor working remote credentials.
   std::string canonical_location;
-  if (auto content = Find(location, &canonical_location))
+  if (auto content = Find(location, &canonical_location)) {
     return std::make_unique<CachedInputFile>(std::move(canonical_location),
                                              std::move(content));
+  }
   std::unique_ptr<InputFile> input;
   if (length) {
     ICEBERG_ASSIGN_OR_RAISE(input, io->NewInputFile(location, *length));
@@ -286,19 +291,21 @@ Result<std::unique_ptr<InputFile>> ContentCache::NewInputFile(
     std::lock_guard lock(mutex_);
     aliases_.Replace(std::move(location), std::string(input->location()));
   }
-  if (auto content = Find(input->location()))
+  if (auto content = Find(input->location())) {
     return std::make_unique<CachedInputFile>(std::string(input->location()),
                                              std::move(content));
+  }
   int64_t size;
-  if (length)
+  if (length) {
     size = static_cast<int64_t>(*length);
-  else {
+  } else {
     ICEBERG_ASSIGN_OR_RAISE(size, input->Size());
   }
   ICEBERG_PRECHECK(size >= 0, "Invalid negative file size {}", size);
   if (size == 0 || std::cmp_greater(size, options_.max_content_length) ||
-      std::cmp_greater(size, options_.max_total_bytes))
+      std::cmp_greater(size, options_.max_total_bytes)) {
     return input;
+  }
   return std::make_unique<CachedInputFile>(std::move(input), shared_from_this(), size);
 }
 
