@@ -293,6 +293,43 @@ void SelectAnchorColumnIfEmpty(
   }
 }
 
+// Lists and maps are matched to the file by the field IDs of their element, key and
+// value. Returns false when the Parquet field leaves any of them without an ID, for
+// example when a partial name mapping does not cover them. Like Java's PruneColumns,
+// the caller then reads the container as if it were missing from the file. A Parquet
+// field of the wrong shape returns true so that projection reports the mismatch.
+bool HasNestedFieldIds(const Type& expected_type,
+                       const ::parquet::arrow::SchemaField& parquet_field) {
+  const auto arrow_type_id = parquet_field.field->type()->id();
+  switch (expected_type.type_id()) {
+    case TypeId::kList: {
+      if ((arrow_type_id != ::arrow::Type::LIST &&
+           arrow_type_id != ::arrow::Type::LARGE_LIST) ||
+          parquet_field.children.size() != 1) {
+        return true;
+      }
+      const auto& element = parquet_field.children[0];
+      const auto& list_type = internal::checked_cast<const ListType&>(expected_type);
+      return GetFieldId(element).has_value() &&
+             HasNestedFieldIds(*list_type.element().type(), element);
+    }
+    case TypeId::kMap: {
+      if (arrow_type_id != ::arrow::Type::MAP || parquet_field.children.size() != 1 ||
+          parquet_field.children[0].children.size() != 2) {
+        return true;
+      }
+      const auto& key = parquet_field.children[0].children[0];
+      const auto& value = parquet_field.children[0].children[1];
+      const auto& map_type = internal::checked_cast<const MapType&>(expected_type);
+      return GetFieldId(key).has_value() && GetFieldId(value).has_value() &&
+             HasNestedFieldIds(*map_type.key().type(), key) &&
+             HasNestedFieldIds(*map_type.value().type(), value);
+    }
+    default:
+      return true;
+  }
+}
+
 template <typename IcebergType, typename ParquetType>
 Status ValidateGeospatialParameters(const IcebergType& expected,
                                     const ParquetType& actual,
@@ -555,6 +592,23 @@ class ProjectionBuilder {
     return projection;
   }
 
+  // Project a field that cannot be read from the file.
+  static Result<FieldProjection> ProjectMissingField(const SchemaField& field) {
+    FieldProjection projection;
+    if (MetadataColumns::IsMetadataColumn(field.field_id())) {
+      projection.kind = FieldProjection::Kind::kMetadata;
+    } else if (field.initial_default() != nullptr) {
+      // Rows written before the field existed assume its `initial-default` value.
+      projection.kind = FieldProjection::Kind::kDefault;
+      projection.from = *field.initial_default();
+    } else if (field.optional()) {
+      projection.kind = FieldProjection::Kind::kNull;
+    } else {
+      return InvalidSchema("Missing required field with id: {}", field.field_id());
+    }
+    return projection;
+  }
+
   Result<FieldProjection> ProjectStruct(
       const StructType& struct_type,
       const std::vector<::parquet::arrow::SchemaField>& parquet_fields) {
@@ -584,24 +638,16 @@ class ProjectionBuilder {
     result.children.reserve(struct_type.fields().size());
 
     for (const auto& field : struct_type.fields()) {
-      int32_t field_id = field.field_id();
       FieldProjection child_projection;
 
-      if (auto iter = field_context_map.find(field_id);
-          iter != field_context_map.cend()) {
+      if (auto iter = field_context_map.find(field.field_id());
+          iter != field_context_map.cend() &&
+          HasNestedFieldIds(*field.type(), iter->second.parquet_field)) {
         const auto& parquet_field = iter->second.parquet_field;
         ICEBERG_ASSIGN_OR_RAISE(child_projection, ProjectField(field, parquet_field,
                                                                iter->second.local_index));
-      } else if (MetadataColumns::IsMetadataColumn(field_id)) {
-        child_projection.kind = FieldProjection::Kind::kMetadata;
-      } else if (field.initial_default() != nullptr) {
-        // Rows written before the field existed assume its `initial-default` value.
-        child_projection.kind = FieldProjection::Kind::kDefault;
-        child_projection.from = *field.initial_default();
-      } else if (field.optional()) {
-        child_projection.kind = FieldProjection::Kind::kNull;
       } else {
-        return InvalidSchema("Missing required field with id: {}", field_id);
+        ICEBERG_ASSIGN_OR_RAISE(child_projection, ProjectMissingField(field));
       }
 
       result.children.emplace_back(std::move(child_projection));
@@ -735,51 +781,89 @@ void CollectColumnIds(const FieldProjection& field_projection,
   }
 }
 
-// Forward declaration
-void ApplyNameMappingToField(const NameMapping& mapping, std::vector<std::string>& names,
-                             ::parquet::arrow::SchemaField* parquet_field);
+// Assigns field IDs from a name mapping to a Parquet schema without field IDs, like
+// Java's ApplyNameMapping. List and map children are looked up as "element", "key" and
+// "value", whatever their physical names in the file.
+class NameMappingApplier {
+ public:
+  explicit NameMappingApplier(const NameMapping& mapping) : mapping_(mapping) {}
 
-void ApplyNameMappingToChild(const NameMapping& mapping, std::vector<std::string>& names,
-                             std::string name, ::parquet::arrow::SchemaField* child) {
-  names.push_back(std::move(name));
-  ApplyNameMappingToField(mapping, names, child);
-  names.pop_back();
-}
-
-void ApplyNameMappingToField(const NameMapping& mapping, std::vector<std::string>& names,
-                             ::parquet::arrow::SchemaField* parquet_field) {
-  if (auto mapped_field = mapping.Find(names);
-      mapped_field.has_value() && mapped_field->get().field_id.has_value()) {
-    parquet_field->field =
-        parquet_field->field->WithMergedMetadata(::arrow::key_value_metadata(
-            {std::string(kParquetFieldIdKey)},
-            {std::to_string(mapped_field->get().field_id.value())}));
+  void ApplyToStruct(std::vector<::parquet::arrow::SchemaField>& fields) {
+    struct MappedSibling {
+      size_t index;
+      std::shared_ptr<::arrow::Field> unmapped_field;
+    };
+    std::unordered_map<int32_t, MappedSibling> mapped_siblings;
+    for (size_t i = 0; i < fields.size(); ++i) {
+      auto unmapped_field = fields[i].field;
+      auto field_id = ApplyToChild(unmapped_field->name(), &fields[i]);
+      if (field_id.has_value()) {
+        auto [iter, inserted] = mapped_siblings.try_emplace(
+            field_id.value(),
+            MappedSibling{.index = i, .unmapped_field = unmapped_field});
+        if (!inserted) {
+          // Aliases can map two sibling columns to the same ID. Java's reader keeps the
+          // last one, so drop the ID from the earlier column.
+          fields[iter->second.index].field = std::move(iter->second.unmapped_field);
+          iter->second = MappedSibling{.index = i, .unmapped_field = unmapped_field};
+        }
+      }
+    }
   }
 
-  auto& children = parquet_field->children;
-  switch (parquet_field->field->type()->id()) {
-    case ::arrow::Type::STRUCT:
-      for (auto& child : children) {
-        ApplyNameMappingToChild(mapping, names, child.field->name(), &child);
-      }
-      break;
-    case ::arrow::Type::LIST:
-    case ::arrow::Type::LARGE_LIST:
-      if (children.size() == 1) {
-        ApplyNameMappingToChild(mapping, names, "element", &children[0]);
-      }
-      break;
-    case ::arrow::Type::MAP:
-      // The key and value sit under the entries struct, which the name path skips.
-      if (children.size() == 1 && children[0].children.size() == 2) {
-        ApplyNameMappingToChild(mapping, names, "key", &children[0].children[0]);
-        ApplyNameMappingToChild(mapping, names, "value", &children[0].children[1]);
-      }
-      break;
-    default:
-      break;
+ private:
+  // Returns the field ID assigned to `field`, if any.
+  std::optional<int32_t> ApplyToChild(std::string_view name,
+                                      ::parquet::arrow::SchemaField* field) {
+    const size_t parent_size = path_.size();
+    if (!path_.empty()) {
+      path_.push_back('.');
+    }
+    path_.append(name);
+    auto field_id = Apply(field);
+    path_.resize(parent_size);
+    return field_id;
   }
-}
+
+  std::optional<int32_t> Apply(::parquet::arrow::SchemaField* parquet_field) {
+    std::optional<int32_t> field_id;
+    if (auto mapped_field = mapping_.Find(path_); mapped_field.has_value()) {
+      field_id = mapped_field->get().field_id;
+    }
+    if (field_id.has_value()) {
+      parquet_field->field =
+          parquet_field->field->WithMergedMetadata(::arrow::key_value_metadata(
+              {std::string(kParquetFieldIdKey)}, {std::to_string(field_id.value())}));
+    }
+
+    auto& children = parquet_field->children;
+    switch (parquet_field->field->type()->id()) {
+      case ::arrow::Type::STRUCT:
+        ApplyToStruct(children);
+        break;
+      case ::arrow::Type::LIST:
+      case ::arrow::Type::LARGE_LIST:
+        if (children.size() == 1) {
+          ApplyToChild(ListType::kElementName, &children[0]);
+        }
+        break;
+      case ::arrow::Type::MAP:
+        // The key and value sit under the entries struct, which the name path skips.
+        if (children.size() == 1 && children[0].children.size() == 2) {
+          ApplyToChild(MapType::kKeyName, &children[0].children[0]);
+          ApplyToChild(MapType::kValueName, &children[0].children[1]);
+        }
+        break;
+      default:
+        break;
+    }
+    return field_id;
+  }
+
+  const NameMapping& mapping_;
+  // Dot-joined names of the field being visited, the key used by NameMapping::Find.
+  std::string path_;
+};
 
 }  // namespace
 
@@ -820,10 +904,7 @@ bool HasFieldIds(const ::parquet::schema::NodePtr& node) {
 
 void ApplyNameMapping(const NameMapping& mapping,
                       ::parquet::arrow::SchemaManifest* parquet_schema) {
-  std::vector<std::string> names;
-  for (auto& parquet_field : parquet_schema->schema_fields) {
-    ApplyNameMappingToChild(mapping, names, parquet_field.field->name(), &parquet_field);
-  }
+  NameMappingApplier(mapping).ApplyToStruct(parquet_schema->schema_fields);
 }
 
 Result<std::shared_ptr<::parquet::SchemaDescriptor>> ToParquetSchema(

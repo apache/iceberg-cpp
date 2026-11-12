@@ -121,7 +121,8 @@ struct ICEBERG_EXPORT ReaderOptions {
   /// \brief Case sensitivity inherited from the scan when resolving field names.
   bool case_sensitive = true;
   /// \brief Name mapping for schema evolution compatibility. Used when reading files
-  /// that may have different field names than the current schema.
+  /// that may have different field names than the current schema. When it is null, the
+  /// Parquet reader matches files without field IDs by the projection's field names.
   std::shared_ptr<class NameMapping> name_mapping;
   /// \brief First row ID inherited by the data file, if assigned.
   std::optional<int64_t> first_row_id;
