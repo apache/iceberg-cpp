@@ -108,6 +108,7 @@ set(ICEBERG_SOURCES
     row/manifest_wrapper.cc
     row/partition_values.cc
     row/struct_like.cc
+    scan_task_planning.cc
     schema.cc
     schema_field.cc
     schema_internal.cc
@@ -330,6 +331,7 @@ if(ICEBERG_BUILD_BUNDLE)
       parquet/parquet_metrics_row_group_filter.cc
       parquet/parquet_reader.cc
       parquet/parquet_register.cc
+      parquet/parquet_split_policy.cc
       parquet/parquet_schema_util.cc
       parquet/parquet_writer.cc
       parquet/row_number_reader.cc)

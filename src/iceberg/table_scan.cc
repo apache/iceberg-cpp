@@ -258,6 +258,42 @@ int64_t FileScanTask::estimated_row_count() const {
   return static_cast<int64_t>(count_at_end - count_at_start);
 }
 
+// FileScanTaskGroup implementation
+
+FileScanTaskGroup::FileScanTaskGroup(std::vector<std::shared_ptr<FileScanTask>> tasks)
+    : tasks_(std::move(tasks)) {
+  for (const auto& task : tasks_) {
+    ICEBERG_DCHECK(task != nullptr, "Task in a file scan task group cannot be null");
+  }
+}
+
+int64_t FileScanTaskGroup::size_bytes() const {
+  int128_t total = 0;
+  for (const auto& task : tasks_) {
+    total += task->size_bytes();
+  }
+  return static_cast<int64_t>(
+      std::min<int128_t>(total, std::numeric_limits<int64_t>::max()));
+}
+
+int32_t FileScanTaskGroup::files_count() const {
+  int64_t total = 0;
+  for (const auto& task : tasks_) {
+    total += task->files_count();
+  }
+  return static_cast<int32_t>(
+      std::min<int64_t>(total, std::numeric_limits<int32_t>::max()));
+}
+
+int64_t FileScanTaskGroup::estimated_row_count() const {
+  int128_t total = 0;
+  for (const auto& task : tasks_) {
+    total += task->estimated_row_count();
+  }
+  return static_cast<int64_t>(
+      std::min<int128_t>(total, std::numeric_limits<int64_t>::max()));
+}
+
 // ChangelogScanTask implementation
 
 ChangelogScanTask::ChangelogScanTask(int32_t change_ordinal, int64_t commit_snapshot_id,
