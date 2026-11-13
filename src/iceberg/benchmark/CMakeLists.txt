@@ -17,8 +17,13 @@
 
 # Google Benchmark is resolved in cmake_modules/IcebergThirdpartyToolchain.cmake.
 
-add_executable(benchmark_smoke benchmark_smoke.cc)
-target_link_libraries(benchmark_smoke
-                      PRIVATE "$<IF:$<TARGET_EXISTS:iceberg_static>,iceberg_static,iceberg_shared>"
-                              "$<IF:$<TARGET_EXISTS:benchmark::benchmark>,benchmark::benchmark,benchmark>"
-)
+function(add_iceberg_benchmark name)
+  add_executable(${name} ${name}.cc)
+  target_link_libraries(${name}
+                        PRIVATE "$<IF:$<TARGET_EXISTS:iceberg_static>,iceberg_static,iceberg_shared>"
+                                "$<IF:$<TARGET_EXISTS:benchmark::benchmark>,benchmark::benchmark,benchmark>"
+  )
+endfunction()
+
+add_iceberg_benchmark(benchmark_smoke)
+add_iceberg_benchmark(metrics_evaluator_benchmark)
