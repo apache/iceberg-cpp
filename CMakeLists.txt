@@ -71,6 +71,12 @@ option(ICEBERG_ENABLE_ASAN "Enable Address Sanitizer" OFF)
 option(ICEBERG_ENABLE_UBSAN "Enable Undefined Behavior Sanitizer" OFF)
 
 include(GNUInstallDirs)
+# Use pinned dependency sources unless the caller explicitly enables package lookup.
+set(FETCHCONTENT_TRY_FIND_PACKAGE_MODE
+    NEVER
+    CACHE STRING "Whether FetchContent should look for installed dependencies")
+set_property(CACHE FETCHCONTENT_TRY_FIND_PACKAGE_MODE PROPERTY STRINGS NEVER OPT_IN
+                                                               ALWAYS)
 include(FetchContent)
 
 set(ICEBERG_INSTALL_LIBDIR "${CMAKE_INSTALL_LIBDIR}")
