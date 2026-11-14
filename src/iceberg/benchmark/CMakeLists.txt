@@ -22,3 +22,9 @@ target_link_libraries(benchmark_smoke
                       PRIVATE "$<IF:$<TARGET_EXISTS:iceberg_static>,iceberg_static,iceberg_shared>"
                               "$<IF:$<TARGET_EXISTS:benchmark::benchmark>,benchmark::benchmark,benchmark>"
 )
+
+add_executable(mumbling_bitmap_benchmark mumbling_bitmap_benchmark.cc)
+target_link_libraries(mumbling_bitmap_benchmark
+                      PRIVATE "$<IF:$<TARGET_EXISTS:iceberg_static>,iceberg_static,iceberg_shared>"
+                              "$<IF:$<TARGET_EXISTS:benchmark::benchmark>,benchmark::benchmark,benchmark>"
+)
