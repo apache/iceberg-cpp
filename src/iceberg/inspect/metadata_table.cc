@@ -22,6 +22,7 @@
 #include <memory>
 #include <utility>
 
+#include "iceberg/inspect/files_table.h"
 #include "iceberg/inspect/history_table.h"
 #include "iceberg/inspect/metadata_scan.h"
 #include "iceberg/inspect/refs_table.h"
@@ -43,6 +44,8 @@ Result<std::unique_ptr<MetadataTable>> MetadataTable::Make(
       return RefsTable::Make(std::move(table));
     case MetadataTableKind::kHistory:
       return HistoryTable::Make(std::move(table));
+    case MetadataTableKind::kFiles:
+      return FilesTable::Make(std::move(table));
     default:
       break;
   }
