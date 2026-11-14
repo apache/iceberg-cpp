@@ -63,6 +63,7 @@ set(ICEBERG_SOURCES
     inspect/metadata_table.cc
     inspect/metadata_scan_task.cc
     inspect/metadata_scan_task_reader.cc
+    inspect/metadata_table_util_internal.cc
     inspect/refs_table.cc
     inspect/snapshots_table.cc
     inheritable_metadata.cc

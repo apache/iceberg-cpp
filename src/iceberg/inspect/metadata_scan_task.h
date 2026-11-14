@@ -37,6 +37,8 @@ class ICEBERG_EXPORT MetadataScanTask {
   enum class TaskKind {
     /// StaticMetadataTask reads in-memory table metadata (snapshots, history, refs).
     kStatic,
+    /// SnapshotMetadataTask reads snapshot manifests and their file entries.
+    kSnapshot,
   };
 
   virtual ~MetadataScanTask() = default;

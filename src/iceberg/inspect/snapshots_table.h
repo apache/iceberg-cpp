@@ -48,7 +48,7 @@ class ICEBERG_EXPORT SnapshotsTable : public MetadataTable {
     return MetadataTableKind::kSnapshots;
   }
 
-  const std::shared_ptr<Schema>& schema() const override;
+  std::shared_ptr<Schema> schema() const override;
 
  protected:
   Result<std::unique_ptr<MetadataScan>> MakeScan(

@@ -107,20 +107,26 @@ class TaskArrowStreamSource {
 
 }  // namespace
 
-MetadataScanBuilder::MetadataScanBuilder(const MetadataTable& table)
-    : table_(&table),
-      context_{.kind = table.kind(),
-               .table_metadata = table.source_table()->metadata(),
-               .schema = table.schema(),
-               .projected_schema = table.schema()} {}
+MetadataScanBuilder::MetadataScanBuilder(const MetadataTable& table,
+                                         internal::MetadataScanContext context)
+    : table_(&table), context_(std::move(context)) {}
 
 MetadataScanBuilder::~MetadataScanBuilder() = default;
 
 Result<std::unique_ptr<MetadataScanBuilder>> MetadataScanBuilder::Make(
     const MetadataTable& table) {
   ICEBERG_PRECHECK(table.source_table() != nullptr, "Source table cannot be null");
-  ICEBERG_PRECHECK(table.schema() != nullptr, "Metadata table schema cannot be null");
-  return std::unique_ptr<MetadataScanBuilder>(new MetadataScanBuilder(table));
+  auto metadata = table.source_table()->metadata();
+  ICEBERG_PRECHECK(metadata != nullptr, "Table metadata cannot be null");
+  ICEBERG_ASSIGN_OR_RAISE(auto schema, table.SchemaForScan(*metadata));
+  ICEBERG_PRECHECK(schema != nullptr, "Metadata table schema cannot be null");
+  internal::MetadataScanContext context{.kind = table.kind(),
+                                        .table_metadata = std::move(metadata),
+                                        .schema = schema,
+                                        .projected_schema = std::move(schema),
+                                        .io = table.source_table()->io()};
+  return std::unique_ptr<MetadataScanBuilder>(
+      new MetadataScanBuilder(table, std::move(context)));
 }
 
 MetadataScanBuilder& MetadataScanBuilder::Select(
