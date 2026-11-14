@@ -98,7 +98,7 @@ void BM_PforDecode(benchmark::State& state, PforData data) {
   const auto count = static_cast<size_t>(state.range(0));
   const Bytes encoded = EncodePfor(MakePforValues(data, count), kBestWidth);
   std::vector<uint8_t> out(count);
-  for (auto _ : state) {
+  while (state.KeepRunning()) {
     auto result = DecodePforBytes(encoded, out);
     benchmark::DoNotOptimize(result);
     benchmark::DoNotOptimize(out.data());
@@ -140,7 +140,7 @@ std::vector<int64_t> MakePositions(Layout layout, int64_t cardinality) {
       std::mt19937_64 rng(kSeed);
       std::uniform_int_distribution<int64_t> dist(0, kMaxPositions - 1);
       std::set<int64_t> unique;
-      while (static_cast<int64_t>(unique.size()) < cardinality) {
+      while (std::cmp_less(unique.size(), cardinality)) {
         unique.insert(dist(rng));
       }
       positions.assign(unique.begin(), unique.end());
@@ -150,9 +150,8 @@ std::vector<int64_t> MakePositions(Layout layout, int64_t cardinality) {
       // Spread the runs so that they cover the whole range when possible.
       const int64_t runs = (cardinality + 63) / 64;
       const int64_t stride = std::max<int64_t>(64, (kMaxPositions / runs) / 64 * 64);
-      for (int64_t run = 0; static_cast<int64_t>(positions.size()) < cardinality; ++run) {
-        for (int64_t i = 0;
-             i < 64 && static_cast<int64_t>(positions.size()) < cardinality; ++i) {
+      for (int64_t run = 0; std::cmp_less(positions.size(), cardinality); ++run) {
+        for (int64_t i = 0; i < 64 && std::cmp_less(positions.size(), cardinality); ++i) {
           positions.push_back(run * stride + i);
         }
       }
@@ -198,7 +197,7 @@ void MaxBitmapArgs(benchmark::internal::Benchmark* b) {
 // the container offset table.
 void BM_Make(benchmark::State& state, Layout layout) {
   const Bytes bytes = MakeBitmapBytes(state, layout);
-  for (auto _ : state) {
+  while (state.KeepRunning()) {
     auto bitmap = MumblingBitmapView::Make(bytes);
     benchmark::DoNotOptimize(bitmap);
   }
@@ -220,7 +219,7 @@ void BM_Contains(benchmark::State& state, Layout layout) {
     probe = dist(rng);
   }
 
-  for (auto _ : state) {
+  while (state.KeepRunning()) {
     int64_t hits = 0;
     for (int64_t probe : probes) {
       hits += bitmap.Contains(probe) ? 1 : 0;
@@ -235,4 +234,12 @@ MUMBLING_BITMAP_BENCHMARK(BM_Contains);
 }  // namespace
 }  // namespace iceberg
 
-BENCHMARK_MAIN();
+int main(int argc, char** argv) {
+  benchmark::Initialize(&argc, argv);
+  if (benchmark::ReportUnrecognizedArguments(argc, argv)) {
+    return 1;
+  }
+  benchmark::RunSpecifiedBenchmarks();
+  benchmark::Shutdown();
+  return 0;
+}
