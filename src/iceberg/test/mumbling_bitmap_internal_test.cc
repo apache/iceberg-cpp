@@ -20,6 +20,7 @@
 #include "iceberg/util/mumbling_bitmap_internal.h"
 
 #include <algorithm>
+#include <array>
 #include <bit>
 #include <cstdint>
 #include <fstream>
@@ -130,8 +131,8 @@ std::vector<Fixture> ReadFixtures(const std::string& file_name, int hex_column) 
     if (tab == std::string::npos) {
       continue;
     }
-    std::string_view columns[] = {std::string_view(line).substr(0, tab),
-                                  std::string_view(line).substr(tab + 1)};
+    std::array<std::string_view, 2> columns = {std::string_view(line).substr(0, tab),
+                                               std::string_view(line).substr(tab + 1)};
     fixtures.push_back({.line = line_number,
                         .bytes = ParseHex(columns[hex_column]),
                         .values = ParseValues(columns[1 - hex_column])});
@@ -411,7 +412,7 @@ TEST(MumblingBitmapTest, RandomRoundTrip) {
       // Pick a density: empty, sparse, borderline or dense.
       const int target = std::vector<int>{0, 3, 31, 32, 100, 256}[rng() % 6];
       std::set<int> in_container;
-      while (static_cast<int>(in_container.size()) < target) {
+      while (std::cmp_less(in_container.size(), target)) {
         in_container.insert(static_cast<int>(rng() % 256));
       }
       for (int pos : in_container) {
