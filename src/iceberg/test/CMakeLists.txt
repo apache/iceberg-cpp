@@ -206,6 +206,7 @@ if(ICEBERG_BUILD_BUNDLE)
   add_iceberg_test(metadata_table_test
                    USE_BUNDLE
                    SOURCES
+                   inspect/metadata_table_util_test.cc
                    inspect/history_table_test.cc
                    inspect/metadata_table_test.cc
                    inspect/refs_table_test.cc
