@@ -285,6 +285,7 @@ class PositionDeleteIndex;
 /// \brief Metadata tables.
 enum class MetadataTableKind : uint8_t;
 
+class FilesTable;
 class HistoryTable;
 class MetadataScanBuilder;
 class MetadataTable;
