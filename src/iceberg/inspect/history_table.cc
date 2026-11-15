@@ -77,7 +77,7 @@ HistoryTable::HistoryTable(std::shared_ptr<const Table> table)
 
 HistoryTable::~HistoryTable() = default;
 
-const std::shared_ptr<Schema>& HistoryTable::schema() const { return CanonicalSchema(); }
+std::shared_ptr<Schema> HistoryTable::schema() const { return CanonicalSchema(); }
 
 const std::shared_ptr<Schema>& HistoryTable::CanonicalSchema() {
   static const auto schema = std::make_shared<Schema>(std::vector<SchemaField>{

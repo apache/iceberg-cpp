@@ -53,6 +53,11 @@ const std::shared_ptr<const Table>& MetadataTable::source_table() const {
   return source_table_;
 }
 
+Result<std::shared_ptr<Schema>> MetadataTable::SchemaForScan(
+    const TableMetadata& metadata) const {
+  return schema();
+}
+
 Result<std::unique_ptr<MetadataScanBuilder>> MetadataTable::NewScan() const {
   return MetadataScanBuilder::Make(*this);
 }

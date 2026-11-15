@@ -91,7 +91,7 @@ RefsTable::RefsTable(std::shared_ptr<const Table> table)
 
 RefsTable::~RefsTable() = default;
 
-const std::shared_ptr<Schema>& RefsTable::schema() const { return CanonicalSchema(); }
+std::shared_ptr<Schema> RefsTable::schema() const { return CanonicalSchema(); }
 
 const std::shared_ptr<Schema>& RefsTable::CanonicalSchema() {
   static const auto schema = std::make_shared<Schema>(std::vector<SchemaField>{

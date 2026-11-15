@@ -46,7 +46,7 @@ class ICEBERG_EXPORT RefsTable : public MetadataTable {
 
   MetadataTableKind kind() const noexcept override { return MetadataTableKind::kRefs; }
 
-  const std::shared_ptr<Schema>& schema() const override;
+  std::shared_ptr<Schema> schema() const override;
 
  protected:
   Result<std::unique_ptr<MetadataScan>> MakeScan(
