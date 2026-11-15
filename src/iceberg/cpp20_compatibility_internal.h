@@ -80,6 +80,7 @@
 #include "iceberg/incremental_append_scan.h"
 #include "iceberg/incremental_changelog_scan.h"
 #include "iceberg/inheritable_metadata.h"
+#include "iceberg/inspect/files_table.h"
 #include "iceberg/inspect/history_table.h"
 #include "iceberg/inspect/metadata_scan.h"
 #include "iceberg/inspect/metadata_scan_task.h"
