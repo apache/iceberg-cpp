@@ -40,6 +40,7 @@
 #include "iceberg/schema_internal.h"
 #include "iceberg/type.h"
 #include "iceberg/util/macros.h"
+#include "iceberg/util/stream.h"
 
 namespace iceberg::internal {
 
@@ -179,6 +180,81 @@ Result<ArrowArrayStream> MakeMetadataBatchStream(
   return MakeArrowArrayStream(
       std::make_unique<Source>(projected_schema, std::move(append_fns), num_rows,
                                batch_size, std::forward<GetRow>(get_row)));
+}
+
+/// Stream manifest-backed rows with the same batch-size and ownership contract.
+template <typename Row, typename AppendRow>
+class MetadataRowsSource : public Stream<ArrowArray> {
+ public:
+  MetadataRowsSource(std::shared_ptr<iceberg::Schema> schema,
+                     std::unique_ptr<Stream<Row>> rows, int64_t batch_size,
+                     AppendRow append_row)
+      : schema_(std::move(schema)),
+        rows_(std::move(rows)),
+        batch_size_(batch_size),
+        append_row_(std::move(append_row)) {}
+
+  Status Close() {
+    rows_.reset();
+    return {};
+  }
+
+  Result<ArrowSchema> Schema() {
+    ArrowSchema schema{};
+    ICEBERG_RETURN_UNEXPECTED(ToArrowSchema(*schema_, &schema));
+    return schema;
+  }
+
+ protected:
+  Result<std::optional<ArrowArray>> NextImpl() override {
+    ICEBERG_PRECHECK(rows_ != nullptr, "Cannot read from a closed metadata stream");
+    ICEBERG_ASSIGN_OR_RAISE(auto row, rows_->Next());
+    if (!row) {
+      return std::nullopt;
+    }
+    ICEBERG_ASSIGN_OR_RAISE(auto builder, ArrowRowBuilder::Make(*schema_));
+    ICEBERG_RETURN_UNEXPECTED(append_row_(builder, *row));
+    while (builder.num_rows() < batch_size_) {
+      ICEBERG_ASSIGN_OR_RAISE(auto next_row, rows_->Next());
+      if (!next_row) {
+        break;
+      }
+      ICEBERG_RETURN_UNEXPECTED(append_row_(builder, *next_row));
+    }
+    ICEBERG_ASSIGN_OR_RAISE(auto batch, std::move(builder).Finish());
+    return batch;
+  }
+
+ private:
+  const std::shared_ptr<iceberg::Schema> schema_;
+  std::unique_ptr<Stream<Row>> rows_;
+  const int64_t batch_size_;
+  AppendRow append_row_;
+};
+
+template <typename Row, typename AppendRow>
+Result<ArrowArrayStream> MakeMetadataBatchStream(const std::shared_ptr<Schema>& schema,
+                                                 std::unique_ptr<Stream<Row>> rows,
+                                                 int64_t batch_size,
+                                                 AppendRow append_row) {
+  ICEBERG_PRECHECK(batch_size > 0, "Batch size must be positive");
+  ICEBERG_PRECHECK(schema != nullptr, "Metadata stream schema cannot be null");
+  ICEBERG_PRECHECK(rows != nullptr, "Metadata row source cannot be null");
+  if constexpr (requires { static_cast<bool>(append_row); }) {
+    ICEBERG_PRECHECK(static_cast<bool>(append_row),
+                     "Metadata row callback cannot be empty");
+  }
+  return MakeArrowArrayStream(std::make_unique<MetadataRowsSource<Row, AppendRow>>(
+      schema, std::move(rows), batch_size, std::move(append_row)));
+}
+
+template <typename Row, typename AppendRow>
+Result<ArrowArrayStream> MakeMetadataBatchStream(const std::shared_ptr<Schema>& schema,
+                                                 std::vector<Row> rows,
+                                                 int64_t batch_size,
+                                                 AppendRow append_row) {
+  return MakeMetadataBatchStream(schema, Stream<Row>::FromVector(std::move(rows)),
+                                 batch_size, std::move(append_row));
 }
 
 }  // namespace iceberg::internal
