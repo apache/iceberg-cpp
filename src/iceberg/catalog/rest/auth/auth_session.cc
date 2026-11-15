@@ -64,28 +64,30 @@ Result<std::shared_ptr<AuthSession>> AuthSession::MakeOAuth2(
     const std::unordered_map<std::string, std::string>& optional_oauth_params,
     std::shared_ptr<HttpClient> client, Executor* auth_executor) {
   return internal::MakeOAuth2Session(
-      initial_token, token_endpoint, client_id, client_secret, scope, keep_refreshed,
-      optional_oauth_params, std::move(client), std::nullopt, auth_executor);
+      initial_token, token_endpoint,
+      client_id.empty() ? client_secret : client_id + ":" + client_secret, scope,
+      keep_refreshed, optional_oauth_params, std::move(client), std::nullopt,
+      auth_executor,
+      /*exchange_enabled=*/false);
 }
 
 Result<std::shared_ptr<AuthSession>> internal::MakeOAuth2Session(
     const OAuthTokenResponse& initial_token, const std::string& token_endpoint,
-    const std::string& client_id, const std::string& client_secret,
-    const std::string& scope, bool keep_refreshed,
+    const std::string& credential, const std::string& scope, bool keep_refreshed,
     const std::unordered_map<std::string, std::string>& optional_oauth_params,
     std::shared_ptr<HttpClient> client,
     std::optional<std::chrono::steady_clock::time_point> token_request_started_at,
-    Executor* refresh_executor) {
+    Executor* refresh_executor, bool exchange_enabled) {
   ICEBERG_PRECHECK(!keep_refreshed || refresh_executor != nullptr,
                    "OAuth2 token refresh is enabled but no auth executor was provided; "
                    "pass an executor or set {}=false",
                    AuthProperties::kKeepRefreshed.key());
   internal::OAuth2Session::Config config{
       .token_endpoint = token_endpoint,
-      .client_id = client_id,
-      .client_secret = client_secret,
+      .credential = credential,
       .scope = scope,
       .optional_oauth_params = optional_oauth_params,
+      .exchange_enabled = exchange_enabled,
       .refresh_executor = keep_refreshed ? refresh_executor : nullptr,
   };
   ICEBERG_ASSIGN_OR_RAISE(auto session, internal::OAuth2Session::Make(

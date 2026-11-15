@@ -23,6 +23,7 @@
 #include <chrono>
 #include <condition_variable>
 #include <exception>
+#include <functional>
 #include <memory>
 #include <mutex>
 #include <optional>
@@ -36,6 +37,7 @@
 #include "iceberg/catalog/rest/auth/oauth2_util.h"
 #include "iceberg/catalog/rest/http_client.h"
 #include "iceberg/logging/log_macros.h"
+#include "iceberg/util/base64.h"
 #include "iceberg/util/macros.h"
 #include "iceberg/util/retry_util.h"
 #include "iceberg/util/scheduled_executor_internal.h"
@@ -65,12 +67,16 @@ class OAuth2Session final : public AuthSession,
  public:
   struct Config {
     std::string token_endpoint;
-    std::string client_id;
-    std::string client_secret;
+    std::string credential;
     std::string scope;
     std::unordered_map<std::string, std::string> optional_oauth_params;
+    /// The legacy public factory keeps client-credentials refresh.
+    bool exchange_enabled = false;
     /// Borrowed executor for background refresh. Null disables refresh.
     Executor* refresh_executor = nullptr;
+    /// Internal clock override for deterministic expiration tests.
+    std::function<std::chrono::steady_clock::time_point()> now =
+        std::chrono::steady_clock::now;
   };
 
   static Result<std::shared_ptr<OAuth2Session>> Make(
@@ -98,7 +104,7 @@ class OAuth2Session final : public AuthSession,
     return OAuth2SessionInfo{
         .token = token_,
         .issued_token_type = issued_token_type_,
-        .credential = Credential(config_),
+        .credential = config_.credential,
         .scope = config_.scope,
         .oauth2_server_uri = config_.token_endpoint,
         .optional_oauth_params = config_.optional_oauth_params,
@@ -135,8 +141,8 @@ class OAuth2Session final : public AuthSession,
 
   /// \brief Whether this session will keep refreshing its token.
   ///
-  /// False if refresh is disabled, was stopped by StopRefreshing() or Close(), or
-  /// gave up after repeated failures.
+  /// False if expiration is unknown, refresh is disabled, was stopped by
+  /// StopRefreshing() or Close(), or gave up after repeated failures.
   bool IsRefreshable() const {
     std::lock_guard lock(refresh_mutex_);
     return scheduler_.has_value() && !closed_ && !refresh_stopped_;
@@ -169,15 +175,10 @@ class OAuth2Session final : public AuthSession,
     return {};
   }
 
-  static std::string Credential(const Config& config) {
-    return config.client_id.empty() ? config.client_secret
-                                    : config.client_id + ":" + config.client_secret;
-  }
-
   static Result<AuthProperties> MakeRefreshProperties(const Config& config) {
     std::unordered_map<std::string, std::string> properties =
         config.optional_oauth_params;
-    properties[AuthProperties::kCredential.key()] = Credential(config);
+    properties[AuthProperties::kCredential.key()] = config.credential;
     properties[AuthProperties::kScope.key()] = config.scope;
     properties[AuthProperties::kOAuth2ServerUri.key()] = config.token_endpoint;
     return AuthProperties::FromProperties(properties);
@@ -215,32 +216,31 @@ class OAuth2Session final : public AuthSession,
   };
 
   void UpdateTokenState(const OAuthTokenResponse& token_response,
-                        std::optional<std::chrono::steady_clock::time_point>
-                            token_request_started_at = std::nullopt) {
+                        std::optional<std::chrono::steady_clock::time_point> expiration) {
     token_ = token_response.access_token;
     issued_token_type_ = token_response.issued_token_type.empty()
                              ? AuthProperties::kAccessTokenType
                              : token_response.issued_token_type;
     headers_ = OAuth2Util::AuthHeaders(token_);
-    expires_at_ = std::chrono::steady_clock::time_point{};
-    auto request_started_at =
-        token_request_started_at.value_or(std::chrono::steady_clock::now());
-    if (auto expiration = TokenExpirationTime(token_response, request_started_at);
-        expiration.has_value()) {
-      expires_at_ = *expiration;
-    }
+    expires_at_ = expiration.value_or(std::chrono::steady_clock::time_point{});
   }
 
   void SetInitialToken(
       const OAuthTokenResponse& token_response,
       std::optional<std::chrono::steady_clock::time_point> token_request_started_at) {
-    UpdateTokenState(token_response, token_request_started_at);
+    auto request_started_at = token_request_started_at.value_or(config_.now());
+    UpdateTokenState(
+        token_response,
+        TokenExpirationTime(token_response, request_started_at,
+                            std::chrono::system_clock::now(), config_.now()));
     if (!scheduler_) {
       return;
     }
     // Refresh an already-expired initial token immediately.
     if (auto delay = CalculateRefreshDelay()) {
       ScheduleRefresh(*delay);
+    } else {
+      MarkRefreshStopped();
     }
   }
 
@@ -255,20 +255,59 @@ class OAuth2Session final : public AuthSession,
       return RefreshToken();
     });
     if (!result.has_value()) {
+      // One final credential-backed attempt, within the same close guard.
+      result = RefreshToken(/*recover=*/true);
+    }
+    if (!result.has_value()) {
       ICEBERG_LOG_WARN("Failed to refresh OAuth2 token: {}", result.error().message);
       MarkRefreshStopped();
       return std::nullopt;
     }
+    if (!result->has_value()) {
+      MarkRefreshStopped();
+    }
     return *result;
   }
 
-  // Record that no further refresh will be scheduled after a failure.
+  // Record that no further refresh will be scheduled.
   void MarkRefreshStopped() {
     std::lock_guard lock(refresh_mutex_);
     refresh_stopped_ = true;
   }
 
-  Result<std::optional<std::chrono::milliseconds>> RefreshToken() {
+  class ClientCredentialsSession final : public AuthSession {
+   public:
+    Result<HttpRequest> Authenticate(HttpRequest request) override {
+      // HttpClient merges its defaults before invoking the session.
+      request.headers.erase("Authorization");
+      return request;
+    }
+  };
+
+  Result<OAuthTokenResponse> FetchRefreshToken(const std::string& token,
+                                               const std::string& issued_token_type,
+                                               bool recover) {
+    if (!config_.exchange_enabled) {
+      ClientCredentialsSession session;
+      return OAuth2Util::FetchToken(*client_, session, refresh_properties_);
+    }
+    auto empty_session = AuthSession::MakeDefault({});
+    auto headers =
+        recover
+            ? std::unordered_map<std::string, std::string>{{"Authorization",
+                                                            "Basic " +
+                                                                Base64::Encode(
+                                                                    config_.credential)}}
+            : OAuth2Util::AuthHeaders(token);
+    // Explicit request headers override any default Authorization on the client.
+    // Keep the current token as subject, without a parent actor.
+    return OAuth2Util::ExchangeToken(*client_, *empty_session, headers, token,
+                                     issued_token_type, std::nullopt, std::nullopt,
+                                     config_.scope, config_.token_endpoint,
+                                     config_.optional_oauth_params);
+  }
+
+  Result<std::optional<std::chrono::milliseconds>> RefreshToken(bool recover = false) {
     {
       std::lock_guard lock(refresh_mutex_);
       if (closed_) {
@@ -276,21 +315,34 @@ class OAuth2Session final : public AuthSession,
       }
     }
     try {
-      auto request_started_at = std::chrono::steady_clock::now();
-      auto empty_session = AuthSession::MakeDefault({});
-      // TODO(lishuxu): Honor token-exchange-enabled when refreshing tokens.
-      ICEBERG_ASSIGN_OR_RAISE(
-          auto response,
-          OAuth2Util::FetchToken(*client_, *empty_session, refresh_properties_));
+      std::string token;
+      std::string issued_token_type;
+      {
+        std::shared_lock lock(mutex_);
+        token = token_;
+        issued_token_type = issued_token_type_;
+        recover = recover || (expires_at_ != std::chrono::steady_clock::time_point{} &&
+                              expires_at_ <= config_.now());
+      }
+      if ((!config_.exchange_enabled || recover) && config_.credential.empty()) {
+        ICEBERG_LOG_WARN("Stopping OAuth2 token refresh: no credential available");
+        return std::nullopt;
+      }
+      auto request_started_at = config_.now();
+      ICEBERG_ASSIGN_OR_RAISE(auto response,
+                              FetchRefreshToken(token, issued_token_type, recover));
+      auto expiration = TokenExpirationTime(
+          response, request_started_at, std::chrono::system_clock::now(), config_.now());
       {
         std::unique_lock lock(mutex_);
-        UpdateTokenState(response, request_started_at);
+        // Keep the current token available for requests and exchange retries until
+        // the replacement has passed expiration validation.
+        if (expiration.has_value() && *expiration <= config_.now()) {
+          return TokenExpired("Refreshed OAuth2 token is already expired");
+        }
+        UpdateTokenState(response, expiration);
       }
-      auto delay = CalculateRefreshDelay();
-      if (delay.has_value() && *delay <= std::chrono::milliseconds::zero()) {
-        return TokenExpired("Refreshed OAuth2 token is already expired");
-      }
-      return delay;
+      return CalculateRefreshDelay();
     } catch (const std::exception& e) {
       return UnknownError("OAuth2 token refresh threw: {}", e.what());
     } catch (...) {
@@ -338,7 +390,7 @@ class OAuth2Session final : public AuthSession,
     if (expires_at_ == std::chrono::steady_clock::time_point{}) {
       return std::nullopt;
     }
-    auto now = std::chrono::steady_clock::now();
+    auto now = config_.now();
     if (expires_at_ <= now) {
       return std::chrono::milliseconds::zero();
     }
@@ -369,11 +421,10 @@ class OAuth2Session final : public AuthSession,
 /// Returns InvalidArgument if keep_refreshed is true without an executor.
 Result<std::shared_ptr<AuthSession>> MakeOAuth2Session(
     const OAuthTokenResponse& initial_token, const std::string& token_endpoint,
-    const std::string& client_id, const std::string& client_secret,
-    const std::string& scope, bool keep_refreshed,
+    const std::string& credential, const std::string& scope, bool keep_refreshed,
     const std::unordered_map<std::string, std::string>& optional_oauth_params,
     std::shared_ptr<HttpClient> client,
     std::optional<std::chrono::steady_clock::time_point> token_request_started_at,
-    Executor* refresh_executor);
+    Executor* refresh_executor, bool exchange_enabled);
 
 }  // namespace iceberg::rest::auth::internal

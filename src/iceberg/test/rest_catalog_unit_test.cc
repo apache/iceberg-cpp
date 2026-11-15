@@ -54,6 +54,7 @@
 #include "iceberg/table_update.h"
 #include "iceberg/test/executor.h"
 #include "iceberg/test/matchers.h"
+#include "iceberg/test/retry.h"
 
 namespace iceberg::rest {
 
@@ -668,6 +669,190 @@ class RestCatalogOAuth2UriTest : public RestCatalogLoadTableTest {
   std::unordered_map<std::string, std::string> properties_;
   int factory_calls_ = 0;
 };
+
+struct OAuth2RefreshModeCase {
+  std::string name;
+  std::string client;
+  std::string server_default;
+  std::string server_override;
+  bool exchange_enabled;
+};
+
+class RestCatalogOAuth2RefreshTest
+    : public RestCatalogOAuth2UriTest,
+      public ::testing::WithParamInterface<OAuth2RefreshModeCase> {};
+
+TEST_P(RestCatalogOAuth2RefreshTest, RefreshUsesMergedConfigAndUpdatesBusinessRequests) {
+  const auto& mode = GetParam();
+  properties_["token-refresh-enabled"] = "true";
+  if (!mode.client.empty()) {
+    properties_["token-exchange-enabled"] = mode.client;
+  }
+  CatalogConfig server_config;
+  if (!mode.server_default.empty()) {
+    server_config.defaults["token-exchange-enabled"] = mode.server_default;
+  }
+  if (!mode.server_override.empty()) {
+    server_config.overrides["token-exchange-enabled"] = mode.server_override;
+  }
+  ExpectInit(server_config,
+             R"({"access_token":"initial","token_type":"bearer","expires_in":1})");
+
+  std::unordered_map<std::string, std::string> expected_form;
+  std::unordered_map<std::string, std::string> expected_headers;
+  if (mode.exchange_enabled) {
+    expected_form = {
+        {"grant_type", "urn:ietf:params:oauth:grant-type:token-exchange"},
+        {"subject_token", "initial"},
+        {"subject_token_type", auth::AuthProperties::kAccessTokenType},
+        {"scope", "catalog"},
+    };
+    expected_headers = {{"Authorization", "Bearer initial"}};
+  } else {
+    expected_form = {{"grant_type", "client_credentials"},
+                     {"client_id", "client"},
+                     {"client_secret", "secret"},
+                     {"scope", "catalog"}};
+  }
+  EXPECT_CALL(*mock_client_, PostForm("https://auth.example/token/", _, _, _, _))
+      .WillOnce([&](const std::string&, const auto& form, const auto& headers,
+                    const ErrorHandler&, auth::AuthSession&) -> Result<HttpResponse> {
+        EXPECT_THAT(form, ::testing::ContainerEq(expected_form));
+        EXPECT_THAT(headers, ::testing::ContainerEq(expected_headers));
+        return HttpResponse(200, R"({"access_token":"refreshed","token_type":"bearer"})");
+      });
+
+  test::MockExecutor executor;
+  std::promise<ExecutorTask> queued;
+  auto ready = queued.get_future();
+  EXPECT_CALL(executor, Submit).WillOnce([&](ExecutorTask task) -> Status {
+    queued.set_value(std::move(task));
+    return {};
+  });
+  ICEBERG_UNWRAP_OR_FAIL(auto root, MakeOAuth2Catalog(&executor));
+  ASSERT_EQ(ready.wait_for(std::chrono::seconds(5)), std::future_status::ready);
+  std::move(ready.get())();
+
+  EXPECT_CALL(*mock_client_, Get("https://catalog.example/api/v1/namespaces", _, _, _, _))
+      .WillOnce([](const std::string&, const auto&, const auto&, const ErrorHandler&,
+                   auth::AuthSession& session) -> Result<HttpResponse> {
+        ICEBERG_ASSIGN_OR_RAISE(auto request, session.Authenticate({}));
+        EXPECT_EQ(request.headers.at("Authorization"), "Bearer refreshed");
+        return HttpResponse(200, R"({"namespaces":[]})");
+      });
+  ICEBERG_UNWRAP_OR_FAIL(auto catalog, root->AsCatalog());
+  EXPECT_THAT(catalog->ListNamespaces({}), IsOk());
+  EXPECT_EQ(factory_calls_, 2);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ExchangeModes, RestCatalogOAuth2RefreshTest,
+    ::testing::Values(OAuth2RefreshModeCase{"Default", "", "", "", true},
+                      OAuth2RefreshModeCase{"Enabled", "true", "", "", true},
+                      OAuth2RefreshModeCase{"Disabled", "false", "", "", false},
+                      OAuth2RefreshModeCase{"ServerDisables", "true", "", "false", false},
+                      OAuth2RefreshModeCase{"ServerEnables", "false", "", "true", true},
+                      OAuth2RefreshModeCase{"ServerDefaultDisables", "", "false", "",
+                                            false},
+                      OAuth2RefreshModeCase{"ClientOverridesServerDefault", "false",
+                                            "true", "", false}),
+    [](const ::testing::TestParamInfo<OAuth2RefreshModeCase>& info) {
+      return info.param.name;
+    });
+
+struct OAuth2RecoveryCase {
+  std::string name;
+  bool expired;
+  bool exchange_enabled;
+};
+
+class RestCatalogOAuth2RecoveryTest
+    : public RestCatalogOAuth2UriTest,
+      public ::testing::WithParamInterface<OAuth2RecoveryCase> {};
+
+TEST_P(RestCatalogOAuth2RecoveryTest, RecoversAndUpdatesBusinessRequests) {
+  const auto& mode = GetParam();
+  properties_["token-refresh-enabled"] = "true";
+  properties_["token-exchange-enabled"] = mode.exchange_enabled ? "true" : "false";
+  properties_["credential"] = ":SeCrEt:Tail";
+  ExpectInit({}, nlohmann::json({{"access_token", "Initial"},
+                                 {"token_type", "bearer"},
+                                 {"expires_in", mode.expired ? 0 : 1}})
+                     .dump());
+
+  const int expected_requests = mode.expired ? 1 : 7;
+  int requests = 0;
+  EXPECT_CALL(*mock_client_, PostForm("https://auth.example/token/", _, _, _, _))
+      .Times(expected_requests)
+      .WillRepeatedly([&](const std::string&, const auto& form, const auto& headers,
+                          const ErrorHandler&,
+                          auth::AuthSession& session) -> Result<HttpResponse> {
+        ++requests;
+        HttpRequest request{.headers = {{"authorization", "Bearer StaleDefault"},
+                                        {"X-Trace", "KeepThisValue"}}};
+        for (const auto& [key, value] : headers) {
+          request.headers.insert_or_assign(key, value);
+        }
+        ICEBERG_ASSIGN_OR_RAISE(auto authenticated,
+                                session.Authenticate(std::move(request)));
+        std::unordered_map<std::string, std::string> expected_form{{"scope", "catalog"}};
+        if (mode.exchange_enabled) {
+          expected_form.insert({
+              {"grant_type", "urn:ietf:params:oauth:grant-type:token-exchange"},
+              {"subject_token", "Initial"},
+              {"subject_token_type", auth::AuthProperties::kAccessTokenType},
+          });
+          EXPECT_EQ(authenticated.headers.at("Authorization"),
+                    mode.expired || requests == 7 ? "Basic OlNlQ3JFdDpUYWls"
+                                                  : "Bearer Initial");
+        } else {
+          expected_form.insert(
+              {{"grant_type", "client_credentials"}, {"client_secret", "SeCrEt:Tail"}});
+          EXPECT_FALSE(authenticated.headers.contains("Authorization"));
+        }
+        EXPECT_THAT(form, ::testing::ContainerEq(expected_form));
+        EXPECT_EQ(authenticated.headers.at("X-Trace"), "KeepThisValue");
+        if (requests < expected_requests) {
+          return IOError("ordinary refresh failed");
+        }
+        return HttpResponse(200, R"({"access_token":"Recovered","token_type":"bearer"})");
+      });
+
+  test::MockExecutor executor;
+  std::promise<ExecutorTask> queued;
+  auto ready = queued.get_future();
+  EXPECT_CALL(executor, Submit).WillOnce([&](ExecutorTask task) -> Status {
+    queued.set_value(std::move(task));
+    return {};
+  });
+  ICEBERG_UNWRAP_OR_FAIL(auto root, MakeOAuth2Catalog(&executor));
+  ASSERT_EQ(ready.wait_for(std::chrono::seconds(5)), std::future_status::ready);
+  test::FakeRetryEnvironment retry_environment;
+  ScopedRetryTestHooks retry_hooks(retry_environment.hooks());
+  std::move(ready.get())();
+  EXPECT_EQ(requests, expected_requests);
+
+  EXPECT_CALL(*mock_client_, Get("https://catalog.example/api/v1/namespaces", _, _, _, _))
+      .WillOnce([](const std::string&, const auto&, const auto&, const ErrorHandler&,
+                   auth::AuthSession& session) -> Result<HttpResponse> {
+        ICEBERG_ASSIGN_OR_RAISE(auto request, session.Authenticate({}));
+        EXPECT_EQ(request.headers.at("Authorization"), "Bearer Recovered");
+        return HttpResponse(200, R"({"namespaces":[]})");
+      });
+  ICEBERG_UNWRAP_OR_FAIL(auto catalog, root->AsCatalog());
+  EXPECT_THAT(catalog->ListNamespaces({}), IsOk());
+  EXPECT_EQ(factory_calls_, 2);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    RecoveryModes, RestCatalogOAuth2RecoveryTest,
+    ::testing::Values(OAuth2RecoveryCase{"ExpiredExchange", true, true},
+                      OAuth2RecoveryCase{"FinalExchange", false, true},
+                      OAuth2RecoveryCase{"ExpiredClientCredentials", true, false},
+                      OAuth2RecoveryCase{"FinalClientCredentials", false, false}),
+    [](const ::testing::TestParamInfo<OAuth2RecoveryCase>& info) {
+      return info.param.name;
+    });
 
 TEST_F(RestCatalogOAuth2UriTest, TrustsServerOverridesByDefault) {
   ExpectInit({.overrides = {{"uri", "HTTPS://other-catalog.example/base/"},
