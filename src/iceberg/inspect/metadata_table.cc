@@ -23,6 +23,7 @@
 #include <utility>
 
 #include "iceberg/inspect/history_table.h"
+#include "iceberg/inspect/manifests_table.h"
 #include "iceberg/inspect/metadata_scan.h"
 #include "iceberg/inspect/refs_table.h"
 #include "iceberg/inspect/snapshots_table.h"
@@ -43,6 +44,8 @@ Result<std::unique_ptr<MetadataTable>> MetadataTable::Make(
       return RefsTable::Make(std::move(table));
     case MetadataTableKind::kHistory:
       return HistoryTable::Make(std::move(table));
+    case MetadataTableKind::kManifests:
+      return ManifestsTable::Make(std::move(table));
     default:
       break;
   }
