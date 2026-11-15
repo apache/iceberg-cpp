@@ -48,6 +48,29 @@ namespace {
 
 // A path reference alone does not make a file-scoped delete applicable. Iceberg also
 // requires the delete and data files to use the same partition spec and partition.
+bool PartitionValuesMatch(const PartitionValues& left, const PartitionValues& right) {
+  if (left.num_fields() != right.num_fields()) {
+    return false;
+  }
+
+  for (size_t i = 0; i < left.num_fields(); ++i) {
+    const auto& left_value = left.values()[i];
+    const auto& right_value = right.values()[i];
+    if (left_value.IsNull() || right_value.IsNull()) {
+      if (left_value.IsNull() != right_value.IsNull()) {
+        return false;
+      }
+      continue;
+    }
+
+    if (left_value != right_value) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
 Status ValidateDeletePartition(const DataFile& delete_file, const DataFile& data_file) {
   ICEBERG_CHECK(delete_file.partition_spec_id.has_value() &&
                     data_file.partition_spec_id.has_value(),
@@ -58,7 +81,7 @@ Status ValidateDeletePartition(const DataFile& delete_file, const DataFile& data
       "Delete file {} has partition spec ID {}, but data file {} has spec ID {}",
       delete_file.file_path, delete_file.partition_spec_id.value(), data_file.file_path,
       data_file.partition_spec_id.value());
-  ICEBERG_CHECK(delete_file.partition == data_file.partition,
+  ICEBERG_CHECK(PartitionValuesMatch(delete_file.partition, data_file.partition),
                 "Delete file {} partition values do not match data file {}",
                 delete_file.file_path, data_file.file_path);
   return {};
