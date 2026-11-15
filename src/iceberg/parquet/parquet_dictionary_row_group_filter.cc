@@ -270,8 +270,8 @@ class DictionaryVisitor : public BoundVisitor<bool> {
       ICEBERG_ARROW_ASSIGN_OR_RETURN(auto file_size, input_->GetSize());
       if (!column->has_dictionary_page() || start < 4 || end <= start ||
           end > file_size) {
-        return Invalid("Invalid Parquet dictionary offsets [{}, {}) for field {}", start,
-                       end, ref->field_id());
+        // Unusable offsets cannot prove that the predicate cannot match.
+        return nullptr;
       }
       ICEBERG_ARROW_ASSIGN_OR_RETURN(auto data, input_->ReadAt(start, end - start));
       if (data->size() != end - start) {

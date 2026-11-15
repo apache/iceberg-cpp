@@ -20,6 +20,7 @@
 #include <algorithm>
 #include <limits>
 #include <map>
+#include <utility>
 
 #include <arrow/array.h>
 #include <arrow/builder.h>
@@ -1394,6 +1395,41 @@ TEST_F(ParquetDictionaryFilterTest, EncodingMetadataAndDictionaryCache) {
   EXPECT_TRUE(io->reads.empty());
 }
 
+TEST_F(ParquetDictionaryFilterTest, InvalidDictionaryOffsetsRetainGroups) {
+  ASSERT_THAT(Write(), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto input, arrow::OpenArrowInputStream(io_, path_));
+  ::parquet::arrow::SchemaManifest manifest;
+  ASSERT_TRUE(::parquet::arrow::SchemaManifest::Make(
+                  metadata_->schema(), nullptr,
+                  ::parquet::default_arrow_reader_properties(), &manifest)
+                  .ok());
+  auto expr = Expressions::And(Expressions::Equal("key", Literal::Int(100)),
+                               Expressions::Equal("key", Literal::Int(101)));
+  ICEBERG_UNWRAP_OR_FAIL(auto filter, ParquetDictionaryRowGroupFilter::Make(
+                                          Options(expr).filter, *metadata_->schema()));
+  auto column = metadata_->RowGroup(0)->ColumnChunk(0);
+  int64_t start = column->dictionary_page_offset();
+  int64_t end = column->data_page_offset();
+  int64_t size = input->GetSize().ValueOrDie();
+  auto io = std::static_pointer_cast<DictionaryRecordingFileIO>(io_);
+  for (const auto& [dictionary_offset, data_offset] :
+       std::vector<std::pair<int64_t, int64_t>>{{-1, end},
+                                                {0, end},
+                                                {3, end},
+                                                {start, start},
+                                                {end, start},
+                                                {start, size + 1}}) {
+    SCOPED_TRACE(std::to_string(dictionary_offset) + ":" + std::to_string(data_offset));
+    auto rebuilt = RebuildMetadata(false, true, dictionary_offset, data_offset);
+    io->reads.clear();
+    ICEBERG_UNWRAP_OR_FAIL(auto should_read,
+                           filter->ShouldRead(manifest, *rebuilt, 0, input,
+                                              ::parquet::default_reader_properties()));
+    EXPECT_TRUE(should_read);
+    EXPECT_TRUE(io->reads.empty());
+  }
+}
+
 TEST_F(ParquetDictionaryFilterTest, MissingAndTruncatedDictionaryReturnErrors) {
   ASSERT_THAT(Write(), IsOk());
   ICEBERG_UNWRAP_OR_FAIL(auto input, arrow::OpenArrowInputStream(io_, path_));
@@ -1409,18 +1445,11 @@ TEST_F(ParquetDictionaryFilterTest, MissingAndTruncatedDictionaryReturnErrors) {
   auto column = metadata_->RowGroup(0)->ColumnChunk(0);
   int64_t start = column->dictionary_page_offset();
   int64_t end = column->data_page_offset();
-  int64_t size = input->GetSize().ValueOrDie();
-  for (const auto& range :
-       std::vector<DictionaryReadRange>{{.offset = -1, .length = end},
-                                        {.offset = 0, .length = end},
-                                        {.offset = start, .length = start},
-                                        {.offset = end, .length = start},
-                                        {.offset = start, .length = size + 1},
-                                        {.offset = start, .length = start + 1},
-                                        {.offset = start, .length = end - 1},
-                                        {.offset = end, .length = end + 1}}) {
-    SCOPED_TRACE(std::to_string(range.offset) + ":" + std::to_string(range.length));
-    auto rebuilt = RebuildMetadata(false, true, range.offset, range.length);
+  for (const auto& [dictionary_offset, data_offset] :
+       std::vector<std::pair<int64_t, int64_t>>{
+           {start, start + 1}, {start, end - 1}, {end, end + 1}}) {
+    SCOPED_TRACE(std::to_string(dictionary_offset) + ":" + std::to_string(data_offset));
+    auto rebuilt = RebuildMetadata(false, true, dictionary_offset, data_offset);
     EXPECT_FALSE(filter
                      ->ShouldRead(manifest, *rebuilt, 0, input,
                                   ::parquet::default_reader_properties())
