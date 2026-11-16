@@ -187,6 +187,12 @@ struct ICEBERG_EXPORT DataFile {
   /// the DataFile struct.
   std::optional<int64_t> data_sequence_number;
 
+  /// \brief Location of the manifest from which this file was read (not serialized).
+  std::optional<std::string> manifest_location;
+
+  /// \brief Copy this file without column-level metrics, retaining file metadata.
+  std::shared_ptr<DataFile> CopyWithoutStats() const;
+
   static constexpr int32_t kContentFieldId = 134;
   inline static const SchemaField kContent = SchemaField::MakeOptional(
       kContentFieldId, "content", int32(),
@@ -301,7 +307,8 @@ struct ICEBERG_EXPORT DataFile {
       SchemaField::MakeOptional(kContentSizeFieldId, "content_size_in_bytes", int64(),
                                 "The length of referenced content stored in the file");
 
-  bool operator==(const DataFile& other) const = default;
+  /// Value equality excludes transient manifest provenance.
+  bool operator==(const DataFile& other) const;
 
   /// \brief Get the schema of the data file with the given partition type.
   static std::shared_ptr<StructType> Type(std::shared_ptr<StructType> partition_type);

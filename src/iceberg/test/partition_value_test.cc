@@ -17,6 +17,7 @@
  * under the License.
  */
 
+#include <bit>
 #include <string>
 #include <vector>
 
@@ -665,6 +666,37 @@ TEST(PartitionSetTest, ConstIteration) {
   }
 
   EXPECT_EQ(count, 2);
+}
+
+TEST(PartitionSetTest, NullsAndNaNsUseJavaPartitionIdentity) {
+  PartitionSet partitions;
+  PartitionValues null_partition(Literal::Null(int64()));
+  EXPECT_TRUE(partitions.add(0, null_partition));
+  EXPECT_FALSE(partitions.add(0, null_partition));
+  EXPECT_TRUE(partitions.contains(0, null_partition));
+  EXPECT_FALSE(partitions.contains(1, null_partition));
+
+  const double positive_nan = std::bit_cast<double>(uint64_t{0x7ff8000000000001});
+  const double negative_nan = std::bit_cast<double>(uint64_t{0xfff8000000000002});
+  PartitionValues nan_partition(Literal::Double(positive_nan));
+  PartitionValues other_nan(Literal::Double(negative_nan));
+  EXPECT_TRUE(partitions.add(0, nan_partition));
+  EXPECT_FALSE(partitions.add(0, other_nan));
+  EXPECT_TRUE(partitions.contains(0, other_nan));
+  EXPECT_EQ(PartitionValuesHash{}(nan_partition), PartitionValuesHash{}(other_nan));
+}
+
+TEST(PartitionMapTest, SignedZerosRemainDistinctLikeJavaDoubleComparator) {
+  PartitionMap<int> partitions;
+  PartitionValues positive_zero(Literal::Double(0.0));
+  PartitionValues negative_zero(Literal::Double(-0.0));
+  partitions.put(0, positive_zero, 1);
+  partitions.put(0, negative_zero, 2);
+  EXPECT_EQ(partitions.size(), 2U);
+  ASSERT_TRUE(partitions.get(0, positive_zero).has_value());
+  ASSERT_TRUE(partitions.get(0, negative_zero).has_value());
+  EXPECT_EQ(partitions.get(0, positive_zero)->get(), 1);
+  EXPECT_EQ(partitions.get(0, negative_zero)->get(), 2);
 }
 
 }  // namespace iceberg

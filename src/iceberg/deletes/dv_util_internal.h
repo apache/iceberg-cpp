@@ -36,6 +36,7 @@
 #include "iceberg/result.h"
 #include "iceberg/row/partition_values.h"
 #include "iceberg/type_fwd.h"
+#include "iceberg/util/executor.h"
 
 namespace iceberg {
 
@@ -50,7 +51,7 @@ class ICEBERG_EXPORT DVUtil {
  public:
   static Result<std::vector<std::shared_ptr<DataFile>>> MergeAndWriteDVs(
       std::span<const DeletionVectorMergeGroup> groups, std::string_view output_path,
-      const std::shared_ptr<FileIO>& io);
+      const std::shared_ptr<FileIO>& io, OptionalExecutor executor = std::nullopt);
 
   static Result<PositionDeleteIndex> ReadDV(const std::shared_ptr<DataFile>& delete_file,
                                             const std::shared_ptr<FileIO>& io);

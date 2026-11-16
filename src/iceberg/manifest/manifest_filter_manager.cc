@@ -19,10 +19,8 @@
 
 #include "iceberg/manifest/manifest_filter_manager.h"
 
-#include <string>
+#include <algorithm>
 #include <tuple>
-#include <unordered_set>
-#include <vector>
 
 #include "iceberg/expression/expression.h"
 #include "iceberg/expression/expressions.h"
@@ -31,24 +29,17 @@
 #include "iceberg/expression/residual_evaluator.h"
 #include "iceberg/expression/strict_metrics_evaluator.h"
 #include "iceberg/file_io.h"
-#include "iceberg/manifest/manifest_entry.h"
-#include "iceberg/manifest/manifest_list.h"
+#include "iceberg/logging/log_macros.h"
 #include "iceberg/manifest/manifest_reader.h"
 #include "iceberg/partition_spec.h"
-#include "iceberg/result.h"
-#include "iceberg/snapshot.h"
 #include "iceberg/table_metadata.h"
 #include "iceberg/util/macros.h"
+#include "iceberg/util/task_group.h"
 
 namespace iceberg {
-
 namespace {
 
 using PartitionSpecsById = ManifestFilterManager::PartitionSpecsById;
-
-bool HasRowFilterExpression(const std::shared_ptr<Expression>& expr) {
-  return expr != nullptr && expr->op() != Expression::Operation::kFalse;
-}
 
 Result<std::shared_ptr<PartitionSpec>> PartitionSpecById(
     const PartitionSpecsById& specs_by_id, int32_t spec_id) {
@@ -59,71 +50,151 @@ Result<std::shared_ptr<PartitionSpec>> PartitionSpecById(
   return iter->second;
 }
 
-Result<std::string> FormatPartitionPath(const PartitionSpecsById& specs_by_id,
-                                        const DataFile& file, int32_t spec_id) {
-  ICEBERG_ASSIGN_OR_RAISE(auto spec, PartitionSpecById(specs_by_id, spec_id));
-  return spec->PartitionPath(file.partition);
+// ManifestFileUtil.canContainAny: partition summaries are inclusive and spec-local.
+Result<bool> CanContainAny(const ManifestFile& manifest, const PartitionSet& partitions,
+                           const Schema& table_schema,
+                           const PartitionSpecsById& specs_by_id) {
+  // C++ represents both absent summaries and the unpartitioned empty tuple as {}.
+  if (manifest.partitions.empty()) {
+    return true;
+  }
+  ICEBERG_ASSIGN_OR_RAISE(auto spec,
+                          PartitionSpecById(specs_by_id, manifest.partition_spec_id));
+  ICEBERG_ASSIGN_OR_RAISE(auto partition_type, spec->PartitionType(table_schema));
+  ICEBERG_PRECHECK(manifest.partitions.size() <= partition_type->fields().size(),
+                   "Invalid partition summaries for manifest: {}",
+                   manifest.manifest_path);
+  for (const auto& [spec_id, partition] : partitions) {
+    if (spec_id != manifest.partition_spec_id ||
+        partition.num_fields() != manifest.partitions.size()) {
+      continue;
+    }
+    bool can_contain = true;
+    for (size_t pos = 0; pos < manifest.partitions.size(); ++pos) {
+      const auto& value = partition.values()[pos];
+      const auto& summary = manifest.partitions[pos];
+      auto type =
+          std::static_pointer_cast<PrimitiveType>(partition_type->fields()[pos].type());
+      if (value.IsNull()) {
+        can_contain = summary.contains_null;
+      } else if (value.IsNaN()) {
+        can_contain = summary.contains_nan.value_or(true);
+      } else if (type->type_id() == TypeId::kUnknown) {
+        can_contain = true;
+      } else if (!summary.lower_bound.has_value()) {
+        can_contain = false;
+      } else {
+        ICEBERG_ASSIGN_OR_RAISE(auto lower_bound,
+                                Literal::Deserialize(*summary.lower_bound, type));
+        if (value.value().index() != lower_bound.value().index()) {
+          can_contain = false;
+        } else {
+          ICEBERG_PRECHECK(summary.upper_bound.has_value(),
+                           "Missing upper partition bound: {}", manifest.manifest_path);
+          ICEBERG_ASSIGN_OR_RAISE(auto upper_bound,
+                                  Literal::Deserialize(*summary.upper_bound, type));
+          ICEBERG_ASSIGN_OR_RAISE(auto typed_value, value.CastTo(type));
+          can_contain = !(typed_value < lower_bound || typed_value > upper_bound);
+        }
+      }
+      if (!can_contain) break;
+    }
+    if (can_contain) return true;
+  }
+  return false;
 }
 
-void AddDeletedFileToManager(ManifestContent manifest_content, DataFileSet& data_files,
-                             DeleteFileSet& delete_files,
-                             std::vector<std::shared_ptr<DataFile>>& deleted_files,
-                             DataFileSet& deleted_data_file_set,
-                             DeleteFileSet& deleted_file_set,
-                             const std::shared_ptr<DataFile>& file) {
-  if (file == nullptr) {
-    return;
-  }
-
-  bool inserted;
-  if (manifest_content == ManifestContent::kData) {
-    data_files.insert(file);
-    inserted = deleted_data_file_set.insert(file).second;
-  } else {
-    delete_files.insert(file);
-    inserted = deleted_file_set.insert(file).second;
-  }
-  if (inserted) {
-    deleted_files.push_back(file);
-  }
-}
-
-bool AddDeletedFileToManifest(ManifestContent manifest_content,
-                              std::vector<std::shared_ptr<DataFile>>& deleted_files,
-                              DataFileSet& deleted_data_file_set,
-                              DeleteFileSet& deleted_file_set,
-                              const std::shared_ptr<DataFile>& file) {
-  if (file == nullptr) {
-    return false;
-  }
-  bool inserted = manifest_content == ManifestContent::kData
-                      ? deleted_data_file_set.insert(file).second
-                      : deleted_file_set.insert(file).second;
-  if (inserted) {
-    deleted_files.push_back(file);
-  }
-  return inserted;
+bool InsertFile(ManifestContent content, DataFileSet& data_files,
+                DeleteFileSet& delete_files, const std::shared_ptr<DataFile>& file) {
+  return content == ManifestContent::kData ? data_files.insert(file).second
+                                           : delete_files.insert(file).second;
 }
 
 }  // namespace
 
+// First partially evaluate the expression using the partition tuple, then check the
+// remaining expression using metrics evaluators, cached for each partition.
+class ManifestFilterManager::PartitionAndMetricsEvaluator {
+ public:
+  static Result<std::unique_ptr<PartitionAndMetricsEvaluator>> Make(
+      std::shared_ptr<Schema> table_schema, const PartitionSpec& spec,
+      std::shared_ptr<Expression> expr, bool case_sensitive) {
+    ICEBERG_ASSIGN_OR_RAISE(
+        auto residual_evaluator,
+        ResidualEvaluator::Make(std::move(expr), spec, *table_schema, case_sensitive));
+    return std::unique_ptr<PartitionAndMetricsEvaluator>(new PartitionAndMetricsEvaluator(
+        std::move(table_schema), std::move(residual_evaluator), case_sensitive));
+  }
+
+  Result<bool> RowsMightMatch(const DataFile& file) {
+    ICEBERG_ASSIGN_OR_RAISE(auto evaluators, MetricsEvaluators(file));
+    return evaluators->first->Evaluate(file);
+  }
+
+  Result<bool> RowsMustMatch(const DataFile& file) {
+    ICEBERG_ASSIGN_OR_RAISE(auto evaluators, MetricsEvaluators(file));
+    return evaluators->second->Evaluate(file);
+  }
+
+ private:
+  using Evaluators = std::pair<std::unique_ptr<InclusiveMetricsEvaluator>,
+                               std::unique_ptr<StrictMetricsEvaluator>>;
+  PartitionAndMetricsEvaluator(std::shared_ptr<Schema> table_schema,
+                               std::unique_ptr<ResidualEvaluator> residual_evaluator,
+                               bool case_sensitive)
+      : table_schema_(std::move(table_schema)),
+        residual_evaluator_(std::move(residual_evaluator)),
+        case_sensitive_(case_sensitive) {}
+
+  Result<Evaluators*> MetricsEvaluators(const DataFile& file) {
+    auto iter = metrics_evaluators_.find(file.partition);
+    if (iter == metrics_evaluators_.end()) {
+      // ResidualEvaluator replaces predicates proved true/false by partition
+      // projections. The remaining predicates need evaluation using file metrics.
+      ICEBERG_ASSIGN_OR_RAISE(auto residual,
+                              residual_evaluator_->ResidualFor(file.partition));
+      ICEBERG_ASSIGN_OR_RAISE(
+          auto inclusive,
+          InclusiveMetricsEvaluator::Make(residual, *table_schema_, case_sensitive_));
+      ICEBERG_ASSIGN_OR_RAISE(auto strict, StrictMetricsEvaluator::Make(
+                                               residual, table_schema_, case_sensitive_));
+      // Copy the partition: readers may reuse their partition container.
+      iter = metrics_evaluators_
+                 .emplace(file.partition,
+                          Evaluators{std::move(inclusive), std::move(strict)})
+                 .first;
+    }
+    return &iter->second;
+  }
+
+  std::shared_ptr<Schema> table_schema_;
+  std::unique_ptr<ResidualEvaluator> residual_evaluator_;
+  bool case_sensitive_;
+  std::unordered_map<PartitionValues, Evaluators, PartitionValuesHash,
+                     PartitionValuesEqual>
+      metrics_evaluators_;
+};
+
 Result<std::unique_ptr<ManifestFilterManager>> ManifestFilterManager::Make(
     ManifestContent content, std::shared_ptr<FileIO> file_io,
-    std::function<Status(const std::string&)> delete_file) {
+    std::function<Status(const std::string&)> delete_file,
+    WorkerPoolSupplier worker_pool_supplier) {
   ICEBERG_PRECHECK(file_io != nullptr, "FileIO cannot be null");
   return std::unique_ptr<ManifestFilterManager>(
-      new ManifestFilterManager(content, std::move(file_io), std::move(delete_file)));
+      new ManifestFilterManager(content, std::move(file_io), std::move(delete_file),
+                                std::move(worker_pool_supplier)));
 }
 
 ManifestFilterManager::ManifestFilterManager(
     ManifestContent content, std::shared_ptr<FileIO> file_io,
-    std::function<Status(const std::string&)> delete_file)
+    std::function<Status(const std::string&)> delete_file,
+    WorkerPoolSupplier worker_pool_supplier)
     : manifest_content_(content),
       file_io_(std::move(file_io)),
       delete_file_(std::move(delete_file)),
-      delete_expr_(Expressions::AlwaysFalse()) {
-  ICEBERG_DCHECK(file_io_, "FileIO cannot be null");
-  if (delete_file_ == nullptr) {
+      delete_expression_(Expressions::AlwaysFalse()),
+      worker_pool_supplier_(std::move(worker_pool_supplier)) {
+  if (!delete_file_) {
     delete_file_ = [this](const std::string& location) {
       return file_io_->DeleteFile(location);
     };
@@ -132,85 +203,32 @@ ManifestFilterManager::ManifestFilterManager(
 
 ManifestFilterManager::~ManifestFilterManager() = default;
 
-Status ManifestFilterManager::DeleteByRowFilter(std::shared_ptr<Expression> expr) {
-  ICEBERG_PRECHECK(expr != nullptr, "Cannot delete files using filter: null");
-  ICEBERG_RETURN_UNEXPECTED(InvalidateFilteredCache());
-  ICEBERG_ASSIGN_OR_RAISE(delete_expr_, Or::MakeFolded(delete_expr_, std::move(expr)));
-  manifest_evaluator_cache_.clear();
-  residual_evaluator_cache_.clear();
-  return {};
-}
-
-void ManifestFilterManager::CaseSensitive(bool case_sensitive) {
-  case_sensitive_ = case_sensitive;
-  manifest_evaluator_cache_.clear();
-  residual_evaluator_cache_.clear();
-}
-
-Status ManifestFilterManager::DeleteFile(std::string_view path) {
-  ICEBERG_RETURN_UNEXPECTED(InvalidateFilteredCache());
-  delete_paths_.insert(std::string(path));
-  return {};
-}
-
-Status ManifestFilterManager::DeleteFile(std::shared_ptr<DataFile> file) {
-  ICEBERG_PRECHECK(file != nullptr, "Cannot delete file: null");
-  ICEBERG_RETURN_UNEXPECTED(InvalidateFilteredCache());
-  if (manifest_content_ == ManifestContent::kData) {
-    data_files_.insert(file);
-    data_files_to_delete_.insert(std::move(file));
-  } else {
-    delete_files_.insert(file);
-    delete_files_to_delete_.insert(std::move(file));
-  }
-  return {};
-}
-
-const DataFileSet& ManifestFilterManager::FilesToBeDeleted() const { return data_files_; }
-
-const std::vector<std::shared_ptr<DataFile>>& ManifestFilterManager::DeletedFiles()
-    const {
-  return deleted_files_;
-}
-
-Result<SnapshotSummaryBuilder> ManifestFilterManager::BuildSummary(
-    const std::vector<ManifestFile>& manifests,
-    const PartitionSpecsById& specs_by_id) const {
-  SnapshotSummaryBuilder summary;
-  for (const auto& manifest : manifests) {
-    auto deleted_iter = filtered_manifest_to_deleted_files_.find(manifest);
-    if (deleted_iter == filtered_manifest_to_deleted_files_.end()) {
-      continue;
-    }
-
-    ICEBERG_ASSIGN_OR_RAISE(auto spec,
-                            PartitionSpecById(specs_by_id, manifest.partition_spec_id));
-    for (const auto& file : deleted_iter->second.files) {
-      if (file != nullptr) {
-        ICEBERG_RETURN_UNEXPECTED(summary.DeletedFile(*spec, *file));
-      }
-    }
-  }
-  summary.IncrementDuplicateDeletes(duplicate_deletes_count_);
-  return summary;
-}
-
-Status ManifestFilterManager::DropPartition(int32_t spec_id, PartitionValues partition) {
-  ICEBERG_RETURN_UNEXPECTED(InvalidateFilteredCache());
-  drop_partitions_.add(spec_id, std::move(partition));
-  return {};
-}
+void ManifestFilterManager::FailAnyDelete() { fail_any_delete_ = true; }
 
 void ManifestFilterManager::FailMissingDeletePaths() {
   fail_missing_delete_paths_ = true;
 }
 
-void ManifestFilterManager::FailAnyDelete() { fail_any_delete_ = true; }
+const DataFileSet& ManifestFilterManager::FilesToBeDeleted() const { return data_files_; }
 
-bool ManifestFilterManager::ContainsDeletes() const {
-  return HasRowFilterExpression(delete_expr_) || !delete_paths_.empty() ||
-         !data_files_to_delete_.empty() || !delete_files_to_delete_.empty() ||
-         !drop_partitions_.empty();
+const DeleteFileSet& ManifestFilterManager::DeleteFilesToBeDeleted() const {
+  return delete_files_;
+}
+
+Status ManifestFilterManager::DeleteByRowFilter(std::shared_ptr<Expression> expr) {
+  ICEBERG_PRECHECK(expr != nullptr, "Cannot delete files using filter: null");
+  ICEBERG_RETURN_UNEXPECTED(InvalidateFilteredCache());
+  ICEBERG_ASSIGN_OR_RAISE(delete_expression_,
+                          Or::MakeFolded(delete_expression_, std::move(expr)));
+  all_deletes_reference_manifests_ = false;
+  return {};
+}
+
+Status ManifestFilterManager::DropPartition(int32_t spec_id, PartitionValues partition) {
+  ICEBERG_RETURN_UNEXPECTED(InvalidateFilteredCache());
+  drop_partitions_.add(spec_id, std::move(partition));
+  all_deletes_reference_manifests_ = false;
+  return {};
 }
 
 Status ManifestFilterManager::DropDeleteFilesOlderThan(int64_t sequence_number) {
@@ -220,340 +238,42 @@ Status ManifestFilterManager::DropDeleteFilesOlderThan(int64_t sequence_number) 
   return {};
 }
 
-void ManifestFilterManager::RemoveDanglingDeletesFor(const DataFileSet& deleted_files) {
-  std::unordered_set<std::string> removed_data_file_paths;
-  for (const auto& file : deleted_files) {
-    if (file != nullptr) {
-      removed_data_file_paths.insert(file->file_path);
-    }
-  }
-  removed_data_file_paths_ = std::move(removed_data_file_paths);
+void ManifestFilterManager::CaseSensitive(bool new_case_sensitive) {
+  case_sensitive_ = new_case_sensitive;
 }
 
-Result<bool> ManifestFilterManager::CanContainDroppedFiles(const ManifestFile&) const {
-  // TODO(Guotao): prune object deletes by partition once manifest partition
-  // summary checks are available.
-  return !delete_paths_.empty() || !data_files_to_delete_.empty() ||
-         !delete_files_to_delete_.empty() || !removed_data_file_paths_.empty();
+void ManifestFilterManager::RemoveDanglingDeletesFor(const DataFileSet& data_files) {
+  removed_data_file_paths_.clear();
+  for (const auto& file : data_files) {
+    removed_data_file_paths_.insert(file->file_path);
+  }
 }
 
-Result<bool> ManifestFilterManager::CanContainDroppedPartitions(
-    const ManifestFile& manifest) const {
-  if (drop_partitions_.empty()) return false;
-  // TODO(Guotao): Use partition_summaries bounds to skip manifests that cannot
-  // contain any dropped partition, instead of only matching partition spec IDs.
-  // Only manifests whose partition spec matches a registered drop can contain
-  // entries for that partition.  PartitionKey is pair<spec_id, values>.
-  int32_t spec_id = manifest.partition_spec_id;
-  for (const auto& key : drop_partitions_) {
-    if (key.first == spec_id) return true;
+Status ManifestFilterManager::DeleteFile(std::shared_ptr<DataFile> file) {
+  ICEBERG_PRECHECK(file != nullptr, "Cannot delete file: null");
+  ICEBERG_RETURN_UNEXPECTED(InvalidateFilteredCache());
+  if (!file->manifest_location.has_value()) {
+    all_deletes_reference_manifests_ = false;
+  } else {
+    manifests_with_deletes_.insert(*file->manifest_location);
   }
-  return false;
-}
-
-Result<bool> ManifestFilterManager::CanContainExpressionDeletes(
-    const ManifestFile& manifest, const std::shared_ptr<Schema>& schema,
-    const PartitionSpecsById& specs_by_id) {
-  if (!HasRowFilterExpression(delete_expr_)) return false;
-  int32_t spec_id = manifest.partition_spec_id;
-  ICEBERG_ASSIGN_OR_RAISE(auto* evaluator,
-                          GetManifestEvaluator(schema, specs_by_id, spec_id));
-  return evaluator->Evaluate(manifest);
-}
-
-Result<bool> ManifestFilterManager::CanContainDeletedFiles(
-    const ManifestFile& manifest, const std::shared_ptr<Schema>& schema,
-    const PartitionSpecsById& specs_by_id, bool trust_manifest_references) {
-  // A manifest with no live files cannot contain files to delete.
-  // Missing counts mean the count is unknown; treat it as possibly non-zero.
-  bool has_live = !manifest.added_files_count.has_value() ||
-                  manifest.added_files_count.value() > 0 ||
-                  !manifest.existing_files_count.has_value() ||
-                  manifest.existing_files_count.value() > 0;
-  if (!has_live) return false;
-
-  if (trust_manifest_references) {
-    // TODO(Guotao): Return whether this manifest is in the referenced manifest set.
-    return true;
-  }
-
-  ICEBERG_ASSIGN_OR_RAISE(auto can_contain_dropped_files,
-                          CanContainDroppedFiles(manifest));
-  if (can_contain_dropped_files) return true;
-
-  ICEBERG_ASSIGN_OR_RAISE(auto can_contain_expression_deletes,
-                          CanContainExpressionDeletes(manifest, schema, specs_by_id));
-  if (can_contain_expression_deletes) return true;
-
-  return CanContainDroppedPartitions(manifest);
-}
-
-Result<ManifestEvaluator*> ManifestFilterManager::GetManifestEvaluator(
-    const std::shared_ptr<Schema>& schema, const PartitionSpecsById& specs_by_id,
-    int32_t spec_id) {
-  auto& evaluator = manifest_evaluator_cache_[spec_id];
-  if (!evaluator) {
-    ICEBERG_ASSIGN_OR_RAISE(auto spec, PartitionSpecById(specs_by_id, spec_id));
-    ICEBERG_ASSIGN_OR_RAISE(evaluator, ManifestEvaluator::MakeRowFilter(
-                                           delete_expr_, spec, *schema, case_sensitive_));
-  }
-  return evaluator.get();
-}
-
-Result<ResidualEvaluator*> ManifestFilterManager::GetResidualEvaluator(
-    const std::shared_ptr<Schema>& schema, const PartitionSpecsById& specs_by_id,
-    int32_t spec_id) {
-  auto& evaluator = residual_evaluator_cache_[spec_id];
-  if (!evaluator) {
-    ICEBERG_ASSIGN_OR_RAISE(auto spec, PartitionSpecById(specs_by_id, spec_id));
-    ICEBERG_ASSIGN_OR_RAISE(evaluator, ResidualEvaluator::Make(delete_expr_, *spec,
-                                                               *schema, case_sensitive_));
-  }
-  return evaluator.get();
-}
-
-Result<bool> ManifestFilterManager::ShouldDelete(const ManifestEntry& entry,
-                                                 const std::shared_ptr<Schema>& schema,
-                                                 const PartitionSpecsById& specs_by_id,
-                                                 int32_t manifest_spec_id) {
-  if (!entry.data_file) return false;
-  const DataFile& file = *entry.data_file;
-  int32_t spec_id = file.partition_spec_id.value_or(manifest_spec_id);
-
-  // All delete branches share fail-any-delete handling.
-  auto marked_for_delete = [&]() -> Result<bool> {
-    if (fail_any_delete_) {
-      ICEBERG_ASSIGN_OR_RAISE(auto partition_path,
-                              FormatPartitionPath(specs_by_id, file, spec_id));
-      return ValidationFailed("Operation would delete existing data: {}", partition_path);
-    }
-    return true;
-  };
-
-  // Path/object-based and partition-drop checks.
-  bool object_delete = manifest_content_ == ManifestContent::kData
-                           ? data_files_to_delete_.contains(file)
-                           : delete_files_to_delete_.contains(file);
-  if (delete_paths_.count(file.file_path) || object_delete ||
-      drop_partitions_.contains(spec_id, file.partition)) {
-    return marked_for_delete();
-  }
-
-  // Delete-manifest-specific cleanup (only for ManifestContent::kDeletes).
-  if (manifest_content_ == ManifestContent::kDeletes) {
-    // Drop delete files whose data sequence number is older than the minimum
-    // retained by the table (they can no longer match any live data rows).
-    // seq == 0 (kInitialSequenceNumber / nullopt) is intentionally excluded:
-    // those entries predate sequence number assignment and must not be pruned.
-    int64_t seq = entry.sequence_number.value_or(0);
-    if (min_sequence_number_ > 0 && seq > 0 && seq < min_sequence_number_) {
-      return marked_for_delete();
-    }
-
-    // Drop DVs that reference a data file that has been removed (dangling DV).
-    if (!removed_data_file_paths_.empty() && file.IsDeletionVector() &&
-        file.referenced_data_file.has_value() &&
-        removed_data_file_paths_.count(*file.referenced_data_file)) {
-      return marked_for_delete();
-    }
-  }
-
-  if (HasRowFilterExpression(delete_expr_)) {
-    ICEBERG_ASSIGN_OR_RAISE(auto* residual_eval,
-                            GetResidualEvaluator(schema, specs_by_id, spec_id));
-    ICEBERG_ASSIGN_OR_RAISE(auto residual_expr,
-                            residual_eval->ResidualFor(file.partition));
-    // TODO(Guotao): Cache strict/inclusive metrics evaluators per partition residual.
-    ICEBERG_ASSIGN_OR_RAISE(
-        auto strict_eval,
-        StrictMetricsEvaluator::Make(residual_expr, schema, case_sensitive_));
-    ICEBERG_ASSIGN_OR_RAISE(auto strict_match, strict_eval->Evaluate(file));
-    if (strict_match) {
-      return marked_for_delete();
-    }
-
-    ICEBERG_ASSIGN_OR_RAISE(auto incl_eval, InclusiveMetricsEvaluator::Make(
-                                                residual_expr, *schema, case_sensitive_));
-    ICEBERG_ASSIGN_OR_RAISE(auto incl_match, incl_eval->Evaluate(file));
-    if (incl_match) {
-      if (manifest_content_ == ManifestContent::kDeletes) {
-        return false;
-      }
-      return ValidationFailed(
-          "Cannot delete file where some, but not all, rows match filter: {}",
-          file.file_path);
-    }
-  }
-
-  return false;
-}
-
-bool ManifestFilterManager::CanTrustManifestReferences(
-    const std::vector<const ManifestFile*>&) const {
-  // TODO(Guotao): add DataFile manifest locations and use them to skip unrelated
-  // manifests. Until then, take the conservative path.
-  return false;
-}
-
-Result<ManifestFile> ManifestFilterManager::FilterManifest(
-    const std::shared_ptr<Schema>& schema, const PartitionSpecsById& specs_by_id,
-    const ManifestFile& manifest, bool trust_manifest_references,
-    const ManifestWriterFactory& writer_factory) {
-  auto cached = filtered_manifests_.find(manifest);
-  if (cached != filtered_manifests_.end()) {
-    auto deleted_iter = filtered_manifest_to_deleted_files_.find(cached->second);
-    if (deleted_iter != filtered_manifest_to_deleted_files_.end()) {
-      for (const auto& file : deleted_iter->second.files) {
-        AddDeletedFileToManager(manifest_content_, data_files_, delete_files_,
-                                deleted_files_, deleted_data_file_set_,
-                                deleted_delete_file_set_, file);
-      }
-      duplicate_deletes_count_ += deleted_iter->second.duplicate_deletes_count;
-    }
-    return cached->second;
-  }
-
-  ICEBERG_ASSIGN_OR_RAISE(
-      auto can_contain_deleted_files,
-      CanContainDeletedFiles(manifest, schema, specs_by_id, trust_manifest_references));
-  if (!can_contain_deleted_files) {
-    filtered_manifests_.emplace(manifest, manifest);
-    return manifest;
-  }
-
-  int32_t spec_id = manifest.partition_spec_id;
-  ICEBERG_ASSIGN_OR_RAISE(auto spec, PartitionSpecById(specs_by_id, spec_id));
-  ICEBERG_ASSIGN_OR_RAISE(auto reader,
-                          ManifestReader::Make(manifest, file_io_, schema, spec));
-  ICEBERG_ASSIGN_OR_RAISE(auto entries, reader->LiveEntries());
-
-  ICEBERG_ASSIGN_OR_RAISE(auto has_deleted_files,
-                          ManifestHasDeletedFiles(entries, schema, specs_by_id, spec_id));
-  if (!has_deleted_files) {
-    filtered_manifests_.emplace(manifest, manifest);
-    return manifest;
-  }
-
-  ICEBERG_ASSIGN_OR_RAISE(auto filtered_manifest,
-                          FilterManifestWithDeletedFiles(entries, spec_id, schema,
-                                                         specs_by_id, writer_factory));
-  filtered_manifests_.emplace(manifest, filtered_manifest);
-  ++replaced_manifests_count_;
-  return filtered_manifest;
-}
-
-Result<bool> ManifestFilterManager::ManifestHasDeletedFiles(
-    const std::vector<ManifestEntry>& entries, const std::shared_ptr<Schema>& schema,
-    const PartitionSpecsById& specs_by_id, int32_t manifest_spec_id) {
-  for (const auto& entry : entries) {
-    ICEBERG_ASSIGN_OR_RAISE(auto should_delete,
-                            ShouldDelete(entry, schema, specs_by_id, manifest_spec_id));
-    if (should_delete) {
-      return true;
-    }
-  }
-  return false;
-}
-
-Result<ManifestFile> ManifestFilterManager::FilterManifestWithDeletedFiles(
-    const std::vector<ManifestEntry>& entries, int32_t manifest_spec_id,
-    const std::shared_ptr<Schema>& schema, const PartitionSpecsById& specs_by_id,
-    const ManifestWriterFactory& writer_factory) {
-  ICEBERG_ASSIGN_OR_RAISE(auto writer,
-                          writer_factory(manifest_spec_id, manifest_content_));
-  std::vector<std::shared_ptr<DataFile>> deleted_files;
-  DataFileSet deleted_data_file_set;
-  DeleteFileSet deleted_file_set;
-  int32_t duplicate_deletes_count = 0;
-  for (const auto& entry : entries) {
-    ICEBERG_ASSIGN_OR_RAISE(auto should_delete,
-                            ShouldDelete(entry, schema, specs_by_id, manifest_spec_id));
-    if (should_delete) {
-      if (entry.data_file) {
-        auto file = std::make_shared<DataFile>(*entry.data_file);
-        AddDeletedFileToManager(manifest_content_, data_files_, delete_files_,
-                                deleted_files_, deleted_data_file_set_,
-                                deleted_delete_file_set_, file);
-        if (!AddDeletedFileToManifest(manifest_content_, deleted_files,
-                                      deleted_data_file_set, deleted_file_set, file)) {
-          ++duplicate_deletes_count;
-        }
-      }
-      ICEBERG_RETURN_UNEXPECTED(writer->WriteDeletedEntry(entry));
-    } else {
-      ICEBERG_RETURN_UNEXPECTED(writer->WriteExistingEntry(entry));
-    }
-  }
-
-  ICEBERG_RETURN_UNEXPECTED(writer->Close());
-  ICEBERG_ASSIGN_OR_RAISE(auto filtered_manifest, writer->ToManifestFile());
-  duplicate_deletes_count_ += duplicate_deletes_count;
-  filtered_manifest_to_deleted_files_[filtered_manifest] = FilteredManifestDeletes{
-      .files = std::move(deleted_files),
-      .duplicate_deletes_count = duplicate_deletes_count,
-  };
-  return filtered_manifest;
-}
-
-Status ManifestFilterManager::InvalidateFilteredCache() {
-  ICEBERG_RETURN_UNEXPECTED(CleanUncommitted({}));
-  replaced_manifests_count_ = 0;
+  InsertFile(manifest_content_, data_files_, delete_files_, file);
+  // Files built without inherited metadata use the initial spec, as Java builders do.
+  delete_file_partitions_.add(file->partition_spec_id.value_or(0), file->partition);
   return {};
 }
 
-void ManifestFilterManager::ResetDeletedFiles() {
-  data_files_.clear();
-  for (const auto& file : data_files_to_delete_) {
-    data_files_.insert(file);
-  }
-  delete_files_.clear();
-  for (const auto& file : delete_files_to_delete_) {
-    delete_files_.insert(file);
-  }
+Status ManifestFilterManager::DeleteFile(std::string_view path) {
+  ICEBERG_RETURN_UNEXPECTED(InvalidateFilteredCache());
+  all_deletes_reference_manifests_ = false;
+  delete_paths_.insert(std::string(path));
+  return {};
 }
 
-Status ManifestFilterManager::ValidateRequiredDeletes() const {
-  if (!fail_missing_delete_paths_) {
-    return {};
-  }
-
-  std::string missing_files;
-  const auto append_missing = [&missing_files](const std::string& path) {
-    if (!missing_files.empty()) missing_files += ",";
-    missing_files += path;
-  };
-  for (const auto& key : data_files_to_delete_) {
-    if (!deleted_data_file_set_.contains(key)) {
-      append_missing(key->file_path);
-    }
-  }
-  for (const auto& key : delete_files_to_delete_) {
-    if (!deleted_delete_file_set_.contains(key)) {
-      append_missing(key->file_path);
-    }
-  }
-  if (!missing_files.empty()) {
-    return ValidationFailed("Missing required files to delete: {}", missing_files);
-  }
-
-  std::string missing_paths;
-  for (const auto& path : delete_paths_) {
-    bool found = false;
-    for (const auto& deleted_file : deleted_files_) {
-      if (deleted_file != nullptr && deleted_file->file_path == path) {
-        found = true;
-        break;
-      }
-    }
-    if (!found) {
-      if (!missing_paths.empty()) missing_paths += ",";
-      missing_paths += path;
-    }
-  }
-  if (!missing_paths.empty()) {
-    return ValidationFailed("Missing required files to delete: {}", missing_paths);
-  }
-  return {};
+bool ManifestFilterManager::ContainsDeletes() const {
+  return !delete_paths_.empty() || !data_files_.empty() || !delete_files_.empty() ||
+         delete_expression_->op() != Expression::Operation::kFalse ||
+         !drop_partitions_.empty();
 }
 
 Result<std::vector<ManifestFile>> ManifestFilterManager::FilterManifests(
@@ -567,98 +287,384 @@ Result<std::vector<ManifestFile>> ManifestFilterManager::FilterManifests(
     const std::shared_ptr<Schema>& schema, const TableMetadata& metadata,
     const std::shared_ptr<Snapshot>& base_snapshot,
     const ManifestWriterFactory& writer_factory) {
-  ResetDeletedFiles();
-  deleted_files_.clear();
-  deleted_data_file_set_.clear();
-  deleted_delete_file_set_.clear();
-  duplicate_deletes_count_ = 0;
   if (!base_snapshot) {
+    CollectDeletedFiles({});
     ICEBERG_RETURN_UNEXPECTED(ValidateRequiredDeletes());
     return std::vector<ManifestFile>{};
   }
-
-  ICEBERG_PRECHECK(file_io_ != nullptr, "Cannot filter manifests: FileIO is null");
-
   ICEBERG_ASSIGN_OR_RAISE(
-      auto list_reader, ManifestListReader::Make(base_snapshot->manifest_list, file_io_));
-  ICEBERG_ASSIGN_OR_RAISE(auto all_manifests, list_reader->Files());
-
+      auto reader, ManifestListReader::Make(base_snapshot->manifest_list, file_io_));
+  ICEBERG_ASSIGN_OR_RAISE(auto all_manifests, reader->Files());
   std::vector<const ManifestFile*> manifests;
-  manifests.reserve(all_manifests.size());
-  for (auto& manifest : all_manifests) {
-    manifests.push_back(&manifest);
+  for (const auto& manifest : all_manifests) {
+    if (manifest.content == manifest_content_) manifests.push_back(&manifest);
   }
-
   TableMetadataCache metadata_cache(&metadata);
   ICEBERG_ASSIGN_OR_RAISE(auto specs_by_id, metadata_cache.GetPartitionSpecsById());
-
   return FilterManifests(schema, specs_by_id.get(), manifests, writer_factory);
 }
 
 Result<std::vector<ManifestFile>> ManifestFilterManager::FilterManifests(
-    const std::shared_ptr<Schema>& schema, const PartitionSpecsById& specs_by_id,
+    const std::shared_ptr<Schema>& table_schema, const PartitionSpecsById& specs_by_id,
     const std::vector<const ManifestFile*>& input_manifests,
     const ManifestWriterFactory& writer_factory) {
-  ICEBERG_PRECHECK(schema != nullptr, "Cannot filter manifests: schema is null");
-  ICEBERG_PRECHECK(file_io_ != nullptr, "Cannot filter manifests: FileIO is null");
-
   std::vector<const ManifestFile*> manifests;
-  manifests.reserve(input_manifests.size());
   for (const auto* manifest : input_manifests) {
     ICEBERG_PRECHECK(manifest != nullptr, "Cannot filter manifests: manifest is null");
-    if (manifest->content == manifest_content_) {
-      manifests.push_back(manifest);
-    }
+    if (manifest->content == manifest_content_) manifests.push_back(manifest);
   }
-
-  ResetDeletedFiles();
-  deleted_files_.clear();
-  deleted_data_file_set_.clear();
-  deleted_delete_file_set_.clear();
-  duplicate_deletes_count_ = 0;
   if (manifests.empty()) {
+    CollectDeletedFiles({});
     ICEBERG_RETURN_UNEXPECTED(ValidateRequiredDeletes());
     return std::vector<ManifestFile>{};
   }
-
+  ICEBERG_PRECHECK(table_schema != nullptr, "Cannot filter manifests: schema is null");
   bool trust_manifest_references = CanTrustManifestReferences(manifests);
-  manifest_evaluator_cache_.clear();
-  residual_evaluator_cache_.clear();
-
-  // TODO(Guotao): Parallelize manifest filtering with per-manifest results, then
-  // merge found paths and deleted files after the loop.
-  std::vector<ManifestFile> filtered;
-  filtered.reserve(manifests.size());
-  for (const auto* manifest_ptr : manifests) {
-    ICEBERG_ASSIGN_OR_RAISE(auto filtered_manifest,
-                            FilterManifest(schema, specs_by_id, *manifest_ptr,
-                                           trust_manifest_references, writer_factory));
-    filtered.push_back(std::move(filtered_manifest));
+  std::vector<ManifestFile> filtered(manifests.size());
+  // Open all manifest files in parallel, using the index to avoid reordering.
+  TaskGroup tasks;
+  std::atomic<bool> failed{false};
+  if (worker_pool_supplier_) tasks.SetExecutor(worker_pool_supplier_());
+  for (size_t index = 0; index < manifests.size(); ++index) {
+    tasks.Submit([&, index]() -> Status {
+      if (failed.load()) return {};
+      auto manifest = FilterManifest(table_schema, specs_by_id, *manifests[index],
+                                     trust_manifest_references, writer_factory);
+      if (!manifest) {
+        failed.store(true);
+        return ::iceberg::unexpected(std::move(manifest.error()));
+      }
+      filtered[index] = std::move(manifest.value());
+      return {};
+    });
   }
-
+  ICEBERG_RETURN_UNEXPECTED(std::move(tasks).Run());
+  CollectDeletedFiles(filtered);
+  for (const auto& file : deleted_files_) {
+    InsertFile(manifest_content_, data_files_, delete_files_, file);
+  }
   ICEBERG_RETURN_UNEXPECTED(ValidateRequiredDeletes());
   return filtered;
 }
 
-Status ManifestFilterManager::CleanUncommitted(
-    const std::unordered_set<std::string>& committed) {
-  auto entries = std::vector<std::pair<ManifestFile, ManifestFile>>{
-      filtered_manifests_.begin(), filtered_manifests_.end()};
-  for (const auto& [manifest, filtered] : entries) {
-    if (committed.contains(filtered.manifest_path)) {
-      continue;
-    }
+bool ManifestFilterManager::CanTrustManifestReferences(
+    const std::vector<const ManifestFile*>& manifests) const {
+  std::unordered_set<std::string> manifest_locations;
+  for (const auto* manifest : manifests)
+    manifest_locations.insert(manifest->manifest_path);
+  return all_deletes_reference_manifests_ && !manifests_with_deletes_.empty() &&
+         std::ranges::all_of(manifests_with_deletes_, [&](const auto& location) {
+           return manifest_locations.contains(location);
+         });
+}
 
-    if (manifest != filtered) {
-      std::ignore = delete_file_(filtered.manifest_path);
-      if (replaced_manifests_count_ > 0) {
-        --replaced_manifests_count_;
+Result<SnapshotSummaryBuilder> ManifestFilterManager::BuildSummary(
+    const std::vector<ManifestFile>& manifests,
+    const PartitionSpecsById& specs_by_id) const {
+  SnapshotSummaryBuilder summary_builder;
+  for (const auto& manifest : manifests) {
+    auto result = filtered_manifest_results_.find(manifest);
+    if (result != filtered_manifest_results_.end()) {
+      ICEBERG_ASSIGN_OR_RAISE(auto manifest_spec,
+                              PartitionSpecById(specs_by_id, manifest.partition_spec_id));
+      for (const auto& file : result->second.files) {
+        ICEBERG_RETURN_UNEXPECTED(summary_builder.DeletedFile(*manifest_spec, *file));
       }
+      summary_builder.IncrementDuplicateDeletes(result->second.duplicate_delete_count);
     }
-    filtered_manifests_.erase(manifest);
-    filtered_manifest_to_deleted_files_.erase(filtered);
+  }
+  return summary_builder;
+}
+
+Status ManifestFilterManager::ValidateRequiredDeletes() const {
+  if (fail_missing_delete_paths_) {
+    std::string missing_files;
+    auto append_missing = [&missing_files](const std::string& path) {
+      if (!missing_files.empty()) missing_files += ",";
+      missing_files += path;
+    };
+    for (const auto& file : data_files_) {
+      if (!deleted_data_file_set_.contains(file)) append_missing(file->file_path);
+    }
+    for (const auto& file : delete_files_) {
+      if (!deleted_delete_file_set_.contains(file)) append_missing(file->file_path);
+    }
+    if (!missing_files.empty()) {
+      return ValidationFailed("Missing required files to delete: {}", missing_files);
+    }
+    std::unordered_set<std::string> deleted_file_paths;
+    for (const auto& file : deleted_files_) deleted_file_paths.insert(file->file_path);
+    for (const auto& path : delete_paths_) {
+      if (!deleted_file_paths.contains(path)) append_missing(path);
+    }
+    if (!missing_files.empty()) {
+      return ValidationFailed("Missing required files to delete: {}", missing_files);
+    }
   }
   return {};
+}
+
+void ManifestFilterManager::CollectDeletedFiles(
+    const std::vector<ManifestFile>& manifests) {
+  deleted_files_.clear();
+  deleted_data_file_set_.clear();
+  deleted_delete_file_set_.clear();
+  duplicate_deletes_count_ = 0;
+  for (const auto& manifest : manifests) {
+    auto result = filtered_manifest_results_.find(manifest);
+    if (result != filtered_manifest_results_.end()) {
+      for (const auto& file : result->second.files) {
+        if (InsertFile(manifest_content_, deleted_data_file_set_,
+                       deleted_delete_file_set_, file)) {
+          deleted_files_.push_back(file);
+        }
+      }
+      duplicate_deletes_count_ += result->second.duplicate_delete_count;
+    }
+  }
+}
+
+const std::vector<std::shared_ptr<DataFile>>& ManifestFilterManager::DeletedFiles()
+    const {
+  return deleted_files_;
+}
+
+Status ManifestFilterManager::CleanUncommitted(
+    const std::unordered_set<std::string>& committed) {
+  // Iterate over a copy of entries to avoid concurrent modification.
+  auto filter_entries = std::vector<std::pair<ManifestFile, ManifestFile>>{
+      filtered_manifests_.begin(), filtered_manifests_.end()};
+  for (const auto& [manifest, filtered] : filter_entries) {
+    if (!committed.contains(filtered.manifest_path)) {
+      if (manifest != filtered) {
+        std::ignore = delete_file_(filtered.manifest_path);
+        --replaced_manifests_count_;
+      }
+      filtered_manifests_.erase(manifest);
+      filtered_manifest_results_.erase(filtered);
+    }
+  }
+  return {};
+}
+
+Status ManifestFilterManager::InvalidateFilteredCache() {
+  ICEBERG_RETURN_UNEXPECTED(CleanUncommitted({}));
+  replaced_manifests_count_ = 0;
+  return {};
+}
+
+Result<ManifestFile> ManifestFilterManager::FilterManifest(
+    const std::shared_ptr<Schema>& table_schema, const PartitionSpecsById& specs_by_id,
+    const ManifestFile& manifest, bool trust_manifest_references,
+    const ManifestWriterFactory& writer_factory) {
+  {
+    std::lock_guard lock(cache_mutex_);
+    auto cached = filtered_manifests_.find(manifest);
+    if (cached != filtered_manifests_.end()) return cached->second;
+  }
+  ICEBERG_ASSIGN_OR_RAISE(auto can_contain_deleted_files,
+                          CanContainDeletedFiles(manifest, table_schema, specs_by_id,
+                                                 trust_manifest_references));
+  if (!can_contain_deleted_files) {
+    std::lock_guard lock(cache_mutex_);
+    filtered_manifests_[manifest] = manifest;
+    return manifest;
+  }
+  ICEBERG_ASSIGN_OR_RAISE(auto spec,
+                          PartitionSpecById(specs_by_id, manifest.partition_spec_id));
+  ICEBERG_ASSIGN_OR_RAISE(auto reader,
+                          ManifestReader::Make(manifest, file_io_, table_schema, spec));
+  ICEBERG_ASSIGN_OR_RAISE(auto evaluator,
+                          PartitionAndMetricsEvaluator::Make(
+                              table_schema, *spec, delete_expression_, case_sensitive_));
+  // The C++ reader materializes live entries; both passes reuse that vector.
+  ICEBERG_ASSIGN_OR_RAISE(auto entries, reader->LiveEntries());
+  ICEBERG_ASSIGN_OR_RAISE(auto has_deleted_files,
+                          ManifestHasDeletedFiles(*evaluator, manifest, *spec, entries));
+  if (has_deleted_files) {
+    ICEBERG_ASSIGN_OR_RAISE(
+        auto filtered,
+        FilterManifestWithDeletedFiles(*evaluator, manifest, entries, writer_factory));
+    ++replaced_manifests_count_;
+    return filtered;
+  }
+  std::lock_guard lock(cache_mutex_);
+  filtered_manifests_[manifest] = manifest;
+  return manifest;
+}
+
+Result<bool> ManifestFilterManager::CanContainDeletedFiles(
+    const ManifestFile& manifest, const std::shared_ptr<Schema>& table_schema,
+    const PartitionSpecsById& specs_by_id, bool trust_manifest_references) const {
+  if (HasNoLiveFiles(manifest)) return false;
+  if (trust_manifest_references)
+    return manifests_with_deletes_.contains(manifest.manifest_path);
+  ICEBERG_ASSIGN_OR_RAISE(auto dropped_files,
+                          CanContainDroppedFiles(manifest, *table_schema, specs_by_id));
+  if (dropped_files) return true;
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto expression_deletes,
+      CanContainExpressionDeletes(manifest, table_schema, specs_by_id));
+  if (expression_deletes) return true;
+  return CanContainDroppedPartitions(manifest, *table_schema, specs_by_id);
+}
+
+bool ManifestFilterManager::HasNoLiveFiles(const ManifestFile& manifest) {
+  return !manifest.has_added_files() && !manifest.has_existing_files();
+}
+
+Result<bool> ManifestFilterManager::CanContainExpressionDeletes(
+    const ManifestFile& manifest, const std::shared_ptr<Schema>& table_schema,
+    const PartitionSpecsById& specs_by_id) const {
+  if (delete_expression_ && delete_expression_->op() != Expression::Operation::kFalse) {
+    ICEBERG_ASSIGN_OR_RAISE(auto spec,
+                            PartitionSpecById(specs_by_id, manifest.partition_spec_id));
+    ICEBERG_ASSIGN_OR_RAISE(auto manifest_evaluator, ManifestEvaluator::MakeRowFilter(
+                                                         delete_expression_, spec,
+                                                         *table_schema, case_sensitive_));
+    return manifest_evaluator->Evaluate(manifest);
+  }
+  return false;
+}
+
+Result<bool> ManifestFilterManager::CanContainDroppedPartitions(
+    const ManifestFile& manifest, const Schema& table_schema,
+    const PartitionSpecsById& specs_by_id) const {
+  if (!drop_partitions_.empty())
+    return CanContainAny(manifest, drop_partitions_, table_schema, specs_by_id);
+  return false;
+}
+
+Result<bool> ManifestFilterManager::CanContainDroppedFiles(
+    const ManifestFile& manifest, const Schema& table_schema,
+    const PartitionSpecsById& specs_by_id) const {
+  if (!delete_paths_.empty()) {
+    return true;
+  } else if (!data_files_.empty() || !delete_files_.empty()) {
+    return CanContainAny(manifest, delete_file_partitions_, table_schema, specs_by_id);
+  } else if (!removed_data_file_paths_.empty()) {
+    return true;
+  }
+  return false;
+}
+
+Result<bool> ManifestFilterManager::ManifestHasDeletedFiles(
+    PartitionAndMetricsEvaluator& evaluator, const ManifestFile& manifest,
+    const PartitionSpec& spec, const std::vector<ManifestEntry>& entries) const {
+  if (manifests_with_deletes_.contains(manifest.manifest_path)) return true;
+  bool is_delete = manifest_content_ == ManifestContent::kDeletes;
+  for (const auto& entry : entries) {
+    const auto& file = *entry.data_file;
+    bool marked_for_delete =
+        delete_paths_.contains(file.file_path) ||
+        (is_delete ? delete_files_.contains(file) : data_files_.contains(file)) ||
+        drop_partitions_.contains(
+            file.partition_spec_id.value_or(manifest.partition_spec_id),
+            file.partition) ||
+        (is_delete && entry.status != ManifestStatus::kDeleted &&
+         entry.sequence_number.value_or(0) > 0 &&
+         entry.sequence_number.value_or(0) < min_sequence_number_) ||
+        (is_delete && IsDanglingDV(file));
+    bool rows_might_match = marked_for_delete;
+    if (!marked_for_delete) {
+      ICEBERG_ASSIGN_OR_RAISE(rows_might_match, evaluator.RowsMightMatch(file));
+    }
+    if (rows_might_match) {
+      bool all_rows_match = marked_for_delete;
+      if (!marked_for_delete) {
+        ICEBERG_ASSIGN_OR_RAISE(all_rows_match, evaluator.RowsMustMatch(file));
+      }
+      if (!all_rows_match && !is_delete) {
+        return ValidationFailed(
+            "Cannot delete file where some, but not all, rows match filter {}: {}",
+            delete_expression_->ToString(), file.file_path);
+      }
+      if (all_rows_match) {
+        if (fail_any_delete_) {
+          ICEBERG_ASSIGN_OR_RAISE(auto partition_path,
+                                  spec.PartitionPath(file.partition));
+          return ValidationFailed("Operation would delete existing data: {}",
+                                  partition_path);
+        }
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+bool ManifestFilterManager::IsDanglingDV(const DataFile& file) const {
+  return file.IsDeletionVector() && file.referenced_data_file.has_value() &&
+         removed_data_file_paths_.contains(*file.referenced_data_file);
+}
+
+Result<ManifestFile> ManifestFilterManager::FilterManifestWithDeletedFiles(
+    PartitionAndMetricsEvaluator& evaluator, const ManifestFile& manifest,
+    const std::vector<ManifestEntry>& entries,
+    const ManifestWriterFactory& writer_factory) {
+  bool is_delete = manifest_content_ == ManifestContent::kDeletes;
+  DataFileSet deleted_data_files;
+  DeleteFileSet deleted_delete_files;
+  FilteredManifestResult result;
+  ICEBERG_ASSIGN_OR_RAISE(auto writer,
+                          writer_factory(manifest.partition_spec_id, manifest_content_));
+  auto write_entries = [&]() -> Status {
+    for (const auto& entry : entries) {
+      const auto& file = *entry.data_file;
+      bool is_dangling_dv = is_delete && IsDanglingDV(file);
+      bool marked_for_delete =
+          is_dangling_dv || delete_paths_.contains(file.file_path) ||
+          (is_delete ? delete_files_.contains(file) : data_files_.contains(file)) ||
+          drop_partitions_.contains(
+              file.partition_spec_id.value_or(manifest.partition_spec_id),
+              file.partition) ||
+          (is_delete && entry.status != ManifestStatus::kDeleted &&
+           entry.sequence_number.value_or(0) > 0 &&
+           entry.sequence_number.value_or(0) < min_sequence_number_);
+      bool rows_might_match = marked_for_delete;
+      if (!marked_for_delete) {
+        ICEBERG_ASSIGN_OR_RAISE(rows_might_match, evaluator.RowsMightMatch(file));
+      }
+      if (rows_might_match) {
+        bool all_rows_match = marked_for_delete;
+        if (!marked_for_delete) {
+          ICEBERG_ASSIGN_OR_RAISE(all_rows_match, evaluator.RowsMustMatch(file));
+        }
+        if (!all_rows_match && !is_delete) {
+          return ValidationFailed(
+              "Cannot delete file where some, but not all, rows match filter {}: {}",
+              delete_expression_->ToString(), file.file_path);
+        }
+        if (all_rows_match) {
+          ICEBERG_RETURN_UNEXPECTED(writer->WriteDeletedEntry(entry));
+          auto file_copy = file.CopyWithoutStats();
+          if (!InsertFile(manifest_content_, deleted_data_files, deleted_delete_files,
+                          file_copy)) {
+            ICEBERG_LOG_WARN("Deleting a duplicate path from manifest {}: {}",
+                             manifest.manifest_path, file.file_path);
+            ++result.duplicate_delete_count;
+          } else {
+            // Only add a new delete to keep the snapshot summary accurate for duplicates.
+            result.files.push_back(std::move(file_copy));
+          }
+        } else {
+          ICEBERG_RETURN_UNEXPECTED(writer->WriteExistingEntry(entry));
+        }
+      } else {
+        ICEBERG_RETURN_UNEXPECTED(writer->WriteExistingEntry(entry));
+      }
+    }
+    return {};
+  };
+  auto write_status = write_entries();
+  // Java closes in finally: a close failure takes precedence over a write failure.
+  ICEBERG_RETURN_UNEXPECTED(writer->Close());
+  ICEBERG_RETURN_UNEXPECTED(write_status);
+  ICEBERG_ASSIGN_OR_RAISE(auto filtered, writer->ToManifestFile());
+  std::lock_guard lock(cache_mutex_);
+  filtered_manifests_[manifest] = filtered;
+  filtered_manifest_results_[filtered] = std::move(result);
+  return filtered;
 }
 
 }  // namespace iceberg
