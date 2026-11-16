@@ -151,5 +151,33 @@ TEST_F(SnapshotMetadataSupportTest, ResolvesSnapshotIdsReferencesAndTimes) {
               IsError(ErrorKind::kInvalidArgument));
 }
 
+TEST_F(SnapshotMetadataSupportTest, PreservesSnapshotLookupErrorsAndEmptyTables) {
+  auto selection = Context();
+  for (const auto* ref : {"", "main"}) {
+    selection.ref_name = ref;
+    ICEBERG_UNWRAP_OR_FAIL(auto snapshot,
+                           ResolveMetadataTableSnapshot(*metadata_, selection));
+    EXPECT_EQ(snapshot, nullptr);
+  }
+
+  selection.ref_name = "missing";
+  EXPECT_THAT(ResolveMetadataTableSnapshot(*metadata_, selection),
+              IsError(ErrorKind::kInvalidArgument));
+  metadata_->refs["null"] = nullptr;
+  selection.ref_name = "null";
+  EXPECT_THAT(ResolveMetadataTableSnapshot(*metadata_, selection),
+              IsError(ErrorKind::kInvalidArgument));
+
+  metadata_->refs["dangling"] = std::make_shared<SnapshotRef>(
+      SnapshotRef{.snapshot_id = 999, .retention = SnapshotRef::Tag{}});
+  selection.ref_name = "dangling";
+  EXPECT_THAT(ResolveMetadataTableSnapshot(*metadata_, selection),
+              IsError(ErrorKind::kNotFound));
+  selection.ref_name = "main";
+  metadata_->current_snapshot_id = 999;
+  EXPECT_THAT(ResolveMetadataTableSnapshot(*metadata_, selection),
+              IsError(ErrorKind::kNotFound));
+}
+
 }  // namespace
 }  // namespace iceberg::internal

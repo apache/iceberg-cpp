@@ -21,7 +21,6 @@
 
 #include <memory>
 #include <string>
-#include <string_view>
 #include <utility>
 
 #include "iceberg/constants.h"
@@ -33,26 +32,6 @@
 #include "iceberg/util/snapshot_util.h"
 
 namespace iceberg::internal {
-
-namespace {
-
-Result<std::shared_ptr<Snapshot>> SnapshotAtRef(const TableMetadata& metadata,
-                                                std::string_view ref_name) {
-  if (ref_name.empty() || ref_name == SnapshotRef::kMainBranch) {
-    if (metadata.current_snapshot_id == kInvalidSnapshotId) {
-      return std::shared_ptr<Snapshot>{nullptr};
-    }
-    return metadata.SnapshotById(metadata.current_snapshot_id);
-  }
-
-  auto ref = metadata.refs.find(std::string(ref_name));
-  ICEBERG_PRECHECK(ref != metadata.refs.end(), "Cannot find snapshot reference '{}'",
-                   ref_name);
-  ICEBERG_PRECHECK(ref->second != nullptr, "Snapshot reference '{}' is null", ref_name);
-  return metadata.SnapshotById(ref->second->snapshot_id);
-}
-
-}  // namespace
 
 namespace {
 class SnapshotMetadataScan : public MetadataScan {
@@ -113,7 +92,19 @@ Result<std::shared_ptr<Snapshot>> ResolveMetadataTableSnapshot(
             metadata, TimePointMsFromUnixMs(*selection.as_of_time_in_millis)));
     return metadata.SnapshotById(snapshot_id);
   }
-  return SnapshotAtRef(metadata, selection.ref_name);
+  const bool is_main_ref =
+      selection.ref_name.empty() || selection.ref_name == SnapshotRef::kMainBranch;
+  if (is_main_ref && metadata.current_snapshot_id == kInvalidSnapshotId) {
+    return std::shared_ptr<Snapshot>{nullptr};
+  }
+  if (!is_main_ref) {
+    auto ref = metadata.refs.find(selection.ref_name);
+    ICEBERG_PRECHECK(ref != metadata.refs.end(), "Cannot find snapshot reference '{}'",
+                     selection.ref_name);
+    ICEBERG_PRECHECK(ref->second != nullptr, "Snapshot reference '{}' is null",
+                     selection.ref_name);
+  }
+  return SnapshotUtil::LatestSnapshot(metadata, selection.ref_name);
 }
 
 }  // namespace iceberg::internal
