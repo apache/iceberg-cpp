@@ -28,6 +28,7 @@
 #include <stdexcept>
 #include <string>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 #include <gmock/gmock.h>
@@ -682,10 +683,23 @@ namespace {
 
 class RefreshHttpClient : public HttpClient {
  public:
-  Result<HttpResponse> PostForm(const std::string&,
-                                const std::unordered_map<std::string, std::string>&,
-                                const std::unordered_map<std::string, std::string>&,
-                                const ErrorHandler&, AuthSession&) override {
+  struct Request {
+    std::string path;
+    std::unordered_map<std::string, std::string> form;
+    HttpHeaders headers;
+  };
+
+  Result<HttpResponse> PostForm(
+      const std::string& path, const std::unordered_map<std::string, std::string>& form,
+      const std::unordered_map<std::string, std::string>& headers, const ErrorHandler&,
+      AuthSession& session) override {
+    ICEBERG_ASSIGN_OR_RAISE(
+        auto authenticated,
+        session.Authenticate({.method = HttpMethod::kPost,
+                              .url = path,
+                              .headers = {headers.begin(), headers.end()}}));
+    recorded_requests.push_back(
+        {.path = path, .form = form, .headers = std::move(authenticated.headers)});
     ++requests;
     return response();
   }
@@ -693,6 +707,7 @@ class RefreshHttpClient : public HttpClient {
     return IOError("refresh failed");
   };
   std::atomic<int> requests{0};
+  std::vector<Request> recorded_requests;
 };
 
 using test::MockExecutor;
@@ -736,6 +751,765 @@ TEST(OAuth2SessionTest, RefreshesAndReschedulesThroughPublicFactory) {
   ICEBERG_UNWRAP_OR_FAIL(auto request, session->Authenticate({}));
   EXPECT_EQ(request.headers.at("Authorization"), "Bearer second");
   EXPECT_EQ(client->requests, 2);
+  for (const auto& request : client->recorded_requests) {
+    EXPECT_EQ(request.form.at("grant_type"), "client_credentials");
+    EXPECT_FALSE(request.headers.contains("Authorization"));
+  }
+}
+
+class OAuth2ManagerRefreshTest : public ::testing::TestWithParam<std::string> {
+ protected:
+  void SetUp() override {
+    if (!GetParam().empty()) {
+      properties_[AuthProperties::kExchangeEnabled.key()] = GetParam();
+    }
+    ICEBERG_UNWRAP_OR_FAIL(manager_, AuthManagers::Load("test-catalog", properties_));
+    manager_->SetAuthRefreshExecutor(&executor_);
+    client_->response = [this]() -> Result<HttpResponse> {
+      return HttpResponse(
+          200, client_->requests == 1
+                   ? R"({"access_token":"initial","token_type":"bearer","expires_in":1})"
+                   : R"({"access_token":"fresh","token_type":"bearer"})");
+    };
+  }
+
+  void TearDown() override {
+    if (session_) {
+      EXPECT_THAT(session_->Close(), IsOk());
+    }
+    if (manager_) {
+      EXPECT_THAT(manager_->Close(), IsOk());
+    }
+  }
+
+  void ExpectRefresh() {
+    EXPECT_CALL(executor_, Submit).WillOnce([this](ExecutorTask task) -> Status {
+      queued_.set_value(std::move(task));
+      return {};
+    });
+  }
+
+  void RunRefresh() {
+    auto task = queued_.get_future();
+    ASSERT_EQ(task.wait_for(std::chrono::seconds(5)), std::future_status::ready);
+    std::move(task.get())();
+  }
+
+  void CheckRequests(const std::string& client_id, const std::string& client_secret,
+                     const std::string& parent_token = "") {
+    ASSERT_EQ(client_->recorded_requests.size(), 2);
+    std::unordered_map<std::string, std::string> credential_form{
+        {"grant_type", "client_credentials"}, {"client_id", client_id},
+        {"client_secret", client_secret},     {"scope", "catalog"},
+        {"audience", "catalog-service"},      {"resource", "https://catalog.example"},
+    };
+    const auto& initial = client_->recorded_requests[0];
+    EXPECT_THAT(initial.form, ::testing::ContainerEq(credential_form));
+    if (parent_token.empty()) {
+      EXPECT_TRUE(initial.headers.empty());
+    } else {
+      EXPECT_EQ(initial.headers.at("Authorization"), "Bearer " + parent_token);
+    }
+
+    const auto& refresh = client_->recorded_requests[1];
+    if (GetParam() == "false") {
+      EXPECT_THAT(refresh.form, ::testing::ContainerEq(credential_form));
+      EXPECT_TRUE(refresh.headers.empty());
+    } else {
+      const std::unordered_map<std::string, std::string> exchange_form{
+          {"grant_type", "urn:ietf:params:oauth:grant-type:token-exchange"},
+          {"subject_token", "initial"},
+          {"subject_token_type", AuthProperties::kAccessTokenType},
+          {"scope", "catalog"},
+          {"audience", "catalog-service"},
+          {"resource", "https://catalog.example"},
+      };
+      EXPECT_THAT(refresh.form, ::testing::ContainerEq(exchange_form));
+      // A delayed worker may correctly recover with the session's own credential.
+      EXPECT_THAT(refresh.headers,
+                  ::testing::ElementsAre(::testing::Pair(
+                      "Authorization",
+                      ::testing::AnyOf(
+                          "Bearer initial",
+                          "Basic " + Base64::Encode(client_id + ":" + client_secret)))));
+    }
+    for (const auto& request : client_->recorded_requests) {
+      EXPECT_EQ(request.path, properties_.at(AuthProperties::kOAuth2ServerUri.key()));
+    }
+    ICEBERG_UNWRAP_OR_FAIL(auto request, session_->Authenticate({}));
+    EXPECT_EQ(request.headers.at("Authorization"), "Bearer fresh");
+    EXPECT_EQ(session_->OAuth2Info()->credential, client_id + ":" + client_secret);
+  }
+
+  MockExecutor executor_;
+  std::promise<ExecutorTask> queued_;
+  std::shared_ptr<RefreshHttpClient> client_ = std::make_shared<RefreshHttpClient>();
+  std::unordered_map<std::string, std::string> properties_{
+      {AuthProperties::kAuthType, "oauth2"},
+      {AuthProperties::kCredential.key(), "catalog:catalog-secret"},
+      {AuthProperties::kOAuth2ServerUri.key(), "https://auth.example/token"},
+      {AuthProperties::kScope.key(), "catalog"},
+      {AuthProperties::kAudience.key(), "catalog-service"},
+      {AuthProperties::kResource.key(), "https://catalog.example"},
+  };
+  std::unique_ptr<AuthManager> manager_;
+  std::shared_ptr<AuthSession> session_;
+};
+
+TEST_P(OAuth2ManagerRefreshTest, CatalogRefreshUsesConfiguredGrant) {
+  ExpectRefresh();
+  ICEBERG_UNWRAP_OR_FAIL(session_, manager_->CatalogSession(client_, properties_));
+  ASSERT_NO_FATAL_FAILURE(RunRefresh());
+  CheckRequests("catalog", "catalog-secret");
+}
+
+TEST_P(OAuth2ManagerRefreshTest, CredentialContextInheritsCatalogRefreshGrant) {
+  ExpectRefresh();
+  properties_[AuthProperties::kToken.key()] = "parent-token";
+  ICEBERG_UNWRAP_OR_FAIL(auto parent, manager_->CatalogSession(client_, properties_));
+  SessionContext context{
+      .session_id = "tenant-a",
+      .credentials = {{AuthProperties::kCredential.key(), "child:child-secret"}},
+  };
+  ICEBERG_UNWRAP_OR_FAIL(session_, manager_->ContextualSession(context, parent));
+  ASSERT_NO_FATAL_FAILURE(RunRefresh());
+  CheckRequests("child", "child-secret", "parent-token");
+  ICEBERG_UNWRAP_OR_FAIL(auto cached, manager_->ContextualSession(context, parent));
+  EXPECT_EQ(cached, session_);
+}
+
+TEST_P(OAuth2ManagerRefreshTest, ExpiredCredentialContextRecoversWithOwnRawCredential) {
+  ExpectRefresh();
+  properties_[AuthProperties::kToken.key()] = "parent-token";
+  ICEBERG_UNWRAP_OR_FAIL(auto parent, manager_->CatalogSession(client_, properties_));
+  client_->response = [this]() -> Result<HttpResponse> {
+    return HttpResponse(
+        200,
+        client_->requests == 1
+            ? R"({"access_token":"child-expired","token_type":"bearer","issued_token_type":"urn:ietf:params:oauth:token-type:jwt","expires_in":0})"
+            : R"({"access_token":"child-fresh","token_type":"bearer"})");
+  };
+  SessionContext context{
+      .session_id = "tenant-recovery",
+      .credentials = {{AuthProperties::kCredential.key(), ":child-secret"}},
+  };
+  ICEBERG_UNWRAP_OR_FAIL(session_, manager_->ContextualSession(context, parent));
+  EXPECT_EQ(session_->OAuth2Info()->credential, ":child-secret");
+  ASSERT_NO_FATAL_FAILURE(RunRefresh());
+
+  ASSERT_EQ(client_->recorded_requests.size(), 2);
+  const auto& initial = client_->recorded_requests[0];
+  const std::unordered_map<std::string, std::string> credential_form{
+      {"grant_type", "client_credentials"},
+      {"client_secret", "child-secret"},
+      {"scope", "catalog"},
+      {"audience", "catalog-service"},
+      {"resource", "https://catalog.example"},
+  };
+  EXPECT_THAT(initial.form, ::testing::ContainerEq(credential_form));
+  EXPECT_EQ(initial.headers.at("Authorization"), "Bearer parent-token");
+  const auto& recovery = client_->recorded_requests[1];
+  if (GetParam() == "false") {
+    EXPECT_THAT(recovery.form, ::testing::ContainerEq(credential_form));
+    EXPECT_TRUE(recovery.headers.empty());
+  } else {
+    const std::unordered_map<std::string, std::string> exchange_form{
+        {"grant_type", "urn:ietf:params:oauth:grant-type:token-exchange"},
+        {"subject_token", "child-expired"},
+        {"subject_token_type", AuthProperties::kJwtTokenType},
+        {"scope", "catalog"},
+        {"audience", "catalog-service"},
+        {"resource", "https://catalog.example"},
+    };
+    EXPECT_THAT(recovery.form, ::testing::ContainerEq(exchange_form));
+    EXPECT_THAT(recovery.headers, ::testing::ElementsAre(::testing::Pair(
+                                      "Authorization", "Basic OmNoaWxkLXNlY3JldA==")));
+  }
+  EXPECT_EQ(recovery.path, properties_.at(AuthProperties::kOAuth2ServerUri.key()));
+  EXPECT_EQ(session_->OAuth2Info()->credential, ":child-secret");
+  ICEBERG_UNWRAP_OR_FAIL(auto request, session_->Authenticate({}));
+  EXPECT_EQ(request.headers.at("Authorization"), "Bearer child-fresh");
+  ICEBERG_UNWRAP_OR_FAIL(auto parent_request, parent->Authenticate({}));
+  EXPECT_EQ(parent_request.headers.at("Authorization"), "Bearer parent-token");
+  ICEBERG_UNWRAP_OR_FAIL(auto cached, manager_->ContextualSession(context, parent));
+  EXPECT_EQ(cached, session_);
+  EXPECT_EQ(client_->requests, 2);
+}
+
+TEST_P(OAuth2ManagerRefreshTest, RefreshDisabledDoesNotScheduleCatalogOrContext) {
+  EXPECT_CALL(executor_, Submit).Times(0);
+  properties_[AuthProperties::kKeepRefreshed.key()] = "false";
+  client_->response = []() -> Result<HttpResponse> {
+    return HttpResponse(
+        200, R"({"access_token":"initial","token_type":"bearer","expires_in":0})");
+  };
+  ICEBERG_UNWRAP_OR_FAIL(session_, manager_->CatalogSession(client_, properties_));
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto child,
+      manager_->ContextualSession(
+          {.session_id = "tenant-a",
+           .credentials = {{AuthProperties::kCredential.key(), "child:child-secret"}}},
+          session_));
+  ASSERT_TRUE(test::WaitForSharedTimer());
+  EXPECT_EQ(client_->requests, 2);
+  ICEBERG_UNWRAP_OR_FAIL(auto request, child->Authenticate({}));
+  EXPECT_EQ(request.headers.at("Authorization"), "Bearer initial");
+}
+
+INSTANTIATE_TEST_SUITE_P(ExchangeModes, OAuth2ManagerRefreshTest,
+                         ::testing::Values(std::string(""), std::string("true"),
+                                           std::string("false")),
+                         [](const ::testing::TestParamInfo<std::string>& info) {
+                           return info.param.empty()     ? "Default"
+                                  : info.param == "true" ? "Enabled"
+                                                         : "Disabled";
+                         });
+
+class OAuth2ExchangeRefreshTest : public ::testing::Test {
+ protected:
+  void SetUp() override {
+    config_.now = [this] { return now_; };
+  }
+  void ExpectRefreshes(int count) {
+    if (count == 0) {
+      EXPECT_CALL(executor_, Submit).Times(0);
+      return;
+    }
+    EXPECT_CALL(executor_, Submit)
+        .Times(count)
+        .WillRepeatedly([this](ExecutorTask task) -> Status {
+          queued_.at(submitted_++).set_value(std::move(task));
+          return {};
+        });
+  }
+
+  Status Start() {
+    ICEBERG_ASSIGN_OR_RAISE(
+        session_, internal::OAuth2Session::Make(token_, config_, client_, std::nullopt));
+    return {};
+  }
+
+  void RunRefresh(size_t index = 0) {
+    auto task = queued_.at(index).get_future();
+    ASSERT_EQ(task.wait_for(std::chrono::seconds(5)), std::future_status::ready);
+    std::move(task.get())();
+  }
+
+  MockExecutor executor_;
+  std::array<std::promise<ExecutorTask>, 2> queued_;
+  int submitted_ = 0;
+  std::shared_ptr<RefreshHttpClient> client_ = std::make_shared<RefreshHttpClient>();
+  std::chrono::steady_clock::time_point now_ = std::chrono::steady_clock::now();
+  internal::OAuth2Session::Config config_{
+      .token_endpoint = "https://auth.example/token",
+      .scope = "catalog",
+      .optional_oauth_params = {{"audience", "catalog-service"},
+                                {"resource", "https://catalog.example"}},
+      .exchange_enabled = true,
+      .refresh_executor = &executor_,
+  };
+  OAuthTokenResponse token_{
+      .access_token = "initial",
+      .token_type = "bearer",
+      .expires_in_secs = 1,
+      .issued_token_type = AuthProperties::kAccessTokenType,
+  };
+  // Destroy the session before its borrowed executor and task promises.
+  std::shared_ptr<internal::OAuth2Session> session_;
+};
+
+TEST_F(OAuth2ExchangeRefreshTest, ExchangesCurrentTokenAndTypeOnEachRefresh) {
+  ExpectRefreshes(2);
+  // Even when a credential is available, exchange must keep the current subject.
+  config_.credential = "client:secret";
+  client_->response = [&]() -> Result<HttpResponse> {
+    if (client_->requests == 1) {
+      return HttpResponse(
+          200, nlohmann::json({{"access_token", "first"},
+                               {"token_type", "bearer"},
+                               {"issued_token_type", AuthProperties::kJwtTokenType},
+                               {"expires_in", 1}})
+                   .dump());
+    }
+    return HttpResponse(200, R"({"access_token":"second","token_type":"bearer"})");
+  };
+  ASSERT_THAT(Start(), IsOk());
+
+  ASSERT_NO_FATAL_FAILURE(RunRefresh());
+  ICEBERG_UNWRAP_OR_FAIL(auto first_request, session_->Authenticate({}));
+  EXPECT_EQ(first_request.headers.at("Authorization"), "Bearer first");
+  ASSERT_TRUE(session_->ExpiresAt().has_value());
+  EXPECT_TRUE(session_->IsRefreshable());
+
+  ASSERT_NO_FATAL_FAILURE(RunRefresh(1));
+  ASSERT_EQ(client_->recorded_requests.size(), 2);
+  for (size_t i = 0; i < client_->recorded_requests.size(); ++i) {
+    const auto& request = client_->recorded_requests[i];
+    const std::string subject = i == 0 ? "initial" : "first";
+    const std::unordered_map<std::string, std::string> expected_form{
+        {"grant_type", "urn:ietf:params:oauth:grant-type:token-exchange"},
+        {"subject_token", subject},
+        {"subject_token_type",
+         i == 0 ? AuthProperties::kAccessTokenType : AuthProperties::kJwtTokenType},
+        {"scope", "catalog"},
+        {"audience", "catalog-service"},
+        {"resource", "https://catalog.example"},
+    };
+    EXPECT_EQ(request.path, config_.token_endpoint);
+    EXPECT_THAT(request.form, ::testing::ContainerEq(expected_form));
+    EXPECT_EQ(request.headers.at("Authorization"), "Bearer " + subject);
+  }
+  ICEBERG_UNWRAP_OR_FAIL(auto second_request, session_->Authenticate({}));
+  EXPECT_EQ(second_request.headers.at("Authorization"), "Bearer second");
+  EXPECT_EQ(session_->OAuth2Info()->issued_token_type, AuthProperties::kAccessTokenType);
+  EXPECT_FALSE(session_->ExpiresAt().has_value());
+  EXPECT_FALSE(session_->IsRefreshable());
+  EXPECT_THAT(session_->Close(), IsOk());
+}
+
+TEST_F(OAuth2ExchangeRefreshTest, RetriesExchangeWithoutChangingIdentity) {
+  ExpectRefreshes(1);
+  client_->response = [&]() -> Result<HttpResponse> {
+    if (client_->requests == 1) {
+      throw std::runtime_error("HTTP library failure");
+    }
+    if (client_->requests == 2) {
+      return IOError("temporarily unavailable");
+    }
+    return HttpResponse(200, R"({"access_token":"fresh","token_type":"bearer"})");
+  };
+  ASSERT_THAT(Start(), IsOk());
+  test::FakeRetryEnvironment fake_retry;
+  ScopedRetryTestHooks hooks(fake_retry.hooks());
+  ASSERT_NO_FATAL_FAILURE(RunRefresh());
+
+  EXPECT_EQ(client_->requests, 3);
+  EXPECT_THAT(fake_retry.observed_base_delays_ms(), ::testing::ElementsAre(100, 200));
+  for (const auto& request : client_->recorded_requests) {
+    EXPECT_EQ(request.form.at("subject_token"), "initial");
+    EXPECT_EQ(request.headers.at("Authorization"), "Bearer initial");
+    EXPECT_FALSE(request.form.contains("client_secret"));
+  }
+  EXPECT_EQ(session_->OAuth2Info()->token, "fresh");
+  EXPECT_THAT(session_->Close(), IsOk());
+}
+
+class OAuth2ExpiredExchangeRefreshTest : public OAuth2ExchangeRefreshTest,
+                                         public ::testing::WithParamInterface<bool> {
+ protected:
+  HttpResponse ExpiredResponse() const {
+    return HttpResponse(
+        200, nlohmann::json(
+                 {{"access_token", GetParam() ? MakeJwt(R"({"exp":0})") : "expired"},
+                  {"token_type", "bearer"},
+                  {"issued_token_type", GetParam() ? AuthProperties::kJwtTokenType
+                                                   : AuthProperties::kAccessTokenType},
+                  {"expires_in", GetParam() ? 3600 : 0}})
+                 .dump());
+  }
+
+  void ExpectInitialState(
+      std::optional<std::chrono::steady_clock::time_point> expiration) {
+    EXPECT_EQ(session_->OAuth2Info()->token, token_.access_token);
+    EXPECT_EQ(session_->OAuth2Info()->issued_token_type, token_.issued_token_type);
+    EXPECT_EQ(session_->ExpiresAt(), expiration);
+    ICEBERG_UNWRAP_OR_FAIL(auto request, session_->Authenticate({}));
+    EXPECT_EQ(request.headers.at("Authorization"), "Bearer " + token_.access_token);
+  }
+
+  void ExpectInitialExchangeRequests(bool final_recovery = false) {
+    for (size_t i = 0; i < client_->recorded_requests.size(); ++i) {
+      const auto& request = client_->recorded_requests[i];
+      EXPECT_EQ(request.form.at("subject_token"), token_.access_token);
+      EXPECT_EQ(request.form.at("subject_token_type"), token_.issued_token_type);
+      EXPECT_EQ(request.headers.at("Authorization"),
+                final_recovery && i == 6 ? "Basic Y2xpZW50OnNlY3JldA=="
+                                         : "Bearer " + token_.access_token);
+    }
+  }
+};
+
+TEST_P(OAuth2ExpiredExchangeRefreshTest, RetriesWithPreviousTokenUntilSuccess) {
+  ExpectRefreshes(1);
+  ASSERT_THAT(Start(), IsOk());
+  auto initial_expiration = session_->ExpiresAt();
+  client_->response = [&]() -> Result<HttpResponse> {
+    if (client_->requests == 1) {
+      return ExpiredResponse();
+    }
+    ExpectInitialState(initial_expiration);
+    const auto& request = client_->recorded_requests.back();
+    if (request.form.at("subject_token") != token_.access_token ||
+        request.headers.at("Authorization") != "Bearer " + token_.access_token) {
+      return IOError("authorization server rejects the expired token");
+    }
+    return HttpResponse(200, R"({"access_token":"fresh","token_type":"bearer"})");
+  };
+  test::FakeRetryEnvironment fake_retry;
+  ScopedRetryTestHooks hooks(fake_retry.hooks());
+  ASSERT_NO_FATAL_FAILURE(RunRefresh());
+
+  EXPECT_EQ(client_->requests, 2);
+  EXPECT_THAT(fake_retry.observed_base_delays_ms(), ::testing::ElementsAre(100));
+  ExpectInitialExchangeRequests();
+  ICEBERG_UNWRAP_OR_FAIL(auto request, session_->Authenticate({}));
+  EXPECT_EQ(request.headers.at("Authorization"), "Bearer fresh");
+  EXPECT_EQ(session_->OAuth2Info()->issued_token_type, AuthProperties::kAccessTokenType);
+  EXPECT_FALSE(session_->ExpiresAt().has_value());
+  EXPECT_FALSE(session_->IsRefreshable());
+  EXPECT_THAT(session_->Close(), IsOk());
+}
+
+TEST_P(OAuth2ExpiredExchangeRefreshTest, KeepsPreviousTokenAfterRetriesExhausted) {
+  ExpectRefreshes(1);
+  config_.credential = "client:secret";
+  ASSERT_THAT(Start(), IsOk());
+  auto initial_expiration = session_->ExpiresAt();
+  client_->response = [&]() -> Result<HttpResponse> { return ExpiredResponse(); };
+  test::FakeRetryEnvironment fake_retry;
+  ScopedRetryTestHooks hooks(fake_retry.hooks());
+  ASSERT_NO_FATAL_FAILURE(RunRefresh());
+
+  EXPECT_EQ(client_->requests, 7);
+  ExpectInitialExchangeRequests(true);
+  ExpectInitialState(initial_expiration);
+  EXPECT_FALSE(session_->IsRefreshable());
+  EXPECT_THAT(session_->Close(), IsOk());
+}
+
+INSTANTIATE_TEST_SUITE_P(ExpirationSources, OAuth2ExpiredExchangeRefreshTest,
+                         ::testing::Bool(),
+                         [](const ::testing::TestParamInfo<bool>& info) {
+                           return info.param ? "Jwt" : "ExpiresIn";
+                         });
+
+TEST_F(OAuth2ExchangeRefreshTest, StopsAfterExchangeRetryBudget) {
+  ExpectRefreshes(1);
+  config_.credential = "client:secret";
+  ASSERT_THAT(Start(), IsOk());
+  test::FakeRetryEnvironment fake_retry;
+  ScopedRetryTestHooks hooks(fake_retry.hooks());
+  ASSERT_NO_FATAL_FAILURE(RunRefresh());
+
+  EXPECT_EQ(client_->requests, 7);
+  for (size_t i = 0; i < client_->recorded_requests.size(); ++i) {
+    const auto& request = client_->recorded_requests[i];
+    EXPECT_EQ(request.headers.at("Authorization"),
+              i == 6 ? "Basic Y2xpZW50OnNlY3JldA==" : "Bearer initial");
+    EXPECT_EQ(request.form.at("grant_type"),
+              "urn:ietf:params:oauth:grant-type:token-exchange");
+    EXPECT_EQ(request.form.at("subject_token"), "initial");
+    EXPECT_FALSE(request.form.contains("client_secret"));
+  }
+  EXPECT_EQ(session_->OAuth2Info()->token, "initial");
+  EXPECT_FALSE(session_->IsRefreshable());
+  EXPECT_THAT(session_->Close(), IsOk());
+}
+
+class OAuth2ExpiredCredentialTest
+    : public OAuth2ExchangeRefreshTest,
+      public ::testing::WithParamInterface<std::pair<std::string, std::string>> {};
+
+TEST_P(OAuth2ExpiredCredentialTest, UsesOriginalCredentialForExpiredToken) {
+  ExpectRefreshes(1);
+  token_.expires_in_secs = 0;
+  config_.credential = GetParam().first;
+  client_->response = []() -> Result<HttpResponse> {
+    return HttpResponse(200, R"({"access_token":"fresh","token_type":"bearer"})");
+  };
+  ASSERT_THAT(Start(), IsOk());
+  ASSERT_NO_FATAL_FAILURE(RunRefresh());
+
+  ASSERT_EQ(client_->recorded_requests.size(), 1);
+  const auto& request = client_->recorded_requests.front();
+  EXPECT_EQ(request.headers.at("Authorization"), "Basic " + GetParam().second);
+  EXPECT_EQ(request.form.at("subject_token"), "initial");
+  EXPECT_EQ(request.form.at("subject_token_type"), AuthProperties::kAccessTokenType);
+  EXPECT_FALSE(request.form.contains("actor_token"));
+  EXPECT_FALSE(request.form.contains("client_secret"));
+  EXPECT_EQ(session_->OAuth2Info()->credential, GetParam().first);
+  EXPECT_EQ(session_->OAuth2Info()->token, "fresh");
+  EXPECT_FALSE(session_->IsRefreshable());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    CredentialForms, OAuth2ExpiredCredentialTest,
+    ::testing::Values(std::pair<std::string, std::string>{"id:secret", "aWQ6c2VjcmV0"},
+                      std::pair<std::string, std::string>{"secret", "c2VjcmV0"},
+                      std::pair<std::string, std::string>{":secret", "OnNlY3JldA=="},
+                      std::pair<std::string, std::string>{"id:secret:tail",
+                                                          "aWQ6c2VjcmV0OnRhaWw="}));
+
+TEST_F(OAuth2ExchangeRefreshTest, SwitchesToBasicWhenTokenExpiresDuringRetries) {
+  ExpectRefreshes(1);
+  config_.credential = "client:secret";
+  client_->response = [&]() -> Result<HttpResponse> {
+    if (client_->requests == 1) {
+      now_ += std::chrono::seconds(2);
+      return IOError("Bearer refresh failed");
+    }
+    return HttpResponse(200, R"({"access_token":"fresh","token_type":"bearer"})");
+  };
+  ASSERT_THAT(Start(), IsOk());
+  test::FakeRetryEnvironment fake_retry;
+  ScopedRetryTestHooks hooks(fake_retry.hooks());
+  ASSERT_NO_FATAL_FAILURE(RunRefresh());
+
+  ASSERT_EQ(client_->recorded_requests.size(), 2);
+  EXPECT_EQ(client_->recorded_requests[0].headers.at("Authorization"), "Bearer initial");
+  EXPECT_EQ(client_->recorded_requests[1].headers.at("Authorization"),
+            "Basic Y2xpZW50OnNlY3JldA==");
+  for (const auto& request : client_->recorded_requests) {
+    EXPECT_EQ(request.form.at("subject_token"), "initial");
+    EXPECT_EQ(request.form.at("subject_token_type"), AuthProperties::kAccessTokenType);
+  }
+  EXPECT_EQ(session_->OAuth2Info()->token, "fresh");
+}
+
+TEST_F(OAuth2ExchangeRefreshTest, FinalRecoveryUsesOwnRequestTimeAndReschedules) {
+  ExpectRefreshes(2);
+  config_.credential = "client:secret";
+  client_->response = [&]() -> Result<HttpResponse> {
+    if (client_->requests <= 6) {
+      if (client_->requests == 6) {
+        now_ += std::chrono::milliseconds(250);
+      }
+      return IOError("Bearer refresh failed");
+    }
+    if (client_->requests == 7) {
+      return HttpResponse(
+          200, R"({"access_token":"recovered","token_type":"bearer","expires_in":1})");
+    }
+    return HttpResponse(200, R"({"access_token":"next","token_type":"bearer"})");
+  };
+  ASSERT_THAT(Start(), IsOk());
+  test::FakeRetryEnvironment fake_retry;
+  ScopedRetryTestHooks hooks(fake_retry.hooks());
+  ASSERT_NO_FATAL_FAILURE(RunRefresh());
+
+  ASSERT_EQ(client_->recorded_requests.size(), 7);
+  for (size_t i = 0; i < 7; ++i) {
+    const auto& request = client_->recorded_requests[i];
+    EXPECT_EQ(request.headers.at("Authorization"),
+              i == 6 ? "Basic Y2xpZW50OnNlY3JldA==" : "Bearer initial");
+    EXPECT_EQ(request.form.at("subject_token"), "initial");
+    EXPECT_FALSE(request.form.contains("actor_token"));
+  }
+  EXPECT_THAT(fake_retry.observed_base_delays_ms(),
+              ::testing::ElementsAre(100, 200, 400, 800, 1600));
+  EXPECT_EQ(session_->ExpiresAt(), now_ + std::chrono::seconds(1));
+  EXPECT_EQ(session_->OAuth2Info()->token, "recovered");
+  EXPECT_TRUE(session_->IsRefreshable());
+  ASSERT_NO_FATAL_FAILURE(RunRefresh(1));
+  EXPECT_EQ(client_->recorded_requests.back().headers.at("Authorization"),
+            "Bearer recovered");
+  EXPECT_EQ(client_->recorded_requests.back().form.at("subject_token"), "recovered");
+  EXPECT_EQ(session_->OAuth2Info()->token, "next");
+  EXPECT_FALSE(session_->IsRefreshable());
+}
+
+TEST_F(OAuth2ExchangeRefreshTest, ExpiredJwtSharesSevenAttemptBudget) {
+  ExpectRefreshes(1);
+  config_.credential = "client:secret";
+  token_.access_token = MakeJwt(R"({"exp":0})");
+  token_.issued_token_type = AuthProperties::kJwtTokenType;
+  token_.expires_in_secs = 3600;
+  ASSERT_THAT(Start(), IsOk());
+  const auto expiration = session_->ExpiresAt();
+  test::FakeRetryEnvironment fake_retry;
+  ScopedRetryTestHooks hooks(fake_retry.hooks());
+  ASSERT_NO_FATAL_FAILURE(RunRefresh());
+
+  ASSERT_EQ(client_->recorded_requests.size(), 7);
+  for (const auto& request : client_->recorded_requests) {
+    EXPECT_EQ(request.headers.at("Authorization"), "Basic Y2xpZW50OnNlY3JldA==");
+    EXPECT_EQ(request.form.at("subject_token"), token_.access_token);
+    EXPECT_EQ(request.form.at("subject_token_type"), AuthProperties::kJwtTokenType);
+  }
+  EXPECT_EQ(session_->OAuth2Info()->token, token_.access_token);
+  EXPECT_EQ(session_->ExpiresAt(), expiration);
+  EXPECT_FALSE(session_->IsRefreshable());
+}
+
+class OAuth2MissingCredentialTest : public OAuth2ExchangeRefreshTest,
+                                    public ::testing::WithParamInterface<bool> {};
+
+TEST_P(OAuth2MissingCredentialTest, DoesNotSendUnrecoverableRequest) {
+  ExpectRefreshes(1);
+  config_.exchange_enabled = GetParam();
+  token_.expires_in_secs = 0;
+  ASSERT_THAT(Start(), IsOk());
+  test::FakeRetryEnvironment fake_retry;
+  ScopedRetryTestHooks hooks(fake_retry.hooks());
+  ASSERT_NO_FATAL_FAILURE(RunRefresh());
+
+  EXPECT_EQ(client_->requests, 0);
+  EXPECT_EQ(session_->OAuth2Info()->token, "initial");
+  EXPECT_FALSE(session_->IsRefreshable());
+}
+
+INSTANTIATE_TEST_SUITE_P(GrantModes, OAuth2MissingCredentialTest, ::testing::Bool());
+
+TEST_F(OAuth2ExchangeRefreshTest, MissingCredentialSkipsFinalRecovery) {
+  ExpectRefreshes(1);
+  ASSERT_THAT(Start(), IsOk());
+  test::FakeRetryEnvironment fake_retry;
+  ScopedRetryTestHooks hooks(fake_retry.hooks());
+  ASSERT_NO_FATAL_FAILURE(RunRefresh());
+
+  ASSERT_EQ(client_->recorded_requests.size(), 6);
+  for (const auto& request : client_->recorded_requests) {
+    EXPECT_EQ(request.headers.at("Authorization"), "Bearer initial");
+  }
+  EXPECT_EQ(session_->OAuth2Info()->token, "initial");
+  EXPECT_FALSE(session_->IsRefreshable());
+}
+
+TEST_F(OAuth2ExchangeRefreshTest, MissingCredentialStopsWhenTokenExpiresDuringRetries) {
+  ExpectRefreshes(1);
+  client_->response = [&]() -> Result<HttpResponse> {
+    now_ += std::chrono::seconds(2);
+    return IOError("Bearer refresh failed");
+  };
+  ASSERT_THAT(Start(), IsOk());
+  test::FakeRetryEnvironment fake_retry;
+  ScopedRetryTestHooks hooks(fake_retry.hooks());
+  ASSERT_NO_FATAL_FAILURE(RunRefresh());
+
+  EXPECT_EQ(client_->requests, 1);
+  EXPECT_EQ(client_->recorded_requests.front().headers.at("Authorization"),
+            "Bearer initial");
+  EXPECT_EQ(session_->OAuth2Info()->token, "initial");
+  EXPECT_FALSE(session_->IsRefreshable());
+}
+
+TEST_F(OAuth2ExchangeRefreshTest, StopBeforeFinalRecoverySkipsRequest) {
+  ExpectRefreshes(1);
+  config_.credential = "client:secret";
+  client_->response = [&]() -> Result<HttpResponse> {
+    if (client_->requests == 6) {
+      session_->StopRefreshing();
+    }
+    return IOError("refresh failed");
+  };
+  ASSERT_THAT(Start(), IsOk());
+  test::FakeRetryEnvironment fake_retry;
+  ScopedRetryTestHooks hooks(fake_retry.hooks());
+  ASSERT_NO_FATAL_FAILURE(RunRefresh());
+
+  EXPECT_EQ(client_->requests, 6);
+  EXPECT_EQ(session_->OAuth2Info()->token, "initial");
+  EXPECT_FALSE(session_->IsRefreshable());
+}
+
+TEST_F(OAuth2ExchangeRefreshTest, CloseWaitsForFinalRecovery) {
+  ExpectRefreshes(1);
+  config_.credential = "client:secret";
+  std::promise<void> entered;
+  std::promise<void> release;
+  auto entered_future = entered.get_future();
+  auto release_future = release.get_future();
+  client_->response = [&]() -> Result<HttpResponse> {
+    if (client_->requests == 7) {
+      entered.set_value();
+      release_future.wait();
+      return HttpResponse(
+          200, R"({"access_token":"recovered","token_type":"bearer","expires_in":1})");
+    }
+    return IOError("refresh failed");
+  };
+  ASSERT_THAT(Start(), IsOk());
+  auto task = queued_[0].get_future();
+  ASSERT_EQ(task.wait_for(std::chrono::seconds(5)), std::future_status::ready);
+  auto refresh = std::async(std::launch::async, [&] {
+    test::FakeRetryEnvironment fake_retry;
+    ScopedRetryTestHooks hooks(fake_retry.hooks());
+    std::move(task.get())();
+  });
+  auto entered_status = entered_future.wait_for(std::chrono::seconds(5));
+  if (entered_status != std::future_status::ready) {
+    release.set_value();
+  }
+  ASSERT_EQ(entered_status, std::future_status::ready);
+  auto closing = std::async(std::launch::async, [&] { return session_->Close(); });
+  EXPECT_EQ(closing.wait_for(std::chrono::milliseconds(30)), std::future_status::timeout);
+  release.set_value();
+  refresh.get();
+  EXPECT_THAT(closing.get(), IsOk());
+
+  EXPECT_EQ(client_->requests, 7);
+  EXPECT_EQ(session_->OAuth2Info()->token, "recovered");
+  EXPECT_FALSE(session_->IsRefreshable());
+}
+
+TEST_F(OAuth2ExchangeRefreshTest, CloseSkipsQueuedExchange) {
+  ExpectRefreshes(1);
+  ASSERT_THAT(Start(), IsOk());
+  auto task = queued_[0].get_future();
+  ASSERT_EQ(task.wait_for(std::chrono::seconds(5)), std::future_status::ready);
+  EXPECT_THAT(session_->Close(), IsOk());
+  std::move(task.get())();
+  EXPECT_EQ(client_->requests, 0);
+}
+
+TEST_F(OAuth2ExchangeRefreshTest, StopDuringExchangePreventsRescheduling) {
+  ExpectRefreshes(1);
+  client_->response = [&]() -> Result<HttpResponse> {
+    session_->StopRefreshing();
+    return HttpResponse(
+        200, R"({"access_token":"fresh","token_type":"bearer","expires_in":1})");
+  };
+  ASSERT_THAT(Start(), IsOk());
+  ASSERT_NO_FATAL_FAILURE(RunRefresh());
+  EXPECT_EQ(session_->OAuth2Info()->token, "fresh");
+  EXPECT_FALSE(session_->IsRefreshable());
+  ASSERT_TRUE(test::WaitForSharedTimer(std::chrono::seconds(1)));
+  EXPECT_THAT(session_->Close(), IsOk());
+}
+
+TEST_F(OAuth2ExchangeRefreshTest, CloseWaitsForExchangeAndStopsRetries) {
+  ExpectRefreshes(1);
+  std::promise<void> entered;
+  std::promise<void> release;
+  auto entered_future = entered.get_future();
+  auto release_future = release.get_future();
+  client_->response = [&]() -> Result<HttpResponse> {
+    entered.set_value();
+    release_future.wait();
+    return IOError("exchange failed during Close");
+  };
+  ASSERT_THAT(Start(), IsOk());
+  auto task = queued_[0].get_future();
+  ASSERT_EQ(task.wait_for(std::chrono::seconds(5)), std::future_status::ready);
+  auto refresh = std::async(std::launch::async, [&] { std::move(task.get())(); });
+  auto entered_status = entered_future.wait_for(std::chrono::seconds(5));
+  if (entered_status != std::future_status::ready) {
+    release.set_value();
+  }
+  ASSERT_EQ(entered_status, std::future_status::ready);
+
+  auto closing = std::async(std::launch::async, [&] { return session_->Close(); });
+  EXPECT_EQ(closing.wait_for(std::chrono::milliseconds(30)), std::future_status::timeout);
+  release.set_value();
+  refresh.get();
+  EXPECT_THAT(closing.get(), IsOk());
+  EXPECT_EQ(client_->requests, 1);
+  EXPECT_FALSE(session_->IsRefreshable());
+}
+
+TEST_F(OAuth2ExchangeRefreshTest, DoesNotScheduleWithoutExpirationOrExecutor) {
+  ExpectRefreshes(0);
+  token_.expires_in_secs = std::nullopt;
+  ASSERT_THAT(Start(), IsOk());
+  EXPECT_FALSE(session_->IsRefreshable());
+  EXPECT_THAT(session_->Close(), IsOk());
+
+  token_.expires_in_secs = 0;
+  config_.refresh_executor = nullptr;
+  ASSERT_THAT(Start(), IsOk());
+  EXPECT_FALSE(session_->IsRefreshable());
+  ASSERT_TRUE(test::WaitForSharedTimer());
+  EXPECT_EQ(client_->requests, 0);
 }
 
 TEST(OAuth2SessionTest, AlreadyExpiredRefreshedTokenBacksOff) {
@@ -863,7 +1637,13 @@ TEST(OAuth2SessionTest, StopsAfterHttpRetryBudget) {
   test::FakeRetryEnvironment fake_retry;
   ScopedRetryTestHooks hooks(fake_retry.hooks());
   std::move(task.get())();
-  EXPECT_EQ(client->requests, 6);
+  EXPECT_EQ(client->requests, 7);
+  for (const auto& request : client->recorded_requests) {
+    EXPECT_EQ(request.form.at("grant_type"), "client_credentials");
+    EXPECT_EQ(request.form.at("client_id"), "client");
+    EXPECT_EQ(request.form.at("client_secret"), "secret");
+    EXPECT_FALSE(request.headers.contains("Authorization"));
+  }
   EXPECT_THAT(fake_retry.observed_base_delays_ms(),
               ::testing::ElementsAre(100, 200, 400, 800, 1600));
   // No further refresh is scheduled, so the session no longer counts as refreshable.
@@ -885,8 +1665,7 @@ TEST(OAuth2SessionTest, StopRefreshingKeepsSessionUsable) {
       auto session,
       internal::OAuth2Session::Make(token_response,
                                     {.token_endpoint = "http://localhost/oauth/tokens",
-                                     .client_id = "client_id",
-                                     .client_secret = "client_secret",
+                                     .credential = "client_id:client_secret",
                                      .scope = "catalog",
                                      .refresh_executor = &executor},
                                     std::make_shared<HttpClient>(), std::nullopt));
