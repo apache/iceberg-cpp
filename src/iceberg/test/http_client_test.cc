@@ -403,6 +403,47 @@ TEST(HttpClientTest, OAuth2SessionRefreshesTokensOverHttp) {
   EXPECT_EQ(server.request_count(), 4);
 }
 
+TEST(HttpClientTest, PublicOAuth2FactoryPreservesAuthorizationOnRefresh) {
+  constexpr std::string_view kAuthorization = "Basic Z2F0ZXdheTpzZWNyZXQ=";
+  LoopbackHttpServer server([&](const std::string& request) {
+    EXPECT_TRUE(request.starts_with("POST /v1/oauth/tokens "));
+    auto headers = RequestHeaders(request);
+    EXPECT_EQ(headers["Authorization"], kAuthorization);
+    const std::unordered_map<std::string, std::string> expected_form{
+        {"grant_type", "client_credentials"},
+        {"client_id", "client"},
+        {"client_secret", "secret"},
+        {"scope", "catalog"},
+    };
+    EXPECT_EQ(RequestForm(request), expected_form);
+    return JsonResponse(200, {{"access_token", "refreshed"}, {"token_type", "bearer"}});
+  });
+  ASSERT_TRUE(server.Start());
+
+  test::MockExecutor executor;
+  std::promise<ExecutorTask> queued;
+  auto ready = queued.get_future();
+  EXPECT_CALL(executor, Submit).WillOnce([&](ExecutorTask task) -> Status {
+    queued.set_value(std::move(task));
+    return {};
+  });
+  auto client = std::make_shared<HttpClient>(
+      std::unordered_map<std::string, std::string>{
+          {"authorization", std::string(kAuthorization)}},
+      std::chrono::seconds(2), std::chrono::seconds(2));
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto session,
+      auth::AuthSession::MakeOAuth2(
+          {.access_token = "initial", .token_type = "bearer", .expires_in_secs = 0},
+          server.url("/v1/oauth/tokens"), "client", "secret", "catalog",
+          /*keep_refreshed=*/true, {}, client, &executor));
+  ASSERT_EQ(ready.wait_for(std::chrono::seconds(5)), std::future_status::ready);
+  std::move(ready.get())();
+
+  EXPECT_EQ(session->OAuth2Info()->token, "refreshed");
+  EXPECT_EQ(server.request_count(), 1);
+}
+
 class OAuth2HttpRecoveryTest : public ::testing::TestWithParam<bool> {};
 
 TEST_P(OAuth2HttpRecoveryTest, RecoversExpiredTokenAndAuthenticatesResourceOverHttp) {
@@ -436,7 +477,8 @@ TEST_P(OAuth2HttpRecoveryTest, RecoversExpiredTokenAndAuthenticatesResourceOverH
     } else {
       expected_form.insert(
           {{"grant_type", "client_credentials"}, {"client_secret", "SeCrEt:Tail"}});
-      valid_auth = !headers.contains("Authorization");
+      valid_auth = headers.contains("Authorization") &&
+                   headers.at("Authorization") == "Bearer StaleDefault";
     }
     if (!request.starts_with("POST /v1/oauth/tokens ") || !valid_auth ||
         RequestForm(request) != expected_form || !headers.contains("X-Trace") ||

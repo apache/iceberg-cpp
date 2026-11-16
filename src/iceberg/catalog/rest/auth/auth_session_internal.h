@@ -275,23 +275,13 @@ class OAuth2Session final : public AuthSession,
     refresh_stopped_ = true;
   }
 
-  class ClientCredentialsSession final : public AuthSession {
-   public:
-    Result<HttpRequest> Authenticate(HttpRequest request) override {
-      // HttpClient merges its defaults before invoking the session.
-      request.headers.erase("Authorization");
-      return request;
-    }
-  };
-
   Result<OAuthTokenResponse> FetchRefreshToken(const std::string& token,
                                                const std::string& issued_token_type,
                                                bool recover) {
-    if (!config_.exchange_enabled) {
-      ClientCredentialsSession session;
-      return OAuth2Util::FetchToken(*client_, session, refresh_properties_);
-    }
     auto empty_session = AuthSession::MakeDefault({});
+    if (!config_.exchange_enabled) {
+      return OAuth2Util::FetchToken(*client_, *empty_session, refresh_properties_);
+    }
     auto headers =
         recover
             ? std::unordered_map<std::string, std::string>{{"Authorization",

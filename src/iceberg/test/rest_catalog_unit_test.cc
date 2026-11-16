@@ -820,7 +820,7 @@ TEST_P(RestCatalogOAuth2RecoveryTest, RecoversAndUpdatesBusinessRequests) {
         } else {
           expected_form.insert(
               {{"grant_type", "client_credentials"}, {"client_secret", "SeCrEt:Tail"}});
-          EXPECT_FALSE(authenticated.headers.contains("Authorization"));
+          EXPECT_EQ(authenticated.headers.at("Authorization"), "Bearer StaleDefault");
         }
         EXPECT_THAT(form, ::testing::ContainerEq(expected_form));
         EXPECT_EQ(authenticated.headers.at("X-Trace"), "KeepThisValue");
