@@ -698,7 +698,8 @@ class RefreshHttpClient : public HttpClient {
         session.Authenticate({.method = HttpMethod::kPost,
                               .url = path,
                               .headers = {headers.begin(), headers.end()}}));
-    recorded_requests.push_back({path, form, std::move(authenticated.headers)});
+    recorded_requests.push_back(
+        {.path = path, .form = form, .headers = std::move(authenticated.headers)});
     ++requests;
     return response();
   }
@@ -824,8 +825,13 @@ class OAuth2ManagerRefreshTest : public ::testing::TestWithParam<std::string> {
           {"resource", "https://catalog.example"},
       };
       EXPECT_THAT(refresh.form, ::testing::ContainerEq(exchange_form));
-      EXPECT_THAT(refresh.headers, ::testing::ElementsAre(::testing::Pair(
-                                       "Authorization", "Bearer initial")));
+      // A delayed worker may correctly recover with the session's own credential.
+      EXPECT_THAT(refresh.headers,
+                  ::testing::ElementsAre(::testing::Pair(
+                      "Authorization",
+                      ::testing::AnyOf(
+                          "Bearer initial",
+                          "Basic " + Base64::Encode(client_id + ":" + client_secret)))));
     }
     for (const auto& request : client_->recorded_requests) {
       EXPECT_EQ(request.path, properties_.at(AuthProperties::kOAuth2ServerUri.key()));

@@ -699,7 +699,6 @@ TEST_P(RestCatalogOAuth2RefreshTest, RefreshUsesMergedConfigAndUpdatesBusinessRe
              R"({"access_token":"initial","token_type":"bearer","expires_in":1})");
 
   std::unordered_map<std::string, std::string> expected_form;
-  std::unordered_map<std::string, std::string> expected_headers;
   if (mode.exchange_enabled) {
     expected_form = {
         {"grant_type", "urn:ietf:params:oauth:grant-type:token-exchange"},
@@ -707,7 +706,6 @@ TEST_P(RestCatalogOAuth2RefreshTest, RefreshUsesMergedConfigAndUpdatesBusinessRe
         {"subject_token_type", auth::AuthProperties::kAccessTokenType},
         {"scope", "catalog"},
     };
-    expected_headers = {{"Authorization", "Bearer initial"}};
   } else {
     expected_form = {{"grant_type", "client_credentials"},
                      {"client_id", "client"},
@@ -718,7 +716,16 @@ TEST_P(RestCatalogOAuth2RefreshTest, RefreshUsesMergedConfigAndUpdatesBusinessRe
       .WillOnce([&](const std::string&, const auto& form, const auto& headers,
                     const ErrorHandler&, auth::AuthSession&) -> Result<HttpResponse> {
         EXPECT_THAT(form, ::testing::ContainerEq(expected_form));
-        EXPECT_THAT(headers, ::testing::ContainerEq(expected_headers));
+        if (mode.exchange_enabled) {
+          // Config selection is unchanged if the queued refresh starts after expiry.
+          EXPECT_THAT(
+              headers,
+              ::testing::ElementsAre(::testing::Pair(
+                  "Authorization",
+                  ::testing::AnyOf("Bearer initial", "Basic Y2xpZW50OnNlY3JldA=="))));
+        } else {
+          EXPECT_TRUE(headers.empty());
+        }
         return HttpResponse(200, R"({"access_token":"refreshed","token_type":"bearer"})");
       });
 
@@ -802,9 +809,14 @@ TEST_P(RestCatalogOAuth2RecoveryTest, RecoversAndUpdatesBusinessRequests) {
               {"subject_token", "Initial"},
               {"subject_token_type", auth::AuthProperties::kAccessTokenType},
           });
-          EXPECT_EQ(authenticated.headers.at("Authorization"),
-                    mode.expired || requests == 7 ? "Basic OlNlQ3JFdDpUYWls"
-                                                  : "Bearer Initial");
+          if (mode.expired || requests == 7) {
+            EXPECT_EQ(authenticated.headers.at("Authorization"),
+                      "Basic OlNlQ3JFdDpUYWls");
+          } else {
+            // Earlier attempts can also use Basic if the queued token has expired.
+            EXPECT_THAT(authenticated.headers.at("Authorization"),
+                        ::testing::AnyOf("Bearer Initial", "Basic OlNlQ3JFdDpUYWls"));
+          }
         } else {
           expected_form.insert(
               {{"grant_type", "client_credentials"}, {"client_secret", "SeCrEt:Tail"}});

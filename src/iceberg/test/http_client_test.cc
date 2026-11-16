@@ -371,15 +371,18 @@ TEST(HttpClientTest, OAuth2SessionRefreshesTokensOverHttp) {
           {"authorization", "Bearer stale-default"}},
       std::chrono::seconds(2), std::chrono::seconds(2));
   ICEBERG_UNWRAP_OR_FAIL(
-      auto session, OAuth2Session::Make({.access_token = tokens[0],
-                                         .token_type = "bearer",
-                                         .expires_in_secs = 1,
-                                         .issued_token_type = types[0]},
-                                        {.token_endpoint = server.url("/v1/oauth/tokens"),
-                                         .scope = "catalog",
-                                         .exchange_enabled = true,
-                                         .refresh_executor = &executor},
-                                        client, std::nullopt));
+      auto session, OAuth2Session::Make(
+                        {.access_token = tokens[0],
+                         .token_type = "bearer",
+                         .expires_in_secs = 1,
+                         .issued_token_type = types[0]},
+                        {.token_endpoint = server.url("/v1/oauth/tokens"),
+                         .scope = "catalog",
+                         .exchange_enabled = true,
+                         .refresh_executor = &executor,
+                         // Worker latency must not expire the subject.
+                         .now = [now = std::chrono::steady_clock::now()] { return now; }},
+                        client, std::nullopt));
   for (auto& done : completed) {
     ASSERT_EQ(done.get_future().wait_for(std::chrono::seconds(10)),
               std::future_status::ready);
