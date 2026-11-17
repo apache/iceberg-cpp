@@ -33,6 +33,11 @@
 namespace iceberg::internal {
 
 namespace {
+/// A scan that plans one task for a metadata table's selected snapshot.
+///
+/// The task retains the captured metadata, schemas, and FileIO so it can outlive the
+/// scan. Table-specific row reading is deferred to the supplied callback when
+/// MetadataScanTaskReader opens the task.
 class SnapshotMetadataScan : public MetadataScan {
  public:
   SnapshotMetadataScan(MetadataScanContext context,
@@ -41,6 +46,7 @@ class SnapshotMetadataScan : public MetadataScan {
         task_(std::make_shared<SnapshotMetadataTask>(std::move(context), read_rows)) {}
 
   Result<MetadataScanTaskStreamPtr> PlanTasksStream() const override {
+    // Each planning call gets a fresh stream over the same retained task.
     return MetadataScanTaskStream::FromVector({task_});
   }
 
