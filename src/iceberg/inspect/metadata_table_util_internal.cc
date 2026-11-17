@@ -25,7 +25,6 @@
 
 #include "iceberg/constants.h"
 #include "iceberg/schema.h"
-#include "iceberg/snapshot.h"
 #include "iceberg/table_metadata.h"
 #include "iceberg/type.h"
 #include "iceberg/util/macros.h"
@@ -77,7 +76,8 @@ Result<std::unique_ptr<MetadataScan>> MakeSnapshotMetadataScan(
 
 Result<std::shared_ptr<Snapshot>> ResolveMetadataTableSnapshot(
     const TableMetadata& metadata, const MetadataScanContext& selection) {
-  if (!selection.ref_name.empty() && selection.ref_name != SnapshotRef::kMainBranch) {
+  const bool is_main_ref = SnapshotUtil::IsMainBranch(selection.ref_name);
+  if (!is_main_ref) {
     ICEBERG_PRECHECK(
         !selection.snapshot_id.has_value() && !selection.as_of_time_in_millis.has_value(),
         "Cannot combine a snapshot reference with a snapshot ID or timestamp");
@@ -92,8 +92,6 @@ Result<std::shared_ptr<Snapshot>> ResolveMetadataTableSnapshot(
             metadata, TimePointMsFromUnixMs(*selection.as_of_time_in_millis)));
     return metadata.SnapshotById(snapshot_id);
   }
-  const bool is_main_ref =
-      selection.ref_name.empty() || selection.ref_name == SnapshotRef::kMainBranch;
   if (is_main_ref && metadata.current_snapshot_id == kInvalidSnapshotId) {
     return std::shared_ptr<Snapshot>{nullptr};
   }
