@@ -33,6 +33,7 @@ set(ICEBERG_SOURCES
     deletes/position_delete_index.cc
     deletes/position_delete_range_consumer.cc
     deletes/roaring_position_bitmap.cc
+    encryption/encrypted_files.cc
     encryption/encryption_manager.cc
     encryption/key_management_client.cc
     encryption/standard_key_metadata.cc
@@ -341,6 +342,7 @@ if(ICEBERG_BUILD_BUNDLE)
          ICEBERG_BUNDLE_SOURCES
          encryption/aes_gcm.cc
          encryption/aes_gcm_stream.cc
+         encryption/encryption_util.cc
          encryption/in_memory_kms.cc
          encryption/standard_encryption_manager.cc)
   endif()

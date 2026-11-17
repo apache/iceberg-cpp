@@ -75,7 +75,7 @@ TEST(StandardKeyMetadataTest, ParseJavaVectors) {
 }
 
 TEST(StandardKeyMetadataTest, RoundTrip) {
-  StandardKeyMetadata metadata{.encryption_key = TestBytes(32, 7)};
+  StandardKeyMetadata metadata(TestBytes(32, 7));
   ICEBERG_UNWRAP_OR_FAIL(auto parsed, StandardKeyMetadata::Parse(metadata.Serialize()));
   EXPECT_EQ(parsed, metadata);
 
@@ -90,8 +90,7 @@ TEST(StandardKeyMetadataTest, RoundTrip) {
   }
 
   // A present but empty AAD prefix is distinct from an absent one
-  StandardKeyMetadata empty_aad{.encryption_key = TestBytes(16, 7),
-                                .aad_prefix = std::vector<uint8_t>{}};
+  StandardKeyMetadata empty_aad(TestBytes(16, 7), std::vector<uint8_t>{});
   ICEBERG_UNWRAP_OR_FAIL(auto parsed_empty,
                          StandardKeyMetadata::Parse(empty_aad.Serialize()));
   ASSERT_TRUE(parsed_empty.aad_prefix.has_value());

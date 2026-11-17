@@ -48,7 +48,10 @@
 #include "iceberg/deletes/position_delete_index.h"
 #include "iceberg/deletes/position_delete_range_consumer.h"
 #include "iceberg/deletes/roaring_position_bitmap.h"
+#include "iceberg/encryption/encrypted_file.h"
+#include "iceberg/encryption/encrypted_files.h"
 #include "iceberg/encryption/encrypted_key.h"
+#include "iceberg/encryption/encryption_key_metadata.h"
 #include "iceberg/encryption/encryption_manager.h"
 #include "iceberg/encryption/key_management_client.h"
 #include "iceberg/encryption/standard_key_metadata.h"
@@ -226,6 +229,7 @@
 
 #ifdef ICEBERG_PUBLIC_HEADERS_ENCRYPTION
 #  include "iceberg/encryption/aes_gcm_stream.h"
+#  include "iceberg/encryption/encryption_util.h"
 #  include "iceberg/encryption/in_memory_kms.h"
 #  include "iceberg/encryption/standard_encryption_manager.h"
 #endif  // ICEBERG_PUBLIC_HEADERS_ENCRYPTION

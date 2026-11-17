@@ -30,9 +30,18 @@
 #include <vector>
 
 #include "iceberg/encryption/encryption_manager.h"
+#include "iceberg/encryption/standard_key_metadata.h"
 #include "iceberg/iceberg_bundle_export.h"
 
 namespace iceberg {
+
+/// \brief The two keys produced by registering a manifest list's key metadata.
+struct ICEBERG_BUNDLE_EXPORT FileEncryptionKeys {
+  /// The key encryption key, wrapped by the table master key in the KMS.
+  EncryptedKey key_encryption_key;
+  /// The manifest list key metadata, encrypted by the key encryption key.
+  EncryptedKey file_key;
+};
 
 /// \brief Standard Iceberg envelope encryption.
 ///
@@ -57,17 +66,21 @@ class ICEBERG_BUNDLE_EXPORT StandardEncryptionManager : public EncryptionManager
   static Result<std::shared_ptr<StandardEncryptionManager>> Make(
       EncryptionManagerRegistry::Options options);
 
-  Result<StandardKeyMetadata> NewKeyMetadata() override;
+  // EncryptionManager
+  Result<std::unique_ptr<InputFile>> Decrypt(
+      std::unique_ptr<EncryptedInputFile> encrypted) override;
+  Result<std::unique_ptr<EncryptedOutputFile>> Encrypt(
+      std::unique_ptr<OutputFile> plain) override;
+
+  Result<StandardKeyMetadata> NewKeyMetadata();
   Result<std::unique_ptr<InputFile>> NewDecryptingInputFile(
-      std::unique_ptr<InputFile> encrypted,
-      std::span<const uint8_t> key_metadata) override;
+      std::unique_ptr<InputFile> encrypted, std::span<const uint8_t> key_metadata);
   Result<std::unique_ptr<OutputFile>> NewEncryptingOutputFile(
-      std::unique_ptr<OutputFile> plain,
-      const StandardKeyMetadata& key_metadata) override;
+      std::unique_ptr<OutputFile> plain, const StandardKeyMetadata& key_metadata);
   Result<std::vector<uint8_t>> DecryptManifestListKeyMetadata(
-      std::string_view manifest_list_key_id) override;
-  Result<ManifestListEncryptionKeys> RegisterManifestListKeyMetadata(
-      const StandardKeyMetadata& key_metadata) override;
+      std::string_view manifest_list_key_id);
+  Result<FileEncryptionKeys> RegisterManifestListKeyMetadata(
+      const StandardKeyMetadata& key_metadata);
 
   /// \brief All keys: those from table metadata and those created by this manager.
   std::vector<EncryptedKey> encryption_keys() const;

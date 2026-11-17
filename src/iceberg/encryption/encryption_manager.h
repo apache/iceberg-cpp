@@ -25,74 +25,69 @@
 #include <cstdint>
 #include <functional>
 #include <memory>
-#include <span>
 #include <string>
-#include <string_view>
 #include <vector>
 
+#include "iceberg/encryption/encrypted_file.h"
 #include "iceberg/encryption/encrypted_key.h"
 #include "iceberg/encryption/key_management_client.h"
-#include "iceberg/encryption/standard_key_metadata.h"
 #include "iceberg/file_io.h"
 #include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
 
 namespace iceberg {
 
-/// \brief Keys created when the key metadata of a new manifest list is registered.
-///
-/// Both must be added to the table metadata `encryption-keys` in the same commit as
-/// the snapshot whose `key-id` is `file_key.key_id`.
-struct ICEBERG_EXPORT ManifestListEncryptionKeys {
-  /// The key encryption key, wrapped by the table master key in the KMS.
-  EncryptedKey key_encryption_key;
-  /// The manifest list key metadata, encrypted by the key encryption key.
-  EncryptedKey file_key;
-};
-
 /// \brief Encrypts and decrypts the files of one table.
 ///
-/// The standard implementation (StandardEncryptionManager) needs a crypto provider
-/// and lives in the bundle library; the core library reaches it through
-/// EncryptionManagerRegistry.
+/// This interface does not require a particular key metadata encoding or encryption
+/// algorithm; those are the business of the specific implementation (such as
+/// StandardEncryptionManager, which needs a crypto provider and lives in the bundle
+/// library) and of EncryptedFiles / EncryptionUtil, which build the EncryptedInputFile /
+/// EncryptedOutputFile wrappers this interface consumes. The core library reaches the
+/// standard implementation through EncryptionManagerRegistry.
 class ICEBERG_EXPORT EncryptionManager {
  public:
   virtual ~EncryptionManager() = default;
 
-  /// \brief Generate key metadata (random data key and AAD prefix) for a new file.
-  virtual Result<StandardKeyMetadata> NewKeyMetadata() = 0;
+  /// \brief Decrypt a file, given its raw bytes and key metadata.
+  virtual Result<std::unique_ptr<InputFile>> Decrypt(
+      std::unique_ptr<EncryptedInputFile> encrypted) = 0;
 
-  /// \brief Wrap an AES GCM Stream (AGS1) file in a decrypting InputFile.
+  /// \brief Wrap a plaintext output file so that it, and its key metadata, can be
+  /// produced once writing is complete.
+  virtual Result<std::unique_ptr<EncryptedOutputFile>> Encrypt(
+      std::unique_ptr<OutputFile> plain) = 0;
+
+  /// \brief Batch variant of Decrypt(std::unique_ptr<EncryptedInputFile>).
   ///
-  /// \param encrypted the encrypted file
-  /// \param key_metadata serialized key metadata, including the file length
-  virtual Result<std::unique_ptr<InputFile>> NewDecryptingInputFile(
-      std::unique_ptr<InputFile> encrypted, std::span<const uint8_t> key_metadata) = 0;
+  /// The default implementation decrypts each file in order; implementations may
+  /// override it to decrypt more efficiently, for example by batching KMS calls.
+  virtual Result<std::vector<std::unique_ptr<InputFile>>> Decrypt(
+      std::vector<std::unique_ptr<EncryptedInputFile>> encrypted);
 
-  /// \brief Wrap a file in an AES GCM Stream (AGS1) encrypting OutputFile.
-  virtual Result<std::unique_ptr<OutputFile>> NewEncryptingOutputFile(
-      std::unique_ptr<OutputFile> plain, const StandardKeyMetadata& key_metadata) = 0;
+  /// \brief Batch variant of Encrypt(std::unique_ptr<OutputFile>).
+  virtual Result<std::vector<std::unique_ptr<EncryptedOutputFile>>> Encrypt(
+      std::vector<std::unique_ptr<OutputFile>> plain);
+};
 
-  /// \brief Decrypt the key metadata of a manifest list.
-  ///
-  /// \param manifest_list_key_id the snapshot `key-id`
-  /// \return the serialized StandardKeyMetadata of the manifest list file
-  virtual Result<std::vector<uint8_t>> DecryptManifestListKeyMetadata(
-      std::string_view manifest_list_key_id) = 0;
+/// \brief An EncryptionManager for unencrypted tables; wraps files without encrypting
+/// them.
+class ICEBERG_EXPORT PlaintextEncryptionManager : public EncryptionManager {
+ public:
+  Result<std::unique_ptr<InputFile>> Decrypt(
+      std::unique_ptr<EncryptedInputFile> encrypted) override;
 
-  /// \brief Encrypt the key metadata of a new manifest list with a key encryption key.
-  ///
-  /// Creates a key encryption key (wrapped by the table master key) if there is no
-  /// unexpired one.
-  virtual Result<ManifestListEncryptionKeys> RegisterManifestListKeyMetadata(
-      const StandardKeyMetadata& key_metadata) = 0;
+  Result<std::unique_ptr<EncryptedOutputFile>> Encrypt(
+      std::unique_ptr<OutputFile> plain) override;
 };
 
 /// \brief Creates the encryption manager of encrypted tables.
 ///
 /// The bundle library registers the standard implementation (see
 /// iceberg::encryption::RegisterAll()). Without it, encrypted tables cannot be read or
-/// written.
+/// written. A registry is used so that the core library can reach a standard-specific
+/// implementation without depending on it directly; Options is therefore
+/// standard-specific and not part of the general EncryptionManager contract.
 class ICEBERG_EXPORT EncryptionManagerRegistry {
  public:
   struct Options {

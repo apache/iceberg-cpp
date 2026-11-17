@@ -24,6 +24,7 @@
 #include <gtest/gtest.h>
 
 #include "iceberg/encryption/encryption_register.h"
+#include "iceberg/encryption/encryption_util.h"
 #include "iceberg/encryption/in_memory_kms.h"
 #include "iceberg/snapshot.h"
 #include "iceberg/table_metadata.h"
@@ -90,8 +91,8 @@ TEST(StandardEncryptionManagerTest, DecryptsJavaManifestListKeys) {
 
   for (const auto& snapshot : metadata->snapshots) {
     ASSERT_TRUE(snapshot->key_id.has_value());
-    ICEBERG_UNWRAP_OR_FAIL(auto decrypted,
-                           manager->DecryptManifestListKeyMetadata(*snapshot->key_id));
+    ICEBERG_UNWRAP_OR_FAIL(auto decrypted, EncryptionUtil::DecryptManifestListKeyMetadata(
+                                               manager, *snapshot->key_id));
     ICEBERG_UNWRAP_OR_FAIL(auto key_metadata, StandardKeyMetadata::Parse(decrypted));
     EXPECT_EQ(key_metadata.encryption_key.size(), 16);
     EXPECT_EQ(key_metadata.aad_prefix->size(), 16);
@@ -148,9 +149,7 @@ TEST(StandardEncryptionManagerTest, RotatesKeyEncryptionKeys) {
   auto kms = MakeKms();
   ICEBERG_UNWRAP_OR_FAIL(auto manager, StandardEncryptionManager::Make(
                                            {.table_key_id = "keyA", .kms = kms}));
-  StandardKeyMetadata key_metadata{.encryption_key = VectorBytes(16, 1),
-                                   .aad_prefix = VectorBytes(16, 2),
-                                   .file_length = 100};
+  StandardKeyMetadata key_metadata(VectorBytes(16, 1), VectorBytes(16, 2), 100);
 
   ICEBERG_UNWRAP_OR_FAIL(auto first,
                          manager->RegisterManifestListKeyMetadata(key_metadata));
@@ -175,9 +174,7 @@ TEST(StandardEncryptionManagerTest, IgnoresOutOfRangeKeyTimestamp) {
   auto kms = MakeKms();
   ICEBERG_UNWRAP_OR_FAIL(auto manager, StandardEncryptionManager::Make(
                                            {.table_key_id = "keyA", .kms = kms}));
-  StandardKeyMetadata key_metadata{.encryption_key = VectorBytes(16, 1),
-                                   .aad_prefix = VectorBytes(16, 2),
-                                   .file_length = 100};
+  StandardKeyMetadata key_metadata(VectorBytes(16, 1), VectorBytes(16, 2), 100);
   ICEBERG_UNWRAP_OR_FAIL(auto first,
                          manager->RegisterManifestListKeyMetadata(key_metadata));
   EXPECT_EQ(kms->wraps, 1);
@@ -224,7 +221,7 @@ TEST(StandardEncryptionManagerTest, DecryptingFileRequiresLength) {
   auto kms = MakeKms();
   ICEBERG_UNWRAP_OR_FAIL(auto manager, StandardEncryptionManager::Make(
                                            {.table_key_id = "keyA", .kms = kms}));
-  StandardKeyMetadata no_length{.encryption_key = VectorBytes(16, 1)};
+  StandardKeyMetadata no_length(VectorBytes(16, 1));
 
   class NullInputFile : public InputFile {
    public:

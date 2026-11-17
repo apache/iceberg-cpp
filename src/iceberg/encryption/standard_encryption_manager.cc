@@ -211,8 +211,7 @@ Result<std::string> StandardEncryptionManager::CurrentKekId() {
   return kek_id;
 }
 
-Result<ManifestListEncryptionKeys>
-StandardEncryptionManager::RegisterManifestListKeyMetadata(
+Result<FileEncryptionKeys> StandardEncryptionManager::RegisterManifestListKeyMetadata(
     const StandardKeyMetadata& key_metadata) {
   ICEBERG_PRECHECK(key_metadata.file_length.has_value(),
                    "Manifest list key metadata must include the file length");
@@ -230,8 +229,25 @@ StandardEncryptionManager::RegisterManifestListKeyMetadata(
                         .encrypted_key_metadata = ToString(encrypted),
                         .encrypted_by_id = kek_id};
   AddKey(file_key);
-  return ManifestListEncryptionKeys{.key_encryption_key = keys_.at(kek_id),
-                                    .file_key = std::move(file_key)};
+  return FileEncryptionKeys{.key_encryption_key = keys_.at(kek_id),
+                            .file_key = std::move(file_key)};
+}
+
+Result<std::unique_ptr<InputFile>> StandardEncryptionManager::Decrypt(
+    std::unique_ptr<EncryptedInputFile> encrypted) {
+  ICEBERG_PRECHECK(encrypted != nullptr, "Encrypted input file cannot be null");
+  std::vector<uint8_t> key_metadata = encrypted->key_metadata().buffer();
+  return NewDecryptingInputFile(encrypted->ReleaseInputFile(), key_metadata);
+}
+
+Result<std::unique_ptr<EncryptedOutputFile>> StandardEncryptionManager::Encrypt(
+    std::unique_ptr<OutputFile> plain) {
+  ICEBERG_ASSIGN_OR_RAISE(auto key_metadata, NewKeyMetadata());
+  ICEBERG_ASSIGN_OR_RAISE(auto encrypting_output_file,
+                          NewEncryptingOutputFile(std::move(plain), key_metadata));
+  return std::make_unique<BaseEncryptedOutputFile>(
+      std::move(encrypting_output_file),
+      std::make_shared<BaseEncryptionKeyMetadata>(key_metadata.Serialize()));
 }
 
 std::vector<EncryptedKey> StandardEncryptionManager::encryption_keys() const {

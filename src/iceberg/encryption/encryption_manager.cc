@@ -25,6 +25,40 @@
 
 namespace iceberg {
 
+Result<std::vector<std::unique_ptr<InputFile>>> EncryptionManager::Decrypt(
+    std::vector<std::unique_ptr<EncryptedInputFile>> encrypted) {
+  std::vector<std::unique_ptr<InputFile>> decrypted;
+  decrypted.reserve(encrypted.size());
+  for (auto& file : encrypted) {
+    ICEBERG_ASSIGN_OR_RAISE(auto input_file, Decrypt(std::move(file)));
+    decrypted.push_back(std::move(input_file));
+  }
+  return decrypted;
+}
+
+Result<std::vector<std::unique_ptr<EncryptedOutputFile>>> EncryptionManager::Encrypt(
+    std::vector<std::unique_ptr<OutputFile>> plain) {
+  std::vector<std::unique_ptr<EncryptedOutputFile>> encrypted;
+  encrypted.reserve(plain.size());
+  for (auto& file : plain) {
+    ICEBERG_ASSIGN_OR_RAISE(auto encrypted_file, Encrypt(std::move(file)));
+    encrypted.push_back(std::move(encrypted_file));
+  }
+  return encrypted;
+}
+
+Result<std::unique_ptr<InputFile>> PlaintextEncryptionManager::Decrypt(
+    std::unique_ptr<EncryptedInputFile> encrypted) {
+  return encrypted->ReleaseInputFile();
+}
+
+Result<std::unique_ptr<EncryptedOutputFile>> PlaintextEncryptionManager::Encrypt(
+    std::unique_ptr<OutputFile> plain) {
+  return std::make_unique<BaseEncryptedOutputFile>(
+      std::move(plain),
+      std::make_shared<BaseEncryptionKeyMetadata>(std::vector<uint8_t>{}));
+}
+
 namespace {
 
 struct RegistryState {
