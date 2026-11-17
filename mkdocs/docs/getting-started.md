@@ -43,9 +43,9 @@ Dependencies managed with CMake FetchContent use the pinned sources by default.
 Set `-DFETCHCONTENT_TRY_FIND_PACKAGE_MODE=OPT_IN` to try installed packages before
 fetching sources. Use a fresh build directory when changing this setting.
 
-Provided Apache Arrow and Parquet packages must be version 25.0.0 or a newer
-compatible version.
-With `OPT_IN`, an older Arrow package is skipped in favor of the pinned sources.
+Provided Apache Arrow and Parquet packages must satisfy the minimum version set
+by `ICEBERG_ARROW_MIN_VERSION` in `cmake_modules/IcebergThirdpartyToolchain.cmake`.
+With `OPT_IN`, an unsupported Arrow package is skipped in favor of the pinned sources.
 If a compatible Arrow package is found, a compatible Parquet package is required;
 otherwise, CMake configuration fails.
 
