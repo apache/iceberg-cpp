@@ -341,6 +341,7 @@ TEST_F(RestCatalogLoadTableTest, OAuthRefreshRunsOnAuthExecutorWhenEnabled) {
         {{"uri", "http://test-server"},
          {"io-impl", "rest-catalog-unit-test-noop"},
          {"credential", "client:secret"},
+         {"oauth2-server-uri", "http://test-server/v1/oauth/tokens"},
          {"token-refresh-enabled", refresh ? "true" : "false"}});
     auto& tokens =
         EXPECT_CALL(*mock_client_, PostForm(_, _, _, _, _)).Times(refresh ? 2 : 1);
@@ -669,7 +670,8 @@ class RestCatalogOAuth2UriTest : public RestCatalogLoadTableTest {
   int factory_calls_ = 0;
 };
 
-TEST_F(RestCatalogOAuth2UriTest, TrustsServerOverridesByDefault) {
+TEST_F(RestCatalogOAuth2UriTest, TrustsServerOverridesWhenExplicitlyEnabled) {
+  properties_["rest.auth.oauth2.trust-server-uri"] = "true";
   ExpectInit({.overrides = {{"uri", "HTTPS://other-catalog.example/base/"},
                             {"oauth2-server-uri", "oauth/token///"},
                             {"rest.auth.oauth2.trust-server-uri", "false"}}});
@@ -678,8 +680,7 @@ TEST_F(RestCatalogOAuth2UriTest, TrustsServerOverridesByDefault) {
                          auth::AuthProperties::kIdTokenType);
 }
 
-TEST_F(RestCatalogOAuth2UriTest, RequiresAbsoluteClientEndpointBeforeAnyIoWhenUntrusted) {
-  properties_["rest.auth.oauth2.trust-server-uri"] = "false";
+TEST_F(RestCatalogOAuth2UriTest, RequiresAbsoluteClientEndpointByDefault) {
   properties_.erase("oauth2-server-uri");
   EXPECT_THAT(MakeOAuth2Catalog(), IsError(ErrorKind::kInvalidArgument));
   for (const auto* endpoint :
@@ -692,7 +693,7 @@ TEST_F(RestCatalogOAuth2UriTest, RequiresAbsoluteClientEndpointBeforeAnyIoWhenUn
   EXPECT_EQ(factory_calls_, 0);
 }
 
-TEST_F(RestCatalogOAuth2UriTest, RefreshUsesTheClientEndpointWhenUntrusted) {
+TEST_F(RestCatalogOAuth2UriTest, RefreshUsesTheClientEndpointByDefault) {
   test::MockExecutor executor;
   std::promise<ExecutorTask> queued;
   auto ready = queued.get_future();
@@ -700,13 +701,15 @@ TEST_F(RestCatalogOAuth2UriTest, RefreshUsesTheClientEndpointWhenUntrusted) {
     queued.set_value(std::move(task));
     return {};
   });
-  properties_["rest.auth.oauth2.trust-server-uri"] = "false";
   properties_["token-refresh-enabled"] = "true";
   ExpectInit({.overrides = {{"uri", "https://other-catalog.example"},
                             {"oauth2-server-uri", "https://server-auth.example/token"},
                             {"rest.auth.oauth2.trust-server-uri", "true"}}},
              R"({"access_token":"expired","token_type":"bearer","expires_in":0})");
-  EXPECT_CALL(*mock_client_, PostForm("https://auth.example/token/", _, _, _, _))
+  EXPECT_CALL(
+      *mock_client_,
+      PostForm("https://auth.example/token/",
+               ::testing::Contains(::testing::Pair("client_secret", "secret")), _, _, _))
       .WillOnce(Return(
           HttpResponse(200, R"({"access_token":"refreshed","token_type":"bearer"})")));
   ICEBERG_UNWRAP_OR_FAIL(auto root, MakeOAuth2Catalog(&executor));
