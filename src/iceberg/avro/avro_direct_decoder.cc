@@ -602,14 +602,15 @@ Status DecodeFieldToBuilder(const ::avro::NodePtr& avro_node, ::avro::Decoder& d
                             const SchemaField& projected_field,
                             const arrow::MetadataColumnContext& metadata_context,
                             ::arrow::ArrayBuilder* array_builder, DecodeContext& ctx) {
-  if (projection.kind == FieldProjection::Kind::kNull) {
+  const bool is_row_lineage =
+      MetadataColumns::IsRowLineageColumn(projected_field.field_id());
+
+  if (projection.kind == FieldProjection::Kind::kNull ||
+      (is_row_lineage && !metadata_context.first_row_id.has_value())) {
     ICEBERG_RETURN_UNEXPECTED(SkipAvroValue(avro_node, decoder));
     ICEBERG_ARROW_RETURN_NOT_OK(array_builder->AppendNull());
     return {};
   }
-
-  const bool is_row_lineage =
-      MetadataColumns::IsRowLineageColumn(projected_field.field_id());
 
   if (avro_node->type() == ::avro::AVRO_UNION) {
     const size_t branch_index = decoder.decodeUnionIndex();

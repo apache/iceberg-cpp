@@ -1597,9 +1597,9 @@ TEST_F(ParquetReaderTest, ReadPartialLineage) {
                          OpenRowLineageReader(schema, std::nullopt, 7L));
 
   ASSERT_NO_FATAL_FAILURE(VerifyNextBatch(*reader_with_sequence,
-                                          R"([[1, null, 7],
-                                             [2, null, 7],
-                                             [3, null, 7]])"));
+                                          R"([[1, null, null],
+                                             [2, null, null],
+                                             [3, null, null]])"));
 }
 
 TEST_F(ParquetReaderTest, ReadPhysicalLineage) {

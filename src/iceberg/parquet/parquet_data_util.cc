@@ -222,7 +222,12 @@ Result<std::shared_ptr<::arrow::Array>> ProjectStructArray(
 
     std::shared_ptr<::arrow::Array> projected_array;
 
-    if (field_projection.kind == FieldProjection::Kind::kProjected) {
+    if (MetadataColumns::IsRowLineageColumn(projected_field.field_id()) &&
+        !metadata_context.first_row_id.has_value()) {
+      ICEBERG_ASSIGN_OR_RAISE(
+          projected_array,
+          MakeNullArray(output_arrow_type, struct_array->length(), pool));
+    } else if (field_projection.kind == FieldProjection::Kind::kProjected) {
       auto parquet_field_index =
           static_cast<int>(std::get<size_t>(field_projection.from));
       if (parquet_field_index >= struct_array->num_fields()) {

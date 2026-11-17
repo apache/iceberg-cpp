@@ -193,15 +193,16 @@ TEST(ProjectRecordBatchTest, LineageWithoutRowPositions) {
   Schema lineage_schema({SchemaField::MakeRequired(1, "id", int32()),
                          MetadataColumns::kRowId,
                          MetadataColumns::kLastUpdatedSequenceNumber});
-  ASSERT_NO_FATAL_FAILURE(VerifyProjectRecordBatch(
-      lineage_schema, data_schema, "[[10], [20], [30]]",
-      "[[10, null, 7], [20, null, 7], [30, null, 7]]", {.data_sequence_number = 7}));
+  const std::string expected = "[[10, null, null], [20, null, null], [30, null, null]]";
+  ASSERT_NO_FATAL_FAILURE(VerifyProjectRecordBatch(lineage_schema, data_schema,
+                                                   "[[10], [20], [30]]", expected,
+                                                   {.data_sequence_number = 7}));
   const std::string physical_values = "[[10, null, null], [20, 777, 8], [30, null, 9]]";
-  ASSERT_NO_FATAL_FAILURE(VerifyProjectRecordBatch(
-      lineage_schema, lineage_schema, physical_values,
-      "[[10, null, 7], [20, 777, 8], [30, null, 9]]", {.data_sequence_number = 7}));
   ASSERT_NO_FATAL_FAILURE(VerifyProjectRecordBatch(lineage_schema, lineage_schema,
-                                                   physical_values, physical_values));
+                                                   physical_values, expected,
+                                                   {.data_sequence_number = 7}));
+  ASSERT_NO_FATAL_FAILURE(VerifyProjectRecordBatch(lineage_schema, lineage_schema,
+                                                   physical_values, expected));
 }
 
 TEST(ProjectRecordBatchTest, RowPositionsAreIndependentOfPhysicalColumns) {
