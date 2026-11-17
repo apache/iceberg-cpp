@@ -316,7 +316,7 @@ Result<bool> ParquetMetricsRowGroupFilter::ShouldRead(
   }
   try {
     MetricsVisitor visitor(manifest, row_group, field_id_to_column_idx_);
-    return Visit<bool>(bound_, visitor);
+    return VisitEvaluator(bound_, visitor);
   } catch (const ::parquet::ParquetException&) {
     // Unusable optional statistics must never turn into false negatives.
     return kRowsMightMatch;

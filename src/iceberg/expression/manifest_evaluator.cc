@@ -378,7 +378,7 @@ Result<bool> ManifestEvaluator::Evaluate(const ManifestFile& manifest) const {
     return kRowsMightMatch;
   }
   ManifestEvalVisitor visitor(manifest);
-  return Visit<bool, ManifestEvalVisitor>(expr_, visitor);
+  return VisitEvaluator(expr_, visitor);
 }
 
 }  // namespace iceberg

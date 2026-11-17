@@ -196,16 +196,18 @@ class NotNode : public EvaluatorNode {
   NodePtr child_;
 };
 
-// Evaluates both children, left first, like the expression visitor, so a row that
-// fails to evaluate on either side still reports its error.
+// Evaluates the right child only if the left child does not decide the result, like
+// VisitEvaluator, so an error from a skipped right child is not reported.
 class AndNode : public EvaluatorNode {
  public:
   AndNode(NodePtr left, NodePtr right)
       : left_(std::move(left)), right_(std::move(right)) {}
   Result<bool> Evaluate(const StructLike& row) const override {
     ICEBERG_ASSIGN_OR_RAISE(auto left, left_->Evaluate(row));
-    ICEBERG_ASSIGN_OR_RAISE(auto right, right_->Evaluate(row));
-    return left && right;
+    if (!left) {
+      return false;
+    }
+    return right_->Evaluate(row);
   }
 
  private:
@@ -219,8 +221,10 @@ class OrNode : public EvaluatorNode {
       : left_(std::move(left)), right_(std::move(right)) {}
   Result<bool> Evaluate(const StructLike& row) const override {
     ICEBERG_ASSIGN_OR_RAISE(auto left, left_->Evaluate(row));
-    ICEBERG_ASSIGN_OR_RAISE(auto right, right_->Evaluate(row));
-    return left || right;
+    if (left) {
+      return true;
+    }
+    return right_->Evaluate(row);
   }
 
  private:
