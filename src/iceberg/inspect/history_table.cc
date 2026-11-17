@@ -40,6 +40,23 @@
 namespace iceberg {
 namespace {
 
+/// \brief Scan the history metadata captured from a table.
+class HistoryScan final : public MetadataScan {
+ public:
+  /// \brief Create a scan from captured metadata table settings.
+  static Result<std::unique_ptr<HistoryScan>> Make(internal::MetadataScanContext context);
+
+  ~HistoryScan() override;
+
+  Result<MetadataScanTaskStreamPtr> PlanTasksStream() const override;
+
+ private:
+  HistoryScan(internal::MetadataScanContext context,
+              std::shared_ptr<MetadataScanTask> task);
+
+  const std::shared_ptr<MetadataScanTask> task_;
+};
+
 struct HistoryRow {
   const SnapshotLogEntry& entry;
   const Snapshot* snapshot;
@@ -136,6 +153,8 @@ Result<ArrowArrayStream> HistoryTable::ReadRows(
       });
 }
 
+namespace {
+
 // HistoryScan implementation
 HistoryScan::HistoryScan(internal::MetadataScanContext context,
                          std::shared_ptr<MetadataScanTask> task)
@@ -167,5 +186,7 @@ Result<std::unique_ptr<HistoryScan>> HistoryScan::Make(
 Result<MetadataScanTaskStreamPtr> HistoryScan::PlanTasksStream() const {
   return MetadataScanTaskStream::FromVector({task_});
 }
+
+}  // namespace
 
 }  // namespace iceberg

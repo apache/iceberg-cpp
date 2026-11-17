@@ -62,20 +62,4 @@ class ICEBERG_EXPORT RefsTable : public MetadataTable {
   explicit RefsTable(std::shared_ptr<const Table> table);
 };
 
-/// \brief Scan the refs metadata captured from a table.
-class ICEBERG_EXPORT RefsScan final : public MetadataScan {
- public:
-  /// \brief Create a scan from captured metadata table settings.
-  static Result<std::unique_ptr<RefsScan>> Make(internal::MetadataScanContext context);
-
-  ~RefsScan() override;
-
-  Result<MetadataScanTaskStreamPtr> PlanTasksStream() const override;
-
- private:
-  RefsScan(internal::MetadataScanContext context, std::shared_ptr<MetadataScanTask> task);
-
-  const std::shared_ptr<MetadataScanTask> task_;
-};
-
 }  // namespace iceberg

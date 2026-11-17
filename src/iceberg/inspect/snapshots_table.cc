@@ -38,6 +38,24 @@
 namespace iceberg {
 namespace {
 
+/// \brief Scan the snapshots metadata captured from a table.
+class SnapshotsScan final : public MetadataScan {
+ public:
+  /// \brief Create a scan from captured metadata table settings.
+  static Result<std::unique_ptr<SnapshotsScan>> Make(
+      internal::MetadataScanContext context);
+
+  ~SnapshotsScan() override;
+
+  Result<MetadataScanTaskStreamPtr> PlanTasksStream() const override;
+
+ private:
+  SnapshotsScan(internal::MetadataScanContext context,
+                std::shared_ptr<MetadataScanTask> task);
+
+  const std::shared_ptr<MetadataScanTask> task_;
+};
+
 constexpr std::array<internal::MetadataTableColumn<Snapshot>, 6> kSnapshotColumns = {
     {{.field_id = 1,
       .append =
@@ -129,6 +147,8 @@ Result<ArrowArrayStream> SnapshotsTable::ReadRows(
       });
 }
 
+namespace {
+
 // SnapshotsScan implementation
 SnapshotsScan::SnapshotsScan(internal::MetadataScanContext context,
                              std::shared_ptr<MetadataScanTask> task)
@@ -160,5 +180,7 @@ Result<std::unique_ptr<SnapshotsScan>> SnapshotsScan::Make(
 Result<MetadataScanTaskStreamPtr> SnapshotsScan::PlanTasksStream() const {
   return MetadataScanTaskStream::FromVector({task_});
 }
+
+}  // namespace
 
 }  // namespace iceberg
