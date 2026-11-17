@@ -98,6 +98,25 @@ TEST_F(SnapshotMetadataSupportTest, TasksRetainOwnersAndCanBeReopened) {
   }
 }
 
+TEST_F(SnapshotMetadataSupportTest, RejectsMissingInputs) {
+  auto context = Context();
+  context.table_metadata.reset();
+  EXPECT_THAT(MakeSnapshotMetadataScan(context, ReadIntTaskRows),
+              IsError(ErrorKind::kInvalidArgument));
+  context = Context();
+  context.schema.reset();
+  EXPECT_THAT(MakeSnapshotMetadataScan(context, ReadIntTaskRows),
+              IsError(ErrorKind::kInvalidArgument));
+  context = Context();
+  context.projected_schema.reset();
+  EXPECT_THAT(MakeSnapshotMetadataScan(context, ReadIntTaskRows),
+              IsError(ErrorKind::kInvalidArgument));
+  context = Context();
+  context.io.reset();
+  EXPECT_THAT(MakeSnapshotMetadataScan(context, ReadIntTaskRows),
+              IsError(ErrorKind::kInvalidArgument));
+}
+
 TEST_F(SnapshotMetadataSupportTest, RejectsInvalidProjectionAndReader) {
   EXPECT_THAT(MakeSnapshotMetadataScan(Context(), nullptr),
               IsError(ErrorKind::kInvalidArgument));

@@ -53,6 +53,10 @@ struct MetadataScanContext {
   std::string ref_name;
   std::optional<int64_t> as_of_time_in_millis;
   std::shared_ptr<FileIO> io;
+
+  /// \brief Validate the metadata and schemas required by all scans.
+  /// FileIO is checked separately by scan factories that require it.
+  ICEBERG_EXPORT Status Validate() const;
 };
 
 }  // namespace internal

@@ -58,10 +58,7 @@ class SnapshotMetadataScan : public MetadataScan {
 Result<std::unique_ptr<MetadataScan>> MakeSnapshotMetadataScan(
     MetadataScanContext context, SnapshotMetadataTask::ReadRowsFunction read_rows) {
   ICEBERG_PRECHECK(read_rows != nullptr, "Snapshot row reader cannot be null");
-  ICEBERG_PRECHECK(context.table_metadata != nullptr, "Table metadata cannot be null");
-  ICEBERG_PRECHECK(context.schema != nullptr, "Metadata table schema cannot be null");
-  ICEBERG_PRECHECK(context.projected_schema != nullptr,
-                   "Projected schema cannot be null");
+  ICEBERG_RETURN_UNEXPECTED(context.Validate());
   ICEBERG_PRECHECK(context.io != nullptr, "FileIO cannot be null");
   for (const auto& projected : context.projected_schema->fields()) {
     ICEBERG_ASSIGN_OR_RAISE(auto field,

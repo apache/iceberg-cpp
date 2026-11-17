@@ -107,6 +107,13 @@ class TaskArrowStreamSource {
 
 }  // namespace
 
+Status internal::MetadataScanContext::Validate() const {
+  ICEBERG_PRECHECK(table_metadata != nullptr, "Table metadata cannot be null");
+  ICEBERG_PRECHECK(schema != nullptr, "Metadata table schema cannot be null");
+  ICEBERG_PRECHECK(projected_schema != nullptr, "Projected schema cannot be null");
+  return {};
+}
+
 MetadataScanBuilder::MetadataScanBuilder(const MetadataTable& table,
                                          internal::MetadataScanContext context)
     : table_(&table), context_(std::move(context)) {}
@@ -119,12 +126,12 @@ Result<std::unique_ptr<MetadataScanBuilder>> MetadataScanBuilder::Make(
   auto metadata = table.source_table()->metadata();
   ICEBERG_PRECHECK(metadata != nullptr, "Table metadata cannot be null");
   ICEBERG_ASSIGN_OR_RAISE(auto schema, table.SchemaForScan(*metadata));
-  ICEBERG_PRECHECK(schema != nullptr, "Metadata table schema cannot be null");
   internal::MetadataScanContext context{.kind = table.kind(),
                                         .table_metadata = std::move(metadata),
                                         .schema = schema,
                                         .projected_schema = std::move(schema),
                                         .io = table.source_table()->io()};
+  ICEBERG_RETURN_UNEXPECTED(context.Validate());
   return std::unique_ptr<MetadataScanBuilder>(
       new MetadataScanBuilder(table, std::move(context)));
 }
@@ -176,8 +183,7 @@ MetadataScanBuilder& MetadataScanBuilder::AsOfTime(int64_t as_of_time_in_millis)
 
 Result<std::unique_ptr<MetadataScan>> MetadataScanBuilder::Build() {
   ICEBERG_RETURN_UNEXPECTED(CheckErrors());
-  ICEBERG_PRECHECK(context_.projected_schema != nullptr,
-                   "Projected schema cannot be null");
+  ICEBERG_RETURN_UNEXPECTED(context_.Validate());
   return table_->MakeScan(context_);
 }
 

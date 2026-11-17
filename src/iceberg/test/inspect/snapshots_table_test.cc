@@ -241,6 +241,19 @@ TEST_F(SnapshotsTableTest, ScanProjectedColumns) {
   EXPECT_EQ(snapshot_ids->Value(1), 2);
 }
 
+TEST_F(SnapshotsTableTest, DirectScanDoesNotRequireFileIO) {
+  internal::MetadataScanContext context{
+      .kind = MetadataTableKind::kSnapshots,
+      .table_metadata = table_->metadata(),
+      .schema = SnapshotsTable::CanonicalSchema(),
+      .projected_schema = SnapshotsTable::CanonicalSchema()};
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, SnapshotsScan::Make(std::move(context)));
+  ICEBERG_UNWRAP_OR_FAIL(auto stream, scan->ToArrowArrayStream());
+  ICEBERG_UNWRAP_OR_FAIL(auto batches, ReadAllBatches(std::move(stream)));
+  ASSERT_EQ(batches.size(), 1);
+  EXPECT_EQ(batches.front()->num_rows(), 2);
+}
+
 TEST_F(SnapshotsTableTest, ScanRejectsInvalidProjection) {
   // An optional column cannot be projected as required.
   auto required_parent = std::make_shared<Schema>(
