@@ -29,6 +29,12 @@
 
 namespace iceberg::arrow {
 
+bool ShouldReadRowLineageAsNull(int32_t field_id,
+                                const MetadataColumnContext& metadata_context) {
+  return MetadataColumns::IsRowLineageColumn(field_id) &&
+         !metadata_context.first_row_id.has_value();
+}
+
 bool CanInheritRowLineageValue(int32_t field_id,
                                const MetadataColumnContext& metadata_context) {
   if (field_id == MetadataColumns::kRowIdColumnId) {

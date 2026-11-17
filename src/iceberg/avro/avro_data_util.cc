@@ -471,11 +471,8 @@ Status AppendFieldToBuilder(const ::avro::NodePtr& avro_node,
                             const SchemaField& projected_field,
                             const arrow::MetadataColumnContext& metadata_context,
                             ::arrow::ArrayBuilder* array_builder) {
-  const bool is_row_lineage =
-      MetadataColumns::IsRowLineageColumn(projected_field.field_id());
-
   if (projection.kind == FieldProjection::Kind::kNull ||
-      (is_row_lineage && !metadata_context.first_row_id.has_value())) {
+      arrow::ShouldReadRowLineageAsNull(projected_field.field_id(), metadata_context)) {
     ICEBERG_ARROW_RETURN_NOT_OK(array_builder->AppendNull());
     return {};
   }
@@ -483,6 +480,9 @@ Status AppendFieldToBuilder(const ::avro::NodePtr& avro_node,
   if (projection.kind == FieldProjection::Kind::kDefault) {
     return AppendDefaultToBuilder(projection, array_builder);
   }
+
+  const bool is_row_lineage =
+      MetadataColumns::IsRowLineageColumn(projected_field.field_id());
 
   if (avro_node->type() == ::avro::AVRO_UNION) {
     size_t branch = avro_datum.unionBranch();

@@ -46,6 +46,10 @@ struct MetadataColumnContext {
   std::optional<int64_t> data_sequence_number;  // Data sequence number for lineage.
 };
 
+/// \brief Return whether a row lineage column must be read as null.
+bool ShouldReadRowLineageAsNull(int32_t field_id,
+                                const MetadataColumnContext& metadata_context);
+
 /// \brief Check if row lineage metadata can be inherited for the column.
 bool CanInheritRowLineageValue(int32_t field_id,
                                const MetadataColumnContext& metadata_context);
