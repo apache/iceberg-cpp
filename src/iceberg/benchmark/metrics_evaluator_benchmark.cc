@@ -42,7 +42,6 @@ namespace {
 
 constexpr int32_t kNumColumns = 16;
 constexpr int64_t kRecordCount = 10'000;
-constexpr int64_t kNullCount = 10;
 
 enum class ColumnKind : int32_t { kLong = 0, kInt, kDouble, kString, kNumKinds };
 
@@ -66,8 +65,6 @@ Literal MakeLiteral(int32_t field_id, int64_t number, const char* str) {
   }
 }
 
-/// Predicates compare against a value inside the bounds, so every predicate has
-/// to deserialize and compare them.
 Literal LowerBound(int32_t field_id) { return MakeLiteral(field_id, 100, "abc"); }
 Literal UpperBound(int32_t field_id) { return MakeLiteral(field_id, 200, "xyz"); }
 Literal ValueInRange(int32_t field_id) { return MakeLiteral(field_id, 150, "mno"); }
@@ -97,7 +94,7 @@ std::shared_ptr<Schema> MakeSchema() {
   return std::make_shared<Schema>(std::move(fields), /*schema_id=*/0);
 }
 
-DataFile MakeDataFile() {
+DataFile MakeDataFile(int64_t null_count) {
   DataFile file;
   file.file_path = "s3://bucket/warehouse/db/table/data/00000-0-data.parquet";
   file.file_format = FileFormatType::kParquet;
@@ -105,7 +102,7 @@ DataFile MakeDataFile() {
   file.file_size_in_bytes = int64_t{64} * 1024 * 1024;
   for (int32_t id = 1; id <= kNumColumns; ++id) {
     file.value_counts[id] = kRecordCount;
-    file.null_value_counts[id] = kNullCount;
+    file.null_value_counts[id] = null_count;
     if (KindOf(id) == ColumnKind::kDouble) {
       file.nan_value_counts[id] = 0;
     }
@@ -164,7 +161,7 @@ struct Strict {
 template <typename EvaluatorT>
 void RunEvaluate(benchmark::State& state) {
   const auto schema = MakeSchema();
-  const auto file = MakeDataFile();
+  const auto file = MakeDataFile(state.range(1));
   auto evaluator = EvaluatorT::Make(MakeFilter(state.range(0)), schema);
   if (!evaluator.has_value()) {
     state.SkipWithError(evaluator.error().message.c_str());
@@ -189,12 +186,13 @@ void BM_InclusiveMetricsEvaluate(benchmark::State& state) {
 
 void BM_StrictMetricsEvaluate(benchmark::State& state) { RunEvaluate<Strict>(state); }
 
-void PredicateCounts(benchmark::internal::Benchmark* bench) {
-  bench->ArgName("predicates")->RangeMultiplier(4)->Range(1, 64);
+// With nulls, several predicates return before reading the bounds.
+void PredicatesAndNulls(benchmark::internal::Benchmark* bench) {
+  bench->ArgNames({"predicates", "nulls"})->ArgsProduct({{1, 4, 16, 64}, {0, 10}});
 }
 
-BENCHMARK(BM_InclusiveMetricsEvaluate)->Apply(PredicateCounts);
-BENCHMARK(BM_StrictMetricsEvaluate)->Apply(PredicateCounts);
+BENCHMARK(BM_InclusiveMetricsEvaluate)->Apply(PredicatesAndNulls);
+BENCHMARK(BM_StrictMetricsEvaluate)->Apply(PredicatesAndNulls);
 
 }  // namespace
 }  // namespace iceberg
