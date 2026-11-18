@@ -81,6 +81,29 @@ TEST_F(TransactionTest, CommitTransactionWithPropertyUpdate) {
   EXPECT_EQ(props.at("txn.property"), "txn.value");
 }
 
+TEST_F(TransactionTest, BaseMetadataSurvivesTableRefresh) {
+  std::weak_ptr<TableMetadata> original_base = table_->metadata();
+  ICEBERG_UNWRAP_OR_FAIL(auto txn, table_->NewTransaction());
+  ICEBERG_UNWRAP_OR_FAIL(auto update, txn->NewUpdateProperties());
+  update->Set("txn.property", "txn.value");
+  ASSERT_THAT(update->Commit(), IsOk());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto concurrent, catalog_->LoadTable(table_ident_));
+  ICEBERG_UNWRAP_OR_FAIL(auto properties, concurrent->NewUpdateProperties());
+  properties->Set("concurrent.property", "concurrent.value");
+  ASSERT_THAT(properties->Commit(), IsOk());
+  ASSERT_THAT(table_->Refresh(), IsOk());
+
+  // The builder borrows this base even after the shared Table has refreshed.
+  ASSERT_FALSE(original_base.expired());
+  EXPECT_EQ(txn->base(), original_base.lock().get());
+  ICEBERG_UNWRAP_OR_FAIL(auto committed, txn->Commit());
+  EXPECT_TRUE(original_base.expired());
+  EXPECT_EQ(committed->properties().configs().at("txn.property"), "txn.value");
+  EXPECT_EQ(committed->properties().configs().at("concurrent.property"),
+            "concurrent.value");
+}
+
 TEST_F(TransactionTest, MultipleUpdatesInTransaction) {
   ICEBERG_UNWRAP_OR_FAIL(auto txn, table_->NewTransaction());
 

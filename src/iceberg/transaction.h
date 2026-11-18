@@ -225,6 +225,8 @@ class ICEBERG_EXPORT TransactionContext {
   Result<std::unique_ptr<LocationProvider>> NewLocationProvider() const;
 
   std::shared_ptr<Table> table;
+  // Keep the builder's borrowed base alive even when the shared Table refreshes.
+  std::shared_ptr<TableMetadata> base_metadata;
   std::unique_ptr<TableMetadataBuilder> metadata_builder;
   TransactionKind kind;
   // If PendingUpdate is created directly from Table, this is nullopt;
