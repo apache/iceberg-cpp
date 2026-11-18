@@ -62,21 +62,4 @@ class ICEBERG_EXPORT HistoryTable : public MetadataTable {
   explicit HistoryTable(std::shared_ptr<const Table> table);
 };
 
-/// \brief Scan the history metadata captured from a table.
-class ICEBERG_EXPORT HistoryScan final : public MetadataScan {
- public:
-  /// \brief Create a scan from captured metadata table settings.
-  static Result<std::unique_ptr<HistoryScan>> Make(internal::MetadataScanContext context);
-
-  ~HistoryScan() override;
-
-  Result<MetadataScanTaskStreamPtr> PlanTasksStream() const override;
-
- private:
-  HistoryScan(internal::MetadataScanContext context,
-              std::shared_ptr<MetadataScanTask> task);
-
-  const std::shared_ptr<MetadataScanTask> task_;
-};
-
 }  // namespace iceberg

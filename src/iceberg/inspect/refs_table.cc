@@ -43,6 +43,22 @@
 namespace iceberg {
 namespace {
 
+/// \brief Scan the refs metadata captured from a table.
+class RefsScan final : public MetadataScan {
+ public:
+  /// \brief Create a scan from captured metadata table settings.
+  static Result<std::unique_ptr<RefsScan>> Make(internal::MetadataScanContext context);
+
+  ~RefsScan() override;
+
+  Result<MetadataScanTaskStreamPtr> PlanTasksStream() const override;
+
+ private:
+  RefsScan(internal::MetadataScanContext context, std::shared_ptr<MetadataScanTask> task);
+
+  const std::shared_ptr<MetadataScanTask> task_;
+};
+
 struct RefRow {
   std::string name;
   std::string type;
@@ -146,6 +162,8 @@ Result<ArrowArrayStream> RefsTable::ReadRows(
       [rows = std::move(rows)](size_t index) -> const RefRow& { return rows[index]; });
 }
 
+namespace {
+
 // RefsScan implementation
 RefsScan::RefsScan(internal::MetadataScanContext context,
                    std::shared_ptr<MetadataScanTask> task)
@@ -175,5 +193,7 @@ Result<std::unique_ptr<RefsScan>> RefsScan::Make(internal::MetadataScanContext c
 Result<MetadataScanTaskStreamPtr> RefsScan::PlanTasksStream() const {
   return MetadataScanTaskStream::FromVector({task_});
 }
+
+}  // namespace
 
 }  // namespace iceberg
