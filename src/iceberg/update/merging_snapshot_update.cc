@@ -832,7 +832,7 @@ MergingSnapshotUpdate::MergeDVs() {
   auto output_path = location_provider->NewDataLocation(
       std::format("merged-dvs-{}-{}.puffin", SnapshotId(), ++dv_merge_attempt_));
 
-  RegisterStagedContentFile(output_path);
+  RegisterStagedFile(output_path, /*is_content=*/true);
   auto merged_files = DVUtil::MergeAndWriteDVs(groups, output_path, ctx_->table->io());
   if (!merged_files) {
     return ::iceberg::unexpected<Error>(std::move(merged_files.error()));

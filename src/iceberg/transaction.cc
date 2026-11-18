@@ -25,6 +25,8 @@
 #include <optional>
 #include <string>
 #include <unordered_set>
+#include <utility>
+#include <vector>
 
 #include "iceberg/catalog.h"
 #include "iceberg/location_provider.h"
@@ -104,6 +106,52 @@ std::string FormatCommittedSnapshots(
   return detail;
 }
 
+// Resolve every expected snapshot before reading any files.
+Result<std::vector<const Snapshot*>> FindAddedSnapshots(
+    const TableMetadata& metadata, std::unordered_set<int64_t> snapshot_ids) {
+  std::vector<const Snapshot*> snapshots;
+  snapshots.reserve(snapshot_ids.size());
+  for (const auto& snapshot : metadata.snapshots) {
+    if (snapshot_ids.empty()) {
+      break;
+    }
+    if (snapshot && snapshot_ids.erase(snapshot->snapshot_id) != 0) {
+      snapshots.push_back(snapshot.get());
+    }
+  }
+  // A catalog may omit snapshots. Never clean files with a partial keep-set.
+  ICEBERG_CHECK(snapshot_ids.empty(), "Committed metadata is missing {} added snapshots",
+                snapshot_ids.size());
+  return snapshots;
+}
+
+// Find owned content files still referenced by this delete manifest.
+Result<std::unordered_set<std::string>> FindReferencedContentFiles(
+    const TableMetadata& metadata, const std::shared_ptr<FileIO>& io,
+    const ManifestFile& manifest,
+    std::unordered_set<std::string>& remaining_content_paths) {
+  ICEBERG_ASSIGN_OR_RAISE(auto schema, metadata.Schema());
+  ICEBERG_ASSIGN_OR_RAISE(auto spec,
+                          metadata.PartitionSpecById(manifest.partition_spec_id));
+  ICEBERG_ASSIGN_OR_RAISE(auto reader, ManifestReader::Make(manifest, io, schema, spec));
+  ICEBERG_ASSIGN_OR_RAISE(auto entries, reader->LiveEntriesStream());
+  std::unordered_set<std::string> referenced;
+  while (!remaining_content_paths.empty()) {
+    ICEBERG_ASSIGN_OR_RAISE(auto entry, entries->Next());
+    if (!entry) {
+      return referenced;
+    }
+    ICEBERG_CHECK(entry->data_file != nullptr,
+                  "Missing content file in committed manifest {}",
+                  manifest.manifest_path);
+    // A merged DV can be shared by several retained snapshots.
+    if (remaining_content_paths.erase(entry->data_file->file_path) != 0) {
+      referenced.insert(entry->data_file->file_path);
+    }
+  }
+  return referenced;
+}
+
 /// Collect files that must survive transaction finalization.
 ///
 /// The set includes manifests and manifest lists from all snapshots created by
@@ -118,46 +166,24 @@ Result<std::unordered_set<std::string>> CommittedTransactionFiles(
     const TableMetadata& metadata, const std::shared_ptr<FileIO>& io,
     std::unordered_set<int64_t> snapshot_ids,
     std::unordered_set<std::string> content_paths) {
+  ICEBERG_ASSIGN_OR_RAISE(auto snapshots,
+                          FindAddedSnapshots(metadata, std::move(snapshot_ids)));
   std::unordered_set<std::string> committed;
-  for (const auto& snapshot : metadata.snapshots) {
-    if (snapshot_ids.empty()) {
-      break;
-    }
-    if (!snapshot || snapshot_ids.erase(snapshot->snapshot_id) == 0) {
-      continue;
-    }
+  for (const auto* snapshot : snapshots) {
     committed.insert(snapshot->manifest_list);
-    SnapshotReader snapshot_reader(snapshot.get());
+    SnapshotReader snapshot_reader(snapshot);
     ICEBERG_ASSIGN_OR_RAISE(auto manifests, snapshot_reader.Manifests(io));
     for (const auto& manifest : manifests) {
-      if (!committed.insert(manifest.manifest_path).second || content_paths.empty() ||
-          manifest.content != ManifestContent::kDeletes) {
-        continue;
-      }
-      // A merged DV can be shared by several retained snapshots.
-      ICEBERG_ASSIGN_OR_RAISE(auto schema, metadata.Schema());
-      ICEBERG_ASSIGN_OR_RAISE(auto spec,
-                              metadata.PartitionSpecById(manifest.partition_spec_id));
-      ICEBERG_ASSIGN_OR_RAISE(auto reader,
-                              ManifestReader::Make(manifest, io, schema, spec));
-      ICEBERG_ASSIGN_OR_RAISE(auto entries, reader->LiveEntriesStream());
-      while (!content_paths.empty()) {
-        ICEBERG_ASSIGN_OR_RAISE(auto entry, entries->Next());
-        if (!entry) {
-          break;
-        }
-        ICEBERG_CHECK(entry->data_file != nullptr,
-                      "Missing content file in committed manifest {}",
-                      manifest.manifest_path);
-        if (content_paths.erase(entry->data_file->file_path) != 0) {
-          committed.insert(entry->data_file->file_path);
-        }
+      const bool first_seen = committed.insert(manifest.manifest_path).second;
+      if (first_seen && !content_paths.empty() &&
+          manifest.content == ManifestContent::kDeletes) {
+        ICEBERG_ASSIGN_OR_RAISE(
+            auto referenced,
+            FindReferencedContentFiles(metadata, io, manifest, content_paths));
+        committed.merge(referenced);
       }
     }
   }
-  // A catalog may omit snapshots. Never clean files with a partial keep-set.
-  ICEBERG_CHECK(snapshot_ids.empty(), "Committed metadata is missing {} added snapshots",
-                snapshot_ids.size());
   return committed;
 }
 

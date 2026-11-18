@@ -497,17 +497,13 @@ Status SnapshotUpdate::CleanStaged() {
   return {};
 }
 
-void SnapshotUpdate::RegisterStagedFile(const std::string& path) {
+void SnapshotUpdate::RegisterStagedFile(const std::string& path, bool is_content) {
   std::lock_guard lock(staging_mutex_);
   staged_files_.insert(path);
-}
-
-void SnapshotUpdate::RegisterStagedContentFile(const std::string& path) {
-  std::lock_guard lock(staging_mutex_);
-  // Content files also belong to the common cleanup registry. They are
-  // added separately to check live references later.
-  staged_files_.insert(path);
-  staged_content_files_.insert(path);
+  if (is_content) {
+    // Need to check live references later
+    staged_content_files_.insert(path);
+  }
 }
 
 Status SnapshotUpdate::DeleteStagedFile(const std::string& path) noexcept {

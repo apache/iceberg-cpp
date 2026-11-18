@@ -286,9 +286,8 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
   /// \brief Get or generate the snapshot ID for the new snapshot.
   int64_t SnapshotId();
 
-  void RegisterStagedFile(const std::string& path);
-  /// Track an owned content file as well as its cleanup path.
-  void RegisterStagedContentFile(const std::string& path);
+  /// Track a cleanup path and mark content files for later live-reference checks.
+  void RegisterStagedFile(const std::string& path, bool is_content = false);
 
   std::string ManifestPath();
   std::string ManifestListPath();
