@@ -19,7 +19,6 @@
 
 #pragma once
 
-#include <algorithm>
 #include <cstddef>
 #include <cstdint>
 #include <memory>
@@ -59,15 +58,6 @@ struct MetadataContentWeigher {
   }
 };
 
-// Bound the bookkeeping for normalized aliases separately from retained content.
-struct LocationAliasWeigher {
-  int64_t operator()(const std::string& alias, const std::string& canonical) const {
-    constexpr size_t kMaxAliasPart = 65537;
-    return static_cast<int64_t>(std::min(alias.size(), kMaxAliasPart) +
-                                std::min(canonical.size(), kMaxAliasPart));
-  }
-};
-
 // A table owns this cache; readers share it through a metadata-only FileIO adapter.
 // Storage FileIOs remain independent of the cache and its configuration.
 class ICEBERG_EXPORT ContentCache : public std::enable_shared_from_this<ContentCache> {
@@ -78,10 +68,11 @@ class ICEBERG_EXPORT ContentCache : public std::enable_shared_from_this<ContentC
   Result<std::unique_ptr<InputFile>> NewInputFile(
       const std::shared_ptr<FileIO>& io, std::string location,
       std::optional<size_t> length = std::nullopt);
-  // Optionally return the canonical location represented by a cache hit.
-  MetadataContent Find(std::string_view location,
-                       std::string* canonical_location = nullptr);
-  void Insert(const std::string& location, MetadataContent content);
+  // A load that overlaps invalidation may serve its own reader but cannot repopulate
+  // the cache. Capture the generation under the same lock as the lookup.
+  MetadataContent Find(std::string_view location, uint64_t* generation = nullptr);
+  void Insert(const std::string& location, MetadataContent content, uint64_t generation);
+  void Invalidate(std::string_view location);
   void Clear();
 
  private:
@@ -89,9 +80,7 @@ class ICEBERG_EXPORT ContentCache : public std::enable_shared_from_this<ContentC
   std::mutex mutex_;
   LruCache<std::string, MetadataContent, MetadataContentWeigher, StringHash, StringEqual>
       lru_;
-  // Alias strings do not pin content and are capped at 64 KiB in total.
-  LruCache<std::string, std::string, LocationAliasWeigher, StringHash, StringEqual>
-      aliases_;
+  uint64_t generation_ = 0;
 };
 
 }  // namespace iceberg::internal

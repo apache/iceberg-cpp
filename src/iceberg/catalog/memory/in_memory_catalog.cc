@@ -23,7 +23,6 @@
 #include <iterator>
 
 #include "iceberg/catalog/catalog_util.h"
-#include "iceberg/content_cache_internal.h"
 #include "iceberg/file_io.h"
 #include "iceberg/metrics/metrics_reporters.h"
 #include "iceberg/table.h"
@@ -345,7 +344,6 @@ Result<std::shared_ptr<InMemoryCatalog>> InMemoryCatalog::Make(
     const std::string& warehouse_location,
     const std::unordered_map<std::string, std::string>& properties) {
   ICEBERG_PRECHECK(file_io != nullptr, "InMemoryCatalog requires a non-null FileIO");
-  ICEBERG_RETURN_UNEXPECTED(internal::ContentCacheOptions::FromProperties(properties));
   std::shared_ptr<MetricsReporter> reporter;
   auto it = properties.find(std::string(kMetricsReporterImpl));
   if (it != properties.end() && !it->second.empty() &&
@@ -448,8 +446,7 @@ Result<std::shared_ptr<Table>> InMemoryCatalog::CreateTable(
       root_namespace_->UpdateTableMetadataLocation(identifier, metadata_file_location));
   return Table::Make(identifier, std::move(table_metadata),
                      std::move(metadata_file_location), file_io_, shared_from_this(),
-                     CatalogUtil::FullTableName(name(), identifier), reporter_,
-                     /*labels=*/nullptr, properties_);
+                     CatalogUtil::FullTableName(name(), identifier), reporter_);
 }
 
 Result<std::shared_ptr<Table>> InMemoryCatalog::UpdateTable(
@@ -501,8 +498,7 @@ Result<std::shared_ptr<Table>> InMemoryCatalog::UpdateTable(
 
   return Table::Make(identifier, std::move(updated), std::move(new_metadata_location),
                      file_io_, shared_from_this(),
-                     CatalogUtil::FullTableName(name(), identifier), reporter_,
-                     /*labels=*/nullptr, properties_);
+                     CatalogUtil::FullTableName(name(), identifier), reporter_);
 }
 
 Result<std::shared_ptr<Transaction>> InMemoryCatalog::StageCreateTable(
@@ -522,10 +518,10 @@ Result<std::shared_ptr<Transaction>> InMemoryCatalog::StageCreateTable(
       auto table_metadata,
       TableMetadata::Make(*schema, *spec, *order, base_location, properties));
   ICEBERG_ASSIGN_OR_RAISE(
-      auto table, StagedTable::Make(identifier, std::move(table_metadata), "", file_io_,
-                                    shared_from_this(),
-                                    CatalogUtil::FullTableName(name(), identifier),
-                                    reporter_, properties_));
+      auto table,
+      StagedTable::Make(identifier, std::move(table_metadata), "", file_io_,
+                        shared_from_this(),
+                        CatalogUtil::FullTableName(name(), identifier), reporter_));
   return Transaction::Make(std::move(table), TransactionKind::kCreate);
 }
 
@@ -606,8 +602,7 @@ Result<std::shared_ptr<Table>> InMemoryCatalog::LoadTable(
                           TableMetadataUtil::Read(*file_io_, metadata_location));
   return Table::Make(identifier, std::move(metadata), std::move(metadata_location),
                      file_io_, shared_from_this(),
-                     CatalogUtil::FullTableName(name(), identifier), reporter_,
-                     /*labels=*/nullptr, properties_);
+                     CatalogUtil::FullTableName(name(), identifier), reporter_);
 }
 
 Result<std::shared_ptr<Table>> InMemoryCatalog::RegisterTable(
@@ -630,7 +625,7 @@ Result<std::shared_ptr<Table>> InMemoryCatalog::RegisterTable(
   }
   return Table::Make(identifier, std::move(metadata), metadata_file_location, file_io_,
                      shared_from_this(), CatalogUtil::FullTableName(name(), identifier),
-                     reporter_, /*labels=*/nullptr, properties_);
+                     reporter_);
 }
 
 }  // namespace iceberg

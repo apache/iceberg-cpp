@@ -337,6 +337,29 @@ TEST_F(FastAppendTest, AppendNullFile) {
   EXPECT_THAT(table_->current_snapshot(), HasErrorMessage("No current snapshot"));
 }
 
+TEST_F(FastAppendTest, InvalidManifestCacheSettingsDoNotDeleteCommittedFiles) {
+  ICEBERG_UNWRAP_OR_FAIL(auto txn, table_->NewTransaction());
+  ICEBERG_UNWRAP_OR_FAIL(auto append, txn->NewFastAppend());
+  append->AppendFile(file_a_);
+  ASSERT_THAT(append->Commit(), IsOk());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto update, txn->NewUpdateProperties());
+  update->Set("io.manifest.cache-enabled", "true");
+  update->Set("io.manifest.cache.max-total-bytes", "invalid");
+  ASSERT_THAT(update->Commit(), IsOk());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto committed, txn->Commit());
+  EXPECT_FALSE(committed->ManifestCacheEnabled());
+  ICEBERG_UNWRAP_OR_FAIL(auto reloaded, catalog_->LoadTable(table_ident_));
+  ICEBERG_UNWRAP_OR_FAIL(auto snapshot, reloaded->current_snapshot());
+  SnapshotReader reader(snapshot.get());
+  ICEBERG_UNWRAP_OR_FAIL(auto manifests, reader.Manifests(file_io_));
+  ASSERT_FALSE(manifests.empty());
+  for (const auto& manifest : manifests) {
+    EXPECT_THAT(file_io_->ReadFile(manifest.manifest_path, std::nullopt), IsOk());
+  }
+}
+
 TEST_F(FastAppendTest, AbortIgnoresCleanupDeleteFailure) {
   ICEBERG_UNWRAP_OR_FAIL(auto txn, table_->NewTransaction());
   ICEBERG_UNWRAP_OR_FAIL(auto fast_append, txn->NewFastAppend());

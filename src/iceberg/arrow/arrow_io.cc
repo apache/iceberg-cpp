@@ -427,8 +427,19 @@ class ArrowInputFile : public InputFile {
     if (file_size_.has_value()) {
       return *file_size_;
     }
-    ::arrow::fs::FileInfo file_info(path_, ::arrow::fs::FileType::File);
-    ICEBERG_ARROW_ASSIGN_OR_RETURN(auto input, fs_->OpenInputFile(file_info));
+    ICEBERG_ARROW_ASSIGN_OR_RETURN(auto info, fs_->GetFileInfo(path_));
+    if (info.type() == ::arrow::fs::FileType::NotFound) {
+      return IOError("File does not exist: {}", location_);
+    }
+    if (info.type() != ::arrow::fs::FileType::File) {
+      return IOError("Not a regular file: {}", location_);
+    }
+    if (info.size() != ::arrow::fs::kNoSize) {
+      file_size_ = info.size();
+      return *file_size_;
+    }
+    // Some filesystems report a file without a size.
+    ICEBERG_ARROW_ASSIGN_OR_RETURN(auto input, fs_->OpenInputFile(info));
     auto size_result = input->GetSize();
     auto close_status = input->Close();
     if (!size_result.ok() && !close_status.ok()) {
@@ -444,17 +455,12 @@ class ArrowInputFile : public InputFile {
   }
 
   Result<std::unique_ptr<SeekableInputStream>> Open() override {
-    ICEBERG_ASSIGN_OR_RAISE(auto input, OpenArrowFile());
-    return std::make_unique<ArrowSeekableInputStream>(std::move(input));
-  }
-
-  Result<std::shared_ptr<::arrow::io::RandomAccessFile>> OpenArrowFile() {
     ::arrow::fs::FileInfo file_info(path_, ::arrow::fs::FileType::File);
     if (file_size_.has_value()) {
       file_info.set_size(*file_size_);
     }
     ICEBERG_ARROW_ASSIGN_OR_RETURN(auto input, fs_->OpenInputFile(file_info));
-    return input;
+    return std::make_unique<ArrowSeekableInputStream>(std::move(input));
   }
 
  private:
@@ -547,9 +553,6 @@ Result<std::shared_ptr<::arrow::io::RandomAccessFile>> OpenArrowInputStream(
     ICEBERG_ASSIGN_OR_RAISE(input_file, io->NewInputFile(path, *length));
   } else {
     ICEBERG_ASSIGN_OR_RAISE(input_file, io->NewInputFile(path));
-  }
-  if (auto* arrow_input = dynamic_cast<ArrowInputFile*>(input_file.get())) {
-    return arrow_input->OpenArrowFile();
   }
   ICEBERG_ASSIGN_OR_RAISE(size, input_file->Size());
   if (size < 0) {

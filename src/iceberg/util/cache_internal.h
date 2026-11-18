@@ -103,6 +103,17 @@ class LruCache {
     return &list_it->value;
   }
 
+  template <typename K>
+  void Erase(const K& key) {
+    const auto it = map_.find(key);
+    if (it == map_.end()) {
+      return;
+    }
+    total_weight_ -= it->second->weight;
+    items_.erase(it->second);
+    map_.erase(it);
+  }
+
   // Insert or update the value for `key`, mark it as most recently used, and evict least
   // recently used entries until the cache is within its maximum weight again.
   //

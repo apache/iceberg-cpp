@@ -24,6 +24,7 @@
 #include <limits>
 #include <utility>
 
+#include "iceberg/util/error_util_internal.h"
 #include "iceberg/util/macros.h"
 #include "iceberg/util/string_util.h"
 
@@ -42,18 +43,6 @@ Result<T> ParseNumberProperty(
                            key, result.error().message);
   }
   return result;
-}
-
-Status FinishWithCloseStatus(Status operation_status, Status close_status) {
-  if (!operation_status.has_value()) {
-    auto error = operation_status.error();
-    if (!close_status.has_value()) {
-      error.message += "; additionally failed to close stream: ";
-      error.message += close_status.error().message;
-    }
-    return ::iceberg::unexpected<Error>(std::move(error));
-  }
-  return close_status;
 }
 
 Result<std::vector<std::byte>> ReadInputFile(InputFile& input_file, int64_t read_size,
@@ -147,7 +136,8 @@ class CachedInputFile : public InputFile {
   Result<int64_t> Size() const override { return size_; }
   Result<std::unique_ptr<SeekableInputStream>> Open() override {
     if (content_) return std::make_unique<CachedSeekableInputStream>(content_);
-    if (auto cached = cache_->Find(location_)) {
+    uint64_t generation;
+    if (auto cached = cache_->Find(location_, &generation)) {
       return std::make_unique<CachedSeekableInputStream>(std::move(cached));
     }
     auto loaded = ReadInputFile(*input_, size_, location_);
@@ -163,7 +153,7 @@ class CachedInputFile : public InputFile {
     }
     auto content =
         std::make_shared<const std::vector<std::byte>>(std::move(loaded).value());
-    cache_->Insert(location_, content);
+    cache_->Insert(location_, content, generation);
     return std::make_unique<CachedSeekableInputStream>(std::move(content));
   }
 
@@ -192,10 +182,17 @@ class ManifestFileIO : public FileIO {
     return io_->NewOutputFile(std::move(location));
   }
   Status DeleteFile(const std::string& location) override {
-    return io_->DeleteFile(location);
+    auto status = io_->DeleteFile(location);
+    cache_->Invalidate(location);
+    return status;
   }
   Status DeleteFiles(const std::vector<std::string>& locations) override {
-    return io_->DeleteFiles(locations);
+    auto status = io_->DeleteFiles(locations);
+    // A failed bulk delete can still remove some files.
+    for (const auto& location : locations) {
+      cache_->Invalidate(location);
+    }
+    return status;
   }
   const std::unordered_map<std::string, std::string>& properties() const override {
     return io_->properties();
@@ -214,61 +211,64 @@ Result<ContentCacheOptions> ContentCacheOptions::FromProperties(
   if (auto it = properties.find(std::string(kEnabled)); it != properties.end()) {
     options.enabled = StringUtils::ParseBoolean(it->second);
   }
+  if (!options.enabled) {
+    return options;
+  }
   ICEBERG_ASSIGN_OR_RAISE(
       options.max_total_bytes,
       ParseNumberProperty(properties, kMaxTotalBytes, options.max_total_bytes));
   ICEBERG_ASSIGN_OR_RAISE(
       options.max_content_length,
       ParseNumberProperty(properties, kMaxContentLength, options.max_content_length));
-  if (options.enabled) {
-    ICEBERG_PRECHECK(
-        options.max_total_bytes > 0 &&
-            std::cmp_less_equal(options.max_total_bytes,
-                                std::numeric_limits<int64_t>::max()),
-        "Manifest cache maximum total bytes must be positive and fit in int64_t");
-    ICEBERG_PRECHECK(
-        options.max_content_length > 0 &&
-            std::cmp_less_equal(options.max_content_length,
-                                std::numeric_limits<int64_t>::max()),
-        "Manifest cache maximum content length must be positive and fit in int64_t");
-  }
+  ICEBERG_PRECHECK(
+      options.max_total_bytes > 0 &&
+          std::cmp_less_equal(options.max_total_bytes,
+                              std::numeric_limits<int64_t>::max()),
+      "Manifest cache maximum total bytes must be positive and fit in int64_t");
+  ICEBERG_PRECHECK(
+      options.max_content_length > 0 &&
+          std::cmp_less_equal(options.max_content_length,
+                              std::numeric_limits<int64_t>::max()),
+      "Manifest cache maximum content length must be positive and fit in int64_t");
   return options;
 }
 
 ContentCache::ContentCache(ContentCacheOptions options)
-    : options_(options),
-      lru_(static_cast<int64_t>(options.max_total_bytes)),
-      aliases_(
-          static_cast<int64_t>(std::min<size_t>(options.max_total_bytes, 64 * 1024))) {}
+    : options_(options), lru_(static_cast<int64_t>(options.max_total_bytes)) {}
+
 std::shared_ptr<FileIO> ContentCache::Wrap(std::shared_ptr<FileIO> io) {
   return std::make_shared<ManifestFileIO>(std::move(io), shared_from_this());
 }
-MetadataContent ContentCache::Find(std::string_view location,
-                                   std::string* canonical_location) {
+
+MetadataContent ContentCache::Find(std::string_view location, uint64_t* generation) {
   std::lock_guard lock(mutex_);
-  if (auto* content = lru_.Find(location)) {
-    if (canonical_location) *canonical_location = location;
-    return *content;
-  }
-  if (auto* canonical = aliases_.Find(location)) {
-    if (auto* content = lru_.Find(*canonical)) {
-      if (canonical_location) *canonical_location = *canonical;
-      return *content;
-    }
-  }
-  return nullptr;
+  if (generation) *generation = generation_;
+  auto* content = lru_.Find(location);
+  return content ? *content : nullptr;
 }
-void ContentCache::Insert(const std::string& location, MetadataContent content) {
+
+void ContentCache::Insert(const std::string& location, MetadataContent content,
+                          uint64_t generation) {
   // Empty/corrupt metadata must not accumulate unbounded zero-weight entries.
   if (content->empty()) return;
   std::lock_guard lock(mutex_);
-  lru_.Replace(location, std::move(content));
+  if (generation == generation_) {
+    lru_.Replace(location, std::move(content));
+  }
 }
+
+void ContentCache::Invalidate(std::string_view location) {
+  std::lock_guard lock(mutex_);
+  lru_.Erase(location);
+  ++generation_;
+}
+
 void ContentCache::Clear() {
   std::lock_guard lock(mutex_);
   lru_.Clear();
-  aliases_.Clear();
+  ++generation_;
 }
+
 Result<std::unique_ptr<InputFile>> ContentCache::NewInputFile(
     const std::shared_ptr<FileIO>& io, std::string location,
     std::optional<size_t> length) {
@@ -276,20 +276,14 @@ Result<std::unique_ptr<InputFile>> ContentCache::NewInputFile(
     return InvalidArgument("File length {} exceeds int64_t max", *length);
   }
   // A hit needs neither storage resolution nor working remote credentials.
-  std::string canonical_location;
-  if (auto content = Find(location, &canonical_location)) {
-    return std::make_unique<CachedInputFile>(std::move(canonical_location),
-                                             std::move(content));
+  if (auto content = Find(location)) {
+    return std::make_unique<CachedInputFile>(std::move(location), std::move(content));
   }
   std::unique_ptr<InputFile> input;
   if (length) {
     ICEBERG_ASSIGN_OR_RAISE(input, io->NewInputFile(location, *length));
   } else {
     ICEBERG_ASSIGN_OR_RAISE(input, io->NewInputFile(location));
-  }
-  if (input->location() != location) {
-    std::lock_guard lock(mutex_);
-    aliases_.Replace(std::move(location), std::string(input->location()));
   }
   if (auto content = Find(input->location())) {
     return std::make_unique<CachedInputFile>(std::string(input->location()),
