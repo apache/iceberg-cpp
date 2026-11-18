@@ -541,6 +541,10 @@ class ICEBERG_EXPORT TableScan {
 
   const std::shared_ptr<TableMetadata> metadata_;
   const std::shared_ptr<Schema> schema_;
+  const std::shared_ptr<FileIO>& manifest_io() const {
+    return context_.manifest_io ? context_.manifest_io : io_;
+  }
+
   const std::shared_ptr<FileIO> io_;
   const internal::TableScanContext context_;
   mutable std::shared_ptr<Schema> projected_schema_;

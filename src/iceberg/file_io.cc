@@ -22,25 +22,10 @@
 #include <limits>
 #include <utility>
 
+#include "iceberg/util/error_util_internal.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg {
-
-namespace {
-
-Status FinishWithCloseStatus(Status operation_status, Status close_status) {
-  if (!operation_status.has_value()) {
-    auto error = operation_status.error();
-    if (!close_status.has_value()) {
-      error.message += "; additionally failed to close stream: ";
-      error.message += close_status.error().message;
-    }
-    return ::iceberg::unexpected<Error>(std::move(error));
-  }
-  return close_status;
-}
-
-}  // namespace
 
 Result<std::unique_ptr<InputFile>> FileIO::NewInputFile(std::string file_location) {
   return NotImplemented("NewInputFile not implemented for {}", file_location);
@@ -82,7 +67,7 @@ Result<std::string> FileIO::ReadFile(const std::string& file_location,
     read_status = stream->ReadFully(/*position=*/0, bytes);
   }
   ICEBERG_RETURN_UNEXPECTED(
-      FinishWithCloseStatus(std::move(read_status), stream->Close()));
+      internal::FinishWithCloseStatus(std::move(read_status), stream->Close()));
   return content;
 }
 
@@ -97,7 +82,7 @@ Status FileIO::WriteFile(const std::string& file_location, std::string_view cont
   if (status.has_value()) {
     status = stream->Flush();
   }
-  return FinishWithCloseStatus(std::move(status), stream->Close());
+  return internal::FinishWithCloseStatus(std::move(status), stream->Close());
 }
 
 Status FileIO::DeleteFiles(const std::vector<std::string>& file_locations) {

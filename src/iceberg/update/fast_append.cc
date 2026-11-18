@@ -128,8 +128,9 @@ Result<std::vector<ManifestFile>> FastAppend::Apply(
   // Add all manifests from the snapshot
   if (snapshot != nullptr) {
     auto snapshot_reader = SnapshotReader(snapshot.get());
-    ICEBERG_ASSIGN_OR_RAISE(auto snapshot_manifests,
-                            snapshot_reader.Manifests(ctx_->table->manifest_io()));
+    ICEBERG_ASSIGN_OR_RAISE(
+        auto snapshot_manifests,
+        snapshot_reader.Manifests(internal::ManifestIO(*ctx_->table)));
     manifests.insert(manifests.end(), snapshot_manifests.begin(),
                      snapshot_manifests.end());
   }
@@ -184,10 +185,10 @@ Result<ManifestFile> FastAppend::CopyManifest(const ManifestFile& manifest) {
 
   // A failed copy must not leave partial counts in the cached summary.
   SnapshotSummaryBuilder summary;
-  ICEBERG_ASSIGN_OR_RAISE(
-      auto copied,
-      CopyAppendManifest(manifest, ctx_->table->manifest_io(), schema, spec, snapshot_id,
-                         new_manifest_path, current.format_version, &summary));
+  ICEBERG_ASSIGN_OR_RAISE(auto copied,
+                          CopyAppendManifest(manifest, internal::ManifestIO(*ctx_->table),
+                                             schema, spec, snapshot_id, new_manifest_path,
+                                             current.format_version, &summary));
   copied_manifests_summary_.Merge(summary);
   return copied;
 }

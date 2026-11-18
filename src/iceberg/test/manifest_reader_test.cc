@@ -800,11 +800,11 @@ TEST_P(TestManifestReader, ReadsManifestListAndManifestFromCachedContent) {
   auto fs = std::make_shared<CountingMockFileSystem>(std::chrono::system_clock::now());
   file_io_ = std::make_shared<arrow::ArrowFileSystemFileIO>(fs);
   auto table_metadata = std::make_shared<TableMetadata>();
+  table_metadata->properties = TableProperties::FromMap(
+      {{std::string(internal::ContentCacheOptions::kEnabled), "true"}});
   ICEBERG_UNWRAP_OR_FAIL(
-      auto table,
-      Table::Make({.ns = {}, .name = "test"}, table_metadata, "metadata.json", file_io_,
-                  std::make_shared<MockCatalog>(), "", nullptr, nullptr,
-                  {{std::string(internal::ContentCacheOptions::kEnabled), "true"}}));
+      auto table, Table::Make({.ns = {}, .name = "test"}, table_metadata, "metadata.json",
+                              file_io_, std::make_shared<MockCatalog>()));
 
   std::vector<ManifestEntry> entries;
   entries.push_back(MakeEntry(
@@ -826,7 +826,8 @@ TEST_P(TestManifestReader, ReadsManifestListAndManifestFromCachedContent) {
   ASSERT_THAT(list_writer->Close(), IsOk());
 
   auto read_manifest_list = [&]() -> std::vector<ManifestFile> {
-    auto reader = ManifestListReader::Make(manifest_list_path, table->manifest_io());
+    auto reader =
+        ManifestListReader::Make(manifest_list_path, internal::ManifestIO(*table));
     EXPECT_THAT(reader, IsOk());
     if (!reader.has_value()) {
       return {};
@@ -837,7 +838,8 @@ TEST_P(TestManifestReader, ReadsManifestListAndManifestFromCachedContent) {
   };
   auto read_data_file_paths = [&](const ManifestFile& manifest) {
     std::vector<std::string> paths;
-    auto reader = ManifestReader::Make(manifest, table->manifest_io(), schema_, spec_);
+    auto reader =
+        ManifestReader::Make(manifest, internal::ManifestIO(*table), schema_, spec_);
     EXPECT_THAT(reader, IsOk());
     if (!reader.has_value()) {
       return paths;

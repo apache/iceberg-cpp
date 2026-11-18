@@ -131,10 +131,11 @@ Result<std::shared_ptr<Table>> MakeCachedTable(
     std::string metadata_location = "metadata.json") {
   auto metadata = std::make_shared<TableMetadata>();
   metadata->table_uuid = "cache-test-table";
+  metadata->properties = TableProperties::FromMap(properties);
   auto storage = std::shared_ptr<FileIO>(&io, [](FileIO*) {});
   return Table::Make({.ns = {}, .name = "test"}, std::move(metadata),
                      std::move(metadata_location), std::move(storage),
-                     std::make_shared<MockCatalog>(), "", nullptr, nullptr, properties);
+                     std::make_shared<MockCatalog>());
 }
 
 // Read a whole immutable file through a table's manifest I/O context.
@@ -207,13 +208,13 @@ TEST(MetadataCacheTest, TableReusesCachedContentAcrossInputFiles) {
       auto table,
       MakeCachedTable(file_io, {{std::string(ContentCacheOptions::kEnabled), "true"}}));
 
-  auto first_file = table->manifest_io()->NewInputFile("manifest.avro");
+  auto first_file = internal::ManifestIO(*table)->NewInputFile("manifest.avro");
   ASSERT_THAT(first_file, IsOk());
   auto first_stream = first_file.value()->Open();
   ASSERT_THAT(first_stream, IsOk());
   ASSERT_THAT(first_stream.value()->Close(), IsOk());
 
-  auto second_file = table->manifest_io()->NewInputFile("manifest.avro");
+  auto second_file = internal::ManifestIO(*table)->NewInputFile("manifest.avro");
   ASSERT_THAT(second_file, IsOk());
   auto second_stream = second_file.value()->Open();
   ASSERT_THAT(second_stream, IsOk());
@@ -231,7 +232,8 @@ TEST(MetadataCacheTest, TableUsesNormalizedLocationForCacheHits) {
 
   for (const auto* location :
        {"alias://manifest.avro", "alias://manifest.avro", "manifest.avro"}) {
-    ICEBERG_UNWRAP_OR_FAIL(auto input_file, table->manifest_io()->NewInputFile(location));
+    ICEBERG_UNWRAP_OR_FAIL(auto input_file,
+                           internal::ManifestIO(*table)->NewInputFile(location));
     EXPECT_EQ(input_file->location(), "manifest.avro");
     ICEBERG_UNWRAP_OR_FAIL(auto stream, input_file->Open());
     ASSERT_THAT(stream->Close(), IsOk());
@@ -251,7 +253,7 @@ TEST(MetadataCacheTest, CachedInputFileDoesNotRetryNonIOErrors) {
       auto table,
       MakeCachedTable(file_io, {{std::string(ContentCacheOptions::kEnabled), "true"}}));
   ICEBERG_UNWRAP_OR_FAIL(auto input_file,
-                         table->manifest_io()->NewInputFile("manifest.avro"));
+                         internal::ManifestIO(*table)->NewInputFile("manifest.avro"));
 
   EXPECT_THAT(input_file->Open(), IsError(ErrorKind::kNotFound));
   EXPECT_EQ(state->open_count, 1);
@@ -267,7 +269,7 @@ TEST(MetadataCacheTest, CachedInputFilePreservesReadAheadAndFallbackErrors) {
       auto table,
       MakeCachedTable(file_io, {{std::string(ContentCacheOptions::kEnabled), "true"}}));
   ICEBERG_UNWRAP_OR_FAIL(auto input_file,
-                         table->manifest_io()->NewInputFile("manifest.avro"));
+                         internal::ManifestIO(*table)->NewInputFile("manifest.avro"));
 
   auto result = input_file->Open();
   EXPECT_THAT(result, IsError(ErrorKind::kIOError));
@@ -284,11 +286,11 @@ TEST(MetadataCacheTest, TableDoesNotCacheLoadFailures) {
       MakeCachedTable(file_io, {{std::string(ContentCacheOptions::kEnabled), "true"}}));
   file_io.failing_opens = 1;
 
-  EXPECT_THAT(ReadCached(*table->manifest_io(), "manifest.avro"),
+  EXPECT_THAT(ReadCached(*internal::ManifestIO(*table), "manifest.avro"),
               IsError(ErrorKind::kNotFound));
-  EXPECT_THAT(ReadCached(*table->manifest_io(), "manifest.avro"),
+  EXPECT_THAT(ReadCached(*internal::ManifestIO(*table), "manifest.avro"),
               HasValue(::testing::Eq("manifest")));
-  EXPECT_THAT(ReadCached(*table->manifest_io(), "manifest.avro"),
+  EXPECT_THAT(ReadCached(*internal::ManifestIO(*table), "manifest.avro"),
               HasValue(::testing::Eq("manifest")));
   // The failed open, then the successful load. The last read comes from the cache.
   EXPECT_EQ(file_io.open_count, 2);
@@ -308,14 +310,14 @@ TEST(MetadataCacheTest, TableReadsUncacheableFilesDirectly) {
     // The 8-byte file can never be cached, so opening it must not load the whole file
     // into memory first.
     ICEBERG_UNWRAP_OR_FAIL(auto input_file,
-                           table->manifest_io()->NewInputFile("manifest.avro"));
+                           internal::ManifestIO(*table)->NewInputFile("manifest.avro"));
     ICEBERG_UNWRAP_OR_FAIL(auto stream, input_file->Open());
     EXPECT_EQ(file_io.read_count, 0);
     ASSERT_THAT(stream->Close(), IsOk());
 
-    EXPECT_THAT(ReadCached(*table->manifest_io(), "manifest.avro"),
+    EXPECT_THAT(ReadCached(*internal::ManifestIO(*table), "manifest.avro"),
                 HasValue(::testing::Eq("manifest")));
-    EXPECT_THAT(ReadCached(*table->manifest_io(), "manifest.avro"),
+    EXPECT_THAT(ReadCached(*internal::ManifestIO(*table), "manifest.avro"),
                 HasValue(::testing::Eq("manifest")));
     EXPECT_EQ(file_io.open_count, 3);
   }
@@ -334,7 +336,7 @@ TEST(MetadataCacheTest, TableEvictsLeastRecentlyUsedContentByBytes) {
 
   // Return the number of underlying opens after reading `location`.
   auto read = [&file_io, &table](const std::string& location) {
-    EXPECT_THAT(ReadCached(*table->manifest_io(), location), IsOk());
+    EXPECT_THAT(ReadCached(*internal::ManifestIO(*table), location), IsOk());
     return file_io.open_count;
   };
   EXPECT_EQ(read("a"), 1);
@@ -352,13 +354,38 @@ TEST(MetadataCacheTest, TableClearsCachedContent) {
   ICEBERG_UNWRAP_OR_FAIL(
       auto table,
       MakeCachedTable(file_io, {{std::string(ContentCacheOptions::kEnabled), "true"}}));
-  ASSERT_THAT(ReadCached(*table->manifest_io(), "snap.avro"), IsOk());
+  ASSERT_THAT(ReadCached(*internal::ManifestIO(*table), "snap.avro"), IsOk());
 
   table->ClearManifestCache();
 
-  ASSERT_THAT(ReadCached(*table->manifest_io(), "snap.avro"), IsOk());
-  ASSERT_THAT(ReadCached(*table->manifest_io(), "snap.avro"), IsOk());
+  ASSERT_THAT(ReadCached(*internal::ManifestIO(*table), "snap.avro"), IsOk());
+  ASSERT_THAT(ReadCached(*internal::ManifestIO(*table), "snap.avro"), IsOk());
   EXPECT_EQ(file_io.open_count, 2);
+}
+
+TEST(MetadataCacheTest, ManifestDeletesInvalidateOnlyTheAttemptedLocations) {
+  CountingMockFileIO io;
+  io.AddFile("single.avro", "old");
+  io.AddFile("batch.avro", "old");
+  io.AddFile("retained.avro", "retained");
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto table,
+      MakeCachedTable(io, {{std::string(ContentCacheOptions::kEnabled), "true"}}));
+  auto manifest_io = internal::ManifestIO(*table);
+  for (const auto* name : {"single.avro", "batch.avro", "retained.avro"}) {
+    ASSERT_THAT(ReadCached(*manifest_io, name), IsOk());
+  }
+  EXPECT_CALL(io, DeleteFile("single.avro")).WillOnce(::testing::Return(Status{}));
+  EXPECT_CALL(io, DeleteFile("batch.avro")).WillOnce(::testing::Return(Status{}));
+  ASSERT_THAT(manifest_io->DeleteFile("single.avro"), IsOk());
+  ASSERT_THAT(manifest_io->DeleteFiles({"batch.avro"}), IsOk());
+  for (const auto* name : {"single.avro", "batch.avro"}) {
+    io.AddFile(name, "new");
+    EXPECT_THAT(ReadCached(*manifest_io, name), HasValue(::testing::Eq("new")));
+  }
+  EXPECT_THAT(ReadCached(*manifest_io, "retained.avro"),
+              HasValue(::testing::Eq("retained")));
+  EXPECT_EQ(io.open_count, 5);
 }
 
 TEST(MetadataCacheTest, TableConcurrentReadsReturnFileContent) {
@@ -385,7 +412,7 @@ TEST(MetadataCacheTest, TableConcurrentReadsReturnFileContent) {
     workers.push_back(std::async(std::launch::async, [&, thread] {
       for (int i = 0; i < kIterations; ++i) {
         const int id = (thread + i) % kLocations;
-        auto content = ReadCached(*table->manifest_io(), std::to_string(id));
+        auto content = ReadCached(*internal::ManifestIO(*table), std::to_string(id));
         if (!content.has_value() || content.value() != contents[id]) {
           mismatch.store(true, std::memory_order_relaxed);
         }
@@ -453,22 +480,12 @@ TEST(MetadataCacheTest, InvalidNumericPropertyErrorIncludesPropertyName) {
   EXPECT_THAT(options, HasErrorMessage(std::string(ContentCacheOptions::kMaxTotalBytes)));
 }
 
-TEST(MetadataCacheTest, ParsesTuningPropertiesWhenDisabled) {
-  auto options = ContentCacheOptions::FromProperties(
-      {{std::string(ContentCacheOptions::kEnabled), "false"},
-       {std::string(ContentCacheOptions::kMaxTotalBytes), "1024"}});
-
-  ASSERT_THAT(options, IsOk());
-  EXPECT_FALSE(options->enabled);
-  EXPECT_EQ(options->max_total_bytes, 1024);
-}
-
-TEST(MetadataCacheTest, RejectsInvalidNumericPropertyWhenDisabled) {
-  auto options = ContentCacheOptions::FromProperties(
-      {{std::string(ContentCacheOptions::kEnabled), "false"},
-       {std::string(ContentCacheOptions::kMaxTotalBytes), "invalid"}});
-
-  EXPECT_THAT(options, HasErrorMessage(std::string(ContentCacheOptions::kMaxTotalBytes)));
+TEST(MetadataCacheTest, IgnoresInvalidTuningPropertiesWhenDisabled) {
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto options, ContentCacheOptions::FromProperties(
+                        {{std::string(ContentCacheOptions::kEnabled), "false"},
+                         {std::string(ContentCacheOptions::kMaxTotalBytes), "invalid"}}));
+  EXPECT_FALSE(options.enabled);
 }
 
 TEST(MetadataCacheTest, ReaderOptionsKeepsPositionalAggregateInitialization) {
@@ -499,8 +516,8 @@ TEST(MetadataCacheTest, RejectsOversizedLengthBeforeCallingStorage) {
   ICEBERG_UNWRAP_OR_FAIL(
       auto table,
       MakeCachedTable(io, {{std::string(ContentCacheOptions::kEnabled), "true"}}));
-  EXPECT_THAT(table->manifest_io()->NewInputFile("manifest.avro",
-                                                 std::numeric_limits<size_t>::max()),
+  EXPECT_THAT(internal::ManifestIO(*table)->NewInputFile(
+                  "manifest.avro", std::numeric_limits<size_t>::max()),
               IsError(ErrorKind::kInvalidArgument));
   EXPECT_EQ(io.length_calls, 0);
 }
@@ -510,9 +527,9 @@ TEST(MetadataCacheTest, DisabledTableUsesStorageDirectly) {
   io.AddFile("manifest.avro", "manifest");
   ICEBERG_UNWRAP_OR_FAIL(auto table, MakeCachedTable(io));
   EXPECT_FALSE(table->ManifestCacheEnabled());
-  EXPECT_EQ(table->manifest_io(), table->io());
-  ASSERT_THAT(ReadCached(*table->manifest_io(), "manifest.avro"), IsOk());
-  ASSERT_THAT(ReadCached(*table->manifest_io(), "manifest.avro"), IsOk());
+  EXPECT_EQ(internal::ManifestIO(*table), table->io());
+  ASSERT_THAT(ReadCached(*internal::ManifestIO(*table), "manifest.avro"), IsOk());
+  ASSERT_THAT(ReadCached(*internal::ManifestIO(*table), "manifest.avro"), IsOk());
   EXPECT_EQ(io.open_count, 2);
 }
 
@@ -527,10 +544,10 @@ TEST(MetadataCacheTest, TablesSharingStorageHaveIndependentCachesAndLimits) {
       auto second,
       MakeCachedTable(io, {{std::string(ContentCacheOptions::kEnabled), "true"},
                            {std::string(ContentCacheOptions::kMaxTotalBytes), "4"}}));
-  ASSERT_THAT(ReadCached(*first->manifest_io(), "manifest.avro"), IsOk());
-  ASSERT_THAT(ReadCached(*second->manifest_io(), "manifest.avro"), IsOk());
-  ASSERT_THAT(ReadCached(*first->manifest_io(), "manifest.avro"), IsOk());
-  ASSERT_THAT(ReadCached(*second->manifest_io(), "manifest.avro"), IsOk());
+  ASSERT_THAT(ReadCached(*internal::ManifestIO(*first), "manifest.avro"), IsOk());
+  ASSERT_THAT(ReadCached(*internal::ManifestIO(*second), "manifest.avro"), IsOk());
+  ASSERT_THAT(ReadCached(*internal::ManifestIO(*first), "manifest.avro"), IsOk());
+  ASSERT_THAT(ReadCached(*internal::ManifestIO(*second), "manifest.avro"), IsOk());
   EXPECT_EQ(io.open_count, 3);
   // Ordinary FileIO input remains independent of either table's cache.
   ASSERT_THAT(ReadCached(io, "manifest.avro"), IsOk());
@@ -543,15 +560,15 @@ TEST(MetadataCacheTest, CompatibleRefreshPreservesCachedContent) {
   std::unordered_map<std::string, std::string> props = {
       {std::string(ContentCacheOptions::kEnabled), "true"}};
   ICEBERG_UNWRAP_OR_FAIL(auto table, MakeCachedTable(io, props));
-  ASSERT_THAT(ReadCached(*table->manifest_io(), "manifest.avro"), IsOk());
+  ASSERT_THAT(ReadCached(*internal::ManifestIO(*table), "manifest.avro"), IsOk());
   ICEBERG_UNWRAP_OR_FAIL(auto refreshed, MakeCachedTable(io, props, "metadata-2.json"));
   auto catalog = std::dynamic_pointer_cast<MockCatalog>(table->catalog());
   EXPECT_CALL(*catalog, LoadTable(::testing::_)).WillOnce(::testing::Return(refreshed));
   ASSERT_THAT(table->Refresh(), IsOk());
-  ASSERT_THAT(ReadCached(*table->manifest_io(), "manifest.avro"), IsOk());
+  ASSERT_THAT(ReadCached(*internal::ManifestIO(*table), "manifest.avro"), IsOk());
   EXPECT_EQ(io.open_count, 1);
   table->ClearManifestCache();
-  ASSERT_THAT(ReadCached(*table->manifest_io(), "manifest.avro"), IsOk());
+  ASSERT_THAT(ReadCached(*internal::ManifestIO(*table), "manifest.avro"), IsOk());
   EXPECT_EQ(io.open_count, 2);
 }
 
@@ -561,14 +578,14 @@ TEST(MetadataCacheTest, RefreshWithChangedLimitsReplacesCache) {
   std::unordered_map<std::string, std::string> props = {
       {std::string(ContentCacheOptions::kEnabled), "true"}};
   ICEBERG_UNWRAP_OR_FAIL(auto table, MakeCachedTable(io, props));
-  ASSERT_THAT(ReadCached(*table->manifest_io(), "manifest.avro"), IsOk());
+  ASSERT_THAT(ReadCached(*internal::ManifestIO(*table), "manifest.avro"), IsOk());
   props[std::string(ContentCacheOptions::kMaxTotalBytes)] = "4";
   ICEBERG_UNWRAP_OR_FAIL(auto refreshed, MakeCachedTable(io, props, "metadata-2.json"));
   auto catalog = std::dynamic_pointer_cast<MockCatalog>(table->catalog());
   EXPECT_CALL(*catalog, LoadTable(::testing::_)).WillOnce(::testing::Return(refreshed));
   ASSERT_THAT(table->Refresh(), IsOk());
-  ASSERT_THAT(ReadCached(*table->manifest_io(), "manifest.avro"), IsOk());
-  ASSERT_THAT(ReadCached(*table->manifest_io(), "manifest.avro"), IsOk());
+  ASSERT_THAT(ReadCached(*internal::ManifestIO(*table), "manifest.avro"), IsOk());
+  ASSERT_THAT(ReadCached(*internal::ManifestIO(*table), "manifest.avro"), IsOk());
   EXPECT_EQ(io.open_count, 3);
 }
 
@@ -580,29 +597,28 @@ TEST(MetadataCacheTest, RefreshWithDifferentStorageDiscardsCachedBytes) {
   std::unordered_map<std::string, std::string> props = {
       {std::string(ContentCacheOptions::kEnabled), "true"}};
   ICEBERG_UNWRAP_OR_FAIL(auto table, MakeCachedTable(first_io, props));
-  ASSERT_THAT(ReadCached(*table->manifest_io(), "manifest.avro"),
+  ASSERT_THAT(ReadCached(*internal::ManifestIO(*table), "manifest.avro"),
               HasValue(::testing::Eq("first")));
   ICEBERG_UNWRAP_OR_FAIL(auto refreshed,
                          MakeCachedTable(second_io, props, "metadata-2.json"));
   auto catalog = std::dynamic_pointer_cast<MockCatalog>(table->catalog());
   EXPECT_CALL(*catalog, LoadTable(::testing::_)).WillOnce(::testing::Return(refreshed));
   ASSERT_THAT(table->Refresh(), IsOk());
-  EXPECT_THAT(ReadCached(*table->manifest_io(), "manifest.avro"),
+  EXPECT_THAT(ReadCached(*internal::ManifestIO(*table), "manifest.avro"),
               HasValue(::testing::Eq("second")));
 }
 
-TEST(MetadataCacheTest, RejectsInvalidCacheLimitsAtTableCreation) {
+TEST(MetadataCacheTest, InvalidCacheLimitsFallBackToStorage) {
   for (const auto key :
        {ContentCacheOptions::kMaxTotalBytes, ContentCacheOptions::kMaxContentLength}) {
     for (const auto value : {"0", "-1", "9223372036854775808", "invalid"}) {
       CountingMockFileIO io;
-      EXPECT_THAT(
+      ICEBERG_UNWRAP_OR_FAIL(
+          auto table,
           MakeCachedTable(io, {{std::string(ContentCacheOptions::kEnabled), "true"},
-                               {std::string(key), value}}),
-          IsError(ErrorKind::kInvalidArgument));
-      EXPECT_THAT(
-          MakeCachedTable(io, {{std::string(ContentCacheOptions::kEnabled), "true"}}),
-          IsOk());
+                               {std::string(key), value}}));
+      EXPECT_FALSE(table->ManifestCacheEnabled());
+      EXPECT_EQ(internal::ManifestIO(*table), table->io());
     }
   }
 }
@@ -615,9 +631,9 @@ TEST(MetadataCacheTest, EmptyFilesAreNotRetained) {
                            {std::string(ContentCacheOptions::kMaxTotalBytes), "1"}}));
   for (int i = 0; i < 100; ++i) {
     io.AddFile(std::to_string(i), "");
-    ASSERT_THAT(ReadCached(*table->manifest_io(), std::to_string(i)), IsOk());
+    ASSERT_THAT(ReadCached(*internal::ManifestIO(*table), std::to_string(i)), IsOk());
   }
-  ASSERT_THAT(ReadCached(*table->manifest_io(), "0"), IsOk());
+  ASSERT_THAT(ReadCached(*internal::ManifestIO(*table), "0"), IsOk());
   EXPECT_EQ(io.open_count, 101);
 }
 
@@ -639,17 +655,15 @@ class UnavailableNormalizingFileIO : public NormalizingMockFileIO {
   }
 };
 
-TEST(MetadataCacheTest, NormalizedAliasHitDoesNotResolveStorage) {
+TEST(MetadataCacheTest, CanonicalLocationHitDoesNotResolveStorage) {
   UnavailableNormalizingFileIO io;
   io.AddFile("manifest.avro", "manifest");
   ICEBERG_UNWRAP_OR_FAIL(
       auto table,
       MakeCachedTable(io, {{std::string(ContentCacheOptions::kEnabled), "true"}}));
-  ASSERT_THAT(ReadCached(*table->manifest_io(), "alias://manifest.avro"), IsOk());
+  ASSERT_THAT(ReadCached(*internal::ManifestIO(*table), "alias://manifest.avro"), IsOk());
   io.unavailable = true;
-  EXPECT_THAT(ReadCached(*table->manifest_io(), "alias://manifest.avro"),
-              HasValue(::testing::Eq("manifest")));
-  EXPECT_THAT(ReadCached(*table->manifest_io(), "manifest.avro"),
+  EXPECT_THAT(ReadCached(*internal::ManifestIO(*table), "manifest.avro"),
               HasValue(::testing::Eq("manifest")));
   EXPECT_EQ(io.open_count, 1);
 }
@@ -660,9 +674,9 @@ TEST(MetadataCacheTest, HitDoesNotResolveStorage) {
   ICEBERG_UNWRAP_OR_FAIL(
       auto table,
       MakeCachedTable(io, {{std::string(ContentCacheOptions::kEnabled), "true"}}));
-  ASSERT_THAT(ReadCached(*table->manifest_io(), "manifest.avro"), IsOk());
+  ASSERT_THAT(ReadCached(*internal::ManifestIO(*table), "manifest.avro"), IsOk());
   io.unavailable = true;
-  EXPECT_THAT(ReadCached(*table->manifest_io(), "manifest.avro"),
+  EXPECT_THAT(ReadCached(*internal::ManifestIO(*table), "manifest.avro"),
               HasValue(::testing::Eq("manifest")));
 }
 

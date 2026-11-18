@@ -105,7 +105,7 @@ TEST_F(TransactionTest, CommitPreservesTableManifestContentCache) {
 
   const auto manifest_path = table_location_ + "/metadata/cached-manifest.avro";
   ASSERT_THAT(file_io_->WriteFile(manifest_path, "manifest bytes"), IsOk());
-  ASSERT_THAT(table_->manifest_io()->ReadFile(manifest_path, std::nullopt),
+  ASSERT_THAT(internal::ManifestIO(*table_)->ReadFile(manifest_path, std::nullopt),
               HasValue(::testing::Eq("manifest bytes")));
 
   ICEBERG_UNWRAP_OR_FAIL(auto txn, table_->NewTransaction());
@@ -114,7 +114,7 @@ TEST_F(TransactionTest, CommitPreservesTableManifestContentCache) {
   ASSERT_THAT(update->Commit(), IsOk());
   ICEBERG_UNWRAP_OR_FAIL(auto committed, txn->Commit());
   ASSERT_THAT(file_io_->DeleteFile(manifest_path), IsOk());
-  EXPECT_THAT(committed->manifest_io()->ReadFile(manifest_path, std::nullopt),
+  EXPECT_THAT(internal::ManifestIO(*committed)->ReadFile(manifest_path, std::nullopt),
               HasValue(::testing::Eq("manifest bytes")));
 }
 

@@ -104,6 +104,10 @@ class SizeFailureFileSystem : public ::arrow::fs::LocalFileSystem {
   using ::arrow::fs::LocalFileSystem::OpenInputFile;
   explicit SizeFailureFileSystem(bool fail_close)
       : input(std::make_shared<SizeFailureArrowFile>(fail_close)) {}
+  using ::arrow::fs::LocalFileSystem::GetFileInfo;
+  ::arrow::Result<::arrow::fs::FileInfo> GetFileInfo(const std::string& path) override {
+    return ::arrow::fs::FileInfo(path, ::arrow::fs::FileType::File);
+  }
   ::arrow::Result<std::shared_ptr<::arrow::io::RandomAccessFile>> OpenInputFile(
       const ::arrow::fs::FileInfo&) override {
     return input;
@@ -421,7 +425,7 @@ class LocalFileIOTest : public TempFileTestBase {
 TEST_F(LocalFileIOTest, ReadWriteFile) {
   auto read_res = file_io_->ReadFile(temp_filepath_, std::nullopt);
   EXPECT_THAT(read_res, IsError(ErrorKind::kIOError));
-  EXPECT_THAT(read_res, HasErrorMessage("Failed to open local file"));
+  EXPECT_THAT(read_res, HasErrorMessage("File does not exist"));
 
   auto write_res = file_io_->WriteFile(temp_filepath_, "hello world");
   EXPECT_THAT(write_res, IsOk());
@@ -431,20 +435,18 @@ TEST_F(LocalFileIOTest, ReadWriteFile) {
   EXPECT_THAT(read_res, HasValue(::testing::Eq("hello world")));
 }
 
-TEST_F(LocalFileIOTest, SizeReleasesTemporaryArrowFile) {
+TEST_F(LocalFileIOTest, SizeUsesFileInfoWithoutOpeningStream) {
   auto fs = std::make_shared<TrackingLocalFileSystem>();
   auto file_io = std::make_shared<arrow::ArrowFileSystemFileIO>(fs);
   ASSERT_THAT(file_io->WriteFile(temp_filepath_, "hello"), IsOk());
   ICEBERG_UNWRAP_OR_FAIL(auto input_file, file_io->NewInputFile(temp_filepath_));
 
   EXPECT_THAT(input_file->Size(), HasValue(::testing::Eq(5)));
-  ASSERT_EQ(fs->opened_inputs.size(), 1);
-  EXPECT_TRUE(fs->opened_inputs.front()->closed());
-
+  EXPECT_TRUE(fs->opened_inputs.empty());
   EXPECT_THAT(input_file->Size(), HasValue(::testing::Eq(5)));
-  EXPECT_EQ(fs->opened_inputs.size(), 1);
+  EXPECT_TRUE(fs->opened_inputs.empty());
   ICEBERG_UNWRAP_OR_FAIL(auto stream, input_file->Open());
-  ASSERT_EQ(fs->opened_inputs.size(), 2);
+  ASSERT_EQ(fs->opened_inputs.size(), 1);
   EXPECT_FALSE(fs->opened_inputs.back()->closed());
   std::array<std::byte, 5> data;
   ASSERT_THAT(stream->ReadFully(0, data), IsOk());
@@ -454,24 +456,23 @@ TEST_F(LocalFileIOTest, SizeReleasesTemporaryArrowFile) {
   EXPECT_TRUE(fs->opened_inputs.back()->closed());
 }
 
-TEST_F(LocalFileIOTest, CachedInputCreationReleasesTemporaryArrowFile) {
+TEST_F(LocalFileIOTest, CachedInputCreationUsesFileInfoWithoutOpeningStream) {
   auto fs = std::make_shared<TrackingLocalFileSystem>();
   auto file_io = std::make_shared<arrow::ArrowFileSystemFileIO>(fs);
   ASSERT_THAT(file_io->WriteFile(temp_filepath_, "hello"), IsOk());
+  auto metadata = std::make_shared<TableMetadata>();
+  metadata->properties = TableProperties::FromMap(
+      {{std::string(internal::ContentCacheOptions::kEnabled), "true"}});
   ICEBERG_UNWRAP_OR_FAIL(
-      auto table,
-      Table::Make({.ns = {}, .name = "test"}, std::make_shared<TableMetadata>(),
-                  "metadata.json", file_io, std::make_shared<MockCatalog>(), "", nullptr,
-                  nullptr,
-                  {{std::string(internal::ContentCacheOptions::kEnabled), "true"}}));
+      auto table, Table::Make({.ns = {}, .name = "test"}, std::move(metadata),
+                              "metadata.json", file_io, std::make_shared<MockCatalog>()));
 
   ICEBERG_UNWRAP_OR_FAIL(auto input_file,
-                         table->manifest_io()->NewInputFile(temp_filepath_));
-  ASSERT_EQ(fs->opened_inputs.size(), 1);
-  EXPECT_TRUE(fs->opened_inputs.front()->closed());
+                         internal::ManifestIO(*table)->NewInputFile(temp_filepath_));
+  EXPECT_TRUE(fs->opened_inputs.empty());
   // Opening loads the content into the cache and closes the underlying file.
   ICEBERG_UNWRAP_OR_FAIL(auto stream, input_file->Open());
-  ASSERT_EQ(fs->opened_inputs.size(), 2);
+  ASSERT_EQ(fs->opened_inputs.size(), 1);
   EXPECT_TRUE(fs->opened_inputs.back()->closed());
   ASSERT_THAT(stream->Close(), IsOk());
 }
@@ -564,26 +565,6 @@ TEST(ArrowFileIOTest, OutputStoredLengthAfterClose) {
   ASSERT_FALSE(position.has_value());
   EXPECT_THAT(position.error().message, ::testing::HasSubstr("closed"));
   EXPECT_THAT(output->StoredLength(), HasValue(::testing::Eq(3)));
-}
-
-TEST(ArrowFileIOTest, OversizedCachedInputRetainsNativeArrowStream) {
-  std::shared_ptr<FileIO> file_io = arrow::ArrowFileSystemFileIO::MakeMockFileIO();
-  ASSERT_THAT(file_io->WriteFile("input", "manifest"), IsOk());
-
-  ICEBERG_UNWRAP_OR_FAIL(auto uncached, arrow::OpenArrowInputStream(file_io, "input"));
-  ICEBERG_UNWRAP_OR_FAIL(
-      auto table,
-      Table::Make(
-          {.ns = {}, .name = "test"}, std::make_shared<TableMetadata>(), "metadata.json",
-          file_io, std::make_shared<MockCatalog>(), "", nullptr, nullptr,
-          {{std::string(internal::ContentCacheOptions::kEnabled), "true"},
-           {std::string(internal::ContentCacheOptions::kMaxContentLength), "4"}}));
-  ICEBERG_UNWRAP_OR_FAIL(auto oversized,
-                         arrow::OpenArrowInputStream(table->manifest_io(), "input"));
-
-  const auto& oversized_stream = *oversized;
-  const auto& uncached_stream = *uncached;
-  EXPECT_TRUE(typeid(oversized_stream) == typeid(uncached_stream));
 }
 
 TEST_F(LocalFileIOTest, ResolvesForeignSchemeToUnderlyingPath) {

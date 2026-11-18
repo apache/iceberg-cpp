@@ -650,7 +650,7 @@ void Transaction::FinalizeUpdates(const TableMetadata& committed) noexcept {
     }
     ICEBERG_ASSIGN_OR_RAISE(
         committed_files,
-        CommittedTransactionFiles(committed, ctx_->table->manifest_io(),
+        CommittedTransactionFiles(committed, internal::ManifestIO(*ctx_->table),
                                   std::move(snapshot_ids), std::move(content_paths)));
     return {};
   });

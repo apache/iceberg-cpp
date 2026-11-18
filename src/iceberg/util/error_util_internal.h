@@ -21,10 +21,24 @@
 
 #include <exception>
 #include <string_view>
+#include <utility>
 
 #include "iceberg/logging/log_macros.h"
+#include "iceberg/result.h"
 
 namespace iceberg::internal {
+
+inline Status FinishWithCloseStatus(Status operation_status, Status close_status) {
+  if (operation_status.has_value()) {
+    return close_status;
+  }
+  auto error = std::move(operation_status).error();
+  if (!close_status.has_value()) {
+    error.message += "; additionally failed to close stream: ";
+    error.message += close_status.error().message;
+  }
+  return unexpected<Error>(std::move(error));
+}
 
 template <typename Action>
 void LogAndIgnoreFailure(std::string_view name, Action&& action) noexcept {
