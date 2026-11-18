@@ -203,6 +203,7 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
   /// Build snapshot state for the transaction's current metadata.
   virtual Result<ApplyResult> Apply();
   Status Finalize(const TableMetadata& committed) override;
+  Status PrepareForReplay() override;
   Status CleanStaged() override;
 
   struct ContentFileWithSequenceNumber {

@@ -95,6 +95,7 @@ class ICEBERG_EXPORT PendingUpdate : public ErrorCollector,
   virtual Status CleanStaged() { return {}; }
 
   /// \brief Prepare retry-safe state after the transaction metadata is refreshed.
+  /// Do not delete staged files that later updates may still reference.
   virtual Status PrepareForReplay() { return {}; }
 
   /// \brief Complete a known successful commit. Called only by Transaction with the

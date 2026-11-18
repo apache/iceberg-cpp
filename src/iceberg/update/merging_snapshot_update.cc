@@ -920,6 +920,7 @@ Result<std::vector<ManifestFile>> MergingSnapshotUpdate::WriteNewDeleteManifests
 }
 
 Status MergingSnapshotUpdate::PrepareForReplay() {
+  ICEBERG_RETURN_UNEXPECTED(SnapshotUpdate::PrepareForReplay());
   // The same path can inherit new sequence numbers and row IDs on replay.
   // Drop derived caches, but keep their files staged for terminal cleanup.
   return CleanUncommittedManagers({});

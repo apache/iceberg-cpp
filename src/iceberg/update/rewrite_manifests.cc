@@ -199,6 +199,7 @@ RewriteManifests& RewriteManifests::AddManifest(const ManifestFile& manifest) {
 std::string RewriteManifests::operation() { return DataOperation::kReplace; }
 
 Status RewriteManifests::PrepareForReplay() {
+  ICEBERG_RETURN_UNEXPECTED(SnapshotUpdate::PrepareForReplay());
   // Rebuild against the latest manifest list on every replay.
   return CleanUncommitted({});
 }

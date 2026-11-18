@@ -398,6 +398,11 @@ Result<SnapshotUpdate::ApplyResult> SnapshotUpdate::Apply() {
                      .stage_only = stage_only_};
 }
 
+Status SnapshotUpdate::PrepareForReplay() {
+  staged_snapshot_.reset();
+  return {};
+}
+
 Status SnapshotUpdate::CleanUncommittedFiles(
     const std::unordered_set<std::string>& committed) {
   // All retained snapshots share this set. A later update may reuse our output.
@@ -407,15 +412,10 @@ Status SnapshotUpdate::CleanUncommittedFiles(
   std::vector<std::string> unused;
   {
     std::lock_guard lock(staging_mutex_);
-    for (const auto& path : staged_files_) {
-      if (!committed.contains(path)) {
-        unused.push_back(path);
-      }
-    }
-    for (const auto& path : committed) {
-      staged_files_.erase(path);
-      staged_content_files_.erase(path);
-    }
+    auto is_committed = [&](const auto& path) { return committed.contains(path); };
+    std::erase_if(staged_files_, is_committed);
+    std::erase_if(staged_content_files_, is_committed);
+    unused.assign(staged_files_.begin(), staged_files_.end());
   }
   for (const auto& path : unused) {
     std::ignore = DeleteStagedFile(path);
@@ -504,6 +504,8 @@ void SnapshotUpdate::RegisterStagedFile(const std::string& path) {
 
 void SnapshotUpdate::RegisterStagedContentFile(const std::string& path) {
   std::lock_guard lock(staging_mutex_);
+  // Content files also belong to the common cleanup registry. They are
+  // added separately to check live references later.
   staged_files_.insert(path);
   staged_content_files_.insert(path);
 }
