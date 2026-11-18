@@ -200,7 +200,8 @@ std::string RewriteManifests::operation() { return DataOperation::kReplace; }
 
 Status RewriteManifests::PrepareForReplay() {
   ICEBERG_RETURN_UNEXPECTED(SnapshotUpdate::PrepareForReplay());
-  // Rebuild against the latest manifest list on every replay.
+  // Clear cached rewrite state to rebuild against the latest manifest list.
+  // Generated files remain staged for terminal cleanup.
   return CleanUncommitted({});
 }
 
