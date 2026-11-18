@@ -118,10 +118,14 @@ Result<std::shared_ptr<TransactionContext>> TransactionContext::Make(
     ctx->metadata_builder = TableMetadataBuilder::BuildFromEmpty();
     std::ignore = ctx->metadata_builder->ApplyChangesForCreate(*ctx->table->metadata());
   } else {
-    ctx->base_metadata = ctx->table->metadata();
-    ctx->metadata_builder = TableMetadataBuilder::BuildFrom(ctx->base_metadata.get());
+    ctx->ResetMetadataBuilder(ctx->table->metadata());
   }
   return ctx;
+}
+
+void TransactionContext::ResetMetadataBuilder(std::shared_ptr<TableMetadata> base) {
+  metadata_builder = TableMetadataBuilder::BuildFrom(base.get());
+  base_metadata = std::move(base);
 }
 
 const TableMetadata* TransactionContext::base() const { return metadata_builder->base(); }
@@ -555,9 +559,7 @@ Result<std::shared_ptr<Table>> Transaction::CommitOnce(bool is_first_attempt) {
       ICEBERG_CHECK(CanRetry(),
                     "Cannot rebase a transaction containing a non-retryable update");
       CleanupUpdates();
-      auto base_metadata = ctx_->table->metadata();
-      ctx_->metadata_builder = TableMetadataBuilder::BuildFrom(base_metadata.get());
-      ctx_->base_metadata = std::move(base_metadata);
+      ctx_->ResetMetadataBuilder(ctx_->table->metadata());
       auto applied = ReplayUpdates();
       if (!applied) {
         return ValidationFailed("Transaction replay failed: {}", applied.error().message);

@@ -219,6 +219,8 @@ class ICEBERG_EXPORT TransactionContext {
   static Result<std::shared_ptr<TransactionContext>> Make(std::shared_ptr<Table> table,
                                                           TransactionKind kind);
 
+  void ResetMetadataBuilder(std::shared_ptr<TableMetadata> base);
+
   const TableMetadata* base() const;
   const TableMetadata& current() const;
   std::string MetadataFileLocation(std::string_view filename) const;
