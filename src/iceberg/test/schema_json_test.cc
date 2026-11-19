@@ -78,7 +78,7 @@ INSTANTIATE_TEST_SUITE_P(
         SchemaJsonParam{.json = "\"geography(srid:4326, karney)\"",
                         .type = iceberg::geography("srid:4326", EdgeAlgorithm::kKarney)},
         SchemaJsonParam{.json = "\"fixed[8]\"", .type = iceberg::fixed(8)},
-        SchemaJsonParam{.json = "\"decimal(10,2)\"", .type = iceberg::decimal(10, 2)},
+        SchemaJsonParam{.json = "\"decimal(10, 2)\"", .type = iceberg::decimal(10, 2)},
         SchemaJsonParam{.json = "\"date\"", .type = iceberg::date()},
         SchemaJsonParam{.json = "\"time\"", .type = iceberg::time()},
         SchemaJsonParam{.json = "\"timestamp\"", .type = iceberg::timestamp()},
@@ -121,6 +121,15 @@ TEST(TypeJsonTest, FromJsonWithSpaces) {
   ASSERT_NE(decimal, nullptr);
   ASSERT_EQ(decimal->precision(), 10);
   ASSERT_EQ(decimal->scale(), 2);
+}
+
+TEST(TypeJsonTest, DecimalWithoutSpaceWritesCanonicalForm) {
+  // Older writers omit the space; the spec's canonical form has it.
+  ICEBERG_UNWRAP_OR_FAIL(auto type,
+                         TypeFromJson(nlohmann::json::parse("\"decimal(10,2)\"")));
+  ASSERT_EQ(*type, *iceberg::decimal(10, 2));
+  ICEBERG_UNWRAP_OR_FAIL(auto json, ToJson(*type));
+  ASSERT_EQ(json, "decimal(10, 2)");
 }
 
 TEST(TypeJsonTest, FromJsonV3TypesWithSpacesAndCase) {

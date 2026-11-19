@@ -663,7 +663,7 @@ Result<nlohmann::json> ToJson(const Type& type) {
       return "double";
     case TypeId::kDecimal: {
       const auto& decimal_type = internal::checked_cast<const DecimalType&>(type);
-      return std::format("decimal({},{})", decimal_type.precision(),
+      return std::format("decimal({}, {})", decimal_type.precision(),
                          decimal_type.scale());
     }
     case TypeId::kDate:
