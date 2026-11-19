@@ -179,7 +179,7 @@ class AvroReaderTest : public TempFileTestBase {
         ::arrow::json::ArrayFromJSONString(::arrow::struct_(arrow_schema->fields()),
                                            R"([[1, null, null],
                                               [2, 777, 8],
-                                              [3, null, null]])")
+                                              [3, 778, null]])")
             .ValueOrDie();
 
     struct ArrowArray arrow_array;
@@ -953,7 +953,8 @@ TEST_P(AvroReaderParameterizedTest, ReadPartialLineage) {
   ICEBERG_UNWRAP_OR_FAIL(auto reader_with_sequence,
                          OpenRowLineageReader(schema, std::nullopt, 7L));
 
-  VerifyNextBatch(*reader_with_sequence, R"([[1, null, 7], [2, null, 7], [3, null, 7]])");
+  VerifyNextBatch(*reader_with_sequence,
+                  R"([[1, null, null], [2, null, null], [3, null, null]])");
 }
 
 TEST_P(AvroReaderParameterizedTest, ReadPhysicalLineage) {
@@ -963,7 +964,16 @@ TEST_P(AvroReaderParameterizedTest, ReadPhysicalLineage) {
   auto schema = RowLineageSchema();
   ICEBERG_UNWRAP_OR_FAIL(auto reader, OpenRowLineageReader(schema, 100L));
 
-  VerifyNextBatch(*reader, R"([[1, 100, null], [2, 777, 8], [3, 102, null]])");
+  VerifyNextBatch(*reader, R"([[1, 100, null], [2, 777, 8], [3, 778, null]])");
+
+  ICEBERG_UNWRAP_OR_FAIL(auto reader_with_sequence,
+                         OpenRowLineageReader(schema, 100L, 7L));
+  VerifyNextBatch(*reader_with_sequence, R"([[1, 100, 7], [2, 777, 8], [3, 778, 7]])");
+
+  ICEBERG_UNWRAP_OR_FAIL(auto reader_without_row_id,
+                         OpenRowLineageReader(schema, std::nullopt, 7L));
+  VerifyNextBatch(*reader_without_row_id,
+                  R"([[1, null, null], [2, null, null], [3, null, null]])");
 }
 
 TEST_P(AvroReaderParameterizedTest, SplitWithRowPositionNotSupported) {
