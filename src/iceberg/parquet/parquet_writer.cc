@@ -362,6 +362,8 @@ class ParquetWriter::Impl {
   std::unordered_map<int32_t, FieldMetrics> field_metrics_;
 };
 
+ParquetWriter::ParquetWriter() noexcept = default;
+
 ParquetWriter::~ParquetWriter() = default;
 
 Status ParquetWriter::Open(const WriterOptions& options) {

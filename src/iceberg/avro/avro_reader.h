@@ -30,7 +30,7 @@ namespace iceberg::avro {
 /// \brief A reader that reads ArrowArray from Avro files.
 class ICEBERG_BUNDLE_EXPORT AvroReader : public Reader {
  public:
-  AvroReader() = default;
+  AvroReader() noexcept;
 
   ~AvroReader() override;
 

@@ -506,6 +506,8 @@ class AvroReader::Impl {
   std::unique_ptr<ReadContext> context_;
 };
 
+AvroReader::AvroReader() noexcept = default;
+
 AvroReader::~AvroReader() = default;
 
 Result<std::optional<ArrowArray>> AvroReader::Next() { return impl_->Next(); }
