@@ -628,6 +628,7 @@ void Transaction::CleanupUpdates() noexcept {
 void Transaction::FinalizeUpdates(const TableMetadata& committed) noexcept {
   std::optional<std::unordered_set<std::string>> committed_files;
   internal::LogAndIgnoreFailure("Transaction file discovery", [&]() -> Status {
+    // TODO(gangwu): Clean staging for snapshots added and expired in one transaction.
     std::unordered_set<int64_t> snapshot_ids;
     for (const auto& change : ctx_->metadata_builder->changes()) {
       if (change->kind() == TableUpdate::Kind::kAddSnapshot) {
@@ -651,9 +652,9 @@ void Transaction::FinalizeUpdates(const TableMetadata& committed) noexcept {
                                   std::move(content_paths)));
     return {};
   });
+  // Skip staging cleanup on discovery failure to protect committed files.
   for (const auto& update : pending_updates_) {
     if (update->kind() == PendingUpdate::Kind::kUpdateSnapshot && committed_files) {
-      // Failed discovery must never turn into an empty keep-set.
       internal::LogAndIgnoreFailure("Snapshot cleanup", [&] {
         return internal::checked_cast<SnapshotUpdate&>(*update).CleanUncommittedFiles(
             *committed_files);
