@@ -74,7 +74,8 @@ class ICEBERG_EXPORT Schema : public StructType {
   /// \param schema_id The unique identifier for this schema (default:kInitialSchemaId).
   /// \param identifier_field_ids Field IDs that uniquely identify rows in the table.
   /// \param get_id Function mapping each original field ID to its reassigned ID.
-  /// \return A new Schema instance or Status if failed.
+  /// \return A new Schema instance, or an error if a field of type unknown is
+  /// required, a map key is of type unknown, or an identifier field is invalid.
   static Result<std::unique_ptr<Schema>> Make(std::vector<SchemaField> fields,
                                               int32_t schema_id,
                                               std::vector<int32_t> identifier_field_ids,
@@ -87,7 +88,8 @@ class ICEBERG_EXPORT Schema : public StructType {
   /// \param identifier_field_names Canonical names of fields that uniquely identify rows
   /// in the table.
   /// \param get_id Function mapping each original field ID to its reassigned ID.
-  /// \return A new Schema instance or Status if failed.
+  /// \return A new Schema instance, or an error if a field of type unknown is
+  /// required, a map key is of type unknown, or an identifier field is invalid.
   static Result<std::unique_ptr<Schema>> Make(
       std::vector<SchemaField> fields, int32_t schema_id,
       const std::vector<std::string>& identifier_field_names, GetId get_id = {});
