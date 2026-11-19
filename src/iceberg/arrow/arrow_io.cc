@@ -22,6 +22,7 @@
 #include <limits>
 #include <mutex>
 #include <optional>
+#include <utility>
 #include <vector>
 
 #include <arrow/buffer.h>
@@ -426,9 +427,30 @@ class ArrowInputFile : public InputFile {
     if (file_size_.has_value()) {
       return *file_size_;
     }
-    ::arrow::fs::FileInfo file_info(path_, ::arrow::fs::FileType::File);
-    ICEBERG_ARROW_ASSIGN_OR_RETURN(auto input, fs_->OpenInputFile(file_info));
-    ICEBERG_ARROW_ASSIGN_OR_RETURN(auto size, input->GetSize());
+    ICEBERG_ARROW_ASSIGN_OR_RETURN(auto info, fs_->GetFileInfo(path_));
+    if (info.type() == ::arrow::fs::FileType::NotFound) {
+      return IOError("File does not exist: {}", location_);
+    }
+    if (info.type() != ::arrow::fs::FileType::File) {
+      return IOError("Not a regular file: {}", location_);
+    }
+    if (info.size() != ::arrow::fs::kNoSize) {
+      file_size_ = info.size();
+      return *file_size_;
+    }
+    // Some filesystems report a file without a size.
+    ICEBERG_ARROW_ASSIGN_OR_RETURN(auto input, fs_->OpenInputFile(info));
+    auto size_result = input->GetSize();
+    auto close_status = input->Close();
+    if (!size_result.ok() && !close_status.ok()) {
+      auto status = size_result.status().WithMessage(
+          size_result.status().message(),
+          "; additionally failed to close file: ", close_status.ToString());
+      ICEBERG_ARROW_RETURN_NOT_OK(status);
+    }
+    ICEBERG_ARROW_ASSIGN_OR_RETURN(auto size, std::move(size_result));
+    ICEBERG_ARROW_RETURN_NOT_OK(close_status);
+    file_size_ = size;
     return size;
   }
 
@@ -445,7 +467,9 @@ class ArrowInputFile : public InputFile {
   std::shared_ptr<::arrow::fs::FileSystem> fs_;
   std::string location_;
   std::string path_;
-  std::optional<int64_t> file_size_;
+  // Set by Size() so a later Open() can skip the size lookup. Not synchronized: like
+  // other InputFile handles, this one is not shared across threads.
+  mutable std::optional<int64_t> file_size_;
 };
 
 class ArrowOutputFile : public OutputFile {

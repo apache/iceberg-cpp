@@ -65,10 +65,11 @@ Result<std::unique_ptr<ManifestReader>> MakeManifestReader(
 /// \brief Abstract strategy for cleaning up files after snapshot expiration.
 class FileCleanupStrategy {
  public:
-  FileCleanupStrategy(std::shared_ptr<FileIO> file_io,
+  FileCleanupStrategy(const Table& table,
                       std::function<void(const std::string&)> delete_func,
                       OptionalExecutor delete_executor, OptionalExecutor plan_executor)
-      : file_io_(std::move(file_io)),
+      : table_(table),
+        file_io_(table.io()),
         delete_func_(std::move(delete_func)),
         delete_executor_(std::move(delete_executor)),
         plan_executor_(std::move(plan_executor)) {}
@@ -104,7 +105,8 @@ class FileCleanupStrategy {
   }
 
   /// \brief Best-effort delete with bounded retry.
-  void DeleteFiles(const std::unordered_set<std::string>& paths) {
+  void DeleteFiles(const std::unordered_set<std::string>& paths,
+                   bool invalidate_manifest_cache = false) {
     if (paths.empty()) {
       return;
     }
@@ -119,9 +121,17 @@ class FileCleanupStrategy {
       if (auto status = std::move(group).Run(); !status) {
         ICEBERG_LOG_WARN("Expiration deletion failed: {}", status.error().message);
       }
-      return;
+    } else {
+      DeleteWithCallback(paths);
     }
+    if (invalidate_manifest_cache) {
+      for (const auto& path : paths) {
+        internal::InvalidateManifestCache(table_, path);
+      }
+    }
+  }
 
+  void DeleteWithCallback(const std::unordered_set<std::string>& paths) {
     TaskGroup<retry::StopRetryOn<ErrorKind::kNotFound>> group(kDeleteRetryConfig);
     group.SetExecutor(delete_executor_);
     for (const auto& path : paths) {
@@ -178,6 +188,7 @@ class FileCleanupStrategy {
     return stats_files_to_delete;
   }
 
+  const Table& table_;
   std::shared_ptr<FileIO> file_io_;
   std::function<void(const std::string&)> delete_func_;
   OptionalExecutor delete_executor_;
@@ -248,12 +259,13 @@ class ReachableFileCleanup : public FileCleanupStrategy {
         }
 
         // Deleting manifest files
-        DeleteFiles(ManifestPaths(manifests_to_delete));
+        DeleteFiles(ManifestPaths(manifests_to_delete),
+                    /*invalidate_manifest_cache=*/true);
       }
     }
 
     // Deleting manifest-list files
-    DeleteFiles(manifest_lists_to_delete);
+    DeleteFiles(manifest_lists_to_delete, /*invalidate_manifest_cache=*/true);
 
     // Deleting statistics files
     if (HasAnyStatisticsFiles(metadata_before_expiration)) {
@@ -593,10 +605,10 @@ class IncrementalFileCleanup : public FileCleanupStrategy {
     }
 
     // Deleting manifest files
-    DeleteFiles(manifests_to_delete);
+    DeleteFiles(manifests_to_delete, /*invalidate_manifest_cache=*/true);
 
     // Deleting manifest-list files
-    DeleteFiles(manifest_lists_to_delete);
+    DeleteFiles(manifest_lists_to_delete, /*invalidate_manifest_cache=*/true);
 
     // Deleting statistics files
     if (HasAnyStatisticsFiles(metadata_before_expiration)) {
@@ -978,8 +990,9 @@ Result<ExpireSnapshots::ApplyResult> ExpireSnapshots::Apply() {
               std::unordered_set<int32_t> schema_ids;
               ICEBERG_ASSIGN_OR_RAISE(auto snapshot, base.SnapshotById(snapshot_id));
               SnapshotReader snapshot_reader(snapshot.get());
-              ICEBERG_ASSIGN_OR_RAISE(auto manifests,
-                                      snapshot_reader.Manifests(ctx_->table->io()));
+              ICEBERG_ASSIGN_OR_RAISE(
+                  auto manifests,
+                  snapshot_reader.Manifests(internal::ManifestIO(*ctx_->table)));
               for (const auto& manifest : manifests) {
                 spec_ids.insert(manifest.partition_spec_id);
               }
@@ -1038,12 +1051,12 @@ Status ExpireSnapshots::Finalize(const TableMetadata& metadata_after_expiration)
       !HasNonMainSnapshots(metadata_after_expiration);
 
   if (can_use_incremental) {
-    return IncrementalFileCleanup(ctx_->table->io(), delete_func_, delete_executor_,
+    return IncrementalFileCleanup(*ctx_->table, delete_func_, delete_executor_,
                                   plan_executor_)
         .CleanFiles(metadata_before_expiration, metadata_after_expiration,
                     cleanup_level_);
   }
-  return ReachableFileCleanup(ctx_->table->io(), delete_func_, delete_executor_,
+  return ReachableFileCleanup(*ctx_->table, delete_func_, delete_executor_,
                               plan_executor_)
       .CleanFiles(metadata_before_expiration, metadata_after_expiration, cleanup_level_);
 }

@@ -328,7 +328,8 @@ Result<SnapshotUpdate::ApplyResult> SnapshotUpdate::Apply() {
       continue;
     }
     metadata_tasks.Submit([&manifest, this]() -> Status {
-      ICEBERG_ASSIGN_OR_RAISE(manifest, AddMetadata(manifest, ctx_->table->io(), base()));
+      ICEBERG_ASSIGN_OR_RAISE(
+          manifest, AddMetadata(manifest, internal::ManifestIO(*ctx_->table), base()));
       return {};
     });
   }
@@ -392,7 +393,8 @@ Status SnapshotUpdate::Finalize([[maybe_unused]] const TableMetadata& metadata) 
   // Only files created by this update are tracked, and committed paths are kept below.
   internal::LogAndIgnoreFailure("Snapshot cleanup", [this]() -> Status {
     auto snapshot_reader = SnapshotReader(staged_snapshot_.get());
-    ICEBERG_ASSIGN_OR_RAISE(auto manifests, snapshot_reader.Manifests(ctx_->table->io()));
+    ICEBERG_ASSIGN_OR_RAISE(
+        auto manifests, snapshot_reader.Manifests(internal::ManifestIO(*ctx_->table)));
     auto committed = manifests | std::views::transform([](const auto& manifest) {
                        return manifest.manifest_path;
                      }) |
@@ -506,6 +508,7 @@ void SnapshotUpdate::UnregisterStagedFile(const std::string& path) {
 Status SnapshotUpdate::DeleteFile(const std::string& path) noexcept {
   try {
     auto result = delete_func_ ? delete_func_(path) : ctx_->table->io()->DeleteFile(path);
+    internal::InvalidateManifestCache(*ctx_->table, path);
     if (!result && result.error().kind != ErrorKind::kNotFound) {
       RegisterStagedFile(path);
       ICEBERG_LOG_WARN("Cannot clean staged file {}: {}", path, result.error().message);

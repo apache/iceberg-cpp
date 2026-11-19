@@ -25,6 +25,7 @@
 #include <functional>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <unordered_map>
 #include <vector>
 
@@ -37,6 +38,13 @@
 #include "iceberg/util/timepoint.h"
 
 namespace iceberg {
+
+namespace internal {
+class ContentCache;
+// Used by snapshot readers and writers for immutable manifests and manifest lists.
+ICEBERG_EXPORT const std::shared_ptr<FileIO>& ManifestIO(const Table& table);
+void InvalidateManifestCache(const Table& table, std::string_view location);
+}  // namespace internal
 
 /// \brief Represents an Iceberg table
 ///
@@ -126,6 +134,12 @@ class ICEBERG_EXPORT Table : public std::enable_shared_from_this<Table> {
 
   /// \brief Returns a FileIO to read and write table data and metadata files
   const std::shared_ptr<FileIO>& io() const;
+
+  /// \brief Return whether this table caches manifest content.
+  bool ManifestCacheEnabled() const { return content_cache_ != nullptr; }
+
+  /// \brief Release manifest content retained by this table.
+  void ClearManifestCache();
 
   /// \brief Returns the current metadata for this table
   const std::shared_ptr<TableMetadata>& metadata() const;
@@ -245,10 +259,20 @@ class ICEBERG_EXPORT Table : public std::enable_shared_from_this<Table> {
   std::shared_ptr<TableMetadata> metadata_;
   std::string metadata_location_;
   std::shared_ptr<FileIO> io_;
+  std::shared_ptr<internal::ContentCache> content_cache_;
+  std::shared_ptr<FileIO> manifest_io_;
   std::shared_ptr<Catalog> catalog_;
   std::shared_ptr<MetricsReporter> reporter_;
   std::unique_ptr<class TableMetadataCache> metadata_cache_;
   const std::unique_ptr<const Labels> labels_;
+
+ private:
+  friend class Transaction;
+  friend const std::shared_ptr<FileIO>& internal::ManifestIO(const Table& table);
+  friend void internal::InvalidateManifestCache(const Table& table,
+                                                std::string_view location);
+  void InitializeManifestCache();
+  void ReuseManifestCache(const Table& source);
 };
 
 /// \brief A table created by stage-create and not yet committed.

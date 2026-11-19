@@ -95,6 +95,29 @@ TEST_F(TransactionTest, BaseMetadataSurvivesTableRefresh) {
   ASSERT_FALSE(original_base.expired());
 }
 
+TEST_F(TransactionTest, CommitPreservesTableManifestContentCache) {
+  ICEBERG_UNWRAP_OR_FAIL(auto enable_txn, table_->NewTransaction());
+  ICEBERG_UNWRAP_OR_FAIL(auto enable, enable_txn->NewUpdateProperties());
+  enable->Set("io.manifest.cache-enabled", "true");
+  ASSERT_THAT(enable->Commit(), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(table_, enable_txn->Commit());
+  ASSERT_TRUE(table_->ManifestCacheEnabled());
+
+  const auto manifest_path = table_location_ + "/metadata/cached-manifest.avro";
+  ASSERT_THAT(file_io_->WriteFile(manifest_path, "manifest bytes"), IsOk());
+  ASSERT_THAT(internal::ManifestIO(*table_)->ReadFile(manifest_path, std::nullopt),
+              HasValue(::testing::Eq("manifest bytes")));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto txn, table_->NewTransaction());
+  ICEBERG_UNWRAP_OR_FAIL(auto update, txn->NewUpdateProperties());
+  update->Set("txn.property", "txn.value");
+  ASSERT_THAT(update->Commit(), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto committed, txn->Commit());
+  ASSERT_THAT(file_io_->DeleteFile(manifest_path), IsOk());
+  EXPECT_THAT(internal::ManifestIO(*committed)->ReadFile(manifest_path, std::nullopt),
+              HasValue(::testing::Eq("manifest bytes")));
+}
+
 TEST_F(TransactionTest, MultipleUpdatesInTransaction) {
   ICEBERG_UNWRAP_OR_FAIL(auto txn, table_->NewTransaction());
 
