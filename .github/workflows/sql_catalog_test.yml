@@ -102,6 +102,19 @@ jobs:
         shell: pwsh
         run: |
           vcpkg install zlib:x64-windows nlohmann-json:x64-windows nanoarrow:x64-windows roaring:x64-windows sqlite3:x64-windows openssl:x64-windows
+      - name: Set up Python on Windows
+        if: ${{ startsWith(matrix.runs-on, 'windows') }}
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.13'
+      # CMake 4.5 rejects bundled Boost.Locale's source_group tree.
+      - name: Pin CMake to 4.4.5 on Windows
+        if: ${{ startsWith(matrix.runs-on, 'windows') }}
+        shell: bash
+        run: |
+          python -m pip install "cmake==4.4.5"
+          cmake --version
+          test "$(cmake --version | tr -d '\r' | head -n 1)" = "cmake version 4.4.5"
       - name: Set up sccache
         uses: ./.github/actions/setup-sccache
         with:
