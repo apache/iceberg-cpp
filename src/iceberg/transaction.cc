@@ -638,13 +638,12 @@ void Transaction::FinalizeUpdates(const TableMetadata& committed) noexcept {
     }
     std::unordered_set<std::string> content_paths;
     for (const auto& update : pending_updates_) {
-      if (update->kind() != PendingUpdate::Kind::kUpdateSnapshot) {
-        continue;
+      if (update->kind() == PendingUpdate::Kind::kUpdateSnapshot) {
+        auto& snapshot_update = internal::checked_cast<SnapshotUpdate&>(*update);
+        std::lock_guard lock(snapshot_update.staging_mutex_);
+        content_paths.insert(snapshot_update.staged_content_files_.begin(),
+                             snapshot_update.staged_content_files_.end());
       }
-      auto& snapshot_update = internal::checked_cast<SnapshotUpdate&>(*update);
-      std::lock_guard lock(snapshot_update.staging_mutex_);
-      content_paths.insert(snapshot_update.staged_content_files_.begin(),
-                           snapshot_update.staged_content_files_.end());
     }
     ICEBERG_ASSIGN_OR_RAISE(
         committed_files,
