@@ -25,15 +25,17 @@ on:
     types: [opened, synchronize, reopened, ready_for_review]
     branches:
       - main
-    paths-ignore:
-      - '.asf.yaml'
-      - '.devcontainer/**'
-      - '.github/**'
-      - '**/*.md'
-      - 'ci/**'
-      - 'cmake_modules/**'
-      - 'dev/**'
-      - 'mkdocs/**'
+    paths:
+      - '**'
+      - '!.asf.yaml'
+      - '!.devcontainer/**'
+      - '!.github/**'
+      - '!**/*.md'
+      - '!ci/**'
+      - '!cmake_modules/**'
+      - '!dev/**'
+      - '!mkdocs/**'
+      - '.github/workflows/cpp-linter.yml'
 
 concurrency:
   group: ${{ github.repository }}-${{ github.head_ref || github.sha }}-${{ github.workflow }}
@@ -59,8 +61,9 @@ jobs:
       - name: Install dependencies
         shell: bash
         run: |
-          sudo apt-get update
-          sudo apt-get install -y libcurl4-openssl-dev libssl-dev libsqlite3-dev libpq-dev default-libmysqlclient-dev
+          sudo apt-get -o Acquire::Retries=5 update --error-on=any
+          sudo apt-get -o Acquire::Retries=5 install -y \
+            libcurl4-openssl-dev libssl-dev libsqlite3-dev libpq-dev default-libmysqlclient-dev
       - name: Set up Python
         uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
@@ -73,6 +76,7 @@ jobs:
           cmake --version
           test "$(cmake --version | head -n 1)" = "cmake version 4.4.5"
       - name: Set up sccache
+        id: setup-sccache
         uses: ./.github/actions/setup-sccache
         with:
           key-prefix: sccache-cpp-linter-ubuntu
@@ -93,7 +97,7 @@ jobs:
             -DICEBERG_BUILD_HIVE=ON
           cmake --build .
       - name: Save sccache
-        if: always()
+        if: always() && steps.setup-sccache.outcome == 'success'
         uses: ./.github/actions/save-sccache
         with:
           key-prefix: sccache-cpp-linter-ubuntu

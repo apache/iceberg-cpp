@@ -58,7 +58,9 @@ jobs:
           persist-credentials: false
       - name: Install dependencies
         shell: bash
-        run: sudo apt-get update && sudo apt-get install -y libcurl4-openssl-dev libssl-dev
+        run: |
+          sudo apt-get -o Acquire::Retries=5 update --error-on=any
+          sudo apt-get -o Acquire::Retries=5 install -y libcurl4-openssl-dev libssl-dev
       - name: Set up Python
         uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
@@ -69,6 +71,7 @@ jobs:
           cmake --version
           test "$(cmake --version | head -n 1)" = "cmake version 4.4.5"
       - name: Set up sccache
+        id: setup-sccache
         uses: ./.github/actions/setup-sccache
         with:
           key-prefix: sccache-sanitizer-ubuntu
@@ -82,7 +85,7 @@ jobs:
             -DCMAKE_C_COMPILER_LAUNCHER=sccache -DCMAKE_CXX_COMPILER_LAUNCHER=sccache
           cmake --build . --verbose
       - name: Save sccache
-        if: always()
+        if: always() && steps.setup-sccache.outcome == 'success'
         uses: ./.github/actions/save-sccache
         with:
           key-prefix: sccache-sanitizer-ubuntu
