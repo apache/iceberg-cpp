@@ -118,9 +118,14 @@ Result<std::shared_ptr<TransactionContext>> TransactionContext::Make(
     ctx->metadata_builder = TableMetadataBuilder::BuildFromEmpty();
     std::ignore = ctx->metadata_builder->ApplyChangesForCreate(*ctx->table->metadata());
   } else {
-    ctx->metadata_builder = TableMetadataBuilder::BuildFrom(ctx->table->metadata().get());
+    ctx->ResetMetadataBuilder(ctx->table->metadata());
   }
   return ctx;
+}
+
+void TransactionContext::ResetMetadataBuilder(std::shared_ptr<TableMetadata> base) {
+  metadata_builder = TableMetadataBuilder::BuildFrom(base.get());
+  base_metadata = std::move(base);
 }
 
 const TableMetadata* TransactionContext::base() const { return metadata_builder->base(); }
@@ -544,10 +549,7 @@ void Transaction::FinalizeUpdates(const TableMetadata& committed) noexcept {
 Result<std::shared_ptr<Table>> Transaction::CommitOnce(bool is_first_attempt) {
   std::vector<std::unique_ptr<TableRequirement>> requirements;
   if (ctx_->kind == TransactionKind::kUpdate) {
-    std::shared_ptr<TableMetadata> metadata_before_refresh;
     if (!is_first_attempt) {
-      // Keep the builder's base alive while Refresh replaces the table metadata.
-      metadata_before_refresh = ctx_->table->metadata();
       ICEBERG_RETURN_UNEXPECTED(ctx_->table->Refresh());
     }
     const bool metadata_changed =
@@ -557,8 +559,7 @@ Result<std::shared_ptr<Table>> Transaction::CommitOnce(bool is_first_attempt) {
       ICEBERG_CHECK(CanRetry(),
                     "Cannot rebase a transaction containing a non-retryable update");
       CleanupUpdates();
-      ctx_->metadata_builder =
-          TableMetadataBuilder::BuildFrom(ctx_->table->metadata().get());
+      ctx_->ResetMetadataBuilder(ctx_->table->metadata());
       auto applied = ReplayUpdates();
       if (!applied) {
         return ValidationFailed("Transaction replay failed: {}", applied.error().message);
