@@ -61,6 +61,17 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y libcurl4-openssl-dev libssl-dev libsqlite3-dev libpq-dev default-libmysqlclient-dev
+      - name: Set up Python
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.13'
+      # Arrow's bundled Boost.Locale 1.88.0 is incompatible with CMake 4.5.
+      - name: Pin CMake to 4.4.5
+        shell: bash
+        run: |
+          python -m pip install "cmake==4.4.5"
+          cmake --version
+          test "$(cmake --version | head -n 1)" = "cmake version 4.4.5"
       - name: Set up sccache
         uses: ./.github/actions/setup-sccache
         with:
@@ -87,10 +98,6 @@ jobs:
         with:
           key-prefix: sccache-cpp-linter-ubuntu
           job-status: ${{ job.status }}
-      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
-        if: github.event_name == 'pull_request'
-        with:
-          python-version: '3.13'
       - name: Install cpp-linter and clang tools
         if: github.event_name == 'pull_request'
         run: |
