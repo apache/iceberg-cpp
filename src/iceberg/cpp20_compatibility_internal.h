@@ -40,6 +40,7 @@
 #include "iceberg/data/delete_loader.h"
 #include "iceberg/data/equality_delete_writer.h"
 #include "iceberg/data/file_scan_task_reader.h"
+#include "iceberg/data/position_delete_update.h"
 #include "iceberg/data/position_delete_writer.h"
 #include "iceberg/data/writer.h"
 #include "iceberg/data_table_scan.h"

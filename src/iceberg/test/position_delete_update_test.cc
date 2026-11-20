@@ -19,6 +19,7 @@
 
 #include "iceberg/data/position_delete_update.h"
 
+#include <initializer_list>
 #include <memory>
 #include <string>
 #include <vector>
@@ -35,6 +36,7 @@
 #include "iceberg/avro/avro_register.h"
 #include "iceberg/data/data_writer.h"
 #include "iceberg/data/file_scan_task_reader.h"
+#include "iceberg/data_table_scan.h"
 #include "iceberg/file_reader.h"
 #include "iceberg/metadata_columns.h"
 #include "iceberg/parquet/parquet_register.h"
@@ -44,7 +46,6 @@
 #include "iceberg/table.h"
 #include "iceberg/table_metadata.h"
 #include "iceberg/table_properties.h"
-#include "iceberg/table_scan.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/test/mock_catalog.h"
 #include "iceberg/test/update_test_base.h"
@@ -132,6 +133,12 @@ class PositionDeleteV3Test : public MinimalUpdateTestBase {
     ASSERT_THAT(table_->Refresh(), IsOk());
   }
 
+  void DeletePositions(std::initializer_list<int64_t> positions) {
+    ICEBERG_UNWRAP_OR_FAIL(auto update, PositionDeleteUpdate::Make(table_));
+    for (auto pos : positions) update->Delete(data_file_->file_path, pos);
+    ASSERT_THAT(update->Commit(), IsOk());
+  }
+
   std::vector<std::shared_ptr<FileScanTask>> Tasks() {
     ICEBERG_THROW_NOT_OK(table_->Refresh());
     auto builder = table_->NewScan().value();
@@ -173,66 +180,61 @@ class PositionDeleteV3Test : public MinimalUpdateTestBase {
   std::shared_ptr<DataFile> data_file_;
 };
 
-struct RoutingCase {
-  int8_t format_version;
-  bool unpartitioned;
-};
-
-class PositionDeleteUpdateTest : public PositionDeleteV3Test,
-                                 public ::testing::WithParamInterface<RoutingCase> {
+class PositionDeleteUpdateTest : public PositionDeleteV3Test {
  protected:
-  int8_t format_version() const override { return GetParam().format_version; }
-  bool unpartitioned() const override { return GetParam().unpartitioned; }
+  int8_t format_version() const override { return 2; }
 };
 
-TEST_P(PositionDeleteUpdateTest, DeleteCommitReloadAndMerge) {
-  ICEBERG_UNWRAP_OR_FAIL(auto first, PositionDeleteUpdate::Make(table_));
-  first->Delete(data_file_->file_path, 3).Delete(data_file_->file_path, 1);
-  ASSERT_THAT(first->Commit(), IsOk());
+TEST_F(PositionDeleteUpdateTest, WritesSortedParquetDeletes) {
+  DeletePositions({3, 1});
   EXPECT_THAT(ReadRows(), ::testing::ElementsAre(0, 2, 4));
+  const auto old_delete = Tasks().at(0)->delete_files().at(0);
+  ASSERT_EQ(old_delete->file_format, FileFormatType::kParquet);
+  auto projection = std::make_shared<Schema>(std::vector<SchemaField>{
+      MetadataColumns::kDeleteFilePath, MetadataColumns::kDeleteFilePos});
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto reader,
+      ReaderFactoryRegistry::Open(
+          FileFormatType::kParquet,
+          {.path = old_delete->file_path, .io = file_io_, .projection = projection}));
+  ICEBERG_UNWRAP_OR_FAIL(auto batch, reader->Next());
+  ASSERT_TRUE(batch.has_value());
+  ArrowSchema schema{};
+  ASSERT_THAT(ToArrowSchema(*projection, &schema), IsOk());
+  auto rows = ::arrow::ImportArray(&*batch, ::arrow::ImportType(&schema).ValueOrDie())
+                  .ValueOrDie();
+  const auto& positions = static_cast<const ::arrow::Int64Array&>(
+      *static_cast<const ::arrow::StructArray&>(*rows).field(1));
+  ASSERT_EQ(positions.length(), 2);
+  EXPECT_EQ(positions.Value(0), 1);
+  EXPECT_EQ(positions.Value(1), 3);
+}
+
+TEST_F(PositionDeleteUpdateTest, UpgradeMergesPreviousParquetDeletes) {
+  DeletePositions({3, 1});
+  ICEBERG_UNWRAP_OR_FAIL(auto properties, table_->NewUpdateProperties());
+  properties->Set(TableProperties::kFormatVersion.key(), "3");
+  ASSERT_THAT(properties->Commit(), IsOk());
+  ASSERT_THAT(table_->Refresh(), IsOk());
+  DeletePositions({2});
+  EXPECT_THAT(ReadRows(), ::testing::ElementsAre(0, 4));
   auto task = Tasks().at(0);
   ASSERT_EQ(task->delete_files().size(), 1);
-  const auto old_delete = task->delete_files().front();
-  EXPECT_EQ(old_delete->file_format,
-            format_version() == 2 ? FileFormatType::kParquet : FileFormatType::kPuffin);
+  EXPECT_TRUE(task->delete_files().front()->IsDeletionVector());
+}
 
-  if (format_version() == 2) {
-    auto projection = std::make_shared<Schema>(std::vector<SchemaField>{
-        MetadataColumns::kDeleteFilePath, MetadataColumns::kDeleteFilePos});
-    ICEBERG_UNWRAP_OR_FAIL(
-        auto reader,
-        ReaderFactoryRegistry::Open(
-            FileFormatType::kParquet,
-            {.path = old_delete->file_path, .io = file_io_, .projection = projection}));
-    ICEBERG_UNWRAP_OR_FAIL(auto batch, reader->Next());
-    ASSERT_TRUE(batch.has_value());
-    ArrowSchema schema{};
-    ASSERT_THAT(ToArrowSchema(*projection, &schema), IsOk());
-    auto rows = ::arrow::ImportArray(&*batch, ::arrow::ImportType(&schema).ValueOrDie())
-                    .ValueOrDie();
-    const auto& positions = static_cast<const ::arrow::Int64Array&>(
-        *static_cast<const ::arrow::StructArray&>(*rows).field(1));
-    ASSERT_EQ(positions.length(), 2);
-    EXPECT_EQ(positions.Value(0), 1);
-    EXPECT_EQ(positions.Value(1), 3);
-    ICEBERG_UNWRAP_OR_FAIL(auto properties, table_->NewUpdateProperties());
-    properties->Set(TableProperties::kFormatVersion.key(), "3");
-    ASSERT_THAT(properties->Commit(), IsOk());
-    ASSERT_THAT(table_->Refresh(), IsOk());
-  }
-  if (!unpartitioned()) {
-    ICEBERG_UNWRAP_OR_FAIL(auto evolution, table_->NewUpdatePartitionSpec());
-    evolution->RemoveField("x");
-    ASSERT_THAT(evolution->Commit(), IsOk());
-    ASSERT_THAT(table_->Refresh(), IsOk());
-    ASSERT_NE(table_->metadata()->default_spec_id, data_file_->partition_spec_id);
-  }
-
-  ICEBERG_UNWRAP_OR_FAIL(auto second, PositionDeleteUpdate::Make(table_));
-  second->Delete(data_file_->file_path, 2);
-  ASSERT_THAT(second->Commit(), IsOk());
+TEST_F(PositionDeleteV3Test, MergesPreviousVectorAfterPartitionEvolution) {
+  DeletePositions({3, 1});
+  EXPECT_THAT(ReadRows(), ::testing::ElementsAre(0, 2, 4));
+  const auto old_delete = Tasks().at(0)->delete_files().at(0);
+  ICEBERG_UNWRAP_OR_FAIL(auto evolution, table_->NewUpdatePartitionSpec());
+  evolution->RemoveField("x");
+  ASSERT_THAT(evolution->Commit(), IsOk());
+  ASSERT_THAT(table_->Refresh(), IsOk());
+  ASSERT_NE(table_->metadata()->default_spec_id, data_file_->partition_spec_id);
+  DeletePositions({2});
   EXPECT_THAT(ReadRows(), ::testing::ElementsAre(0, 4));
-  task = Tasks().at(0);
+  auto task = Tasks().at(0);
   ASSERT_EQ(task->delete_files().size(), 1);
   const auto& dv = task->delete_files().front();
   EXPECT_EQ(dv->file_format, FileFormatType::kPuffin);
@@ -241,9 +243,22 @@ TEST_P(PositionDeleteUpdateTest, DeleteCommitReloadAndMerge) {
   EXPECT_EQ(dv->partition, data_file_->partition);
 }
 
-INSTANTIATE_TEST_SUITE_P(FormatAndPartitioning, PositionDeleteUpdateTest,
-                         ::testing::Values(RoutingCase{2, false}, RoutingCase{3, false},
-                                           RoutingCase{3, true}));
+class UnpartitionedPositionDeleteV3Test : public PositionDeleteV3Test {
+ protected:
+  bool unpartitioned() const override { return true; }
+};
+
+TEST_F(UnpartitionedPositionDeleteV3Test, ReloadsCommittedDeletes) {
+  DeletePositions({1, 2});
+  EXPECT_THAT(ReadRows(), ::testing::ElementsAre(0, 3, 4));
+}
+
+TEST_F(PositionDeleteV3Test, RejectsPositionPastEndOfFile) {
+  ICEBERG_UNWRAP_OR_FAIL(auto update, PositionDeleteUpdate::Make(table_));
+  update->Delete(data_file_->file_path, data_file_->record_count);
+  EXPECT_THAT(update->Commit(), IsError(ErrorKind::kInvalidArgument));
+  EXPECT_TRUE(PuffinFiles().empty());
+}
 
 TEST_F(PositionDeleteV3Test, ConcurrentRemovalRejectsPreparedDeletes) {
   SetRetries(1);

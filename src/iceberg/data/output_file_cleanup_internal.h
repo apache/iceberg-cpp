@@ -50,7 +50,7 @@ inline Status FailWithOutputCleanup(Error error, FileIO& io,
   if (!cleanup.has_value()) {
     error.message += "; output cleanup failed: " + cleanup.error().message;
   }
-  return std::unexpected(std::move(error));
+  return iceberg::unexpected(std::move(error));
 }
 
 }  // namespace iceberg::internal

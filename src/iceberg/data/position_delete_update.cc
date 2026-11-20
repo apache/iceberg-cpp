@@ -35,6 +35,7 @@
 #include "iceberg/data/delete_loader.h"
 #include "iceberg/data/output_file_cleanup_internal.h"
 #include "iceberg/data/position_delete_writer.h"
+#include "iceberg/data_table_scan.h"
 #include "iceberg/deletes/dv_writer.h"
 #include "iceberg/file_format.h"
 #include "iceberg/file_io.h"
@@ -45,7 +46,6 @@
 #include "iceberg/table.h"
 #include "iceberg/table_metadata.h"
 #include "iceberg/table_properties.h"
-#include "iceberg/table_scan.h"
 #include "iceberg/update/row_delta.h"
 #include "iceberg/util/macros.h"
 #include "iceberg/util/string_util.h"
@@ -123,10 +123,16 @@ class PositionDeleteUpdate::Impl {
       ICEBERG_ASSIGN_OR_RAISE(auto task, tasks->Next());
       if (!task.has_value()) break;
       const auto& data_file = (*task)->data_file();
-      if (!deletes_.contains(data_file->file_path)) {
+      const auto requested = deletes_.find(data_file->file_path);
+      if (requested == deletes_.end()) {
         continue;
       }
 
+      for (int64_t pos : requested->second) {
+        ICEBERG_PRECHECK(pos < data_file->record_count,
+                         "Position {} exceeds the last row of {} ({} rows)", pos,
+                         data_file->file_path, data_file->record_count);
+      }
       ICEBERG_PRECHECK(data_file->partition_spec_id.has_value(),
                        "Data file is missing partition spec ID: {}",
                        data_file->file_path);
