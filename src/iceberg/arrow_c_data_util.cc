@@ -232,6 +232,12 @@ Status AppendValue(const ArrowSchema& input_schema, const ArrowArray& input_arra
 
 }  // namespace
 
+Status AppendArrayValue(const ArrowSchema& input_schema, const ArrowArray& input_array,
+                        const ArrowArrayView& input_view, int64_t row_index,
+                        ArrowArray* output_array) {
+  return AppendValue(input_schema, input_array, input_view, row_index, output_array);
+}
+
 ProjectionContext::ProjectionContext(ProjectionContext&& other) noexcept
     : selected_field_indices_(std::move(other.selected_field_indices_)),
       input_arrow_schema_(other.input_arrow_schema_),
