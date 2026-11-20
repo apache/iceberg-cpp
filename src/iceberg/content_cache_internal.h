@@ -58,11 +58,18 @@ struct MetadataContentWeigher {
   }
 };
 
-// A table owns this cache; readers share it through a metadata-only FileIO adapter.
-// Storage FileIOs remain independent of the cache and its configuration.
+struct ContentCacheState;
+class ContentCacheRegistry;
+
+// A lightweight per-table handle with a weak reference to cached content. A global
+// LRU registry retains at most eight cache states by default. Readers share the
+// handle through a manifest-only FileIO adapter without pinning its cache state.
 class ICEBERG_EXPORT ContentCache : public std::enable_shared_from_this<ContentCache> {
  public:
   explicit ContentCache(ContentCacheOptions options);
+  ~ContentCache();
+  // Return the previous process-wide capacity. The new capacity must be positive.
+  static int32_t SetGlobalCapacity(int32_t max_caches);
   const ContentCacheOptions& options() const { return options_; }
   std::shared_ptr<FileIO> Wrap(std::shared_ptr<FileIO> io);
   Result<std::unique_ptr<InputFile>> NewInputFile(
@@ -77,9 +84,9 @@ class ICEBERG_EXPORT ContentCache : public std::enable_shared_from_this<ContentC
 
  private:
   const ContentCacheOptions options_;
+  const std::shared_ptr<ContentCacheRegistry> registry_;
   std::mutex mutex_;
-  LruCache<std::string, MetadataContent, MetadataContentWeigher, StringHash, StringEqual>
-      lru_;
+  std::weak_ptr<ContentCacheState> state_;
   uint64_t generation_ = 0;
 };
 

@@ -42,6 +42,18 @@
 
 namespace iceberg {
 
+template <typename Base>
+class FileIOWithProperties : public Base {
+ public:
+  using Base::Base;
+
+  const std::unordered_map<std::string, std::string>& properties() const override {
+    return config;
+  }
+
+  std::unordered_map<std::string, std::string> config;
+};
+
 class MockFileIO : public FileIO {
  public:
   MockFileIO() = default;

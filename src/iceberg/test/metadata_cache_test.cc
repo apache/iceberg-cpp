@@ -49,6 +49,16 @@ namespace iceberg {
 namespace {
 using internal::ContentCacheOptions;
 
+class ScopedGlobalCacheLimit {
+ public:
+  explicit ScopedGlobalCacheLimit(int32_t limit)
+      : previous_(internal::ContentCache::SetGlobalCapacity(limit)) {}
+  ~ScopedGlobalCacheLimit() { internal::ContentCache::SetGlobalCapacity(previous_); }
+
+ private:
+  int32_t previous_;
+};
+
 class CountingInputStream : public SeekableInputStream {
  public:
   CountingInputStream(std::unique_ptr<SeekableInputStream> stream, int* read_count)
@@ -109,7 +119,7 @@ class CountingInputFile : public InputFile {
   int* failing_opens_;
 };
 
-class CountingMockFileIO : public MockFileIO {
+class CountingMockFileIO : public FileIOWithProperties<MockFileIO> {
  public:
   Result<std::unique_ptr<InputFile>> NewInputFile(std::string file_location) override {
     ICEBERG_ASSIGN_OR_RAISE(auto input_file,
@@ -125,13 +135,16 @@ class CountingMockFileIO : public MockFileIO {
   int failing_opens = 0;
 };
 
-// Create independently configured tables sharing the same storage FileIO.
+// Configure storage before creating an independently cached table.
+template <typename IO>
 Result<std::shared_ptr<Table>> MakeCachedTable(
-    FileIO& io, const std::unordered_map<std::string, std::string>& properties = {},
-    std::string metadata_location = "metadata.json") {
+    IO& io, const std::unordered_map<std::string, std::string>& properties = {},
+    std::string metadata_location = "metadata.json",
+    const std::unordered_map<std::string, std::string>& table_properties = {}) {
+  io.config = properties;
   auto metadata = std::make_shared<TableMetadata>();
   metadata->table_uuid = "cache-test-table";
-  metadata->properties = TableProperties::FromMap(properties);
+  metadata->properties = TableProperties::FromMap(table_properties);
   auto storage = std::shared_ptr<FileIO>(&io, [](FileIO*) {});
   return Table::Make({.ns = {}, .name = "test"}, std::move(metadata),
                      std::move(metadata_location), std::move(storage),
@@ -187,7 +200,7 @@ class FailingOpenInputFile : public InputFile {
   std::shared_ptr<FailingOpenState> state_;
 };
 
-class FailingOpenFileIO : public FileIO {
+class FailingOpenFileIO : public FileIOWithProperties<FileIO> {
  public:
   explicit FailingOpenFileIO(std::shared_ptr<FailingOpenState> state)
       : state_(std::move(state)) {}
@@ -390,7 +403,7 @@ TEST(MetadataCacheTest, ManifestDeletesInvalidateOnlyTheAttemptedLocations) {
 
 TEST(MetadataCacheTest, TableConcurrentReadsReturnFileContent) {
   // CountingMockFileIO's counters are not thread-safe, so use the plain mock.
-  MockFileIO file_io;
+  FileIOWithProperties<MockFileIO> file_io;
   constexpr int kLocations = 8;
   std::vector<std::string> contents;
   for (int id = 0; id < kLocations; ++id) {
@@ -499,7 +512,7 @@ TEST(MetadataCacheTest, ReaderOptionsKeepsPositionalAggregateInitialization) {
   EXPECT_EQ(options.projection, schema);
 }
 
-class LengthTrackingFileIO : public MockFileIO {
+class LengthTrackingFileIO : public FileIOWithProperties<MockFileIO> {
  public:
   using MockFileIO::NewInputFile;
   int length_calls = 0;
@@ -533,6 +546,35 @@ TEST(MetadataCacheTest, DisabledTableUsesStorageDirectly) {
   EXPECT_EQ(io.open_count, 2);
 }
 
+TEST(MetadataCacheTest, TablePropertiesDoNotEnableManifestCache) {
+  CountingMockFileIO io;
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto table,
+      MakeCachedTable(io, {}, "metadata.json",
+                      {{std::string(ContentCacheOptions::kEnabled), "true"}}));
+  EXPECT_FALSE(table->ManifestCacheEnabled());
+  EXPECT_EQ(internal::ManifestIO(*table), table->io());
+}
+
+TEST(MetadataCacheTest, TablePropertiesDoNotOverrideFileIOCacheSettings) {
+  CountingMockFileIO io;
+  io.AddFile("manifest.avro", "manifest");
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto table,
+      MakeCachedTable(io,
+                      {{std::string(ContentCacheOptions::kEnabled), "true"},
+                       {std::string(ContentCacheOptions::kMaxTotalBytes), "16"},
+                       {std::string(ContentCacheOptions::kMaxContentLength), "16"}},
+                      "metadata.json",
+                      {{std::string(ContentCacheOptions::kEnabled), "false"},
+                       {std::string(ContentCacheOptions::kMaxTotalBytes), "invalid"},
+                       {std::string(ContentCacheOptions::kMaxContentLength), "1"}}));
+  EXPECT_TRUE(table->ManifestCacheEnabled());
+  ASSERT_THAT(ReadCached(*internal::ManifestIO(*table), "manifest.avro"), IsOk());
+  ASSERT_THAT(ReadCached(*internal::ManifestIO(*table), "manifest.avro"), IsOk());
+  EXPECT_EQ(io.open_count, 1);
+}
+
 TEST(MetadataCacheTest, TablesSharingStorageHaveIndependentCachesAndLimits) {
   CountingMockFileIO io;
   io.AddFile("manifest.avro", "manifest");
@@ -552,6 +594,121 @@ TEST(MetadataCacheTest, TablesSharingStorageHaveIndependentCachesAndLimits) {
   // Ordinary FileIO input remains independent of either table's cache.
   ASSERT_THAT(ReadCached(io, "manifest.avro"), IsOk());
   EXPECT_EQ(io.open_count, 4);
+}
+
+TEST(MetadataCacheTest, GlobalLimitEvictsLeastRecentlyUsedCacheWithLiveTableHandles) {
+  ScopedGlobalCacheLimit limit(2);
+  CountingMockFileIO io;
+  io.AddFile("manifest.avro", "manifest");
+  std::unordered_map<std::string, std::string> props = {
+      {std::string(ContentCacheOptions::kEnabled), "true"}};
+  ICEBERG_UNWRAP_OR_FAIL(auto first, MakeCachedTable(io, props));
+  ICEBERG_UNWRAP_OR_FAIL(auto second, MakeCachedTable(io, props));
+  ICEBERG_UNWRAP_OR_FAIL(auto third, MakeCachedTable(io, props));
+  ASSERT_THAT(ReadCached(*internal::ManifestIO(*first), "manifest.avro"), IsOk());
+  ASSERT_THAT(ReadCached(*internal::ManifestIO(*second), "manifest.avro"), IsOk());
+  ASSERT_THAT(ReadCached(*internal::ManifestIO(*first), "manifest.avro"), IsOk());
+  EXPECT_EQ(io.open_count, 2);
+  // Touching the first cache makes the second the next victim. The adapter must
+  // retain only a weak reference to its cached content, even while the table lives.
+  auto second_adapter = internal::ManifestIO(*second);
+  ASSERT_THAT(ReadCached(*internal::ManifestIO(*third), "manifest.avro"), IsOk());
+  ASSERT_THAT(ReadCached(*internal::ManifestIO(*first), "manifest.avro"), IsOk());
+  EXPECT_EQ(io.open_count, 3);
+  ASSERT_THAT(ReadCached(*second_adapter, "manifest.avro"), IsOk());
+  EXPECT_EQ(io.open_count, 4);
+}
+
+TEST(MetadataCacheTest, GlobalEvictionReleasesBytesAndReadersKeepTheirContent) {
+  ScopedGlobalCacheLimit limit(1);
+  auto first = std::make_shared<internal::ContentCache>(ContentCacheOptions{});
+  auto content = std::make_shared<const std::vector<std::byte>>(8);
+  std::weak_ptr<const std::vector<std::byte>> weak_content = content;
+  first->Insert("manifest.avro", std::move(content), 0);
+  CountingMockFileIO io;
+  auto adapter = first->Wrap(std::shared_ptr<FileIO>(&io, [](FileIO*) {}));
+  ICEBERG_UNWRAP_OR_FAIL(auto file, adapter->NewInputFile("manifest.avro"));
+  ICEBERG_UNWRAP_OR_FAIL(auto reader, file->Open());
+  file.reset();
+  auto second = std::make_shared<internal::ContentCache>(ContentCacheOptions{});
+  second->Insert("other.avro", std::make_shared<const std::vector<std::byte>>(8), 0);
+  EXPECT_FALSE(first->Find("manifest.avro"));
+  // Only the active reader still owns these bytes after global eviction.
+  EXPECT_FALSE(weak_content.expired());
+  std::array<std::byte, 8> out;
+  ASSERT_THAT(reader->ReadFully(0, out), IsOk());
+  EXPECT_EQ(out, (std::array<std::byte, 8>{}));
+  reader.reset();
+  EXPECT_TRUE(weak_content.expired());
+}
+
+TEST(MetadataCacheTest, LoweringGlobalLimitImmediatelyReleasesOldCacheContent) {
+  ScopedGlobalCacheLimit limit(2);
+  auto first = std::make_shared<internal::ContentCache>(ContentCacheOptions{});
+  auto second = std::make_shared<internal::ContentCache>(ContentCacheOptions{});
+  auto content = std::make_shared<const std::vector<std::byte>>(8);
+  std::weak_ptr<const std::vector<std::byte>> weak_content = content;
+  first->Insert("first.avro", std::move(content), 0);
+  second->Insert("second.avro", std::make_shared<const std::vector<std::byte>>(8), 0);
+  ASSERT_THAT(Table::SetManifestCacheLimit(1), IsOk());
+  EXPECT_TRUE(weak_content.expired());
+  EXPECT_TRUE(second->Find("second.avro"));
+}
+
+TEST(MetadataCacheTest, RejectsNonPositiveGlobalLimits) {
+  EXPECT_THAT(Table::SetManifestCacheLimit(0), IsError(ErrorKind::kInvalidArgument));
+  EXPECT_THAT(Table::SetManifestCacheLimit(-1), IsError(ErrorKind::kInvalidArgument));
+}
+
+TEST(MetadataCacheTest, DestroyingLastCacheHandleReleasesRetainedBytes) {
+  auto cache = std::make_shared<internal::ContentCache>(ContentCacheOptions{});
+  auto content = std::make_shared<const std::vector<std::byte>>(8);
+  std::weak_ptr<const std::vector<std::byte>> weak_content = content;
+  cache->Insert("manifest.avro", std::move(content), 0);
+  ASSERT_FALSE(weak_content.expired());
+  cache.reset();
+  EXPECT_TRUE(weak_content.expired());
+}
+
+TEST(MetadataCacheTest, InvalidatedLoadCannotPopulateRecreatedCacheState) {
+  ScopedGlobalCacheLimit limit(1);
+  auto cache = std::make_shared<internal::ContentCache>(ContentCacheOptions{});
+  uint64_t generation;
+  ASSERT_FALSE(cache->Find("manifest.avro", &generation));
+  auto other = std::make_shared<internal::ContentCache>(ContentCacheOptions{});
+  other->Insert("other.avro", std::make_shared<const std::vector<std::byte>>(8), 0);
+  cache->Invalidate("manifest.avro");
+  cache->Insert("manifest.avro", std::make_shared<const std::vector<std::byte>>(8),
+                generation);
+  EXPECT_FALSE(cache->Find("manifest.avro"));
+}
+
+TEST(MetadataCacheTest, ConcurrentReadsSurviveGlobalEviction) {
+  ScopedGlobalCacheLimit limit(2);
+  FileIOWithProperties<MockFileIO> io;
+  io.AddFile("manifest.avro", "manifest");
+  std::vector<std::shared_ptr<Table>> tables;
+  for (int i = 0; i < 4; ++i) {
+    ICEBERG_UNWRAP_OR_FAIL(
+        auto table,
+        MakeCachedTable(io, {{std::string(ContentCacheOptions::kEnabled), "true"}}));
+    tables.push_back(std::move(table));
+  }
+  std::barrier start(4);
+  std::vector<std::future<bool>> readers;
+  for (const auto& table : tables) {
+    readers.push_back(std::async(std::launch::async, [&start, table] {
+      start.arrive_and_wait();
+      for (int i = 0; i < 1000; ++i) {
+        auto content = ReadCached(*internal::ManifestIO(*table), "manifest.avro");
+        if (!content || *content != "manifest") return false;
+      }
+      return true;
+    }));
+  }
+  for (auto& reader : readers) {
+    EXPECT_TRUE(reader.get());
+  }
 }
 
 TEST(MetadataCacheTest, CompatibleRefreshPreservesCachedContent) {
@@ -606,6 +763,72 @@ TEST(MetadataCacheTest, RefreshWithDifferentStorageDiscardsCachedBytes) {
   ASSERT_THAT(table->Refresh(), IsOk());
   EXPECT_THAT(ReadCached(*internal::ManifestIO(*table), "manifest.avro"),
               HasValue(::testing::Eq("second")));
+}
+
+TEST(MetadataCacheTest, RefreshWithRotatedCredentialsPreservesCacheAndUsesNewStorage) {
+  for (const auto* metadata_location : {"metadata.json", "metadata-2.json"}) {
+    SCOPED_TRACE(metadata_location);
+    for (bool explicit_endpoint : {false, true}) {
+      SCOPED_TRACE(explicit_endpoint);
+      CountingMockFileIO first_io;
+      CountingMockFileIO second_io;
+      first_io.AddFile("manifest.avro", "cached");
+      second_io.AddFile("new-manifest.avro", "new manifest");
+      std::unordered_map<std::string, std::string> props = {
+          {std::string(ContentCacheOptions::kEnabled), "true"},
+          {"s3.access-key-id", "old-key"},
+          {"s3.secret-access-key", "old-secret"},
+          {"s3.session-token", "old-token"},
+          {"s3.session-token-expires-at-ms", "1000"}};
+      if (explicit_endpoint) {
+        props["s3.endpoint"] = "https://storage.example";
+      }
+      ICEBERG_UNWRAP_OR_FAIL(auto table, MakeCachedTable(first_io, props));
+      ASSERT_THAT(ReadCached(*internal::ManifestIO(*table), "manifest.avro"), IsOk());
+
+      props["s3.access-key-id"] = "new-key";
+      props["s3.secret-access-key"] = "new-secret";
+      props["s3.session-token"] = "new-token";
+      props["s3.session-token-expires-at-ms"] = "2000";
+      ICEBERG_UNWRAP_OR_FAIL(auto refreshed,
+                             MakeCachedTable(second_io, props, metadata_location));
+      auto catalog = std::dynamic_pointer_cast<MockCatalog>(table->catalog());
+      EXPECT_CALL(*catalog, LoadTable(::testing::_))
+          .WillOnce(::testing::Return(refreshed));
+      ASSERT_THAT(table->Refresh(), IsOk());
+      EXPECT_EQ(table->io().get(), &second_io);
+      EXPECT_THAT(ReadCached(*internal::ManifestIO(*table), "manifest.avro"),
+                  HasValue(::testing::Eq("cached")));
+      EXPECT_EQ(first_io.open_count, 1);
+      EXPECT_EQ(second_io.open_count, 0);
+      EXPECT_THAT(ReadCached(*internal::ManifestIO(*table), "new-manifest.avro"),
+                  HasValue(::testing::Eq("new manifest")));
+      EXPECT_EQ(second_io.open_count, 1);
+    }
+  }
+}
+
+TEST(MetadataCacheTest, RefreshWithChangedStoragePropertiesDiscardsCachedBytes) {
+  for (const auto* key : {"s3.endpoint", "client.region", "io-impl"}) {
+    SCOPED_TRACE(key);
+    CountingMockFileIO first_io;
+    CountingMockFileIO second_io;
+    first_io.AddFile("manifest.avro", "first");
+    second_io.AddFile("manifest.avro", "second");
+    std::unordered_map<std::string, std::string> props = {
+        {std::string(ContentCacheOptions::kEnabled), "true"}, {key, "old"}};
+    ICEBERG_UNWRAP_OR_FAIL(auto table, MakeCachedTable(first_io, props));
+    ASSERT_THAT(ReadCached(*internal::ManifestIO(*table), "manifest.avro"), IsOk());
+    props[key] = "new";
+    ICEBERG_UNWRAP_OR_FAIL(auto refreshed,
+                           MakeCachedTable(second_io, props, "metadata-2.json"));
+    auto catalog = std::dynamic_pointer_cast<MockCatalog>(table->catalog());
+    EXPECT_CALL(*catalog, LoadTable(::testing::_)).WillOnce(::testing::Return(refreshed));
+    ASSERT_THAT(table->Refresh(), IsOk());
+    EXPECT_THAT(ReadCached(*internal::ManifestIO(*table), "manifest.avro"),
+                HasValue(::testing::Eq("second")));
+    EXPECT_EQ(second_io.open_count, 1);
+  }
 }
 
 TEST(MetadataCacheTest, InvalidCacheLimitsFallBackToStorage) {

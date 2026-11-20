@@ -79,3 +79,36 @@ follows:
   `iceberg::avro::RegisterAll()`.
 - Parquet readers and writers are registered by
   `iceberg::parquet::RegisterAll()`.
+
+## Manifest content caching
+
+Tables can cache immutable manifest and manifest-list bytes. Cache settings come
+exclusively from `FileIO::properties()`; table metadata properties do not enable
+or override the cache. REST catalogs supply their merged catalog and table I/O
+configuration through the table's `FileIO`. Applications that inject a `FileIO`
+must expose the desired settings through its `properties()` method.
+
+| Property | Default |
+|---|---|
+| `io.manifest.cache-enabled` | `false` |
+| `io.manifest.cache.max-total-bytes` | `104857600` (100 MiB) |
+| `io.manifest.cache.max-content-length` | `8388608` (8 MiB) |
+
+Independent table loads have separate caches and byte budgets. A process-wide
+LRU registry retains at most eight cache states by default. Change this global
+limit with `Table::SetManifestCacheLimit(max_caches)`, passing a positive number.
+Lowering the limit immediately evicts the least recently used cache states.
+The global count is configured separately from the per-table FileIO settings so
+different FileIO instances cannot overwrite one another's global limit.
+
+Per-table handles and manifest I/O adapters retain only weak references to cache
+states. Cache states are created on first use, and an evicted table recreates an
+empty cache on its next read. Active readers and input files can still hold bytes
+after eviction, and concurrent load buffers are outside the retained byte budget.
+Call `Table::ClearManifestCache()` to release a table's retained content explicitly.
+
+Compatible refreshes and committed table handles share their source table's cache.
+S3 access keys, secrets, session tokens, and token expiry can rotate without losing
+warm content when the remaining storage configuration matches. Changes to cache
+limits or storage configuration, such as an endpoint or region, start a new cache.
+Data files and table metadata JSON continue to use storage I/O directly.

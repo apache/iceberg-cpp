@@ -20,6 +20,9 @@
 #include "iceberg/table.h"
 
 #include <memory>
+#include <string>
+#include <string_view>
+#include <unordered_map>
 
 #include "iceberg/catalog.h"
 #include "iceberg/content_cache_internal.h"
@@ -61,6 +64,32 @@
 #include "iceberg/util/macros.h"
 
 namespace iceberg {
+namespace {
+
+std::unordered_map<std::string, std::string> StorageProperties(const FileIO& io) {
+  auto properties = io.properties();
+  // Vended S3 credentials can rotate without changing the underlying storage.
+  // Cache options are checked separately and do not identify a storage context.
+  constexpr std::string_view kNonStorageProperties[] = {
+      "s3.access-key-id",
+      "s3.secret-access-key",
+      "s3.session-token",
+      "s3.session-token-expires-at-ms",
+      internal::ContentCacheOptions::kEnabled,
+      internal::ContentCacheOptions::kMaxTotalBytes,
+      internal::ContentCacheOptions::kMaxContentLength};
+  for (const auto key : kNonStorageProperties) {
+    properties.erase(std::string(key));
+  }
+  return properties;
+}
+
+bool HasS3Credentials(const FileIO& io) {
+  return io.properties().contains("s3.access-key-id") &&
+         io.properties().contains("s3.secret-access-key");
+}
+
+}  // namespace
 
 Result<std::shared_ptr<Table>> Table::Make(
     TableIdentifier identifier, std::shared_ptr<TableMetadata> metadata,
@@ -106,11 +135,7 @@ Table::Table(TableIdentifier identifier, std::shared_ptr<TableMetadata> metadata
 }
 
 void Table::InitializeManifestCache() {
-  auto properties = io_->properties();
-  for (const auto& [key, value] : metadata_->properties.configs()) {
-    properties[key] = value;
-  }
-  auto options = internal::ContentCacheOptions::FromProperties(properties);
+  auto options = internal::ContentCacheOptions::FromProperties(io_->properties());
   if (!options.has_value()) {
     // Table construction can happen after the catalog has committed new metadata.
     ICEBERG_LOG_WARN("Manifest cache disabled for table {}: {}", full_name_,
@@ -137,16 +162,26 @@ void Table::ClearManifestCache() {
   if (content_cache_) content_cache_->Clear();
 }
 
+Status Table::SetManifestCacheLimit(int32_t max_caches) {
+  ICEBERG_PRECHECK(max_caches > 0, "Global manifest cache limit must be positive");
+  internal::ContentCache::SetGlobalCapacity(max_caches);
+  return {};
+}
+
 void Table::ReuseManifestCache(const Table& source) {
   if (!content_cache_ || !source.content_cache_ || uuid() != source.uuid() ||
       content_cache_->options() != source.content_cache_->options()) {
     return;
   }
-  // A replaced storage context with no comparable properties may represent a different
-  // endpoint or filesystem. Only preserve bytes when its identity is known to match.
-  if (io_ != source.io_ &&
-      (io_->properties().empty() || io_->properties() != source.io_->properties())) {
-    return;
+  // Without comparable settings or S3 credentials, a replacement may represent a
+  // different opaque filesystem. S3 credentials alone use the default S3 endpoint.
+  if (io_ != source.io_) {
+    auto properties = StorageProperties(*io_);
+    if (properties != StorageProperties(*source.io_) ||
+        (properties.empty() && !HasS3Credentials(*io_) &&
+         !HasS3Credentials(*source.io_))) {
+      return;
+    }
   }
   content_cache_ = source.content_cache_;
   manifest_io_ = content_cache_->Wrap(io_);
@@ -156,13 +191,14 @@ const std::string& Table::uuid() const { return metadata_->table_uuid; }
 
 Status Table::Refresh() {
   ICEBERG_ASSIGN_OR_RAISE(auto refreshed_table, catalog_->LoadTable(identifier_));
+  refreshed_table->ReuseManifestCache(*this);
+  // Credentials and I/O configuration can change even when metadata is unchanged.
+  content_cache_ = std::move(refreshed_table->content_cache_);
+  manifest_io_ = std::move(refreshed_table->manifest_io_);
+  io_ = std::move(refreshed_table->io_);
   if (metadata_location_ != refreshed_table->metadata_file_location()) {
-    refreshed_table->ReuseManifestCache(*this);
-    content_cache_ = std::move(refreshed_table->content_cache_);
-    manifest_io_ = std::move(refreshed_table->manifest_io_);
     metadata_ = std::move(refreshed_table->metadata_);
     metadata_location_ = std::string(refreshed_table->metadata_file_location());
-    io_ = std::move(refreshed_table->io_);
     metadata_cache_ = std::make_unique<TableMetadataCache>(metadata_.get());
   }
   return {};

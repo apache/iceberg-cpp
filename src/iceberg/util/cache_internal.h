@@ -90,6 +90,16 @@ class LruCache {
   // Maximum combined weight allowed in this cache.
   int64_t max_weight() const { return max_weight_; }
 
+  // Apply a new limit immediately, evicting least recently used entries as needed.
+  void Resize(int64_t max_weight) {
+    ICEBERG_DCHECK(max_weight >= 0, "Cache maximum weight must be non-negative");
+    max_weight_ = max_weight;
+    while (total_weight_ > max_weight_) {
+      EvictLeastRecentlyUsed();
+    }
+    ReserveForUnitWeight();
+  }
+
   template <typename K>
   Value* Find(K&& key) {
     const auto it = map_.find(key);
@@ -185,7 +195,7 @@ class LruCache {
     }
   }
 
-  const int64_t max_weight_;
+  int64_t max_weight_;
   Weigher weigher_;
   int64_t total_weight_ = 0;
   // In most to least recently used order
