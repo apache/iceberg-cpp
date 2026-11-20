@@ -22,11 +22,7 @@
 /// \file iceberg/inspect/position_deletes_table.h
 /// \brief Define the position_deletes metadata table.
 
-#include <cstddef>
 #include <memory>
-#include <optional>
-#include <unordered_map>
-#include <vector>
 
 #include "iceberg/iceberg_export.h"
 #include "iceberg/inspect/metadata_table.h"
@@ -41,32 +37,27 @@ class ICEBERG_EXPORT PositionDeletesTable : public MetadataTable {
   /// \brief Create a position_deletes metadata table for a source table.
   /// \param table Source table whose current snapshot will be inspected.
   /// \return A metadata table or an error if its schema cannot be constructed.
-  static Result<std::unique_ptr<PositionDeletesTable>> Make(std::shared_ptr<Table> table);
+  static Result<std::unique_ptr<PositionDeletesTable>> Make(
+      std::shared_ptr<const Table> table);
 
   ~PositionDeletesTable() override;
 
   Kind kind() const noexcept override { return Kind::kPositionDeletes; }
 
-  const std::shared_ptr<Schema>& schema() const override { return schema_; }
+  std::shared_ptr<Schema> schema() const override { return schema_; }
 
-  /// \brief Materialize current position deletes as an Arrow stream.
-  /// Recreate this metadata table if the source schema, format, or partition specs
-  /// change.
-  Result<ArrowArrayStream> Scan() override;
-
-  /// \brief Scan with a projection of complete top-level fields.
-  Result<ArrowArrayStream> Scan(const Schema& projected_schema);
+ protected:
+  Result<std::shared_ptr<Schema>> SchemaForScan(
+      const TableMetadata& metadata) const override;
+  Result<std::unique_ptr<MetadataScan>> MakeScan(
+      internal::MetadataScanContext context, std::shared_ptr<FileIO> io) const override;
 
  private:
-  PositionDeletesTable(
-      std::shared_ptr<Table> table, std::shared_ptr<Schema> schema,
-      std::shared_ptr<StructType> partition_type,
-      std::unordered_map<int32_t, std::vector<std::optional<size_t>>> partition_mappings);
+  PositionDeletesTable(std::shared_ptr<const Table> table,
+                       std::shared_ptr<Schema> schema);
 
   std::shared_ptr<Schema> schema_;
   std::shared_ptr<const TableMetadata> source_metadata_;
-  std::shared_ptr<StructType> partition_type_;
-  std::unordered_map<int32_t, std::vector<std::optional<size_t>>> partition_mappings_;
 };
 
 }  // namespace iceberg

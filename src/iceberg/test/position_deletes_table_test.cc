@@ -43,6 +43,8 @@
 #include "iceberg/deletes/dv_writer.h"
 #include "iceberg/file_format.h"
 #include "iceberg/file_writer.h"
+#include "iceberg/inspect/metadata_scan_task.h"
+#include "iceberg/inspect/metadata_scan_task_reader.h"
 #include "iceberg/inspect/metadata_table.h"
 #include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/metadata_columns.h"
@@ -224,9 +226,21 @@ class PositionDeletesTableTest : public ScanTestBase {
         .value();
   }
 
-  std::unique_ptr<PositionDeletesTable> MakePositionDeletesTable(
+  std::unique_ptr<MetadataTable> MakePositionDeletesTable(
       const std::shared_ptr<Table>& table) {
-    return MetadataTable::Make<PositionDeletesTable>(table).value();
+    return table->Inspect(MetadataTableKind::kPositionDeletes).value();
+  }
+
+  static Result<ArrowArrayStream> Scan(const MetadataTable& table,
+                                       std::shared_ptr<Schema> projection = nullptr,
+                                       int64_t batch_size = 1024) {
+    ICEBERG_ASSIGN_OR_RAISE(auto builder, table.NewScan());
+    if (projection) builder->Project(std::move(projection));
+    ICEBERG_ASSIGN_OR_RAISE(auto scan, builder->Build());
+    ICEBERG_ASSIGN_OR_RAISE(auto tasks, scan->PlanTasks());
+    ICEBERG_ASSIGN_OR_RAISE(auto reader,
+                            MetadataScanTaskReader::Make({.batch_size = batch_size}));
+    return reader->Open(*tasks.at(0));
   }
 
   static std::shared_ptr<::arrow::RecordBatch> Import(ArrowArrayStream stream,
@@ -257,7 +271,7 @@ TEST_P(PositionDeletesTableTest, SchemaAndEmptyScan) {
   }
   EXPECT_EQ(names, expected);
 
-  ICEBERG_UNWRAP_OR_FAIL(auto array, table->Scan());
+  ICEBERG_UNWRAP_OR_FAIL(auto array, Scan(*table));
   auto batch = Import(std::move(array), *table->schema());
   EXPECT_EQ(batch->num_rows(), 0);
 }
@@ -277,8 +291,8 @@ TEST_P(PositionDeletesTableTest, ExpandsParquetAndProjectsColumns) {
 
   const auto& fields = table->schema()->fields();
   auto projected =
-      std::make_unique<Schema>(std::vector<SchemaField>{fields[5], fields[1], fields[3]});
-  ICEBERG_UNWRAP_OR_FAIL(auto array, table->Scan(*projected));
+      std::make_shared<Schema>(std::vector<SchemaField>{fields[5], fields[1], fields[3]});
+  ICEBERG_UNWRAP_OR_FAIL(auto array, Scan(*table, projected));
   auto batch = Import(std::move(array), *projected);
 
   ASSERT_EQ(batch->num_rows(), 2);
@@ -314,7 +328,7 @@ TEST_F(PositionDeletesTableTest, SurfacesDeletedRowsFromParquet) {
   auto table = MakePositionDeletesTable(
       MakeTable(2, unpartitioned_spec_, MakeSnapshot(2, kSnapshotId, 1, {manifest})));
 
-  ICEBERG_UNWRAP_OR_FAIL(auto array, table->Scan());
+  ICEBERG_UNWRAP_OR_FAIL(auto array, Scan(*table));
   auto batch = Import(std::move(array), *table->schema());
   ASSERT_EQ(batch->num_rows(), 1);
 
@@ -347,7 +361,7 @@ TEST_F(PositionDeletesTableTest, DoesNotDefaultOmittedDeletedRowFields) {
   auto table = MakePositionDeletesTable(
       MakeTable(3, unpartitioned_spec_, MakeSnapshot(3, kSnapshotId, 1, {manifest})));
 
-  ICEBERG_UNWRAP_OR_FAIL(auto array, table->Scan());
+  ICEBERG_UNWRAP_OR_FAIL(auto array, Scan(*table));
   auto batch = Import(std::move(array), *table->schema());
   ASSERT_EQ(batch->num_rows(), 1);
 
@@ -374,7 +388,7 @@ TEST_F(PositionDeletesTableTest, RejectsNullDeletedRowsFromParquet) {
   auto table = MakePositionDeletesTable(
       MakeTable(2, unpartitioned_spec_, MakeSnapshot(2, kSnapshotId, 1, {manifest})));
 
-  auto result = table->Scan();
+  auto result = Scan(*table);
   EXPECT_THAT(result, IsError(ErrorKind::kInvalidArrowData));
   EXPECT_THAT(result, HasErrorMessage("null row values"));
 }
@@ -424,9 +438,13 @@ TEST_F(PositionDeletesTableTest, InspectsLogicalPartitionTypes) {
     Literal value;
     const char* expected;
   };
+  ICEBERG_UNWRAP_OR_FAIL(auto uuid,
+                         Uuid::FromString("30313233-3435-3637-3839-616263646566"));
   for (const auto& test :
        std::vector<Case>{{"decimal", Literal::Decimal(-1234, 10, 2), "-12.34"},
-                         {"date", Literal::Date(1), "1970-01-02"}}) {
+                         {"date", Literal::Date(1), "1970-01-02"},
+                         {"fixed", Literal::Fixed({65, 66}), "AB"},
+                         {"uuid", Literal::UUID(uuid), "0123456789abcdef"}}) {
     SCOPED_TRACE(test.name);
     schema_ = std::make_shared<Schema>(
         std::vector<SchemaField>{SchemaField::MakeRequired(1, "key", test.value.type())});
@@ -443,11 +461,15 @@ TEST_F(PositionDeletesTableTest, InspectsLogicalPartitionTypes) {
         {MakeEntry(ManifestStatus::kAdded, kSnapshotId, 1, files.front())}, shared_spec);
     auto table = MakePositionDeletesTable(
         MakeTable(3, shared_spec, MakeSnapshot(3, kSnapshotId, 1, {manifest})));
-    ICEBERG_UNWRAP_OR_FAIL(auto stream, table->Scan());
+    ICEBERG_UNWRAP_OR_FAIL(auto stream, Scan(*table));
     auto batch = Import(std::move(stream), *table->schema());
     ASSERT_EQ(batch->num_rows(), 1);
     auto partitions = std::static_pointer_cast<::arrow::StructArray>(batch->column(3));
     auto value = partitions->field(0)->GetScalar(0).ValueOrDie();
+    if (test.value.type()->type_id() == TypeId::kUuid) {
+      ASSERT_EQ(value->type->id(), ::arrow::Type::EXTENSION);
+      value = static_cast<const ::arrow::ExtensionScalar&>(*value).value;
+    }
     EXPECT_EQ(value->ToString(), test.expected);
   }
 }
@@ -477,7 +499,7 @@ TEST_F(PositionDeletesTableTest, PromotesHistoricalPartitionValues) {
                                      historical_schema);
 
   auto table = MakePositionDeletesTable(source);
-  ICEBERG_UNWRAP_OR_FAIL(auto array, table->Scan());
+  ICEBERG_UNWRAP_OR_FAIL(auto array, Scan(*table));
   auto batch = Import(std::move(array), *table->schema());
   ASSERT_EQ(batch->num_rows(), 1);
   auto partitions = std::static_pointer_cast<::arrow::StructArray>(batch->column(3));
@@ -513,10 +535,11 @@ TEST_F(PositionDeletesTableTest, OmitsDroppedHistoricalPartitionSources) {
 
 TEST_F(PositionDeletesTableTest, ProjectsEmptyScan) {
   auto table = MakePositionDeletesTable(MakeTable(3, unpartitioned_spec_));
-  ICEBERG_UNWRAP_OR_FAIL(auto projected, table->schema()->Select(std::vector<std::string>{
-                                             "pos", "delete_file_path"}));
+  ICEBERG_UNWRAP_OR_FAIL(
+      std::shared_ptr<Schema> projected,
+      table->schema()->Select(std::vector<std::string>{"pos", "delete_file_path"}));
 
-  ICEBERG_UNWRAP_OR_FAIL(auto array, table->Scan(*projected));
+  ICEBERG_UNWRAP_OR_FAIL(auto array, Scan(*table, projected));
   auto batch = Import(std::move(array), *projected);
   EXPECT_EQ(batch->num_rows(), 0);
   ASSERT_EQ(batch->num_columns(), 2);
@@ -526,12 +549,12 @@ TEST_F(PositionDeletesTableTest, ProjectsEmptyScan) {
 
 TEST_F(PositionDeletesTableTest, RejectsNestedRowProjection) {
   auto table = MakePositionDeletesTable(MakeTable(3, unpartitioned_spec_));
-  ICEBERG_UNWRAP_OR_FAIL(auto projected,
+  ICEBERG_UNWRAP_OR_FAIL(std::shared_ptr<Schema> projected,
                          table->schema()->Select(std::vector<std::string>{"row.id"}));
 
-  auto result = table->Scan(*projected);
-  EXPECT_THAT(result, IsError(ErrorKind::kInvalidArgument));
-  EXPECT_THAT(result, HasErrorMessage("only supports complete top-level fields"));
+  auto result = Scan(*table, projected);
+  EXPECT_THAT(result, IsError(ErrorKind::kNotSupported));
+  EXPECT_THAT(result, HasErrorMessage("Partial projection"));
 }
 
 TEST_F(PositionDeletesTableTest, ExpandsUpgradedMixedTable) {
@@ -555,7 +578,7 @@ TEST_F(PositionDeletesTableTest, ExpandsUpgradedMixedTable) {
       MakeTable(3, unpartitioned_spec_,
                 MakeSnapshot(3, kSnapshotId, 2, {old_manifest, new_manifest})));
 
-  ICEBERG_UNWRAP_OR_FAIL(auto array, table->Scan());
+  ICEBERG_UNWRAP_OR_FAIL(auto array, Scan(*table));
   auto batch = Import(std::move(array), *table->schema());
   ASSERT_EQ(batch->num_rows(), 4);
 
@@ -590,6 +613,8 @@ TEST_F(PositionDeletesTableTest, ExpandsUpgradedMixedTable) {
 TEST_F(PositionDeletesTableTest, RequiresRecreationAfterSourceLayoutChange) {
   auto source = MakeTable(2, unpartitioned_spec_);
   auto table = MakePositionDeletesTable(source);
+  ICEBERG_UNWRAP_OR_FAIL(auto builder, table->NewScan());
+  ICEBERG_UNWRAP_OR_FAIL(auto captured, builder->Build());
   auto catalog = std::dynamic_pointer_cast<MockCatalog>(source->catalog());
   ASSERT_NE(catalog, nullptr);
   auto upgraded = MakeTable(3, unpartitioned_spec_);
@@ -598,16 +623,19 @@ TEST_F(PositionDeletesTableTest, RequiresRecreationAfterSourceLayoutChange) {
                                                upgraded->io(), upgraded->catalog()));
   EXPECT_CALL(*catalog, LoadTable(::testing::_)).WillOnce(::testing::Return(upgraded));
   ASSERT_THAT(source->Refresh(), IsOk());
-  EXPECT_THAT(table->Scan(), HasErrorMessage("recreate the position_deletes table"));
+  EXPECT_THAT(Scan(*table), HasErrorMessage("recreate the position_deletes table"));
+  ICEBERG_UNWRAP_OR_FAIL(auto original_stream, captured->ToArrowArrayStream());
+  EXPECT_EQ(Import(std::move(original_stream), *table->schema())->num_columns(), 5);
   auto recreated = MakePositionDeletesTable(source);
-  ICEBERG_UNWRAP_OR_FAIL(auto stream, recreated->Scan());
+  ICEBERG_UNWRAP_OR_FAIL(auto stream, Scan(*recreated));
   auto batch = Import(std::move(stream), *recreated->schema());
   EXPECT_EQ(batch->num_rows(), 0);
   EXPECT_EQ(batch->num_columns(), 7);
 }
 
 TEST_F(PositionDeletesTableTest, ProjectsAcrossBoundedBatches) {
-  std::vector<int64_t> positions(MetadataTable::kBatchSize + 7);
+  constexpr int64_t kBatchSize = 8;
+  std::vector<int64_t> positions(kBatchSize + 7);
   std::iota(positions.begin(), positions.end(), 0);
   auto files = WriteDeletionVectors("batched.puffin", {{"data.parquet", positions}},
                                     unpartitioned_spec_, PartitionValues{});
@@ -619,19 +647,19 @@ TEST_F(PositionDeletesTableTest, ProjectsAcrossBoundedBatches) {
       MakeTable(3, unpartitioned_spec_, MakeSnapshot(3, kSnapshotId, 1, {manifest})));
   const auto& fields = table->schema()->fields();
   auto projected =
-      std::make_unique<Schema>(std::vector<SchemaField>{fields[1], fields[0]});
-  ICEBERG_UNWRAP_OR_FAIL(auto stream, table->Scan(*projected));
+      std::make_shared<Schema>(std::vector<SchemaField>{fields[1], fields[0]});
+  ICEBERG_UNWRAP_OR_FAIL(auto stream, Scan(*table, projected, kBatchSize));
   auto reader = ::arrow::ImportRecordBatchReader(&stream).ValueOrDie();
   auto first = reader->Next().ValueOrDie();
   ASSERT_NE(first, nullptr);
   EXPECT_EQ(first->schema()->field(0)->name(), "pos");
   EXPECT_EQ(first->schema()->field(1)->name(), "file_path");
-  EXPECT_EQ(first->num_rows(), MetadataTable::kBatchSize);
+  EXPECT_EQ(first->num_rows(), kBatchSize);
   auto second = reader->Next().ValueOrDie();
   ASSERT_NE(second, nullptr);
   EXPECT_EQ(second->num_rows(), 7);
   auto values = std::static_pointer_cast<::arrow::Int64Array>(second->column(0));
-  EXPECT_EQ(values->Value(0), MetadataTable::kBatchSize);
+  EXPECT_EQ(values->Value(0), kBatchSize);
   EXPECT_EQ(reader->Next().ValueOrDie(), nullptr);
 }
 
@@ -652,7 +680,7 @@ TEST_F(PositionDeletesTableTest, ExpandsMultiplePuffinBlobs) {
   auto table = MakePositionDeletesTable(
       MakeTable(3, unpartitioned_spec_, MakeSnapshot(3, kSnapshotId, 1, {manifest})));
 
-  ICEBERG_UNWRAP_OR_FAIL(auto array, table->Scan());
+  ICEBERG_UNWRAP_OR_FAIL(auto array, Scan(*table));
   auto batch = Import(std::move(array), *table->schema());
   ASSERT_EQ(batch->num_rows(), 5);
 
