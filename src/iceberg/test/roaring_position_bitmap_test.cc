@@ -42,7 +42,6 @@ namespace iceberg {
 namespace {
 
 constexpr size_t kBitmapCountSizeBytes = 8;
-constexpr size_t kBitmapKeySizeBytes = 4;
 constexpr int64_t kBitmapSize = 0xFFFFFFFFL;
 constexpr int64_t kBitmapOffset = kBitmapSize + 1L;
 constexpr int64_t kContainerSize = 0xFFFF;  // Character.MAX_VALUE
@@ -453,31 +452,12 @@ TEST(RoaringPositionBitmapTest, TestSerializeOrdersKeysAscending) {
   bitmap.Add(3);
 
   ICEBERG_UNWRAP_OR_FAIL(auto serialized, bitmap.Serialize());
-  const char* cursor = serialized.data();
-  size_t remaining = serialized.size();
-  ASSERT_GE(remaining, kBitmapCountSizeBytes);
-  ASSERT_EQ(ReadLittleEndian<int64_t>(cursor), 4);
-  cursor += kBitmapCountSizeBytes;
-  remaining -= kBitmapCountSizeBytes;
-
-  std::vector<int32_t> keys;
-  const std::vector<uint64_t> expected_cardinalities = {2, 1, 1, 1};
-  while (keys.size() < 4) {
-    ASSERT_GE(remaining, kBitmapKeySizeBytes);
-    keys.push_back(ReadLittleEndian<int32_t>(cursor));
-    cursor += kBitmapKeySizeBytes;
-    remaining -= kBitmapKeySizeBytes;
-
-    auto bucket = roaring::Roaring::readSafe(cursor, remaining);
-    ASSERT_EQ(bucket.cardinality(), expected_cardinalities[keys.size() - 1]);
-    const size_t bucket_size = bucket.getSizeInBytes(/*portable=*/true);
-    ASSERT_LE(bucket_size, remaining);
-    cursor += bucket_size;
-    remaining -= bucket_size;
-  }
-
-  EXPECT_EQ(keys, (std::vector<int32_t>{0, 1, 100, std::numeric_limits<int32_t>::max()}));
-  EXPECT_EQ(remaining, 0u);
+  EXPECT_EQ(ReadLittleEndian<int64_t>(serialized.data()), 4);
+  // Deserialization requires strictly increasing keys.
+  ICEBERG_UNWRAP_OR_FAIL(auto restored, RoaringPositionBitmap::Deserialize(serialized));
+  AssertEqualContent(restored,
+                     {3, std::numeric_limits<int32_t>::max(), (int64_t{1} << 32) | 7,
+                      (int64_t{100} << 32) | 9, std::numeric_limits<int64_t>::max()});
 }
 
 TEST(RoaringPositionBitmapTest, TestSerializeDeserializeAllContainerBitmap) {

@@ -147,9 +147,9 @@ Result<size_t> PositionDeleteIndex::PrepareForSerialization() {
   bitmap_.Optimize();  // run-length encode before serializing
   const size_t vector_size = bitmap_.SerializedSizeInBytes();
   const size_t magic_and_vector_size = kMagicBytes + vector_size;
-  ICEBERG_PRECHECK(magic_and_vector_size <= kMaxSerializedLength,
-                   "Deletion vector is too large to serialize: {} bytes",
-                   magic_and_vector_size);
+  const size_t blob_size = kLengthPrefixBytes + magic_and_vector_size + kCrcBytes;
+  ICEBERG_PRECHECK(blob_size <= kMaxSerializedLength,
+                   "Deletion vector is too large to serialize: {} bytes", blob_size);
   return magic_and_vector_size;
 }
 
