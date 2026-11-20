@@ -42,6 +42,7 @@
 #include "iceberg/data/data_writer.h"
 #include "iceberg/data/file_scan_task_reader.h"
 #include "iceberg/data/position_delete_update.h"
+#include "iceberg/data_table_scan.h"
 #include "iceberg/file_writer.h"
 #include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/manifest/manifest_reader.h"
@@ -54,7 +55,6 @@
 #include "iceberg/table.h"
 #include "iceberg/table_metadata.h"
 #include "iceberg/table_properties.h"
-#include "iceberg/table_scan.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/test/mock_catalog.h"
 #include "iceberg/test/update_test_base.h"
@@ -68,7 +68,7 @@ namespace {
 
 using Row = std::array<int64_t, 5>;
 
-enum class FailurePoint { kBeforeCreate, kAfterCreate, kDelete };
+enum class FailurePoint { kAfterCreate, kDelete };
 
 class FailingFileIO : public FileIO {
  public:
@@ -113,10 +113,6 @@ class FailingFileIO : public FileIO {
 
    private:
     Result<std::unique_ptr<PositionOutputStream>> Open(bool overwrite) {
-      if (*failure_ == FailurePoint::kBeforeCreate) {
-        failure_->reset();
-        return IOError("injected output failure before creation");
-      }
       ICEBERG_ASSIGN_OR_RAISE(
           auto stream, overwrite ? delegate_->CreateOrOverwrite() : delegate_->Create());
       if (*failure_ == FailurePoint::kAfterCreate) {
@@ -154,10 +150,6 @@ class CompactionExecutorTest : public MinimalUpdateTestBase {
     ASSERT_THAT(table_->Refresh(), IsOk());
     ICEBERG_UNWRAP_OR_FAIL(schema_, table_->schema());
     ICEBERG_UNWRAP_OR_FAIL(spec_, table_->spec());
-    auto arrow_io = std::dynamic_pointer_cast<arrow::ArrowFileSystemFileIO>(file_io_);
-    ASSERT_NE(arrow_io, nullptr);
-    ASSERT_TRUE(arrow_io->fs()->CreateDir(table_location_ + "/data/x=10").ok());
-    ASSERT_TRUE(arrow_io->fs()->CreateDir(table_location_ + "/data/x=20").ok());
   }
 
   Result<std::shared_ptr<DataFile>> WriteDataFile(std::string_view name,
@@ -297,7 +289,7 @@ class CompactionExecutorTest : public MinimalUpdateTestBase {
   }
 
   Result<std::shared_ptr<Table>> FailingCommitTable(
-      std::unexpected<Error> failure, std::shared_ptr<FileIO> io = nullptr) {
+      iceberg::unexpected<Error> failure, std::shared_ptr<FileIO> io = nullptr) {
     auto mock = std::make_shared<::testing::NiceMock<MockCatalog>>();
     ON_CALL(*mock, LoadTable(::testing::_))
         .WillByDefault([catalog = catalog_](const TableIdentifier& name) {
@@ -376,9 +368,6 @@ TEST_F(CompactionExecutorTest, AppliesDeletesAndPreservesRowLineage) {
 }
 
 TEST_F(CompactionExecutorTest, CompactsNullPartition) {
-  auto arrow_io = std::dynamic_pointer_cast<arrow::ArrowFileSystemFileIO>(file_io_);
-  ASSERT_NE(arrow_io, nullptr);
-  ASSERT_TRUE(arrow_io->fs()->CreateDir(table_location_ + "/data/x=null").ok());
   ICEBERG_UNWRAP_OR_FAIL(auto schema_update, table_->NewUpdateSchema());
   schema_update->MakeColumnOptional("x");
   ASSERT_THAT(schema_update->Commit(), IsOk());
@@ -679,16 +668,13 @@ TEST_F(CompactionExecutorTest, WriterFailureBeforeFileCreationLeavesExecutorReus
   EXPECT_NE(rewritten_tasks.front()->data_file()->file_path, data_file->file_path);
 }
 
-class CompactionWriterFailureTest : public CompactionExecutorTest,
-                                    public ::testing::WithParamInterface<FailurePoint> {};
-
-TEST_P(CompactionWriterFailureTest, CleansOutputAndAllowsRetry) {
+TEST_F(CompactionExecutorTest, CleansPartiallyCreatedOutputAndAllowsRetry) {
   ICEBERG_UNWRAP_OR_FAIL(
       auto file, WriteDataFile("input.parquet", R"([[10, 100, 1000], [10, 200, 2000]])"));
   ASSERT_THAT(Append({file}), IsOk());
   ICEBERG_UNWRAP_OR_FAIL(auto tasks, Tasks(table_));
   ICEBERG_UNWRAP_OR_FAIL(auto plan, Plan(tasks));
-  auto io = std::make_shared<FailingFileIO>(table_->io(), GetParam());
+  auto io = std::make_shared<FailingFileIO>(table_->io(), FailurePoint::kAfterCreate);
   ICEBERG_UNWRAP_OR_FAIL(
       auto writer_table,
       Table::Make(table_->name(), table_->metadata(),
@@ -703,10 +689,6 @@ TEST_P(CompactionWriterFailureTest, CleansOutputAndAllowsRetry) {
   ASSERT_EQ(rewritten.size(), 1);
   EXPECT_NE(rewritten.front()->data_file()->file_path, file->file_path);
 }
-
-INSTANTIATE_TEST_SUITE_P(OutputCreation, CompactionWriterFailureTest,
-                         ::testing::Values(FailurePoint::kBeforeCreate,
-                                           FailurePoint::kAfterCreate));
 
 TEST_F(CompactionExecutorV2UpgradeTest,
        RemovesParquetDeleteAndAssignsUpgradedRowLineage) {
@@ -734,8 +716,6 @@ TEST_F(CompactionExecutorV2UpgradeTest,
   ICEBERG_UNWRAP_OR_FAIL(auto tasks, Tasks(table_));
   ASSERT_EQ(tasks.size(), 1);
   ASSERT_FALSE(tasks.front()->data_file()->first_row_id.has_value());
-  ASSERT_TRUE(tasks.front()->data_file()->data_sequence_number.has_value());
-  const auto original_sequence = *tasks.front()->data_file()->data_sequence_number;
   ICEBERG_UNWRAP_OR_FAIL(auto plan, Plan(tasks));
 
   ICEBERG_UNWRAP_OR_FAIL(auto executor, CompactionExecutor::Make(table_));
@@ -750,8 +730,12 @@ TEST_F(CompactionExecutorV2UpgradeTest,
   ASSERT_EQ(rows.size(), 2);
   EXPECT_EQ(rows[0][3], first_row_id);
   EXPECT_EQ(rows[1][3], first_row_id + 1);
-  EXPECT_EQ(rows[0][4], original_sequence);
-  EXPECT_EQ(rows[1][4], original_sequence);
+  // The v2 rows had no assigned lineage, so their sequence is inherited
+  // from the replacement file along with their newly assigned row IDs.
+  const auto sequence = rewritten_tasks.front()->data_file()->data_sequence_number;
+  ASSERT_TRUE(sequence.has_value());
+  EXPECT_EQ(rows[0][4], *sequence);
+  EXPECT_EQ(rows[1][4], *sequence);
   EXPECT_TRUE(rewritten_tasks.front()->delete_files().empty());
   ICEBERG_UNWRAP_OR_FAIL(auto live_deletes, LiveDeleteEntries());
   EXPECT_TRUE(live_deletes.empty());

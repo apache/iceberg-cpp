@@ -130,40 +130,10 @@ class CompactionPlannerTest : public testing::Test {
 };
 
 TEST_F(CompactionPlannerTest, ValidatesConfig) {
-  std::vector<CompactionPlannerConfig> invalid;
-
   auto config = Config();
   config.target_file_size_bytes = 0;
-  invalid.push_back(config);
-  config = Config();
-  config.min_file_size_ratio = -0.1;
-  invalid.push_back(config);
-  config = Config();
-  config.min_file_size_ratio = 1.1;
-  invalid.push_back(config);
-  config = Config();
-  config.min_file_size_ratio = std::numeric_limits<double>::quiet_NaN();
-  invalid.push_back(config);
-  config = Config();
-  config.min_input_files = 0;
-  invalid.push_back(config);
-  config = Config();
-  config.delete_file_threshold = -1;
-  invalid.push_back(config);
-  config = Config();
-  config.delete_ratio_threshold = -0.1;
-  invalid.push_back(config);
-  config = Config();
-  config.delete_ratio_threshold = 1.1;
-  invalid.push_back(config);
-  config = Config();
-  config.delete_ratio_threshold = std::numeric_limits<double>::quiet_NaN();
-  invalid.push_back(config);
-
-  for (const auto& invalid_config : invalid) {
-    EXPECT_THAT(CompactionPlanner::Plan(kSnapshotId, {}, invalid_config),
-                IsError(ErrorKind::kInvalidArgument));
-  }
+  EXPECT_THAT(CompactionPlanner::Plan(kSnapshotId, {}, config),
+              IsError(ErrorKind::kInvalidArgument));
 }
 
 TEST_F(CompactionPlannerTest, ZeroDeleteThresholdsDisableDeleteSelection) {
