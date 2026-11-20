@@ -32,6 +32,7 @@
 #include <gtest/gtest.h>
 
 #include "iceberg/constants.h"
+#include "iceberg/inspect/metadata_scan_task.h"
 #include "iceberg/inspect/metadata_scan_task_reader.h"
 #include "iceberg/inspect/metadata_table.h"
 #include "iceberg/test/arrow_test_util.h"
@@ -241,14 +242,12 @@ TEST_F(SnapshotsTableTest, ScanProjectedColumns) {
   EXPECT_EQ(snapshot_ids->Value(1), 2);
 }
 
-TEST_F(SnapshotsTableTest, DirectScanDoesNotRequireFileIO) {
-  internal::MetadataScanContext context{
-      .kind = MetadataTableKind::kSnapshots,
-      .table_metadata = table_->metadata(),
-      .schema = SnapshotsTable::CanonicalSchema(),
-      .projected_schema = SnapshotsTable::CanonicalSchema()};
-  ICEBERG_UNWRAP_OR_FAIL(auto scan, SnapshotsScan::Make(std::move(context)));
-  ICEBERG_UNWRAP_OR_FAIL(auto stream, scan->ToArrowArrayStream());
+TEST_F(SnapshotsTableTest, StaticTaskDoesNotRequireFileIO) {
+  ICEBERG_UNWRAP_OR_FAIL(auto task, StaticMetadataTask::Make(
+                                        MetadataTableKind::kSnapshots, table_->metadata(),
+                                        SnapshotsTable::CanonicalSchema()));
+  ICEBERG_UNWRAP_OR_FAIL(auto reader, MetadataScanTaskReader::Make({}));
+  ICEBERG_UNWRAP_OR_FAIL(auto stream, reader->Open(*task));
   ICEBERG_UNWRAP_OR_FAIL(auto batches, ReadAllBatches(std::move(stream)));
   ASSERT_EQ(batches.size(), 1);
   EXPECT_EQ(batches.front()->num_rows(), 2);
