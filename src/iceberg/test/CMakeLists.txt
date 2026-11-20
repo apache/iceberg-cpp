@@ -71,6 +71,7 @@ endfunction()
 add_iceberg_test(schema_test
                  SOURCES
                  assign_id_visitor_test.cc
+                 content_stats_util_test.cc
                  name_mapping_test.cc
                  partition_field_test.cc
                  partition_spec_test.cc

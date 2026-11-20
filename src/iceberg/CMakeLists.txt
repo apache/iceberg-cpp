@@ -117,6 +117,7 @@ set(ICEBERG_SOURCES
     sort_field.cc
     sort_order.cc
     statistics_file.cc
+    stats/content_stats_util.cc
     table.cc
     table_identifier.cc
     table_metadata.cc
@@ -303,6 +304,7 @@ add_subdirectory(expression)
 add_subdirectory(manifest)
 add_subdirectory(puffin)
 add_subdirectory(row)
+add_subdirectory(stats)
 add_subdirectory(update)
 add_subdirectory(util)
 add_subdirectory(inspect)
