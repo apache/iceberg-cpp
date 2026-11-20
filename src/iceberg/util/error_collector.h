@@ -181,12 +181,12 @@ class ICEBERG_EXPORT ErrorCollector {
   /// \brief Check if any errors have been collected
   ///
   /// \return true if there are accumulated errors
-  [[nodiscard]] bool has_errors() const { return !errors_.empty(); }
+  bool has_errors() const { return !errors_.empty(); }
 
   /// \brief Get the number of errors collected
   ///
   /// \return The count of accumulated errors
-  [[nodiscard]] size_t error_count() const { return errors_.size(); }
+  size_t error_count() const { return errors_.size(); }
 
   /// \brief Check for accumulated errors and return them if any exist
   ///
@@ -220,7 +220,7 @@ class ICEBERG_EXPORT ErrorCollector {
   void ClearErrors() { errors_.clear(); }
 
   /// \brief Get read-only access to all collected errors
-  [[nodiscard]] const std::vector<Error>& errors() const { return errors_; }
+  const std::vector<Error>& errors() const { return errors_; }
 
  private:
   void RecordError(Error err) { errors_.push_back(std::move(err)); }
