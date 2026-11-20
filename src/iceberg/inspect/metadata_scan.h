@@ -52,6 +52,9 @@ struct MetadataScanContext {
   std::optional<int64_t> snapshot_id;
   std::string ref_name;
   std::optional<int64_t> as_of_time_in_millis;
+
+  /// \brief Validate the metadata and schemas required by all scans.
+  ICEBERG_EXPORT Status Validate() const;
 };
 
 }  // namespace internal
@@ -97,10 +100,12 @@ class ICEBERG_EXPORT MetadataScanBuilder : public ErrorCollector {
   Result<std::unique_ptr<MetadataScan>> Build();
 
  private:
-  explicit MetadataScanBuilder(const MetadataTable& table);
+  MetadataScanBuilder(const MetadataTable& table, internal::MetadataScanContext context,
+                      std::shared_ptr<FileIO> io);
 
   const MetadataTable* table_;
   internal::MetadataScanContext context_;
+  const std::shared_ptr<FileIO> io_;
 };
 
 /// \brief A metadata scan that plans tasks or reads all of them as Arrow batches.

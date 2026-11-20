@@ -19,9 +19,12 @@
 
 #pragma once
 
+#include <cstdint>
 #include <memory>
 
+#include "iceberg/arrow_c_data.h"
 #include "iceberg/iceberg_export.h"
+#include "iceberg/inspect/metadata_scan.h"
 #include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
 
@@ -37,6 +40,8 @@ class ICEBERG_EXPORT MetadataScanTask {
   enum class TaskKind {
     /// StaticMetadataTask reads in-memory table metadata (snapshots, history, refs).
     kStatic,
+    /// SnapshotMetadataTask reads snapshot manifests and their file entries.
+    kSnapshot,
   };
 
   virtual ~MetadataScanTask() = default;
@@ -83,6 +88,35 @@ class ICEBERG_EXPORT StaticMetadataTask : public MetadataScanTask {
   const MetadataTableKind table_kind_;
   const std::shared_ptr<const TableMetadata> metadata_;
   const std::shared_ptr<Schema> projected_schema_;
+};
+
+/// \brief Task retaining a snapshot scan's captured settings and FileIO.
+///
+/// Rows are read through an in-process callback. Splitting work across multiple
+/// tasks and serializable task descriptions are future work for parallel execution.
+class ICEBERG_EXPORT SnapshotMetadataTask : public MetadataScanTask {
+ public:
+  using ReadRowsFunction = Result<ArrowArrayStream> (*)(
+      const internal::MetadataScanContext& /*context*/,
+      const std::shared_ptr<FileIO>& /*io*/, int64_t /*batch_size*/);
+
+  /// \brief Create a task owning the scan settings, FileIO, and row reader.
+  static Result<std::shared_ptr<SnapshotMetadataTask>> Make(
+      internal::MetadataScanContext context, std::shared_ptr<FileIO> io,
+      ReadRowsFunction read_rows);
+
+  Result<ArrowArrayStream> Open(int64_t batch_size) const;
+
+  TaskKind task_kind() const override { return TaskKind::kSnapshot; }
+  MetadataTableKind table_kind() const override { return context_.kind; }
+
+ private:
+  SnapshotMetadataTask(internal::MetadataScanContext context, std::shared_ptr<FileIO> io,
+                       ReadRowsFunction read_rows);
+
+  const internal::MetadataScanContext context_;
+  const std::shared_ptr<FileIO> io_;
+  const ReadRowsFunction read_rows_;
 };
 
 }  // namespace iceberg

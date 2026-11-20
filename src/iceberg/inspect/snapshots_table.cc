@@ -100,9 +100,7 @@ SnapshotsTable::SnapshotsTable(std::shared_ptr<const Table> table)
 
 SnapshotsTable::~SnapshotsTable() = default;
 
-const std::shared_ptr<Schema>& SnapshotsTable::schema() const {
-  return CanonicalSchema();
-}
+std::shared_ptr<Schema> SnapshotsTable::schema() const { return CanonicalSchema(); }
 
 const std::shared_ptr<Schema>& SnapshotsTable::CanonicalSchema() {
   static const auto schema = std::make_shared<Schema>(std::vector<SchemaField>{
@@ -125,7 +123,7 @@ Result<std::unique_ptr<SnapshotsTable>> SnapshotsTable::Make(
 }
 
 Result<std::unique_ptr<MetadataScan>> SnapshotsTable::MakeScan(
-    internal::MetadataScanContext context) const {
+    internal::MetadataScanContext context, std::shared_ptr<FileIO> /*io*/) const {
   return SnapshotsScan::Make(std::move(context));
 }
 
@@ -164,10 +162,7 @@ Result<std::unique_ptr<SnapshotsScan>> SnapshotsScan::Make(
       context.as_of_time_in_millis.has_value()) {
     return NotSupported("Metadata table does not support time travel");
   }
-  ICEBERG_PRECHECK(context.table_metadata != nullptr, "Table metadata cannot be null");
-  ICEBERG_PRECHECK(context.schema != nullptr, "Metadata table schema cannot be null");
-  ICEBERG_PRECHECK(context.projected_schema != nullptr,
-                   "Projected schema cannot be null");
+  ICEBERG_RETURN_UNEXPECTED(context.Validate());
   ICEBERG_RETURN_UNEXPECTED(internal::SelectAppendFns<Snapshot>(
       *SnapshotsTable::CanonicalSchema(), *context.projected_schema, kSnapshotColumns));
   ICEBERG_ASSIGN_OR_RAISE(auto task,

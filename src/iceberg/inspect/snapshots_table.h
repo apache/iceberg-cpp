@@ -48,11 +48,11 @@ class ICEBERG_EXPORT SnapshotsTable : public MetadataTable {
     return MetadataTableKind::kSnapshots;
   }
 
-  const std::shared_ptr<Schema>& schema() const override;
+  std::shared_ptr<Schema> schema() const override;
 
  protected:
   Result<std::unique_ptr<MetadataScan>> MakeScan(
-      internal::MetadataScanContext context) const override;
+      internal::MetadataScanContext context, std::shared_ptr<FileIO> io) const override;
 
  private:
   friend class MetadataScanTaskReader;
