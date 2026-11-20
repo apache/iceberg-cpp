@@ -54,6 +54,7 @@
 #include "iceberg/util/location_util.h"
 #include "iceberg/util/macros.h"
 #include "iceberg/util/property_util.h"
+#include "iceberg/util/string_util.h"
 #include "iceberg/util/timepoint.h"
 #include "iceberg/util/type_util.h"
 #include "iceberg/util/uuid.h"
@@ -197,7 +198,29 @@ std::string ToString(const MetadataLogEntry& entry) {
 Result<std::unique_ptr<TableMetadata>> TableMetadata::Make(
     const iceberg::Schema& schema, const iceberg::PartitionSpec& spec,
     const iceberg::SortOrder& sort_order, const std::string& location,
+    const std::unordered_map<std::string, std::string>& properties) {
+  auto persisted_properties = properties;
+  int format_version = kDefaultTableFormatVersion;
+  auto iter = persisted_properties.find(TableProperties::kFormatVersion.key());
+  if (iter != persisted_properties.end()) {
+    auto parsed_version = StringUtils::ParseNumber<int>(iter->second);
+    if (!parsed_version.has_value()) {
+      return InvalidArgument("Invalid format-version property: '{}'", iter->second);
+    }
+    format_version = parsed_version.value();
+    persisted_properties.erase(iter);
+  }
+  return Make(schema, spec, sort_order, location, persisted_properties, format_version);
+}
+
+Result<std::unique_ptr<TableMetadata>> TableMetadata::Make(
+    const iceberg::Schema& schema, const iceberg::PartitionSpec& spec,
+    const iceberg::SortOrder& sort_order, const std::string& location,
     const std::unordered_map<std::string, std::string>& properties, int format_version) {
+  if (format_version < 1 || format_version > kSupportedTableFormatVersion) {
+    return InvalidArgument("Unsupported table format version: {} (supported: 1-{})",
+                           format_version, kSupportedTableFormatVersion);
+  }
   for (const auto& [key, _] : properties) {
     if (TableProperties::reserved_properties().contains(key)) {
       return InvalidArgument(
@@ -227,7 +250,7 @@ Result<std::unique_ptr<TableMetadata>> TableMetadata::Make(
 
   ICEBERG_RETURN_UNEXPECTED(PropertyUtil::ValidateCommitProperties(properties));
 
-  return TableMetadataBuilder::BuildFromEmpty(format_version)
+  return TableMetadataBuilder::BuildFromEmpty(static_cast<int8_t>(format_version))
       ->AssignUUID()
       .SetLocation(location)
       .SetCurrentSchema(std::move(fresh_schema), last_column_id)
@@ -567,6 +590,8 @@ class TableMetadataBuilder::Impl {
   // Constructor for new table
   explicit Impl(int8_t format_version) : base_(nullptr), metadata_{} {
     metadata_.format_version = format_version;
+    // Create commits must carry the initial version even when no upgrade occurs.
+    changes_.push_back(std::make_unique<table::UpgradeFormatVersion>(format_version));
     metadata_.last_sequence_number = TableMetadata::kInitialSequenceNumber;
     metadata_.last_updated_ms = kInvalidLastUpdatedMs;
     metadata_.last_column_id = Schema::kInvalidColumnId;
