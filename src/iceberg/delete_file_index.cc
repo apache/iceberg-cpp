@@ -44,6 +44,51 @@
 
 namespace iceberg {
 
+namespace {
+
+// A path reference alone does not make a file-scoped delete applicable. Iceberg also
+// requires the delete and data files to use the same partition spec and partition.
+bool PartitionValuesMatch(const PartitionValues& left, const PartitionValues& right) {
+  if (left.num_fields() != right.num_fields()) {
+    return false;
+  }
+
+  for (size_t i = 0; i < left.num_fields(); ++i) {
+    const auto& left_value = left.values()[i];
+    const auto& right_value = right.values()[i];
+    if (left_value.IsNull() || right_value.IsNull()) {
+      if (left_value.IsNull() != right_value.IsNull()) {
+        return false;
+      }
+      continue;
+    }
+
+    if (left_value != right_value) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+Status ValidateDeletePartition(const DataFile& delete_file, const DataFile& data_file) {
+  ICEBERG_CHECK(delete_file.partition_spec_id.has_value() &&
+                    data_file.partition_spec_id.has_value(),
+                "Missing partition spec ID for delete file {} or data file {}",
+                delete_file.file_path, data_file.file_path);
+  ICEBERG_CHECK(
+      delete_file.partition_spec_id == data_file.partition_spec_id,
+      "Delete file {} has partition spec ID {}, but data file {} has spec ID {}",
+      delete_file.file_path, delete_file.partition_spec_id.value(), data_file.file_path,
+      data_file.partition_spec_id.value());
+  ICEBERG_CHECK(PartitionValuesMatch(delete_file.partition, data_file.partition),
+                "Delete file {} partition values do not match data file {}",
+                delete_file.file_path, data_file.file_path);
+  return {};
+}
+
+}  // namespace
+
 namespace internal {
 
 Status EqualityDeleteFile::ConvertBoundsIfNeeded() const {
@@ -439,7 +484,11 @@ Result<std::vector<std::shared_ptr<DataFile>>> DeleteFileIndex::FindPathDeletes(
     return {};
   }
 
-  return it->second->Filter(seq);
+  auto deletes = it->second->Filter(seq);
+  for (const auto& delete_file : deletes) {
+    ICEBERG_RETURN_UNEXPECTED(ValidateDeletePartition(*delete_file, data_file));
+  }
+  return deletes;
 }
 
 Result<std::shared_ptr<DataFile>> DeleteFileIndex::FindDV(
@@ -457,6 +506,7 @@ Result<std::shared_ptr<DataFile>> DeleteFileIndex::FindDV(
                 "DV data sequence number {} must be greater than or equal to data file "
                 "sequence number {}",
                 it->second.sequence_number.value(), seq);
+  ICEBERG_RETURN_UNEXPECTED(ValidateDeletePartition(*it->second.data_file, data_file));
 
   return it->second.data_file;
 }

@@ -67,6 +67,14 @@ class DeleteFileIndexTest : public testing::TestWithParam<int8_t> {
             /*spec_id=*/1, {PartitionField(/*source_id=*/2, /*field_id=*/1000,
                                            "data_bucket", Transform::Bucket(16))}));
 
+    // A second, evolved bucket spec lets tests verify that a path-matched delete still
+    // needs the exact spec ID to match the data file.
+    ICEBERG_UNWRAP_OR_FAIL(
+        other_partitioned_spec_,
+        PartitionSpec::Make(
+            /*spec_id=*/2, {PartitionField(/*source_id=*/2, /*field_id=*/1001,
+                                           "data_bucket_32", Transform::Bucket(32))}));
+
     // Unpartitioned spec
     unpartitioned_spec_ = PartitionSpec::Unpartitioned();
 
@@ -152,6 +160,17 @@ class DeleteFileIndexTest : public testing::TestWithParam<int8_t> {
     });
   }
 
+  void SetNullableIdentityPartitionSpec() {
+    schema_ = std::make_shared<Schema>(std::vector<SchemaField>{
+        SchemaField::MakeRequired(/*field_id=*/1, "id", int32()),
+        SchemaField::MakeOptional(/*field_id=*/2, "category", string())});
+    ICEBERG_UNWRAP_OR_FAIL(
+        partitioned_spec_,
+        PartitionSpec::Make(
+            /*spec_id=*/1, {PartitionField(/*source_id=*/2, /*field_id=*/1000, "category",
+                                           Transform::Identity())}));
+  }
+
   ManifestEntry MakeDeleteEntry(int64_t snapshot_id, int64_t sequence_number,
                                 std::shared_ptr<DataFile> file,
                                 ManifestStatus status = ManifestStatus::kAdded) {
@@ -188,6 +207,7 @@ class DeleteFileIndexTest : public testing::TestWithParam<int8_t> {
 
   std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>> GetSpecsById() {
     return {{partitioned_spec_->spec_id(), partitioned_spec_},
+            {other_partitioned_spec_->spec_id(), other_partitioned_spec_},
             {unpartitioned_spec_->spec_id(), unpartitioned_spec_}};
   }
 
@@ -210,6 +230,7 @@ class DeleteFileIndexTest : public testing::TestWithParam<int8_t> {
   std::shared_ptr<FileIO> file_io_;
   std::shared_ptr<Schema> schema_;
   std::shared_ptr<PartitionSpec> partitioned_spec_;
+  std::shared_ptr<PartitionSpec> other_partitioned_spec_;
   std::shared_ptr<PartitionSpec> unpartitioned_spec_;
 
   std::shared_ptr<DataFile> file_a_;
@@ -1086,6 +1107,151 @@ TEST_P(DeleteFileIndexTest, TestMixDeleteFilesAndDVs) {
                 testing::UnorderedElementsAre("/path/to/pos-delete-b1.parquet",
                                               "/path/to/pos-delete-b2.parquet"));
   }
+}
+
+TEST_P(DeleteFileIndexTest, TestDVRejectsMismatchedPartitionValues) {
+  if (GetParam() < 3) {
+    GTEST_SKIP() << "DVs only supported in V3+";
+  }
+
+  auto dv = MakeDV("/path/to/dv.puffin", PartitionValues({Literal::Int(1)}),
+                   partitioned_spec_->spec_id(), file_a_->file_path);
+  auto manifest = WriteDeleteManifest(
+      /*format_version=*/3, /*snapshot_id=*/1000L,
+      {MakeDeleteEntry(/*snapshot_id=*/1000L, /*sequence_number=*/1, dv)},
+      partitioned_spec_);
+  ICEBERG_UNWRAP_OR_FAIL(auto index, BuildIndex({manifest}));
+
+  auto result = index->ForDataFile(0, *file_a_);
+  EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
+  EXPECT_THAT(result, HasErrorMessage("partition values"));
+}
+
+TEST_P(DeleteFileIndexTest, TestDVRejectsMismatchedPartitionSpecId) {
+  if (GetParam() < 3) {
+    GTEST_SKIP() << "DVs only supported in V3+";
+  }
+
+  auto dv = MakeDV("/path/to/dv.puffin", PartitionValues({Literal::Int(0)}),
+                   other_partitioned_spec_->spec_id(), file_a_->file_path);
+  auto manifest = WriteDeleteManifest(
+      /*format_version=*/3, /*snapshot_id=*/1000L,
+      {MakeDeleteEntry(/*snapshot_id=*/1000L, /*sequence_number=*/1, dv)},
+      other_partitioned_spec_);
+  ICEBERG_UNWRAP_OR_FAIL(auto index, BuildIndex({manifest}));
+
+  auto result = index->ForDataFile(0, *file_a_);
+  EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
+  EXPECT_THAT(result, HasErrorMessage("partition spec IDs"));
+}
+
+TEST_P(DeleteFileIndexTest, TestDVMatchesNullPartition) {
+  if (GetParam() < 3) {
+    GTEST_SKIP() << "DVs only supported in V3+";
+  }
+
+  SetNullableIdentityPartitionSpec();
+  auto null_partition = PartitionValues(Literal::Null(string()));
+  auto data_file = MakeDataFile("/path/to/data-null.parquet", null_partition,
+                                partitioned_spec_->spec_id());
+  auto dv = MakeDV("/path/to/dv-null.puffin", null_partition,
+                   partitioned_spec_->spec_id(), data_file->file_path);
+  auto manifest = WriteDeleteManifest(
+      /*format_version=*/3, /*snapshot_id=*/1000L,
+      {MakeDeleteEntry(/*snapshot_id=*/1000L, /*sequence_number=*/1, dv)},
+      partitioned_spec_);
+  ICEBERG_UNWRAP_OR_FAIL(auto index, BuildIndex({manifest}));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto deletes, index->ForDataFile(0, *data_file));
+  ASSERT_EQ(deletes.size(), 1);
+  EXPECT_EQ(deletes[0]->file_path, "/path/to/dv-null.puffin");
+}
+
+TEST_P(DeleteFileIndexTest, TestDVRejectsNullValuePartitionMismatch) {
+  if (GetParam() < 3) {
+    GTEST_SKIP() << "DVs only supported in V3+";
+  }
+
+  SetNullableIdentityPartitionSpec();
+  auto null_partition = PartitionValues(Literal::Null(string()));
+  auto data_file = MakeDataFile("/path/to/data-null.parquet", null_partition,
+                                partitioned_spec_->spec_id());
+  auto dv =
+      MakeDV("/path/to/dv-non-null.puffin", PartitionValues(Literal::String("category")),
+             partitioned_spec_->spec_id(), data_file->file_path);
+  auto manifest = WriteDeleteManifest(
+      /*format_version=*/3, /*snapshot_id=*/1000L,
+      {MakeDeleteEntry(/*snapshot_id=*/1000L, /*sequence_number=*/1, dv)},
+      partitioned_spec_);
+  ICEBERG_UNWRAP_OR_FAIL(auto index, BuildIndex({manifest}));
+
+  auto result = index->ForDataFile(0, *data_file);
+  EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
+  EXPECT_THAT(result, HasErrorMessage("partition values"));
+}
+
+TEST_P(DeleteFileIndexTest, TestPathPositionDeleteMatchesPartition) {
+  auto pos_delete = MakePositionDeleteFile(
+      "/path/to/pos-delete.parquet", PartitionValues({Literal::Int(0)}),
+      partitioned_spec_->spec_id(), file_a_->file_path);
+  auto manifest = WriteDeleteManifest(
+      /*format_version=*/2, /*snapshot_id=*/1000L,
+      {MakeDeleteEntry(/*snapshot_id=*/1000L, /*sequence_number=*/1, pos_delete)},
+      partitioned_spec_);
+  ICEBERG_UNWRAP_OR_FAIL(auto index, BuildIndex({manifest}));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto deletes, index->ForDataFile(0, *file_a_));
+  ASSERT_EQ(deletes.size(), 1);
+  EXPECT_EQ(deletes[0]->file_path, "/path/to/pos-delete.parquet");
+}
+
+TEST_P(DeleteFileIndexTest, TestPathPositionDeleteMatchesNullPartition) {
+  SetNullableIdentityPartitionSpec();
+  auto null_partition = PartitionValues(Literal::Null(string()));
+  auto data_file = MakeDataFile("/path/to/data-null.parquet", null_partition,
+                                partitioned_spec_->spec_id());
+  auto pos_delete =
+      MakePositionDeleteFile("/path/to/pos-delete-null.parquet", null_partition,
+                             partitioned_spec_->spec_id(), data_file->file_path);
+  auto manifest = WriteDeleteManifest(
+      /*format_version=*/2, /*snapshot_id=*/1000L,
+      {MakeDeleteEntry(/*snapshot_id=*/1000L, /*sequence_number=*/1, pos_delete)},
+      partitioned_spec_);
+  ICEBERG_UNWRAP_OR_FAIL(auto index, BuildIndex({manifest}));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto deletes, index->ForDataFile(0, *data_file));
+  ASSERT_EQ(deletes.size(), 1);
+  EXPECT_EQ(deletes[0]->file_path, "/path/to/pos-delete-null.parquet");
+}
+
+TEST_P(DeleteFileIndexTest, TestPathPositionDeleteRejectsMismatchedPartitionValues) {
+  auto pos_delete = MakePositionDeleteFile(
+      "/path/to/pos-delete.parquet", PartitionValues({Literal::Int(1)}),
+      partitioned_spec_->spec_id(), file_a_->file_path);
+  auto manifest = WriteDeleteManifest(
+      /*format_version=*/2, /*snapshot_id=*/1000L,
+      {MakeDeleteEntry(/*snapshot_id=*/1000L, /*sequence_number=*/1, pos_delete)},
+      partitioned_spec_);
+  ICEBERG_UNWRAP_OR_FAIL(auto index, BuildIndex({manifest}));
+
+  auto result = index->ForDataFile(0, *file_a_);
+  EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
+  EXPECT_THAT(result, HasErrorMessage("partition values"));
+}
+
+TEST_P(DeleteFileIndexTest, TestPathPositionDeleteRejectsMismatchedPartitionSpecId) {
+  auto pos_delete = MakePositionDeleteFile(
+      "/path/to/pos-delete.parquet", PartitionValues({Literal::Int(0)}),
+      other_partitioned_spec_->spec_id(), file_a_->file_path);
+  auto manifest = WriteDeleteManifest(
+      /*format_version=*/2, /*snapshot_id=*/1000L,
+      {MakeDeleteEntry(/*snapshot_id=*/1000L, /*sequence_number=*/1, pos_delete)},
+      other_partitioned_spec_);
+  ICEBERG_UNWRAP_OR_FAIL(auto index, BuildIndex({manifest}));
+
+  auto result = index->ForDataFile(0, *file_a_);
+  EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
+  EXPECT_THAT(result, HasErrorMessage("partition spec IDs"));
 }
 
 TEST_P(DeleteFileIndexTest, TestMultipleDVs) {
