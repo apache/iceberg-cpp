@@ -29,7 +29,61 @@
 #include "iceberg/util/string_util.h"
 
 namespace iceberg::internal {
+
+struct ContentCacheState {
+  explicit ContentCacheState(size_t max_total_bytes)
+      : lru(static_cast<int64_t>(max_total_bytes)) {}
+
+  LruCache<std::string, MetadataContent, MetadataContentWeigher, StringHash, StringEqual>
+      lru;
+};
+
+// Owns cache states, never their per-table handles or storage FileIOs. Callers hold
+// the handle's mutex before accessing a state; the registry mutex only protects the
+// global LRU. Eviction releases content without calling back into a table handle.
+class ContentCacheRegistry {
+ public:
+  std::shared_ptr<ContentCacheState> Get(const ContentCache* owner,
+                                         const ContentCacheOptions& options,
+                                         std::weak_ptr<ContentCacheState>& weak_state) {
+    std::lock_guard lock(mutex_);
+    if (auto* state = caches_.Find(owner)) {
+      return *state;
+    }
+    auto state = weak_state.lock();
+    if (!state) {
+      state = std::make_shared<ContentCacheState>(options.max_total_bytes);
+    }
+    caches_.Replace(owner, state);
+    weak_state = state;
+    return state;
+  }
+
+  void Erase(const ContentCache* owner) {
+    std::lock_guard lock(mutex_);
+    caches_.Erase(owner);
+  }
+
+  int32_t SetCapacity(int32_t max_caches) {
+    ICEBERG_DCHECK(max_caches > 0, "Global manifest cache limit must be positive");
+    std::lock_guard lock(mutex_);
+    auto previous = static_cast<int32_t>(caches_.max_weight());
+    caches_.Resize(max_caches);
+    return previous;
+  }
+
+ private:
+  std::mutex mutex_;
+  LruCache<const ContentCache*, std::shared_ptr<ContentCacheState>> caches_{8};
+};
+
 namespace {
+
+std::shared_ptr<ContentCacheRegistry> GlobalContentCacheRegistry() {
+  // Handles keep the registry alive even when destroyed during static teardown.
+  static auto registry = std::make_shared<ContentCacheRegistry>();
+  return registry;
+}
 
 template <typename T>
 Result<T> ParseNumberProperty(
@@ -234,7 +288,13 @@ Result<ContentCacheOptions> ContentCacheOptions::FromProperties(
 }
 
 ContentCache::ContentCache(ContentCacheOptions options)
-    : options_(options), lru_(static_cast<int64_t>(options.max_total_bytes)) {}
+    : options_(options), registry_(GlobalContentCacheRegistry()) {}
+
+ContentCache::~ContentCache() { registry_->Erase(this); }
+
+int32_t ContentCache::SetGlobalCapacity(int32_t max_caches) {
+  return GlobalContentCacheRegistry()->SetCapacity(max_caches);
+}
 
 std::shared_ptr<FileIO> ContentCache::Wrap(std::shared_ptr<FileIO> io) {
   return std::make_shared<ManifestFileIO>(std::move(io), shared_from_this());
@@ -243,7 +303,8 @@ std::shared_ptr<FileIO> ContentCache::Wrap(std::shared_ptr<FileIO> io) {
 MetadataContent ContentCache::Find(std::string_view location, uint64_t* generation) {
   std::lock_guard lock(mutex_);
   if (generation) *generation = generation_;
-  auto* content = lru_.Find(location);
+  auto state = registry_->Get(this, options_, state_);
+  auto* content = state->lru.Find(location);
   return content ? *content : nullptr;
 }
 
@@ -253,19 +314,22 @@ void ContentCache::Insert(const std::string& location, MetadataContent content,
   if (content->empty()) return;
   std::lock_guard lock(mutex_);
   if (generation == generation_) {
-    lru_.Replace(location, std::move(content));
+    registry_->Get(this, options_, state_)->lru.Replace(location, std::move(content));
   }
 }
 
 void ContentCache::Invalidate(std::string_view location) {
   std::lock_guard lock(mutex_);
-  lru_.Erase(location);
+  if (auto state = state_.lock()) {
+    state->lru.Erase(location);
+  }
   ++generation_;
 }
 
 void ContentCache::Clear() {
   std::lock_guard lock(mutex_);
-  lru_.Clear();
+  registry_->Erase(this);
+  state_.reset();
   ++generation_;
 }
 

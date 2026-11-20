@@ -338,15 +338,14 @@ TEST_F(FastAppendTest, AppendNullFile) {
 }
 
 TEST_F(FastAppendTest, InvalidManifestCacheSettingsDoNotDeleteCommittedFiles) {
+  auto& io = static_cast<FileIOWithProperties<arrow::ArrowFileSystemFileIO>&>(*file_io_);
+  io.config = {{"io.manifest.cache-enabled", "true"},
+               {"io.manifest.cache.max-total-bytes", "invalid"}};
+  ICEBERG_UNWRAP_OR_FAIL(table_, catalog_->LoadTable(table_ident_));
   ICEBERG_UNWRAP_OR_FAIL(auto txn, table_->NewTransaction());
   ICEBERG_UNWRAP_OR_FAIL(auto append, txn->NewFastAppend());
   append->AppendFile(file_a_);
   ASSERT_THAT(append->Commit(), IsOk());
-
-  ICEBERG_UNWRAP_OR_FAIL(auto update, txn->NewUpdateProperties());
-  update->Set("io.manifest.cache-enabled", "true");
-  update->Set("io.manifest.cache.max-total-bytes", "invalid");
-  ASSERT_THAT(update->Commit(), IsOk());
 
   ICEBERG_UNWRAP_OR_FAIL(auto committed, txn->Commit());
   EXPECT_FALSE(committed->ManifestCacheEnabled());

@@ -41,6 +41,7 @@
 #include "iceberg/table_metadata.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/test/mock_catalog.h"
+#include "iceberg/test/mock_io.h"
 #include "iceberg/test/std_io.h"
 #include "iceberg/test/temp_file_test_base.h"
 
@@ -458,11 +459,10 @@ TEST_F(LocalFileIOTest, SizeUsesFileInfoWithoutOpeningStream) {
 
 TEST_F(LocalFileIOTest, CachedInputCreationUsesFileInfoWithoutOpeningStream) {
   auto fs = std::make_shared<TrackingLocalFileSystem>();
-  auto file_io = std::make_shared<arrow::ArrowFileSystemFileIO>(fs);
+  auto file_io = std::make_shared<FileIOWithProperties<arrow::ArrowFileSystemFileIO>>(fs);
+  file_io->config = {{std::string(internal::ContentCacheOptions::kEnabled), "true"}};
   ASSERT_THAT(file_io->WriteFile(temp_filepath_, "hello"), IsOk());
   auto metadata = std::make_shared<TableMetadata>();
-  metadata->properties = TableProperties::FromMap(
-      {{std::string(internal::ContentCacheOptions::kEnabled), "true"}});
   ICEBERG_UNWRAP_OR_FAIL(
       auto table, Table::Make({.ns = {}, .name = "test"}, std::move(metadata),
                               "metadata.json", file_io, std::make_shared<MockCatalog>()));

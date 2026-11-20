@@ -41,6 +41,7 @@
 #include "iceberg/table_metadata.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/test/mock_catalog.h"
+#include "iceberg/test/mock_io.h"
 #include "iceberg/test/test_resource.h"
 #include "iceberg/util/uuid.h"
 
@@ -62,7 +63,9 @@ class UpdateTestBase : public ::testing::Test {
 
   /// \brief Initialize file IO and create necessary directories.
   void InitializeFileIO() {
-    file_io_ = arrow::ArrowFileSystemFileIO::MakeMockFileIO();
+    auto mock_io = arrow::ArrowFileSystemFileIO::MakeMockFileIO();
+    file_io_ = std::make_shared<FileIOWithProperties<arrow::ArrowFileSystemFileIO>>(
+        static_cast<arrow::ArrowFileSystemFileIO&>(*mock_io).fs());
     ICEBERG_UNWRAP_OR_FAIL(catalog_,
                            InMemoryCatalog::Make("test_catalog", file_io_, "/warehouse/",
                                                  /*properties=*/{}));

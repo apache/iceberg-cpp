@@ -96,11 +96,9 @@ TEST_F(TransactionTest, BaseMetadataSurvivesTableRefresh) {
 }
 
 TEST_F(TransactionTest, CommitPreservesTableManifestContentCache) {
-  ICEBERG_UNWRAP_OR_FAIL(auto enable_txn, table_->NewTransaction());
-  ICEBERG_UNWRAP_OR_FAIL(auto enable, enable_txn->NewUpdateProperties());
-  enable->Set("io.manifest.cache-enabled", "true");
-  ASSERT_THAT(enable->Commit(), IsOk());
-  ICEBERG_UNWRAP_OR_FAIL(table_, enable_txn->Commit());
+  auto& io = static_cast<FileIOWithProperties<arrow::ArrowFileSystemFileIO>&>(*file_io_);
+  io.config["io.manifest.cache-enabled"] = "true";
+  ICEBERG_UNWRAP_OR_FAIL(table_, catalog_->LoadTable(table_ident_));
   ASSERT_TRUE(table_->ManifestCacheEnabled());
 
   const auto manifest_path = table_location_ + "/metadata/cached-manifest.avro";

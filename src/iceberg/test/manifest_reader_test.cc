@@ -52,6 +52,7 @@
 #include "iceberg/table_scan.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/test/mock_catalog.h"
+#include "iceberg/test/mock_io.h"
 #include "iceberg/transform.h"
 #include "iceberg/type.h"
 
@@ -798,10 +799,12 @@ TEST(ManifestReaderStaticTest, WithStatsColumnsHandlesEmptyAndSelectAll) {
 TEST_P(TestManifestReader, ReadsManifestListAndManifestFromCachedContent) {
   const auto version = GetParam();
   auto fs = std::make_shared<CountingMockFileSystem>(std::chrono::system_clock::now());
-  file_io_ = std::make_shared<arrow::ArrowFileSystemFileIO>(fs);
+  auto configured_io =
+      std::make_shared<FileIOWithProperties<arrow::ArrowFileSystemFileIO>>(fs);
+  configured_io->config = {
+      {std::string(internal::ContentCacheOptions::kEnabled), "true"}};
+  file_io_ = std::move(configured_io);
   auto table_metadata = std::make_shared<TableMetadata>();
-  table_metadata->properties = TableProperties::FromMap(
-      {{std::string(internal::ContentCacheOptions::kEnabled), "true"}});
   ICEBERG_UNWRAP_OR_FAIL(
       auto table, Table::Make({.ns = {}, .name = "test"}, table_metadata, "metadata.json",
                               file_io_, std::make_shared<MockCatalog>()));

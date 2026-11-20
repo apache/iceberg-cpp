@@ -136,10 +136,16 @@ class ICEBERG_EXPORT Table : public std::enable_shared_from_this<Table> {
   const std::shared_ptr<FileIO>& io() const;
 
   /// \brief Return whether this table caches manifest content.
+  /// Cache settings come exclusively from io()->properties().
   bool ManifestCacheEnabled() const { return content_cache_ != nullptr; }
 
   /// \brief Release manifest content retained by this table.
   void ClearManifestCache();
+
+  /// \brief Set the process-wide maximum number of retained manifest caches.
+  /// Defaults to 8. The limit must be positive; lowering it immediately evicts the
+  /// least recently used caches. Active readers may retain bytes after eviction.
+  static Status SetManifestCacheLimit(int32_t max_caches);
 
   /// \brief Returns the current metadata for this table
   const std::shared_ptr<TableMetadata>& metadata() const;
