@@ -21,6 +21,7 @@
 #include <atomic>
 #include <barrier>
 #include <cstdint>
+#include <cstdlib>
 #include <future>
 #include <limits>
 #include <memory>
@@ -48,6 +49,39 @@
 namespace iceberg {
 namespace {
 using internal::ContentCacheOptions;
+
+#ifdef GTEST_HAS_DEATH_TEST
+int SetManifestCacheLimitEnv(const char* value) {
+  constexpr const char* kLimitEnv = "ICEBERG_IO_MANIFEST_CACHE_LIMIT";
+#  ifdef _WIN32
+  return _putenv_s(kLimitEnv, value);
+#  else
+  return setenv(kLimitEnv, value, /*overwrite=*/1);
+#  endif
+}
+
+TEST(MetadataCacheDeathTest, InitializesGlobalLimitFromEnvironment) {
+  // Start with a new registry for every environment setting.
+  GTEST_FLAG_SET(death_test_style, "threadsafe");
+  for (const auto& [value, expected_limit] :
+       {std::pair{"2", 2}, std::pair{"0", 8}, std::pair{"-1", 8}, std::pair{"2x", 8},
+        std::pair{"2147483648", 8}}) {
+    SCOPED_TRACE(value);
+    EXPECT_EXIT(
+        {
+          if (SetManifestCacheLimitEnv(value) != 0) {
+            std::_Exit(EXIT_FAILURE);
+          }
+          const auto initial_limit = internal::ContentCache::SetGlobalCapacity(3);
+          const auto overridden_limit = internal::ContentCache::SetGlobalCapacity(4);
+          std::_Exit(initial_limit == expected_limit && overridden_limit == 3
+                         ? EXIT_SUCCESS
+                         : EXIT_FAILURE);
+        },
+        ::testing::ExitedWithCode(EXIT_SUCCESS), "");
+  }
+}
+#endif
 
 class ScopedGlobalCacheLimit {
  public:
