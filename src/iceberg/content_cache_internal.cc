@@ -20,10 +20,12 @@
 #include "iceberg/content_cache_internal.h"
 
 #include <algorithm>
+#include <cstdlib>
 #include <cstring>
 #include <limits>
 #include <utility>
 
+#include "iceberg/logging/log_macros.h"
 #include "iceberg/util/error_util_internal.h"
 #include "iceberg/util/macros.h"
 #include "iceberg/util/string_util.h"
@@ -43,6 +45,8 @@ struct ContentCacheState {
 // global LRU. Eviction releases content without calling back into a table handle.
 class ContentCacheRegistry {
  public:
+  explicit ContentCacheRegistry(int32_t capacity) : caches_(capacity) {}
+
   std::shared_ptr<ContentCacheState> Get(const ContentCache* owner,
                                          const ContentCacheOptions& options,
                                          std::weak_ptr<ContentCacheState>& weak_state) {
@@ -74,14 +78,29 @@ class ContentCacheRegistry {
 
  private:
   std::mutex mutex_;
-  LruCache<const ContentCache*, std::shared_ptr<ContentCacheState>> caches_{8};
+  LruCache<const ContentCache*, std::shared_ptr<ContentCacheState>> caches_;
 };
 
 namespace {
 
+int32_t InitialGlobalCacheCapacity() {
+  constexpr int32_t kDefaultCapacity = 8;
+  constexpr const char* kLimitEnv = "ICEBERG_IO_MANIFEST_CACHE_LIMIT";
+  if (const char* configured_limit = std::getenv(kLimitEnv)) {
+    auto limit = StringUtils::ParseNumber<int32_t>(configured_limit);
+    if (limit && *limit > 0) {
+      return *limit;
+    }
+    ICEBERG_LOG_WARN("{} must be a positive integer that fits in int32_t. Using {}.",
+                     kLimitEnv, kDefaultCapacity);
+  }
+  return kDefaultCapacity;
+}
+
 std::shared_ptr<ContentCacheRegistry> GlobalContentCacheRegistry() {
   // Handles keep the registry alive even when destroyed during static teardown.
-  static auto registry = std::make_shared<ContentCacheRegistry>();
+  static auto registry =
+      std::make_shared<ContentCacheRegistry>(InitialGlobalCacheCapacity());
   return registry;
 }
 
