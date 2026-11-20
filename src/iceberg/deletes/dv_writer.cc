@@ -31,8 +31,6 @@
 
 #include "iceberg/deletes/dv_util_internal.h"
 #include "iceberg/deletes/position_delete_index.h"
-#include "iceberg/deletes/roaring_position_bitmap.h"
-#include "iceberg/file_format.h"
 #include "iceberg/file_io.h"  // IWYU pragma: keep
 #include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/partition_spec.h"
@@ -56,6 +54,7 @@ class DVWriter::Impl {
     PositionDeleteIndex positions;
     std::shared_ptr<PartitionSpec> spec;
     PartitionValues partition;
+    puffin::BlobMetadata blob;
   };
 
   Deletes& DeletesFor(std::string_view referenced_data_file,
@@ -79,9 +78,7 @@ class DVWriter::Impl {
     ICEBERG_PRECHECK(!referenced_data_file.empty(),
                      "Deletion vector requires a non-empty referenced data file");
     ICEBERG_PRECHECK(spec != nullptr, "Deletion vector requires a partition spec");
-    ICEBERG_PRECHECK(pos >= 0 && pos <= RoaringPositionBitmap::kMaxPosition,
-                     "Deletion vector position out of range [0, {}]: {}",
-                     RoaringPositionBitmap::kMaxPosition, pos);
+    ICEBERG_PRECHECK(pos >= 0, "Deletion vector position must be non-negative: {}", pos);
     DeletesFor(referenced_data_file, spec, partition).positions.Delete(pos);
     return {};
   }
@@ -110,10 +107,10 @@ class DVWriter::Impl {
 
     for (auto& [path, deletes] : deletes_by_path_) {
       ICEBERG_RETURN_UNEXPECTED(LoadPreviousDeletes(path, deletes));
+      ICEBERG_RETURN_UNEXPECTED(deletes.positions.PrepareForSerialization());
     }
 
     ICEBERG_ASSIGN_OR_RAISE(auto output_file, options_.io->NewOutputFile(options_.path));
-    const std::string output_path(options_.path);
     ICEBERG_ASSIGN_OR_RAISE(
         auto writer, puffin::PuffinWriter::Make(
                          std::move(output_file),
@@ -121,15 +118,20 @@ class DVWriter::Impl {
                            ICEBERG_FULL_VERSION_STRING}}));
 
     for (auto& [path, deletes] : deletes_by_path_) {
-      ICEBERG_RETURN_UNEXPECTED(Write(*writer, path, deletes));
+      ICEBERG_ASSIGN_OR_RAISE(deletes.blob,
+                              DVUtil::WriteDVBlob(*writer, path, deletes.positions));
     }
 
     ICEBERG_RETURN_UNEXPECTED(writer->Finish());
     ICEBERG_ASSIGN_OR_RAISE(const int64_t file_size, writer->FileSize());
 
-    for (const auto& [path, _] : deletes_by_path_) {
+    for (const auto& [path, deletes] : deletes_by_path_) {
       result_.referenced_data_files.push_back(path);
-      ICEBERG_ASSIGN_OR_RAISE(auto data_file, CreateDV(output_path, file_size, path));
+      ICEBERG_ASSIGN_OR_RAISE(
+          auto data_file,
+          DVUtil::MakeDVDataFile(options_.path, file_size, path, deletes.partition,
+                                 deletes.positions.Cardinality(), deletes.spec,
+                                 deletes.blob));
       result_.data_files.push_back(std::move(data_file));
     }
 
@@ -160,42 +162,8 @@ class DVWriter::Impl {
     return {};
   }
 
-  Status Write(puffin::PuffinWriter& writer, std::string_view path, Deletes& deletes) {
-    ICEBERG_ASSIGN_OR_RAISE(auto blob_metadata,
-                            DVUtil::WriteDVBlob(writer, path, deletes.positions));
-    blobs_by_path_.insert_or_assign(std::string(path), std::move(blob_metadata));
-    return {};
-  }
-
-  Result<std::shared_ptr<DataFile>> CreateDV(const std::string& path, int64_t size,
-                                             std::string_view referenced_data_file) {
-    auto deletes = deletes_by_path_.find(referenced_data_file);
-    ICEBERG_CHECK(deletes != deletes_by_path_.end(), "Missing deletion vector for {}",
-                  referenced_data_file);
-    auto blob_metadata = blobs_by_path_.find(referenced_data_file);
-    ICEBERG_CHECK(blob_metadata != blobs_by_path_.end(),
-                  "Missing deletion vector blob for {}", referenced_data_file);
-
-    return std::make_shared<DataFile>(DataFile{
-        .content = DataFile::Content::kPositionDeletes,
-        .file_path = path,
-        .file_format = FileFormatType::kPuffin,
-        .partition = deletes->second.partition,
-        .record_count = deletes->second.positions.Cardinality(),
-        .file_size_in_bytes = size,
-        // TODO(gangwu): support encryption key metadata
-        .referenced_data_file = std::string(referenced_data_file),
-        .content_offset = blob_metadata->second.offset,
-        .content_size_in_bytes = blob_metadata->second.length,
-        .partition_spec_id = deletes->second.spec
-                                 ? std::make_optional(deletes->second.spec->spec_id())
-                                 : std::nullopt,
-    });
-  }
-
   DVWriterOptions options_;
   std::map<std::string, Deletes, StringLess> deletes_by_path_;
-  std::map<std::string, puffin::BlobMetadata, StringLess> blobs_by_path_;
   DeleteWriteResult result_;
   bool closed_ = false;
 };
