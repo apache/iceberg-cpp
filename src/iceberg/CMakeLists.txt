@@ -58,6 +58,7 @@ set(ICEBERG_SOURCES
     geospatial.cc
     incremental_append_scan.cc
     incremental_changelog_scan.cc
+    inspect/metadata_manifest_util_internal.cc
     inspect/history_table.cc
     inspect/metadata_scan.cc
     inspect/metadata_table.cc
