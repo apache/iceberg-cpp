@@ -27,6 +27,7 @@
 #include <fstream>
 #include <utility>
 
+#include "iceberg/result.h"
 #include "iceberg/test/test_config.h"
 
 namespace iceberg::verification {
@@ -39,6 +40,24 @@ constexpr std::string_view kNormativeLevel = "normative_level";
 
 std::filesystem::path TableSpecDir() {
   return std::filesystem::path(ICEBERG_VERIFICATION_DIR) / "table-spec";
+}
+
+/// \brief Read the fixture file at `path` and return its `cases` array.
+Result<nlohmann::json> ParseFixture(const std::filesystem::path& path) {
+  std::ifstream file(path);
+  if (!file) {
+    return IOError("cannot open file");
+  }
+  nlohmann::json fixture;
+  try {
+    fixture = nlohmann::json::parse(file);
+  } catch (const std::exception& e) {
+    return JsonParseError("{}", e.what());
+  }
+  if (!fixture.contains(kCases) || !fixture[kCases].is_array()) {
+    return JsonParseError("no `cases` array");
+  }
+  return std::move(fixture[kCases]);
 }
 
 std::string JoinDiffs(const std::vector<std::string>& diffs) {
@@ -61,31 +80,28 @@ std::vector<VerificationCase> LoadCases(std::string_view surface,
     return cases;
   }
   for (auto subdir : subdirs) {
-    auto path = TableSpecDir() / surface / subdir / "cases.json";
-    auto load_error = [&](std::string message) {
+    auto load_error = [&](std::string id, const std::filesystem::path& path,
+                          std::string_view message) {
       cases.push_back({.subdir = std::string(subdir),
-                       .id = "load",
+                       .id = std::move(id),
                        .load_error = std::format("{}: {}", path.string(), message)});
     };
-    std::ifstream file(path);
-    if (!file) {
-      load_error("cannot open file");
+    auto path = TableSpecDir() / surface / subdir / "cases.json";
+    auto fixture = ParseFixture(path);
+    if (!fixture.has_value()) {
+      load_error("load", path, fixture.error().message);
       continue;
     }
-    nlohmann::json fixture;
-    try {
-      fixture = nlohmann::json::parse(file);
-    } catch (const std::exception& e) {
-      load_error(e.what());
-      continue;
-    }
-    if (!fixture.contains(kCases) || !fixture[kCases].is_array()) {
-      load_error("no `cases` array");
-      continue;
-    }
-    for (auto& json : fixture[kCases]) {
+    auto& entries = *fixture;
+    for (size_t i = 0; i < entries.size(); ++i) {
+      auto& json = entries[i];
+      if (!json.is_object() || !json.contains(kId) || !json[kId].is_string()) {
+        load_error(std::format("cases-{}", i), path,
+                   std::format("cases[{}] is not an object with a string `id`", i));
+        continue;
+      }
       cases.push_back({.subdir = std::string(subdir),
-                       .id = json.value(kId, std::string()),
+                       .id = json[kId].get<std::string>(),
                        .json = std::move(json)});
     }
   }
@@ -119,9 +135,7 @@ void DiffJson(const nlohmann::json& expected, const nlohmann::json& actual,
         diffs->push_back(std::format("{}: unexpected {}", child, value.dump()));
       }
     }
-    return;
-  }
-  if (expected.is_array() && actual.is_array()) {
+  } else if (expected.is_array() && actual.is_array()) {
     auto common = std::min(expected.size(), actual.size());
     for (size_t i = 0; i < common; ++i) {
       DiffJson(expected[i], actual[i], std::format("{}[{}]", path, i), diffs);
@@ -130,9 +144,7 @@ void DiffJson(const nlohmann::json& expected, const nlohmann::json& actual,
       diffs->push_back(std::format("{}: expected {} elements, got {}", path,
                                    expected.size(), actual.size()));
     }
-    return;
-  }
-  if (expected != actual) {
+  } else if (expected != actual) {
     diffs->push_back(std::format("{}: expected {}, got {}", path.empty() ? "value" : path,
                                  expected.dump(), actual.dump()));
   }
