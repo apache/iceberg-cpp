@@ -95,7 +95,7 @@ Result<std::unique_ptr<HistoryTable>> HistoryTable::Make(
 }
 
 Result<std::unique_ptr<MetadataScan>> HistoryTable::MakeScan(
-    internal::MetadataScanContext context) const {
+    internal::MetadataScanContext context, std::shared_ptr<FileIO> /*io*/) const {
   return HistoryScan::Make(std::move(context));
 }
 

@@ -25,7 +25,6 @@
 #include "iceberg/inspect/history_table.h"
 #include "iceberg/inspect/metadata_scan_task.h"
 #include "iceberg/inspect/metadata_table.h"
-#include "iceberg/inspect/metadata_table_util_internal.h"
 #include "iceberg/inspect/refs_table.h"
 #include "iceberg/inspect/snapshots_table.h"
 #include "iceberg/util/checked_cast.h"
@@ -50,7 +49,7 @@ Result<ArrowArrayStream> MetadataScanTaskReader::Open(
   switch (task.task_kind()) {
     case MetadataScanTask::TaskKind::kSnapshot: {
       const auto& snapshot_task =
-          internal::checked_cast<const internal::SnapshotMetadataTask&>(task);
+          internal::checked_cast<const SnapshotMetadataTask&>(task);
       return snapshot_task.Open(options_.batch_size);
     }
     case MetadataScanTask::TaskKind::kStatic: {

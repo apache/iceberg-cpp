@@ -115,8 +115,9 @@ Status internal::MetadataScanContext::Validate() const {
 }
 
 MetadataScanBuilder::MetadataScanBuilder(const MetadataTable& table,
-                                         internal::MetadataScanContext context)
-    : table_(&table), context_(std::move(context)) {}
+                                         internal::MetadataScanContext context,
+                                         std::shared_ptr<FileIO> io)
+    : table_(&table), context_(std::move(context)), io_(std::move(io)) {}
 
 MetadataScanBuilder::~MetadataScanBuilder() = default;
 
@@ -125,15 +126,15 @@ Result<std::unique_ptr<MetadataScanBuilder>> MetadataScanBuilder::Make(
   ICEBERG_PRECHECK(table.source_table() != nullptr, "Source table cannot be null");
   auto metadata = table.source_table()->metadata();
   ICEBERG_PRECHECK(metadata != nullptr, "Table metadata cannot be null");
+  auto io = table.source_table()->io();
   ICEBERG_ASSIGN_OR_RAISE(auto schema, table.SchemaForScan(*metadata));
   internal::MetadataScanContext context{.kind = table.kind(),
                                         .table_metadata = std::move(metadata),
                                         .schema = schema,
-                                        .projected_schema = std::move(schema),
-                                        .io = table.source_table()->io()};
+                                        .projected_schema = std::move(schema)};
   ICEBERG_RETURN_UNEXPECTED(context.Validate());
   return std::unique_ptr<MetadataScanBuilder>(
-      new MetadataScanBuilder(table, std::move(context)));
+      new MetadataScanBuilder(table, std::move(context), std::move(io)));
 }
 
 MetadataScanBuilder& MetadataScanBuilder::Select(
@@ -184,7 +185,7 @@ MetadataScanBuilder& MetadataScanBuilder::AsOfTime(int64_t as_of_time_in_millis)
 Result<std::unique_ptr<MetadataScan>> MetadataScanBuilder::Build() {
   ICEBERG_RETURN_UNEXPECTED(CheckErrors());
   ICEBERG_RETURN_UNEXPECTED(context_.Validate());
-  return table_->MakeScan(context_);
+  return table_->MakeScan(context_, io_);
 }
 
 MetadataScan::MetadataScan(internal::MetadataScanContext context)

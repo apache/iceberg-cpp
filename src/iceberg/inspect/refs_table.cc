@@ -111,7 +111,7 @@ Result<std::unique_ptr<RefsTable>> RefsTable::Make(std::shared_ptr<const Table> 
 }
 
 Result<std::unique_ptr<MetadataScan>> RefsTable::MakeScan(
-    internal::MetadataScanContext context) const {
+    internal::MetadataScanContext context, std::shared_ptr<FileIO> /*io*/) const {
   return RefsScan::Make(std::move(context));
 }
 

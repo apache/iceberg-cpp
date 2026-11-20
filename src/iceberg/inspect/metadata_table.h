@@ -98,8 +98,9 @@ class ICEBERG_EXPORT MetadataTable {
       const TableMetadata& metadata) const;
 
   /// \brief Plan a scan using the captured metadata, projection, and snapshot selection.
+  /// \param io FileIO captured when the scan builder was created
   virtual Result<std::unique_ptr<MetadataScan>> MakeScan(
-      internal::MetadataScanContext context) const = 0;
+      internal::MetadataScanContext context, std::shared_ptr<FileIO> io) const = 0;
 
  private:
   friend class MetadataScanBuilder;

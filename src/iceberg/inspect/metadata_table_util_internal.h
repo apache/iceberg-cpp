@@ -19,9 +19,7 @@
 
 #pragma once
 
-#include <cstdint>
 #include <memory>
-#include <utility>
 
 #include "iceberg/iceberg_export.h"
 #include "iceberg/inspect/metadata_scan.h"
@@ -30,31 +28,9 @@
 
 namespace iceberg::internal {
 
-/// A task retaining the captured metadata, projection, and manifest IO.
-class SnapshotMetadataTask : public MetadataScanTask {
- public:
-  using ReadRowsFunction = Result<ArrowArrayStream> (*)(const MetadataScanContext&,
-                                                        const std::shared_ptr<FileIO>&,
-                                                        int64_t);
-
-  SnapshotMetadataTask(MetadataScanContext context, ReadRowsFunction read_rows)
-      : context(std::move(context)), read_rows_(read_rows) {}
-
-  Result<ArrowArrayStream> Open(int64_t batch_size) const {
-    return read_rows_(context, context.io, batch_size);
-  }
-
-  TaskKind task_kind() const override { return TaskKind::kSnapshot; }
-  MetadataTableKind table_kind() const override { return context.kind; }
-
-  const MetadataScanContext context;
-
- private:
-  ReadRowsFunction read_rows_;
-};
-
 ICEBERG_EXPORT Result<std::unique_ptr<MetadataScan>> MakeSnapshotMetadataScan(
-    MetadataScanContext context, SnapshotMetadataTask::ReadRowsFunction read_rows);
+    MetadataScanContext context, std::shared_ptr<FileIO> io,
+    SnapshotMetadataTask::ReadRowsFunction read_rows);
 
 /// \brief Resolve a time-travel selection to a snapshot.
 ICEBERG_EXPORT Result<std::shared_ptr<Snapshot>> ResolveMetadataTableSnapshot(

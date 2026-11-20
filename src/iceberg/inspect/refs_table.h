@@ -50,7 +50,7 @@ class ICEBERG_EXPORT RefsTable : public MetadataTable {
 
  protected:
   Result<std::unique_ptr<MetadataScan>> MakeScan(
-      internal::MetadataScanContext context) const override;
+      internal::MetadataScanContext context, std::shared_ptr<FileIO> io) const override;
 
  private:
   friend class MetadataScanTaskReader;

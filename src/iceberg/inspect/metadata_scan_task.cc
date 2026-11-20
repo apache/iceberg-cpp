@@ -49,4 +49,25 @@ StaticMetadataTask::StaticMetadataTask(MetadataTableKind table_kind,
       metadata_(std::move(metadata)),
       projected_schema_(std::move(projected_schema)) {}
 
+// SnapshotMetadataTask
+
+Result<std::shared_ptr<SnapshotMetadataTask>> SnapshotMetadataTask::Make(
+    internal::MetadataScanContext context, std::shared_ptr<FileIO> io,
+    ReadRowsFunction read_rows) {
+  ICEBERG_PRECHECK(read_rows != nullptr, "Snapshot row reader cannot be null");
+  ICEBERG_RETURN_UNEXPECTED(context.Validate());
+  ICEBERG_PRECHECK(io != nullptr, "FileIO cannot be null");
+  return std::shared_ptr<SnapshotMetadataTask>(
+      new SnapshotMetadataTask(std::move(context), std::move(io), read_rows));
+}
+
+SnapshotMetadataTask::SnapshotMetadataTask(internal::MetadataScanContext context,
+                                           std::shared_ptr<FileIO> io,
+                                           ReadRowsFunction read_rows)
+    : context_(std::move(context)), io_(std::move(io)), read_rows_(read_rows) {}
+
+Result<ArrowArrayStream> SnapshotMetadataTask::Open(int64_t batch_size) const {
+  return read_rows_(context_, io_, batch_size);
+}
+
 }  // namespace iceberg

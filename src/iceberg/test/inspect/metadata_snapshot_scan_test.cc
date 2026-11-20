@@ -25,6 +25,7 @@
 
 #include <arrow/array.h>
 #include <arrow/type.h>
+#include <gmock/gmock.h>
 #include <gtest/gtest.h>
 #include <nanoarrow/nanoarrow.hpp>
 
@@ -64,6 +65,21 @@ Result<ArrowArrayStream> ReadIntTaskRows(const MetadataScanContext& context,
       });
 }
 
+class TestSnapshotMetadataTable : public MetadataTable {
+ public:
+  explicit TestSnapshotMetadataTable(std::shared_ptr<const Table> table)
+      : MetadataTable(std::move(table)) {}
+
+  MetadataTableKind kind() const noexcept override { return MetadataTableKind::kFiles; }
+  std::shared_ptr<Schema> schema() const override { return IntSchema(); }
+
+ protected:
+  Result<std::unique_ptr<MetadataScan>> MakeScan(
+      MetadataScanContext context, std::shared_ptr<FileIO> io) const override {
+    return MakeSnapshotMetadataScan(std::move(context), std::move(io), ReadIntTaskRows);
+  }
+};
+
 class SnapshotMetadataSupportTest : public MetadataTableTestBase {
  protected:
   MetadataScanContext Context() {
@@ -71,13 +87,13 @@ class SnapshotMetadataSupportTest : public MetadataTableTestBase {
     return {.kind = MetadataTableKind::kFiles,
             .table_metadata = metadata_,
             .schema = schema,
-            .projected_schema = schema,
-            .io = io_};
+            .projected_schema = schema};
   }
 };
 
 TEST_F(SnapshotMetadataSupportTest, TasksRetainOwnersAndCanBeReopened) {
-  ICEBERG_UNWRAP_OR_FAIL(auto scan, MakeSnapshotMetadataScan(Context(), ReadIntTaskRows));
+  ICEBERG_UNWRAP_OR_FAIL(auto scan,
+                         MakeSnapshotMetadataScan(Context(), io_, ReadIntTaskRows));
   ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanTasks());
   ASSERT_EQ(tasks.size(), 1);
   scan.reset();
@@ -98,37 +114,71 @@ TEST_F(SnapshotMetadataSupportTest, TasksRetainOwnersAndCanBeReopened) {
   }
 }
 
+TEST_F(SnapshotMetadataSupportTest, BuilderCapturesFileIOAcrossRefresh) {
+  TestSnapshotMetadataTable metadata_table(table_);
+  ICEBERG_UNWRAP_OR_FAIL(auto builder, metadata_table.NewScan());
+  std::weak_ptr<FileIO> captured_io = io_;
+
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto refreshed,
+      Table::Make(table_->name(), std::make_shared<TableMetadata>(*metadata_),
+                  "s3://bucket/refreshed.json", std::make_shared<MockFileIO>(),
+                  catalog_));
+  EXPECT_CALL(*catalog_, LoadTable(::testing::_)).WillOnce(::testing::Return(refreshed));
+  ASSERT_THAT(table_->Refresh(), IsOk());
+  EXPECT_NE(table_->io().get(), io_.get());
+  io_.reset();
+  EXPECT_FALSE(captured_io.expired());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
+  ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanTasks());
+  ASSERT_EQ(tasks.size(), 1);
+  builder.reset();
+  scan.reset();
+  EXPECT_FALSE(captured_io.expired());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto reader, MetadataScanTaskReader::Make({.batch_size = 2}));
+  ICEBERG_UNWRAP_OR_FAIL(auto stream, reader->Open(*tasks.front()));
+  tasks.clear();
+  reader.reset();
+  EXPECT_FALSE(captured_io.expired());
+  ICEBERG_UNWRAP_OR_FAIL(auto batches, ReadAllBatches(std::move(stream)));
+  ASSERT_EQ(batches.size(), 2);
+  EXPECT_EQ(batches[0]->num_rows(), 2);
+  EXPECT_EQ(batches[1]->num_rows(), 1);
+  EXPECT_TRUE(captured_io.expired());
+}
+
 TEST_F(SnapshotMetadataSupportTest, RejectsMissingInputs) {
   auto context = Context();
   context.table_metadata.reset();
-  EXPECT_THAT(MakeSnapshotMetadataScan(context, ReadIntTaskRows),
+  EXPECT_THAT(MakeSnapshotMetadataScan(context, io_, ReadIntTaskRows),
               IsError(ErrorKind::kInvalidArgument));
   context = Context();
   context.schema.reset();
-  EXPECT_THAT(MakeSnapshotMetadataScan(context, ReadIntTaskRows),
+  EXPECT_THAT(MakeSnapshotMetadataScan(context, io_, ReadIntTaskRows),
               IsError(ErrorKind::kInvalidArgument));
   context = Context();
   context.projected_schema.reset();
-  EXPECT_THAT(MakeSnapshotMetadataScan(context, ReadIntTaskRows),
+  EXPECT_THAT(MakeSnapshotMetadataScan(context, io_, ReadIntTaskRows),
               IsError(ErrorKind::kInvalidArgument));
   context = Context();
-  context.io.reset();
-  EXPECT_THAT(MakeSnapshotMetadataScan(context, ReadIntTaskRows),
+  EXPECT_THAT(MakeSnapshotMetadataScan(context, nullptr, ReadIntTaskRows),
               IsError(ErrorKind::kInvalidArgument));
 }
 
 TEST_F(SnapshotMetadataSupportTest, RejectsInvalidProjectionAndReader) {
-  EXPECT_THAT(MakeSnapshotMetadataScan(Context(), nullptr),
+  EXPECT_THAT(MakeSnapshotMetadataScan(Context(), io_, nullptr),
               IsError(ErrorKind::kInvalidArgument));
   auto context = Context();
   context.projected_schema = std::make_shared<Schema>(
       std::vector<SchemaField>{SchemaField::MakeRequired(99, "missing", int64())});
-  EXPECT_THAT(MakeSnapshotMetadataScan(context, ReadIntTaskRows),
+  EXPECT_THAT(MakeSnapshotMetadataScan(context, io_, ReadIntTaskRows),
               IsError(ErrorKind::kInvalidArgument));
   context = Context();
   context.ref_name = "dev";
   context.snapshot_id = 1;
-  EXPECT_THAT(MakeSnapshotMetadataScan(context, ReadIntTaskRows),
+  EXPECT_THAT(MakeSnapshotMetadataScan(context, io_, ReadIntTaskRows),
               IsError(ErrorKind::kInvalidArgument));
 }
 

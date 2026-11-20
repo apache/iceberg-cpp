@@ -17,13 +17,12 @@
  * under the License.
  */
 
-#include "iceberg/inspect/metadata_table_util_internal.h"
-
 #include <memory>
 #include <string>
 #include <utility>
 
 #include "iceberg/constants.h"
+#include "iceberg/inspect/metadata_table_util_internal.h"
 #include "iceberg/schema.h"
 #include "iceberg/table_metadata.h"
 #include "iceberg/type.h"
@@ -41,9 +40,8 @@ namespace {
 class SnapshotMetadataScan : public MetadataScan {
  public:
   SnapshotMetadataScan(MetadataScanContext context,
-                       SnapshotMetadataTask::ReadRowsFunction read_rows)
-      : MetadataScan(context),
-        task_(std::make_shared<SnapshotMetadataTask>(std::move(context), read_rows)) {}
+                       std::shared_ptr<SnapshotMetadataTask> task)
+      : MetadataScan(std::move(context)), task_(std::move(task)) {}
 
   Result<MetadataScanTaskStreamPtr> PlanTasksStream() const override {
     // Each planning call gets a fresh stream over the same retained task.
@@ -56,10 +54,10 @@ class SnapshotMetadataScan : public MetadataScan {
 }  // namespace
 
 Result<std::unique_ptr<MetadataScan>> MakeSnapshotMetadataScan(
-    MetadataScanContext context, SnapshotMetadataTask::ReadRowsFunction read_rows) {
-  ICEBERG_PRECHECK(read_rows != nullptr, "Snapshot row reader cannot be null");
-  ICEBERG_RETURN_UNEXPECTED(context.Validate());
-  ICEBERG_PRECHECK(context.io != nullptr, "FileIO cannot be null");
+    MetadataScanContext context, std::shared_ptr<FileIO> io,
+    SnapshotMetadataTask::ReadRowsFunction read_rows) {
+  ICEBERG_ASSIGN_OR_RAISE(auto task,
+                          SnapshotMetadataTask::Make(context, std::move(io), read_rows));
   for (const auto& projected : context.projected_schema->fields()) {
     ICEBERG_ASSIGN_OR_RAISE(auto field,
                             context.schema->GetFieldById(projected.field_id()));
@@ -74,7 +72,7 @@ Result<std::unique_ptr<MetadataScan>> MakeSnapshotMetadataScan(
   }
   ICEBERG_RETURN_UNEXPECTED(
       ResolveMetadataTableSnapshot(*context.table_metadata, context));
-  return std::make_unique<SnapshotMetadataScan>(std::move(context), read_rows);
+  return std::make_unique<SnapshotMetadataScan>(std::move(context), std::move(task));
 }
 
 Result<std::shared_ptr<Snapshot>> ResolveMetadataTableSnapshot(

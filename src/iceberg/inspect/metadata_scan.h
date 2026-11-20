@@ -52,10 +52,8 @@ struct MetadataScanContext {
   std::optional<int64_t> snapshot_id;
   std::string ref_name;
   std::optional<int64_t> as_of_time_in_millis;
-  std::shared_ptr<FileIO> io;
 
   /// \brief Validate the metadata and schemas required by all scans.
-  /// FileIO is checked separately by scan factories that require it.
   ICEBERG_EXPORT Status Validate() const;
 };
 
@@ -102,10 +100,12 @@ class ICEBERG_EXPORT MetadataScanBuilder : public ErrorCollector {
   Result<std::unique_ptr<MetadataScan>> Build();
 
  private:
-  MetadataScanBuilder(const MetadataTable& table, internal::MetadataScanContext context);
+  MetadataScanBuilder(const MetadataTable& table, internal::MetadataScanContext context,
+                      std::shared_ptr<FileIO> io);
 
   const MetadataTable* table_;
   internal::MetadataScanContext context_;
+  const std::shared_ptr<FileIO> io_;
 };
 
 /// \brief A metadata scan that plans tasks or reads all of them as Arrow batches.

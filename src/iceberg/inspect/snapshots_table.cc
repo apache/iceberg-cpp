@@ -105,7 +105,7 @@ Result<std::unique_ptr<SnapshotsTable>> SnapshotsTable::Make(
 }
 
 Result<std::unique_ptr<MetadataScan>> SnapshotsTable::MakeScan(
-    internal::MetadataScanContext context) const {
+    internal::MetadataScanContext context, std::shared_ptr<FileIO> /*io*/) const {
   return SnapshotsScan::Make(std::move(context));
 }
 
