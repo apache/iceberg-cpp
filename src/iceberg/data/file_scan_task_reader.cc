@@ -174,8 +174,10 @@ class TaskStreamSource {
                      "Batch length {} exceeds int32_t row index capacity",
                      input_batch.length);
     // DeleteFilter preserves existing field positions when adding delete keys.
-    ICEBERG_ASSIGN_OR_RAISE(auto row,
-                            ArrowArrayStructLike::Make(input_arrow_schema, input_batch));
+    ICEBERG_ASSIGN_OR_RAISE(
+        auto row, ArrowArrayStructLike::Make(input_arrow_schema, input_batch,
+                                             /*row_index=*/0,
+                                             projection_context_.validate_batch()));
     std::vector<int32_t> kept;
     auto keep = [&](int64_t index) -> Status {
       ICEBERG_RETURN_UNEXPECTED(row->Reset(index));
@@ -283,7 +285,8 @@ class FileScanTaskReader::Impl {
       ICEBERG_ASSIGN_OR_RAISE(
           delete_filter,
           DeleteFilter::Make(data_file->file_path, task.delete_files(), projected_schema_,
-                             io_, field_lookup_, has_position_deletes, delete_counter_));
+                             io_, field_lookup_, has_position_deletes, delete_counter_,
+                             properties_.Get(ReaderProperties::kArrowValidateBatch)));
       required_schema = delete_filter->RequiredSchema();
     }
 

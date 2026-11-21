@@ -41,9 +41,12 @@ class ICEBERG_EXPORT ArrowArrayStructLike : public StructLike {
 
   Status Reset(const ArrowArray& array, int64_t row_index = 0);
 
+  /// \param validate_batch Fully validate the array and children on creation and
+  /// Reset to a new array (default true). Disable only for validated or trusted input.
   static Result<std::unique_ptr<ArrowArrayStructLike>> Make(const ArrowSchema& schema,
                                                             const ArrowArray& array,
-                                                            int64_t row_index = 0);
+                                                            int64_t row_index = 0,
+                                                            bool validate_batch = true);
 
   ArrowArrayStructLike(const ArrowArrayStructLike&) = delete;
   ArrowArrayStructLike& operator=(const ArrowArrayStructLike&) = delete;
@@ -68,9 +71,12 @@ class ICEBERG_EXPORT ArrowArrayArrayLike : public ArrayLike {
 
   Status Reset(const ArrowArray& array, int64_t row_index = 0);
 
+  /// \param validate_batch Fully validate the array and children on creation and
+  /// Reset to a new array (default true). Disable only for validated or trusted input.
   static Result<std::unique_ptr<ArrowArrayArrayLike>> Make(const ArrowSchema& schema,
                                                            const ArrowArray& array,
-                                                           int64_t row_index = 0);
+                                                           int64_t row_index = 0,
+                                                           bool validate_batch = true);
 
   ArrowArrayArrayLike(const ArrowArrayArrayLike& other) = delete;
   ArrowArrayArrayLike& operator=(const ArrowArrayArrayLike& other) = delete;
@@ -97,9 +103,12 @@ class ICEBERG_EXPORT ArrowArrayMapLike : public MapLike {
 
   Status Reset(const ArrowArray& array, int64_t row_index = 0);
 
+  /// \param validate_batch Fully validate the array and children on creation and
+  /// Reset to a new array (default true). Disable only for validated or trusted input.
   static Result<std::unique_ptr<ArrowArrayMapLike>> Make(const ArrowSchema& schema,
                                                          const ArrowArray& array,
-                                                         int64_t row_index = 0);
+                                                         int64_t row_index = 0,
+                                                         bool validate_batch = true);
 
   ArrowArrayMapLike(const ArrowArrayMapLike& other) = delete;
   ArrowArrayMapLike& operator=(const ArrowArrayMapLike& other) = delete;
