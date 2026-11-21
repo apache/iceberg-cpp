@@ -47,6 +47,7 @@ class ICEBERG_EXPORT ScanTask {
   enum class Kind : uint8_t {
     kFileScanTask,
     kChangelogScanTask,
+    kFileScanTaskGroup,
   };
 
   /// \brief The kind of scan task.
@@ -140,6 +141,44 @@ using FileScanTaskStream = Stream<std::shared_ptr<FileScanTask>>;
 
 /// \brief Owning pointer to a file scan task stream.
 using FileScanTaskStreamPtr = std::unique_ptr<FileScanTaskStream>;
+
+/// \brief A group of file scan tasks planned as one unit of parallel work.
+///
+/// Groups are produced by DataTableScan::PlanTasksStream(). The tasks in a group are
+/// read sequentially by one reader, and groups are the unit of parallelism for
+/// parallel scans.
+class ICEBERG_EXPORT FileScanTaskGroup : public ScanTask {
+ public:
+  /// \brief Construct a group that takes shared ownership of its tasks.
+  ///
+  /// \param tasks The group's tasks, in planning order. They must not be mutated
+  /// while the group is used.
+  explicit FileScanTaskGroup(std::vector<std::shared_ptr<FileScanTask>> tasks);
+
+  /// \brief The tasks in this group, in planning order.
+  const std::vector<std::shared_ptr<FileScanTask>>& tasks() const { return tasks_; }
+
+  /// \brief This scan task group's kind.
+  Kind kind() const override { return Kind::kFileScanTaskGroup; }
+
+  /// \brief The number of bytes that should be read by this task group.
+  int64_t size_bytes() const override;
+
+  /// \brief The number of files that should be read by this task group.
+  int32_t files_count() const override;
+
+  /// \brief The estimated number of rows that should be read by this task group.
+  int64_t estimated_row_count() const override;
+
+ private:
+  std::vector<std::shared_ptr<FileScanTask>> tasks_;
+};
+
+/// \brief Stream of file scan task groups.
+using FileScanTaskGroupStream = Stream<std::shared_ptr<FileScanTaskGroup>>;
+
+/// \brief Owning pointer to a file scan task group stream.
+using FileScanTaskGroupStreamPtr = std::unique_ptr<FileScanTaskGroupStream>;
 
 enum class ChangelogOperation : uint8_t {
   kInsert,
