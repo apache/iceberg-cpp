@@ -20,6 +20,7 @@
 #include "iceberg/update/snapshot_update.h"
 
 #include <algorithm>
+#include <chrono>
 #include <format>
 #include <ranges>
 #include <span>
@@ -46,6 +47,7 @@
 #include "iceberg/util/snapshot_util.h"
 #include "iceberg/util/string_util.h"
 #include "iceberg/util/task_group.h"
+#include "iceberg/util/timepoint.h"
 #include "iceberg/util/uuid.h"
 
 namespace iceberg {
@@ -386,12 +388,17 @@ Result<SnapshotUpdate::ApplyResult> SnapshotUpdate::Apply() {
   }
 
   ICEBERG_ASSIGN_OR_RAISE(auto summary, ComputeSummary(base()));
+  // The v4 spec requires timestamps to increase strictly along a branch.
+  // Like Java, apply it to every format version.
+  TimePointMs timestamp_ms = CurrentTimePointMs();
+  if (parent_snapshot != nullptr && timestamp_ms <= parent_snapshot->timestamp_ms) {
+    timestamp_ms = parent_snapshot->timestamp_ms + std::chrono::milliseconds(1);
+  }
   ICEBERG_ASSIGN_OR_RAISE(
       staged_snapshot_,
-      Snapshot::Make(sequence_number, SnapshotId(), parent_snapshot_id,
-                     CurrentTimePointMs(), std::move(op), std::move(summary),
-                     base().current_schema_id, std::move(manifest_list_path), next_row_id,
-                     assigned_rows));
+      Snapshot::Make(sequence_number, SnapshotId(), parent_snapshot_id, timestamp_ms,
+                     std::move(op), std::move(summary), base().current_schema_id,
+                     std::move(manifest_list_path), next_row_id, assigned_rows));
 
   return ApplyResult{.snapshot = staged_snapshot_,
                      .target_branch = target_branch_,

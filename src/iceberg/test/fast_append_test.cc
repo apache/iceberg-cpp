@@ -19,6 +19,7 @@
 
 #include "iceberg/update/fast_append.h"
 
+#include <chrono>
 #include <format>
 #include <functional>
 #include <limits>
@@ -26,6 +27,7 @@
 #include <optional>
 #include <stdexcept>
 #include <string>
+#include <string_view>
 #include <thread>
 #include <unordered_set>
 #include <variant>
@@ -59,6 +61,7 @@
 #include "iceberg/update/overwrite_files.h"
 #include "iceberg/update/rewrite_files.h"
 #include "iceberg/update/update_properties.h"
+#include "iceberg/util/timepoint.h"
 #include "iceberg/util/uuid.h"
 
 namespace iceberg {
@@ -592,6 +595,116 @@ TEST_F(SnapshotUpdateTest, ConcurrentManifestPaths) {
     EXPECT_THAT(path, ::testing::HasSubstr("/metadata/"));
     EXPECT_THAT(path, ::testing::HasSubstr("-m"));
   }
+}
+
+class SnapshotTimestampTest : public UpdateTestBase {
+ protected:
+  static constexpr int64_t kOldSnapshotId = 3051729675574597004;
+  static constexpr int64_t kCurrentSnapshotId = 3055729675574597004;
+  static constexpr std::string_view kAuditBranch = "audit";
+
+  // Register TableMetadataV2Valid with main's head moved one hour into the
+  // future, which acts as a clock that does not advance past it, and an
+  // "audit" branch pointing at the older snapshot from the past.
+  void RegisterWithFutureMainHead() {
+    ICEBERG_UNWRAP_OR_FAIL(auto metadata,
+                           ReadTableMetadataFromResource("TableMetadataV2Valid.json"));
+    metadata->location = table_location_;
+    future_ms_ = CurrentTimePointMs() + std::chrono::hours(1);
+    for (auto& snapshot : metadata->snapshots) {
+      if (snapshot->snapshot_id == kCurrentSnapshotId) {
+        snapshot->timestamp_ms = future_ms_;
+      }
+    }
+    for (auto& entry : metadata->snapshot_log) {
+      if (entry.snapshot_id == kCurrentSnapshotId) {
+        entry.timestamp_ms = future_ms_;
+      }
+    }
+    ICEBERG_UNWRAP_OR_FAIL(auto audit, SnapshotRef::MakeBranch(kOldSnapshotId));
+    metadata->refs[std::string(kAuditBranch)] = std::move(audit);
+
+    std::ignore = catalog_->DropTable(table_ident_, /*purge=*/false);
+    auto metadata_location = std::format("{}/metadata/00001-{}.metadata.json",
+                                         table_location_, Uuid::GenerateV7().ToString());
+    ASSERT_THAT(TableMetadataUtil::Write(*file_io_, metadata_location, *metadata),
+                IsOk());
+    ICEBERG_UNWRAP_OR_FAIL(table_,
+                           catalog_->RegisterTable(table_ident_, metadata_location));
+  }
+
+  // Commit an empty snapshot to the branch and return the branch's new head.
+  Result<std::shared_ptr<Snapshot>> CommitTo(
+      std::string_view branch = SnapshotRef::kMainBranch) {
+    ICEBERG_ASSIGN_OR_RAISE(auto ctx,
+                            TransactionContext::Make(table_, TransactionKind::kUpdate));
+    auto update = std::make_shared<TestSnapshotUpdate>(ctx);
+    update->ToBranch(std::string(branch));
+    ICEBERG_RETURN_UNEXPECTED(update->Commit());
+    ICEBERG_RETURN_UNEXPECTED(table_->Refresh());
+    const auto& metadata = table_->metadata();
+    auto it = metadata->refs.find(std::string(branch));
+    ICEBERG_CHECK(it != metadata->refs.end(), "Missing branch {}", branch);
+    return metadata->SnapshotById(it->second->snapshot_id);
+  }
+
+  TimePointMs future_ms_;
+};
+
+TEST_F(SnapshotTimestampTest, FirstSnapshotUsesCurrentTime) {
+  RegisterTableFromResource("TableMetadataV2ValidMinimal.json");
+  ASSERT_EQ(table_->metadata()->snapshots.size(), 0);
+
+  auto before = CurrentTimePointMs();
+  ICEBERG_UNWRAP_OR_FAIL(auto snapshot, CommitTo());
+  auto after = CurrentTimePointMs();
+
+  EXPECT_FALSE(snapshot->parent_snapshot_id.has_value());
+  EXPECT_GE(snapshot->timestamp_ms, before);
+  EXPECT_LE(snapshot->timestamp_ms, after);
+}
+
+TEST_F(SnapshotTimestampTest, SuccessiveCommitsStrictlyIncrease) {
+  RegisterTableFromResource("TableMetadataV2ValidMinimal.json");
+
+  // Commits run faster than the clock ticks, so some share a millisecond.
+  ICEBERG_UNWRAP_OR_FAIL(auto previous, CommitTo());
+  for (int i = 0; i < 20; ++i) {
+    ICEBERG_UNWRAP_OR_FAIL(auto snapshot, CommitTo());
+    ASSERT_EQ(snapshot->parent_snapshot_id, previous->snapshot_id);
+    EXPECT_GT(snapshot->timestamp_ms, previous->timestamp_ms);
+    previous = std::move(snapshot);
+  }
+}
+
+TEST_F(SnapshotTimestampTest, FutureParentGetsParentPlusOne) {
+  RegisterWithFutureMainHead();
+
+  ICEBERG_UNWRAP_OR_FAIL(auto first, CommitTo());
+  EXPECT_EQ(first->parent_snapshot_id, kCurrentSnapshotId);
+  EXPECT_EQ(first->timestamp_ms, future_ms_ + std::chrono::milliseconds(1));
+
+  // The clock is still behind the parent, so the next commit bumps again.
+  ICEBERG_UNWRAP_OR_FAIL(auto second, CommitTo());
+  EXPECT_EQ(second->parent_snapshot_id, first->snapshot_id);
+  EXPECT_EQ(second->timestamp_ms, future_ms_ + std::chrono::milliseconds(2));
+}
+
+TEST_F(SnapshotTimestampTest, UsesParentOnTargetBranch) {
+  RegisterWithFutureMainHead();
+
+  // The audit branch's parent is in the past, so its commit uses the current
+  // time even though main's head is in the future.
+  auto before = CurrentTimePointMs();
+  ICEBERG_UNWRAP_OR_FAIL(auto audit, CommitTo(kAuditBranch));
+  auto after = CurrentTimePointMs();
+  EXPECT_EQ(audit->parent_snapshot_id, kOldSnapshotId);
+  EXPECT_GE(audit->timestamp_ms, before);
+  EXPECT_LE(audit->timestamp_ms, after);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto main, CommitTo());
+  EXPECT_EQ(main->parent_snapshot_id, kCurrentSnapshotId);
+  EXPECT_EQ(main->timestamp_ms, future_ms_ + std::chrono::milliseconds(1));
 }
 
 namespace {
