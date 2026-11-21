@@ -98,6 +98,24 @@ class ICEBERG_EXPORT StringUtils {
     return ToLower(str).starts_with(ToLower(prefix));
   }
 
+  /// \brief Case-insensitive equality folding only ASCII letters (A-Z, a-z).
+  ///
+  /// Non-ASCII bytes compare unchanged, so folding never changes the length
+  /// of either operand. Use this for identifiers, such as SQL dialects, whose
+  /// comparison rules specify ASCII folding; use EqualsIgnoreCase for
+  /// Unicode-aware comparison.
+  static bool EqualsIgnoreCaseAscii(std::string_view a, std::string_view b) {
+    if (a.size() != b.size()) {
+      return false;
+    }
+    for (size_t i = 0; i < a.size(); ++i) {
+      if (ToLowerAscii(a[i]) != ToLowerAscii(b[i])) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   /// \brief Count the number of code points in a UTF-8 string.
   static size_t CodePointCount(std::string_view str) {
     size_t count = 0;

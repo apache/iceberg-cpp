@@ -160,6 +160,8 @@ endif()
 add_iceberg_test(scheduled_executor_test SOURCES scheduled_executor_test.cc)
 set_tests_properties(scheduled_executor_test PROPERTIES TIMEOUT 60)
 
+add_iceberg_test(view_metadata_test SOURCES view_metadata_test.cc)
+
 add_iceberg_test(util_test
                  USE_DATA
                  SOURCES
