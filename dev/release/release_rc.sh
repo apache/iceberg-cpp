@@ -47,6 +47,17 @@ rc=$2
 : "${RELEASE_WATCH:=${RELEASE_DEFAULT}}"
 : "${RELEASE_WATCH_INTERVAL:=30}"
 
+if [ "${RELEASE_SIGN}" -gt 0 ]; then
+  if command -v shasum > /dev/null 2>&1; then
+    sha512_sum=(shasum -a 512 -t)
+  elif command -v sha512sum > /dev/null 2>&1; then
+    sha512_sum=(sha512sum -t)
+  else
+    echo "The signing step requires 'shasum' or 'sha512sum'."
+    exit 1
+  fi
+fi
+
 cd "${SOURCE_TOP_DIR}"
 
 if [ "${RELEASE_PULL}" -gt 0 ] || [ "${RELEASE_PUSH_TAG}" -gt 0 ]; then
@@ -126,6 +137,13 @@ if [ "${RELEASE_SIGN}" -gt 0 ]; then
     done
   fi
 
+  run_identity=$(gh api "repos/${repository}/actions/runs/${run_id}" \
+    --jq '[.path, .event, .head_branch, .head_sha, .status, .conclusion] | join(" ")')
+  if [ "${run_identity}" != ".github/workflows/rc.yml push ${rc_tag} ${rc_hash} completed success" ]; then
+    echo "Workflow run ${run_id} is not a successful RC run for ${rc_tag} at ${rc_hash}. Not signing."
+    exit 1
+  fi
+
   mkdir -p "${rc_id}"
 
   echo "Downloading .tar.gz and .sha512 from GitHub Releases"
@@ -136,8 +154,29 @@ if [ "${RELEASE_SIGN}" -gt 0 ]; then
     --repo "${repository}" \
     --skip-existing
 
-  echo "Signing tar.gz"
   cd "${rc_id}"
+  echo "Verifying release files against RC workflow run ${run_id}"
+  (
+    verify_dir="${TMPDIR:-/tmp}/iceberg-cpp-rc.${RANDOM}.${RANDOM}"
+    (umask 077 && mkdir "${verify_dir}")
+    trap 'rm -rf "${verify_dir}"' EXIT
+    if ! gh run download "${run_id}" --name archive --dir "${verify_dir}" --repo "${repository}"; then
+      echo "Could not download the RC workflow archive. Not signing."
+      exit 1
+    fi
+
+    workflow_checksum="${verify_dir}/${tar_gz}.sha512"
+    archive_sha512=$("${sha512_sum[@]}" "${tar_gz}")
+    release_checksum_sha512=$("${sha512_sum[@]}" < "${tar_gz}.sha512")
+    workflow_checksum_sha512=$("${sha512_sum[@]}" < "${workflow_checksum}")
+    if [ "${archive_sha512}" != "$(<"${workflow_checksum}")" ] ||
+      [ "${release_checksum_sha512}" != "${workflow_checksum_sha512}" ]; then
+      echo "The RC files in ${rc_id} do not match workflow run ${run_id}. Not signing."
+      exit 1
+    fi
+  )
+
+  echo "Signing tar.gz"
   gpg --armor --output "${tar_gz}.asc" --detach-sig "${tar_gz}"
   echo "Add signature to GitHub release"
   gh release upload "${rc_tag}" \
