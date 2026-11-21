@@ -356,6 +356,106 @@ TEST(ParquetNameMappingTest, ApplyNameMappingWithUnmappedFields) {
   ASSERT_EQ(SelectedColumnIndices(projection), std::vector<int32_t>({0}));
 }
 
+TEST(ParquetNameMappingTest, ApplyNameMappingKeepsLastAliasedSibling) {
+  Schema expected_schema({
+      SchemaField::MakeOptional(/*field_id=*/2, "full_name", string()),
+  });
+
+  auto parquet_schema = MakeGroupNode(
+      "iceberg_schema", {MakeStringNode("name"), MakeStringNode("full_name")});
+  auto schema_manifest = MakeSchemaManifest(parquet_schema);
+  auto mapping = NameMapping::Make({
+      MappedField{.names = {"name", "full_name"}, .field_id = 2},
+  });
+
+  ApplyNameMapping(*mapping, &schema_manifest);
+  const auto& first_metadata = schema_manifest.schema_fields[0].field->metadata();
+  EXPECT_TRUE(first_metadata == nullptr ||
+              first_metadata->FindKey(std::string(kParquetFieldIdKey)) < 0);
+  EXPECT_EQ(schema_manifest.schema_fields[1].field->metadata()->Get(
+                std::string(kParquetFieldIdKey)),
+            "2");
+
+  auto projection_result = Project(expected_schema, schema_manifest);
+  ASSERT_THAT(projection_result, IsOk());
+
+  // `from` indexes the selected columns, which only hold the "full_name" column.
+  const auto& projection = *projection_result;
+  ASSERT_EQ(projection.fields.size(), 1);
+  ASSERT_PROJECTED_FIELD(projection.fields[0], 0);
+  ASSERT_EQ(SelectedColumnIndices(projection), std::vector<int32_t>({1}));
+}
+
+TEST(ParquetNameMappingTest, ProjectContainersWithUnmappedChildrenAsMissing) {
+  Schema expected_schema({
+      SchemaField::MakeOptional(/*field_id=*/1, "id", int64()),
+      SchemaField::MakeOptional(
+          /*field_id=*/2, "numbers",
+          std::make_shared<ListType>(SchemaField::MakeOptional(
+              /*field_id=*/201, "element", int32()))),
+      SchemaField::MakeOptional(
+          /*field_id=*/3, "counts",
+          std::make_shared<MapType>(
+              SchemaField::MakeRequired(/*field_id=*/301, "key", string()),
+              SchemaField::MakeOptional(/*field_id=*/302, "value", int32()))),
+      SchemaField::MakeOptional(
+          /*field_id=*/4, "nested",
+          std::make_shared<ListType>(SchemaField::MakeOptional(
+              /*field_id=*/401, "element",
+              std::make_shared<ListType>(SchemaField::MakeOptional(
+                  /*field_id=*/402, "element", int32()))))),
+  });
+
+  auto parquet_schema = MakeGroupNode(
+      "iceberg_schema",
+      {
+          MakeInt64Node("id"),
+          MakeListNode("numbers", MakeInt32Node("element")),
+          MakeMapNode("counts",
+                      MakeStringNode("key", /*field_id=*/-1, /*optional=*/false),
+                      MakeInt32Node("value")),
+          MakeListNode("nested", MakeListNode("element", MakeInt32Node("element"))),
+      });
+  // Each container is mapped, but some of its children are not.
+  auto mapping = NameMapping::Make({
+      MappedField{.names = {"id"}, .field_id = 1},
+      MappedField{.names = {"numbers"}, .field_id = 2},
+      MappedField{.names = {"counts"},
+                  .field_id = 3,
+                  .nested_mapping = MappedFields::Make({
+                      MappedField{.names = {"value"}, .field_id = 302},
+                  })},
+      MappedField{.names = {"nested"},
+                  .field_id = 4,
+                  .nested_mapping = MappedFields::Make({
+                      MappedField{.names = {"element"}, .field_id = 401},
+                  })},
+  });
+
+  auto schema_manifest = MakeSchemaManifest(parquet_schema);
+  ApplyNameMapping(*mapping, &schema_manifest);
+  auto projection_result = Project(expected_schema, schema_manifest);
+  ASSERT_THAT(projection_result, IsOk());
+
+  const auto& projection = *projection_result;
+  ASSERT_EQ(projection.fields.size(), 4);
+  ASSERT_PROJECTED_FIELD(projection.fields[0], 0);
+  ASSERT_PROJECTED_NULL_FIELD(projection.fields[1]);
+  ASSERT_PROJECTED_NULL_FIELD(projection.fields[2]);
+  ASSERT_PROJECTED_NULL_FIELD(projection.fields[3]);
+  ASSERT_EQ(SelectedColumnIndices(projection), std::vector<int32_t>({0}));
+
+  // A required container that cannot be read is still an error.
+  Schema required_schema({
+      SchemaField::MakeRequired(
+          /*field_id=*/2, "numbers",
+          std::make_shared<ListType>(SchemaField::MakeOptional(
+              /*field_id=*/201, "element", int32()))),
+  });
+  EXPECT_THAT(Project(required_schema, schema_manifest),
+              HasErrorMessage("Missing required field with id: 2"));
+}
+
 TEST(ParquetSchemaProjectionTest, ProjectIdenticalSchemas) {
   Schema expected_schema({
       SchemaField::MakeRequired(/*field_id=*/1, "id", iceberg::int64()),

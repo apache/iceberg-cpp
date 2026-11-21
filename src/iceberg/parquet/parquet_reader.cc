@@ -41,6 +41,7 @@
 #include "iceberg/arrow/arrow_status_internal.h"
 #include "iceberg/arrow/metadata_column_util_internal.h"
 #include "iceberg/expression/binder.h"
+#include "iceberg/name_mapping.h"
 #include "iceberg/parquet/parquet_data_util_internal.h"
 #include "iceberg/parquet/parquet_metrics_row_group_filter_internal.h"
 #include "iceberg/parquet/parquet_register.h"
@@ -66,9 +67,12 @@ Result<SchemaProjection> BuildProjection(::parquet::arrow::FileReader* reader,
   auto metadata = reader->parquet_reader()->metadata();
 
   if (!HasFieldIds(metadata->schema()->schema_root())) {
+    // Like Java's Avro and ORC readers, fall back to matching the read schema's names
+    // when the table has no name mapping.
+    std::unique_ptr<NameMapping> fallback_mapping;
     if (name_mapping == nullptr) {
-      return InvalidSchema(
-          "Parquet file schema has no field IDs and no name mapping provided");
+      ICEBERG_ASSIGN_OR_RAISE(fallback_mapping, CreateMapping(read_schema));
+      name_mapping = fallback_mapping.get();
     }
     ::parquet::arrow::SchemaManifest schema_manifest;
     ICEBERG_ARROW_RETURN_NOT_OK(::parquet::arrow::SchemaManifest::Make(
