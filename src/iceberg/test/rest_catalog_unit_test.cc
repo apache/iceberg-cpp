@@ -17,11 +17,13 @@
  * under the License.
  */
 
+#include <barrier>
 #include <chrono>
 #include <future>
 #include <memory>
 #include <optional>
 #include <string>
+#include <thread>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
@@ -498,6 +500,36 @@ TEST_F(RestCatalogLoadTableTest,
   ASSERT_NE(credentialed, nullptr);
   ASSERT_EQ(credentialed->credentials().size(), 1);
   EXPECT_EQ(credentialed->credentials()[0].config.at("k"), "v");
+}
+
+// Threads that hold the default catalog at the same time get the same instance.
+TEST_F(RestCatalogLoadTableTest, ConcurrentAsCatalogCallsShareDefaultCatalog) {
+  constexpr int kThreads = 16;
+  constexpr int kRounds = 200;
+  ICEBERG_UNWRAP_OR_FAIL(auto root, MakeCatalog({}));
+
+  std::barrier sync(kThreads);
+  std::vector<std::shared_ptr<Catalog>> held(kThreads);
+  std::vector<std::thread> threads;
+  threads.reserve(kThreads);
+  for (int i = 0; i < kThreads; ++i) {
+    threads.emplace_back([&, i] {
+      for (int round = 0; round < kRounds; ++round) {
+        // No thread holds a default catalog here, so each round creates a new one.
+        sync.arrive_and_wait();
+        held[i] = root->AsCatalog().value_or(nullptr);
+        sync.arrive_and_wait();
+        // ASSERT would return early and leave the other threads at the barrier.
+        EXPECT_NE(held[i], nullptr);
+        EXPECT_EQ(held[i], held[0]);
+        sync.arrive_and_wait();
+        held[i].reset();
+      }
+    });
+  }
+  for (auto& thread : threads) {
+    thread.join();
+  }
 }
 
 struct PlanningModeCase {

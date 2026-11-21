@@ -45,9 +45,9 @@ namespace iceberg::rest {
 
 /// \brief Session-aware REST catalog root.
 ///
-/// Thread-safe, including the catalogs from AsCatalog() and WithContext(), as long as
-/// the configured HTTP client, FileIO, metrics reporters, executors, auth manager and
-/// its sessions are.
+/// Thread-safe, as are the catalogs from AsCatalog() and WithContext(). Custom HTTP
+/// clients, FileIOs, metrics reporters and auth managers must be thread-safe too, as
+/// must the executors passed to Make().
 class ICEBERG_REST_EXPORT RestCatalog final
     : public SessionCatalog,
       public std::enable_shared_from_this<RestCatalog> {
