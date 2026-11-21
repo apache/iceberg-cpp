@@ -944,4 +944,84 @@ TEST(StrictMetricsEvaluatorRegressionTest, MissingNanCountForField) {
   evaluate(Expressions::GreaterThan("no_nan_stats", Literal::Double(-1.0)));
 }
 
+TEST(StrictMetricsEvaluatorRegressionTest, NotInWithMissingLowerBound) {
+  auto schema = std::make_shared<Schema>(
+      std::vector<SchemaField>{SchemaField::MakeRequired(1, "id", int32())},
+      /*schema_id=*/0);
+
+  auto data_file = std::make_shared<DataFile>();
+  data_file->file_path = "missing_lower_bound.parquet";
+  data_file->file_format = FileFormatType::kParquet;
+  data_file->record_count = 1;
+  data_file->value_counts = {{1, 1L}};
+  data_file->null_value_counts = {{1, 0L}};
+  data_file->upper_bounds = {{1, Literal::Int(50).Serialize().value()}};
+
+  auto expect_eval = [&](const std::shared_ptr<Expression>& expr, bool expected) {
+    ICEBERG_UNWRAP_OR_FAIL(auto eval, StrictMetricsEvaluator::Make(expr, schema, true));
+    ICEBERG_UNWRAP_OR_FAIL(auto result, eval->Evaluate(*data_file));
+    EXPECT_EQ(result, expected) << expr->ToString();
+  };
+
+  // Lower bound is absent (unbounded below), so any literal <= 50 may exist in the file.
+  expect_eval(Expressions::NotIn("id", {Literal::Int(40), Literal::Int(50)}),
+              kRowsMightNotMatch);
+  expect_eval(Expressions::NotIn("id", {Literal::Int(20), Literal::Int(30)}),
+              kRowsMightNotMatch);
+  expect_eval(Expressions::NotIn("id", {Literal::Int(50), Literal::Int(70)}),
+              kRowsMightNotMatch);
+  // All literals are strictly above upper_bound, so no row can be in the set.
+  expect_eval(Expressions::NotIn("id", {Literal::Int(51), Literal::Int(70)}),
+              kRowsMustMatch);
+}
+
+TEST(StrictMetricsEvaluatorRegressionTest, NotInWithMissingUpperBound) {
+  auto schema = std::make_shared<Schema>(
+      std::vector<SchemaField>{SchemaField::MakeRequired(1, "id", int32())},
+      /*schema_id=*/0);
+
+  auto data_file = std::make_shared<DataFile>();
+  data_file->file_path = "missing_upper_bound.parquet";
+  data_file->file_format = FileFormatType::kParquet;
+  data_file->record_count = 1;
+  data_file->value_counts = {{1, 1L}};
+  data_file->null_value_counts = {{1, 0L}};
+  data_file->lower_bounds = {{1, Literal::Int(50).Serialize().value()}};
+
+  auto expect_eval = [&](const std::shared_ptr<Expression>& expr, bool expected) {
+    ICEBERG_UNWRAP_OR_FAIL(auto eval, StrictMetricsEvaluator::Make(expr, schema, true));
+    ICEBERG_UNWRAP_OR_FAIL(auto result, eval->Evaluate(*data_file));
+    EXPECT_EQ(result, expected) << expr->ToString();
+  };
+
+  // Upper bound is absent (unbounded above), so any literal >= 50 may exist in the file.
+  expect_eval(Expressions::NotIn("id", {Literal::Int(50), Literal::Int(60)}),
+              kRowsMightNotMatch);
+  expect_eval(Expressions::NotIn("id", {Literal::Int(30), Literal::Int(50)}),
+              kRowsMightNotMatch);
+  // All literals are strictly below lower_bound, so no row can be in the set.
+  expect_eval(Expressions::NotIn("id", {Literal::Int(20), Literal::Int(49)}),
+              kRowsMustMatch);
+}
+
+TEST(StrictMetricsEvaluatorRegressionTest, NotInWithMissingBounds) {
+  auto schema = std::make_shared<Schema>(
+      std::vector<SchemaField>{SchemaField::MakeRequired(1, "id", int32())},
+      /*schema_id=*/0);
+
+  auto data_file = std::make_shared<DataFile>();
+  data_file->file_path = "missing_bounds.parquet";
+  data_file->file_format = FileFormatType::kParquet;
+  data_file->record_count = 1;
+  data_file->value_counts = {{1, 1L}};
+  data_file->null_value_counts = {{1, 0L}};
+
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto eval,
+      StrictMetricsEvaluator::Make(
+          Expressions::NotIn("id", {Literal::Int(40), Literal::Int(50)}), schema, true));
+  ICEBERG_UNWRAP_OR_FAIL(auto result, eval->Evaluate(*data_file));
+  EXPECT_EQ(result, kRowsMightNotMatch);
+}
+
 }  // namespace iceberg

@@ -19,7 +19,8 @@
 
 #include "iceberg/expression/strict_metrics_evaluator.h"
 
-#include <ranges>
+#include <algorithm>
+#include <optional>
 
 #include "iceberg/expression/binder.h"
 #include "iceberg/expression/expression_visitor.h"
@@ -400,28 +401,29 @@ class StrictMetricsVisitor : public BoundVisitor<bool> {
       }
       lower_bound = std::move(lower);
     }
-    auto literals_view = literal_set | std::views::filter([&](const Literal& lit) {
-                           return lower_bound.has_value() && lower_bound.value() <= lit;
-                         });
-    // if all values are less than lower bound, rows must
-    // match (notIn).
-    if (lower_bound.has_value() && literals_view.empty()) {
-      return kRowsMustMatch;
-    }
 
+    std::optional<Literal> upper_bound;
     auto upper_it = data_file_.upper_bounds.find(id);
     if (upper_it != data_file_.upper_bounds.cend()) {
       ICEBERG_ASSIGN_OR_RAISE(auto upper, ParseBound(expr, upper_it->second));
-      auto filtered_view = literals_view | std::views::filter([&](const Literal& lit) {
-                             return upper >= lit;
-                           });
-      if (filtered_view.empty()) {
-        // if all remaining values are greater than upper bound,
-        // rows must match
-        // (notIn).
-        return kRowsMustMatch;
-      }
+      upper_bound = std::move(upper);
     }
+
+    if (!lower_bound.has_value() && !upper_bound.has_value()) {
+      return kRowsMightNotMatch;
+    }
+
+    // Treat a missing bound as unbounded on that side. If no value in literal_set
+    // falls within [lower_bound, upper_bound], no row from file can be in the set,
+    // so all rows satisfy NOT IN.
+    auto within_bounds = [&](const Literal& lit) {
+      return (!lower_bound.has_value() || *lower_bound <= lit) &&
+             (!upper_bound.has_value() || *upper_bound >= lit);
+    };
+    if (std::ranges::none_of(literal_set, within_bounds)) {
+      return kRowsMustMatch;
+    }
+
     return kRowsMightNotMatch;
   }
 
