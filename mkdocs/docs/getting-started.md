@@ -39,6 +39,16 @@ ctest --test-dir build --output-on-failure
 
 ## Build with CMake
 
+Dependencies managed with CMake FetchContent use the pinned sources by default.
+Set `-DFETCHCONTENT_TRY_FIND_PACKAGE_MODE=OPT_IN` to try installed packages before
+fetching sources. Use a fresh build directory when changing this setting.
+
+Provided Apache Arrow and Parquet packages must satisfy the minimum version set
+by `ICEBERG_ARROW_BUILD_VERSION` in `cmake_modules/IcebergThirdpartyToolchain.cmake`.
+With `OPT_IN`, an unsupported Arrow package is skipped in favor of the pinned sources.
+If a compatible Arrow package is found, a compatible Parquet package is required;
+otherwise, CMake configuration fails.
+
 ### Core Libraries
 
 ```bash
@@ -59,7 +69,7 @@ cmake --install build
 ### Bundle Library (with provided Apache Arrow)
 
 ```bash
-cmake -S . -B build -G Ninja -DCMAKE_INSTALL_PREFIX=/path/to/install -DCMAKE_PREFIX_PATH=/path/to/arrow -DICEBERG_BUILD_BUNDLE=ON
+cmake -S . -B build -G Ninja -DCMAKE_INSTALL_PREFIX=/path/to/install -DCMAKE_PREFIX_PATH=/path/to/arrow -DICEBERG_BUILD_BUNDLE=ON -DFETCHCONTENT_TRY_FIND_PACKAGE_MODE=OPT_IN
 cmake --build build
 cmake --install build
 ```
@@ -68,6 +78,7 @@ cmake --install build
 
 | Option | Default | Description |
 |--------|---------|-------------|
+| `FETCHCONTENT_TRY_FIND_PACKAGE_MODE` | `NEVER` | Set to `OPT_IN` to try installed FetchContent dependencies before fetching sources |
 | `ICEBERG_BUILD_STATIC` | `ON` | Build static library |
 | `ICEBERG_BUILD_SHARED` | `OFF` | Build shared library |
 | `ICEBERG_BUILD_TESTS` | `ON` | Build tests |
