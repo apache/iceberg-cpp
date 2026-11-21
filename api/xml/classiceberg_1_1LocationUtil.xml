@@ -1,0 +1,126 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1LocationUtil" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::LocationUtil</compoundname>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1LocationUtil_1a547f886111038bdf691d48e781d1099f" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::string_view</type>
+        <definition>static std::string_view iceberg::LocationUtil::ParseScheme</definition>
+        <argsstring>(std::string_view location)</argsstring>
+        <name>ParseScheme</name>
+        <qualifiedname>iceberg::LocationUtil::ParseScheme</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>location</declname>
+        </param>
+        <briefdescription>
+<para>Extract the URI scheme from a location. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This follows Java&apos;s <ref refid="classiceberg_1_1ResolvingFileIO" kindref="compound">ResolvingFileIO</ref>: the text before the first colon is the scheme; an empty result means that no scheme was found. Text that is not syntactically a scheme (RFC 3986) yields no scheme, and on Windows a single letter is a drive rather than a scheme. The rest of the location is not validated. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/location_util.h" line="41" column="27"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1LocationUtil_1a54da92b737859f8eb2450d87ea69f94f" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>static bool iceberg::LocationUtil::HasScheme</definition>
+        <argsstring>(std::string_view location)</argsstring>
+        <name>HasScheme</name>
+        <qualifiedname>iceberg::LocationUtil::HasScheme</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>location</declname>
+        </param>
+        <briefdescription>
+<para>Whether a location starts with a URI scheme. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This is the spec&apos;s test for an absolute path (see &quot;Paths in Metadata&quot;): the text before the first colon must be a non-empty RFC 3986 scheme. It is strict on every platform: unlike ParseScheme, a single letter such as <computeroutput>C:</computeroutput> counts as a scheme. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/location_util.h" line="49" column="15"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1LocationUtil_1afe4d1878a2457b0ce17fae310146fd1e" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::string</type>
+        <definition>static std::string iceberg::LocationUtil::ResolveLocation</definition>
+        <argsstring>(std::string_view table_location, std::string_view location)</argsstring>
+        <name>ResolveLocation</name>
+        <qualifiedname>iceberg::LocationUtil::ResolveLocation</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>table_location</declname>
+        </param>
+        <param>
+          <type>std::string_view</type>
+          <declname>location</declname>
+        </param>
+        <briefdescription>
+<para>Resolve a location against a table location. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>A location with a URI scheme is absolute and is returned unchanged. Otherwise the result is <computeroutput>table_location + &quot;/&quot; + location</computeroutput>, with no <computeroutput>/</computeroutput> added when the table location already ends in one. The join does not interpret <computeroutput>.</computeroutput> or <computeroutput>..</computeroutput>, and a location starting with <computeroutput>/</computeroutput> yields <computeroutput>//</computeroutput>. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/location_util.h" line="57" column="22"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1LocationUtil_1a58be1085fbb3b38ecf80275864dc6fa1" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::string_view</type>
+        <definition>static std::string_view iceberg::LocationUtil::RelativizeLocation</definition>
+        <argsstring>(std::string_view table_location, std::string_view location)</argsstring>
+        <name>RelativizeLocation</name>
+        <qualifiedname>iceberg::LocationUtil::RelativizeLocation</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>table_location</declname>
+        </param>
+        <param>
+          <type>std::string_view</type>
+          <declname>location</declname>
+        </param>
+        <briefdescription>
+<para>Relativize a location against a table location. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>If the location starts with the table location immediately followed by <computeroutput>/</computeroutput>, the remainder after that separator is returned. Otherwise the location is returned unchanged. A table location that ends in <computeroutput>/</computeroutput> already includes the separator. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/location_util.h" line="66" column="27"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1LocationUtil_1a40e671309458a36d622339fd7dd6a743" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::string_view</type>
+        <definition>static std::string_view iceberg::LocationUtil::StripTrailingSlash</definition>
+        <argsstring>(std::string_view path)</argsstring>
+        <name>StripTrailingSlash</name>
+        <qualifiedname>iceberg::LocationUtil::StripTrailingSlash</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>path</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/location_util.h" line="69" column="27" bodyfile="iceberg/util/location_util.h" bodystart="69" bodyend="78"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/util/location_util.h" line="32" column="1" bodyfile="iceberg/util/location_util.h" bodystart="32" bodyend="79"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1LocationUtil_1a54da92b737859f8eb2450d87ea69f94f" prot="public" virt="non-virtual"><scope>iceberg::LocationUtil</scope><name>HasScheme</name></member>
+      <member refid="classiceberg_1_1LocationUtil_1a547f886111038bdf691d48e781d1099f" prot="public" virt="non-virtual"><scope>iceberg::LocationUtil</scope><name>ParseScheme</name></member>
+      <member refid="classiceberg_1_1LocationUtil_1a58be1085fbb3b38ecf80275864dc6fa1" prot="public" virt="non-virtual"><scope>iceberg::LocationUtil</scope><name>RelativizeLocation</name></member>
+      <member refid="classiceberg_1_1LocationUtil_1afe4d1878a2457b0ce17fae310146fd1e" prot="public" virt="non-virtual"><scope>iceberg::LocationUtil</scope><name>ResolveLocation</name></member>
+      <member refid="classiceberg_1_1LocationUtil_1a40e671309458a36d622339fd7dd6a743" prot="public" virt="non-virtual"><scope>iceberg::LocationUtil</scope><name>StripTrailingSlash</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

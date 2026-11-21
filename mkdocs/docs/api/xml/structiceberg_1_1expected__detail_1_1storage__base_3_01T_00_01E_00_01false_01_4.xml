@@ -1,0 +1,468 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1expected__detail_1_1storage__base_3_01T_00_01E_00_01false_01_4" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::expected_detail::storage_base&lt; T, E, false &gt;</compoundname>
+    <templateparamlist>
+      <param>
+        <type>class T</type>
+      </param>
+      <param>
+        <type>class E</type>
+      </param>
+    </templateparamlist>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1expected__detail_1_1storage__base_3_01T_00_01E_00_01false_01_4_1a94462d57005418543751a44f40f2cfb6" prot="public" static="no" mutable="no">
+        <type>T</type>
+        <definition>T iceberg::expected_detail::storage_base&lt; T, E, false &gt;::m_val</definition>
+        <argsstring></argsstring>
+        <name>m_val</name>
+        <qualifiedname>iceberg::expected_detail::storage_base&lt; T, E, false &gt;::m_val</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/compat/expected.h" line="707" column="7" bodyfile="iceberg/compat/expected.h" bodystart="707" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1expected__detail_1_1storage__base_3_01T_00_01E_00_01false_01_4_1a36ce73d1764939505f8be85789232b89" prot="public" static="no" mutable="no">
+        <type>E</type>
+        <definition>E iceberg::expected_detail::storage_base&lt; T, E, false &gt;::m_unexpect</definition>
+        <argsstring></argsstring>
+        <name>m_unexpect</name>
+        <qualifiedname>iceberg::expected_detail::storage_base&lt; T, E, false &gt;::m_unexpect</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/compat/expected.h" line="708" column="7" bodyfile="iceberg/compat/expected.h" bodystart="708" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1expected__detail_1_1storage__base_3_01T_00_01E_00_01false_01_4_1aed7b8083211951d66a9a5d5ec9d4b127" prot="public" static="no" mutable="no">
+        <type>char</type>
+        <definition>char iceberg::expected_detail::storage_base&lt; T, E, false &gt;::m_dummy</definition>
+        <argsstring></argsstring>
+        <name>m_dummy</name>
+        <qualifiedname>iceberg::expected_detail::storage_base&lt; T, E, false &gt;::m_dummy</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/compat/expected.h" line="709" column="10" bodyfile="iceberg/compat/expected.h" bodystart="709" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1expected__detail_1_1storage__base_3_01T_00_01E_00_01false_01_4_1a8c6cb893fe74b119c2009c25a05ef10b" prot="public" static="no" mutable="no">
+        <type>union <ref refid="structiceberg_1_1expected__detail_1_1storage__base" kindref="compound">iceberg::expected_detail::storage_base</ref>&lt; T, E, false &gt;</type>
+        <definition>union iceberg::expected_detail::storage_base&lt; T, E, false &gt; iceberg::expected_detail::storage_base&lt; T, E, false &gt;</definition>
+        <argsstring></argsstring>
+        <name></name>
+        <qualifiedname>iceberg::expected_detail::storage_base&lt; T, E, false &gt;</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/compat/expected.h" line="710" column="3"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1expected__detail_1_1storage__base_3_01T_00_01E_00_01false_01_4_1a81cc5d964b5a8c296b963bb46f5a5144" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool iceberg::expected_detail::storage_base&lt; T, E, false &gt;::m_has_val</definition>
+        <argsstring></argsstring>
+        <name>m_has_val</name>
+        <qualifiedname>iceberg::expected_detail::storage_base&lt; T, E, false &gt;::m_has_val</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/compat/expected.h" line="711" column="8" bodyfile="iceberg/compat/expected.h" bodystart="711" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structiceberg_1_1expected__detail_1_1storage__base_3_01T_00_01E_00_01false_01_4_1aa0a904fcf97158cb91909f5f7975a041" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::expected_detail::storage_base&lt; T, E, false &gt;::storage_base</definition>
+        <argsstring>(storage_base const &amp;)=default</argsstring>
+        <name>storage_base</name>
+        <qualifiedname>iceberg::expected_detail::storage_base&lt; T, E, false &gt;::storage_base</qualifiedname>
+        <param>
+          <type><ref refid="structiceberg_1_1expected__detail_1_1storage__base" kindref="compound">storage_base</ref> const &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/compat/expected.h" line="615" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1expected__detail_1_1storage__base_3_01T_00_01E_00_01false_01_4_1a67284901b21dc612ed35010d156cc077" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::expected_detail::storage_base&lt; T, E, false &gt;::storage_base</definition>
+        <argsstring>(storage_base &amp;&amp;)=default</argsstring>
+        <name>storage_base</name>
+        <qualifiedname>iceberg::expected_detail::storage_base&lt; T, E, false &gt;::storage_base</qualifiedname>
+        <param>
+          <type><ref refid="structiceberg_1_1expected__detail_1_1storage__base" kindref="compound">storage_base</ref> &amp;&amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/compat/expected.h" line="616" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1expected__detail_1_1storage__base_3_01T_00_01E_00_01false_01_4_1ac65bc8e36e72d384fa0a5d87c23f3592" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="structiceberg_1_1expected__detail_1_1storage__base" kindref="compound">storage_base</ref> &amp;</type>
+        <definition>storage_base &amp; iceberg::expected_detail::storage_base&lt; T, E, false &gt;::operator=</definition>
+        <argsstring>(storage_base const &amp;)=default</argsstring>
+        <name>operator=</name>
+        <qualifiedname>iceberg::expected_detail::storage_base&lt; T, E, false &gt;::operator=</qualifiedname>
+        <param>
+          <type><ref refid="structiceberg_1_1expected__detail_1_1storage__base" kindref="compound">storage_base</ref> const &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/compat/expected.h" line="617" column="16"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1expected__detail_1_1storage__base_3_01T_00_01E_00_01false_01_4_1af2155c09560948c80b31a05116be8e8e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="structiceberg_1_1expected__detail_1_1storage__base" kindref="compound">storage_base</ref> &amp;</type>
+        <definition>storage_base &amp; iceberg::expected_detail::storage_base&lt; T, E, false &gt;::operator=</definition>
+        <argsstring>(storage_base &amp;&amp;)=default</argsstring>
+        <name>operator=</name>
+        <qualifiedname>iceberg::expected_detail::storage_base&lt; T, E, false &gt;::operator=</qualifiedname>
+        <param>
+          <type><ref refid="structiceberg_1_1expected__detail_1_1storage__base" kindref="compound">storage_base</ref> &amp;&amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/compat/expected.h" line="618" column="16"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1expected__detail_1_1storage__base_3_01T_00_01E_00_01false_01_4_1ab13774c57273578eaa4cf9696d2c0c61" prot="public" static="no" constexpr="yes" const="no" explicit="no" inline="yes" noexcept="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class U</type>
+            <defval>T</defval>
+          </param>
+          <param>
+            <type>std::enable_if_t&lt; std::is_default_constructible_v&lt; U &gt;, int &gt;</type>
+            <defval>0</defval>
+          </param>
+        </templateparamlist>
+        <type>constexpr</type>
+        <definition>constexpr iceberg::expected_detail::storage_base&lt; T, E, false &gt;::storage_base</definition>
+        <argsstring>() noexcept(std::is_nothrow_default_constructible_v&lt; U &gt;)</argsstring>
+        <name>storage_base</name>
+        <qualifiedname>iceberg::expected_detail::storage_base&lt; T, E, false &gt;::storage_base</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/compat/expected.h" line="623" column="13" bodyfile="iceberg/compat/expected.h" bodystart="623" bodyend="624"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1expected__detail_1_1storage__base_3_01T_00_01E_00_01false_01_4_1a2b26b262a71507b9d5da973be2a55035" prot="public" static="no" constexpr="yes" const="no" explicit="no" inline="yes" noexcept="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class Rhs</type>
+          </param>
+        </templateparamlist>
+        <type>constexpr</type>
+        <definition>constexpr iceberg::expected_detail::storage_base&lt; T, E, false &gt;::storage_base</definition>
+        <argsstring>(construct_from_expected_t, Rhs &amp;&amp;rhs) noexcept(std::is_nothrow_constructible_v&lt; T, decltype(expected_detail::expected_source_value(std::declval&lt; Rhs &gt;()))&gt; &amp;&amp;std::is_nothrow_constructible_v&lt; E, decltype(expected_detail::expected_source_error(std::declval&lt; Rhs &gt;()))&gt;)</argsstring>
+        <name>storage_base</name>
+        <qualifiedname>iceberg::expected_detail::storage_base&lt; T, E, false &gt;::storage_base</qualifiedname>
+        <param>
+          <type><ref refid="structiceberg_1_1expected__detail_1_1construct__from__expected__t" kindref="compound">construct_from_expected_t</ref></type>
+        </param>
+        <param>
+          <type>Rhs &amp;&amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/compat/expected.h" line="627" column="13" bodyfile="iceberg/compat/expected.h" bodystart="627" bodyend="642"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1expected__detail_1_1storage__base_3_01T_00_01E_00_01false_01_4_1af27b2cc7e578535fec4157100a7223c8" prot="public" static="no" constexpr="yes" const="no" explicit="yes" inline="yes" noexcept="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class...</type>
+            <declname>Args</declname>
+            <defname>Args</defname>
+          </param>
+          <param>
+            <type>std::enable_if_t&lt; std::is_constructible_v&lt; T, Args &amp;&amp;... &gt; &gt; *</type>
+            <defval>nullptr</defval>
+          </param>
+        </templateparamlist>
+        <type>constexpr</type>
+        <definition>constexpr iceberg::expected_detail::storage_base&lt; T, E, false &gt;::storage_base</definition>
+        <argsstring>(std::in_place_t, Args &amp;&amp;... args) noexcept(noexcept(T(std::forward&lt; Args &gt;(args)...)))</argsstring>
+        <name>storage_base</name>
+        <qualifiedname>iceberg::expected_detail::storage_base&lt; T, E, false &gt;::storage_base</qualifiedname>
+        <param>
+          <type>std::in_place_t</type>
+        </param>
+        <param>
+          <type>Args &amp;&amp;...</type>
+          <declname>args</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/compat/expected.h" line="646" column="22" bodyfile="iceberg/compat/expected.h" bodystart="646" bodyend="648"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1expected__detail_1_1storage__base_3_01T_00_01E_00_01false_01_4_1a2d6e2538f4dee26e5084fd618e47e5c2" prot="public" static="no" constexpr="yes" const="no" explicit="yes" inline="yes" noexcept="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class U</type>
+          </param>
+          <param>
+            <type>class...</type>
+            <declname>Args</declname>
+            <defname>Args</defname>
+          </param>
+          <param>
+            <type>std::enable_if_t&lt; std::is_constructible_v&lt; T, std::initializer_list&lt; U &gt; &amp;, Args &amp;&amp;... &gt; &gt; *</type>
+            <defval>nullptr</defval>
+          </param>
+        </templateparamlist>
+        <type>constexpr</type>
+        <definition>constexpr iceberg::expected_detail::storage_base&lt; T, E, false &gt;::storage_base</definition>
+        <argsstring>(std::in_place_t, std::initializer_list&lt; U &gt; il, Args &amp;&amp;... args) noexcept(noexcept(T(il, std::forward&lt; Args &gt;(args)...)))</argsstring>
+        <name>storage_base</name>
+        <qualifiedname>iceberg::expected_detail::storage_base&lt; T, E, false &gt;::storage_base</qualifiedname>
+        <param>
+          <type>std::in_place_t</type>
+        </param>
+        <param>
+          <type>std::initializer_list&lt; U &gt;</type>
+          <declname>il</declname>
+        </param>
+        <param>
+          <type>Args &amp;&amp;...</type>
+          <declname>args</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/compat/expected.h" line="653" column="22" bodyfile="iceberg/compat/expected.h" bodystart="653" bodyend="656"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1expected__detail_1_1storage__base_3_01T_00_01E_00_01false_01_4_1afc290a7421e73343b8bcb53989e68809" prot="public" static="no" constexpr="yes" const="no" explicit="yes" inline="yes" noexcept="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class...</type>
+            <declname>Args</declname>
+            <defname>Args</defname>
+          </param>
+          <param>
+            <type>std::enable_if_t&lt; std::is_constructible_v&lt; E, Args &amp;&amp;... &gt; &gt; *</type>
+            <defval>nullptr</defval>
+          </param>
+        </templateparamlist>
+        <type>constexpr</type>
+        <definition>constexpr iceberg::expected_detail::storage_base&lt; T, E, false &gt;::storage_base</definition>
+        <argsstring>(unexpect_t, Args &amp;&amp;... args) noexcept(noexcept(E(std::forward&lt; Args &gt;(args)...)))</argsstring>
+        <name>storage_base</name>
+        <qualifiedname>iceberg::expected_detail::storage_base&lt; T, E, false &gt;::storage_base</qualifiedname>
+        <param>
+          <type><ref refid="structiceberg_1_1unexpect__t" kindref="compound">unexpect_t</ref></type>
+        </param>
+        <param>
+          <type>Args &amp;&amp;...</type>
+          <declname>args</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/compat/expected.h" line="660" column="22" bodyfile="iceberg/compat/expected.h" bodystart="660" bodyend="662"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1expected__detail_1_1storage__base_3_01T_00_01E_00_01false_01_4_1a244bc7415a9bf251c110ec49194d86f1" prot="public" static="no" constexpr="yes" const="no" explicit="yes" inline="yes" noexcept="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class U</type>
+          </param>
+          <param>
+            <type>class...</type>
+            <declname>Args</declname>
+            <defname>Args</defname>
+          </param>
+          <param>
+            <type>std::enable_if_t&lt; std::is_constructible_v&lt; E, std::initializer_list&lt; U &gt; &amp;, Args &amp;&amp;... &gt; &gt; *</type>
+            <defval>nullptr</defval>
+          </param>
+        </templateparamlist>
+        <type>constexpr</type>
+        <definition>constexpr iceberg::expected_detail::storage_base&lt; T, E, false &gt;::storage_base</definition>
+        <argsstring>(unexpect_t, std::initializer_list&lt; U &gt; il, Args &amp;&amp;... args) noexcept(noexcept(E(il, std::forward&lt; Args &gt;(args)...)))</argsstring>
+        <name>storage_base</name>
+        <qualifiedname>iceberg::expected_detail::storage_base&lt; T, E, false &gt;::storage_base</qualifiedname>
+        <param>
+          <type><ref refid="structiceberg_1_1unexpect__t" kindref="compound">unexpect_t</ref></type>
+        </param>
+        <param>
+          <type>std::initializer_list&lt; U &gt;</type>
+          <declname>il</declname>
+        </param>
+        <param>
+          <type>Args &amp;&amp;...</type>
+          <declname>args</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/compat/expected.h" line="667" column="22" bodyfile="iceberg/compat/expected.h" bodystart="667" bodyend="670"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1expected__detail_1_1storage__base_3_01T_00_01E_00_01false_01_4_1af0a23585f4d1cd96f05dc1363d6c4453" prot="public" static="no" constexpr="yes" const="no" explicit="yes" inline="yes" noexcept="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class Fn</type>
+          </param>
+          <param>
+            <type>class...</type>
+            <declname>Args</declname>
+            <defname>Args</defname>
+          </param>
+        </templateparamlist>
+        <type>constexpr</type>
+        <definition>constexpr iceberg::expected_detail::storage_base&lt; T, E, false &gt;::storage_base</definition>
+        <argsstring>(construct_with_invoke_result_t, Fn &amp;&amp;func, Args &amp;&amp;... args) noexcept(noexcept(static_cast&lt; T &gt;(std::invoke(std::forward&lt; Fn &gt;(func), std::forward&lt; Args &gt;(args)...))))</argsstring>
+        <name>storage_base</name>
+        <qualifiedname>iceberg::expected_detail::storage_base&lt; T, E, false &gt;::storage_base</qualifiedname>
+        <param>
+          <type><ref refid="structiceberg_1_1expected__detail_1_1construct__with__invoke__result__t" kindref="compound">construct_with_invoke_result_t</ref></type>
+        </param>
+        <param>
+          <type>Fn &amp;&amp;</type>
+          <declname>func</declname>
+        </param>
+        <param>
+          <type>Args &amp;&amp;...</type>
+          <declname>args</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/compat/expected.h" line="674" column="22" bodyfile="iceberg/compat/expected.h" bodystart="674" bodyend="680"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1expected__detail_1_1storage__base_3_01T_00_01E_00_01false_01_4_1a76482a0a6ede83d24887ce621692ccc9" prot="public" static="no" constexpr="yes" const="no" explicit="yes" inline="yes" noexcept="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class Fn</type>
+          </param>
+          <param>
+            <type>class...</type>
+            <declname>Args</declname>
+            <defname>Args</defname>
+          </param>
+        </templateparamlist>
+        <type>constexpr</type>
+        <definition>constexpr iceberg::expected_detail::storage_base&lt; T, E, false &gt;::storage_base</definition>
+        <argsstring>(construct_with_invoke_result_t, unexpect_t, Fn &amp;&amp;func, Args &amp;&amp;... args) noexcept(noexcept(static_cast&lt; E &gt;(std::invoke(std::forward&lt; Fn &gt;(func), std::forward&lt; Args &gt;(args)...))))</argsstring>
+        <name>storage_base</name>
+        <qualifiedname>iceberg::expected_detail::storage_base&lt; T, E, false &gt;::storage_base</qualifiedname>
+        <param>
+          <type><ref refid="structiceberg_1_1expected__detail_1_1construct__with__invoke__result__t" kindref="compound">construct_with_invoke_result_t</ref></type>
+        </param>
+        <param>
+          <type><ref refid="structiceberg_1_1unexpect__t" kindref="compound">unexpect_t</ref></type>
+        </param>
+        <param>
+          <type>Fn &amp;&amp;</type>
+          <declname>func</declname>
+        </param>
+        <param>
+          <type>Args &amp;&amp;...</type>
+          <declname>args</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/compat/expected.h" line="684" column="22" bodyfile="iceberg/compat/expected.h" bodystart="684" bodyend="690"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1expected__detail_1_1storage__base_3_01T_00_01E_00_01false_01_4_1a8736a5157f1d03648d7a62fd1b185a1f" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>ICEBERG_EXPECTED_CONSTEXPR_DTOR</type>
+        <definition>ICEBERG_EXPECTED_CONSTEXPR_DTOR iceberg::expected_detail::storage_base&lt; T, E, false &gt;::~storage_base</definition>
+        <argsstring>()</argsstring>
+        <name>~storage_base</name>
+        <qualifiedname>iceberg::expected_detail::storage_base&lt; T, E, false &gt;::~storage_base</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/compat/expected.h" line="694" column="35" bodyfile="iceberg/compat/expected.h" bodystart="694" bodyend="704"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::expected_detail::storage_base&lt; T, E, false &gt;</label>
+        <link refid="structiceberg_1_1expected__detail_1_1storage__base_3_01T_00_01E_00_01false_01_4"/>
+        <childnode refid="1" relation="usage">
+          <edgelabel>@3</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/compat/expected.h" line="614" column="1" bodyfile="iceberg/compat/expected.h" bodystart="614" bodyend="712"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1expected__detail_1_1storage__base_3_01T_00_01E_00_01false_01_4_1aed7b8083211951d66a9a5d5ec9d4b127" prot="public" virt="non-virtual"><scope>iceberg::expected_detail::storage_base&lt; T, E, false &gt;</scope><name>m_dummy</name></member>
+      <member refid="structiceberg_1_1expected__detail_1_1storage__base_3_01T_00_01E_00_01false_01_4_1a81cc5d964b5a8c296b963bb46f5a5144" prot="public" virt="non-virtual"><scope>iceberg::expected_detail::storage_base&lt; T, E, false &gt;</scope><name>m_has_val</name></member>
+      <member refid="structiceberg_1_1expected__detail_1_1storage__base_3_01T_00_01E_00_01false_01_4_1a36ce73d1764939505f8be85789232b89" prot="public" virt="non-virtual"><scope>iceberg::expected_detail::storage_base&lt; T, E, false &gt;</scope><name>m_unexpect</name></member>
+      <member refid="structiceberg_1_1expected__detail_1_1storage__base_3_01T_00_01E_00_01false_01_4_1a94462d57005418543751a44f40f2cfb6" prot="public" virt="non-virtual"><scope>iceberg::expected_detail::storage_base&lt; T, E, false &gt;</scope><name>m_val</name></member>
+      <member refid="structiceberg_1_1expected__detail_1_1storage__base_3_01T_00_01E_00_01false_01_4_1ac65bc8e36e72d384fa0a5d87c23f3592" prot="public" virt="non-virtual"><scope>iceberg::expected_detail::storage_base&lt; T, E, false &gt;</scope><name>operator=</name></member>
+      <member refid="structiceberg_1_1expected__detail_1_1storage__base_3_01T_00_01E_00_01false_01_4_1af2155c09560948c80b31a05116be8e8e" prot="public" virt="non-virtual"><scope>iceberg::expected_detail::storage_base&lt; T, E, false &gt;</scope><name>operator=</name></member>
+      <member refid="structiceberg_1_1expected__detail_1_1storage__base_3_01T_00_01E_00_01false_01_4_1aa0a904fcf97158cb91909f5f7975a041" prot="public" virt="non-virtual"><scope>iceberg::expected_detail::storage_base&lt; T, E, false &gt;</scope><name>storage_base</name></member>
+      <member refid="structiceberg_1_1expected__detail_1_1storage__base_3_01T_00_01E_00_01false_01_4_1a67284901b21dc612ed35010d156cc077" prot="public" virt="non-virtual"><scope>iceberg::expected_detail::storage_base&lt; T, E, false &gt;</scope><name>storage_base</name></member>
+      <member refid="structiceberg_1_1expected__detail_1_1storage__base_3_01T_00_01E_00_01false_01_4_1ab13774c57273578eaa4cf9696d2c0c61" prot="public" virt="non-virtual"><scope>iceberg::expected_detail::storage_base&lt; T, E, false &gt;</scope><name>storage_base</name></member>
+      <member refid="structiceberg_1_1expected__detail_1_1storage__base_3_01T_00_01E_00_01false_01_4_1a2b26b262a71507b9d5da973be2a55035" prot="public" virt="non-virtual"><scope>iceberg::expected_detail::storage_base&lt; T, E, false &gt;</scope><name>storage_base</name></member>
+      <member refid="structiceberg_1_1expected__detail_1_1storage__base_3_01T_00_01E_00_01false_01_4_1af27b2cc7e578535fec4157100a7223c8" prot="public" virt="non-virtual"><scope>iceberg::expected_detail::storage_base&lt; T, E, false &gt;</scope><name>storage_base</name></member>
+      <member refid="structiceberg_1_1expected__detail_1_1storage__base_3_01T_00_01E_00_01false_01_4_1a2d6e2538f4dee26e5084fd618e47e5c2" prot="public" virt="non-virtual"><scope>iceberg::expected_detail::storage_base&lt; T, E, false &gt;</scope><name>storage_base</name></member>
+      <member refid="structiceberg_1_1expected__detail_1_1storage__base_3_01T_00_01E_00_01false_01_4_1afc290a7421e73343b8bcb53989e68809" prot="public" virt="non-virtual"><scope>iceberg::expected_detail::storage_base&lt; T, E, false &gt;</scope><name>storage_base</name></member>
+      <member refid="structiceberg_1_1expected__detail_1_1storage__base_3_01T_00_01E_00_01false_01_4_1a244bc7415a9bf251c110ec49194d86f1" prot="public" virt="non-virtual"><scope>iceberg::expected_detail::storage_base&lt; T, E, false &gt;</scope><name>storage_base</name></member>
+      <member refid="structiceberg_1_1expected__detail_1_1storage__base_3_01T_00_01E_00_01false_01_4_1af0a23585f4d1cd96f05dc1363d6c4453" prot="public" virt="non-virtual"><scope>iceberg::expected_detail::storage_base&lt; T, E, false &gt;</scope><name>storage_base</name></member>
+      <member refid="structiceberg_1_1expected__detail_1_1storage__base_3_01T_00_01E_00_01false_01_4_1a76482a0a6ede83d24887ce621692ccc9" prot="public" virt="non-virtual"><scope>iceberg::expected_detail::storage_base&lt; T, E, false &gt;</scope><name>storage_base</name></member>
+      <member refid="structiceberg_1_1expected__detail_1_1storage__base_3_01T_00_01E_00_01false_01_4_1a8736a5157f1d03648d7a62fd1b185a1f" prot="public" virt="non-virtual"><scope>iceberg::expected_detail::storage_base&lt; T, E, false &gt;</scope><name>~storage_base</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

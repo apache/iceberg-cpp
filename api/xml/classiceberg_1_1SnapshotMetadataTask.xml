@@ -1,0 +1,221 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1SnapshotMetadataTask" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::SnapshotMetadataTask</compoundname>
+    <basecompoundref refid="classiceberg_1_1MetadataScanTask" prot="public" virt="non-virtual">iceberg::MetadataScanTask</basecompoundref>
+    <includes refid="metadata__scan__task_8h" local="no">metadata_scan_task.h</includes>
+    <sectiondef kind="public-type">
+      <memberdef kind="typedef" id="classiceberg_1_1SnapshotMetadataTask_1a790fe6009a92123c5fc890cacb17d0a8" prot="public" static="no">
+        <type><ref refid="namespaceiceberg_1aac79523734e35ca4d34cced52e56ec9b" kindref="member">Result</ref>&lt; <ref refid="structArrowArrayStream" kindref="compound">ArrowArrayStream</ref> &gt;(*)(const <ref refid="structiceberg_1_1internal_1_1MetadataScanContext" kindref="compound">internal::MetadataScanContext</ref> &amp;, const std::shared_ptr&lt; <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> &gt; &amp;, int64_t)</type>
+        <definition>using iceberg::SnapshotMetadataTask::ReadRowsFunction =  Result&lt;ArrowArrayStream&gt; (*)( const internal::MetadataScanContext&amp; , const std::shared_ptr&lt;FileIO&gt;&amp; , int64_t )</definition>
+        <argsstring></argsstring>
+        <name>ReadRowsFunction</name>
+        <qualifiedname>iceberg::SnapshotMetadataTask::ReadRowsFunction</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/inspect/metadata_scan_task.h" line="99" column="3" bodyfile="iceberg/inspect/metadata_scan_task.h" bodystart="101" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1SnapshotMetadataTask_1a9da59d0f9dce27b30ef71c6ef29527a7" prot="private" static="no" mutable="no">
+        <type>const <ref refid="structiceberg_1_1internal_1_1MetadataScanContext" kindref="compound">internal::MetadataScanContext</ref></type>
+        <definition>const internal::MetadataScanContext iceberg::SnapshotMetadataTask::context_</definition>
+        <argsstring></argsstring>
+        <name>context_</name>
+        <qualifiedname>iceberg::SnapshotMetadataTask::context_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/inspect/metadata_scan_task.h" line="117" column="39" bodyfile="iceberg/inspect/metadata_scan_task.h" bodystart="117" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1SnapshotMetadataTask_1ae69d8b1fb568877b43a0eb471640b5d0" prot="private" static="no" mutable="no">
+        <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> &gt;</type>
+        <definition>const std::shared_ptr&lt;FileIO&gt; iceberg::SnapshotMetadataTask::io_</definition>
+        <argsstring></argsstring>
+        <name>io_</name>
+        <qualifiedname>iceberg::SnapshotMetadataTask::io_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/inspect/metadata_scan_task.h" line="118" column="25" bodyfile="iceberg/inspect/metadata_scan_task.h" bodystart="118" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1SnapshotMetadataTask_1ad946bc5b384c381d4ab80dd9cddaa160" prot="private" static="no" mutable="no">
+        <type>const ReadRowsFunction</type>
+        <definition>const ReadRowsFunction iceberg::SnapshotMetadataTask::read_rows_</definition>
+        <argsstring></argsstring>
+        <name>read_rows_</name>
+        <qualifiedname>iceberg::SnapshotMetadataTask::read_rows_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/inspect/metadata_scan_task.h" line="119" column="26" bodyfile="iceberg/inspect/metadata_scan_task.h" bodystart="119" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1SnapshotMetadataTask_1a18ab61a904bc312d6197ea0dade648f4" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceiceberg_1aac79523734e35ca4d34cced52e56ec9b" kindref="member">Result</ref>&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1SnapshotMetadataTask" kindref="compound">SnapshotMetadataTask</ref> &gt; &gt;</type>
+        <definition>static Result&lt; std::shared_ptr&lt; SnapshotMetadataTask &gt; &gt; iceberg::SnapshotMetadataTask::Make</definition>
+        <argsstring>(internal::MetadataScanContext context, std::shared_ptr&lt; FileIO &gt; io, ReadRowsFunction read_rows)</argsstring>
+        <name>Make</name>
+        <qualifiedname>iceberg::SnapshotMetadataTask::Make</qualifiedname>
+        <param>
+          <type><ref refid="structiceberg_1_1internal_1_1MetadataScanContext" kindref="compound">internal::MetadataScanContext</ref></type>
+          <declname>context</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> &gt;</type>
+          <declname>io</declname>
+        </param>
+        <param>
+          <type>ReadRowsFunction</type>
+          <declname>read_rows</declname>
+        </param>
+        <briefdescription>
+<para>Create a task owning the scan settings, <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref>, and row reader. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/inspect/metadata_scan_task.h" line="104" column="17"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1SnapshotMetadataTask_1a6f4ea07dbbd2fcce401a06108c20118f" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceiceberg_1aac79523734e35ca4d34cced52e56ec9b" kindref="member">Result</ref>&lt; <ref refid="structArrowArrayStream" kindref="compound">ArrowArrayStream</ref> &gt;</type>
+        <definition>Result&lt; ArrowArrayStream &gt; iceberg::SnapshotMetadataTask::Open</definition>
+        <argsstring>(int64_t batch_size) const</argsstring>
+        <name>Open</name>
+        <qualifiedname>iceberg::SnapshotMetadataTask::Open</qualifiedname>
+        <param>
+          <type>int64_t</type>
+          <declname>batch_size</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/inspect/metadata_scan_task.h" line="108" column="10"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SnapshotMetadataTask_1a6351b44196cb1b7de31ff9f51b48b3c0" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+        <type><ref refid="classiceberg_1_1MetadataScanTask_1a632e6eaf32f46b8e1e8f118c7b513291" kindref="member">TaskKind</ref></type>
+        <definition>TaskKind iceberg::SnapshotMetadataTask::task_kind</definition>
+        <argsstring>() const override</argsstring>
+        <name>task_kind</name>
+        <qualifiedname>iceberg::SnapshotMetadataTask::task_kind</qualifiedname>
+        <reimplements refid="classiceberg_1_1MetadataScanTask_1a811f3bdb3dce348aa718266232628226">task_kind</reimplements>
+        <briefdescription>
+<para>Return how this task is read. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/inspect/metadata_scan_task.h" line="110" column="12" bodyfile="iceberg/inspect/metadata_scan_task.h" bodystart="110" bodyend="110"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SnapshotMetadataTask_1ab826078b54dab72fc9032d6a19d5aca1" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+        <type><ref refid="namespaceiceberg_1afd874214b2b513aad12d482976163b85" kindref="member">MetadataTableKind</ref></type>
+        <definition>MetadataTableKind iceberg::SnapshotMetadataTask::table_kind</definition>
+        <argsstring>() const override</argsstring>
+        <name>table_kind</name>
+        <qualifiedname>iceberg::SnapshotMetadataTask::table_kind</qualifiedname>
+        <reimplements refid="classiceberg_1_1MetadataScanTask_1a1be16438cb67796533e87c9c0b1c8b67">table_kind</reimplements>
+        <briefdescription>
+<para>Return the metadata table whose rows this task produces. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/inspect/metadata_scan_task.h" line="111" column="21" bodyfile="iceberg/inspect/metadata_scan_task.h" bodystart="111" bodyend="111"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classiceberg_1_1SnapshotMetadataTask_1a77bf49140202db7f44e8db8790f334aa" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::SnapshotMetadataTask::SnapshotMetadataTask</definition>
+        <argsstring>(internal::MetadataScanContext context, std::shared_ptr&lt; FileIO &gt; io, ReadRowsFunction read_rows)</argsstring>
+        <name>SnapshotMetadataTask</name>
+        <qualifiedname>iceberg::SnapshotMetadataTask::SnapshotMetadataTask</qualifiedname>
+        <param>
+          <type><ref refid="structiceberg_1_1internal_1_1MetadataScanContext" kindref="compound">internal::MetadataScanContext</ref></type>
+          <declname>context</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> &gt;</type>
+          <declname>io</declname>
+        </param>
+        <param>
+          <type>ReadRowsFunction</type>
+          <declname>read_rows</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/inspect/metadata_scan_task.h" line="114" column="3"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Task retaining a snapshot scan&apos;s captured settings and <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref>. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>Rows are read through an in-process callback. Splitting work across multiple tasks and serializable task descriptions are future work for parallel execution. </para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>iceberg::MetadataScanTask</label>
+        <link refid="classiceberg_1_1MetadataScanTask"/>
+      </node>
+      <node id="1">
+        <label>iceberg::SnapshotMetadataTask</label>
+        <link refid="classiceberg_1_1SnapshotMetadataTask"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>iceberg::MetadataScanTask</label>
+        <link refid="classiceberg_1_1MetadataScanTask"/>
+      </node>
+      <node id="1">
+        <label>iceberg::SnapshotMetadataTask</label>
+        <link refid="classiceberg_1_1SnapshotMetadataTask"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/inspect/metadata_scan_task.h" line="97" column="1" bodyfile="iceberg/inspect/metadata_scan_task.h" bodystart="97" bodyend="120"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1SnapshotMetadataTask_1a9da59d0f9dce27b30ef71c6ef29527a7" prot="private" virt="non-virtual"><scope>iceberg::SnapshotMetadataTask</scope><name>context_</name></member>
+      <member refid="classiceberg_1_1SnapshotMetadataTask_1ae69d8b1fb568877b43a0eb471640b5d0" prot="private" virt="non-virtual"><scope>iceberg::SnapshotMetadataTask</scope><name>io_</name></member>
+      <member refid="classiceberg_1_1SnapshotMetadataTask_1a18ab61a904bc312d6197ea0dade648f4" prot="public" virt="non-virtual"><scope>iceberg::SnapshotMetadataTask</scope><name>Make</name></member>
+      <member refid="classiceberg_1_1SnapshotMetadataTask_1a6f4ea07dbbd2fcce401a06108c20118f" prot="public" virt="non-virtual"><scope>iceberg::SnapshotMetadataTask</scope><name>Open</name></member>
+      <member refid="classiceberg_1_1SnapshotMetadataTask_1ad946bc5b384c381d4ab80dd9cddaa160" prot="private" virt="non-virtual"><scope>iceberg::SnapshotMetadataTask</scope><name>read_rows_</name></member>
+      <member refid="classiceberg_1_1SnapshotMetadataTask_1a790fe6009a92123c5fc890cacb17d0a8" prot="public" virt="non-virtual"><scope>iceberg::SnapshotMetadataTask</scope><name>ReadRowsFunction</name></member>
+      <member refid="classiceberg_1_1SnapshotMetadataTask_1a77bf49140202db7f44e8db8790f334aa" prot="private" virt="non-virtual"><scope>iceberg::SnapshotMetadataTask</scope><name>SnapshotMetadataTask</name></member>
+      <member refid="classiceberg_1_1SnapshotMetadataTask_1ab826078b54dab72fc9032d6a19d5aca1" prot="public" virt="virtual"><scope>iceberg::SnapshotMetadataTask</scope><name>table_kind</name></member>
+      <member refid="classiceberg_1_1SnapshotMetadataTask_1a6351b44196cb1b7de31ff9f51b48b3c0" prot="public" virt="virtual"><scope>iceberg::SnapshotMetadataTask</scope><name>task_kind</name></member>
+      <member refid="classiceberg_1_1MetadataScanTask_1a632e6eaf32f46b8e1e8f118c7b513291" prot="public" virt="non-virtual"><scope>iceberg::SnapshotMetadataTask</scope><name>TaskKind</name></member>
+      <member refid="classiceberg_1_1MetadataScanTask_1a263c577aa08c356e64527559b036d6b8" prot="public" virt="virtual"><scope>iceberg::SnapshotMetadataTask</scope><name>~MetadataScanTask</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

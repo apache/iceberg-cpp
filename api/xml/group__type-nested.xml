@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="group__type-nested" kind="group">
+    <compoundname>type-nested</compoundname>
+    <title>Nested Types</title>
+    <innerclass refid="classiceberg_1_1StructType" prot="public">iceberg::StructType</innerclass>
+    <innerclass refid="classiceberg_1_1ListType" prot="public">iceberg::ListType</innerclass>
+    <innerclass refid="classiceberg_1_1MapType" prot="public">iceberg::MapType</innerclass>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>Nested types have child fields. </para>
+    </detaileddescription>
+  </compounddef>
+</doxygen>

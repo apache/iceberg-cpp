@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1expected__detail_1_1construct__from__expected__t" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::expected_detail::construct_from_expected_t</compoundname>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structiceberg_1_1expected__detail_1_1construct__from__expected__t_1a2ab33026da74b06aad3ff535a46012b2" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::expected_detail::construct_from_expected_t::construct_from_expected_t</definition>
+        <argsstring>()=default</argsstring>
+        <name>construct_from_expected_t</name>
+        <qualifiedname>iceberg::expected_detail::construct_from_expected_t::construct_from_expected_t</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/compat/expected.h" line="427" column="12"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/compat/expected.h" line="426" column="1" bodyfile="iceberg/compat/expected.h" bodystart="426" bodyend="428"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1expected__detail_1_1construct__from__expected__t_1a2ab33026da74b06aad3ff535a46012b2" prot="public" virt="non-virtual"><scope>iceberg::expected_detail::construct_from_expected_t</scope><name>construct_from_expected_t</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

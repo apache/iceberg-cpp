@@ -1,0 +1,332 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1ScanMetricsResult" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::ScanMetricsResult</compoundname>
+    <includes refid="scan__report_8h" local="no">scan_report.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1ScanMetricsResult_1a0bad97252ada931792f094064dfe31f4" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; <ref refid="structiceberg_1_1TimerResult" kindref="compound">TimerResult</ref> &gt;</type>
+        <definition>std::optional&lt;TimerResult&gt; iceberg::ScanMetricsResult::total_planning_duration</definition>
+        <argsstring></argsstring>
+        <name>total_planning_duration</name>
+        <qualifiedname>iceberg::ScanMetricsResult::total_planning_duration</qualifiedname>
+        <briefdescription>
+<para>Total planning duration (count of recordings + accumulated nanoseconds). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/scan_report.h" line="48" column="17" bodyfile="iceberg/metrics/scan_report.h" bodystart="48" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1ScanMetricsResult_1aa0d265681bf064b1e1f9d16ceb8984b3" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; <ref refid="structiceberg_1_1CounterResult" kindref="compound">CounterResult</ref> &gt;</type>
+        <definition>std::optional&lt;CounterResult&gt; iceberg::ScanMetricsResult::result_data_files</definition>
+        <argsstring></argsstring>
+        <name>result_data_files</name>
+        <qualifiedname>iceberg::ScanMetricsResult::result_data_files</qualifiedname>
+        <briefdescription>
+<para>Number of data files included in the scan result. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/scan_report.h" line="50" column="17" bodyfile="iceberg/metrics/scan_report.h" bodystart="50" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1ScanMetricsResult_1abae2ba65e6efdc9b3da9ef23a835bd41" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; <ref refid="structiceberg_1_1CounterResult" kindref="compound">CounterResult</ref> &gt;</type>
+        <definition>std::optional&lt;CounterResult&gt; iceberg::ScanMetricsResult::result_delete_files</definition>
+        <argsstring></argsstring>
+        <name>result_delete_files</name>
+        <qualifiedname>iceberg::ScanMetricsResult::result_delete_files</qualifiedname>
+        <briefdescription>
+<para>Number of delete files included in the scan result. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/scan_report.h" line="52" column="17" bodyfile="iceberg/metrics/scan_report.h" bodystart="52" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1ScanMetricsResult_1aaab4912dac12d249db8d7a7adda35e26" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; <ref refid="structiceberg_1_1CounterResult" kindref="compound">CounterResult</ref> &gt;</type>
+        <definition>std::optional&lt;CounterResult&gt; iceberg::ScanMetricsResult::scanned_data_manifests</definition>
+        <argsstring></argsstring>
+        <name>scanned_data_manifests</name>
+        <qualifiedname>iceberg::ScanMetricsResult::scanned_data_manifests</qualifiedname>
+        <briefdescription>
+<para>Number of data manifests whose files were read (not skipped). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/scan_report.h" line="54" column="17" bodyfile="iceberg/metrics/scan_report.h" bodystart="54" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1ScanMetricsResult_1afa0f6d6a3069cb549e2463555d2c1950" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; <ref refid="structiceberg_1_1CounterResult" kindref="compound">CounterResult</ref> &gt;</type>
+        <definition>std::optional&lt;CounterResult&gt; iceberg::ScanMetricsResult::scanned_delete_manifests</definition>
+        <argsstring></argsstring>
+        <name>scanned_delete_manifests</name>
+        <qualifiedname>iceberg::ScanMetricsResult::scanned_delete_manifests</qualifiedname>
+        <briefdescription>
+<para>Number of delete manifests whose files were read (not skipped). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/scan_report.h" line="56" column="17" bodyfile="iceberg/metrics/scan_report.h" bodystart="56" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1ScanMetricsResult_1a1534e3b0d1cf4994bc9e441d41b178af" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; <ref refid="structiceberg_1_1CounterResult" kindref="compound">CounterResult</ref> &gt;</type>
+        <definition>std::optional&lt;CounterResult&gt; iceberg::ScanMetricsResult::total_data_manifests</definition>
+        <argsstring></argsstring>
+        <name>total_data_manifests</name>
+        <qualifiedname>iceberg::ScanMetricsResult::total_data_manifests</qualifiedname>
+        <briefdescription>
+<para>Total number of data manifests in the snapshot. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/scan_report.h" line="58" column="17" bodyfile="iceberg/metrics/scan_report.h" bodystart="58" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1ScanMetricsResult_1a8db5a4c57d115d451dc63565e1adcbfa" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; <ref refid="structiceberg_1_1CounterResult" kindref="compound">CounterResult</ref> &gt;</type>
+        <definition>std::optional&lt;CounterResult&gt; iceberg::ScanMetricsResult::total_delete_manifests</definition>
+        <argsstring></argsstring>
+        <name>total_delete_manifests</name>
+        <qualifiedname>iceberg::ScanMetricsResult::total_delete_manifests</qualifiedname>
+        <briefdescription>
+<para>Total number of delete manifests in the snapshot. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/scan_report.h" line="60" column="17" bodyfile="iceberg/metrics/scan_report.h" bodystart="60" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1ScanMetricsResult_1a28cb5434595150a60cdefbb9306384ea" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; <ref refid="structiceberg_1_1CounterResult" kindref="compound">CounterResult</ref> &gt;</type>
+        <definition>std::optional&lt;CounterResult&gt; iceberg::ScanMetricsResult::total_file_size_in_bytes</definition>
+        <argsstring></argsstring>
+        <name>total_file_size_in_bytes</name>
+        <qualifiedname>iceberg::ScanMetricsResult::total_file_size_in_bytes</qualifiedname>
+        <briefdescription>
+<para>Total byte size of all result data files. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/scan_report.h" line="62" column="17" bodyfile="iceberg/metrics/scan_report.h" bodystart="62" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1ScanMetricsResult_1a95650e9b7986fa718d65904084175277" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; <ref refid="structiceberg_1_1CounterResult" kindref="compound">CounterResult</ref> &gt;</type>
+        <definition>std::optional&lt;CounterResult&gt; iceberg::ScanMetricsResult::total_delete_file_size_in_bytes</definition>
+        <argsstring></argsstring>
+        <name>total_delete_file_size_in_bytes</name>
+        <qualifiedname>iceberg::ScanMetricsResult::total_delete_file_size_in_bytes</qualifiedname>
+        <briefdescription>
+<para>Total byte size of all result delete files. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/scan_report.h" line="64" column="17" bodyfile="iceberg/metrics/scan_report.h" bodystart="64" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1ScanMetricsResult_1abee069249143ffccc4a46749ef545f6c" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; <ref refid="structiceberg_1_1CounterResult" kindref="compound">CounterResult</ref> &gt;</type>
+        <definition>std::optional&lt;CounterResult&gt; iceberg::ScanMetricsResult::skipped_data_manifests</definition>
+        <argsstring></argsstring>
+        <name>skipped_data_manifests</name>
+        <qualifiedname>iceberg::ScanMetricsResult::skipped_data_manifests</qualifiedname>
+        <briefdescription>
+<para>Number of data manifests skipped by partition/stats pruning. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/scan_report.h" line="66" column="17" bodyfile="iceberg/metrics/scan_report.h" bodystart="66" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1ScanMetricsResult_1a966945cd62d095f1e4d26e406de17e26" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; <ref refid="structiceberg_1_1CounterResult" kindref="compound">CounterResult</ref> &gt;</type>
+        <definition>std::optional&lt;CounterResult&gt; iceberg::ScanMetricsResult::skipped_delete_manifests</definition>
+        <argsstring></argsstring>
+        <name>skipped_delete_manifests</name>
+        <qualifiedname>iceberg::ScanMetricsResult::skipped_delete_manifests</qualifiedname>
+        <briefdescription>
+<para>Number of delete manifests skipped by partition/stats pruning. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/scan_report.h" line="68" column="17" bodyfile="iceberg/metrics/scan_report.h" bodystart="68" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1ScanMetricsResult_1a0c8c733275745e2690e7759802473f01" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; <ref refid="structiceberg_1_1CounterResult" kindref="compound">CounterResult</ref> &gt;</type>
+        <definition>std::optional&lt;CounterResult&gt; iceberg::ScanMetricsResult::skipped_data_files</definition>
+        <argsstring></argsstring>
+        <name>skipped_data_files</name>
+        <qualifiedname>iceberg::ScanMetricsResult::skipped_data_files</qualifiedname>
+        <briefdescription>
+<para>Number of individual data files skipped by stats pruning. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/scan_report.h" line="70" column="17" bodyfile="iceberg/metrics/scan_report.h" bodystart="70" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1ScanMetricsResult_1a1db5aabe44923227008407ef8ef5f55c" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; <ref refid="structiceberg_1_1CounterResult" kindref="compound">CounterResult</ref> &gt;</type>
+        <definition>std::optional&lt;CounterResult&gt; iceberg::ScanMetricsResult::skipped_delete_files</definition>
+        <argsstring></argsstring>
+        <name>skipped_delete_files</name>
+        <qualifiedname>iceberg::ScanMetricsResult::skipped_delete_files</qualifiedname>
+        <briefdescription>
+<para>Number of individual delete files skipped by stats pruning. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/scan_report.h" line="72" column="17" bodyfile="iceberg/metrics/scan_report.h" bodystart="72" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1ScanMetricsResult_1ad3f82c94d0869704045774493f1830c7" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; <ref refid="structiceberg_1_1CounterResult" kindref="compound">CounterResult</ref> &gt;</type>
+        <definition>std::optional&lt;CounterResult&gt; iceberg::ScanMetricsResult::indexed_delete_files</definition>
+        <argsstring></argsstring>
+        <name>indexed_delete_files</name>
+        <qualifiedname>iceberg::ScanMetricsResult::indexed_delete_files</qualifiedname>
+        <briefdescription>
+<para>Number of indexed delete files (positional or DV) in the result. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/scan_report.h" line="74" column="17" bodyfile="iceberg/metrics/scan_report.h" bodystart="74" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1ScanMetricsResult_1a9859494079158f00988e9dd2c6424190" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; <ref refid="structiceberg_1_1CounterResult" kindref="compound">CounterResult</ref> &gt;</type>
+        <definition>std::optional&lt;CounterResult&gt; iceberg::ScanMetricsResult::equality_delete_files</definition>
+        <argsstring></argsstring>
+        <name>equality_delete_files</name>
+        <qualifiedname>iceberg::ScanMetricsResult::equality_delete_files</qualifiedname>
+        <briefdescription>
+<para>Number of equality delete files in the result. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/scan_report.h" line="76" column="17" bodyfile="iceberg/metrics/scan_report.h" bodystart="76" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1ScanMetricsResult_1a8a49aa2101e754ac818201243ab6cf95" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; <ref refid="structiceberg_1_1CounterResult" kindref="compound">CounterResult</ref> &gt;</type>
+        <definition>std::optional&lt;CounterResult&gt; iceberg::ScanMetricsResult::positional_delete_files</definition>
+        <argsstring></argsstring>
+        <name>positional_delete_files</name>
+        <qualifiedname>iceberg::ScanMetricsResult::positional_delete_files</qualifiedname>
+        <briefdescription>
+<para>Number of positional delete files in the result. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/scan_report.h" line="78" column="17" bodyfile="iceberg/metrics/scan_report.h" bodystart="78" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1ScanMetricsResult_1aab9175ea4cc292e811498e351d4eff50" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; <ref refid="structiceberg_1_1CounterResult" kindref="compound">CounterResult</ref> &gt;</type>
+        <definition>std::optional&lt;CounterResult&gt; iceberg::ScanMetricsResult::dvs</definition>
+        <argsstring></argsstring>
+        <name>dvs</name>
+        <qualifiedname>iceberg::ScanMetricsResult::dvs</qualifiedname>
+        <briefdescription>
+<para>Number of deletion vectors in the result. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/scan_report.h" line="80" column="17" bodyfile="iceberg/metrics/scan_report.h" bodystart="80" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structiceberg_1_1ScanMetricsResult_1a28b277b3e54309d7aa2ad48799fb4fd5" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::ScanMetricsResult::operator==</definition>
+        <argsstring>(const ScanMetricsResult &amp;) const =default</argsstring>
+        <name>operator==</name>
+        <qualifiedname>iceberg::ScanMetricsResult::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1ScanMetricsResult" kindref="compound">ScanMetricsResult</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/scan_report.h" line="82" column="8"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="structiceberg_1_1ScanMetricsResult_1a155ef530d0bcb6fd1aeaf3c566222cdc" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="structiceberg_1_1ScanMetricsResult" kindref="compound">ScanMetricsResult</ref></type>
+        <definition>static ScanMetricsResult iceberg::ScanMetricsResult::From</definition>
+        <argsstring>(const ScanMetrics &amp;scan_metrics)</argsstring>
+        <name>From</name>
+        <qualifiedname>iceberg::ScanMetricsResult::From</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1ScanMetrics" kindref="compound">ScanMetrics</ref> &amp;</type>
+          <declname>scan_metrics</declname>
+        </param>
+        <briefdescription>
+<para>Build a <ref refid="structiceberg_1_1ScanMetricsResult" kindref="compound">ScanMetricsResult</ref> from live scan metrics. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics/scan_report.h" line="85" column="28"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Immutable snapshot of scan metrics for use in <ref refid="structiceberg_1_1ScanReport" kindref="compound">ScanReport</ref>. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>Populated by <ref refid="classiceberg_1_1ScanMetrics_1aceaf909e93eb63ad83fa613ac4daa588" kindref="member">ScanMetrics::ToResult()</ref> after a scan completes. </para>
+    </detaileddescription>
+    <location file="iceberg/metrics/scan_report.h" line="46" column="1" bodyfile="iceberg/metrics/scan_report.h" bodystart="46" bodyend="86"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1ScanMetricsResult_1aab9175ea4cc292e811498e351d4eff50" prot="public" virt="non-virtual"><scope>iceberg::ScanMetricsResult</scope><name>dvs</name></member>
+      <member refid="structiceberg_1_1ScanMetricsResult_1a9859494079158f00988e9dd2c6424190" prot="public" virt="non-virtual"><scope>iceberg::ScanMetricsResult</scope><name>equality_delete_files</name></member>
+      <member refid="structiceberg_1_1ScanMetricsResult_1a155ef530d0bcb6fd1aeaf3c566222cdc" prot="public" virt="non-virtual"><scope>iceberg::ScanMetricsResult</scope><name>From</name></member>
+      <member refid="structiceberg_1_1ScanMetricsResult_1ad3f82c94d0869704045774493f1830c7" prot="public" virt="non-virtual"><scope>iceberg::ScanMetricsResult</scope><name>indexed_delete_files</name></member>
+      <member refid="structiceberg_1_1ScanMetricsResult_1a28b277b3e54309d7aa2ad48799fb4fd5" prot="public" virt="non-virtual"><scope>iceberg::ScanMetricsResult</scope><name>operator==</name></member>
+      <member refid="structiceberg_1_1ScanMetricsResult_1a8a49aa2101e754ac818201243ab6cf95" prot="public" virt="non-virtual"><scope>iceberg::ScanMetricsResult</scope><name>positional_delete_files</name></member>
+      <member refid="structiceberg_1_1ScanMetricsResult_1aa0d265681bf064b1e1f9d16ceb8984b3" prot="public" virt="non-virtual"><scope>iceberg::ScanMetricsResult</scope><name>result_data_files</name></member>
+      <member refid="structiceberg_1_1ScanMetricsResult_1abae2ba65e6efdc9b3da9ef23a835bd41" prot="public" virt="non-virtual"><scope>iceberg::ScanMetricsResult</scope><name>result_delete_files</name></member>
+      <member refid="structiceberg_1_1ScanMetricsResult_1aaab4912dac12d249db8d7a7adda35e26" prot="public" virt="non-virtual"><scope>iceberg::ScanMetricsResult</scope><name>scanned_data_manifests</name></member>
+      <member refid="structiceberg_1_1ScanMetricsResult_1afa0f6d6a3069cb549e2463555d2c1950" prot="public" virt="non-virtual"><scope>iceberg::ScanMetricsResult</scope><name>scanned_delete_manifests</name></member>
+      <member refid="structiceberg_1_1ScanMetricsResult_1a0c8c733275745e2690e7759802473f01" prot="public" virt="non-virtual"><scope>iceberg::ScanMetricsResult</scope><name>skipped_data_files</name></member>
+      <member refid="structiceberg_1_1ScanMetricsResult_1abee069249143ffccc4a46749ef545f6c" prot="public" virt="non-virtual"><scope>iceberg::ScanMetricsResult</scope><name>skipped_data_manifests</name></member>
+      <member refid="structiceberg_1_1ScanMetricsResult_1a1db5aabe44923227008407ef8ef5f55c" prot="public" virt="non-virtual"><scope>iceberg::ScanMetricsResult</scope><name>skipped_delete_files</name></member>
+      <member refid="structiceberg_1_1ScanMetricsResult_1a966945cd62d095f1e4d26e406de17e26" prot="public" virt="non-virtual"><scope>iceberg::ScanMetricsResult</scope><name>skipped_delete_manifests</name></member>
+      <member refid="structiceberg_1_1ScanMetricsResult_1a1534e3b0d1cf4994bc9e441d41b178af" prot="public" virt="non-virtual"><scope>iceberg::ScanMetricsResult</scope><name>total_data_manifests</name></member>
+      <member refid="structiceberg_1_1ScanMetricsResult_1a95650e9b7986fa718d65904084175277" prot="public" virt="non-virtual"><scope>iceberg::ScanMetricsResult</scope><name>total_delete_file_size_in_bytes</name></member>
+      <member refid="structiceberg_1_1ScanMetricsResult_1a8db5a4c57d115d451dc63565e1adcbfa" prot="public" virt="non-virtual"><scope>iceberg::ScanMetricsResult</scope><name>total_delete_manifests</name></member>
+      <member refid="structiceberg_1_1ScanMetricsResult_1a28cb5434595150a60cdefbb9306384ea" prot="public" virt="non-virtual"><scope>iceberg::ScanMetricsResult</scope><name>total_file_size_in_bytes</name></member>
+      <member refid="structiceberg_1_1ScanMetricsResult_1a0bad97252ada931792f094064dfe31f4" prot="public" virt="non-virtual"><scope>iceberg::ScanMetricsResult</scope><name>total_planning_duration</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>
