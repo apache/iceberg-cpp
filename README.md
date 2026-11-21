@@ -71,6 +71,19 @@ To run a specific test suite:
 ctest --test-dir build -R schema_test --output-on-failure
 ```
 
+`verification_test` runs the conformance fixtures from
+[apache/iceberg-verification](https://github.com/apache/iceberg-verification),
+pinned as a git submodule at `testing/iceberg-verification`. It is built only
+with `-DICEBERG_BUILD_VERIFICATION_TESTS=ON`, and CMake fails at configure time
+when the submodule is not checked out. To fetch it:
+
+```bash
+git submodule update --init testing/iceberg-verification
+```
+
+Pass `-DICEBERG_VERIFICATION_DIR=/path/to/iceberg-verification` to run against
+another checkout.
+
 ### Build and Install Iceberg Bundle Library
 
 #### Vendored Apache Arrow (default)
@@ -101,6 +114,7 @@ cmake --install build
 | `ICEBERG_BUILD_BUNDLE` | `ON` | Build the battery-included library |
 | `ICEBERG_BUILD_REST` | `ON` | Build REST catalog client |
 | `ICEBERG_BUILD_REST_INTEGRATION_TESTS` | `OFF` | Build REST catalog integration tests |
+| `ICEBERG_BUILD_VERIFICATION_TESTS` | `OFF` | Build conformance tests over the apache/iceberg-verification fixtures |
 | `ICEBERG_SPDLOG` | `ON` | Use spdlog as the default logging backend |
 | `ICEBERG_BUILD_HIVE` | `OFF` | Build Hive (HMS) catalog client |
 | `ICEBERG_BUILD_SQL_CATALOG` | `OFF` | Build SQL catalog client |

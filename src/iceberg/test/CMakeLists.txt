@@ -19,6 +19,22 @@
 
 set(ICEBERG_TEST_RESOURCES "${CMAKE_SOURCE_DIR}/src/iceberg/test/resources")
 
+# Conformance fixtures from apache/iceberg-verification, pinned as a git submodule.
+if(ICEBERG_BUILD_VERIFICATION_TESTS)
+  set(ICEBERG_VERIFICATION_DIR
+      "${PROJECT_SOURCE_DIR}/testing/iceberg-verification"
+      CACHE PATH "Path to an apache/iceberg-verification checkout")
+  # The path is pasted into a C string literal, so turn Windows backslashes into
+  # forward slashes, which would otherwise read as escape sequences.
+  cmake_path(SET ICEBERG_VERIFICATION_DIR "${ICEBERG_VERIFICATION_DIR}")
+  if(NOT IS_DIRECTORY "${ICEBERG_VERIFICATION_DIR}/table-spec")
+    message(FATAL_ERROR "ICEBERG_BUILD_VERIFICATION_TESTS is ON but no "
+                        "iceberg-verification fixtures were found at "
+                        "${ICEBERG_VERIFICATION_DIR}. Run `git submodule update --init "
+                        "testing/iceberg-verification` or set ICEBERG_VERIFICATION_DIR.")
+  endif()
+endif()
+
 configure_file("test_config.h.in" "test_config.h")
 
 # vcpkg's z-applocal POST_BUILD copies dependency DLLs into this shared test
@@ -132,6 +148,14 @@ add_iceberg_test(json_serde_test
                  json_serde_test.cc
                  metadata_serde_test.cc
                  schema_json_test.cc)
+
+if(ICEBERG_BUILD_VERIFICATION_TESTS)
+  add_iceberg_test(verification_test
+                   SOURCES
+                   verification/schema_verification_test.cc
+                   verification/types_verification_test.cc
+                   verification/verification_util.cc)
+endif()
 
 add_iceberg_test(scheduled_executor_test SOURCES scheduled_executor_test.cc)
 set_tests_properties(scheduled_executor_test PROPERTIES TIMEOUT 60)

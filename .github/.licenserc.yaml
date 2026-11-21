@@ -25,6 +25,7 @@ header:
 
   paths-ignore:
     - '**/.gitignore'
+    - '.gitmodules'
     - '.github/**'
     - 'LICENSE'
     - 'NOTICE'
@@ -33,6 +34,7 @@ header:
     - 'src/iceberg/util/murmurhash3_internal.*'
     - 'src/iceberg/test/resources/**'
     - 'src/iceberg/catalog/hive/gen-cpp/**'
+    - 'testing/iceberg-verification/**'
     - 'thirdparty/**'
 
   comment: on-failure
