@@ -21,6 +21,8 @@
 #include <ranges>
 #include <vector>
 
+#include <arrow/array/array_nested.h>
+#include <arrow/array/builder_binary.h>
 #include <arrow/array/builder_decimal.h>
 #include <arrow/array/builder_nested.h>
 #include <arrow/array/builder_primitive.h>
@@ -1544,6 +1546,131 @@ TEST(ExtractDatumFromArrayTest, MapStringToInt) {
 
   for (size_t i = 0; i < expected.size(); ++i) {
     verify_record(i, expected[i]);
+  }
+}
+
+TEST(ExtractDatumFromArrayTest, LargeListOfIntegers) {
+  Schema iceberg_schema({
+      SchemaField::MakeRequired(
+          1, "numbers",
+          std::make_shared<ListType>(SchemaField::MakeRequired(2, "element", int32()))),
+  });
+
+  ::avro::NodePtr avro_node;
+  ASSERT_THAT(ToAvroNodeVisitor{}.Visit(iceberg_schema, &avro_node), IsOk());
+
+  // Build a LargeListArray manually — JSON parsing always produces regular ListArray,
+  // so we use builders to get the large-offset variant.
+  auto int32_builder = std::make_shared<::arrow::Int32Builder>();
+  ::arrow::LargeListBuilder list_builder(::arrow::default_memory_pool(), int32_builder);
+
+  ASSERT_TRUE(list_builder.Append().ok());
+  ASSERT_TRUE(int32_builder->Append(10).ok());
+  ASSERT_TRUE(int32_builder->Append(11).ok());
+  ASSERT_TRUE(int32_builder->Append(12).ok());
+
+  ASSERT_TRUE(list_builder.Append().ok());
+  ASSERT_TRUE(int32_builder->Append(20).ok());
+  ASSERT_TRUE(int32_builder->Append(21).ok());
+
+  ASSERT_TRUE(list_builder.Append().ok());
+  ASSERT_TRUE(int32_builder->Append(30).ok());
+  ASSERT_TRUE(int32_builder->Append(31).ok());
+  ASSERT_TRUE(int32_builder->Append(32).ok());
+  ASSERT_TRUE(int32_builder->Append(33).ok());
+
+  std::shared_ptr<::arrow::Array> large_list_array;
+  ASSERT_TRUE(list_builder.Finish(&large_list_array).ok());
+
+  auto arrow_array = ::arrow::StructArray::Make(
+                         ::arrow::ArrayVector{large_list_array},
+                         std::vector<std::shared_ptr<::arrow::Field>>{::arrow::field(
+                             "numbers", ::arrow::large_list(::arrow::int32()))})
+                         .ValueOrDie();
+
+  std::vector<std::vector<int32_t>> expected = {{10, 11, 12}, {20, 21}, {30, 31, 32, 33}};
+
+  auto verify_record = [&](int64_t index, const std::vector<int32_t>& expected_numbers) {
+    ::avro::GenericDatum extracted_datum(avro_node);
+    ASSERT_THAT(ExtractDatumFromArray(*arrow_array, index, &extracted_datum), IsOk());
+    const auto& record = extracted_datum.value<::avro::GenericRecord>();
+    const auto& avro_arr = record.fieldAt(0).value<::avro::GenericArray>();
+    const auto& elements = avro_arr.value();
+
+    ASSERT_EQ(elements.size(), expected_numbers.size());
+    for (size_t i = 0; i < expected_numbers.size(); ++i) {
+      EXPECT_EQ(elements[i].value<int32_t>(), expected_numbers[i]);
+    }
+  };
+
+  for (size_t i = 0; i < expected.size(); ++i) {
+    verify_record(i, expected[i]);
+  }
+}
+
+TEST(ExtractDatumFromArrayTest, LargeString) {
+  Schema iceberg_schema({
+      SchemaField::MakeRequired(1, "name", string()),
+  });
+
+  ::avro::NodePtr avro_node;
+  ASSERT_THAT(ToAvroNodeVisitor{}.Visit(iceberg_schema, &avro_node), IsOk());
+
+  // Build a LargeStringArray manually
+  ::arrow::LargeStringBuilder builder;
+  ASSERT_TRUE(builder.Append("hello").ok());
+  ASSERT_TRUE(builder.Append("world").ok());
+  ASSERT_TRUE(builder.Append("iceberg").ok());
+  std::shared_ptr<::arrow::Array> large_string_array;
+  ASSERT_TRUE(builder.Finish(&large_string_array).ok());
+
+  auto arrow_array =
+      ::arrow::StructArray::Make(::arrow::ArrayVector{large_string_array},
+                                 std::vector<std::shared_ptr<::arrow::Field>>{
+                                     ::arrow::field("name", ::arrow::large_utf8())})
+          .ValueOrDie();
+
+  std::vector<std::string> expected = {"hello", "world", "iceberg"};
+
+  for (int64_t i = 0; std::cmp_less(i, expected.size()); ++i) {
+    ::avro::GenericDatum extracted_datum(avro_node);
+    ASSERT_THAT(ExtractDatumFromArray(*arrow_array, i, &extracted_datum), IsOk());
+    const auto& record = extracted_datum.value<::avro::GenericRecord>();
+    EXPECT_EQ(record.fieldAt(0).value<std::string>(), expected[i]);
+  }
+}
+
+TEST(ExtractDatumFromArrayTest, LargeBinary) {
+  Schema iceberg_schema({
+      SchemaField::MakeRequired(1, "data", binary()),
+  });
+
+  ::avro::NodePtr avro_node;
+  ASSERT_THAT(ToAvroNodeVisitor{}.Visit(iceberg_schema, &avro_node), IsOk());
+
+  // Build a LargeBinaryArray manually
+  ::arrow::LargeBinaryBuilder builder;
+  ASSERT_TRUE(builder.Append("abc").ok());
+  ASSERT_TRUE(builder.Append("bcd").ok());
+  ASSERT_TRUE(builder.Append("cde").ok());
+  std::shared_ptr<::arrow::Array> large_binary_array;
+  ASSERT_TRUE(builder.Finish(&large_binary_array).ok());
+
+  auto arrow_array =
+      ::arrow::StructArray::Make(::arrow::ArrayVector{large_binary_array},
+                                 std::vector<std::shared_ptr<::arrow::Field>>{
+                                     ::arrow::field("data", ::arrow::large_binary())})
+          .ValueOrDie();
+
+  for (int64_t i = 0; i < 3; ++i) {
+    ::avro::GenericDatum extracted_datum(avro_node);
+    ASSERT_THAT(ExtractDatumFromArray(*arrow_array, i, &extracted_datum), IsOk());
+    const auto& record = extracted_datum.value<::avro::GenericRecord>();
+    const auto& bytes = record.fieldAt(0).value<std::vector<uint8_t>>();
+    ASSERT_EQ(bytes.size(), 3);
+    EXPECT_EQ(bytes[0], static_cast<uint8_t>('a' + i));
+    EXPECT_EQ(bytes[1], static_cast<uint8_t>('b' + i));
+    EXPECT_EQ(bytes[2], static_cast<uint8_t>('c' + i));
   }
 }
 
