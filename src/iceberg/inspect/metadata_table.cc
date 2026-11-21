@@ -24,6 +24,7 @@
 
 #include "iceberg/inspect/history_table.h"
 #include "iceberg/inspect/metadata_scan.h"
+#include "iceberg/inspect/partitions_table.h"
 #include "iceberg/inspect/refs_table.h"
 #include "iceberg/inspect/snapshots_table.h"
 
@@ -43,6 +44,8 @@ Result<std::unique_ptr<MetadataTable>> MetadataTable::Make(
       return RefsTable::Make(std::move(table));
     case MetadataTableKind::kHistory:
       return HistoryTable::Make(std::move(table));
+    case MetadataTableKind::kPartitions:
+      return PartitionsTable::Make(std::move(table));
     default:
       break;
   }
