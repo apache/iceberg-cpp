@@ -89,7 +89,7 @@ class ICEBERG_EXPORT SchemaField : public iceberg::util::Formattable {
   const std::shared_ptr<Type>& type() const;
 
   /// \brief Get whether the field is optional.
-  [[nodiscard]] bool optional() const;
+  bool optional() const;
 
   /// \brief Get the field documentation.
   std::string_view doc() const;
