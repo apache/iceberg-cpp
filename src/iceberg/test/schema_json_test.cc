@@ -327,6 +327,36 @@ TEST(SchemaJsonTest, NestedUnknownFieldsRoundTrip) {
   ASSERT_EQ(schema_json, parsed_json);
 }
 
+TEST(SchemaJsonTest, RejectsRequiredUnknownFields) {
+  constexpr std::string_view required_field =
+      R"({"fields":[{"id":1,"name":"mystery","required":true,"type":"unknown"}],"type":"struct"})";
+  auto result = SchemaFromJson(nlohmann::json::parse(required_field));
+  EXPECT_THAT(result, IsError(ErrorKind::kInvalidArgument));
+  EXPECT_THAT(result, HasErrorMessage("Unknown type field 'mystery' must be optional"));
+
+  constexpr std::string_view required_nested_field =
+      R"({"fields":[{"id":1,"name":"profile","required":false,"type":{"type":"struct","fields":[
+          {"id":2,"name":"mystery","required":true,"type":"unknown"}]}}],"type":"struct"})";
+  result = SchemaFromJson(nlohmann::json::parse(required_nested_field));
+  EXPECT_THAT(result, IsError(ErrorKind::kInvalidArgument));
+  EXPECT_THAT(result, HasErrorMessage("Unknown type field 'mystery' must be optional"));
+
+  constexpr std::string_view required_element =
+      R"({"fields":[{"id":1,"name":"mysteries","required":false,"type":{"type":"list",
+          "element-id":2,"element-required":true,"element":"unknown"}}],"type":"struct"})";
+  result = SchemaFromJson(nlohmann::json::parse(required_element));
+  EXPECT_THAT(result, IsError(ErrorKind::kInvalidArgument));
+  EXPECT_THAT(result, HasErrorMessage("Unknown type field 'element' must be optional"));
+
+  constexpr std::string_view unknown_key =
+      R"({"fields":[{"id":1,"name":"properties","required":false,"type":{"type":"map",
+          "key-id":2,"key":"unknown","value-id":3,"value-required":false,"value":"string"}}],
+          "type":"struct"})";
+  result = SchemaFromJson(nlohmann::json::parse(unknown_key));
+  EXPECT_THAT(result, IsError(ErrorKind::kInvalidArgument));
+  EXPECT_THAT(result, HasErrorMessage("Map 'key' cannot be unknown type"));
+}
+
 TEST(SchemaJsonTest, IdentifierFieldIds) {
   // Test schema with identifier-field-ids
   constexpr std::string_view json_with_identifier_str =
