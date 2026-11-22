@@ -41,6 +41,10 @@
 namespace iceberg::parquet {
 namespace {
 
+// True means a matching row may exist; false means the group can be skipped.
+constexpr bool kRowsMightMatch = true;
+constexpr bool kRowsCannotMatch = false;
+
 bool IsDictionaryEncoding(::parquet::Encoding::type encoding) {
   return encoding == ::parquet::Encoding::PLAIN_DICTIONARY ||
          encoding == ::parquet::Encoding::RLE_DICTIONARY;
@@ -124,16 +128,16 @@ class DictionaryVisitor : public BoundVisitor<bool> {
         properties_(properties),
         writer_version_(writer_version) {}
 
-  Result<bool> AlwaysTrue() override { return true; }
-  Result<bool> AlwaysFalse() override { return false; }
+  Result<bool> AlwaysTrue() override { return kRowsMightMatch; }
+  Result<bool> AlwaysFalse() override { return kRowsCannotMatch; }
   // Make rewrites NOT. Negating an inclusive result would be unsafe.
-  Result<bool> Not(bool) override { return true; }
+  Result<bool> Not(bool) override { return kRowsMightMatch; }
   Result<bool> And(bool left, bool right) override { return left && right; }
   Result<bool> Or(bool left, bool right) override { return left || right; }
   // Dictionaries contain only non-null values. A rewritten NOT(range) includes
   // IS_NULL, which stays inclusive here; footer statistics may rule it out.
-  Result<bool> IsNull(const std::shared_ptr<Bound>&) override { return true; }
-  Result<bool> NotNull(const std::shared_ptr<Bound>&) override { return true; }
+  Result<bool> IsNull(const std::shared_ptr<Bound>&) override { return kRowsMightMatch; }
+  Result<bool> NotNull(const std::shared_ptr<Bound>&) override { return kRowsMightMatch; }
 
   Result<bool> IsNaN(const std::shared_ptr<Bound>& expr) override {
     return AnyMatch(expr, [](const Literal& value) { return value.IsNaN(); });
@@ -218,7 +222,7 @@ class DictionaryVisitor : public BoundVisitor<bool> {
     auto ref = std::dynamic_pointer_cast<BoundReference>(expr);
     ICEBERG_ASSIGN_OR_RAISE(auto dictionary, GetDictionary(ref));
     if (!dictionary || (nulls_match && MayContainNull(*ref))) {
-      return true;
+      return kRowsMightMatch;
     }
     return std::ranges::any_of(*dictionary, predicate);
   }
@@ -354,7 +358,7 @@ Result<bool> ParquetDictionaryRowGroupFilter::ShouldRead(
     const ::parquet::ReaderProperties& properties) const {
   auto row_group = metadata.RowGroup(row_group_index);
   if (row_group->num_rows() <= 0) {
-    return false;
+    return kRowsCannotMatch;
   }
   try {
     DictionaryVisitor visitor(manifest, *row_group, field_id_to_column_idx_, input,
