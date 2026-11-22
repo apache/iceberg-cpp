@@ -41,6 +41,7 @@
 #include "iceberg/arrow/arrow_status_internal.h"
 #include "iceberg/expression/binder.h"
 #include "iceberg/expression/expressions.h"
+#include "iceberg/expression/predicate.h"
 #include "iceberg/file_reader.h"
 #include "iceberg/metadata_columns.h"
 #include "iceberg/name_mapping.h"
@@ -681,6 +682,29 @@ TEST_F(ParquetBloomFilterTest, CacheReadErrorsAndFalsePositives) {
                                             manifest, *metadata_->RowGroup(0), &tracked));
     EXPECT_TRUE(result);
     EXPECT_EQ(tracked.calls, 0);
+  }
+}
+
+TEST_F(ParquetBloomFilterTest, MalformedBooleanPredicatesReturnErrors) {
+  ASSERT_THAT(Write(), IsOk());
+  ::parquet::arrow::SchemaManifest manifest;
+  ASSERT_TRUE(::parquet::arrow::SchemaManifest::Make(
+                  metadata_->schema(), nullptr,
+                  ::parquet::default_arrow_reader_properties(), &manifest)
+                  .ok());
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto bound,
+      Binder::Bind(*schema_, Expressions::Equal("key", Literal::Int(0)), true));
+  auto predicate = std::dynamic_pointer_cast<BoundPredicate>(bound);
+  ASSERT_NE(predicate, nullptr);
+  for (auto op : {Expression::Operation::kAnd, Expression::Operation::kOr}) {
+    ICEBERG_UNWRAP_OR_FAIL(auto malformed, BoundLiteralPredicate::Make(
+                                               op, predicate->term(), Literal::Int(0)));
+    std::shared_ptr<Expression> expression = std::move(malformed);
+    ICEBERG_UNWRAP_OR_FAIL(
+        auto filter, ParquetBloomRowGroupFilter::Make(expression, *metadata_->schema()));
+    EXPECT_THAT(filter->ShouldRead(manifest, *metadata_->RowGroup(0), nullptr),
+                HasErrorMessage("Invalid operation for BoundLiteralPredicate"));
   }
 }
 
