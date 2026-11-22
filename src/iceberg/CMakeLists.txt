@@ -109,6 +109,7 @@ set(ICEBERG_SOURCES
     row/manifest_wrapper.cc
     row/partition_values.cc
     row/struct_like.cc
+    scan_task_planning.cc
     schema.cc
     schema_field.cc
     schema_internal.cc

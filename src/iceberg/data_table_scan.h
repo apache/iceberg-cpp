@@ -56,6 +56,25 @@ class ICEBERG_EXPORT DataTableScan : public TableScan {
   /// work to it.
   virtual Result<FileScanTaskStreamPtr> PlanFilesStream() const;
 
+  /// \brief Collects PlanTasksStream() into a vector.
+  /// \return A Result containing task groups or an error.
+  Result<std::vector<std::shared_ptr<FileScanTaskGroup>>> PlanTasks() const;
+
+  /// \brief Lazily splits and groups this scan's planned tasks.
+  ///
+  /// Parquet files larger than read.split.target-size use manifest split offsets
+  /// coalesced toward the target size, or fixed-size byte ranges when offsets are
+  /// unavailable or invalid. Other files stay whole. Splitting does not open data
+  /// files. Tasks are weighted using read.split.open-file-cost and packed with at
+  /// most read.split.planning-lookback open groups.
+  ///
+  /// The returned fallible, single-pass stream owns the underlying task stream and its
+  /// metrics, and can outlive this scan. An executor configured through PlanWith() is
+  /// borrowed and must remain alive until the group stream is destroyed, as later
+  /// Next() calls may submit work to it. Split settings resolve from scan options,
+  /// then table properties, then their defaults.
+  virtual Result<FileScanTaskGroupStreamPtr> PlanTasksStream() const;
+
  protected:
   using TableScan::TableScan;
 };
