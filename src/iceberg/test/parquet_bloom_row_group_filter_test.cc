@@ -767,11 +767,11 @@ TEST_F(ParquetBloomFilterTest, ShortCircuitOnlySkipsUnneededBranches) {
     std::shared_ptr<Expression> expression;
     std::optional<bool> expected;
   };
-  for (const auto& test :
-       std::vector<Case>{{Expressions::And(absent, failing), false},
-                         {Expressions::Or(present, failing), true},
-                         {Expressions::And(present, failing), std::nullopt},
-                         {Expressions::Or(absent, failing), std::nullopt}}) {
+  for (const auto& test : std::vector<Case>{
+           {.expression = Expressions::And(absent, failing), .expected = false},
+           {.expression = Expressions::Or(present, failing), .expected = true},
+           {.expression = Expressions::And(present, failing), .expected = std::nullopt},
+           {.expression = Expressions::Or(absent, failing), .expected = std::nullopt}}) {
     SCOPED_TRACE(test.expression->ToString());
     ICEBERG_UNWRAP_OR_FAIL(
         auto filter, ParquetBloomRowGroupFilter::Make(Options(test.expression).filter,
