@@ -605,13 +605,18 @@ TEST_F(ParquetBloomFilterTest, UuidBoundsUseUnsignedByteOrder) {
 
 class CountingBloomReader : public ::parquet::RowGroupBloomFilterReader {
  public:
-  enum class Mode { kNormal, kMissing, kThrow, kSaturated };
+  enum class Mode { kNormal, kMissing, kThrow, kSaturated, kThrowSecondColumn };
   CountingBloomReader(std::shared_ptr<::parquet::RowGroupBloomFilterReader> delegate,
                       Mode mode)
       : delegate_(std::move(delegate)), mode_(mode) {}
   std::unique_ptr<::parquet::BloomFilter> GetColumnBloomFilter(int i) override {
     ++calls;
     switch (mode_) {
+      case Mode::kThrowSecondColumn:
+        if (i == 1) {
+          throw ::parquet::ParquetException("test Bloom read failure");
+        }
+        return delegate_->GetColumnBloomFilter(i);
       case Mode::kMissing:
         return nullptr;
       case Mode::kThrow:
@@ -677,6 +682,91 @@ TEST_F(ParquetBloomFilterTest, CacheReadErrorsAndFalsePositives) {
     EXPECT_TRUE(result);
     EXPECT_EQ(tracked.calls, 0);
   }
+}
+
+TEST_F(ParquetBloomFilterTest, OrShortCircuitAvoidsBloomReads) {
+  ASSERT_THAT(Write(), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto input, arrow::OpenArrowInputStream(io_, path_));
+  auto reader = ::parquet::ParquetFileReader::Open(input);
+  ::parquet::arrow::SchemaManifest manifest;
+  ASSERT_TRUE(::parquet::arrow::SchemaManifest::Make(
+                  metadata_->schema(), nullptr,
+                  ::parquet::default_arrow_reader_properties(), &manifest)
+                  .ok());
+  auto expression = Expressions::Or(Expressions::LessThan("key", Literal::Int(100)),
+                                    Expressions::Equal("key", Literal::Int(100)));
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto filter,
+      ParquetBloomRowGroupFilter::Make(Options(expression).filter, *metadata_->schema()));
+  auto delegate = reader->GetBloomFilterReader().RowGroup(0);
+  for (auto mode :
+       {CountingBloomReader::Mode::kNormal, CountingBloomReader::Mode::kThrow}) {
+    CountingBloomReader tracked(delegate, mode);
+    auto result = filter->ShouldRead(manifest, *metadata_->RowGroup(0), &tracked);
+    EXPECT_THAT(result, IsOk());
+    if (result) {
+      EXPECT_TRUE(*result);
+    }
+    EXPECT_EQ(tracked.calls, 0);
+  }
+}
+
+TEST_F(ParquetBloomFilterTest, ShortCircuitOnlySkipsUnneededBranches) {
+  ::parquet::WriterProperties::Builder properties;
+  writer_properties_ = properties.disable_dictionary()
+                           ->enable_bloom_filter("key", {.ndv = 1000, .fpp = 0.0001})
+                           ->enable_bloom_filter("value", {.ndv = 1000, .fpp = 0.0001})
+                           ->build();
+  ASSERT_THAT(Write(), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto input, arrow::OpenArrowInputStream(io_, path_));
+  auto reader = ::parquet::ParquetFileReader::Open(input);
+  ::parquet::arrow::SchemaManifest manifest;
+  ASSERT_TRUE(::parquet::arrow::SchemaManifest::Make(
+                  metadata_->schema(), nullptr,
+                  ::parquet::default_arrow_reader_properties(), &manifest)
+                  .ok());
+  auto delegate = reader->GetBloomFilterReader().RowGroup(0);
+  auto present = Expressions::Equal("key", Literal::Int(0));
+  auto absent = Expressions::Equal("key", Literal::Int(100));
+  auto failing = Expressions::Equal("value", Literal::Long(100));
+  struct Case {
+    std::shared_ptr<Expression> expression;
+    std::optional<bool> expected;
+  };
+  for (const auto& test :
+       std::vector<Case>{{Expressions::And(absent, failing), false},
+                         {Expressions::Or(present, failing), true},
+                         {Expressions::And(present, failing), std::nullopt},
+                         {Expressions::Or(absent, failing), std::nullopt}}) {
+    SCOPED_TRACE(test.expression->ToString());
+    ICEBERG_UNWRAP_OR_FAIL(
+        auto filter, ParquetBloomRowGroupFilter::Make(Options(test.expression).filter,
+                                                      *metadata_->schema()));
+    CountingBloomReader tracked(delegate, CountingBloomReader::Mode::kThrowSecondColumn);
+    auto result = filter->ShouldRead(manifest, *metadata_->RowGroup(0), &tracked);
+    if (test.expected.has_value()) {
+      ASSERT_THAT(result, IsOk());
+      EXPECT_EQ(*result, *test.expected);
+      EXPECT_EQ(tracked.calls, 1);
+    } else {
+      EXPECT_THAT(result, HasErrorMessage("Cannot read Parquet Bloom filter"));
+      EXPECT_EQ(tracked.calls, 2);
+    }
+  }
+}
+
+TEST_F(ParquetBloomFilterTest, OrShortCircuitSkipsCorruptBloomPayload) {
+  ASSERT_THAT(Write(), IsOk());
+  auto column = metadata_->RowGroup(0)->ColumnChunk(0);
+  ASSERT_TRUE(column->bloom_filter_offset().has_value());
+  ASSERT_TRUE(column->bloom_filter_length().has_value());
+  auto& data = std::static_pointer_cast<MockFileIO>(io_)->FileData(path_);
+  std::ranges::fill(std::span(data).subspan(*column->bloom_filter_offset(),
+                                            *column->bloom_filter_length()),
+                    std::byte{0});
+  auto expression = Expressions::Or(Expressions::LessThan("key", Literal::Int(100)),
+                                    Expressions::Equal("key", Literal::Int(100)));
+  Check(Options(expression), {0, 1, 2, 3, 4, 5});
 }
 
 TEST_F(ParquetBloomFilterTest, CorruptBloomPayloadFailsOpen) {

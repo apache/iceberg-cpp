@@ -175,6 +175,28 @@ class BloomVisitor : public BoundVisitor<bool> {
         bloom_reader_(bloom_reader),
         columns_(columns) {}
 
+  Result<bool> Eval(const std::shared_ptr<Expression>& expr) {
+    // Avoid loading Bloom payloads once a branch determines the inclusive result.
+    // Make rewrites NOT, so only AND and OR need recursive traversal here.
+    if (expr->op() == Expression::Operation::kAnd) {
+      const auto& and_expr = internal::checked_pointer_cast<iceberg::And>(expr);
+      ICEBERG_ASSIGN_OR_RAISE(auto left, Eval(and_expr->left()));
+      if (!left) {
+        return false;
+      }
+      return Eval(and_expr->right());
+    }
+    if (expr->op() == Expression::Operation::kOr) {
+      const auto& or_expr = internal::checked_pointer_cast<iceberg::Or>(expr);
+      ICEBERG_ASSIGN_OR_RAISE(auto left, Eval(or_expr->left()));
+      if (left) {
+        return true;
+      }
+      return Eval(or_expr->right());
+    }
+    return Visit<bool>(expr, *this);
+  }
+
   Result<bool> AlwaysTrue() override { return true; }
   Result<bool> AlwaysFalse() override { return false; }
   // Make rewrites NOT. Negating an inclusive result would be unsafe.
@@ -308,7 +330,7 @@ Result<bool> ParquetBloomRowGroupFilter::ShouldRead(
   }
   try {
     BloomVisitor visitor(manifest, row_group, bloom_reader, field_id_to_column_idx_);
-    return Visit<bool>(bound_, visitor);
+    return visitor.Eval(bound_);
   } catch (const ::parquet::ParquetException& e) {
     return Invalid("Cannot read Parquet Bloom filter: {}", e.what());
   }

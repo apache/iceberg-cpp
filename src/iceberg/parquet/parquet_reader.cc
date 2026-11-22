@@ -35,6 +35,7 @@
 #include <parquet/arrow/reader.h>
 #include <parquet/arrow/schema.h>
 #include <parquet/bloom_filter_reader.h>
+#include <parquet/exception.h>
 #include <parquet/file_reader.h>
 #include <parquet/properties.h>
 
@@ -306,11 +307,16 @@ class ParquetReader::Impl {
         ICEBERG_ASSIGN_OR_RAISE(
             auto should_read, stats_filter_->ShouldRead(reader_->manifest(), *row_group));
         if (should_read && bloom_filter_) {
-          auto bloom_reader =
-              reader_->parquet_reader()->GetBloomFilterReader().RowGroup(row_group_index);
-          ICEBERG_ASSIGN_OR_RAISE(
-              should_read, bloom_filter_->ShouldRead(reader_->manifest(), *row_group,
-                                                     bloom_reader.get()));
+          try {
+            auto bloom_reader =
+                reader_->parquet_reader()->GetBloomFilterReader().RowGroup(
+                    row_group_index);
+            ICEBERG_ASSIGN_OR_RAISE(
+                should_read, bloom_filter_->ShouldRead(reader_->manifest(), *row_group,
+                                                       bloom_reader.get()));
+          } catch (const ::parquet::ParquetException& e) {
+            return Invalid("Cannot read Parquet Bloom filter: {}", e.what());
+          }
         }
         if (should_read) {
           row_group_indices_[selected_count++] = row_group_index;
