@@ -452,9 +452,11 @@ class StrictMetricsVisitor : public BoundVisitor<bool> {
       return kRowsMightNotMatch;
     }
 
-    ICEBERG_DCHECK(expr->reference()->type()->type_id() == TypeId::kString &&
-                       std::holds_alternative<std::string>(lit.value()),
-                   "StartsWith requires a string column and string literal");
+    if (expr->reference()->type()->type_id() != TypeId::kString ||
+        lit.type()->type_id() != TypeId::kString ||
+        !std::holds_alternative<std::string>(lit.value())) {
+      return InvalidExpression("StartsWith requires a string column and string literal");
+    }
     std::string_view prefix = std::get<std::string>(lit.value());
 
     ICEBERG_ASSIGN_OR_RAISE(auto lower, ParseBound(expr, lower_it->second));
