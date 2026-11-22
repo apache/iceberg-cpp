@@ -1063,7 +1063,7 @@ TEST_P(TableScanTest, FixedByteRangesReadEveryParquetRowOnce) {
   }
   std::ranges::sort(ids);
   std::vector<int32_t> expected(kRows);
-  std::iota(expected.begin(), expected.end(), 0);
+  std::ranges::iota(expected, 0);
   EXPECT_EQ(ids, expected);
 }
 
