@@ -17,6 +17,7 @@
  * under the License.
  */
 
+#include <algorithm>
 #include <limits>
 #include <map>
 
@@ -229,6 +230,15 @@ class ParquetBloomFilterTest : public ::testing::Test {
     SCOPED_TRACE(options.filter ? options.filter->ToString() : "no filter");
     ICEBERG_UNWRAP_OR_FAIL(auto actual, Read(options));
     EXPECT_EQ(actual, expected);
+  }
+
+  Result<std::vector<BloomReadRange>> RecordOpenReads(const ReaderOptions& options) {
+    auto io = std::static_pointer_cast<BloomRecordingFileIO>(io_);
+    io->reads.clear();
+    ICEBERG_ASSIGN_OR_RAISE(
+        auto reader, ReaderFactoryRegistry::Open(FileFormatType::kParquet, options));
+    ICEBERG_RETURN_UNEXPECTED(reader->Close());
+    return io->reads;
   }
 
   bool write_bloom_ = true;
@@ -810,26 +820,21 @@ TEST_F(ParquetBloomFilterTest, CorruptBloomPayloadFailsOpen) {
 
 TEST_F(ParquetBloomFilterTest, FooterPruningAndDisabledOptionAvoidBloomReads) {
   ASSERT_THAT(Write(true), IsOk());
-  auto io = std::static_pointer_cast<BloomRecordingFileIO>(io_);
-  io->reads.clear();
-  ICEBERG_UNWRAP_OR_FAIL(
-      auto unfiltered,
-      ReaderFactoryRegistry::Open(FileFormatType::kParquet, Options(nullptr)));
-  auto footer_reads = io->reads;
-  ASSERT_THAT(unfiltered->Close(), IsOk());
+  // Open initializes the batch reader, so its data reads depend on the selection.
+  auto empty = Options(nullptr);
+  empty.split = Split{.offset = 0, .length = 0};
+  ICEBERG_UNWRAP_OR_FAIL(auto footer_reads, RecordOpenReads(empty));
+  ICEBERG_UNWRAP_OR_FAIL(auto unfiltered_reads, RecordOpenReads(Options(nullptr)));
   auto pruned = Options(Expressions::Equal("key", Literal::Int(100)));
+  ICEBERG_UNWRAP_OR_FAIL(auto pruned_reads, RecordOpenReads(pruned));
+  EXPECT_EQ(pruned_reads, footer_reads);
   auto disabled = Options(Expressions::Equal("key", Literal::Int(10)));
   disabled.properties.Set(ReaderProperties::kParquetRowGroupFilter, false);
-  for (const auto& options : {pruned, disabled}) {
-    io->reads.clear();
-    ICEBERG_UNWRAP_OR_FAIL(
-        auto reader, ReaderFactoryRegistry::Open(FileFormatType::kParquet, options));
-    EXPECT_EQ(io->reads, footer_reads);
-    ASSERT_THAT(reader->Close(), IsOk());
-  }
+  ICEBERG_UNWRAP_OR_FAIL(auto disabled_reads, RecordOpenReads(disabled));
+  EXPECT_EQ(disabled_reads, unfiltered_reads);
 }
 
-TEST_F(ParquetBloomFilterTest, OpenReadsOnlyBloomPayload) {
+TEST_F(ParquetBloomFilterTest, BloomPlanningReadsOnlyBloomPayload) {
   row_group_size_ = 768 * 1024;
   ::parquet::WriterProperties::Builder properties;
   writer_properties_ = properties.disable_dictionary()
@@ -859,24 +864,26 @@ TEST_F(ParquetBloomFilterTest, OpenReadsOnlyBloomPayload) {
   ASSERT_GT(column->total_compressed_size(), 2 * 1024 * 1024);
   ASSERT_TRUE(column->bloom_filter_offset().has_value());
   ASSERT_TRUE(column->bloom_filter_length().has_value());
-  auto io = std::static_pointer_cast<BloomRecordingFileIO>(io_);
-  io->reads.clear();
-  ICEBERG_UNWRAP_OR_FAIL(
-      auto unfiltered,
-      ReaderFactoryRegistry::Open(FileFormatType::kParquet, Options(nullptr)));
-  auto footer_reads = io->reads;
-  ASSERT_THAT(unfiltered->Close(), IsOk());
+  auto empty = Options(nullptr);
+  empty.split = Split{.offset = 0, .length = 0};
+  ICEBERG_UNWRAP_OR_FAIL(auto footer_reads, RecordOpenReads(empty));
+  ICEBERG_UNWRAP_OR_FAIL(auto unfiltered_reads, RecordOpenReads(Options(nullptr)));
+  ASSERT_GE(unfiltered_reads.size(), footer_reads.size());
+  EXPECT_TRUE(std::ranges::equal(std::span(unfiltered_reads).first(footer_reads.size()),
+                                 footer_reads));
   for (int value : {1, 2}) {
-    io->reads.clear();
-    ICEBERG_UNWRAP_OR_FAIL(auto reader,
-                           ReaderFactoryRegistry::Open(
-                               FileFormatType::kParquet,
-                               Options(Expressions::Equal("key", Literal::Int(value)))));
+    ICEBERG_UNWRAP_OR_FAIL(
+        auto reads,
+        RecordOpenReads(Options(Expressions::Equal("key", Literal::Int(value)))));
     auto expected = footer_reads;
     expected.push_back({.offset = *column->bloom_filter_offset(),
                         .length = *column->bloom_filter_length()});
-    EXPECT_EQ(io->reads, expected);
-    ASSERT_THAT(reader->Close(), IsOk());
+    if (value == 2) {
+      // A retained group also incurs the batch reader's normal initialization reads.
+      auto data_reads = std::span(unfiltered_reads).subspan(footer_reads.size());
+      expected.insert(expected.end(), data_reads.begin(), data_reads.end());
+    }
+    EXPECT_EQ(reads, expected);
   }
 }
 
