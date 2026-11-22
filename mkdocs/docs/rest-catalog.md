@@ -31,7 +31,13 @@ properties.
 | `rest.client.socket-timeout-ms` | Unbounded | Non-negative integer; zero disables the response inactivity timeout |
 | `rest.client.max-retries` | 5 | Positive integer; excludes the first attempt; does not bound total wait time |
 | `rest.client.user-agent` | `iceberg-cpp/<version>` | Used when the request has no explicit `User-Agent` header |
-| `rest.client.idempotency-key-lifetime` | Unbounded | ISO-8601 duration, for example `PT30M`; zero or negative durations disable keyed retries; malformed or out-of-range values are ignored |
+| `rest.client.idempotency-key-lifetime` | Key-based retries disabled | Set from the top-level `/v1/config` field `idempotency-key-lifetime`, an ISO-8601 duration such as `PT30M`; absent, malformed, out-of-range or non-positive values do not enable key-based retries |
+
+Only the top-level `idempotency-key-lifetime` field advertises server support for
+idempotency keys. The catalog passes that value to the transport after discovery;
+client properties and server `defaults` or `overrides` cannot enable support or
+extend the advertised window. A standalone `HttpClient` must be given a positive
+lifetime only when the server supports idempotency keys.
 
 The socket timeout measures response inactivity rather than average transfer
 speed or total request duration. It does not bound request-body uploads. The
@@ -43,15 +49,21 @@ HTTP response retries are decided after receiving the headers, before reading
 the response body:
 
 - HTTP 429, and HTTP 503 carrying `Retry-After`, permit retries for any method.
-- GET, HEAD and DELETE, and requests carrying an `Idempotency-Key` header, also
+- GET, HEAD and DELETE, and requests carrying an `Idempotency-Key` header with a
+  positive server-advertised lifetime, also
   permit retries on HTTP 408, 500, 502, 503 and 504.
-- Positive numeric and HTTP-date `Retry-After` values are honored. Otherwise the
-  wait doubles from 1 second up to 64 seconds, with up to 10% jitter. Invalid or
+- Positive numeric and HTTP-date `Retry-After` values are honored. All three
+  HTTP-date formats are accepted; other date syntax uses the normal backoff. The
+  normal wait doubles from 1 second up to 64 seconds, with up to 10% jitter. Invalid or
   non-positive values use this backoff; numeric durations beyond the millisecond
   range saturate at the maximum representable duration.
 
-Recoverable I/O failures before response headers are received permit retries
-for idempotent methods or requests carrying `Idempotency-Key`. As in Java's
+Response trailers do not change the retry decision made at the end of the final
+headers.
+
+Recoverable I/O failures before the final response headers are complete permit
+retries for idempotent methods or supported requests carrying `Idempotency-Key`.
+This includes resets after receiving a status line or partial headers. As in Java's
 I/O-exception retry path, these retries have no delay. Name resolution,
 connection, TLS, timeout, cancellation and premature-response-closure failures
 are not retried. Failures while reading a final response body are propagated,
@@ -63,6 +75,8 @@ lifetime. The bound includes `Retry-After` or the largest possible HTTP backoff
 jitter. As in Java, the I/O-error lifetime check uses the exponential interval
 even though the exception retry itself has no delay. Unkeyed requests are not
 constrained by this property.
+The client checks expiry again before sending a retry, so response cleanup or an
+oversleep cannot send a retry after the advertised window expires.
 
 Authentication runs once before the first send. Retries replay the same
 headers, body and idempotency key. A subsequent logical request authenticates
@@ -80,4 +94,4 @@ Other Java transport options, including `rest.client.max-connections`,
 `rest.client.connections-per-route`, `rest.client.proxy.*` and
 `rest.client.tls.configurer-impl`, are not yet supported by this transport.
 
-For temporary storage credentials and their lifetime, see [FileIO](file-io.md#refreshing-temporary-s3-credentials).
+For temporary storage credentials and their lifetime, see [FileIO](file-io.md#storage-credentials).

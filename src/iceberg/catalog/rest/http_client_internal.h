@@ -36,7 +36,8 @@ ICEBERG_REST_EXPORT bool ShouldRetry(
     const cpr::Response& response, const HttpRequest& request, int64_t exec_count,
     const HttpClientOptions& options,
     std::optional<std::chrono::milliseconds> elapsed = std::nullopt,
-    std::chrono::system_clock::time_point now = std::chrono::system_clock::now());
+    std::chrono::system_clock::time_point now = std::chrono::system_clock::now(),
+    bool final_headers_complete = true);
 
 ICEBERG_REST_EXPORT std::chrono::milliseconds RetryInterval(
     const cpr::Response& response, int64_t exec_count,
@@ -51,6 +52,7 @@ struct ICEBERG_REST_EXPORT RetryTiming {
 
 struct Attempt {
   cpr::Response response;
+  bool final_headers_complete = false;
   bool retry_approved = false;
 };
 

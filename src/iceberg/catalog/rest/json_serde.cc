@@ -82,6 +82,7 @@ constexpr std::string_view kIdentifiers = "identifiers";
 constexpr std::string_view kOverrides = "overrides";
 constexpr std::string_view kDefaults = "defaults";
 constexpr std::string_view kEndpoints = "endpoints";
+constexpr std::string_view kIdempotencyKeyLifetime = "idempotency-key-lifetime";
 constexpr std::string_view kMessage = "message";
 constexpr std::string_view kType = "type";
 constexpr std::string_view kCode = "code";
@@ -387,6 +388,9 @@ nlohmann::json ToJson(const CatalogConfig& config) {
   for (const auto& endpoint : config.endpoints) {
     json[kEndpoints].emplace_back(endpoint.ToString());
   }
+  if (config.idempotency_key_lifetime.has_value()) {
+    json[kIdempotencyKeyLifetime] = *config.idempotency_key_lifetime;
+  }
   return json;
 }
 
@@ -397,6 +401,9 @@ Result<CatalogConfig> CatalogConfigFromJson(const nlohmann::json& json) {
       GetJsonValueOrDefault<decltype(config.overrides)>(json, kOverrides));
   ICEBERG_ASSIGN_OR_RAISE(
       config.defaults, GetJsonValueOrDefault<decltype(config.defaults)>(json, kDefaults));
+  ICEBERG_ASSIGN_OR_RAISE(
+      config.idempotency_key_lifetime,
+      GetJsonValueOptional<std::string>(json, kIdempotencyKeyLifetime));
   ICEBERG_ASSIGN_OR_RAISE(
       auto endpoints, GetJsonValueOrDefault<std::vector<std::string>>(json, kEndpoints));
   config.endpoints.reserve(endpoints.size());

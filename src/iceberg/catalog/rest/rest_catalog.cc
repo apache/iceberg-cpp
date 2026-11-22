@@ -488,7 +488,11 @@ Result<std::shared_ptr<RestCatalog>> RestCatalog::Make(
                           config.Get(RestCatalogProperties::kNamespaceSeparator)));
 
   // Create init session for fetching server configuration
-  ICEBERG_ASSIGN_OR_RAISE(auto init_client, client_factory(config));
+  // A client property cannot advertise server support before config discovery.
+  constexpr auto kKeyLifetime = "rest.client.idempotency-key-lifetime";
+  auto init_config = config;
+  init_config.mutable_configs().erase(kKeyLifetime);
+  ICEBERG_ASSIGN_OR_RAISE(auto init_client, client_factory(init_config));
   ICEBERG_PRECHECK(init_client != nullptr, "HTTP client factory returned null");
   ICEBERG_ASSIGN_OR_RAISE(auto init_session,
                           auth_manager->InitSession(init_client, config.configs()));
@@ -497,6 +501,13 @@ Result<std::shared_ptr<RestCatalog>> RestCatalog::Make(
 
   RestCatalogProperties final_config = RestCatalogProperties::FromMap(
       MergeConfigs(server_config.defaults, config.configs(), server_config.overrides));
+  // Only the top-level response field advertises support. Defaults, overrides and
+  // client properties must not enable retries against a server that ignores keys.
+  final_config.mutable_configs().erase(kKeyLifetime);
+  if (server_config.idempotency_key_lifetime.has_value()) {
+    final_config.mutable_configs().emplace(kKeyLifetime,
+                                           *server_config.idempotency_key_lifetime);
+  }
   // The server cannot change the client's endpoint trust policy or, when disabled,
   // move a client credential directly or through an override of the catalog URI.
   final_config.Set(RestCatalogProperties::kTrustServerOAuth2Uri, trust_server_oauth2_uri);

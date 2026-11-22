@@ -27,11 +27,11 @@
 #include <limits>
 #include <map>
 #include <mutex>
-#include <utility>
 #include <optional>
 #include <random>
 #include <regex>
 #include <thread>
+#include <utility>
 #include <vector>
 
 #include <cpr/cpr.h>
@@ -297,6 +297,19 @@ std::optional<std::chrono::milliseconds> RetryAfter(
     if (seconds > kMaxSeconds) return (std::chrono::milliseconds::max)();
     return std::chrono::milliseconds(seconds * 1000);
   }
+  // curl_getdate also accepts non-HTTP dates such as "01 Jan 2035". Only
+  // IMF-fixdate and the two obsolete HTTP-date forms are valid Retry-After dates.
+  static const std::regex http_date(
+      R"((?:(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun), [0-9]{2} )"
+      R"((?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) [0-9]{4} )"
+      R"([0-9]{2}:[0-9]{2}:[0-9]{2} GMT|)"
+      R"((?:Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday), [0-9]{2}-)"
+      R"((?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)-[0-9]{2} )"
+      R"([0-9]{2}:[0-9]{2}:[0-9]{2} GMT|)"
+      R"((?:Mon|Tue|Wed|Thu|Fri|Sat|Sun) )"
+      R"((?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) (?:[0-9]{2}| [0-9]) )"
+      R"([0-9]{2}:[0-9]{2}:[0-9]{2} [0-9]{4}))");
+  if (!std::regex_match(it->second, http_date)) return std::nullopt;
   const auto date = curl_getdate(it->second.c_str(), nullptr);
   if (date < 0) return std::nullopt;
   const auto now_ms =
@@ -320,14 +333,17 @@ namespace detail {
 bool ShouldRetry(const cpr::Response& response, const HttpRequest& request,
                  int64_t exec_count, const HttpClientOptions& options,
                  std::optional<std::chrono::milliseconds> elapsed,
-                 std::chrono::system_clock::time_point now) {
+                 std::chrono::system_clock::time_point now, bool final_headers_complete) {
   if (exec_count > options.max_retries) return false;
   const bool has_key = request.headers.contains("Idempotency-Key");
-  const bool safe = IsIdempotent(request.method) || has_key;
+  const bool supported_key =
+      has_key && options.idempotency_key_lifetime.has_value() &&
+      *options.idempotency_key_lifetime > std::chrono::milliseconds::zero();
+  const bool safe = IsIdempotent(request.method) || supported_key;
   if (response.error) {
     // Java reads the final response entity outside HttpRequestRetryExec. A body
     // read failure is propagated, even for a successful status or keyed request.
-    if (response.status_code != 0 || !safe ||
+    if ((final_headers_complete && response.status_code != 0) || !safe ||
         !IsRetriableTransportError(response.error.code)) {
       return false;
     }
@@ -388,12 +404,26 @@ Result<cpr::Response> SendWithRetry(const HttpClientOptions& options,
     const auto now = timing.now();
     const auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(
         std::chrono::time_point_cast<std::chrono::milliseconds>(now) - first_attempt);
-    if (!attempt.retry_approved &&
-        !ShouldRetry(attempt.response, request, exec_count, options, elapsed, now)) {
+    // The final-header callback owns HTTP-status retry decisions. In particular,
+    // trailers must not turn a rejected response into a retryable response.
+    if (attempt.final_headers_complete
+            ? !attempt.retry_approved
+            : !ShouldRetry(attempt.response, request, exec_count, options, elapsed, now,
+                           false)) {
       return std::move(attempt.response);
     }
+    const auto key_expired = [&] {
+      return request.headers.contains("Idempotency-Key") &&
+             options.idempotency_key_lifetime.has_value() &&
+             std::chrono::duration_cast<std::chrono::milliseconds>(
+                 std::chrono::time_point_cast<std::chrono::milliseconds>(timing.now()) -
+                 first_attempt) >= *options.idempotency_key_lifetime;
+    };
+    if (key_expired()) return std::move(attempt.response);
     const auto delay = RetryInterval(attempt.response, exec_count, timing.now());
     if (delay > std::chrono::milliseconds::zero()) timing.sleep(delay);
+    // Closing the prior response or sleeping can overrun the server's key window.
+    if (key_expired()) return std::move(attempt.response);
   }
 }
 
@@ -549,7 +579,14 @@ Result<cpr::Response> PerformSession(cpr::Session& session,
       result = curl_multi_socket_action(multi.get(), CURL_SOCKET_TIMEOUT, 0, &running);
     }
   }
-  return session.Complete(transfer_result);
+  auto completed = session.Complete(transfer_result);
+  // Keep only the response data used by the transport. Releasing CPR's curl
+  // holder with this session accounts for cleanup before retry expiry checks.
+  cpr::Response response;
+  response.status_code = completed.status_code;
+  response.text = std::move(completed.text);
+  response.error = std::move(completed.error);
+  return response;
 }
 
 /// \brief Default error type for unparseable REST responses.
@@ -792,116 +829,124 @@ Result<HttpResponse> HttpClient::Execute(HttpMethod method, const std::string& u
   return connection_pools_->Run(
       [&](const cpr::ConnectionPool& pool) -> Result<cpr::Response> {
         return detail::SendWithRetry(
-          options_, request,
-          [&](int64_t exec_count, std::chrono::system_clock::time_point first_attempt)
-              -> Result<detail::Attempt> {
-            detail::SocketIdleTimeout idle_timeout(
-                std::chrono::milliseconds(options_.socket_timeout_ms.value_or(0)));
-            bool socket_timed_out = false;
-            bool retry_approved = false;
-            bool final_response_started = false;
-            std::string raw_headers;
-            cpr::Session cpr_session;
-            cpr_session.SetConnectionPool(pool);
-            ApplyOptions(cpr_session, options_);
-            cpr_session.SetRedirect(kNoFollowRedirects);
-            cpr_session.SetTimeout(cpr::Timeout{request_timeout_});
-            cpr_session.SetUrl(cpr::Url{request.url});
-            cpr_session.SetHeader(ToCprHeader(request));
-            auto* curl = cpr_session.GetCurlHolder()->handle;
-            cpr_session.SetHeaderCallback(cpr::HeaderCallback{[&](std::string_view header,
-                                                                  intptr_t /*userdata*/) {
-              raw_headers.append(header);
-              cpr::Response candidate;
-              curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &candidate.status_code);
-              if (candidate.status_code >= 200) final_response_started = true;
-              if (header != "\r\n" && header != "\n") return true;
-              if (candidate.status_code < 200) return true;
-              candidate.header = cpr::util::parseHeader(raw_headers);
-              const auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(
-                  std::chrono::time_point_cast<std::chrono::milliseconds>(
-                      std::chrono::system_clock::now()) -
-                  first_attempt);
-              if (detail::ShouldRetry(candidate, request, exec_count, options_,
-                                      elapsed)) {
-                // Apache decides HTTP-status retries before reading the entity.
-                // Do not wait for an error response body that may never arrive.
-                // Aborting before draining the body sacrifices connection reuse
-                // for this response; subsequent successful requests still reuse the pool.
-                retry_approved = true;
-                return false;
-              }
-              return true;
-            }});
-            const bool has_socket_timeout = options_.socket_timeout_ms.value_or(0) > 0;
-            cpr::cpr_pf_arg_t download_progress = 0;
-            cpr::cpr_pf_arg_t upload_progress = 0;
-            cpr::cpr_pf_arg_t upload_size = 0;
-            const auto check_idle = [&] {
-              double pretransfer_seconds = 0;
-              long request_bytes = 0;
-              curl_easy_getinfo(curl, CURLINFO_PRETRANSFER_TIME, &pretransfer_seconds);
-              curl_easy_getinfo(curl, CURLINFO_REQUEST_SIZE, &request_bytes);
-              if ((pretransfer_seconds == 0 && request_bytes == 0 &&
-                   download_progress == 0 && upload_progress == 0 &&
-                   raw_headers.empty()) ||
-                  (!final_response_started && upload_progress < upload_size)) {
-                idle_timeout.Reset();
-                return true;
-              }
-              if (!idle_timeout.Check(download_progress,
-                                      final_response_started ? 0 : upload_progress,
-                                      raw_headers.size())) {
-                socket_timed_out = true;
-                return false;
-              }
-              return true;
-            };
-            if (has_socket_timeout) {
-              cpr_session.SetProgressCallback(cpr::ProgressCallback{
-                  [&](cpr::cpr_pf_arg_t /*download_total*/, cpr::cpr_pf_arg_t downloaded,
-                      cpr::cpr_pf_arg_t upload_total, cpr::cpr_pf_arg_t uploaded,
-                      intptr_t /*userdata*/) {
-                    download_progress = downloaded;
-                    upload_size = upload_total;
-                    upload_progress = uploaded;
-                    return check_idle();
+            options_, request,
+            [&](int64_t exec_count, std::chrono::system_clock::time_point first_attempt)
+                -> Result<detail::Attempt> {
+              detail::SocketIdleTimeout idle_timeout(
+                  std::chrono::milliseconds(options_.socket_timeout_ms.value_or(0)));
+              bool socket_timed_out = false;
+              bool retry_approved = false;
+              bool final_response_started = false;
+              bool final_headers_complete = false;
+              std::string raw_headers;
+              cpr::Session cpr_session;
+              cpr_session.SetConnectionPool(pool);
+              ApplyOptions(cpr_session, options_);
+              cpr_session.SetRedirect(kNoFollowRedirects);
+              cpr_session.SetTimeout(cpr::Timeout{request_timeout_});
+              cpr_session.SetUrl(cpr::Url{request.url});
+              cpr_session.SetHeader(ToCprHeader(request));
+              auto* curl = cpr_session.GetCurlHolder()->handle;
+              cpr_session.SetHeaderCallback(cpr::HeaderCallback{
+                  [&](std::string_view header, intptr_t /*userdata*/) {
+                    raw_headers.append(header);
+                    if (final_headers_complete) return true;
+                    cpr::Response candidate;
+                    curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE,
+                                      &candidate.status_code);
+                    if (candidate.status_code >= 200) final_response_started = true;
+                    if (header != "\r\n" && header != "\n") return true;
+                    if (candidate.status_code < 200) return true;
+                    final_headers_complete = true;
+                    candidate.header = cpr::util::parseHeader(raw_headers);
+                    const auto elapsed =
+                        std::chrono::duration_cast<std::chrono::milliseconds>(
+                            std::chrono::time_point_cast<std::chrono::milliseconds>(
+                                std::chrono::system_clock::now()) -
+                            first_attempt);
+                    if (detail::ShouldRetry(candidate, request, exec_count, options_,
+                                            elapsed)) {
+                      // Apache decides HTTP-status retries before reading the entity.
+                      // Do not wait for an error response body that may never arrive.
+                      // Aborting before draining the body sacrifices connection reuse
+                      // for this response; subsequent successful requests still reuse the
+                      // pool.
+                      retry_approved = true;
+                      return false;
+                    }
+                    return true;
                   }});
-            }
-            switch (request.method) {
-              case HttpMethod::kGet:
-                cpr_session.PrepareGet();
-                break;
-              case HttpMethod::kHead:
-                cpr_session.PrepareHead();
-                break;
-              case HttpMethod::kPost:
-                cpr_session.SetBody(cpr::Body{request.body});
-                cpr_session.PreparePost();
-                break;
-              case HttpMethod::kDelete:
-                cpr_session.PrepareDelete();
-                break;
-              default:
-                return NotSupported("Unsupported HTTP method");
-            }
-            ICEBERG_ASSIGN_OR_RAISE(
-                auto result,
-                PerformSession(cpr_session, has_socket_timeout ? &idle_timeout : nullptr,
-                               check_idle));
-            result.raw_header = std::move(raw_headers);
-            result.header = cpr::util::parseHeader(result.raw_header, &result.status_line,
-                                                   &result.reason);
-            if (retry_approved) {
-              result.error = {};
-            } else if (socket_timed_out) {
-              result.error.code = cpr::ErrorCode::OPERATION_TIMEDOUT;
-              result.error.message =
-                  "No response progress within the configured socket timeout";
-            }
-            return detail::Attempt{.response = std::move(result),
-                           .retry_approved = retry_approved};
-          });
+              const bool has_socket_timeout = options_.socket_timeout_ms.value_or(0) > 0;
+              cpr::cpr_pf_arg_t download_progress = 0;
+              cpr::cpr_pf_arg_t upload_progress = 0;
+              cpr::cpr_pf_arg_t upload_size = 0;
+              const auto check_idle = [&] {
+                double pretransfer_seconds = 0;
+                long request_bytes = 0;
+                curl_easy_getinfo(curl, CURLINFO_PRETRANSFER_TIME, &pretransfer_seconds);
+                curl_easy_getinfo(curl, CURLINFO_REQUEST_SIZE, &request_bytes);
+                if ((pretransfer_seconds == 0 && request_bytes == 0 &&
+                     download_progress == 0 && upload_progress == 0 &&
+                     raw_headers.empty()) ||
+                    (!final_response_started && upload_progress < upload_size)) {
+                  idle_timeout.Reset();
+                  return true;
+                }
+                if (!idle_timeout.Check(download_progress,
+                                        final_response_started ? 0 : upload_progress,
+                                        raw_headers.size())) {
+                  socket_timed_out = true;
+                  return false;
+                }
+                return true;
+              };
+              if (has_socket_timeout) {
+                cpr_session.SetProgressCallback(cpr::ProgressCallback{
+                    [&](cpr::cpr_pf_arg_t /*download_total*/,
+                        cpr::cpr_pf_arg_t downloaded, cpr::cpr_pf_arg_t upload_total,
+                        cpr::cpr_pf_arg_t uploaded, intptr_t /*userdata*/) {
+                      download_progress = downloaded;
+                      upload_size = upload_total;
+                      upload_progress = uploaded;
+                      return check_idle();
+                    }});
+              }
+              switch (request.method) {
+                case HttpMethod::kGet:
+                  cpr_session.PrepareGet();
+                  break;
+                case HttpMethod::kHead:
+                  cpr_session.PrepareHead();
+                  break;
+                case HttpMethod::kPost:
+                  cpr_session.SetBody(cpr::Body{request.body});
+                  cpr_session.PreparePost();
+                  break;
+                case HttpMethod::kDelete:
+                  cpr_session.PrepareDelete();
+                  break;
+                default:
+                  return NotSupported("Unsupported HTTP method");
+              }
+              ICEBERG_ASSIGN_OR_RAISE(
+                  auto result,
+                  PerformSession(cpr_session,
+                                 has_socket_timeout ? &idle_timeout : nullptr,
+                                 check_idle));
+              result.raw_header = std::move(raw_headers);
+              result.header = cpr::util::parseHeader(result.raw_header,
+                                                     &result.status_line, &result.reason);
+              if (retry_approved) {
+                result.error = {};
+              } else if (socket_timed_out) {
+                result.error.code = cpr::ErrorCode::OPERATION_TIMEDOUT;
+                result.error.message =
+                    "No response progress within the configured socket timeout";
+              }
+              return detail::Attempt{.response = std::move(result),
+                                     .final_headers_complete = final_headers_complete,
+                                     .retry_approved = retry_approved};
+            });
       },
       error_handler);
 }

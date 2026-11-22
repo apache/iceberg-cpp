@@ -17,6 +17,7 @@
  * under the License.
  */
 
+#include <array>
 #include <chrono>
 #include <future>
 #include <memory>
@@ -422,6 +423,47 @@ TEST_F(RestCatalogLoadTableTest, InitializationUsesMergedServerConfig) {
   ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
   ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
   EXPECT_TRUE(tasks.empty());
+}
+
+TEST_F(RestCatalogLoadTableTest, OnlyTopLevelConfigAdvertisesIdempotencySupport) {
+  constexpr auto kKeyLifetime = "rest.client.idempotency-key-lifetime";
+  const std::array<std::optional<std::string>, 6> cases{
+      std::nullopt, "PT30M", "PT0S", "PT-1S", "malformed", "PT99999999999999999999H"};
+  for (const auto& advertised : cases) {
+    SCOPED_TRACE(advertised.value_or("absent"));
+    CatalogConfig server_config{.defaults = {{kKeyLifetime, "PT2H"}},
+                                .overrides = {{kKeyLifetime, "PT3H"}},
+                                .idempotency_key_lifetime = advertised};
+    EXPECT_CALL(*mock_client_, Get(::testing::EndsWith("/v1/config"), _, _, _, _))
+        .WillOnce(Return(HttpResponse(200, ToJson(server_config).dump())));
+    auto config =
+        RestCatalogProperties::FromMap({{"uri", "http://test-server"},
+                                        {"io-impl", "rest-catalog-unit-test-noop"},
+                                        {kKeyLifetime, "PT4H"}});
+    std::vector<RestCatalogProperties> client_configs;
+    ICEBERG_UNWRAP_OR_FAIL(
+        auto root,
+        RestCatalog::Make(config, [&](const RestCatalogProperties& properties) {
+          client_configs.push_back(properties);
+          return mock_client_;
+        }));
+    ASSERT_EQ(client_configs.size(), 2);
+    EXPECT_FALSE(client_configs[0].configs().contains(kKeyLifetime));
+    if (advertised.has_value()) {
+      EXPECT_EQ(client_configs[1].configs().at(kKeyLifetime), *advertised);
+    } else {
+      EXPECT_FALSE(client_configs[1].configs().contains(kKeyLifetime));
+    }
+    ICEBERG_UNWRAP_OR_FAIL(
+        auto options, HttpClientOptions::FromProperties(client_configs[1].configs()));
+    if (advertised == "PT30M") {
+      EXPECT_EQ(options.idempotency_key_lifetime, std::chrono::minutes(30));
+    } else {
+      EXPECT_LE(options.idempotency_key_lifetime.value_or(std::chrono::milliseconds(0)),
+                std::chrono::milliseconds(0));
+    }
+    ASSERT_TRUE(::testing::Mock::VerifyAndClearExpectations(mock_client_.get()));
+  }
 }
 
 // --------------------------------------------------------------------------

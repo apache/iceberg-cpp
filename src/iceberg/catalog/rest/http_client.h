@@ -79,7 +79,8 @@ struct ICEBERG_REST_EXPORT HttpClientOptions {
   /// `rest.client.user-agent`; unset sends `iceberg-cpp/<version>`.
   std::optional<std::string> user_agent;
   /// `rest.client.idempotency-key-lifetime`, parsed from an ISO-8601 duration.
-  /// Unset disables the bound; zero disables retries of keyed requests.
+  /// A positive server-advertised lifetime enables retries based on a key.
+  /// Unset or zero prevents a key from making a non-idempotent request retryable.
   std::optional<std::chrono::milliseconds> idempotency_key_lifetime;
 
   static Result<HttpClientOptions> FromProperties(
