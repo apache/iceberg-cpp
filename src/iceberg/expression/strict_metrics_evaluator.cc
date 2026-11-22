@@ -21,6 +21,8 @@
 
 #include <algorithm>
 #include <optional>
+#include <string>
+#include <string_view>
 
 #include "iceberg/expression/binder.h"
 #include "iceberg/expression/expression_visitor.h"
@@ -429,7 +431,46 @@ class StrictMetricsVisitor : public BoundVisitor<bool> {
 
   Result<bool> StartsWith(const std::shared_ptr<Bound>& expr,
                           const Literal& lit) override {
-    return kRowsMightNotMatch;
+    RETURN_IF_NOT_REFERENCE(expr);
+
+    int32_t id = expr->reference()->field().field_id();
+
+    ICEBERG_ASSIGN_OR_RAISE(auto is_nested, IsNestedColumn(id));
+    if (is_nested) {
+      return kRowsMightNotMatch;
+    }
+
+    ICEBERG_ASSIGN_OR_RAISE(auto has_nulls, CanContainNulls(id));
+    if (has_nulls) {
+      return kRowsMightNotMatch;
+    }
+
+    auto lower_it = data_file_.lower_bounds.find(id);
+    auto upper_it = data_file_.upper_bounds.find(id);
+    if (lower_it == data_file_.lower_bounds.cend() ||
+        upper_it == data_file_.upper_bounds.cend()) {
+      return kRowsMightNotMatch;
+    }
+
+    ICEBERG_DCHECK(expr->reference()->type()->type_id() == TypeId::kString &&
+                       std::holds_alternative<std::string>(lit.value()),
+                   "StartsWith requires a string column and string literal");
+    std::string_view prefix = std::get<std::string>(lit.value());
+
+    ICEBERG_ASSIGN_OR_RAISE(auto lower, ParseBound(expr, lower_it->second));
+    std::string_view lower_str = std::get<std::string>(lower.value());
+    if (!lower_str.starts_with(prefix)) {
+      return kRowsMightNotMatch;
+    }
+
+    ICEBERG_ASSIGN_OR_RAISE(auto upper, ParseBound(expr, upper_it->second));
+    std::string_view upper_str = std::get<std::string>(upper.value());
+    if (!upper_str.starts_with(prefix)) {
+      return kRowsMightNotMatch;
+    }
+
+    // Both bounds start with the prefix, so all rows must start with the prefix.
+    return kRowsMustMatch;
   }
 
   Result<bool> NotStartsWith(const std::shared_ptr<Bound>& expr,

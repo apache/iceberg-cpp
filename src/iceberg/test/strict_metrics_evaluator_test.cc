@@ -391,8 +391,8 @@ TEST_F(StrictMetricsEvaluatorTest, NotInTest) {
 }
 
 TEST_F(StrictMetricsEvaluatorTest, StartsWithTest) {
-  // always true
   TestStringCase(Expressions::StartsWith("name", "1"), kRowsMightNotMatch);
+  TestStringCase(Expressions::StartsWith("name", ""), kRowsMustMatch);
 }
 
 TEST_F(StrictMetricsEvaluatorTest, NotStartsWithTest) {
@@ -426,13 +426,16 @@ class StrictMetricsEvaluatorMigratedTest : public StrictMetricsEvaluatorTest {
                 15, "struct",
                 std::make_shared<StructType>(std::vector<SchemaField>{
                     SchemaField::MakeOptional(16, "nested_col_no_stats", int64()),
-                    SchemaField::MakeOptional(17, "nested_col_with_stats", int64())})),
+                    SchemaField::MakeOptional(17, "nested_col_with_stats", int64()),
+                    SchemaField::MakeOptional(18, "nested_string_col", string())})),
         },
         /*schema_id=*/0);
 
     file_ = MakePrimaryFile();
     file_with_bounds_ = MakeSomeNullsFile();
     file_with_equal_bounds_ = MakeSomeNullsEqualBoundsFile();
+    string_file_ = MakeStringFile();
+    string_file_wide_range_ = MakeWideRangeStringFile();
   }
 
   std::shared_ptr<DataFile> MakePrimaryFile() {
@@ -520,6 +523,40 @@ class StrictMetricsEvaluatorMigratedTest : public StrictMetricsEvaluatorTest {
     return data_file;
   }
 
+  std::shared_ptr<DataFile> MakeStringFile() {
+    auto data_file = std::make_shared<DataFile>();
+    data_file->file_path = "string_file.avro";
+    data_file->file_format = FileFormatType::kParquet;
+    data_file->record_count = 50;
+    data_file->value_counts = {
+        {3, 50L},
+    };
+    data_file->lower_bounds = {
+        {3, Literal::String("abc").Serialize().value()},
+    };
+    data_file->upper_bounds = {
+        {3, Literal::String("abd").Serialize().value()},
+    };
+    return data_file;
+  }
+
+  std::shared_ptr<DataFile> MakeWideRangeStringFile() {
+    auto data_file = std::make_shared<DataFile>();
+    data_file->file_path = "string_file_wide_range.avro";
+    data_file->file_format = FileFormatType::kParquet;
+    data_file->record_count = 50;
+    data_file->value_counts = {
+        {3, 50L},
+    };
+    data_file->lower_bounds = {
+        {3, Literal::String("aa").Serialize().value()},
+    };
+    data_file->upper_bounds = {
+        {3, Literal::String("dC").Serialize().value()},
+    };
+    return data_file;
+  }
+
   std::shared_ptr<DataFile> MakeMissingStatsFile() {
     auto data_file = std::make_shared<DataFile>();
     data_file->file_path = "missing.parquet";
@@ -569,6 +606,8 @@ class StrictMetricsEvaluatorMigratedTest : public StrictMetricsEvaluatorTest {
   std::shared_ptr<DataFile> file_;
   std::shared_ptr<DataFile> file_with_bounds_;
   std::shared_ptr<DataFile> file_with_equal_bounds_;
+  std::shared_ptr<DataFile> string_file_;
+  std::shared_ptr<DataFile> string_file_wide_range_;
 };
 
 TEST_F(StrictMetricsEvaluatorMigratedTest, AllNulls) {
@@ -879,6 +918,158 @@ TEST_F(StrictMetricsEvaluatorMigratedTest, EvaluateOnNestedColumnWithStats) {
                    false);
   ExpectShouldRead(Expressions::IsNull("struct.nested_col_with_stats"), false);
   ExpectShouldRead(Expressions::NotNull("struct.nested_col_with_stats"), false);
+}
+
+TEST_F(StrictMetricsEvaluatorMigratedTest, StartsWithMatchesWhenBothBoundsHavePrefix) {
+  ExpectShouldRead(Expressions::StartsWith("required", "ab"), true, string_file_);
+  ExpectShouldRead(Expressions::StartsWith("required", "a"), true, string_file_);
+}
+
+TEST_F(StrictMetricsEvaluatorMigratedTest, StartsWithMatchesEmptyPrefixWhenBoundsExist) {
+  ExpectShouldRead(Expressions::StartsWith("required", ""), true, string_file_);
+}
+
+TEST_F(StrictMetricsEvaluatorMigratedTest,
+       StartsWithDoesNotMatchWhenOnlyOneBoundHasPrefix) {
+  ExpectShouldRead(Expressions::StartsWith("required", "abc"), false, string_file_);
+  ExpectShouldRead(Expressions::StartsWith("required", "abd"), false, string_file_);
+  ExpectShouldRead(Expressions::StartsWith("required", "a"), false,
+                   string_file_wide_range_);
+}
+
+TEST_F(StrictMetricsEvaluatorMigratedTest,
+       StartsWithDoesNotMatchWhenNeitherBoundHasPrefix) {
+  ExpectShouldRead(Expressions::StartsWith("required", "zzz"), false, string_file_);
+  ExpectShouldRead(Expressions::StartsWith("required", "e"), false,
+                   string_file_wide_range_);
+}
+
+TEST_F(StrictMetricsEvaluatorMigratedTest,
+       StartsWithDoesNotMatchWhenPrefixLongerThanBounds) {
+  ExpectShouldRead(Expressions::StartsWith("required", "abcdef"), false, string_file_);
+}
+
+TEST_F(StrictMetricsEvaluatorMigratedTest, StartsWithDoesNotMatchWhenStatsMissing) {
+  ExpectShouldRead(Expressions::StartsWith("required", "a"), false);
+  ExpectShouldRead(Expressions::StartsWith("required", ""), false);
+}
+
+TEST_F(StrictMetricsEvaluatorMigratedTest, StartsWithDoesNotMatchWhenSingleBoundMissing) {
+  auto lower_only = std::make_shared<DataFile>(*string_file_);
+  lower_only->upper_bounds.clear();
+  ExpectShouldRead(Expressions::StartsWith("required", "ab"), false, lower_only);
+
+  auto upper_only = std::make_shared<DataFile>(*string_file_);
+  upper_only->lower_bounds.clear();
+  ExpectShouldRead(Expressions::StartsWith("required", "ab"), false, upper_only);
+}
+
+TEST_F(StrictMetricsEvaluatorMigratedTest, StartsWithDoesNotMatchForAllNullColumn) {
+  ExpectShouldRead(Expressions::StartsWith("all_nulls", "a"), false);
+}
+
+TEST_F(StrictMetricsEvaluatorMigratedTest, StartsWithDoesNotMatchWhenColumnHasSomeNulls) {
+  ExpectShouldRead(Expressions::StartsWith("some_nulls", "b"), false, file_with_bounds_);
+  // Bounds are equal ["bbb", "bbb"], but the column still has nulls.
+  ExpectShouldRead(Expressions::StartsWith("some_nulls", "b"), false,
+                   file_with_equal_bounds_);
+  ExpectShouldRead(Expressions::StartsWith("some_nulls", ""), false,
+                   file_with_equal_bounds_);
+}
+
+TEST_F(StrictMetricsEvaluatorMigratedTest, StartsWithMatchesOptionalColumnWithZeroNulls) {
+  auto file = std::make_shared<DataFile>();
+  file->file_path = "optional_no_nulls.parquet";
+  file->file_format = FileFormatType::kParquet;
+  file->record_count = 50;
+  file->value_counts = {{6, 50L}};
+  file->null_value_counts = {{6, 0L}};
+  file->lower_bounds = {{6, Literal::String("abc").Serialize().value()}};
+  file->upper_bounds = {{6, Literal::String("abd").Serialize().value()}};
+
+  ExpectShouldRead(Expressions::StartsWith("no_nulls", "ab"), true, file);
+}
+
+TEST_F(StrictMetricsEvaluatorMigratedTest,
+       StartsWithDoesNotMatchOptionalColumnWithMissingNullCount) {
+  auto file = std::make_shared<DataFile>();
+  file->file_path = "optional_missing_null_count.parquet";
+  file->file_format = FileFormatType::kParquet;
+  file->record_count = 50;
+  file->value_counts = {{6, 50L}};
+  file->lower_bounds = {{6, Literal::String("abc").Serialize().value()}};
+  file->upper_bounds = {{6, Literal::String("abd").Serialize().value()}};
+
+  ExpectShouldRead(Expressions::StartsWith("no_nulls", "ab"), false, file);
+}
+
+TEST_F(StrictMetricsEvaluatorMigratedTest, StartsWithDoesNotMatchForNestedColumn) {
+  ExpectShouldRead(Expressions::StartsWith("struct.nested_string_col", "a"), false);
+
+  auto nested_with_stats = std::make_shared<DataFile>(*file_);
+  nested_with_stats->value_counts[18] = 50L;
+  nested_with_stats->null_value_counts[18] = 0L;
+  nested_with_stats->lower_bounds[18] = Literal::String("abc").Serialize().value();
+  nested_with_stats->upper_bounds[18] = Literal::String("abd").Serialize().value();
+  ExpectShouldRead(Expressions::StartsWith("struct.nested_string_col", "ab"), false,
+                   nested_with_stats);
+}
+
+TEST_F(StrictMetricsEvaluatorMigratedTest, StartsWithDoesNotMatchForTransformTerm) {
+  // Truncate is a transform, not a direct column ref, so bounds cannot be used.
+  ExpectShouldRead(
+      Expressions::StartsWith<BoundTransform>(Expressions::Truncate("required", 2), "ab"),
+      false, string_file_);
+}
+
+TEST_F(StrictMetricsEvaluatorMigratedTest, StartsWithEvaluatesNegatedNotStartsWith) {
+  // Not(NotStartsWith) gets rewritten to StartsWith before evaluation.
+  ExpectShouldRead(Expressions::Not(Expressions::NotStartsWith("required", "ab")), true,
+                   string_file_);
+  ExpectShouldRead(Expressions::Not(Expressions::NotStartsWith("required", "abc")), false,
+                   string_file_);
+}
+
+TEST_F(StrictMetricsEvaluatorMigratedTest, StartsWithMatchesMultibyteUtf8Prefix) {
+  // String bounds use UTF-8, verify comparing multibyte prefixes works.
+  const std::string e_accent = "\xC3\xA9";                     // U+00E9
+  const std::string grinning_face_emoji = "\xF0\x9F\x98\x80";  // U+1F600
+
+  auto utf8_file = std::make_shared<DataFile>();
+  utf8_file->file_path = "utf8_file.parquet";
+  utf8_file->file_format = FileFormatType::kParquet;
+  utf8_file->record_count = 50;
+  utf8_file->value_counts = {{3, 50L}};
+  utf8_file->lower_bounds = {{3, Literal::String(e_accent + "a").Serialize().value()}};
+  utf8_file->upper_bounds = {{3, Literal::String(e_accent + "b").Serialize().value()}};
+
+  ExpectShouldRead(Expressions::StartsWith("required", e_accent), true, utf8_file);
+  // Only lower bound matches e_accent + "a"; emoji does not match either bound.
+  ExpectShouldRead(Expressions::StartsWith("required", e_accent + "a"), false, utf8_file);
+  ExpectShouldRead(Expressions::StartsWith("required", grinning_face_emoji), false,
+                   utf8_file);
+}
+
+TEST_F(StrictMetricsEvaluatorMigratedTest, StartsWithRejectsNonStringColumnOnBind) {
+  auto result =
+      StrictMetricsEvaluator::Make(Expressions::StartsWith("id", "ab"), schema_);
+  EXPECT_THAT(result, IsError(ErrorKind::kInvalidExpression));
+}
+
+TEST_F(StrictMetricsEvaluatorMigratedTest, StartsWithRejectsNonStringLiteralOnBind) {
+  auto result = StrictMetricsEvaluator::Make(
+      Expressions::Predicate(Expression::Operation::kStartsWith, "required",
+                             Literal::Int(123)),
+      schema_);
+  EXPECT_FALSE(result.has_value());
+}
+
+TEST_F(StrictMetricsEvaluatorMigratedTest, StartsWithRejectsNullLiteralOnBind) {
+  auto result = StrictMetricsEvaluator::Make(
+      Expressions::Predicate(Expression::Operation::kStartsWith, "required",
+                             Literal::Null(string())),
+      schema_);
+  EXPECT_THAT(result, IsError(ErrorKind::kInvalidExpression));
 }
 
 TEST(StrictMetricsEvaluatorRegressionTest, MissingNullCountForField) {
