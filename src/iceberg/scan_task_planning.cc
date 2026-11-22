@@ -18,33 +18,28 @@
  */
 
 #include <algorithm>
+#include <cstddef>
 #include <cstdint>
 #include <deque>
 #include <limits>
-#include <mutex>
+#include <memory>
+#include <optional>
+#include <span>
 #include <unordered_map>
 #include <utility>
 #include <vector>
 
+#include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/result.h"
 #include "iceberg/scan_task_planning_internal.h"
 #include "iceberg/table_properties.h"
+#include "iceberg/util/content_file_util.h"
 #include "iceberg/util/int128.h"
 #include "iceberg/util/string_util.h"
 
 namespace iceberg::internal {
 
 namespace {
-
-std::mutex& SplitPolicyMutex() {
-  static std::mutex mutex;
-  return mutex;
-}
-
-std::unordered_map<FileFormatType, std::unique_ptr<SplitPolicy>>& SplitPolicies() {
-  static std::unordered_map<FileFormatType, std::unique_ptr<SplitPolicy>> policies;
-  return policies;
-}
 
 template <typename T>
 Result<T> ResolveValue(
@@ -63,14 +58,7 @@ Result<T> ResolveValue(
 int128_t DeleteContentBytes(const FileScanTask& task) {
   int128_t total = 0;
   for (const auto& delete_file : task.delete_files()) {
-    int64_t size = delete_file->file_size_in_bytes;
-    // A deletion vector stores a blob inside a larger container; charge the blob,
-    // like Java's ScanTaskUtil.contentSizeInBytes.
-    if (delete_file->file_format == FileFormatType::kPuffin &&
-        delete_file->content_size_in_bytes.has_value()) {
-      size = *delete_file->content_size_in_bytes;
-    }
-    total += size;
+    total += ContentFileUtil::ContentSizeInBytes(*delete_file);
   }
   return total;
 }
@@ -83,23 +71,6 @@ struct OpenGroup {
 };
 
 }  // namespace
-
-void SplitPolicyRegistry::Register(FileFormatType format,
-                                   std::unique_ptr<SplitPolicy> policy) {
-  std::lock_guard lock(SplitPolicyMutex());
-  SplitPolicies()[format] = std::move(policy);
-}
-
-void SplitPolicyRegistry::Unregister(FileFormatType format) {
-  std::lock_guard lock(SplitPolicyMutex());
-  SplitPolicies().erase(format);
-}
-
-SplitPolicy* SplitPolicyRegistry::Find(FileFormatType format) {
-  std::lock_guard lock(SplitPolicyMutex());
-  auto policy = SplitPolicies().find(format);
-  return policy == SplitPolicies().end() ? nullptr : policy->second.get();
-}
 
 Result<TaskGroupPlanningOptions> ResolveTaskGroupPlanningOptions(
     const std::unordered_map<std::string, std::string>& scan_options,
@@ -145,51 +116,60 @@ Result<int64_t> TaskGroupWeight(const FileScanTask& task, int64_t open_file_cost
   return static_cast<int64_t>(weight);
 }
 
-Result<std::vector<std::shared_ptr<FileScanTask>>> SplitFileScanTask(
-    const std::shared_ptr<FileScanTask>& task, int64_t target_size,
-    const std::shared_ptr<FileIO>& io) {
-  const int64_t length = task->length();
-  if (task->is_split() || length <= target_size) {
-    return std::vector<std::shared_ptr<FileScanTask>>{task};
-  }
+namespace {
 
-  SplitPolicy* policy = SplitPolicyRegistry::Find(task->data_file()->file_format);
-  if (policy == nullptr) {
-    return std::vector<std::shared_ptr<FileScanTask>>{task};
-  }
-  ICEBERG_ASSIGN_OR_RAISE(auto boundaries,
-                          policy->SplitBoundaries(io, *task->data_file()));
-  auto make_split = [&](int64_t start, int64_t split_length) {
-    return FileScanTask::MakeSplit(task->data_file(), start, split_length,
-                                   task->delete_files(), task->residual_filter());
-  };
-
-  // Coalesce adjacent boundary intervals toward the target size. The first range
-  // starts at zero, so the ranges cover [0, file size) exactly, including the bytes
-  // before the first boundary.
-  std::vector<std::shared_ptr<FileScanTask>> splits;
-  int64_t split_start = 0;
-  for (int64_t boundary : boundaries) {
-    if (boundary - split_start >= target_size) {
-      ICEBERG_ASSIGN_OR_RAISE(auto split,
-                              make_split(split_start, boundary - split_start));
-      splits.push_back(std::move(split));
-      split_start = boundary;
+std::span<const int64_t> ValidSplitOffsets(const DataFile& file) {
+  int64_t previous = 0;
+  for (int64_t offset : file.split_offsets) {
+    if (offset <= previous || offset >= file.file_size_in_bytes) {
+      return {};
     }
+    previous = offset;
   }
-  if (splits.empty()) {
-    // No boundary is far enough from the start to reach the target size; the file
-    // stays whole, like a file with a single huge row group.
-    return std::vector<std::shared_ptr<FileScanTask>>{task};
-  }
-  if (split_start < length) {
-    ICEBERG_ASSIGN_OR_RAISE(auto tail, make_split(split_start, length - split_start));
-    splits.push_back(std::move(tail));
-  }
-  return splits;
+  return file.split_offsets;
 }
 
-namespace {
+// Generates ranges on demand so a small target size does not materialize every
+// split of a large file before the first group can be returned.
+class FileScanTaskSplitCursor {
+ public:
+  FileScanTaskSplitCursor(std::shared_ptr<FileScanTask> task, int64_t target_size)
+      : task_(std::move(task)),
+        target_size_(target_size),
+        boundaries_(ValidSplitOffsets(*task_->data_file())) {}
+
+  bool HasNext() const { return next_start_ < task_->length(); }
+
+  Result<std::shared_ptr<FileScanTask>> Next() {
+    const int64_t file_size = task_->length();
+    int64_t end = file_size;
+    if (boundaries_.empty()) {
+      end = next_start_ + std::min(target_size_, file_size - next_start_);
+    } else {
+      // Coalesce toward the target while covering the prefix and tail of the file.
+      while (next_boundary_ < boundaries_.size()) {
+        const int64_t boundary = boundaries_[next_boundary_++];
+        if (boundary - next_start_ >= target_size_) {
+          end = boundary;
+          break;
+        }
+      }
+    }
+    const int64_t start = std::exchange(next_start_, end);
+    if (start == 0 && end == file_size) {
+      return task_;
+    }
+    return FileScanTask::MakeSplit(task_->data_file(), start, end - start,
+                                   task_->delete_files(), task_->residual_filter());
+  }
+
+ private:
+  std::shared_ptr<FileScanTask> task_;
+  int64_t target_size_;
+  std::span<const int64_t> boundaries_;
+  int64_t next_start_ = 0;
+  size_t next_boundary_ = 0;
+};
 
 // Packs tasks into groups, mirroring Java's BinPacking.PackingIterator with
 // largestBinFirst=true: at most `lookback` groups stay open, a task joins the first
@@ -260,47 +240,50 @@ class TaskGroupPacker {
 class TaskGroupPlanningStream final : public FileScanTaskGroupStream {
  public:
   TaskGroupPlanningStream(FileScanTaskStreamPtr tasks,
-                          const TaskGroupPlanningOptions& options,
-                          std::shared_ptr<FileIO> io)
-      : tasks_(std::move(tasks)),
-        options_(options),
-        packer_(options),
-        io_(std::move(io)) {}
+                          const TaskGroupPlanningOptions& options)
+      : tasks_(std::move(tasks)), target_size_(options.target_size), packer_(options) {}
 
   Result<std::optional<std::shared_ptr<FileScanTaskGroup>>> NextImpl() override {
     while (true) {
-      if (input_exhausted_) {
+      ICEBERG_ASSIGN_OR_RAISE(auto task, NextTask());
+      if (!task.has_value()) {
         return packer_.NextRemainingGroup();
       }
-      ICEBERG_ASSIGN_OR_RAISE(auto task, tasks_->Next());
-      if (!task.has_value()) {
-        input_exhausted_ = true;
-        continue;
-      }
-      ICEBERG_ASSIGN_OR_RAISE(auto splits,
-                              SplitFileScanTask(*task, options_.target_size, io_));
-      for (auto& split : splits) {
-        ICEBERG_ASSIGN_OR_RAISE(auto group, packer_.Add(std::move(split)));
-        if (group.has_value()) {
-          return group;
-        }
+      ICEBERG_ASSIGN_OR_RAISE(auto group, packer_.Add(std::move(*task)));
+      if (group.has_value()) {
+        return group;
       }
     }
   }
 
  private:
+  Result<std::optional<std::shared_ptr<FileScanTask>>> NextTask() {
+    if (!splits_ || !splits_->HasNext()) {
+      splits_.reset();
+      ICEBERG_ASSIGN_OR_RAISE(auto task, tasks_->Next());
+      if (!task || (*task)->is_split() || (*task)->length() <= target_size_) {
+        return task;
+      }
+      // FileScanTaskReader supports partial tasks for Parquet.
+      if ((*task)->data_file()->file_format != FileFormatType::kParquet) {
+        return task;
+      }
+      splits_.emplace(std::move(*task), target_size_);
+    }
+    ICEBERG_ASSIGN_OR_RAISE(auto split, splits_->Next());
+    return std::optional{std::move(split)};
+  }
+
   FileScanTaskStreamPtr tasks_;
-  TaskGroupPlanningOptions options_;
+  int64_t target_size_;
   TaskGroupPacker packer_;
-  std::shared_ptr<FileIO> io_;
-  bool input_exhausted_ = false;
+  std::optional<FileScanTaskSplitCursor> splits_;
 };
 
 }  // namespace
 
 Result<FileScanTaskGroupStreamPtr> PlanTaskGroupStream(
-    FileScanTaskStreamPtr tasks, const TaskGroupPlanningOptions& options,
-    std::shared_ptr<FileIO> io) {
+    FileScanTaskStreamPtr tasks, const TaskGroupPlanningOptions& options) {
   if (tasks == nullptr) {
     return Invalid("Task stream must not be null");
   }
@@ -316,8 +299,7 @@ Result<FileScanTaskGroupStreamPtr> PlanTaskGroupStream(
     return Invalid("read.split.open-file-cost must not be negative, but is {}",
                    options.open_file_cost);
   }
-  return FileScanTaskGroupStreamPtr(
-      new TaskGroupPlanningStream(std::move(tasks), options, std::move(io)));
+  return std::make_unique<TaskGroupPlanningStream>(std::move(tasks), options);
 }
 
 }  // namespace iceberg::internal

@@ -230,7 +230,7 @@ Result<FileScanTaskGroupStreamPtr> DataTableScan::PlanTasksStream() const {
                           internal::ResolveTaskGroupPlanningOptions(
                               context_.options, metadata_->properties.configs()));
   ICEBERG_ASSIGN_OR_RAISE(auto tasks, PlanFilesStream());
-  return internal::PlanTaskGroupStream(std::move(tasks), options, io_);
+  return internal::PlanTaskGroupStream(std::move(tasks), options);
 }
 
 }  // namespace iceberg

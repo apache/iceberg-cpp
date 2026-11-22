@@ -24,7 +24,6 @@ namespace iceberg::parquet {
 void RegisterAll() {
   RegisterReader();
   RegisterWriter();
-  RegisterSplitPolicy();
 }
 
 }  // namespace iceberg::parquet

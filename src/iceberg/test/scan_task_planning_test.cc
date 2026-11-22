@@ -91,8 +91,8 @@ TaskGroupPlanningOptions Options(int64_t target_size, int64_t lookback = 10,
 Result<std::vector<std::shared_ptr<FileScanTaskGroup>>> PlanAll(
     std::vector<std::shared_ptr<FileScanTask>> tasks,
     const TaskGroupPlanningOptions& options) {
-  ICEBERG_ASSIGN_OR_RAISE(
-      auto stream, PlanTaskGroupStream(TaskStream(std::move(tasks)), options, nullptr));
+  ICEBERG_ASSIGN_OR_RAISE(auto stream,
+                          PlanTaskGroupStream(TaskStream(std::move(tasks)), options));
   std::vector<std::shared_ptr<FileScanTaskGroup>> groups;
   while (true) {
     ICEBERG_ASSIGN_OR_RAISE(auto group, stream->Next());
@@ -112,53 +112,7 @@ std::vector<std::pair<int64_t, int64_t>> RangesOf(const FileScanTaskGroup& group
   return ranges;
 }
 
-// A split policy with fixed boundaries that counts how often it is consulted.
-class CountingSplitPolicy final : public SplitPolicy {
- public:
-  explicit CountingSplitPolicy(std::vector<int64_t> boundaries)
-      : boundaries_(std::move(boundaries)) {}
-
-  Result<std::vector<int64_t>> SplitBoundaries(const std::shared_ptr<FileIO>&,
-                                               const DataFile&) override {
-    ++calls_;
-    return boundaries_;
-  }
-
-  int calls() const { return calls_; }
-
- private:
-  std::vector<int64_t> boundaries_;
-  int calls_ = 0;
-};
-
-// Registers a policy for a format and unregisters it when the test ends.
-class ScopedSplitPolicy {
- public:
-  ScopedSplitPolicy(FileFormatType format, std::unique_ptr<SplitPolicy> policy)
-      : format_(format) {
-    SplitPolicyRegistry::Register(format_, std::move(policy));
-  }
-
-  ~ScopedSplitPolicy() { SplitPolicyRegistry::Unregister(format_); }
-
- private:
-  FileFormatType format_;
-};
-
-class ScanTaskPlanningTest : public ::testing::Test {
- protected:
-  void SetUp() override {
-    // Core-only builds have no registered policies; make bundled builds match by
-    // removing anything registered before the test.
-    SplitPolicyRegistry::Unregister(FileFormatType::kParquet);
-  }
-
-  ~ScanTaskPlanningTest() override {
-    SplitPolicyRegistry::Unregister(FileFormatType::kParquet);
-  }
-};
-
-TEST_F(ScanTaskPlanningTest, ResolveOptionsUsesDefaults) {
+TEST(ScanTaskPlanningTest, ResolveOptionsUsesDefaults) {
   const std::unordered_map<std::string, std::string> empty;
   ICEBERG_UNWRAP_OR_FAIL(auto options, ResolveTaskGroupPlanningOptions(empty, empty));
   EXPECT_THAT(options.target_size, Eq(kDefaultTargetSize));
@@ -166,7 +120,7 @@ TEST_F(ScanTaskPlanningTest, ResolveOptionsUsesDefaults) {
   EXPECT_THAT(options.open_file_cost, Eq(kDefaultOpenFileCost));
 }
 
-TEST_F(ScanTaskPlanningTest, ResolveOptionsPrefersScanOptionOverTableProperty) {
+TEST(ScanTaskPlanningTest, ResolveOptionsPrefersScanOptionOverTableProperty) {
   const std::unordered_map<std::string, std::string> scan_options{
       {"read.split.target-size", "1000"}};
   const std::unordered_map<std::string, std::string> table_properties{
@@ -176,7 +130,7 @@ TEST_F(ScanTaskPlanningTest, ResolveOptionsPrefersScanOptionOverTableProperty) {
   EXPECT_THAT(options.target_size, Eq(1000));
 }
 
-TEST_F(ScanTaskPlanningTest, ResolveOptionsPrefersTablePropertyOverDefault) {
+TEST(ScanTaskPlanningTest, ResolveOptionsPrefersTablePropertyOverDefault) {
   const std::unordered_map<std::string, std::string> scan_options;
   const std::unordered_map<std::string, std::string> table_properties{
       {"read.split.planning-lookback", "3"}};
@@ -185,7 +139,7 @@ TEST_F(ScanTaskPlanningTest, ResolveOptionsPrefersTablePropertyOverDefault) {
   EXPECT_THAT(options.lookback, Eq(3));
 }
 
-TEST_F(ScanTaskPlanningTest, ResolveOptionsRejectsInvalidValues) {
+TEST(ScanTaskPlanningTest, ResolveOptionsRejectsInvalidValues) {
   const std::unordered_map<std::string, std::string> empty;
   const std::unordered_map<std::string, std::string> malformed{
       {"read.split.target-size", "not-a-number"}};
@@ -213,7 +167,7 @@ TEST_F(ScanTaskPlanningTest, ResolveOptionsRejectsInvalidValues) {
       IsError(ErrorKind::kInvalid));
 }
 
-TEST_F(ScanTaskPlanningTest, WeightMatchesJavaFormula) {
+TEST(ScanTaskPlanningTest, WeightMatchesJavaFormula) {
   auto task =
       MakeTask(MakeDataFile("file", 100), {MakeDeleteFile(50), MakeDeleteFile(30)});
   ICEBERG_UNWRAP_OR_FAIL(auto weight, TaskGroupWeight(*task, 10));
@@ -221,14 +175,14 @@ TEST_F(ScanTaskPlanningTest, WeightMatchesJavaFormula) {
   EXPECT_THAT(weight, Eq(180));
 }
 
-TEST_F(ScanTaskPlanningTest, WeightChargesOpenFileCost) {
+TEST(ScanTaskPlanningTest, WeightChargesOpenFileCost) {
   auto task = MakeTask(MakeDataFile("file", 10));
   ICEBERG_UNWRAP_OR_FAIL(auto weight, TaskGroupWeight(*task, 1000));
   // max(10, (1 + 0) * 1000) = 1000
   EXPECT_THAT(weight, Eq(1000));
 }
 
-TEST_F(ScanTaskPlanningTest, WeightUsesDeletionVectorContentSize) {
+TEST(ScanTaskPlanningTest, WeightUsesDeletionVectorContentSize) {
   auto task = MakeTask(MakeDataFile("file", 10),
                        {MakeDeleteFile(1000, /*content_size=*/40, /*puffin=*/true)});
   ICEBERG_UNWRAP_OR_FAIL(auto weight, TaskGroupWeight(*task, 0));
@@ -236,28 +190,25 @@ TEST_F(ScanTaskPlanningTest, WeightUsesDeletionVectorContentSize) {
   EXPECT_THAT(weight, Eq(50));
 }
 
-TEST_F(ScanTaskPlanningTest, WeightRejectsCostOverflow) {
+TEST(ScanTaskPlanningTest, WeightRejectsCostOverflow) {
   const int64_t kMax = std::numeric_limits<int64_t>::max();
   auto task = MakeTask(MakeDataFile("file", kMax), {MakeDeleteFile(kMax)});
   EXPECT_THAT(TaskGroupWeight(*task, 0), IsError(ErrorKind::kInvalid));
 }
 
-TEST_F(ScanTaskPlanningTest, NoPolicyKeepsLargeTaskWhole) {
-  auto task = MakeTask(MakeDataFile("file", 1000));
+TEST(ScanTaskPlanningTest, ParquetSplitsWithoutBundle) {
+  auto task = MakeTask(MakeDataFile("file", 250));
   ICEBERG_UNWRAP_OR_FAIL(auto groups, PlanAll({task}, Options(100)));
-  ASSERT_THAT(groups.size(), Eq(1));
-  ASSERT_THAT(groups[0]->tasks().size(), Eq(1));
-  EXPECT_THAT(groups[0]->tasks()[0], Eq(task));
-  EXPECT_FALSE(groups[0]->tasks()[0]->is_split());
+  ASSERT_THAT(groups.size(), Eq(3));
+  EXPECT_THAT(RangesOf(*groups[0]), ElementsAre(std::pair<int64_t, int64_t>{0, 100}));
+  EXPECT_THAT(RangesOf(*groups[1]), ElementsAre(std::pair<int64_t, int64_t>{100, 100}));
+  EXPECT_THAT(RangesOf(*groups[2]), ElementsAre(std::pair<int64_t, int64_t>{200, 50}));
 }
 
-TEST_F(ScanTaskPlanningTest, UnsplittableFormatKeepsLargeTaskWhole) {
-  auto avro = MakeDataFile("avro-file", 1000);
+TEST(ScanTaskPlanningTest, UnsplittableFormatKeepsLargeTaskWhole) {
+  auto avro = MakeDataFile("avro-file", 1000, {100, 500});
   avro->file_format = FileFormatType::kAvro;
   auto task = MakeTask(std::move(avro));
-  ScopedSplitPolicy scoped(
-      FileFormatType::kParquet,
-      std::make_unique<CountingSplitPolicy>(std::vector<int64_t>{100, 500}));
   ICEBERG_UNWRAP_OR_FAIL(auto groups, PlanAll({task}, Options(100)));
   ASSERT_THAT(groups.size(), Eq(1));
   ASSERT_THAT(groups[0]->tasks().size(), Eq(1));
@@ -265,23 +216,15 @@ TEST_F(ScanTaskPlanningTest, UnsplittableFormatKeepsLargeTaskWhole) {
   EXPECT_FALSE(groups[0]->tasks()[0]->is_split());
 }
 
-TEST_F(ScanTaskPlanningTest, SmallTaskSkipsPolicy) {
-  auto policy = std::make_unique<CountingSplitPolicy>(std::vector<int64_t>{});
-  const CountingSplitPolicy* policy_view = policy.get();
-  ScopedSplitPolicy scoped(FileFormatType::kParquet, std::move(policy));
-
-  auto small = MakeTask(MakeDataFile("small", 500));
+TEST(ScanTaskPlanningTest, SmallParquetTaskStaysWhole) {
+  auto small = MakeTask(MakeDataFile("small", 500, {100, 200}));
   ICEBERG_UNWRAP_OR_FAIL(auto groups, PlanAll({small}, Options(1000)));
   ASSERT_THAT(groups.size(), Eq(1));
-  EXPECT_THAT(policy_view->calls(), Eq(0));
+  EXPECT_THAT(groups[0]->tasks(), ElementsAre(small));
 }
 
-TEST_F(ScanTaskPlanningTest, SplitCoversFileExactlyAndCoalescesTowardTarget) {
-  auto policy =
-      std::make_unique<CountingSplitPolicy>(std::vector<int64_t>{100, 250, 300});
-  ScopedSplitPolicy scoped(FileFormatType::kParquet, std::move(policy));
-
-  auto file = MakeDataFile("file", 1000);
+TEST(ScanTaskPlanningTest, SplitCoversFileExactlyAndCoalescesTowardTarget) {
+  auto file = MakeDataFile("file", 1000, {100, 250, 300});
   file->record_count = 100;
   auto deletes = std::vector<std::shared_ptr<DataFile>>{MakeDeleteFile(7)};
   const auto residual = Expressions::GreaterThan("id", Literal::Int(1));
@@ -307,12 +250,8 @@ TEST_F(ScanTaskPlanningTest, SplitCoversFileExactlyAndCoalescesTowardTarget) {
               Eq(100));
 }
 
-TEST_F(ScanTaskPlanningTest, BoundariesBelowTargetKeepFileWhole) {
-  ScopedSplitPolicy scoped(
-      FileFormatType::kParquet,
-      std::make_unique<CountingSplitPolicy>(std::vector<int64_t>{10}));
-
-  auto task = MakeTask(MakeDataFile("file", 1000));
+TEST(ScanTaskPlanningTest, BoundariesBelowTargetKeepFileWhole) {
+  auto task = MakeTask(MakeDataFile("file", 1000, {10}));
   ICEBERG_UNWRAP_OR_FAIL(auto groups, PlanAll({task}, Options(100)));
   ASSERT_THAT(groups.size(), Eq(1));
   ASSERT_THAT(groups[0]->tasks().size(), Eq(1));
@@ -320,48 +259,55 @@ TEST_F(ScanTaskPlanningTest, BoundariesBelowTargetKeepFileWhole) {
   EXPECT_FALSE(task->is_split());
 }
 
-TEST_F(ScanTaskPlanningTest, MixedFormatTasksShareOneGroup) {
+TEST(ScanTaskPlanningTest, FixedSizeTailStaysWithinInt64FileRange) {
+  constexpr int64_t kFileSize = std::numeric_limits<int64_t>::max();
+  constexpr int64_t kTarget = kFileSize / 2 + 1;
+  auto task = MakeTask(MakeDataFile("file", kFileSize));
+  ICEBERG_UNWRAP_OR_FAIL(auto groups, PlanAll({task}, Options(kTarget, /*lookback=*/1)));
+  ASSERT_THAT(groups.size(), Eq(2));
+  EXPECT_THAT(RangesOf(*groups[0]), ElementsAre(std::pair<int64_t, int64_t>{0, kTarget}));
+  EXPECT_THAT(RangesOf(*groups[1]),
+              ElementsAre(std::pair<int64_t, int64_t>{kTarget, kFileSize - kTarget}));
+}
+
+TEST(ScanTaskPlanningTest, MixedFormatTasksShareOneGroup) {
   auto avro_file = MakeDataFile("avro-file", 400);
   avro_file->file_format = FileFormatType::kAvro;
   auto avro = MakeTask(std::move(avro_file));
   auto parquet = MakeTask(MakeDataFile("parquet-file", 500));
 
-  // No split policy is registered: both files stay whole and pack together.
   ICEBERG_UNWRAP_OR_FAIL(auto groups, PlanAll({avro, parquet}, Options(1000)));
   ASSERT_THAT(groups.size(), Eq(1));
   EXPECT_THAT(groups[0]->tasks(), ElementsAre(avro, parquet));
 }
 
-TEST_F(ScanTaskPlanningTest, EmptyFileStaysWhole) {
+TEST(ScanTaskPlanningTest, EmptyFileStaysWhole) {
   auto task = MakeTask(MakeDataFile("empty", 0));
   ICEBERG_UNWRAP_OR_FAIL(auto groups, PlanAll({task}, Options(100)));
   ASSERT_THAT(groups.size(), Eq(1));
   EXPECT_THAT(groups[0]->tasks(), ElementsAre(task));
 }
 
-TEST_F(ScanTaskPlanningTest, AlreadySplitTaskPassesThrough) {
-  ScopedSplitPolicy scoped(
-      FileFormatType::kParquet,
-      std::make_unique<CountingSplitPolicy>(std::vector<int64_t>{100, 500}));
-
-  ICEBERG_UNWRAP_OR_FAIL(auto split,
-                         FileScanTask::MakeSplit(MakeDataFile("file", 1000), 100, 50));
+TEST(ScanTaskPlanningTest, AlreadySplitTaskPassesThrough) {
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto split,
+      FileScanTask::MakeSplit(MakeDataFile("file", 1000, {100, 500}), 100, 50));
   ICEBERG_UNWRAP_OR_FAIL(auto groups, PlanAll({split}, Options(10)));
   ASSERT_THAT(groups.size(), Eq(1));
   EXPECT_THAT(groups[0]->tasks(), ElementsAre(split));
 }
 
-TEST_F(ScanTaskPlanningTest, PackingFillsFirstGroupThatFits) {
-  auto a = MakeTask(MakeDataFile("a", 100));
-  auto b = MakeTask(MakeDataFile("b", 40));
-  auto c = MakeTask(MakeDataFile("c", 40));
+TEST(ScanTaskPlanningTest, PackingFillsFirstGroupThatFits) {
+  auto a = MakeTask(MakeDataFile("a", 60));
+  auto b = MakeTask(MakeDataFile("b", 70));
+  auto c = MakeTask(MakeDataFile("c", 20));
   ICEBERG_UNWRAP_OR_FAIL(auto groups, PlanAll({a, b, c}, Options(100)));
   ASSERT_THAT(groups.size(), Eq(2));
-  EXPECT_THAT(groups[0]->tasks(), ElementsAre(a));
-  EXPECT_THAT(groups[1]->tasks(), ElementsAre(b, c));
+  EXPECT_THAT(groups[0]->tasks(), ElementsAre(a, c));
+  EXPECT_THAT(groups[1]->tasks(), ElementsAre(b));
 }
 
-TEST_F(ScanTaskPlanningTest, PackingClosesLargestOpenGroupFirst) {
+TEST(ScanTaskPlanningTest, PackingClosesLargestOpenGroupFirst) {
   // With lookback 2, opening a third group closes the largest open group.
   auto a = MakeTask(MakeDataFile("a", 100));
   auto b = MakeTask(MakeDataFile("b", 60));
@@ -373,8 +319,8 @@ TEST_F(ScanTaskPlanningTest, PackingClosesLargestOpenGroupFirst) {
   EXPECT_THAT(groups[2]->tasks(), ElementsAre(c));
 }
 
-TEST_F(ScanTaskPlanningTest, OversizedTaskFormsSingletonGroup) {
-  auto big = MakeTask(MakeDataFile("big", 1000));
+TEST(ScanTaskPlanningTest, OversizedTaskFormsSingletonGroup) {
+  auto big = MakeTask(MakeDataFile("big", 80), {MakeDeleteFile(30)});
   auto small = MakeTask(MakeDataFile("small", 20));
   ICEBERG_UNWRAP_OR_FAIL(auto groups,
                          PlanAll({big, small}, Options(100, /*lookback=*/1)));
@@ -383,7 +329,7 @@ TEST_F(ScanTaskPlanningTest, OversizedTaskFormsSingletonGroup) {
   EXPECT_THAT(groups[1]->tasks(), ElementsAre(small));
 }
 
-TEST_F(ScanTaskPlanningTest, GroupHoldsAtMost1024Tasks) {
+TEST(ScanTaskPlanningTest, GroupHoldsAtMost1024Tasks) {
   std::vector<std::shared_ptr<FileScanTask>> tasks;
   tasks.reserve(1025);
   for (int i = 0; i < 1025; ++i) {
@@ -395,7 +341,7 @@ TEST_F(ScanTaskPlanningTest, GroupHoldsAtMost1024Tasks) {
   EXPECT_THAT(groups[1]->tasks().size(), Eq(1));
 }
 
-TEST_F(ScanTaskPlanningTest, GroupSumsTaskMetrics) {
+TEST(ScanTaskPlanningTest, GroupSumsTaskMetrics) {
   auto first = MakeTask(MakeDataFile("first", 30));
   auto second = MakeTask(MakeDataFile("second", 20, {10}));
   ICEBERG_UNWRAP_OR_FAIL(auto groups, PlanAll({first, second}, Options(100)));
@@ -408,45 +354,43 @@ TEST_F(ScanTaskPlanningTest, GroupSumsTaskMetrics) {
   EXPECT_THAT(group.estimated_row_count(), Eq(20));
 }
 
-TEST_F(ScanTaskPlanningTest, CostOverflowSurfacesPlanningError) {
+TEST(ScanTaskPlanningTest, CostOverflowSurfacesPlanningError) {
   const int64_t kMax = std::numeric_limits<int64_t>::max();
   auto task = MakeTask(MakeDataFile("file", kMax), {MakeDeleteFile(kMax)});
   ICEBERG_UNWRAP_OR_FAIL(auto stream,
-                         PlanTaskGroupStream(TaskStream({task}), Options(100), nullptr));
+                         PlanTaskGroupStream(TaskStream({task}), Options(100)));
   auto group = stream->Next();
   ASSERT_FALSE(group.has_value());
   EXPECT_THAT(group, IsError(ErrorKind::kInvalid));
 }
 
-TEST_F(ScanTaskPlanningTest, EmptyTaskStreamProducesNoGroups) {
-  ICEBERG_UNWRAP_OR_FAIL(auto stream,
-                         PlanTaskGroupStream(TaskStream({}), Options(100), nullptr));
+TEST(ScanTaskPlanningTest, EmptyTaskStreamProducesNoGroups) {
+  ICEBERG_UNWRAP_OR_FAIL(auto stream, PlanTaskGroupStream(TaskStream({}), Options(100)));
   ICEBERG_UNWRAP_OR_FAIL(auto group, stream->Next());
   EXPECT_FALSE(group.has_value());
 }
 
-TEST_F(ScanTaskPlanningTest, PlanRejectsInvalidOptions) {
+TEST(ScanTaskPlanningTest, PlanRejectsInvalidOptions) {
   auto tasks = TaskStream({});
-  EXPECT_THAT(PlanTaskGroupStream(std::move(tasks), Options(0), nullptr),
+  EXPECT_THAT(PlanTaskGroupStream(std::move(tasks), Options(0)),
+              IsError(ErrorKind::kInvalid));
+
+  tasks = TaskStream({});
+  EXPECT_THAT(PlanTaskGroupStream(std::move(tasks), Options(100, /*lookback=*/0)),
               IsError(ErrorKind::kInvalid));
 
   tasks = TaskStream({});
   EXPECT_THAT(
-      PlanTaskGroupStream(std::move(tasks), Options(100, /*lookback=*/0), nullptr),
+      PlanTaskGroupStream(std::move(tasks), Options(100, 10, /*open_file_cost=*/-1)),
       IsError(ErrorKind::kInvalid));
-
-  tasks = TaskStream({});
-  EXPECT_THAT(PlanTaskGroupStream(std::move(tasks),
-                                  Options(100, 10, /*open_file_cost=*/-1), nullptr),
-              IsError(ErrorKind::kInvalid));
 }
 
-TEST_F(ScanTaskPlanningTest, StreamStopsEarlyWithoutConsumingAllGroups) {
+TEST(ScanTaskPlanningTest, StreamStopsEarlyWithoutConsumingAllGroups) {
   auto a = MakeTask(MakeDataFile("a", 100));
   auto b = MakeTask(MakeDataFile("b", 60));
   auto c = MakeTask(MakeDataFile("c", 60));
-  ICEBERG_UNWRAP_OR_FAIL(
-      auto stream, PlanTaskGroupStream(TaskStream({a, b, c}), Options(100, 2), nullptr));
+  ICEBERG_UNWRAP_OR_FAIL(auto stream,
+                         PlanTaskGroupStream(TaskStream({a, b, c}), Options(100, 2)));
   {
     ICEBERG_UNWRAP_OR_FAIL(auto group, stream->Next());
     ASSERT_TRUE(group.has_value());
