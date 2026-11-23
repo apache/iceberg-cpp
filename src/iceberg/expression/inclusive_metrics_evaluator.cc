@@ -19,7 +19,7 @@
 
 #include "iceberg/expression/inclusive_metrics_evaluator.h"
 
-#include <ranges>
+#include <algorithm>
 #include <utility>
 
 #include "iceberg/expression/binder.h"
@@ -257,31 +257,19 @@ class InclusiveMetricsVisitor : public BoundVisitor<bool> {
     }
 
     ICEBERG_ASSIGN_OR_RAISE(auto lower, LowerBound(expr));
-    if (!lower.has_value() || lower->IsNull() || lower->IsNaN()) {
+    if (lower.has_value() && lower->IsNaN()) {
       // NaN indicates unreliable bounds. See the InclusiveMetricsEvaluator docs for more.
       return kRowsMightMatch;
     }
-    auto literals_view = literal_set | std::views::filter([&](const Literal& lit) {
-                           return lower.value() <= lit;
-                         });
-    // if all values are less than lower bound, rows cannot match
-    if (literals_view.empty()) {
-      return kRowCannotMatch;
-    }
 
     ICEBERG_ASSIGN_OR_RAISE(auto upper, UpperBound(expr));
-    if (!upper.has_value() || upper->IsNull()) {
-      return kRowsMightMatch;
-    }
-    auto filtered_view = literals_view | std::views::filter([&](const Literal& lit) {
-                           return upper.value() >= lit;
-                         });
-    // if remaining values are greater than upper bound, rows cannot match
-    if (filtered_view.empty()) {
-      return kRowCannotMatch;
-    }
-
-    return kRowsMightMatch;
+    const bool has_lower = lower.has_value() && !lower->IsNull();
+    const bool has_upper = upper.has_value() && !upper->IsNull() && !upper->IsNaN();
+    return std::ranges::any_of(literal_set, [&](const Literal& lit) {
+      // Bounds exclude NaN values and may be missing on either side.
+      return lit.IsNaN() ||
+             ((!has_lower || *lower <= lit) && (!has_upper || lit <= *upper));
+    });
   }
 
   Result<bool> NotIn(const std::shared_ptr<Bound>& expr,

@@ -909,6 +909,23 @@ TEST_F(InclusiveMetricsEvaluatorMigratedTest, IntegerInTest) {
   RunTest(Expressions::In("id", ids), kRowsMightMatch, file1_);
 }
 
+TEST_F(InclusiveMetricsEvaluatorMigratedTest, InWithMissingLowerBound) {
+  auto file = std::make_shared<DataFile>();
+  file->record_count = 1;
+  file->upper_bounds = {{1, Literal::Long(50).Serialize().value()}};
+  RunTest(Expressions::In("id", {Literal::Long(51), Literal::Long(70)}), kRowCannotMatch,
+          file);
+  RunTest(Expressions::In("id", {Literal::Long(50), Literal::Long(70)}), kRowsMightMatch,
+          file);
+}
+
+TEST_F(InclusiveMetricsEvaluatorMigratedTest, InWithNaNAndMissingLowerBound) {
+  file1_->upper_bounds[8] = Literal::Float(50.0F).Serialize().value();
+  RunTest(
+      Expressions::In("some_nans", {Literal::Float(51.0F), Literal::Float(kFloatNan)}),
+      kRowsMightMatch, file1_);
+}
+
 TEST_F(InclusiveMetricsEvaluatorMigratedTest, IntegerNotInTest) {
   RunTest(Expressions::NotIn(
               "id", {Literal::Long(kIntMinValue - 25), Literal::Long(kIntMinValue - 24)}),
