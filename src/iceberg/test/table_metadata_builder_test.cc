@@ -18,6 +18,7 @@
  */
 
 #include <algorithm>
+#include <limits>
 #include <memory>
 #include <ranges>
 #include <string>
@@ -94,6 +95,19 @@ std::unique_ptr<TableMetadata> CreateBaseMetadata(
   return metadata;
 }
 
+std::shared_ptr<Snapshot> CreateRootManifestSnapshot() {
+  return std::make_shared<Snapshot>(Snapshot{
+      .snapshot_id = 1,
+      .sequence_number = 1,
+      .timestamp_ms = TimePointMsFromUnixMs(1000),
+      .summary = {{"operation", "append"}},
+      .schema_id = 0,
+      .first_row_id = 0,
+      .added_rows = 10,
+      .root_manifest = "metadata/root.avro",
+  });
+}
+
 }  // namespace
 
 // test for TableMetadata
@@ -161,10 +175,14 @@ TEST_P(TableMetadataFormatVersionTest, MakeWithProperty) {
   EXPECT_THAT(metadata->properties.configs(),
               ::testing::UnorderedElementsAre(::testing::Pair("owner", "alice")));
   EXPECT_EQ(properties.at("format-version"), std::to_string(version));
+  EXPECT_EQ(metadata->next_row_id, TableMetadata::kInitialRowId);
+  EXPECT_TRUE(metadata->snapshots.empty());
+  EXPECT_FALSE(metadata->HasRootManifest());
+  EXPECT_FALSE(metadata->table_uuid.empty());
 }
 
 INSTANTIATE_TEST_SUITE_P(SupportedVersions, TableMetadataFormatVersionTest,
-                         ::testing::Values(1, 2, 3),
+                         ::testing::Values(1, 2, 3, 4),
                          [](const ::testing::TestParamInfo<int>& info) {
                            return "V" + std::to_string(info.param);
                          });
@@ -181,7 +199,7 @@ TEST_P(TableMetadataInvalidFormatVersionTest, MakeRejectsProperty) {
 }
 
 INSTANTIATE_TEST_SUITE_P(UnsupportedVersions, TableMetadataInvalidFormatVersionTest,
-                         ::testing::Values(0, -1, 4, 257));
+                         ::testing::Values(0, -1, 5, 257));
 
 struct InvalidFormatVersionString {
   std::string name;
@@ -542,7 +560,7 @@ TEST(TableMetadataBuilderTest, UpgradeFormatVersion) {
 
   // Unsupported format version should fail
   builder = TableMetadataBuilder::BuildFromEmpty(3);
-  builder->UpgradeFormatVersion(4);
+  builder->UpgradeFormatVersion(5);
   EXPECT_THAT(builder->Build(),
               HasErrorMessage("Cannot upgrade table to unsupported format version"));
 
@@ -550,6 +568,301 @@ TEST(TableMetadataBuilderTest, UpgradeFormatVersion) {
   builder = TableMetadataBuilder::BuildFromEmpty(2);
   builder->UpgradeFormatVersion(1);
   EXPECT_THAT(builder->Build(), HasErrorMessage("Cannot downgrade"));
+}
+
+TEST(TableMetadataBuilderTest, UpgradeToV4PreservesLegacySnapshots) {
+  for (int8_t version : {1, 2, 3}) {
+    SCOPED_TRACE(version);
+    for (int64_t timestamp : {999, 1000}) {
+      SCOPED_TRACE(timestamp);
+      auto base = CreateBaseMetadata();
+      base->format_version = version;
+      auto parent = CreateRootManifestSnapshot();
+      parent->sequence_number = version == 1 ? 0 : 1;
+      parent->root_manifest.reset();
+      parent->manifest_list = "s3://bucket/table/metadata/parent.avro";
+      auto child = std::make_shared<Snapshot>(*parent);
+      child->snapshot_id = 2;
+      child->parent_snapshot_id = parent->snapshot_id;
+      child->sequence_number = version == 1 ? 0 : 2;
+      child->first_row_id = 10;
+      child->timestamp_ms = TimePointMsFromUnixMs(timestamp);
+      child->manifest_list = "s3://bucket/table/metadata/child.avro";
+      base->snapshots = {parent, child};
+      base->last_sequence_number = child->sequence_number;
+      base->current_snapshot_id = child->snapshot_id;
+      base->snapshot_log = {
+          {.timestamp_ms = parent->timestamp_ms, .snapshot_id = parent->snapshot_id},
+          {.timestamp_ms = child->timestamp_ms, .snapshot_id = child->snapshot_id}};
+      base->refs[std::string(SnapshotRef::kMainBranch)] =
+          std::make_shared<SnapshotRef>(SnapshotRef{.snapshot_id = child->snapshot_id,
+                                                    .retention = SnapshotRef::Branch{}});
+      base->next_row_id = 20;
+      auto builder = TableMetadataBuilder::BuildFrom(base.get());
+      builder->UpgradeFormatVersion(4);
+      ICEBERG_UNWRAP_OR_FAIL(auto upgraded, builder->Build());
+      EXPECT_EQ(upgraded->format_version, 4);
+      EXPECT_EQ(upgraded->next_row_id, 20);
+      EXPECT_EQ(upgraded->table_uuid, base->table_uuid);
+      EXPECT_EQ(upgraded->snapshot_log, base->snapshot_log);
+      ASSERT_EQ(upgraded->snapshots.size(), 2);
+      for (size_t i = 0; i < upgraded->snapshots.size(); ++i) {
+        EXPECT_EQ(upgraded->snapshots[i]->manifest_list,
+                  base->snapshots[i]->manifest_list);
+        EXPECT_EQ(upgraded->snapshots[i]->timestamp_ms, base->snapshots[i]->timestamp_ms);
+        EXPECT_FALSE(upgraded->snapshots[i]->root_manifest.has_value());
+      }
+      ASSERT_EQ(builder->changes().size(), 1);
+      EXPECT_EQ(builder->changes().front()->kind(),
+                TableUpdate::Kind::kUpgradeFormatVersion);
+      ICEBERG_UNWRAP_OR_FAIL(auto json, ToJson(*upgraded));
+      ICEBERG_UNWRAP_OR_FAIL(auto parsed, TableMetadataFromJson(json));
+      EXPECT_EQ(*parsed, *upgraded);
+      for (int64_t offset : {-1, 0, 1}) {
+        auto snapshot = CreateRootManifestSnapshot();
+        snapshot->snapshot_id = 3;
+        snapshot->parent_snapshot_id = child->snapshot_id;
+        snapshot->sequence_number = child->sequence_number + 1;
+        snapshot->first_row_id = 20;
+        snapshot->timestamp_ms = TimePointMsFromUnixMs(timestamp + offset);
+        auto append = TableMetadataBuilder::BuildFrom(parsed.get());
+        append->AddSnapshot(std::move(snapshot));
+        if (offset <= 0) {
+          auto result = append->Build();
+          EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
+          EXPECT_THAT(result, HasErrorMessage("timestamp"));
+        } else {
+          EXPECT_THAT(append->Build(), IsOk());
+        }
+      }
+      auto downgrade = TableMetadataBuilder::BuildFrom(upgraded.get());
+      downgrade->UpgradeFormatVersion(3);
+      EXPECT_THAT(downgrade->Build(), HasErrorMessage("Cannot downgrade"));
+    }
+  }
+}
+
+TEST(TableMetadataBuilderTest, AddLegacySnapshotsBeforeV4) {
+  for (int8_t version : {1, 2, 3}) {
+    SCOPED_TRACE(version);
+    auto metadata = CreateBaseMetadata();
+    metadata->format_version = version;
+    auto snapshot = CreateRootManifestSnapshot();
+    snapshot->root_manifest.reset();
+    snapshot->manifest_list.clear();
+    auto builder = TableMetadataBuilder::BuildFrom(metadata.get());
+    builder->AddSnapshot(snapshot);
+    ICEBERG_UNWRAP_OR_FAIL(auto updated, builder->Build());
+    EXPECT_THAT(ToJson(*updated), IsOk());
+  }
+}
+
+TEST(TableMetadataBuilderTest, V4SnapshotsRequireRootManifests) {
+  auto base = CreateBaseMetadata();
+  base->format_version = 4;
+  base->snapshots.push_back(CreateRootManifestSnapshot());
+  base->last_sequence_number = 1;
+  base->next_row_id = 10;
+  auto child = CreateRootManifestSnapshot();
+  child->snapshot_id = 2;
+  child->parent_snapshot_id = 1;
+  child->sequence_number = 2;
+  child->first_row_id = 10;
+  child->timestamp_ms = TimePointMsFromUnixMs(1001);
+  child->root_manifest.reset();
+  child->manifest_list = "legacy.avro";
+  auto builder = TableMetadataBuilder::BuildFrom(base.get());
+  builder->AddSnapshot(std::move(child));
+  EXPECT_THAT(builder->Build(),
+              HasErrorMessage("New v" + std::to_string(base->format_version) +
+                              " snapshots require root-manifest"));
+}
+
+TEST(TableMetadataBuilderTest,
+     V4StaleSequenceIsRetryableBeforeParentTimestampValidation) {
+  auto base = CreateBaseMetadata();
+  base->format_version = 4;
+  base->snapshots.push_back(CreateRootManifestSnapshot());
+  base->last_sequence_number = 1;
+  base->next_row_id = 10;
+  // A stale sequence must take retry precedence over an invalid parent timestamp.
+  for (int64_t timestamp : {999, 1000, 1001}) {
+    for (int64_t sequence : {1, 2}) {
+      SCOPED_TRACE(timestamp);
+      SCOPED_TRACE(sequence);
+      auto child = CreateRootManifestSnapshot();
+      child->snapshot_id = 2;
+      child->parent_snapshot_id = 1;
+      child->first_row_id = 10;
+      child->sequence_number = sequence;
+      child->timestamp_ms = TimePointMsFromUnixMs(timestamp);
+      auto builder = TableMetadataBuilder::BuildFrom(base.get());
+      builder->AddSnapshot(std::move(child));
+      auto result = builder->Build();
+      if (sequence == 2 && timestamp > 1000) {
+        ASSERT_THAT(result, IsOk());
+        EXPECT_EQ(result.value()->next_row_id, 20);
+      } else {
+        EXPECT_THAT(result, IsError(sequence == 1 ? ErrorKind::kRetryableValidationFailed
+                                                  : ErrorKind::kValidationFailed));
+        EXPECT_THAT(result,
+                    HasErrorMessage(sequence == 1 ? "sequence number" : "timestamp"));
+        EXPECT_TRUE(builder->changes().empty());
+      }
+    }
+  }
+}
+
+TEST(TableMetadataBuilderTest, RootSnapshotsRequireAlignedRowIdsBeforeMutation) {
+  for (int64_t first_row_id : {99, 100, 200}) {
+    SCOPED_TRACE(first_row_id);
+    auto base = CreateBaseMetadata();
+    base->format_version = 4;
+    base->next_row_id = 100;
+    auto snapshot = CreateRootManifestSnapshot();
+    snapshot->first_row_id = first_row_id;
+    auto builder = TableMetadataBuilder::BuildFrom(base.get());
+    const auto metadata_before = builder->current();
+    builder->AddSnapshot(std::move(snapshot));
+    auto result = builder->Build();
+    if (first_row_id == 100) {
+      ASSERT_THAT(result, IsOk());
+      EXPECT_EQ(result.value()->next_row_id, 110);
+    } else {
+      EXPECT_THAT(result, IsError(ErrorKind::kRetryableValidationFailed));
+      EXPECT_EQ(builder->current(), metadata_before);
+      EXPECT_TRUE(builder->changes().empty());
+    }
+  }
+}
+
+TEST(TableMetadataBuilderTest, RootSnapshotsCheckRowIdOverflowBeforeMutation) {
+  for (int64_t added_rows : {5, 6}) {
+    SCOPED_TRACE(added_rows);
+    auto base = CreateBaseMetadata();
+    base->format_version = 4;
+    base->next_row_id = std::numeric_limits<int64_t>::max() - 5;
+    auto snapshot = CreateRootManifestSnapshot();
+    snapshot->first_row_id = base->next_row_id;
+    snapshot->added_rows = added_rows;
+    auto builder = TableMetadataBuilder::BuildFrom(base.get());
+    const auto metadata_before = builder->current();
+    builder->AddSnapshot(std::move(snapshot));
+    auto result = builder->Build();
+    if (added_rows == 5) {
+      ASSERT_THAT(result, IsOk());
+      EXPECT_EQ(result.value()->next_row_id, std::numeric_limits<int64_t>::max());
+    } else {
+      EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
+      EXPECT_EQ(builder->current(), metadata_before);
+      EXPECT_TRUE(builder->changes().empty());
+    }
+  }
+}
+
+TEST(TableMetadataBuilderTest, ParentlessRootsCannotLowerSequenceNumbers) {
+  for (int64_t sequence : {4, 5, 6}) {
+    SCOPED_TRACE(sequence);
+    auto base = CreateBaseMetadata();
+    base->format_version = 4;
+    base->last_sequence_number = 5;
+    auto snapshot = CreateRootManifestSnapshot();
+    snapshot->sequence_number = sequence;
+    auto builder = TableMetadataBuilder::BuildFrom(base.get());
+    const auto metadata_before = builder->current();
+    builder->AddSnapshot(std::move(snapshot));
+    auto result = builder->Build();
+    if (sequence == 6) {
+      ASSERT_THAT(result, IsOk());
+      EXPECT_EQ(result.value()->last_sequence_number, 6);
+    } else {
+      EXPECT_THAT(result, IsError(ErrorKind::kRetryableValidationFailed));
+      EXPECT_EQ(builder->current(), metadata_before);
+      EXPECT_TRUE(builder->changes().empty());
+    }
+  }
+}
+
+TEST(TableMetadataBuilderTest, RootSnapshotsPreventSchemaSpecPruningInEitherOrder) {
+  for (bool remove_schema : {false, true}) {
+    for (bool root_first : {false, true}) {
+      SCOPED_TRACE(remove_schema);
+      SCOPED_TRACE(root_first);
+      auto base = CreateBaseMetadata();
+      base->format_version = 4;
+      ICEBERG_UNWRAP_OR_FAIL(
+          auto schema, Schema::Make(std::vector<SchemaField>{SchemaField::MakeRequired(
+                                        1, "old", int32())},
+                                    1, std::vector<int32_t>{}));
+      base->schemas.push_back(std::move(schema));
+      ICEBERG_UNWRAP_OR_FAIL(auto spec, PartitionSpec::Make(1, {}));
+      base->partition_specs.push_back(std::move(spec));
+      auto builder = TableMetadataBuilder::BuildFrom(base.get());
+      if (root_first) {
+        builder->AddSnapshot(CreateRootManifestSnapshot());
+      }
+      if (remove_schema) {
+        builder->RemoveSchemas({1});
+      } else {
+        builder->RemovePartitionSpecs({1});
+      }
+      if (!root_first) {
+        builder->AddSnapshot(CreateRootManifestSnapshot());
+      }
+      EXPECT_THAT(builder->Build(), IsError(ErrorKind::kNotSupported));
+    }
+  }
+}
+
+TEST(TableMetadataBuilderTest, V4RejectsIdentifierFieldsWithoutMigration) {
+  for (bool historical_schema : {false, true}) {
+    auto metadata = CreateBaseMetadata();
+    metadata->format_version = 4;
+    ICEBERG_UNWRAP_OR_FAIL(
+        auto schema, Schema::Make({SchemaField::MakeRequired(1, "id", int64())},
+                                  historical_schema ? 1 : 0, std::vector<int32_t>{1}));
+    if (historical_schema) {
+      metadata->schemas.push_back(std::move(schema));
+    } else {
+      metadata->schemas[0] = std::move(schema);
+    }
+    auto builder = TableMetadataBuilder::BuildFrom(metadata.get());
+    EXPECT_THAT(builder->Build(), IsError(ErrorKind::kNotSupported));
+    EXPECT_EQ(metadata->schemas.back()->IdentifierFieldIds(), std::vector<int32_t>{1});
+    if (!historical_schema) {
+      metadata->format_version = 3;
+      builder = TableMetadataBuilder::BuildFrom(metadata.get());
+      builder->UpgradeFormatVersion(4);
+      EXPECT_THAT(builder->Build(), HasErrorMessage("primary-key constraint migration"));
+    }
+  }
+}
+
+TEST(TableMetadataBuilderTest, UpgradeToV4BeforeSelectingCurrentSchema) {
+  auto metadata = CreateBaseMetadata();
+  metadata->format_version = 3;
+  metadata->current_schema_id = -1;
+  auto builder = TableMetadataBuilder::BuildFrom(metadata.get());
+  builder->AddSchema(CreateTestSchema()).UpgradeFormatVersion(4).SetCurrentSchema(0);
+  ICEBERG_UNWRAP_OR_FAIL(auto upgraded, builder->Build());
+  EXPECT_EQ(upgraded->format_version, 4);
+  EXPECT_EQ(upgraded->current_schema_id, 0);
+}
+
+TEST(TableMetadataBuilderTest, V4RejectsRelativeLocation) {
+  auto metadata = CreateBaseMetadata();
+  metadata->format_version = 4;
+  auto builder = TableMetadataBuilder::BuildFrom(metadata.get());
+  builder->SetLocation("relative/table");
+  EXPECT_THAT(builder->Build(), HasErrorMessage("location must be absolute"));
+}
+
+TEST(TableMetadataBuilderTest, V4RequiresLocationUntilSupported) {
+  auto metadata = CreateBaseMetadata();
+  metadata->format_version = 4;
+  metadata->location.clear();
+  auto builder = TableMetadataBuilder::BuildFrom(metadata.get());
+  EXPECT_THAT(builder->Build(), IsError(ErrorKind::kNotSupported));
 }
 
 // Test AddSortOrder
@@ -1402,8 +1715,10 @@ TEST(TableMetadataBuilderTest, RemoveSnapshotRef) {
   auto builder = TableMetadataBuilder::BuildFrom(base.get());
 
   // Add multiple snapshots
-  builder->AddSnapshot(std::make_shared<Snapshot>(Snapshot{.snapshot_id = 1}));
-  builder->AddSnapshot(std::make_shared<Snapshot>(Snapshot{.snapshot_id = 2}));
+  builder->AddSnapshot(std::make_shared<Snapshot>(
+      Snapshot{.snapshot_id = 1, .manifest_list = "s3://bucket/manifest-list-1.avro"}));
+  builder->AddSnapshot(std::make_shared<Snapshot>(
+      Snapshot{.snapshot_id = 2, .manifest_list = "s3://bucket/manifest-list-2.avro"}));
 
   // Add multiple refs
   ICEBERG_UNWRAP_OR_FAIL(auto ref1, SnapshotRef::MakeBranch(1));
@@ -1426,7 +1741,8 @@ TEST(TableMetadataBuilderTest, SetRefRejectsTagForMainBranch) {
   auto base = CreateBaseMetadata();
   auto builder = TableMetadataBuilder::BuildFrom(base.get());
 
-  builder->AddSnapshot(std::make_shared<Snapshot>(Snapshot{.snapshot_id = 1}));
+  builder->AddSnapshot(std::make_shared<Snapshot>(
+      Snapshot{.snapshot_id = 1, .manifest_list = "s3://bucket/manifest-list-1.avro"}));
   ICEBERG_UNWRAP_OR_FAIL(auto main_tag, SnapshotRef::MakeTag(1));
 
   builder->SetRef(std::string(SnapshotRef::kMainBranch), std::move(main_tag));
@@ -1442,7 +1758,10 @@ TEST(TableMetadataBuilderTest, SetMainRefToAddedSnapshotUsesSnapshotTimestampFor
 
   auto snapshot_time = TimePointMsFromUnixMs(123456789);
   builder->AddSnapshot(std::make_shared<Snapshot>(
-      Snapshot{.snapshot_id = 1, .sequence_number = 1, .timestamp_ms = snapshot_time}));
+      Snapshot{.snapshot_id = 1,
+               .sequence_number = 1,
+               .timestamp_ms = snapshot_time,
+               .manifest_list = "s3://bucket/manifest-list-1.avro"}));
   ICEBERG_UNWRAP_OR_FAIL(auto main_branch, SnapshotRef::MakeBranch(1));
 
   builder->SetRef(std::string(SnapshotRef::kMainBranch), std::move(main_branch));
@@ -1460,8 +1779,10 @@ TEST(TableMetadataBuilderTest, RemoveSnapshot) {
   auto builder = TableMetadataBuilder::BuildFrom(base.get());
 
   // Add multiple snapshots
-  builder->AddSnapshot(std::make_shared<Snapshot>(Snapshot{.snapshot_id = 1}));
-  builder->AddSnapshot(std::make_shared<Snapshot>(Snapshot{.snapshot_id = 2}));
+  builder->AddSnapshot(std::make_shared<Snapshot>(
+      Snapshot{.snapshot_id = 1, .manifest_list = "s3://bucket/manifest-list-1.avro"}));
+  builder->AddSnapshot(std::make_shared<Snapshot>(
+      Snapshot{.snapshot_id = 2, .manifest_list = "s3://bucket/manifest-list-2.avro"}));
 
   ICEBERG_UNWRAP_OR_FAIL(auto metadata, builder->Build());
   ASSERT_EQ(metadata->snapshots.size(), 2);
@@ -1480,8 +1801,10 @@ TEST(TableMetadataBuilderTest, RemoveSnapshotNotExist) {
   auto builder = TableMetadataBuilder::BuildFrom(base.get());
 
   // Add multiple snapshots
-  builder->AddSnapshot(std::make_shared<Snapshot>(Snapshot{.snapshot_id = 1}));
-  builder->AddSnapshot(std::make_shared<Snapshot>(Snapshot{.snapshot_id = 2}));
+  builder->AddSnapshot(std::make_shared<Snapshot>(
+      Snapshot{.snapshot_id = 1, .manifest_list = "s3://bucket/manifest-list-1.avro"}));
+  builder->AddSnapshot(std::make_shared<Snapshot>(
+      Snapshot{.snapshot_id = 2, .manifest_list = "s3://bucket/manifest-list-2.avro"}));
 
   ICEBERG_UNWRAP_OR_FAIL(auto metadata, builder->Build());
   ASSERT_EQ(metadata->snapshots.size(), 2);
