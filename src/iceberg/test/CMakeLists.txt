@@ -197,6 +197,13 @@ add_iceberg_test(util_test
                  uuid_test.cc
                  visit_type_test.cc)
 
+# Parallel scan reader tests use fake readers and do not need the bundle.
+add_iceberg_test(parallel_scan_test
+                 USE_DATA
+                 SOURCES
+                 arrow_batch_sizer_test.cc
+                 parallel_scan_reader_test.cc)
+
 add_iceberg_test(puffin_test
                  USE_DATA
                  SOURCES

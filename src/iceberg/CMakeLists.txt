@@ -251,11 +251,13 @@ if(MSVC_TOOLCHAIN)
 endif()
 
 set(ICEBERG_DATA_SOURCES
+    data/arrow_batch_sizer.cc
     data/data_writer.cc
     data/delete_filter.cc
     data/delete_loader.cc
     data/equality_delete_writer.cc
     data/file_scan_task_reader.cc
+    data/parallel_scan_reader.cc
     data/position_delete_writer.cc
     data/writer.cc)
 
@@ -264,18 +266,21 @@ set(ICEBERG_DATA_SHARED_BUILD_INTERFACE_LIBS)
 set(ICEBERG_DATA_STATIC_INSTALL_INTERFACE_LIBS)
 set(ICEBERG_DATA_SHARED_INSTALL_INTERFACE_LIBS)
 
+# The parallel scan reader starts worker threads.
 list(APPEND ICEBERG_DATA_STATIC_BUILD_INTERFACE_LIBS
-     "$<IF:$<TARGET_EXISTS:iceberg_static>,iceberg_static,iceberg_shared>")
+     "$<IF:$<TARGET_EXISTS:iceberg_static>,iceberg_static,iceberg_shared>"
+     Threads::Threads)
 list(APPEND ICEBERG_DATA_SHARED_BUILD_INTERFACE_LIBS
-     "$<IF:$<TARGET_EXISTS:iceberg_shared>,iceberg_shared,iceberg_static>")
+     "$<IF:$<TARGET_EXISTS:iceberg_shared>,iceberg_shared,iceberg_static>"
+     Threads::Threads)
 list(APPEND
      ICEBERG_DATA_STATIC_INSTALL_INTERFACE_LIBS
      "$<IF:$<TARGET_EXISTS:iceberg::iceberg_static>,iceberg::iceberg_static,iceberg::iceberg_shared>"
-)
+     Threads::Threads)
 list(APPEND
      ICEBERG_DATA_SHARED_INSTALL_INTERFACE_LIBS
      "$<IF:$<TARGET_EXISTS:iceberg::iceberg_shared>,iceberg::iceberg_shared,iceberg::iceberg_static>"
-)
+     Threads::Threads)
 
 add_iceberg_lib(iceberg_data
                 SOURCES
