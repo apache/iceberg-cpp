@@ -38,6 +38,7 @@
 #include "iceberg/data/file_scan_task_reader.h"
 #include "iceberg/data_table_scan.h"
 #include "iceberg/expression/expressions.h"
+#include "iceberg/metadata_columns.h"
 #include "iceberg/parquet/parquet_register.h"
 #include "iceberg/schema_internal.h"
 #include "iceberg/snapshot.h"
@@ -826,6 +827,65 @@ TEST_P(TableScanTest, PlanFilesWithDeleteFiles) {
   ICEBERG_UNWRAP_OR_FAIL(auto stream, scan->PlanFilesStream());
   ICEBERG_UNWRAP_OR_FAIL(auto streamed_tasks, stream->ToVector());
   verify_tasks(streamed_tasks);
+}
+
+TEST_P(TableScanTest, PlanFilesValidatesReferencedDeletePartition) {
+  const int version = GetParam();
+  if (version < 2) GTEST_SKIP() << "Requires row-level deletes";
+
+  auto check = [&](const PartitionValues& data_partition,
+                   const PartitionValues& delete_partition,
+                   const std::shared_ptr<PartitionSpec>& delete_spec,
+                   std::string_view error) {
+    constexpr int64_t snapshot_id = 1000;
+    auto data =
+        MakeDataFile("/data.parquet", data_partition, partitioned_spec_->spec_id());
+    auto deletion = MakePositionDeleteFile("/deletion", delete_partition,
+                                           delete_spec->spec_id(), data->file_path);
+    if (version >= 3) {
+      deletion->file_format = FileFormatType::kPuffin;
+      deletion->content_offset = 4;
+      deletion->content_size_in_bytes = 6;
+    } else {
+      ICEBERG_UNWRAP_OR_FAIL(auto path, Literal::String(data->file_path).Serialize());
+      deletion->lower_bounds[MetadataColumns::kDeleteFilePathColumnId] = path;
+      deletion->upper_bounds[MetadataColumns::kDeleteFilePathColumnId] = path;
+    }
+    auto added = [&](auto file) {
+      return MakeEntry(ManifestStatus::kAdded, snapshot_id, 1, file);
+    };
+    auto manifest =
+        WriteDataManifest(version, snapshot_id, {added(data)}, partitioned_spec_);
+    auto deletes =
+        WriteDeleteManifest(version, snapshot_id, {added(deletion)}, delete_spec);
+    auto snapshot = std::make_shared<Snapshot>(Snapshot{
+        .snapshot_id = snapshot_id,
+        .sequence_number = 1,
+        .manifest_list = WriteManifestList(version, snapshot_id, 1, {manifest, deletes}),
+        .schema_id = schema_->schema_id()});
+    auto metadata =
+        ScanTestBase::MakeTableMetadata({snapshot}, snapshot_id, {}, delete_spec);
+    ICEBERG_UNWRAP_OR_FAIL(auto builder, MakeScanBuilder<DataTableScan>(metadata));
+    ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
+    auto planned = scan->PlanFiles();
+    if (error.empty()) {
+      ASSERT_TRUE(planned.has_value()) << planned.error().message;
+      ASSERT_EQ(planned->size(), 1U);
+      EXPECT_EQ(planned->front()->delete_files().size(), 1U);
+    } else {
+      ASSERT_FALSE(planned.has_value());
+      EXPECT_EQ(planned.error().kind, ErrorKind::kValidationFailed);
+      EXPECT_THAT(planned.error().message, testing::HasSubstr(std::string(error)));
+      EXPECT_THAT(planned.error().message, testing::HasSubstr(data->file_path));
+      EXPECT_THAT(planned.error().message, testing::HasSubstr(deletion->file_path));
+    }
+  };
+  PartitionValues zero(Literal::Int(0));
+  check(zero, PartitionValues(Literal::Int(1)), partitioned_spec_,
+        "Mismatched partition tuples");
+  check(zero, PartitionValues{}, unpartitioned_spec_, "Mismatched partition specs");
+  PartitionValues null_partition(Literal::Null(int32()));
+  check(null_partition, null_partition, partitioned_spec_, "");
 }
 
 TEST_P(TableScanTest, SchemaWithSelectedColumnsAndFilter) {
