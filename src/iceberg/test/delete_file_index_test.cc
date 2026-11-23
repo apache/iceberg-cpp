@@ -1135,12 +1135,18 @@ TEST_P(DeleteFileIndexTest, ReferencedDeleteMustMatchDataFilePartition) {
   data.partition = file_b_->partition;
   auto result = index->ForDataFile(1, data);
   EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
-  EXPECT_THAT(result, HasErrorMessage("Mismatched partition tuples"));
+  EXPECT_THAT(result, HasErrorMessage("Mismatched partition tuples ((0), (1))"));
   data.partition = file_a_->partition;
   data.partition_spec_id = unpartitioned_spec_->spec_id();
   result = index->ForDataFile(1, data);
   EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
   EXPECT_THAT(result, HasErrorMessage("Mismatched partition specs"));
+
+  data.partition_spec_id.reset();
+  result = index->ForDataFile(1, data);
+  EXPECT_THAT(result, IsError(ErrorKind::kInvalidArgument));
+  EXPECT_THAT(result, HasErrorMessage("Missing partition spec id from data file"));
+  EXPECT_THAT(result, HasErrorMessage(data.file_path));
 }
 
 TEST_P(DeleteFileIndexTest, TestInvalidDVSequenceNumber) {
