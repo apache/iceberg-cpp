@@ -22,6 +22,7 @@
 #include <limits>
 #include <mutex>
 #include <optional>
+#include <string_view>
 #include <vector>
 
 #include <arrow/buffer.h>
@@ -30,6 +31,7 @@
 #include <arrow/io/interfaces.h>
 #include <arrow/result.h>
 #include <arrow/status.h>
+#include <arrow/util/string.h>
 #include <arrow/util/uri.h>
 
 #include "iceberg/arrow/arrow_io_internal.h"
@@ -484,26 +486,26 @@ class ArrowOutputFile : public OutputFile {
 }  // namespace
 
 Result<std::string> ArrowFileSystemFileIO::ResolvePath(const std::string& file_location) {
-  const auto pos = file_location.find("://");
-  if (pos == std::string::npos) {
+  const std::string_view uri(file_location);
+  if (::arrow::internal::AsciiEqualsCaseInsensitive(uri.substr(0, 6), "file:/") &&
+      !uri.substr(6).starts_with('/')) {
+    ICEBERG_ARROW_ASSIGN_OR_RETURN(
+        auto path, arrow_fs_->PathFromUri("file:" + file_location.substr(5)));
+    return path;
+  }
+
+  const auto pos = uri.find("://");
+  if (pos == uri.npos) {
     return file_location;
   }
-
-  auto path = arrow_fs_->PathFromUri(file_location);
-  if (path.ok()) {
+  if (auto path = arrow_fs_->PathFromUri(file_location); path.ok()) {
     return std::move(path).ValueOrDie();
   }
-
-  // Foreign alias (s3a/s3n): validate via Arrow's parser, then percent-decode the
-  // scheme-less key (substring keeps a Windows drive letter's ':' that host() drops).
-  if (auto parsed = ::arrow::util::Uri::FromString(file_location); !parsed.ok()) {
-    const auto& status = parsed.status();
-    return ::iceberg::unexpected<Error>{
-        {.kind = ToErrorKind(status), .message = status.ToString()}};
-  }
-  std::string bucket_key = file_location.substr(pos + 3);
-  bucket_key = bucket_key.substr(0, bucket_key.find_first_of("?#"));
-  return ::arrow::util::UriUnescape(bucket_key);
+  // Keep drive letters in alias keys.
+  ::arrow::util::Uri parsed;
+  ICEBERG_ARROW_RETURN_NOT_OK(parsed.Parse(file_location));
+  const auto key = uri.substr(pos + 3);
+  return ::arrow::util::UriUnescape(key.substr(0, key.find_first_of("?#")));
 }
 
 Result<std::shared_ptr<::arrow::io::RandomAccessFile>> OpenArrowInputStream(

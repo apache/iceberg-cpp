@@ -27,6 +27,7 @@
 #include <arrow/filesystem/localfs.h>
 #include <arrow/result.h>
 #include <arrow/status.h>
+#include <arrow/util/uri.h>
 #include <gtest/gtest.h>
 
 #include "iceberg/arrow/arrow_io_internal.h"
@@ -354,6 +355,23 @@ TEST_F(LocalFileIOTest, ReadWriteFile) {
   read_res = file_io_->ReadFile(temp_filepath_, std::nullopt);
   EXPECT_THAT(read_res, IsOk());
   EXPECT_THAT(read_res, HasValue(::testing::Eq("hello world")));
+}
+
+TEST_F(LocalFileIOTest, ReadsLocalFileUriWithOneOrThreeSlashes) {
+  ASSERT_THAT(file_io_->WriteFile(temp_filepath_, "metadata bytes"), IsOk());
+  const auto uri = ::arrow::util::UriFromAbsolutePath(temp_filepath_);
+  ASSERT_TRUE(uri.ok()) << uri.status();
+  ASSERT_TRUE(uri->starts_with("file:///"));
+
+  for (const auto prefix : {"file:", "FiLe:", "file://"}) {
+    EXPECT_THAT(file_io_->ReadFile(prefix + uri->substr(7), std::nullopt),
+                HasValue(::testing::Eq("metadata bytes")));
+  }
+}
+
+TEST_F(LocalFileIOTest, RejectsMalformedShortFileUri) {
+  EXPECT_THAT(file_io_->ReadFile("file:/tmp/%ZZ", std::nullopt),
+              HasErrorMessage("Cannot parse URI"));
 }
 
 TEST_F(LocalFileIOTest, DeleteFile) {
