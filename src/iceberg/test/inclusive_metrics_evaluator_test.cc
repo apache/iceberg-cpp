@@ -19,6 +19,10 @@
 
 #include "iceberg/expression/inclusive_metrics_evaluator.h"
 
+#include <map>
+#include <string>
+#include <vector>
+
 #include <gtest/gtest.h>
 
 #include "iceberg/expression/binder.h"
@@ -966,7 +970,6 @@ TEST_F(InclusiveMetricsEvaluatorMigratedTest, NotEqWithSingleValue) {
   single_value->record_count = 10;
   single_value->value_counts = {{3, 10L}};
   single_value->null_value_counts = {{3, 0L}};
-  single_value->nan_value_counts = {{3, 0L}};
   single_value->lower_bounds = {{3, Literal::String("abc").Serialize().value()}};
   single_value->upper_bounds = {{3, Literal::String("abc").Serialize().value()}};
   // single value equals the literal -> rows cannot match
@@ -1042,7 +1045,6 @@ TEST_F(InclusiveMetricsEvaluatorMigratedTest, NotInWithSingleValue) {
   single_value->record_count = 10;
   single_value->value_counts = {{3, 10L}};
   single_value->null_value_counts = {{3, 0L}};
-  single_value->nan_value_counts = {{3, 0L}};
   single_value->lower_bounds = {{3, Literal::String("abc").Serialize().value()}};
   single_value->upper_bounds = {{3, Literal::String("abc").Serialize().value()}};
   // single value is in the exclusion set -> rows cannot match
@@ -1097,6 +1099,90 @@ TEST_F(InclusiveMetricsEvaluatorMigratedTest, NotInWithSingleValue) {
       {9, Literal::Float(kFloatNan).Serialize().value()}};
   RunTest(Expressions::NotIn("no_nans", {Literal::Float(5.0F)}), kRowsMightMatch,
           single_value_nan_bounds);
+}
+
+// Per the spec:
+// 1. float/double upper and lower bounds don't cover nulls or NaNs.
+// 2. null_value_counts and nan_value_counts are optional.
+// 3. only float/double values can have NaNs, and nan_value_counts set.
+// Therefore, single-value (aka UniqueValue) NotEq/NotIn pruning for float/double is only
+// possible when both null_value_counts and nan_value_counts are explicitly set to 0 for
+// the column, and must not prune when either count is missing or non-zero.
+TEST_F(InclusiveMetricsEvaluatorMigratedTest,
+       UniqueValuePruningFloatAndDoubleNaNAndNullCounts) {
+  auto check_column = [&](const std::string& col_name, int32_t field_id,
+                          int32_t other_field_id, const Literal& match_val,
+                          const Literal& other_val) {
+    SCOPED_TRACE(col_name);
+    auto file = std::make_shared<DataFile>();
+    file->file_path = "single_value";
+    file->file_format = FileFormatType::kParquet;
+    file->record_count = 10;
+    file->value_counts = {{field_id, 10L}};
+    auto bound = match_val.Serialize().value();
+    file->lower_bounds = {{field_id, bound}};
+    file->upper_bounds = {{field_id, bound}};
+
+    struct Case {
+      std::string label;
+      std::map<int32_t, int64_t> null_counts;
+      std::map<int32_t, int64_t> nan_counts;
+      bool expected;
+    };
+
+    const std::vector<Case> cases = {
+        // Explicit 0 nulls and 0 NaNs: safe to prune when the single value is excluded.
+        {.label = "zero_nulls_and_nans",
+         .null_counts = {{field_id, 0L}},
+         .nan_counts = {{field_id, 0L}},
+         .expected = kRowCannotMatch},
+        // Missing or non-zero nan_value_counts: file may contain NaN rows outside
+        // [lower, upper], so must not prune.
+        {.label = "empty_nan_counts",
+         .null_counts = {{field_id, 0L}},
+         .nan_counts = {},
+         .expected = kRowsMightMatch},
+        {.label = "missing_field_nan_count",
+         .null_counts = {{field_id, 0L}},
+         .nan_counts = {{other_field_id, 0L}},
+         .expected = kRowsMightMatch},
+        {.label = "non_zero_nans",
+         .null_counts = {{field_id, 0L}},
+         .nan_counts = {{field_id, 2L}},
+         .expected = kRowsMightMatch},
+        // Missing or non-zero null_value_counts: file may contain nulls even when
+        // nan_value_counts is 0, so must not prune.
+        {.label = "empty_null_counts",
+         .null_counts = {},
+         .nan_counts = {{field_id, 0L}},
+         .expected = kRowsMightMatch},
+        {.label = "missing_field_null_count",
+         .null_counts = {{other_field_id, 0L}},
+         .nan_counts = {{field_id, 0L}},
+         .expected = kRowsMightMatch},
+        {.label = "non_zero_nulls",
+         .null_counts = {{field_id, 2L}},
+         .nan_counts = {{field_id, 0L}},
+         .expected = kRowsMightMatch},
+    };
+
+    for (const auto& tc : cases) {
+      SCOPED_TRACE(tc.label);
+      file->null_value_counts = tc.null_counts;
+      file->nan_value_counts = tc.nan_counts;
+      RunTest(Expressions::NotEqual(col_name, match_val), tc.expected, file);
+      RunTest(Expressions::NotIn(col_name, {match_val, other_val}), tc.expected, file);
+      // A literal different from the file's single value can still match rows.
+      RunTest(Expressions::NotEqual(col_name, other_val), kRowsMightMatch, file);
+      RunTest(Expressions::NotIn(col_name, {other_val}), kRowsMightMatch, file);
+    }
+  };
+
+  // Check for both float and double columns.
+  check_column("no_nans", /*field_id=*/9, /*other_field_id=*/13, Literal::Float(5.0F),
+               Literal::Float(10.0F));
+  check_column("no_nan_stats", /*field_id=*/13, /*other_field_id=*/9,
+               Literal::Double(5.0), Literal::Double(10.0));
 }
 
 }  // namespace iceberg

@@ -91,8 +91,7 @@ class InclusiveMetricsVisitor : public BoundVisitor<bool> {
     if (dynamic_cast<const BoundReference*>(expr.get()) == nullptr) {
       return kRowsMightMatch;
     }
-    auto it = data_file_.nan_value_counts.find(id);
-    if (it != data_file_.nan_value_counts.end() && it->second == 0) {
+    if (!MayContainNaN(id)) {
       return kRowCannotMatch;
     }
     return kRowsMightMatch;
@@ -397,6 +396,11 @@ class InclusiveMetricsVisitor : public BoundVisitor<bool> {
            val_it->second == null_it->second;
   }
 
+  bool MayContainNaN(int32_t id) {
+    auto it = data_file_.nan_value_counts.find(id);
+    return it == data_file_.nan_value_counts.cend() || it->second != 0;
+  }
+
   bool ContainsNaNsOnly(int32_t id) {
     auto val_it = data_file_.value_counts.find(id);
     auto nan_it = data_file_.nan_value_counts.find(id);
@@ -447,8 +451,9 @@ class InclusiveMetricsVisitor : public BoundVisitor<bool> {
       return std::nullopt;
     }
 
-    auto nan_it = data_file_.nan_value_counts.find(id);
-    if (nan_it != data_file_.nan_value_counts.cend() && nan_it->second != 0) {
+    // Float and double bounds exclude NaNs, so require nan_value_counts == 0.
+    const auto type_id = lower->type()->type_id();
+    if ((type_id == TypeId::kFloat || type_id == TypeId::kDouble) && MayContainNaN(id)) {
       return std::nullopt;
     }
 
