@@ -19,6 +19,7 @@
 
 #include "iceberg/table.h"
 
+#include <array>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -70,7 +71,7 @@ std::unordered_map<std::string, std::string> StorageProperties(const FileIO& io)
   auto properties = io.properties();
   // Vended S3 credentials can rotate without changing the underlying storage.
   // Cache options are checked separately and do not identify a storage context.
-  constexpr std::string_view kNonStorageProperties[] = {
+  constexpr std::array<std::string_view, 7> kNonStorageProperties = {
       "s3.access-key-id",
       "s3.secret-access-key",
       "s3.session-token",
