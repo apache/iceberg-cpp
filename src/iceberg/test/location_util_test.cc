@@ -118,11 +118,10 @@ TEST(LocationUtilTest, ResolveLocationSpecExamples) {
   EXPECT_EQ(LocationUtil::ResolveLocation("s3://bucket/db/table",
                                           "hdfs://wh/db/table/data/00000-0.parquet"),
             "hdfs://wh/db/table/data/00000-0.parquet");
-  // Duplicate separator: the table location ends in `/`, which the spec
-  // recommends against. No second separator is added (see ResolveLocation).
+  // Duplicate separator: the table location ends in `/`.
   EXPECT_EQ(
       LocationUtil::ResolveLocation("s3://bucket/db/table/", "data/00000-0.parquet"),
-      "s3://bucket/db/table/data/00000-0.parquet");
+      "s3://bucket/db/table//data/00000-0.parquet");
   // Duplicate separator: the relative path starts with `/`.
   EXPECT_EQ(
       LocationUtil::ResolveLocation("s3://bucket/db/table", "/data/00000-0.parquet"),
@@ -142,14 +141,10 @@ TEST(LocationUtilTest, ResolveLocation) {
             "s3://b/t/./data/f.parquet");
   EXPECT_EQ(LocationUtil::ResolveLocation("s3://b/t", "../other/f.parquet"),
             "s3://b/t/../other/f.parquet");
-  // A trailing separator on the table location is not doubled; only one
-  // trailing separator is consumed, and a leading one on the path is kept.
-  EXPECT_EQ(LocationUtil::ResolveLocation("s3://b/t/", "f.parquet"),
-            "s3://b/t/f.parquet");
   EXPECT_EQ(LocationUtil::ResolveLocation("s3://b/t//", "f.parquet"),
-            "s3://b/t//f.parquet");
+            "s3://b/t///f.parquet");
   EXPECT_EQ(LocationUtil::ResolveLocation("s3://b/t/", "/f.parquet"),
-            "s3://b/t//f.parquet");
+            "s3://b/t///f.parquet");
   // A scheme-less table location is joined the same way.
   EXPECT_EQ(LocationUtil::ResolveLocation("/wh/t", "data/f.parquet"),
             "/wh/t/data/f.parquet");
@@ -189,11 +184,10 @@ TEST(LocationUtilTest, RelativizeLocation) {
   // Matching is case-sensitive.
   EXPECT_EQ(LocationUtil::RelativizeLocation("s3://b/t", "S3://b/t/f.parquet"),
             "S3://b/t/f.parquet");
-  // A table location ending in `/` supplies the separator itself.
   EXPECT_EQ(LocationUtil::RelativizeLocation("s3://b/t/", "s3://b/t/f.parquet"),
-            "f.parquet");
+            "s3://b/t/f.parquet");
   EXPECT_EQ(LocationUtil::RelativizeLocation("s3://b/t/", "s3://b/t//f.parquet"),
-            "/f.parquet");
+            "f.parquet");
   EXPECT_EQ(LocationUtil::RelativizeLocation("s3://b/t/", "s3://b/t/"), "s3://b/t/");
   EXPECT_EQ(LocationUtil::RelativizeLocation("s3://b/t/", "s3://b/t2/f.parquet"),
             "s3://b/t2/f.parquet");

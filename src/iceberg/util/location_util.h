@@ -51,9 +51,8 @@ class ICEBERG_EXPORT LocationUtil {
   /// \brief Resolve a location against a table location.
   ///
   /// A location with a URI scheme is absolute and is returned unchanged.
-  /// Otherwise the result is `table_location + "/" + location`, with no `/`
-  /// added when the table location already ends in one. The join does not
-  /// interpret `.` or `..`, and a location starting with `/` yields `//`.
+  /// Otherwise the result is `table_location + "/" + location`. Existing
+  /// separators are preserved, so adjacent separators form `//`.
   static std::string ResolveLocation(std::string_view table_location,
                                      std::string_view location);
 
@@ -61,8 +60,7 @@ class ICEBERG_EXPORT LocationUtil {
   ///
   /// If the location starts with the table location immediately followed by
   /// `/`, the remainder after that separator is returned. Otherwise the
-  /// location is returned unchanged. A table location that ends in `/`
-  /// already includes the separator.
+  /// location is returned unchanged.
   static std::string_view RelativizeLocation(std::string_view table_location,
                                              std::string_view location);
 

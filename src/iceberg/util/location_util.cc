@@ -88,19 +88,10 @@ std::string LocationUtil::ResolveLocation(std::string_view table_location,
   // could decode or re-encode `%XX`, producing a path that differs from the
   // one the writer stored. Both parts are opaque strings in whatever encoding
   // the writer used, and they are copied byte for byte.
-  //
-  // The spec recommends a table location that does not end in `/`, because
-  // the join would otherwise produce `//`. This applies that recommendation:
-  // if the table location already ends in `/`, no second separator is added,
-  // since object stores such as S3 treat `//` as part of the key and advise
-  // against it. A leading `/` on the relative path is kept, since it comes
-  // from a stored path that really contains `//`.
   std::string resolved;
   resolved.reserve(table_location.size() + 1 + location.size());
   resolved.append(table_location);
-  if (!table_location.ends_with('/')) {
-    resolved.push_back('/');
-  }
+  resolved.push_back('/');
   resolved.append(location);
   return resolved;
 }
@@ -110,14 +101,7 @@ std::string_view LocationUtil::RelativizeLocation(std::string_view table_locatio
   // The spec ("Path Relativization") defines this as a plain prefix match on
   // the table location followed by `/`, so a byte comparison is exact. No URI
   // parsing or normalization: paths that only differ in encoding or `//` are
-  // different paths, and are kept absolute. A table location that already
-  // ends in `/` supplies the separator itself, matching ResolveLocation.
-  if (table_location.ends_with('/')) {
-    if (location.size() > table_location.size() && location.starts_with(table_location)) {
-      return location.substr(table_location.size());
-    }
-    return location;
-  }
+  // different paths.
   if (location.size() > table_location.size() && location.starts_with(table_location) &&
       location[table_location.size()] == '/') {
     return location.substr(table_location.size() + 1);
