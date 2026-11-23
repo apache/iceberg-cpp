@@ -66,8 +66,8 @@ class ICEBERG_DATA_EXPORT ParallelScanMetrics {
   ParallelScanMetricsSnapshot Snapshot() const;
 
   /// \brief Apply `update` to the counters under this object's lock.
-  template <typename Update>
-  void Update(Update&& update) {
+  template <typename Fn>
+  void Update(Fn&& update) {
     std::lock_guard lock(mutex_);
     update(snapshot_);
   }

@@ -17,6 +17,7 @@
  * under the License.
  */
 
+#include <array>
 #include <cstdint>
 #include <limits>
 #include <string>
@@ -227,10 +228,10 @@ TEST(ArrowBatchSizerTest, RejectsOverflowBeforeSizingBuffers) {
   schema.release(&schema);
 
   // The buffers are never dereferenced: the size checks fail first.
-  const void* buffers[2] = {nullptr, nullptr};
+  std::array<const void*, 2> buffers = {nullptr, nullptr};
   ArrowArray array{};
   array.n_buffers = 2;
-  array.buffers = buffers;
+  array.buffers = buffers.data();
   array.release = ReleaseNothing;
 
   // offset + length overflows.
@@ -250,10 +251,10 @@ TEST(ArrowBatchSizerTest, RejectsOffsetBufferOverflow) {
   ICEBERG_UNWRAP_OR_FAIL(auto sizer, ArrowBatchSizer::Make(schema));
   schema.release(&schema);
 
-  const void* buffers[3] = {nullptr, nullptr, nullptr};
+  std::array<const void*, 3> buffers = {nullptr, nullptr, nullptr};
   ArrowArray array{};
   array.n_buffers = 3;
-  array.buffers = buffers;
+  array.buffers = buffers.data();
   array.release = ReleaseNothing;
   // (length + 1) * 8 offset bytes overflows.
   array.length = std::numeric_limits<int64_t>::max() / 8;
@@ -269,19 +270,19 @@ TEST(ArrowBatchSizerTest, RejectsFixedSizeListChildLengthOverflow) {
   ICEBERG_UNWRAP_OR_FAIL(auto sizer, ArrowBatchSizer::Make(schema));
   schema.release(&schema);
 
-  const void* child_buffers[2] = {nullptr, nullptr};
+  std::array<const void*, 2> child_buffers = {nullptr, nullptr};
   ArrowArray child{};
   child.n_buffers = 2;
-  child.buffers = child_buffers;
+  child.buffers = child_buffers.data();
   child.release = ReleaseNothing;
-  ArrowArray* children[1] = {&child};
+  std::array<ArrowArray*, 1> children = {&child};
 
-  const void* buffers[1] = {nullptr};
+  std::array<const void*, 1> buffers = {nullptr};
   ArrowArray array{};
   array.n_buffers = 1;
-  array.buffers = buffers;
+  array.buffers = buffers.data();
   array.n_children = 1;
-  array.children = children;
+  array.children = children.data();
   array.release = ReleaseNothing;
   // length * 2^20 child elements overflows.
   array.length = std::numeric_limits<int64_t>::max() / 1024;
