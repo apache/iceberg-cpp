@@ -231,6 +231,8 @@ TEST_F(PredicateTest, NamedReferenceBind) {
   ASSERT_THAT(bound_result, IsOk());
 
   auto bound_ref = bound_result.value();
+  const Bound& bound = *bound_ref;
+  EXPECT_EQ(bound.reference(), bound_ref);
   EXPECT_EQ(bound_ref->name(), "id");
   EXPECT_EQ(bound_ref->field().field_id(), 1);
   EXPECT_EQ(bound_ref->type()->type_id(), TypeId::kLong);
