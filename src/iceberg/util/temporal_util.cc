@@ -164,18 +164,6 @@ Result<int64_t> ParseTimeWithFraction(std::string_view str, int64_t units_per_se
          seconds * units_per_second + frac_units;
 }
 
-inline constexpr year_month_day DateToYmd(int32_t days_since_epoch) {
-  return {internal::kEpochDays + days{days_since_epoch}};
-}
-
-inline constexpr year_month_day TimestampToYmd(int64_t micros_since_epoch) {
-  return {floor<days>(sys_time<microseconds>(microseconds{micros_since_epoch}))};
-}
-
-inline constexpr year_month_day TimestampNsToYmd(int64_t nanos_since_epoch) {
-  return {floor<days>(sys_time<nanoseconds>(nanoseconds{nanos_since_epoch}))};
-}
-
 template <typename Duration>
   requires std::is_same_v<Duration, days> || std::is_same_v<Duration, hours>
 inline constexpr int32_t TimestampToDuration(int64_t micros_since_epoch) {
@@ -194,84 +182,45 @@ inline constexpr int32_t TimestampNsToDuration(int64_t nanos_since_epoch) {
           .count());
 }
 
-inline constexpr int32_t MonthsSinceEpoch(const year_month_day& ymd) {
-  auto delta = ymd.year() - internal::kEpochYmd.year();
-  // Calculate the month as months from 1970-01
-  // Note: January is month 1, so we subtract 1 to get zero-based month count.
-  return static_cast<int32_t>(delta.count() * 12 + static_cast<unsigned>(ymd.month()) -
-                              1);
-}
+struct YearMonth {
+  int32_t years_since_epoch;
+  int32_t month_index;
+};
 
-template <TypeId type_id>
-Result<Literal> ExtractYearImpl(const Literal& literal) {
-  std::unreachable();
-}
+Result<YearMonth> GetYearMonth(const Literal& literal, std::string_view unit) {
+  if (literal.IsAboveMax() || literal.IsBelowMin()) [[unlikely]] {
+    return NotSupported("Cannot extract {} from {}", unit, literal.ToString());
+  }
 
-template <>
-Result<Literal> ExtractYearImpl<TypeId::kDate>(const Literal& literal) {
-  auto value = std::get<int32_t>(literal.value());
-  auto ymd = DateToYmd(value);
-  return Literal::Int((ymd.year() - internal::kEpochYmd.year()).count());
-}
+  int64_t epoch_days;
+  switch (literal.type()->type_id()) {
+    case TypeId::kDate:
+      epoch_days = std::get<int32_t>(literal.value());
+      break;
+    case TypeId::kTimestamp:
+    case TypeId::kTimestampTz:
+      epoch_days = FloorDiv(std::get<int64_t>(literal.value()), internal::kMicrosPerDay);
+      break;
+    case TypeId::kTimestampNs:
+    case TypeId::kTimestampTzNs:
+      epoch_days = FloorDiv(std::get<int64_t>(literal.value()), internal::kNanosPerDay);
+      break;
+    default:
+      return NotSupported("Extract {} from type {} is not supported", unit,
+                          literal.type()->ToString());
+  }
 
-template <>
-Result<Literal> ExtractYearImpl<TypeId::kTimestamp>(const Literal& literal) {
-  auto value = std::get<int64_t>(literal.value());
-  auto ymd = TimestampToYmd(value);
-  return Literal::Int((ymd.year() - internal::kEpochYmd.year()).count());
-}
-
-template <>
-Result<Literal> ExtractYearImpl<TypeId::kTimestampNs>(const Literal& literal) {
-  auto value = std::get<int64_t>(literal.value());
-  auto ymd = TimestampNsToYmd(value);
-  return Literal::Int((ymd.year() - internal::kEpochYmd.year()).count());
-}
-
-template <>
-Result<Literal> ExtractYearImpl<TypeId::kTimestampTz>(const Literal& literal) {
-  return ExtractYearImpl<TypeId::kTimestamp>(literal);
-}
-
-template <>
-Result<Literal> ExtractYearImpl<TypeId::kTimestampTzNs>(const Literal& literal) {
-  return ExtractYearImpl<TypeId::kTimestampNs>(literal);
-}
-
-template <TypeId type_id>
-Result<Literal> ExtractMonthImpl(const Literal& literal) {
-  std::unreachable();
-}
-
-template <>
-Result<Literal> ExtractMonthImpl<TypeId::kDate>(const Literal& literal) {
-  auto value = std::get<int32_t>(literal.value());
-  auto ymd = DateToYmd(value);
-  return Literal::Int(MonthsSinceEpoch(ymd));
-}
-
-template <>
-Result<Literal> ExtractMonthImpl<TypeId::kTimestamp>(const Literal& literal) {
-  auto value = std::get<int64_t>(literal.value());
-  auto ymd = TimestampToYmd(value);
-  return Literal::Int(MonthsSinceEpoch(ymd));
-}
-
-template <>
-Result<Literal> ExtractMonthImpl<TypeId::kTimestampNs>(const Literal& literal) {
-  auto value = std::get<int64_t>(literal.value());
-  auto ymd = TimestampNsToYmd(value);
-  return Literal::Int(MonthsSinceEpoch(ymd));
-}
-
-template <>
-Result<Literal> ExtractMonthImpl<TypeId::kTimestampTz>(const Literal& literal) {
-  return ExtractMonthImpl<TypeId::kTimestamp>(literal);
-}
-
-template <>
-Result<Literal> ExtractMonthImpl<TypeId::kTimestampTzNs>(const Literal& literal) {
-  return ExtractMonthImpl<TypeId::kTimestampNs>(literal);
+  // Gregorian dates repeat every 400 years. Only pass days in the first
+  // cycle from 1970 to chrono so the calendar year always fits in chrono::year.
+  constexpr int64_t kDaysPerCycle = 146097;
+  const auto cycles = FloorDiv(epoch_days, kDaysPerCycle);
+  const auto day_in_cycle = epoch_days - cycles * kDaysPerCycle;
+  const year_month_day ymd{internal::kEpochDays +
+                           days{static_cast<int32_t>(day_in_cycle)}};
+  const auto years_in_cycle = (ymd.year() - internal::kEpochYmd.year()).count();
+  return YearMonth{
+      .years_since_epoch = static_cast<int32_t>(cycles * 400 + years_in_cycle),
+      .month_index = static_cast<int32_t>(static_cast<unsigned>(ymd.month())) - 1};
 }
 
 template <TypeId type_id>
@@ -449,54 +398,20 @@ Result<bool> TemporalUtils::IsUtcOffset(std::string_view str) {
   return timestamp_with_offset.second == 0;
 }
 
-#define DISPATCH_EXTRACT_YEAR(type_id) \
-  case type_id:                        \
-    return ExtractYearImpl<type_id>(literal);
-
 Result<Literal> TemporalUtils::ExtractYear(const Literal& literal) {
   if (literal.IsNull()) [[unlikely]] {
     return Literal::Null(int32());
   }
-
-  if (literal.IsAboveMax() || literal.IsBelowMin()) [[unlikely]] {
-    return NotSupported("Cannot extract year from {}", literal.ToString());
-  }
-
-  switch (literal.type()->type_id()) {
-    DISPATCH_EXTRACT_YEAR(TypeId::kDate)
-    DISPATCH_EXTRACT_YEAR(TypeId::kTimestamp)
-    DISPATCH_EXTRACT_YEAR(TypeId::kTimestampTz)
-    DISPATCH_EXTRACT_YEAR(TypeId::kTimestampNs)
-    DISPATCH_EXTRACT_YEAR(TypeId::kTimestampTzNs)
-    default:
-      return NotSupported("Extract year from type {} is not supported",
-                          literal.type()->ToString());
-  }
+  ICEBERG_ASSIGN_OR_RAISE(auto ym, GetYearMonth(literal, "year"));
+  return Literal::Int(ym.years_since_epoch);
 }
-
-#define DISPATCH_EXTRACT_MONTH(type_id) \
-  case type_id:                         \
-    return ExtractMonthImpl<type_id>(literal);
 
 Result<Literal> TemporalUtils::ExtractMonth(const Literal& literal) {
   if (literal.IsNull()) [[unlikely]] {
     return Literal::Null(int32());
   }
-
-  if (literal.IsAboveMax() || literal.IsBelowMin()) [[unlikely]] {
-    return NotSupported("Cannot extract month from {}", literal.ToString());
-  }
-
-  switch (literal.type()->type_id()) {
-    DISPATCH_EXTRACT_MONTH(TypeId::kDate)
-    DISPATCH_EXTRACT_MONTH(TypeId::kTimestamp)
-    DISPATCH_EXTRACT_MONTH(TypeId::kTimestampTz)
-    DISPATCH_EXTRACT_MONTH(TypeId::kTimestampNs)
-    DISPATCH_EXTRACT_MONTH(TypeId::kTimestampTzNs)
-    default:
-      return NotSupported("Extract month from type {} is not supported",
-                          literal.type()->ToString());
-  }
+  ICEBERG_ASSIGN_OR_RAISE(auto ym, GetYearMonth(literal, "month"));
+  return Literal::Int(ym.years_since_epoch * 12 + ym.month_index);
 }
 
 #define DISPATCH_EXTRACT_DAY(type_id) \
