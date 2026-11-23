@@ -121,7 +121,7 @@ class ICEBERG_EXPORT BoundAggregate : public Aggregate<BoundTerm>, public Bound 
     virtual Literal GetResult() const = 0;
   };
 
-  std::shared_ptr<BoundReference> reference() override {
+  std::shared_ptr<const BoundReference> reference() const override {
     ICEBERG_DCHECK(term() != nullptr || op() == Expression::Operation::kCountStar,
                    "Bound aggregate term should not be null except for COUNT(*)");
     return term() ? term()->reference() : nullptr;
