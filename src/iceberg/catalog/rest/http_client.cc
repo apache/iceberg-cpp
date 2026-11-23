@@ -882,7 +882,8 @@ Result<HttpResponse> HttpClient::Execute(HttpMethod method, const std::string& u
               cpr::cpr_pf_arg_t upload_size = 0;
               const auto check_idle = [&] {
                 double pretransfer_seconds = 0;
-                long request_bytes = 0;
+                // CURLINFO_REQUEST_SIZE requires a long*, including on Windows.
+                long request_bytes = 0;  // NOLINT(google-runtime-int)
                 curl_easy_getinfo(curl, CURLINFO_PRETRANSFER_TIME, &pretransfer_seconds);
                 curl_easy_getinfo(curl, CURLINFO_REQUEST_SIZE, &request_bytes);
                 if ((pretransfer_seconds == 0 && request_bytes == 0 &&

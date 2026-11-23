@@ -498,10 +498,13 @@ TEST(HttpClientTest, RetriesPartialHeaderResetOnlyForSafeRequests) {
     bool supported;
     bool retry;
   };
-  for (const auto& test_case : {Case{HttpMethod::kGet, false, false, true},
-                                Case{HttpMethod::kPost, false, false, false},
-                                Case{HttpMethod::kPost, true, false, false},
-                                Case{HttpMethod::kPost, true, true, true}}) {
+  const std::array<Case, 4> cases{{
+      {.method = HttpMethod::kGet, .keyed = false, .supported = false, .retry = true},
+      {.method = HttpMethod::kPost, .keyed = false, .supported = false, .retry = false},
+      {.method = HttpMethod::kPost, .keyed = true, .supported = false, .retry = false},
+      {.method = HttpMethod::kPost, .keyed = true, .supported = true, .retry = true},
+  }};
+  for (const auto& test_case : cases) {
     SCOPED_TRACE(::testing::Message()
                  << static_cast<int>(test_case.method) << ", keyed=" << test_case.keyed
                  << ", supported=" << test_case.supported);
