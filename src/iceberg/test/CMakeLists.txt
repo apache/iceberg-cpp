@@ -286,6 +286,7 @@ if(ICEBERG_BUILD_BUNDLE)
                    file_scan_task_test.cc
                    incremental_append_scan_test.cc
                    incremental_changelog_scan_test.cc
+                   parallel_table_scan_test.cc
                    scan_planning_metrics_test.cc
                    table_scan_test.cc)
 
