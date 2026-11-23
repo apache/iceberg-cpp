@@ -459,13 +459,23 @@ class ReferencePredicateNode : public EvaluatorNode {
     }
   }
 
+  // Reads the referenced field's raw scalar from a row. Owned by the bound
+  // reference, which the evaluator keeps alive through its bound expression.
   const StructLikeAccessor& accessor_;
+  // The field's type, which selects the scalar representation to compare.
   TypeId type_id_;
+  // The field's decimal scale, or 0 for other types.
   int32_t scale_;
+  // The predicate operation, e.g. kLt or kIsNull.
   Operation op_;
-  // Owned by the bound predicate, which the evaluator keeps alive.
+  // The literal to compare with, or nullptr for unary predicates. Owned by the
+  // bound predicate, which the evaluator keeps alive.
   const Literal* literal_;
+  // The literal's decimal scale, or 0 for other types or unary predicates.
   int32_t literal_scale_;
+  // Evaluates the whole predicate with Literal semantics for rows whose scalar
+  // does not have the field type's representation, so they keep the same result
+  // or error as before.
   VisitorNode fallback_;
 };
 
