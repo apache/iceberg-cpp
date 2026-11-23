@@ -803,6 +803,11 @@ INSTANTIATE_TEST_SUITE_P(
 
                       .endpoints = {*Endpoint::Make(HttpMethod::kGet, "/v1/config"),
                                     *Endpoint::Make(HttpMethod::kPost, "/v1/tables")}}},
+        CatalogConfigParam{
+            .test_name = "WithIdempotencyKeyLifetime",
+            .expected_json_str =
+                R"({"defaults":{},"overrides":{},"idempotency-key-lifetime":"PT30M"})",
+            .model = {.idempotency_key_lifetime = "PT30M"}},
         // Only endpoints
         CatalogConfigParam{
             .test_name = "OnlyEndpoints",
@@ -846,6 +851,9 @@ INSTANTIATE_TEST_SUITE_P(
         CatalogConfigDeserializeParam{.test_name = "BothNull",
                                       .json_str = R"({"defaults":null,"overrides":null})",
                                       .expected_model = {}},
+        CatalogConfigDeserializeParam{.test_name = "NullIdempotencyKeyLifetime",
+                                      .json_str = R"({"idempotency-key-lifetime":null})",
+                                      .expected_model = {}},
         // Missing endpoints field, client will uses default endpoints
         CatalogConfigDeserializeParam{
             .test_name = "MissingEndpoints",
@@ -874,6 +882,10 @@ INSTANTIATE_TEST_SUITE_P(
                 R"({"defaults":{"warehouse":"s3://bucket/warehouse"},"overrides":"clients"})",
             .expected_error_message =
                 "Failed to parse 'overrides' (JSON value of type string)"},
+        CatalogConfigInvalidParam{
+            .test_name = "WrongIdempotencyKeyLifetimeType",
+            .invalid_json_str = R"({"idempotency-key-lifetime":123})",
+            .expected_error_message = "Failed to parse 'idempotency-key-lifetime'"},
         // Invalid endpoint format - missing space separator
         CatalogConfigInvalidParam{
             .test_name = "InvalidEndpointMissingSpace",

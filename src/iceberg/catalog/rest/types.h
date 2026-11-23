@@ -57,6 +57,8 @@ struct ICEBERG_REST_EXPORT CatalogConfig {
   std::unordered_map<std::string, std::string> defaults;   // required
   std::unordered_map<std::string, std::string> overrides;  // required
   std::vector<Endpoint> endpoints;
+  /// Presence advertises server support for Idempotency-Key on mutations.
+  std::optional<std::string> idempotency_key_lifetime;
 
   /// \brief Validates the CatalogConfig.
   Status Validate() const { return {}; }

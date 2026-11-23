@@ -19,6 +19,7 @@
 
 #pragma once
 
+#include <cstdint>
 #include <string>
 
 #include "iceberg/version.h"
@@ -27,6 +28,8 @@
 /// Constant values for Iceberg REST API.
 
 namespace iceberg::rest {
+
+inline constexpr int64_t kDefaultConnectionTimeoutMs = 180000;
 
 inline const std::string kHeaderContentType = "Content-Type";
 inline const std::string kHeaderAccept = "Accept";
