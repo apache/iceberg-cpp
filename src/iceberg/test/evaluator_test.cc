@@ -19,10 +19,16 @@
 
 #include "iceberg/expression/evaluator.h"
 
+#include <cmath>
 #include <cstddef>
+#include <cstdint>
+#include <exception>
+#include <format>
 #include <limits>
 #include <memory>
 #include <string>
+#include <string_view>
+#include <utility>
 #include <vector>
 
 #include <arrow/array.h>
@@ -34,15 +40,20 @@
 #include <gtest/gtest.h>
 
 #include "iceberg/arrow_c_data_guard_internal.h"
+#include "iceberg/expression/binder.h"
 #include "iceberg/expression/expressions.h"
 #include "iceberg/expression/literal.h"
+#include "iceberg/expression/predicate.h"
 #include "iceberg/expression/rewrite_not.h"
+#include "iceberg/expression/term.h"
 #include "iceberg/result.h"
 #include "iceberg/row/arrow_array_wrapper.h"
+#include "iceberg/row/struct_like.h"
 #include "iceberg/schema.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/transform.h"
 #include "iceberg/type.h"
+#include "iceberg/util/uuid.h"
 
 namespace iceberg {
 
@@ -1016,6 +1027,205 @@ TEST_F(EvaluatorTest, InExceptions) {
                                                              Expressions::Ref("x"), {});
     EXPECT_THAT(result, IsError(ErrorKind::kInvalidExpression));
     EXPECT_THAT(result, HasErrorMessage("Cannot create IN predicate without a value"));
+  }
+}
+
+namespace {
+
+// A row of raw scalars, one per top-level field.
+class ScalarRow : public StructLike {
+ public:
+  explicit ScalarRow(std::vector<Scalar> values) : values_(std::move(values)) {}
+  Result<Scalar> GetField(size_t pos) const override { return values_.at(pos); }
+  size_t num_fields() const override { return values_.size(); }
+
+ private:
+  std::vector<Scalar> values_;
+};
+
+// One column under test: its type, row values, and literals to compare with.
+struct ColumnCase {
+  std::shared_ptr<PrimitiveType> type;
+  std::vector<Scalar> values;
+  std::vector<Literal> literals;
+};
+
+std::string Bytes(std::initializer_list<int> bytes) {
+  std::string result;
+  for (int byte : bytes) {
+    result.push_back(static_cast<char>(byte));
+  }
+  return result;
+}
+
+std::vector<uint8_t> ByteVector(std::string_view bytes) {
+  return {bytes.begin(), bytes.end()};
+}
+
+}  // namespace
+
+// The evaluator compares raw scalars for reference predicates. It must match the
+// literal-based semantics of BoundPredicate::Test for every type, operation, and
+// edge value, including nulls, NaNs, signed zeros, and unsigned byte order.
+TEST(EvaluatorRawComparisonTest, MatchesLiteralSemantics) {
+  const float nan_f = std::numeric_limits<float>::quiet_NaN();
+  const double nan_d = std::numeric_limits<double>::quiet_NaN();
+  const double inf = std::numeric_limits<double>::infinity();
+  const std::string high = Bytes({0xff, 0x01});
+  const std::string low = Bytes({0x01, 0xff});
+  static const std::string kStrings[] = {"", "a", "ab", "abc", "b", high, low};
+  auto uuid_a = Uuid::FromString("123e4567-e89b-12d3-a456-426614174000").value();
+  auto uuid_b = Uuid::FromString("f23e4567-e89b-12d3-a456-426614174000").value();
+  static std::string uuid_a_bytes;
+  static std::string uuid_b_bytes;
+  uuid_a_bytes.assign(reinterpret_cast<const char*>(uuid_a.bytes().data()), 16);
+  uuid_b_bytes.assign(reinterpret_cast<const char*>(uuid_b.bytes().data()), 16);
+
+  std::vector<ColumnCase> cases;
+  cases.push_back({boolean(),
+                   {std::monostate{}, false, true},
+                   {Literal::Boolean(false), Literal::Boolean(true)}});
+  cases.push_back({int32(),
+                   {std::monostate{}, int32_t{-5}, int32_t{0}, int32_t{7},
+                    std::numeric_limits<int32_t>::max()},
+                   {Literal::Int(0), Literal::Int(7), Literal::Int(-100)}});
+  cases.push_back({date(),
+                   {std::monostate{}, int32_t{18000}, int32_t{19000}},
+                   {Literal::Date(18500), Literal::Date(18000)}});
+  cases.push_back({int64(),
+                   {std::monostate{}, int64_t{-1}, int64_t{0}, int64_t{1} << 40},
+                   {Literal::Long(0), Literal::Long(int64_t{1} << 40)}});
+  cases.push_back({timestamp(),
+                   {std::monostate{}, int64_t{1000}, int64_t{2000}},
+                   {Literal::Timestamp(1500), Literal::Timestamp(2000)}});
+  cases.push_back(
+      {timestamp_tz(), {std::monostate{}, int64_t{1000}}, {Literal::TimestampTz(1000)}});
+  cases.push_back({time(), {std::monostate{}, int64_t{5}}, {Literal::Time(6)}});
+  cases.push_back({float32(),
+                   {std::monostate{}, -0.0f, 0.0f, 1.5f, nan_f, -nan_f,
+                    std::numeric_limits<float>::infinity()},
+                   {Literal::Float(0.0f), Literal::Float(-0.0f), Literal::Float(1.5f)}});
+  cases.push_back({float64(),
+                   {std::monostate{}, -0.0, 0.0, -inf, inf, nan_d, 2.25},
+                   {Literal::Double(0.0), Literal::Double(-0.0), Literal::Double(2.25),
+                    Literal::Double(inf)}});
+  cases.push_back({decimal(9, 2),
+                   {std::monostate{}, Decimal(int128_t{-150}), Decimal(int128_t{0}),
+                    Decimal(int128_t{12345})},
+                   {Literal::Decimal(0, 9, 2), Literal::Decimal(12345, 9, 2),
+                    Literal::Decimal(-151, 9, 2)}});
+  std::vector<Scalar> strings{std::monostate{}};
+  for (const auto& value : kStrings) {
+    strings.emplace_back(std::string_view(value));
+  }
+  cases.push_back({string(),
+                   strings,
+                   {Literal::String(""), Literal::String("a"), Literal::String("ab"),
+                    Literal::String(high), Literal::String("b")}});
+  cases.push_back(
+      {binary(),
+       strings,
+       {Literal::Binary({}), Literal::Binary(ByteVector("ab")),
+        Literal::Binary(ByteVector(high)), Literal::Binary(ByteVector(low))}});
+  static const std::string kFixed[] = {"abc", "abd", Bytes({0xff, 0x00, 0x00})};
+  std::vector<Scalar> fixed_values{std::monostate{}};
+  for (const auto& value : kFixed) {
+    fixed_values.emplace_back(std::string_view(value));
+  }
+  cases.push_back({fixed(3),
+                   fixed_values,
+                   {Literal::Fixed(ByteVector("abd")),
+                    Literal::Fixed(ByteVector(Bytes({0xff, 0x00, 0x00})))}});
+  cases.push_back(
+      {uuid(),
+       {std::monostate{}, std::string_view(uuid_a_bytes), std::string_view(uuid_b_bytes)},
+       {Literal::UUID(uuid_a), Literal::UUID(uuid_b)}});
+
+  using Op = Expression::Operation;
+  const Op literal_ops[] = {Op::kLt, Op::kLtEq,  Op::kGt,         Op::kGtEq,
+                            Op::kEq, Op::kNotEq, Op::kStartsWith, Op::kNotStartsWith};
+  const Op unary_ops[] = {Op::kIsNull, Op::kNotNull, Op::kIsNan, Op::kNotNan};
+
+  int checked = 0;
+  for (const auto& column : cases) {
+    Schema schema({SchemaField::MakeOptional(1, "c", column.type)});
+    std::vector<std::shared_ptr<Expression>> predicates;
+    for (Op op : unary_ops) {
+      predicates.push_back(Expressions::Predicate(op, "c"));
+    }
+    for (const auto& literal : column.literals) {
+      for (Op op : literal_ops) {
+        predicates.push_back(Expressions::Predicate(op, "c", literal));
+      }
+    }
+    for (const auto& unbound : predicates) {
+      auto bound = Binder::Bind(schema, unbound, /*case_sensitive=*/true);
+      auto evaluator = Evaluator::Make(schema, unbound);
+      if (!bound.has_value()) {
+        // Invalid for this type, e.g. starts_with on an int.
+        EXPECT_FALSE(evaluator.has_value()) << unbound->ToString();
+        continue;
+      }
+      ASSERT_TRUE(evaluator.has_value()) << evaluator.error().message;
+      for (const auto& value : column.values) {
+        ScalarRow row({value});
+        SCOPED_TRACE(
+            std::format("{} on {}", unbound->ToString(), column.type->ToString()));
+        Result<bool> expected = false;
+        if ((*bound)->op() == Op::kTrue || (*bound)->op() == Op::kFalse) {
+          expected = (*bound)->op() == Op::kTrue;
+        } else {
+          const auto& predicate = std::dynamic_pointer_cast<BoundPredicate>(*bound);
+          ASSERT_NE(predicate, nullptr) << (*bound)->ToString();
+          auto literal = predicate->term()->Evaluate(row);
+          ASSERT_TRUE(literal.has_value()) << literal.error().message;
+          expected = predicate->Test(*literal);
+        }
+        auto actual = (*evaluator)->Evaluate(row);
+        ASSERT_EQ(expected.has_value(), actual.has_value());
+        if (expected.has_value()) {
+          EXPECT_EQ(*expected, *actual)
+              << "row value index in " << column.type->ToString();
+        }
+        ++checked;
+      }
+    }
+  }
+  EXPECT_GT(checked, 1000);
+}
+
+TEST(EvaluatorRawComparisonTest, CompoundExpressionsKeepErrorsFromBothSides) {
+  Schema schema({SchemaField::MakeRequired(1, "id", int32()),
+                 SchemaField::MakeOptional(2, "name", string())});
+  // A required field that is null is an error. The left side is false, but the
+  // right side is still evaluated, as before.
+  auto expr = Expressions::And(Expressions::Equal("name", Literal::String("x")),
+                               Expressions::GreaterThan("id", Literal::Int(0)));
+  ICEBERG_UNWRAP_OR_FAIL(auto evaluator, Evaluator::Make(schema, expr));
+  ScalarRow bad_row({std::monostate{}, std::string_view("y")});
+  EXPECT_FALSE(evaluator->Evaluate(bad_row).has_value());
+  ScalarRow good_row({int32_t{1}, std::string_view("x")});
+  EXPECT_THAT(evaluator->Evaluate(good_row), HasValue(::testing::Eq(true)));
+}
+
+TEST(EvaluatorRawComparisonTest, TransformsAndSetsUseLiteralEvaluation) {
+  Schema schema({SchemaField::MakeOptional(1, "id", int32())});
+  auto in = Expressions::In("id", {Literal::Int(1), Literal::Int(3)});
+  ICEBERG_UNWRAP_OR_FAIL(auto in_evaluator, Evaluator::Make(schema, in));
+  EXPECT_THAT(in_evaluator->Evaluate(ScalarRow({int32_t{3}})),
+              HasValue(::testing::Eq(true)));
+  EXPECT_THAT(in_evaluator->Evaluate(ScalarRow({int32_t{2}})),
+              HasValue(::testing::Eq(false)));
+  EXPECT_THAT(in_evaluator->Evaluate(ScalarRow({std::monostate{}})),
+              HasValue(::testing::Eq(false)));
+
+  auto bucket = Expressions::Equal(
+      std::shared_ptr<UnboundTerm<BoundTransform>>(Expressions::Bucket("id", 4)),
+      Literal::Int(0));
+  ICEBERG_UNWRAP_OR_FAIL(auto bucket_evaluator, Evaluator::Make(schema, bucket));
+  for (int32_t id = 0; id < 8; ++id) {
+    auto result = bucket_evaluator->Evaluate(ScalarRow({id}));
+    ASSERT_TRUE(result.has_value()) << result.error().message;
   }
 }
 
