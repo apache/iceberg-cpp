@@ -19,6 +19,7 @@
 
 #include "iceberg/expression/evaluator.h"
 
+#include <array>
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
@@ -1073,7 +1074,8 @@ TEST(EvaluatorRawComparisonTest, MatchesLiteralSemantics) {
   const double inf = std::numeric_limits<double>::infinity();
   const std::string high = Bytes({0xff, 0x01});
   const std::string low = Bytes({0x01, 0xff});
-  static const std::string kStrings[] = {"", "a", "ab", "abc", "b", high, low};
+  static const std::array<std::string, 7> kStrings = {"",  "a",  "ab", "abc",
+                                                      "b", high, low};
   auto uuid_a = Uuid::FromString("123e4567-e89b-12d3-a456-426614174000").value();
   auto uuid_b = Uuid::FromString("f23e4567-e89b-12d3-a456-426614174000").value();
   static std::string uuid_a_bytes;
@@ -1082,69 +1084,77 @@ TEST(EvaluatorRawComparisonTest, MatchesLiteralSemantics) {
   uuid_b_bytes.assign(reinterpret_cast<const char*>(uuid_b.bytes().data()), 16);
 
   std::vector<ColumnCase> cases;
-  cases.push_back({boolean(),
-                   {std::monostate{}, false, true},
-                   {Literal::Boolean(false), Literal::Boolean(true)}});
-  cases.push_back({int32(),
-                   {std::monostate{}, int32_t{-5}, int32_t{0}, int32_t{7},
-                    std::numeric_limits<int32_t>::max()},
-                   {Literal::Int(0), Literal::Int(7), Literal::Int(-100)}});
-  cases.push_back({date(),
-                   {std::monostate{}, int32_t{18000}, int32_t{19000}},
-                   {Literal::Date(18500), Literal::Date(18000)}});
-  cases.push_back({int64(),
-                   {std::monostate{}, int64_t{-1}, int64_t{0}, int64_t{1} << 40},
-                   {Literal::Long(0), Literal::Long(int64_t{1} << 40)}});
-  cases.push_back({timestamp(),
-                   {std::monostate{}, int64_t{1000}, int64_t{2000}},
-                   {Literal::Timestamp(1500), Literal::Timestamp(2000)}});
+  cases.push_back({.type = boolean(),
+                   .values = {std::monostate{}, false, true},
+                   .literals = {Literal::Boolean(false), Literal::Boolean(true)}});
+  cases.push_back({.type = int32(),
+                   .values = {std::monostate{}, int32_t{-5}, int32_t{0}, int32_t{7},
+                              std::numeric_limits<int32_t>::max()},
+                   .literals = {Literal::Int(0), Literal::Int(7), Literal::Int(-100)}});
+  cases.push_back({.type = date(),
+                   .values = {std::monostate{}, int32_t{18000}, int32_t{19000}},
+                   .literals = {Literal::Date(18500), Literal::Date(18000)}});
   cases.push_back(
-      {timestamp_tz(), {std::monostate{}, int64_t{1000}}, {Literal::TimestampTz(1000)}});
-  cases.push_back({time(), {std::monostate{}, int64_t{5}}, {Literal::Time(6)}});
-  cases.push_back({float32(),
-                   {std::monostate{}, -0.0f, 0.0f, 1.5f, nan_f, -nan_f,
-                    std::numeric_limits<float>::infinity()},
-                   {Literal::Float(0.0f), Literal::Float(-0.0f), Literal::Float(1.5f)}});
-  cases.push_back({float64(),
-                   {std::monostate{}, -0.0, 0.0, -inf, inf, nan_d, 2.25},
-                   {Literal::Double(0.0), Literal::Double(-0.0), Literal::Double(2.25),
-                    Literal::Double(inf)}});
-  cases.push_back({decimal(9, 2),
-                   {std::monostate{}, Decimal(int128_t{-150}), Decimal(int128_t{0}),
-                    Decimal(int128_t{12345})},
-                   {Literal::Decimal(0, 9, 2), Literal::Decimal(12345, 9, 2),
-                    Literal::Decimal(-151, 9, 2)}});
+      {.type = int64(),
+       .values = {std::monostate{}, int64_t{-1}, int64_t{0}, int64_t{1} << 40},
+       .literals = {Literal::Long(0), Literal::Long(int64_t{1} << 40)}});
+  cases.push_back({.type = timestamp(),
+                   .values = {std::monostate{}, int64_t{1000}, int64_t{2000}},
+                   .literals = {Literal::Timestamp(1500), Literal::Timestamp(2000)}});
+  cases.push_back({.type = timestamp_tz(),
+                   .values = {std::monostate{}, int64_t{1000}},
+                   .literals = {Literal::TimestampTz(1000)}});
+  cases.push_back({.type = time(),
+                   .values = {std::monostate{}, int64_t{5}},
+                   .literals = {Literal::Time(6)}});
+  cases.push_back(
+      {.type = float32(),
+       .values = {std::monostate{}, -0.0f, 0.0f, 1.5f, nan_f, -nan_f,
+                  std::numeric_limits<float>::infinity()},
+       .literals = {Literal::Float(0.0f), Literal::Float(-0.0f), Literal::Float(1.5f)}});
+  cases.push_back({.type = float64(),
+                   .values = {std::monostate{}, -0.0, 0.0, -inf, inf, nan_d, 2.25},
+                   .literals = {Literal::Double(0.0), Literal::Double(-0.0),
+                                Literal::Double(2.25), Literal::Double(inf)}});
+  cases.push_back({.type = decimal(9, 2),
+                   .values = {std::monostate{}, Decimal(int128_t{-150}),
+                              Decimal(int128_t{0}), Decimal(int128_t{12345})},
+                   .literals = {Literal::Decimal(0, 9, 2), Literal::Decimal(12345, 9, 2),
+                                Literal::Decimal(-151, 9, 2)}});
   std::vector<Scalar> strings{std::monostate{}};
   for (const auto& value : kStrings) {
     strings.emplace_back(std::string_view(value));
   }
-  cases.push_back({string(),
-                   strings,
-                   {Literal::String(""), Literal::String("a"), Literal::String("ab"),
-                    Literal::String(high), Literal::String("b")}});
   cases.push_back(
-      {binary(),
-       strings,
-       {Literal::Binary({}), Literal::Binary(ByteVector("ab")),
-        Literal::Binary(ByteVector(high)), Literal::Binary(ByteVector(low))}});
-  static const std::string kFixed[] = {"abc", "abd", Bytes({0xff, 0x00, 0x00})};
+      {.type = string(),
+       .values = strings,
+       .literals = {Literal::String(""), Literal::String("a"), Literal::String("ab"),
+                    Literal::String(high), Literal::String("b")}});
+  cases.push_back({.type = binary(),
+                   .values = strings,
+                   .literals = {Literal::Binary({}), Literal::Binary(ByteVector("ab")),
+                                Literal::Binary(ByteVector(high)),
+                                Literal::Binary(ByteVector(low))}});
+  static const std::array<std::string, 3> kFixed = {"abc", "abd",
+                                                    Bytes({0xff, 0x00, 0x00})};
   std::vector<Scalar> fixed_values{std::monostate{}};
   for (const auto& value : kFixed) {
     fixed_values.emplace_back(std::string_view(value));
   }
-  cases.push_back({fixed(3),
-                   fixed_values,
-                   {Literal::Fixed(ByteVector("abd")),
-                    Literal::Fixed(ByteVector(Bytes({0xff, 0x00, 0x00})))}});
-  cases.push_back(
-      {uuid(),
-       {std::monostate{}, std::string_view(uuid_a_bytes), std::string_view(uuid_b_bytes)},
-       {Literal::UUID(uuid_a), Literal::UUID(uuid_b)}});
+  cases.push_back({.type = fixed(3),
+                   .values = fixed_values,
+                   .literals = {Literal::Fixed(ByteVector("abd")),
+                                Literal::Fixed(ByteVector(Bytes({0xff, 0x00, 0x00})))}});
+  cases.push_back({.type = uuid(),
+                   .values = {std::monostate{}, std::string_view(uuid_a_bytes),
+                              std::string_view(uuid_b_bytes)},
+                   .literals = {Literal::UUID(uuid_a), Literal::UUID(uuid_b)}});
 
   using Op = Expression::Operation;
-  const Op literal_ops[] = {Op::kLt, Op::kLtEq,  Op::kGt,         Op::kGtEq,
-                            Op::kEq, Op::kNotEq, Op::kStartsWith, Op::kNotStartsWith};
-  const Op unary_ops[] = {Op::kIsNull, Op::kNotNull, Op::kIsNan, Op::kNotNan};
+  const std::array literal_ops = {Op::kLt,         Op::kLtEq,         Op::kGt,
+                                  Op::kGtEq,       Op::kEq,           Op::kNotEq,
+                                  Op::kStartsWith, Op::kNotStartsWith};
+  const std::array unary_ops = {Op::kIsNull, Op::kNotNull, Op::kIsNan, Op::kNotNan};
 
   int checked = 0;
   for (const auto& column : cases) {
