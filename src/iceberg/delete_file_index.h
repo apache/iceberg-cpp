@@ -87,6 +87,18 @@ struct ICEBERG_EXPORT EqualityDeleteFile {
   Status ConvertBoundsIfNeeded() const;
 };
 
+/// \brief Check if two ranges overlap.
+inline bool RangesOverlap(const Literal& data_lower, const Literal& data_upper,
+                          const Literal& delete_lower, const Literal& delete_upper) {
+  if (data_lower > delete_upper) {
+    return false;
+  }
+  if (delete_lower > data_upper) {
+    return false;
+  }
+  return true;
+}
+
 /// \brief Check if a value count map indicates all values are null.
 inline bool AllNull(const std::map<int32_t, int64_t>& null_counts,
                     const std::map<int32_t, int64_t>& value_counts, int32_t field_id,

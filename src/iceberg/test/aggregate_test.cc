@@ -28,6 +28,7 @@
 #include "iceberg/schema.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/type.h"
+#include "iceberg/util/temporal_util.h"
 
 namespace iceberg {
 
@@ -325,6 +326,17 @@ TEST(AggregateTest, AggregatesFromDataFileWithTransform) {
   EXPECT_EQ(std::get<int32_t>(results[0].value()), 20);
   EXPECT_EQ(std::get<int32_t>(results[1].value()), 0);
   EXPECT_TRUE(evaluator->AllAggregatorsValid());
+}
+
+TEST(AggregateTest, MaxDayUsesTimestampUpperBound) {
+  Schema schema({SchemaField::MakeRequired(1, "ts", timestamp())});
+  auto max_day = BindAggregate(schema, Expressions::Max(Expressions::Day("ts")));
+  ICEBERG_UNWRAP_OR_FAIL(auto upper,
+                         Literal::Timestamp(2 * internal::kMicrosPerDay + 1).Serialize());
+  DataFile file{.record_count = 1, .upper_bounds = {{1, upper}}};
+  EXPECT_TRUE(max_day->HasValue(file));
+  ICEBERG_UNWRAP_OR_FAIL(auto result, max_day->Evaluate(file));
+  EXPECT_EQ(std::get<int32_t>(result.value()), 2);
 }
 
 TEST(AggregateTest, PromotedDateBoundsDistinguishUnknownAndInvalid) {

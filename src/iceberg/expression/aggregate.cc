@@ -85,6 +85,20 @@ Result<std::optional<Literal>> EvaluateFileExtremum(const BoundAggregate& aggreg
   return std::nullopt;
 }
 
+Result<Literal> FileExtremumOrNull(const BoundAggregate& aggregate,
+                                   const DataFile& file) {
+  ICEBERG_ASSIGN_OR_RAISE(auto value, EvaluateFileExtremum(aggregate, file));
+  if (!value) {
+    return Literal::Null(GetPrimitiveType(*aggregate.term()));
+  }
+  return std::move(*value);
+}
+
+bool HasFileExtremum(const BoundAggregate& aggregate, const DataFile& file) {
+  auto value = EvaluateFileExtremum(aggregate, file);
+  return value && value->has_value();
+}
+
 class CountAggregator : public BoundAggregate::Aggregator {
  public:
   explicit CountAggregator(const CountAggregate& aggregate) : aggregate_(aggregate) {}
@@ -422,11 +436,7 @@ Result<Literal> MaxAggregate::Evaluate(const StructLike& data) const {
 }
 
 Result<Literal> MaxAggregate::Evaluate(const DataFile& file) const {
-  ICEBERG_ASSIGN_OR_RAISE(auto value, EvaluateFileExtremum(*this, file));
-  if (!value) {
-    return Literal::Null(GetPrimitiveType(*term()));
-  }
-  return std::move(*value);
+  return FileExtremumOrNull(*this, file);
 }
 
 std::unique_ptr<BoundAggregate::Aggregator> MaxAggregate::NewAggregator() const {
@@ -434,8 +444,7 @@ std::unique_ptr<BoundAggregate::Aggregator> MaxAggregate::NewAggregator() const 
 }
 
 bool MaxAggregate::HasValue(const DataFile& file) const {
-  auto value = EvaluateFileExtremum(*this, file);
-  return value && value->has_value();
+  return HasFileExtremum(*this, file);
 }
 
 MinAggregate::MinAggregate(std::shared_ptr<BoundTerm> term)
@@ -457,11 +466,7 @@ Result<Literal> MinAggregate::Evaluate(const StructLike& data) const {
 }
 
 Result<Literal> MinAggregate::Evaluate(const DataFile& file) const {
-  ICEBERG_ASSIGN_OR_RAISE(auto value, EvaluateFileExtremum(*this, file));
-  if (!value) {
-    return Literal::Null(GetPrimitiveType(*term()));
-  }
-  return std::move(*value);
+  return FileExtremumOrNull(*this, file);
 }
 
 std::unique_ptr<BoundAggregate::Aggregator> MinAggregate::NewAggregator() const {
@@ -469,8 +474,7 @@ std::unique_ptr<BoundAggregate::Aggregator> MinAggregate::NewAggregator() const 
 }
 
 bool MinAggregate::HasValue(const DataFile& file) const {
-  auto value = EvaluateFileExtremum(*this, file);
-  return value && value->has_value();
+  return HasFileExtremum(*this, file);
 }
 
 // -------------------- Unbound binding --------------------

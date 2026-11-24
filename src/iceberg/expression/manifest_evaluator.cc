@@ -26,7 +26,6 @@
 #include "iceberg/manifest/manifest_list.h"
 #include "iceberg/row/struct_like.h"
 #include "iceberg/schema.h"
-#include "iceberg/util/conversions_internal.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg {
@@ -114,7 +113,7 @@ class ManifestEvalVisitor : public BoundVisitor<bool> {
     }
     ICEBERG_ASSIGN_OR_RAISE(
         auto lower, DeserializeBoundLiteral(summary.lower_bound.value(), ref->type()));
-    if (lower && *lower >= lit) {
+    if (lower >= lit) {
       return kRowCannotMatch;
     }
     return kRowsMightMatch;
@@ -129,7 +128,7 @@ class ManifestEvalVisitor : public BoundVisitor<bool> {
     }
     ICEBERG_ASSIGN_OR_RAISE(
         auto lower, DeserializeBoundLiteral(summary.lower_bound.value(), ref->type()));
-    if (lower && *lower > lit) {
+    if (lower > lit) {
       return kRowCannotMatch;
     }
     return kRowsMightMatch;
@@ -144,7 +143,7 @@ class ManifestEvalVisitor : public BoundVisitor<bool> {
     }
     ICEBERG_ASSIGN_OR_RAISE(
         auto upper, DeserializeBoundLiteral(summary.upper_bound.value(), ref->type()));
-    if (upper && *upper <= lit) {
+    if (upper <= lit) {
       return kRowCannotMatch;
     }
     return kRowsMightMatch;
@@ -160,7 +159,7 @@ class ManifestEvalVisitor : public BoundVisitor<bool> {
     ICEBERG_ASSIGN_OR_RAISE(
         auto upper,
         DeserializeBoundLiteral(summary.upper_bound.value(), expr->reference()->type()));
-    if (upper && *upper < lit) {
+    if (upper < lit) {
       return kRowCannotMatch;
     }
     return kRowsMightMatch;
@@ -175,13 +174,13 @@ class ManifestEvalVisitor : public BoundVisitor<bool> {
     }
     ICEBERG_ASSIGN_OR_RAISE(
         auto lower, DeserializeBoundLiteral(summary.lower_bound.value(), ref->type()));
-    if (lower && *lower > lit) {
+    if (lower > lit) {
       return kRowCannotMatch;
     }
 
     ICEBERG_ASSIGN_OR_RAISE(
         auto upper, DeserializeBoundLiteral(summary.upper_bound.value(), ref->type()));
-    if (upper && *upper < lit) {
+    if (upper < lit) {
       return kRowCannotMatch;
     }
 
@@ -215,7 +214,7 @@ class ManifestEvalVisitor : public BoundVisitor<bool> {
         auto upper, DeserializeBoundLiteral(summary.upper_bound.value(), ref->type()));
 
     if (std::ranges::all_of(literal_set, [&](const Literal& lit) {
-          return (lower && lit < *lower) || (upper && lit > *upper);
+          return lit < lower || lit > upper;
         })) {
       // if all values are less than lower bound or greater than upper bound,
       // rows cannot match.
@@ -248,11 +247,8 @@ class ManifestEvalVisitor : public BoundVisitor<bool> {
         auto lower, DeserializeBoundLiteral(summary.lower_bound.value(), ref->type()));
     ICEBERG_ASSIGN_OR_RAISE(
         auto upper, DeserializeBoundLiteral(summary.upper_bound.value(), ref->type()));
-    if (!lower || !upper) {
-      return kRowsMightMatch;
-    }
-    const auto& lower_bound = std::get<std::string>(lower->value());
-    const auto& upper_bound = std::get<std::string>(upper->value());
+    const auto& lower_bound = std::get<std::string>(lower.value());
+    const auto& upper_bound = std::get<std::string>(upper.value());
     // truncate lower bound so that its length in bytes is not greater than the length of
     // prefix
     size_t length = std::min(prefix.size(), lower_bound.size());
@@ -285,11 +281,8 @@ class ManifestEvalVisitor : public BoundVisitor<bool> {
         auto lower, DeserializeBoundLiteral(summary.lower_bound.value(), ref->type()));
     ICEBERG_ASSIGN_OR_RAISE(
         auto upper, DeserializeBoundLiteral(summary.upper_bound.value(), ref->type()));
-    if (!lower || !upper) {
-      return kRowsMightMatch;
-    }
-    const auto& lower_bound = std::get<std::string>(lower->value());
-    const auto& upper_bound = std::get<std::string>(upper->value());
+    const auto& lower_bound = std::get<std::string>(lower.value());
+    const auto& upper_bound = std::get<std::string>(upper.value());
 
     // if lower is shorter than the prefix, it can't start with the prefix
     if (lower_bound.size() < prefix.size()) {
@@ -342,12 +335,12 @@ class ManifestEvalVisitor : public BoundVisitor<bool> {
     return allNull;
   }
 
-  Result<std::optional<Literal>> DeserializeBoundLiteral(
-      const std::vector<uint8_t>& bound, const std::shared_ptr<Type>& type) const {
+  Result<Literal> DeserializeBoundLiteral(const std::vector<uint8_t>& bound,
+                                          const std::shared_ptr<Type>& type) const {
     if (!type->is_primitive()) {
       return NotSupported("Bounds of non-primitive partition fields are not supported.");
     }
-    return internal::DeserializeBound(
+    return Literal::Deserialize(
         bound, std::move(internal::checked_pointer_cast<PrimitiveType>(type)));
   }
 

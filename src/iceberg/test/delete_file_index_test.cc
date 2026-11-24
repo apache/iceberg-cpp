@@ -76,8 +76,10 @@ TEST(DeleteFileDatePromotionTest, DataAndDeleteBoundsUseTimestampUnits) {
   check(midnight, midnight, date, date, true);
   check(epoch, overflow, midnight, midnight, true);
   check(midnight, midnight, date, overflow, true);
-  check(date, overflow, epoch, epoch, false);
-  check(epoch, epoch, date, overflow, false);
+  check(date, date, epoch, epoch, false);
+  check(epoch, epoch, date, date, false);
+  check(date, overflow, epoch, epoch, true);
+  check(epoch, epoch, date, overflow, true);
 }
 
 class DeleteFileIndexTest : public testing::TestWithParam<int8_t> {

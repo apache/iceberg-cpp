@@ -19,6 +19,7 @@
 
 #include "iceberg/expression/inclusive_metrics_evaluator.h"
 
+#include <limits>
 #include <map>
 #include <string>
 #include <vector>
@@ -145,6 +146,29 @@ TEST(InclusiveMetricsDatePromotionTest, UsesDaysForTimestampBounds) {
   };
   check(Expressions::GreaterThan("ts", Literal::Timestamp(5)), true);
   check(Expressions::LessThan("ts", Literal::Timestamp(5)), false);
+}
+
+TEST(InclusiveMetricsDatePromotionTest, OutOfRangeUpperBoundKeepsUsableLowerBound) {
+  Schema schema({SchemaField::MakeRequired(1, "ts", timestamp_ns())});
+  ICEBERG_UNWRAP_OR_FAIL(auto lower, Literal::Date(0).Serialize());
+  ICEBERG_UNWRAP_OR_FAIL(auto upper, Literal::Date(106752).Serialize());
+  DataFile file{
+      .record_count = 1, .lower_bounds = {{1, lower}}, .upper_bounds = {{1, upper}}};
+
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto above,
+      InclusiveMetricsEvaluator::Make(
+          Expressions::GreaterThan(
+              "ts", Literal::TimestampNs(std::numeric_limits<int64_t>::max() - 1)),
+          schema, true));
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto below,
+      InclusiveMetricsEvaluator::Make(
+          Expressions::LessThan("ts", Literal::TimestampNs(0)), schema, true));
+  ICEBERG_UNWRAP_OR_FAIL(auto might_match_above, above->Evaluate(file));
+  ICEBERG_UNWRAP_OR_FAIL(auto might_match_below, below->Evaluate(file));
+  EXPECT_EQ(might_match_above, kRowsMightMatch);
+  EXPECT_EQ(might_match_below, kRowCannotMatch);
 }
 
 TEST_F(InclusiveMetricsEvaluatorTest, CaseSensitiveTest) {
