@@ -56,7 +56,7 @@ class SnapshotsScan final : public MetadataScan {
   const std::shared_ptr<MetadataScanTask> task_;
 };
 
-constexpr std::array<internal::MetadataTableColumn<Snapshot>, 6> kSnapshotColumns = {
+constexpr std::array<internal::MetadataTableColumn<Snapshot>, 7> kSnapshotColumns = {
     {{.field_id = 1,
       .append =
           [](ArrowArray* column, const Snapshot& row) {
@@ -83,13 +83,19 @@ constexpr std::array<internal::MetadataTableColumn<Snapshot>, 6> kSnapshotColumn
             return row.manifest_list.empty() ? AppendNull(column)
                                              : AppendString(column, row.manifest_list);
           }},
-     {.field_id = 6, .append = [](ArrowArray* column, const Snapshot& row) {
-        if (row.summary.empty()) {
-          return AppendNull(column);
-        }
-        auto summary = row.summary;
-        summary.erase(SnapshotSummaryFields::kOperation);
-        return AppendStringMap(column, summary);
+     {.field_id = 6,
+      .append =
+          [](ArrowArray* column, const Snapshot& row) {
+            if (row.summary.empty()) {
+              return AppendNull(column);
+            }
+            auto summary = row.summary;
+            summary.erase(SnapshotSummaryFields::kOperation);
+            return AppendStringMap(column, summary);
+          }},
+     {.field_id = 9, .append = [](ArrowArray* column, const Snapshot& row) {
+        return row.root_manifest ? AppendString(column, *row.root_manifest)
+                                 : AppendNull(column);
       }}}};
 
 }  // namespace
@@ -112,7 +118,8 @@ const std::shared_ptr<Schema>& SnapshotsTable::CanonicalSchema() {
       SchemaField::MakeOptional(
           6, "summary",
           std::make_shared<MapType>(SchemaField::MakeRequired(7, "key", string()),
-                                    SchemaField::MakeRequired(8, "value", string())))});
+                                    SchemaField::MakeRequired(8, "value", string()))),
+      SchemaField::MakeOptional(9, "root_manifest", string())});
   return schema;
 }
 

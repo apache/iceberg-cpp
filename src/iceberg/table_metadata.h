@@ -64,15 +64,14 @@ struct ICEBERG_EXPORT MetadataLogEntry {
 
 /// \brief Represents the metadata for an Iceberg table
 ///
-/// Note that it only contains table metadata from the spec.  Compared to the Java
-/// implementation, missing pieces including:
-/// (1) Map<Integer, Schema|PartitionSpec|SortOrder>
-/// (2) List<MetadataUpdate>
-/// (3) Map<Long, Snapshot>
-/// (4) Map<String, SnapshotRef>
+/// Builders maintain lookup indexes and track metadata updates separately.
 struct ICEBERG_EXPORT TableMetadata {
   static constexpr int8_t kDefaultTableFormatVersion = 2;
-  static constexpr int8_t kSupportedTableFormatVersion = 3;
+  static constexpr int8_t kSupportedTableFormatVersion = 4;
+  static constexpr int8_t kMinFormatVersionOptionalLocation = 4;
+  static constexpr int8_t kMinFormatVersionRootManifest = 4;
+  static constexpr int8_t kMinFormatVersionMonotonicTimestamps = 4;
+  static constexpr int8_t kMinFormatVersionConstraints = 4;
   static constexpr int8_t kMinFormatVersionRowLineage = 3;
   static constexpr int8_t kMinFormatVersionDefaultValues = 3;
   static constexpr int64_t kInitialSequenceNumber = 0;
@@ -87,7 +86,8 @@ struct ICEBERG_EXPORT TableMetadata {
   int8_t format_version;
   /// A UUID that identifies the table
   std::string table_uuid;
-  /// The table's base location
+  /// The table's base location. An absolute URI is required in format version 4
+  /// and later.
   std::string location;
   /// The table's highest assigned sequence number
   int64_t last_sequence_number;
@@ -168,6 +168,23 @@ struct ICEBERG_EXPORT TableMetadata {
   Result<std::shared_ptr<iceberg::Snapshot>> SnapshotById(int64_t snapshot_id) const;
   /// \brief Get the next sequence number
   int64_t NextSequenceNumber() const;
+
+  /// \brief Validate retained snapshots for this format and root allocation bounds.
+  Status ValidateSnapshots() const;
+
+  /// \brief Whether any snapshot references a root manifest.
+  bool HasRootManifest() const;
+
+  /// \brief Validate the table location for this format version.
+  /// In format version 4 and later, the location must be an absolute URI.
+  /// Omitted locations are not supported yet.
+  Status ValidateLocation() const;
+
+  /// \brief Validate identifier-field support across all schemas.
+  /// Returns NotSupported for format version 4 and later if any schema has
+  /// identifier fields, as primary-key constraint migration is not supported yet.
+  /// Earlier format versions pass this check.
+  Status ValidateIdentifierFields() const;
 
   ICEBERG_EXPORT friend bool operator==(const TableMetadata& lhs,
                                         const TableMetadata& rhs);

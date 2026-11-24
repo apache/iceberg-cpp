@@ -19,6 +19,7 @@
 
 #include <barrier>
 #include <chrono>
+#include <cstdint>
 #include <future>
 #include <memory>
 #include <optional>
@@ -231,6 +232,46 @@ class RestCatalogLoadTableTest : public ::testing::Test {
   std::unordered_set<Endpoint> all_plan_endpoints_;
   std::unordered_set<Endpoint> no_plan_endpoint_set_;
 };
+
+TEST_F(RestCatalogLoadTableTest, RejectsSchemaSpecPruningBeforeSendingCommit) {
+  ICEBERG_UNWRAP_OR_FAIL(auto root, MakeCatalog(all_plan_endpoints_));
+  ICEBERG_UNWRAP_OR_FAIL(auto catalog, root->AsCatalog());
+  EXPECT_CALL(*mock_client_, Get(::testing::EndsWith("/tables/my_table"), _, _, _, _))
+      .WillOnce(Return(HttpResponse(200, kLoadTableDefaultResponse)));
+  ICEBERG_UNWRAP_OR_FAIL(auto loaded_table, catalog->LoadTable(identifier_));
+  ON_CALL(*mock_client_, Post(_, _, _, _, _))
+      .WillByDefault([](auto&&...) -> Result<HttpResponse> {
+        return HttpResponse(200, kCommitTableResponse);
+      });
+  EXPECT_CALL(*mock_client_, Post(_, _, _, _, _)).Times(0);
+  // Even an older loaded table may have been upgraded concurrently on the server.
+  for (const auto& handle : {catalog, loaded_table->catalog()}) {
+    for (bool remove_schema : {false, true}) {
+      SCOPED_TRACE(remove_schema);
+      std::vector<std::unique_ptr<TableUpdate>> updates;
+      if (remove_schema) {
+        updates.push_back(
+            std::make_unique<table::RemoveSchemas>(std::unordered_set<int32_t>{2}));
+      } else {
+        updates.push_back(
+            std::make_unique<table::RemovePartitionSpecs>(std::vector<int32_t>{1}));
+      }
+      auto result = handle->UpdateTable(identifier_, {}, updates);
+      EXPECT_THAT(result, IsError(ErrorKind::kNotSupported));
+      EXPECT_THAT(result, HasErrorMessage("server"));
+    }
+  }
+}
+
+TEST_F(RestCatalogLoadTableTest, AllowsSnapshotRemovalWithoutSchemaSpecPruning) {
+  ICEBERG_UNWRAP_OR_FAIL(auto root, MakeCatalog(all_plan_endpoints_));
+  ICEBERG_UNWRAP_OR_FAIL(auto catalog, root->AsCatalog());
+  EXPECT_CALL(*mock_client_, Post(::testing::EndsWith("/tables/my_table"), _, _, _, _))
+      .WillOnce(Return(HttpResponse(200, kCommitTableResponse)));
+  std::vector<std::unique_ptr<TableUpdate>> updates;
+  updates.push_back(std::make_unique<table::RemoveSnapshots>(std::vector<int64_t>{10}));
+  EXPECT_THAT(catalog->UpdateTable(identifier_, {}, updates), IsOk());
+}
 
 class RestCatalogLabelsTest : public RestCatalogLoadTableTest,
                               public ::testing::WithParamInterface<bool> {

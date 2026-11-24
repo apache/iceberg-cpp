@@ -24,6 +24,7 @@
 #include <chrono>
 #include <cstdint>
 #include <format>
+#include <limits>
 #include <memory>
 #include <optional>
 #include <ranges>
@@ -318,6 +319,58 @@ Result<std::shared_ptr<Snapshot>> TableMetadata::SnapshotById(int64_t snapshot_i
     return NotFound("Snapshot with ID {} is not found", snapshot_id);
   }
   return *iter;
+}
+
+bool TableMetadata::HasRootManifest() const {
+  return std::ranges::any_of(snapshots, [](const auto& snapshot) {
+    return snapshot && snapshot->root_manifest.has_value();
+  });
+}
+
+Status TableMetadata::ValidateLocation() const {
+  if (format_version >= kMinFormatVersionOptionalLocation) {
+    if (location.empty()) {
+      return NotSupported("V{} tables without a location are not supported yet",
+                          format_version);
+    }
+    ICEBERG_PRECHECK(!LocationUtil::ParseScheme(location).empty(),
+                     "V{} table location must be absolute: {}", format_version, location);
+  }
+  return {};
+}
+
+Status TableMetadata::ValidateIdentifierFields() const {
+  if (format_version >= kMinFormatVersionConstraints &&
+      std::ranges::any_of(schemas, [](const auto& schema) {
+        return !schema->IdentifierFieldIds().empty();
+      })) {
+    return NotSupported(
+        "Primary-key constraints are not supported yet; "
+        "identifier-field-ids cannot be written in format version {}",
+        format_version);
+  }
+  return {};
+}
+
+Status TableMetadata::ValidateSnapshots() const {
+  for (const auto& snapshot : snapshots) {
+    ICEBERG_CHECK(snapshot != nullptr, "Cannot write null snapshot");
+    ICEBERG_RETURN_UNEXPECTED(snapshot->ValidateForFormatVersion(format_version));
+    if (snapshot->root_manifest.has_value()) {
+      ICEBERG_CHECK(
+          last_sequence_number >= snapshot->sequence_number,
+          "last-sequence-number {} is below retained snapshot {} sequence-number {}",
+          last_sequence_number, snapshot->snapshot_id, snapshot->sequence_number);
+      const auto first_row_id = snapshot->first_row_id.value();
+      const auto added_rows = snapshot->added_rows.value();
+      ICEBERG_CHECK(
+          first_row_id <= next_row_id && added_rows <= next_row_id - first_row_id,
+          "next-row-id {} does not cover retained snapshot {} row IDs "
+          "(first-row-id {}, added-rows {})",
+          next_row_id, snapshot->snapshot_id, first_row_id, added_rows);
+    }
+  }
+  return {};
 }
 
 int64_t TableMetadata::NextSequenceNumber() const {
@@ -790,6 +843,19 @@ Status TableMetadataBuilder::Impl::UpgradeFormatVersion(int8_t new_format_versio
     return {};
   }
 
+  // A create transaction may upgrade before selecting the current schema.
+  // Build() checks identifier-field compatibility across all schemas.
+  if (new_format_version >= TableMetadata::kMinFormatVersionConstraints) {
+    auto current_schema = schemas_by_id_.find(metadata_.current_schema_id);
+    if (current_schema != schemas_by_id_.end() &&
+        !current_schema->second->IdentifierFieldIds().empty()) {
+      return NotSupported(
+          "Cannot upgrade a table with identifier fields to format version {}: "
+          "primary-key constraint migration is not supported yet",
+          new_format_version);
+    }
+  }
+
   // Update the format version
   metadata_.format_version = new_format_version;
 
@@ -1114,14 +1180,35 @@ Status TableMetadataBuilder::Impl::AddSnapshot(std::shared_ptr<Snapshot> snapsho
                 "Attempting to add a snapshot before a sort order is added");
   ICEBERG_CHECK(!snapshots_by_id_.contains(snapshot->snapshot_id),
                 "Snapshot already exists for id: {}", snapshot->snapshot_id);
+  ICEBERG_RETURN_UNEXPECTED(
+      snapshot->ValidateForFormatVersion(metadata_.format_version, true));
   if (metadata_.format_version != 1 &&
       snapshot->sequence_number <= metadata_.last_sequence_number &&
-      snapshot->parent_snapshot_id.has_value()) {
+      (snapshot->parent_snapshot_id.has_value() || snapshot->root_manifest.has_value())) {
     return RetryableValidationFailed(
         "Cannot add snapshot with sequence number {} older than last sequence number {}",
         snapshot->sequence_number, metadata_.last_sequence_number);
   }
-
+  if (metadata_.format_version >= TableMetadata::kMinFormatVersionMonotonicTimestamps &&
+      snapshot->parent_snapshot_id.has_value()) {
+    auto parent = snapshots_by_id_.find(snapshot->parent_snapshot_id.value());
+    if (parent != snapshots_by_id_.end() &&
+        snapshot->timestamp_ms <= parent->second->timestamp_ms) {
+      return ValidationFailed(
+          "V{} snapshot timestamp must be greater than its parent timestamp",
+          metadata_.format_version);
+    }
+  }
+  if (snapshot->root_manifest.has_value()) {
+    if (snapshot->first_row_id.value() != metadata_.next_row_id) {
+      return RetryableValidationFailed(
+          "Cannot add snapshot, first-row-id must match table next-row-id: {} != {}",
+          snapshot->first_row_id.value(), metadata_.next_row_id);
+    }
+    ICEBERG_CHECK(snapshot->added_rows.value() <=
+                      std::numeric_limits<int64_t>::max() - metadata_.next_row_id,
+                  "Cannot add snapshot: row ID range overflows int64");
+  }
   metadata_.last_sequence_number = snapshot->sequence_number;
   metadata_.snapshots.push_back(snapshot);
   snapshots_by_id_.emplace(snapshot->snapshot_id, snapshot);
@@ -1397,7 +1484,19 @@ Result<std::vector<SnapshotLogEntry>> TableMetadataBuilder::Impl::UpdateSnapshot
 }
 
 Result<std::unique_ptr<TableMetadata>> TableMetadataBuilder::Impl::Build() {
-  // 1. Validate metadata consistency through TableMetadata#Validate
+  // 1. Validate the location and retained snapshots.
+  ICEBERG_RETURN_UNEXPECTED(metadata_.ValidateLocation());
+  // Catalog replay may use a newer base whose roots were absent during planning.
+  if (metadata_.HasRootManifest() &&
+      std::ranges::any_of(changes_, [](const auto& change) {
+        return change->kind() == TableUpdate::Kind::kRemoveSchemas ||
+               change->kind() == TableUpdate::Kind::kRemovePartitionSpecs;
+      })) {
+    return NotSupported(
+        "Removing schemas or partition specs with root manifests is not supported yet");
+  }
+
+  ICEBERG_RETURN_UNEXPECTED(metadata_.ValidateSnapshots());
 
   // 2. Update last_updated_ms if there are changes
   if (metadata_.last_updated_ms == kInvalidLastUpdatedMs) {
@@ -1410,6 +1509,7 @@ Result<std::unique_ptr<TableMetadata>> TableMetadataBuilder::Impl::Build() {
   auto schema_it = schemas_by_id_.find(current_schema_id);
   ICEBERG_PRECHECK(schema_it != schemas_by_id_.end(),
                    "Current schema ID {} not found in schemas", current_schema_id);
+  ICEBERG_RETURN_UNEXPECTED(metadata_.ValidateIdentifierFields());
   {
     const auto& current_schema = schema_it->second;
 
