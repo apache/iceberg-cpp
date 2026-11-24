@@ -83,6 +83,11 @@ struct ICEBERG_EXPORT TableMetadata {
       {TypeId::kVariant, 3},     {TypeId::kGeometry, 3},      {TypeId::kGeography, 3},
   };
 
+  /// \brief Check whether the table format version is supported.
+  static constexpr bool IsSupportedFormatVersion(int8_t version) {
+    return version >= 1 && version <= kSupportedTableFormatVersion;
+  }
+
   /// An integer version number for the format
   int8_t format_version;
   /// A UUID that identifies the table

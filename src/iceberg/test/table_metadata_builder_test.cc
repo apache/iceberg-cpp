@@ -18,6 +18,8 @@
  */
 
 #include <algorithm>
+#include <array>
+#include <limits>
 #include <memory>
 #include <ranges>
 #include <string>
@@ -550,6 +552,45 @@ TEST(TableMetadataBuilderTest, UpgradeFormatVersion) {
   builder = TableMetadataBuilder::BuildFromEmpty(2);
   builder->UpgradeFormatVersion(1);
   EXPECT_THAT(builder->Build(), HasErrorMessage("Cannot downgrade"));
+}
+
+TEST(TableMetadataBuilderTest, UpgradeFormatVersionRejectsUnsupportedVersions) {
+  auto base = CreateBaseMetadata();
+  for (int8_t version : std::vector<int8_t>{
+           0, -1, std::numeric_limits<int8_t>::min(), std::numeric_limits<int8_t>::max(),
+           static_cast<int8_t>(TableMetadata::kSupportedTableFormatVersion + 1)}) {
+    SCOPED_TRACE(version);
+    auto empty_builder = TableMetadataBuilder::BuildFromEmpty(version);
+    auto empty_result = empty_builder->Build();
+    EXPECT_THAT(empty_result, IsError(ErrorKind::kInvalidArgument));
+    EXPECT_THAT(empty_result, HasErrorMessage("Unsupported table format version: " +
+                                              std::to_string(version)));
+
+    auto builder = TableMetadataBuilder::BuildFrom(base.get());
+    builder->UpgradeFormatVersion(version);
+    auto result = builder->Build();
+    EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
+    EXPECT_THAT(result,
+                HasErrorMessage("Cannot upgrade table to unsupported format version: v" +
+                                std::to_string(version)));
+    EXPECT_TRUE(builder->changes().empty());
+
+    table::UpgradeFormatVersion update(version);
+    auto cloned = update.Clone();
+    EXPECT_EQ(*cloned, update);
+    const std::array<const TableUpdate*, 2> updates{&update, cloned.get()};
+    for (const auto* candidate : updates) {
+      auto update_builder = TableMetadataBuilder::BuildFrom(base.get());
+      candidate->ApplyTo(*update_builder);
+      auto update_result = update_builder->Build();
+      EXPECT_THAT(update_result, IsError(ErrorKind::kValidationFailed));
+      EXPECT_THAT(
+          update_result,
+          HasErrorMessage("Cannot upgrade table to unsupported format version: v" +
+                          std::to_string(version)));
+      EXPECT_TRUE(update_builder->changes().empty());
+    }
+  }
 }
 
 // Test AddSortOrder

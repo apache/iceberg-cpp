@@ -21,6 +21,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <utility>
 
 #include "iceberg/metrics_config.h"
 #include "iceberg/result.h"
@@ -88,7 +89,8 @@ Result<UpdateProperties::ApplyResult> UpdateProperties::Apply() {
     ICEBERG_ASSIGN_OR_RAISE(auto parsed_version,
                             StringUtils::ParseNumber<int32_t>(iter->second));
 
-    if (parsed_version > TableMetadata::kSupportedTableFormatVersion) {
+    if (!std::in_range<int8_t>(parsed_version) ||
+        !TableMetadata::IsSupportedFormatVersion(static_cast<int8_t>(parsed_version))) {
       return InvalidArgument(
           "Cannot upgrade table to unsupported format version: v{} (supported: v{})",
           parsed_version, TableMetadata::kSupportedTableFormatVersion);

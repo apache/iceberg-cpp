@@ -17,6 +17,7 @@
  * under the License.
  */
 
+#include <limits>
 #include <optional>
 #include <string>
 
@@ -487,6 +488,42 @@ TEST(MetadataSerdeTest, V3DefaultValuesRoundTrip) {
 TEST(MetadataSerdeTest, DeserializeUnsupportedVersion) {
   ReadTableMetadataExpectError("TableMetadataUnsupportedVersion.json",
                                "Cannot read unsupported version");
+}
+
+TEST(MetadataSerdeTest, RejectsNarrowedFormatVersions) {
+  for (const auto* resource : {"TableMetadataV1Valid.json", "TableMetadataV2Valid.json",
+                               "TableMetadataV3ValidMinimal.json"}) {
+    SCOPED_TRACE(resource);
+    ICEBERG_UNWRAP_OR_FAIL(auto metadata, ReadTableMetadataFromResource(resource));
+    ICEBERG_UNWRAP_OR_FAIL(auto valid_json, ToJson(*metadata));
+    ASSERT_THAT(TableMetadataFromJson(valid_json), IsOk());
+    const int64_t version = metadata->format_version;
+    for (int64_t invalid_version :
+         {version + 256, version - 256, version + int64_t{4294967296LL}}) {
+      SCOPED_TRACE(invalid_version);
+      auto invalid_json = valid_json;
+      invalid_json["format-version"] = invalid_version;
+      auto result = TableMetadataFromJson(invalid_json);
+      EXPECT_THAT(result, IsError(ErrorKind::kJsonParseError));
+      EXPECT_THAT(result, HasErrorMessage("'format-version' integer is out of range"));
+    }
+  }
+}
+
+TEST(MetadataSerdeTest, RejectsNonIntegerFormatVersions) {
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto metadata, ReadTableMetadataFromResource("TableMetadataV2ValidMinimal.json"));
+  ICEBERG_UNWRAP_OR_FAIL(auto valid_json, ToJson(*metadata));
+  for (const auto& value : {nlohmann::json(2.0), nlohmann::json(2.5), nlohmann::json("2"),
+                            nlohmann::json(true), nlohmann::json(nullptr),
+                            nlohmann::json(std::numeric_limits<uint64_t>::max())}) {
+    SCOPED_TRACE(value.dump());
+    auto invalid_json = valid_json;
+    invalid_json["format-version"] = value;
+    auto result = TableMetadataFromJson(invalid_json);
+    EXPECT_THAT(result, IsError(ErrorKind::kJsonParseError));
+    EXPECT_THAT(result, HasErrorMessage("format-version"));
+  }
 }
 
 TEST(MetadataSerdeTest, DeserializeRejectsUnknownSchemaBeforeFormatV3) {
