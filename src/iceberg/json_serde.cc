@@ -1594,13 +1594,12 @@ Result<std::unique_ptr<TableMetadata>> TableMetadataFromJson(const nlohmann::jso
 
   auto table_metadata = std::make_unique<TableMetadata>();
 
-  ICEBERG_ASSIGN_OR_RAISE(table_metadata->format_version,
-                          GetJsonValue<int8_t>(json, kFormatVersion));
-  if (table_metadata->format_version < 1 ||
-      table_metadata->format_version > TableMetadata::kSupportedTableFormatVersion) {
-    return JsonParseError("Cannot read unsupported version: {}",
-                          table_metadata->format_version);
+  ICEBERG_ASSIGN_OR_RAISE(auto format_version,
+                          GetJsonInteger<int8_t>(json, kFormatVersion));
+  if (!TableMetadata::IsSupportedFormatVersion(format_version)) {
+    return JsonParseError("Cannot read unsupported version: {}", format_version);
   }
+  table_metadata->format_version = format_version;
 
   ICEBERG_ASSIGN_OR_RAISE(table_metadata->table_uuid,
                           GetJsonValueOrDefault<std::string>(json, kTableUuid));
@@ -2082,7 +2081,7 @@ Result<std::unique_ptr<TableUpdate>> TableUpdateFromJson(const nlohmann::json& j
   }
   if (action == kActionUpgradeFormatVersion) {
     ICEBERG_ASSIGN_OR_RAISE(auto format_version,
-                            GetJsonValue<int8_t>(json, kFormatVersion));
+                            GetJsonInteger<int8_t>(json, kFormatVersion));
     return std::make_unique<table::UpgradeFormatVersion>(format_version);
   }
   if (action == kActionAddSchema) {

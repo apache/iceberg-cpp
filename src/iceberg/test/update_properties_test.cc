@@ -129,6 +129,18 @@ TEST_F(UpdatePropertiesTest, UpgradeFormatVersionUnsupported) {
   EXPECT_THAT(result, HasErrorMessage("unsupported format version"));
 }
 
+TEST_F(UpdatePropertiesTest, UpgradeFormatVersionRejectsNonPositiveValues) {
+  for (const auto* version : {"0", "-1", "-255", "-254", "-253"}) {
+    SCOPED_TRACE(version);
+    ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateProperties());
+    update->Set("format-version", version);
+
+    auto result = update->Apply();
+    EXPECT_THAT(result, IsError(ErrorKind::kInvalidArgument));
+    EXPECT_THAT(result, HasErrorMessage("unsupported format version"));
+  }
+}
+
 TEST_F(UpdatePropertiesTest, SetReservedPropertyUuid) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateProperties());
   update->Set("uuid", "some-uuid");
