@@ -39,6 +39,7 @@
 #include "iceberg/util/cache_internal.h"
 #include "iceberg/util/checked_cast.h"
 #include "iceberg/util/content_file_util.h"
+#include "iceberg/util/conversions_internal.h"
 #include "iceberg/util/executor_util_internal.h"
 #include "iceberg/util/macros.h"
 
@@ -104,17 +105,19 @@ Status EqualityDeleteFile::ConvertBoundsIfNeeded() const {
     // Convert lower bound
     if (auto it = wrapped.data_file->lower_bounds.find(field_id);
         it != wrapped.data_file->lower_bounds.cend() && !it->second.empty()) {
-      ICEBERG_ASSIGN_OR_RAISE(auto lower,
-                              Literal::Deserialize(it->second, primitive_type));
-      lower_bounds.emplace(field_id, std::move(lower));
+      ICEBERG_ASSIGN_OR_RAISE(auto lower, DeserializeBound(it->second, primitive_type));
+      if (lower) {
+        lower_bounds.emplace(field_id, std::move(*lower));
+      }
     }
 
     // Convert upper bound
     if (auto it = wrapped.data_file->upper_bounds.find(field_id);
         it != wrapped.data_file->upper_bounds.cend() && !it->second.empty()) {
-      ICEBERG_ASSIGN_OR_RAISE(auto upper,
-                              Literal::Deserialize(it->second, primitive_type));
-      upper_bounds.emplace(field_id, std::move(upper));
+      ICEBERG_ASSIGN_OR_RAISE(auto upper, DeserializeBound(it->second, primitive_type));
+      if (upper) {
+        upper_bounds.emplace(field_id, std::move(*upper));
+      }
     }
   }
 
@@ -183,19 +186,19 @@ Result<bool> CanContainEqDeletesForFile(const DataFile& data_file,
 
     ICEBERG_ASSIGN_OR_RAISE(auto delete_lower, delete_file.LowerBound(field_id));
     ICEBERG_ASSIGN_OR_RAISE(auto delete_upper, delete_file.UpperBound(field_id));
-    if (!delete_lower.has_value() || !delete_upper.has_value()) {
+    if (!delete_lower && !delete_upper) {
       continue;  // Missing bounds, assume may match
     }
 
     // Convert data bounds
     auto primitive_type = checked_pointer_cast<PrimitiveType>(field.type());
     ICEBERG_ASSIGN_OR_RAISE(auto data_lower,
-                            Literal::Deserialize(data_lower_it->second, primitive_type));
+                            DeserializeBound(data_lower_it->second, primitive_type));
     ICEBERG_ASSIGN_OR_RAISE(auto data_upper,
-                            Literal::Deserialize(data_upper_it->second, primitive_type));
+                            DeserializeBound(data_upper_it->second, primitive_type));
 
-    if (!RangesOverlap(data_lower, data_upper, delete_lower->get(),
-                       delete_upper->get())) {
+    if ((data_lower && delete_upper && *data_lower > delete_upper->get()) ||
+        (data_upper && delete_lower && *data_upper < delete_lower->get())) {
       return false;  // Ranges don't overlap - cannot match
     }
   }

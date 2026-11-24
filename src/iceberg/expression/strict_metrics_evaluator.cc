@@ -31,6 +31,7 @@
 #include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/schema.h"
 #include "iceberg/type.h"
+#include "iceberg/util/conversions_internal.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg {
@@ -156,7 +157,7 @@ class StrictMetricsVisitor : public BoundVisitor<bool> {
     auto it = data_file_.upper_bounds.find(id);
     if (it != data_file_.upper_bounds.cend()) {
       ICEBERG_ASSIGN_OR_RAISE(auto upper, ParseBound(expr, it->second));
-      if (upper < lit) {
+      if (upper && *upper < lit) {
         return kRowsMustMatch;
       }
     }
@@ -184,7 +185,7 @@ class StrictMetricsVisitor : public BoundVisitor<bool> {
     auto it = data_file_.upper_bounds.find(id);
     if (it != data_file_.upper_bounds.cend()) {
       ICEBERG_ASSIGN_OR_RAISE(auto upper, ParseBound(expr, it->second));
-      if (upper <= lit) {
+      if (upper && *upper <= lit) {
         return kRowsMustMatch;
       }
     }
@@ -212,13 +213,13 @@ class StrictMetricsVisitor : public BoundVisitor<bool> {
     auto it = data_file_.lower_bounds.find(id);
     if (it != data_file_.lower_bounds.cend()) {
       ICEBERG_ASSIGN_OR_RAISE(auto lower, ParseBound(expr, it->second));
-      if (lower.IsNaN()) {
+      if (lower && lower->IsNaN()) {
         // NaN indicates unreliable bounds. See the StrictMetricsEvaluator docs for
         // more.
         return kRowsMightNotMatch;
       }
 
-      if (lower > lit) {
+      if (lower && *lower > lit) {
         return kRowsMustMatch;
       }
     }
@@ -246,13 +247,13 @@ class StrictMetricsVisitor : public BoundVisitor<bool> {
     auto it = data_file_.lower_bounds.find(id);
     if (it != data_file_.lower_bounds.cend()) {
       ICEBERG_ASSIGN_OR_RAISE(auto lower, ParseBound(expr, it->second));
-      if (lower.IsNaN()) {
+      if (lower && lower->IsNaN()) {
         // NaN indicates unreliable bounds. See the StrictMetricsEvaluator docs for
         // more.
         return kRowsMightNotMatch;
       }
 
-      if (lower >= lit) {
+      if (lower && *lower >= lit) {
         return kRowsMustMatch;
       }
     }
@@ -281,11 +282,11 @@ class StrictMetricsVisitor : public BoundVisitor<bool> {
     if (lower_it != data_file_.lower_bounds.cend() &&
         upper_it != data_file_.upper_bounds.cend()) {
       ICEBERG_ASSIGN_OR_RAISE(auto lower, ParseBound(expr, lower_it->second));
-      if (lower != lit) {
+      if (!lower || *lower != lit) {
         return kRowsMightNotMatch;
       }
       ICEBERG_ASSIGN_OR_RAISE(auto upper, ParseBound(expr, upper_it->second));
-      if (upper != lit) {
+      if (!upper || *upper != lit) {
         return kRowsMightNotMatch;
       }
 
@@ -313,12 +314,12 @@ class StrictMetricsVisitor : public BoundVisitor<bool> {
     auto lower_it = data_file_.lower_bounds.find(id);
     if (lower_it != data_file_.lower_bounds.cend()) {
       ICEBERG_ASSIGN_OR_RAISE(auto lower, ParseBound(expr, lower_it->second));
-      if (lower.IsNaN()) {
+      if (lower && lower->IsNaN()) {
         // NaN indicates unreliable bounds. See the StrictMetricsEvaluator docs for
         // more.
         return kRowsMightNotMatch;
       }
-      if (lower > lit) {
+      if (lower && *lower > lit) {
         return kRowsMustMatch;
       }
     }
@@ -326,7 +327,7 @@ class StrictMetricsVisitor : public BoundVisitor<bool> {
     auto upper_it = data_file_.upper_bounds.find(id);
     if (upper_it != data_file_.upper_bounds.cend()) {
       ICEBERG_ASSIGN_OR_RAISE(auto upper, ParseBound(expr, upper_it->second));
-      if (upper < lit) {
+      if (upper && *upper < lit) {
         return kRowsMustMatch;
       }
     }
@@ -357,16 +358,16 @@ class StrictMetricsVisitor : public BoundVisitor<bool> {
       // similar to the implementation in eq, first check if the lower bound is in the
       // set
       ICEBERG_ASSIGN_OR_RAISE(auto lower, ParseBound(expr, lower_it->second));
-      if (!literal_set.contains(lower)) {
+      if (!lower || !literal_set.contains(*lower)) {
         return kRowsMightNotMatch;
       }
       // check if the upper bound is in the set
       ICEBERG_ASSIGN_OR_RAISE(auto upper, ParseBound(expr, upper_it->second));
-      if (!literal_set.contains(upper)) {
+      if (!upper || !literal_set.contains(*upper)) {
         return kRowsMightNotMatch;
       }
       // finally check if the lower bound and the upper bound are equal
-      if (lower != upper) {
+      if (*lower != *upper) {
         return kRowsMightNotMatch;
       }
 
@@ -395,20 +396,18 @@ class StrictMetricsVisitor : public BoundVisitor<bool> {
     std::optional<Literal> lower_bound;
     auto lower_it = data_file_.lower_bounds.find(id);
     if (lower_it != data_file_.lower_bounds.cend()) {
-      ICEBERG_ASSIGN_OR_RAISE(auto lower, ParseBound(expr, lower_it->second));
-      if (lower.IsNaN()) {
+      ICEBERG_ASSIGN_OR_RAISE(lower_bound, ParseBound(expr, lower_it->second));
+      if (lower_bound && lower_bound->IsNaN()) {
         // NaN indicates unreliable bounds. See the StrictMetricsEvaluator docs for
         // more.
         return kRowsMightNotMatch;
       }
-      lower_bound = std::move(lower);
     }
 
     std::optional<Literal> upper_bound;
     auto upper_it = data_file_.upper_bounds.find(id);
     if (upper_it != data_file_.upper_bounds.cend()) {
-      ICEBERG_ASSIGN_OR_RAISE(auto upper, ParseBound(expr, upper_it->second));
-      upper_bound = std::move(upper);
+      ICEBERG_ASSIGN_OR_RAISE(upper_bound, ParseBound(expr, upper_it->second));
     }
 
     if (!lower_bound.has_value() && !upper_bound.has_value()) {
@@ -460,13 +459,19 @@ class StrictMetricsVisitor : public BoundVisitor<bool> {
     std::string_view prefix = std::get<std::string>(lit.value());
 
     ICEBERG_ASSIGN_OR_RAISE(auto lower, ParseBound(expr, lower_it->second));
-    std::string_view lower_str = std::get<std::string>(lower.value());
+    if (!lower) {
+      return kRowsMightNotMatch;
+    }
+    std::string_view lower_str = std::get<std::string>(lower->value());
     if (!lower_str.starts_with(prefix)) {
       return kRowsMightNotMatch;
     }
 
     ICEBERG_ASSIGN_OR_RAISE(auto upper, ParseBound(expr, upper_it->second));
-    std::string_view upper_str = std::get<std::string>(upper.value());
+    if (!upper) {
+      return kRowsMightNotMatch;
+    }
+    std::string_view upper_str = std::get<std::string>(upper->value());
     if (!upper_str.starts_with(prefix)) {
       return kRowsMightNotMatch;
     }
@@ -507,8 +512,8 @@ class StrictMetricsVisitor : public BoundVisitor<bool> {
     if (auto lower_it = data_file_.lower_bounds.find(id);
         lower_it != data_file_.lower_bounds.cend()) {
       ICEBERG_ASSIGN_OR_RAISE(auto lower, ParseBound(expr, lower_it->second));
-      std::string_view lower_str = std::get<std::string>(lower.value());
-      if (lower_str.compare(0, prefix.size(), prefix) > 0) {
+      if (lower &&
+          std::get<std::string>(lower->value()).compare(0, prefix.size(), prefix) > 0) {
         return kRowsMustMatch;
       }
     }
@@ -516,8 +521,7 @@ class StrictMetricsVisitor : public BoundVisitor<bool> {
     if (auto upper_it = data_file_.upper_bounds.find(id);
         upper_it != data_file_.upper_bounds.cend()) {
       ICEBERG_ASSIGN_OR_RAISE(auto upper, ParseBound(expr, upper_it->second));
-      std::string_view upper_str = std::get<std::string>(upper.value());
-      if (upper_str < prefix) {
+      if (upper && std::get<std::string>(upper->value()) < prefix) {
         return kRowsMustMatch;
       }
     }
@@ -526,14 +530,14 @@ class StrictMetricsVisitor : public BoundVisitor<bool> {
   }
 
  private:
-  Result<Literal> ParseBound(const std::shared_ptr<Bound>& expr,
-                             const std::vector<uint8_t>& stats) {
+  Result<std::optional<Literal>> ParseBound(const std::shared_ptr<Bound>& expr,
+                                            const std::vector<uint8_t>& stats) {
     auto type = expr->reference()->type();
     if (!type->is_primitive()) {
       return NotSupported("Bound of non-primitive type is not supported.");
     }
     auto primitive_type = internal::checked_pointer_cast<PrimitiveType>(type);
-    return Literal::Deserialize(stats, primitive_type);
+    return internal::DeserializeBound(stats, primitive_type);
   }
 
   Result<bool> CanContainNulls(int32_t id) {

@@ -649,6 +649,36 @@ TEST(LiteralSerDeTest, TypePromotion) {
   EXPECT_EQ(double_result->type()->type_id(), TypeId::kDouble);
   EXPECT_DOUBLE_EQ(std::get<double>(double_result->value()), 1.0);
 }
+
+TEST(LiteralSerDeTest, DatePromotion) {
+  for (const auto& type :
+       std::vector<std::shared_ptr<PrimitiveType>>{timestamp(), timestamp_ns()}) {
+    const auto units_per_day = type->type_id() == TypeId::kTimestamp
+                                   ? internal::kMicrosPerDay
+                                   : internal::kNanosPerDay;
+    const auto max_days =
+        static_cast<int32_t>(std::numeric_limits<int64_t>::max() / units_per_day);
+    for (int32_t days : {-max_days, -1, 0, 1, max_days}) {
+      ICEBERG_UNWRAP_OR_FAIL(auto bytes, Literal::Date(days).Serialize());
+      ICEBERG_UNWRAP_OR_FAIL(auto decoded, Literal::Deserialize(bytes, type));
+      EXPECT_EQ(std::get<int64_t>(decoded.value()), days * units_per_day);
+    }
+    for (int32_t days : {-max_days - 1, max_days + 1}) {
+      ICEBERG_UNWRAP_OR_FAIL(auto bytes, Literal::Date(days).Serialize());
+      EXPECT_THAT(Literal::Deserialize(bytes, type),
+                  IsError(ErrorKind::kInvalidArgument));
+    }
+  }
+}
+
+TEST(LiteralSerDeTest, FourByteTemporalValuesRequireDatePromotion) {
+  ICEBERG_UNWRAP_OR_FAIL(auto bytes, Literal::Date(1).Serialize());
+  for (const auto& type : std::vector<std::shared_ptr<PrimitiveType>>{
+           time(), timestamp_tz(), timestamptz_ns()}) {
+    EXPECT_THAT(Literal::Deserialize(bytes, type), IsError(ErrorKind::kInvalidArgument));
+  }
+}
+
 // Instantiate parameterized tests
 
 INSTANTIATE_TEST_SUITE_P(

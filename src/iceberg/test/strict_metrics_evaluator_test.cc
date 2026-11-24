@@ -31,6 +31,7 @@
 #include "iceberg/schema.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/type.h"
+#include "iceberg/util/temporal_util.h"
 
 namespace iceberg {
 
@@ -1325,6 +1326,44 @@ TEST(StrictMetricsEvaluatorRegressionTest, NotInWithMissingLowerBound) {
   // All literals are strictly above upper_bound, so no row can be in the set.
   expect_eval(Expressions::NotIn("id", {Literal::Int(51), Literal::Int(70)}),
               kRowsMustMatch);
+}
+
+TEST(StrictMetricsEvaluatorRegressionTest, NotInWithPromotedDateUpperBound) {
+  auto schema = std::make_shared<Schema>(
+      std::vector<SchemaField>{SchemaField::MakeRequired(1, "ts", timestamp())},
+      /*schema_id=*/0);
+  DataFile file;
+  file.record_count = 1;
+  file.null_value_counts = {{1, 0}};
+  ICEBERG_UNWRAP_OR_FAIL(auto upper, Literal::Date(1).Serialize());
+  file.upper_bounds = {{1, upper}};
+
+  // The file may contain midnight on January 2, 1970.
+  auto expr = Expressions::NotIn("ts", {Literal::Timestamp(internal::kMicrosPerDay),
+                                        Literal::Timestamp(2 * internal::kMicrosPerDay)});
+  ICEBERG_UNWRAP_OR_FAIL(auto eval, StrictMetricsEvaluator::Make(expr, schema, true));
+  ICEBERG_UNWRAP_OR_FAIL(auto result, eval->Evaluate(file));
+  EXPECT_EQ(result, kRowsMightNotMatch);
+}
+
+TEST(StrictMetricsEvaluatorRegressionTest, NotInWithOutOfRangeDateBound) {
+  auto schema = std::make_shared<Schema>(
+      std::vector<SchemaField>{SchemaField::MakeRequired(1, "ts", timestamp_ns())});
+  ICEBERG_UNWRAP_OR_FAIL(auto epoch, Literal::Date(0).Serialize());
+  ICEBERG_UNWRAP_OR_FAIL(auto loose_upper, Literal::Date(106752).Serialize());
+  DataFile file{.record_count = 1,
+                .lower_bounds = {{1, epoch}},
+                .upper_bounds = {{1, loose_upper}}};
+
+  auto expect_not_in = [&](int64_t first, int64_t second, bool expected) {
+    auto expr = Expressions::NotIn(
+        "ts", {Literal::TimestampNs(first), Literal::TimestampNs(second)});
+    ICEBERG_UNWRAP_OR_FAIL(auto eval, StrictMetricsEvaluator::Make(expr, schema, true));
+    ICEBERG_UNWRAP_OR_FAIL(auto result, eval->Evaluate(file));
+    EXPECT_EQ(result, expected);
+  };
+  expect_not_in(0, 1, kRowsMightNotMatch);
+  expect_not_in(-2, -1, kRowsMustMatch);  // The lower bound is still usable.
 }
 
 TEST(StrictMetricsEvaluatorRegressionTest, NotInWithMissingUpperBound) {

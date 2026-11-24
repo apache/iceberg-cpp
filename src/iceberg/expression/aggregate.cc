@@ -32,6 +32,7 @@
 #include "iceberg/row/struct_like.h"
 #include "iceberg/type.h"
 #include "iceberg/util/checked_cast.h"
+#include "iceberg/util/conversions_internal.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg {
@@ -56,17 +57,32 @@ class SingleValueStructLike : public StructLike {
   Literal literal_;
 };
 
-Result<Literal> EvaluateBoundTerm(const BoundTerm& term,
-                                  const std::optional<std::vector<uint8_t>>& bound) {
-  auto ptype = GetPrimitiveType(term);
-  if (!bound.has_value()) {
-    SingleValueStructLike data(Literal::Null(ptype));
-    return term.Evaluate(data);
+// A disengaged optional means the file metrics cannot determine the extremum.
+Result<std::optional<Literal>> EvaluateFileExtremum(const BoundAggregate& aggregate,
+                                                    const DataFile& file) {
+  const auto& term = *aggregate.term();
+  const auto ref = term.reference();
+  const auto id = ref->field().field_id();
+  const auto& bounds = aggregate.op() == Expression::Operation::kMax ? file.upper_bounds
+                                                                     : file.lower_bounds;
+  if (auto it = bounds.find(id); it != bounds.end()) {
+    ICEBERG_ASSIGN_OR_RAISE(
+        auto bound, internal::DeserializeBound(it->second, GetPrimitiveType(*ref)));
+    if (bound) {
+      if (term.kind() == Term::Kind::kReference) {
+        return bound;
+      }
+      SingleValueStructLike data(std::move(*bound));
+      return term.Evaluate(data);
+    }
   }
-
-  ICEBERG_ASSIGN_OR_RAISE(auto literal, Literal::Deserialize(*bound, ptype));
-  SingleValueStructLike data(std::move(literal));
-  return term.Evaluate(data);
+  const auto values = file.value_counts.find(id);
+  const auto nulls = file.null_value_counts.find(id);
+  if (values != file.value_counts.end() && values->second > 0 &&
+      nulls != file.null_value_counts.end() && values->second == nulls->second) {
+    return Literal::Null(GetPrimitiveType(term));
+  }
+  return std::nullopt;
 }
 
 class CountAggregator : public BoundAggregate::Aggregator {
@@ -139,27 +155,27 @@ class MaxAggregator : public BoundAggregate::Aggregator {
     if (!valid_) {
       return {};
     }
-    if (!aggregate_.HasValue(file)) {
+    ICEBERG_ASSIGN_OR_RAISE(auto value, EvaluateFileExtremum(aggregate_, file));
+    if (!value) {
       valid_ = false;
       return {};
     }
 
-    ICEBERG_ASSIGN_OR_RAISE(auto value, aggregate_.Evaluate(file));
-    if (value.IsNull()) {
+    if (value->IsNull()) {
       return {};
     }
     if (current_.IsNull()) {
-      current_ = std::move(value);
+      current_ = std::move(*value);
       return {};
     }
 
-    if (auto ordering = value <=> current_;
+    if (auto ordering = *value <=> current_;
         ordering == std::partial_ordering::unordered) {
       valid_ = false;
       return InvalidArgument("Cannot compare literal {} with current value {}",
-                             value.ToString(), current_.ToString());
+                             value->ToString(), current_.ToString());
     } else if (ordering == std::partial_ordering::greater) {
-      current_ = std::move(value);
+      current_ = std::move(*value);
     }
     return {};
   }
@@ -210,27 +226,27 @@ class MinAggregator : public BoundAggregate::Aggregator {
     if (!valid_) {
       return {};
     }
-    if (!aggregate_.HasValue(file)) {
+    ICEBERG_ASSIGN_OR_RAISE(auto value, EvaluateFileExtremum(aggregate_, file));
+    if (!value) {
       valid_ = false;
       return {};
     }
 
-    ICEBERG_ASSIGN_OR_RAISE(auto value, aggregate_.Evaluate(file));
-    if (value.IsNull()) {
+    if (value->IsNull()) {
       return {};
     }
     if (current_.IsNull()) {
-      current_ = std::move(value);
+      current_ = std::move(*value);
       return {};
     }
 
-    if (auto ordering = value <=> current_;
+    if (auto ordering = *value <=> current_;
         ordering == std::partial_ordering::unordered) {
       valid_ = false;
       return InvalidArgument("Cannot compare literal {} with current value {}",
-                             value.ToString(), current_.ToString());
+                             value->ToString(), current_.ToString());
     } else if (ordering == std::partial_ordering::less) {
-      current_ = std::move(value);
+      current_ = std::move(*value);
     }
     return {};
   }
@@ -406,9 +422,11 @@ Result<Literal> MaxAggregate::Evaluate(const StructLike& data) const {
 }
 
 Result<Literal> MaxAggregate::Evaluate(const DataFile& file) const {
-  auto field_id = GetFieldId(term());
-  auto upper = GetMapValue(file.upper_bounds, field_id);
-  return EvaluateBoundTerm(*term(), upper);
+  ICEBERG_ASSIGN_OR_RAISE(auto value, EvaluateFileExtremum(*this, file));
+  if (!value) {
+    return Literal::Null(GetPrimitiveType(*term()));
+  }
+  return std::move(*value);
 }
 
 std::unique_ptr<BoundAggregate::Aggregator> MaxAggregate::NewAggregator() const {
@@ -416,13 +434,8 @@ std::unique_ptr<BoundAggregate::Aggregator> MaxAggregate::NewAggregator() const 
 }
 
 bool MaxAggregate::HasValue(const DataFile& file) const {
-  auto field_id = GetFieldId(term());
-  bool has_bound = file.upper_bounds.contains(field_id);
-  auto value_count = GetMapValue(file.value_counts, field_id);
-  auto null_count = GetMapValue(file.null_value_counts, field_id);
-  bool all_null = value_count.has_value() && *value_count > 0 && null_count.has_value() &&
-                  null_count.value() == value_count.value();
-  return has_bound || all_null;
+  auto value = EvaluateFileExtremum(*this, file);
+  return value && value->has_value();
 }
 
 MinAggregate::MinAggregate(std::shared_ptr<BoundTerm> term)
@@ -444,9 +457,11 @@ Result<Literal> MinAggregate::Evaluate(const StructLike& data) const {
 }
 
 Result<Literal> MinAggregate::Evaluate(const DataFile& file) const {
-  auto field_id = GetFieldId(term());
-  auto lower = GetMapValue(file.lower_bounds, field_id);
-  return EvaluateBoundTerm(*term(), lower);
+  ICEBERG_ASSIGN_OR_RAISE(auto value, EvaluateFileExtremum(*this, file));
+  if (!value) {
+    return Literal::Null(GetPrimitiveType(*term()));
+  }
+  return std::move(*value);
 }
 
 std::unique_ptr<BoundAggregate::Aggregator> MinAggregate::NewAggregator() const {
@@ -454,13 +469,8 @@ std::unique_ptr<BoundAggregate::Aggregator> MinAggregate::NewAggregator() const 
 }
 
 bool MinAggregate::HasValue(const DataFile& file) const {
-  auto field_id = GetFieldId(term());
-  bool has_bound = file.lower_bounds.contains(field_id);
-  auto value_count = GetMapValue(file.value_counts, field_id);
-  auto null_count = GetMapValue(file.null_value_counts, field_id);
-  bool all_null = value_count.has_value() && *value_count > 0 && null_count.has_value() &&
-                  null_count.value() == value_count.value();
-  return has_bound || all_null;
+  auto value = EvaluateFileExtremum(*this, file);
+  return value && value->has_value();
 }
 
 // -------------------- Unbound binding --------------------

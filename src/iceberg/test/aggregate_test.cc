@@ -327,6 +327,33 @@ TEST(AggregateTest, AggregatesFromDataFileWithTransform) {
   EXPECT_TRUE(evaluator->AllAggregatorsValid());
 }
 
+TEST(AggregateTest, PromotedDateBoundsDistinguishUnknownAndInvalid) {
+  ICEBERG_UNWRAP_OR_FAIL(auto lower, Literal::Date(-106752).Serialize());
+  ICEBERG_UNWRAP_OR_FAIL(auto upper, Literal::Date(106752).Serialize());
+  for (const auto& field : {SchemaField::MakeRequired(1, "ts", timestamp_ns()),
+                            SchemaField::MakeOptional(1, "ts", timestamp_ns())}) {
+    Schema schema({field});
+    for (const auto& agg : {BindAggregate(schema, Expressions::Min("ts")),
+                            BindAggregate(schema, Expressions::Max("ts"))}) {
+      DataFile file{
+          .record_count = 1, .lower_bounds = {{1, lower}}, .upper_bounds = {{1, upper}}};
+      EXPECT_FALSE(agg->HasValue(file));
+      ICEBERG_UNWRAP_OR_FAIL(auto value, agg->Evaluate(file));
+      EXPECT_TRUE(value.IsNull());
+      EXPECT_EQ(value.type()->type_id(), TypeId::kTimestampNs);
+      auto accumulator = agg->NewAggregator();
+      ASSERT_TRUE(accumulator->Update(file).has_value());
+      EXPECT_FALSE(accumulator->IsValid());
+
+      file.lower_bounds[1] = file.upper_bounds[1] = {0, 1, 2};
+      EXPECT_FALSE(agg->HasValue(file));
+      EXPECT_THAT(agg->Evaluate(file), IsError(ErrorKind::kInvalidArgument));
+      EXPECT_THAT(agg->NewAggregator()->Update(file),
+                  IsError(ErrorKind::kInvalidArgument));
+    }
+  }
+}
+
 TEST(AggregateTest, DataFileAggregatorParity) {
   Schema schema({SchemaField::MakeRequired(1, "id", int32()),
                  SchemaField::MakeOptional(2, "no_stats", int32()),

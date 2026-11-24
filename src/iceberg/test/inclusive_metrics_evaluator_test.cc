@@ -131,6 +131,22 @@ class InclusiveMetricsEvaluatorTest : public ::testing::Test {
   std::shared_ptr<Schema> schema_;
 };
 
+TEST(InclusiveMetricsDatePromotionTest, UsesDaysForTimestampBounds) {
+  Schema schema({SchemaField::MakeRequired(1, "ts", timestamp())});
+  ICEBERG_UNWRAP_OR_FAIL(auto lower, Literal::Date(1).Serialize());
+  ICEBERG_UNWRAP_OR_FAIL(auto upper, Literal::Date(2).Serialize());
+  DataFile file{
+      .record_count = 1, .lower_bounds = {{1, lower}}, .upper_bounds = {{1, upper}}};
+  auto check = [&](const std::shared_ptr<Expression>& expr, bool expected) {
+    ICEBERG_UNWRAP_OR_FAIL(auto eval,
+                           InclusiveMetricsEvaluator::Make(expr, schema, true));
+    ICEBERG_UNWRAP_OR_FAIL(auto result, eval->Evaluate(file));
+    EXPECT_EQ(result, expected);
+  };
+  check(Expressions::GreaterThan("ts", Literal::Timestamp(5)), true);
+  check(Expressions::LessThan("ts", Literal::Timestamp(5)), false);
+}
+
 TEST_F(InclusiveMetricsEvaluatorTest, CaseSensitiveTest) {
   {
     auto unbound = Expressions::Equal("id", Literal::Long(300));
