@@ -1374,7 +1374,10 @@ Result<nlohmann::json> ToJson(const TableMetadata& table_metadata) {
   json[kFormatVersion] = table_metadata.format_version;
   json[kTableUuid] = table_metadata.table_uuid;
   ICEBERG_RETURN_UNEXPECTED(table_metadata.ValidateLocation());
-  json[kLocation] = table_metadata.location;
+  if (table_metadata.format_version < TableMetadata::kMinFormatVersionOptionalLocation ||
+      !table_metadata.location.empty()) {
+    json[kLocation] = table_metadata.location;
+  }
   if (table_metadata.format_version > 1) {
     json[kLastSequenceNumber] = table_metadata.last_sequence_number;
   }
@@ -1662,9 +1665,6 @@ Result<std::unique_ptr<TableMetadata>> TableMetadataFromJson(const nlohmann::jso
                             GetJsonValue<std::string>(json, kLocation));
   }
   if (auto status = table_metadata->ValidateLocation(); !status) {
-    if (status.error().kind == ErrorKind::kNotSupported) {
-      return NotSupported("{}", status.error().message);
-    }
     return JsonParseError("{}", status.error().message);
   }
 

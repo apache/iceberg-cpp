@@ -545,7 +545,7 @@ TEST(MetadataSerdeTest, SerializationRejectsNullSnapshots) {
   }
 }
 
-TEST(MetadataSerdeTest, V4RequiresLocationUntilSupported) {
+TEST(MetadataSerdeTest, V4OptionalLocation) {
   for (bool explicit_null : {false, true}) {
     auto json = V4MetadataJson();
     if (explicit_null) {
@@ -553,12 +553,15 @@ TEST(MetadataSerdeTest, V4RequiresLocationUntilSupported) {
     } else {
       json.erase("location");
     }
-    EXPECT_THAT(TableMetadataFromJson(json), IsError(ErrorKind::kNotSupported));
+    ICEBERG_UNWRAP_OR_FAIL(auto parsed, TableMetadataFromJson(json));
+    EXPECT_TRUE(parsed->location.empty());
+    ICEBERG_UNWRAP_OR_FAIL(auto serialized, ToJson(*parsed));
+    EXPECT_FALSE(serialized.contains("location"));
+    for (int version : {1, 2, 3}) {
+      json["format-version"] = version;
+      EXPECT_FALSE(TableMetadataFromJson(json).has_value());
+    }
   }
-  ICEBERG_UNWRAP_OR_FAIL(
-      auto metadata, ReadTableMetadataFromResource("TableMetadataV4ValidMinimal.json"));
-  metadata->location.clear();
-  EXPECT_THAT(ToJson(*metadata), IsError(ErrorKind::kNotSupported));
 }
 
 TEST(MetadataSerdeTest, V4RejectsRelativeLocationAndMissingRequiredFields) {

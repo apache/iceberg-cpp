@@ -329,11 +329,7 @@ bool TableMetadata::HasRootManifest() const {
 
 Status TableMetadata::ValidateLocation() const {
   if (format_version >= kMinFormatVersionOptionalLocation) {
-    if (location.empty()) {
-      return NotSupported("V{} tables without a location are not supported yet",
-                          format_version);
-    }
-    ICEBERG_PRECHECK(!LocationUtil::ParseScheme(location).empty(),
+    ICEBERG_PRECHECK(location.empty() || !LocationUtil::ParseScheme(location).empty(),
                      "V{} table location must be absolute: {}", format_version, location);
   }
   return {};
@@ -632,6 +628,10 @@ Result<std::string> TableMetadataUtil::NewTableMetadataFilePath(const TableMetad
     return std::format("{}/{}", LocationUtil::StripTrailingSlash(metadata_location),
                        filename);
   } else {
+    ICEBERG_PRECHECK(!meta.location.empty(),
+                     "Cannot generate a metadata file location without a table location; "
+                     "provide a table location or set '{}'",
+                     TableProperties::kWriteMetadataLocation.key());
     return std::format("{}/{}/{}", meta.location, kMetadataFolderName, filename);
   }
 }

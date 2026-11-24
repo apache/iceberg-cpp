@@ -86,8 +86,9 @@ struct ICEBERG_EXPORT TableMetadata {
   int8_t format_version;
   /// A UUID that identifies the table
   std::string table_uuid;
-  /// The table's base location. An absolute URI is required in format version 4
-  /// and later.
+  /// The table's base location. In format version 4 and later, a provided location
+  /// must be an absolute URI, and empty represents an omitted location. A catalog
+  /// must provide the location before resolving relative paths.
   std::string location;
   /// The table's highest assigned sequence number
   int64_t last_sequence_number;
@@ -176,8 +177,8 @@ struct ICEBERG_EXPORT TableMetadata {
   bool HasRootManifest() const;
 
   /// \brief Validate the table location for this format version.
-  /// In format version 4 and later, the location must be an absolute URI.
-  /// Omitted locations are not supported yet.
+  /// In format version 4 and later, locations may be absent; a provided location
+  /// must be an absolute URI.
   Status ValidateLocation() const;
 
   /// \brief Validate identifier-field support across all schemas.

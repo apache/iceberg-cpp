@@ -857,12 +857,17 @@ TEST(TableMetadataBuilderTest, V4RejectsRelativeLocation) {
   EXPECT_THAT(builder->Build(), HasErrorMessage("location must be absolute"));
 }
 
-TEST(TableMetadataBuilderTest, V4RequiresLocationUntilSupported) {
+TEST(TableMetadataBuilderTest, V4OptionalLocation) {
   auto metadata = CreateBaseMetadata();
   metadata->format_version = 4;
   metadata->location.clear();
   auto builder = TableMetadataBuilder::BuildFrom(metadata.get());
-  EXPECT_THAT(builder->Build(), IsError(ErrorKind::kNotSupported));
+  ICEBERG_UNWRAP_OR_FAIL(auto unlocated, builder->Build());
+  EXPECT_TRUE(unlocated->location.empty());
+  builder = TableMetadataBuilder::BuildFrom(unlocated.get());
+  builder->SetLocation("s3://catalog/table");
+  ICEBERG_UNWRAP_OR_FAIL(auto located, builder->Build());
+  EXPECT_EQ(located->location, "s3://catalog/table");
 }
 
 // Test AddSortOrder
