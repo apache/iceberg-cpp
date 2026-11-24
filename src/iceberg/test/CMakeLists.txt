@@ -165,6 +165,7 @@ add_iceberg_test(util_test
                  USE_DATA
                  SOURCES
                  base64_test.cc
+                 bin_packing_test.cc
                  bucket_util_test.cc
                  cache_test.cc
                  config_test.cc
