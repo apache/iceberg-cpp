@@ -32,6 +32,7 @@
 //                                [--filter=all-pass|none]
 
 #include <algorithm>
+#include <array>
 #include <chrono>
 #include <cmath>
 #include <cstdint>
@@ -457,9 +458,9 @@ Status RunWorkload(const Config& config, const Workload& workload) {
   std::vector<double> total_ratios;
   std::vector<double> read_ratios;
   // Indexed by path: 0 = serial, 1 = parallel.
-  std::vector<double> bytes_read[2];
-  std::vector<double> allocations[2];
-  std::vector<double> allocated_bytes[2];
+  std::array<std::vector<double>, 2> bytes_read;
+  std::array<std::vector<double>, 2> allocations;
+  std::array<std::vector<double>, 2> allocated_bytes;
   internal::ParallelScanMetricsSnapshot peak;
   for (int trial = 0; trial < config.trials; ++trial) {
     Run serial;
@@ -567,11 +568,7 @@ Config ParseArgs(int argc, char** argv) {
   return config;
 }
 
-}  // namespace
-}  // namespace iceberg
-
-int main(int argc, char** argv) {
-  using namespace iceberg;
+int RunBenchmark(int argc, char** argv) {
   parquet::RegisterAll();
   avro::RegisterAll();
   const Config config = ParseArgs(argc, argv);
@@ -604,3 +601,8 @@ int main(int argc, char** argv) {
   }
   return 0;
 }
+
+}  // namespace
+}  // namespace iceberg
+
+int main(int argc, char** argv) { return iceberg::RunBenchmark(argc, argv); }
