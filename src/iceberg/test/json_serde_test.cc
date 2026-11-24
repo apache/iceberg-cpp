@@ -118,6 +118,19 @@ void TestSchemaFieldJsonConversion(const SchemaField& field,
   EXPECT_EQ(field, *obj_ex.value()) << "Deserialized object mismatch.";
 }
 
+nlohmann::json RootManifestSnapshotJson() {
+  return nlohmann::json::parse(R"({
+    "snapshot-id": 1,
+    "sequence-number": 1,
+    "timestamp-ms": 1000,
+    "root-manifest": "metadata/root.avro",
+    "summary": {"operation": "append"},
+    "schema-id": 0,
+    "first-row-id": 0,
+    "added-rows": 10
+  })");
+}
+
 }  // namespace
 
 // Pins the wire format produced by ToJson(SchemaField) / FieldFromJson for
@@ -539,6 +552,40 @@ TEST(JsonInternalTest, Snapshot) {
           "schema-id":42})"_json;
 
   TestJsonConversion(snapshot, expected_json);
+}
+
+TEST(JsonInternalTest, SnapshotRootManifestRoundTrip) {
+  auto json = RootManifestSnapshotJson();
+  ICEBERG_UNWRAP_OR_FAIL(auto snapshot, SnapshotFromJson(json));
+  EXPECT_EQ(snapshot->root_manifest, "metadata/root.avro");
+  EXPECT_TRUE(snapshot->manifest_list.empty());
+  TestJsonConversion(*snapshot, json);
+  json["manifest-list"] = "legacy.avro";
+  EXPECT_THAT(SnapshotFromJson(json), HasErrorMessage("exactly one"));
+}
+
+TEST(JsonInternalTest, SnapshotConstraintStatusesRequireAnObject) {
+  auto omitted = RootManifestSnapshotJson();
+  EXPECT_THAT(SnapshotFromJson(omitted), IsOk());
+  for (const auto& value :
+       std::vector<nlohmann::json>{nullptr, nlohmann::json::object()}) {
+    auto json = RootManifestSnapshotJson();
+    json["constraint-statuses"] = value;
+    EXPECT_THAT(SnapshotFromJson(json), IsOk());
+  }
+  for (const auto& value :
+       std::vector<nlohmann::json>{true, 0, 0.0, "statuses", nlohmann::json::array(),
+                                   nlohmann::json::array({1})}) {
+    SCOPED_TRACE(value.dump());
+    auto json = RootManifestSnapshotJson();
+    json["constraint-statuses"] = value;
+    auto result = SnapshotFromJson(json);
+    EXPECT_THAT(result, IsError(ErrorKind::kJsonParseError));
+    EXPECT_THAT(result, HasErrorMessage("constraint-statuses"));
+  }
+  auto json = RootManifestSnapshotJson();
+  json["constraint-statuses"] = {{"validated", {1}}};
+  EXPECT_THAT(SnapshotFromJson(json), IsError(ErrorKind::kNotSupported));
 }
 
 TEST(JsonInternalTest, SnapshotRowLineageSerializesTopLevelFields) {

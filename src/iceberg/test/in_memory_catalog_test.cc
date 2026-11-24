@@ -25,6 +25,8 @@
 #include <unordered_map>
 
 #include <arrow/filesystem/localfs.h>
+#include <arrow/result.h>
+#include <arrow/util/uri.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
@@ -42,6 +44,7 @@
 #include "iceberg/test/mock_io.h"
 #include "iceberg/test/test_resource.h"
 #include "iceberg/transaction.h"
+#include "iceberg/update/fast_append.h"
 #include "iceberg/update/update_properties.h"
 #include "iceberg/util/uuid.h"
 
@@ -150,7 +153,9 @@ TEST_P(InMemoryCatalogFormatVersionTest, CreateTable) {
       std::vector<SchemaField>{SchemaField::MakeRequired(1, "x", int64())});
   const auto [staged, version] = GetParam();
   TableIdentifier ident{.ns = {}, .name = "versioned_table"};
-  const auto location = GenerateTestTableLocation(ident.name);
+  auto location =
+      ::arrow::util::UriFromAbsolutePath(GenerateTestTableLocation(ident.name));
+  ASSERT_TRUE(location.ok()) << location.status().ToString();
   const std::unordered_map<std::string, std::string> properties = {
       {"format-version", std::to_string(version)}, {"owner", "alice"}};
   std::shared_ptr<Table> created;
@@ -158,14 +163,14 @@ TEST_P(InMemoryCatalogFormatVersionTest, CreateTable) {
     ICEBERG_UNWRAP_OR_FAIL(
         auto transaction,
         catalog_->StageCreateTable(ident, schema, PartitionSpec::Unpartitioned(),
-                                   SortOrder::Unsorted(), location, properties));
+                                   SortOrder::Unsorted(), *location, properties));
     EXPECT_EQ(transaction->current().format_version, version);
     EXPECT_THAT(catalog_->TableExists(ident), HasValue(::testing::Eq(false)));
     ICEBERG_UNWRAP_OR_FAIL(created, transaction->Commit());
   } else {
     ICEBERG_UNWRAP_OR_FAIL(
         created, catalog_->CreateTable(ident, schema, PartitionSpec::Unpartitioned(),
-                                       SortOrder::Unsorted(), location, properties));
+                                       SortOrder::Unsorted(), *location, properties));
   }
   EXPECT_EQ(created->metadata()->format_version, version);
   ICEBERG_UNWRAP_OR_FAIL(auto loaded, catalog_->LoadTable(ident));
@@ -176,7 +181,7 @@ TEST_P(InMemoryCatalogFormatVersionTest, CreateTable) {
 
 INSTANTIATE_TEST_SUITE_P(SupportedVersions, InMemoryCatalogFormatVersionTest,
                          ::testing::Combine(::testing::Bool(),
-                                            ::testing::Values(1, 2, 3)),
+                                            ::testing::Values(1, 2, 3, 4)),
                          [](const ::testing::TestParamInfo<std::tuple<bool, int>>& info) {
                            return std::string(std::get<0>(info.param) ? "StagedV"
                                                                       : "CreateV") +
@@ -215,6 +220,29 @@ INSTANTIATE_TEST_SUITE_P(StagedUpgrades, InMemoryCatalogStagedFormatUpgradeTest,
                            return "V" + std::to_string(info.param) + "ToV3";
                          });
 
+TEST_F(InMemoryCatalogTest, UpgradeFormatVersionToV4) {
+  auto schema = std::make_shared<Schema>(
+      std::vector<SchemaField>{SchemaField::MakeRequired(1, "id", int64())});
+  for (const auto* initial_version : {"2", "4"}) {
+    TableIdentifier ident{.name = std::string("version_") + initial_version};
+    auto location =
+        ::arrow::util::UriFromAbsolutePath(GenerateTestTableLocation(ident.name));
+    ASSERT_TRUE(location.ok()) << location.status().ToString();
+    ICEBERG_UNWRAP_OR_FAIL(
+        auto table, catalog_->CreateTable(ident, schema, PartitionSpec::Unpartitioned(),
+                                          SortOrder::Unsorted(), *location,
+                                          {{"format-version", initial_version}}));
+    ICEBERG_UNWRAP_OR_FAIL(auto update, table->NewUpdateProperties());
+    update->Set("format-version", "4");
+    ASSERT_THAT(update->Commit(), IsOk());
+    ICEBERG_UNWRAP_OR_FAIL(auto loaded, catalog_->LoadTable(ident));
+    EXPECT_EQ(loaded->metadata()->format_version, 4);
+    EXPECT_FALSE(loaded->metadata()->properties.configs().contains("format-version"));
+    ICEBERG_UNWRAP_OR_FAIL(auto append, loaded->NewFastAppend());
+    EXPECT_THAT(append->Commit(), IsError(ErrorKind::kNotSupported));
+  }
+}
+
 class InMemoryCatalogInvalidFormatVersionTest
     : public InMemoryCatalogTest,
       public ::testing::WithParamInterface<std::tuple<bool, std::string>> {};
@@ -244,7 +272,7 @@ INSTANTIATE_TEST_SUITE_P(
     InvalidVersions, InMemoryCatalogInvalidFormatVersionTest,
     ::testing::Combine(::testing::Bool(),
                        ::testing::Values("", "abc", "2x", "1.5", "2147483648", "0", "-1",
-                                         "4", "257")),
+                                         "5", "257")),
     [](const ::testing::TestParamInfo<std::tuple<bool, std::string>>& info) {
       return std::string(std::get<0>(info.param) ? "StagedCase" : "CreateCase") +
              std::to_string(info.index);

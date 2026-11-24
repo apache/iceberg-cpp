@@ -18,8 +18,11 @@
  */
 #include "iceberg/snapshot.h"
 
+#include <string>
+
 #include <gtest/gtest.h>
 
+#include "iceberg/test/matchers.h"
 #include "iceberg/util/timepoint.h"
 
 namespace iceberg {
@@ -118,6 +121,38 @@ TEST_F(SnapshotTest, EqualityComparison) {
 
   EXPECT_EQ(snapshot1, snapshot2);
   EXPECT_NE(snapshot1, snapshot3);
+}
+
+TEST_F(SnapshotTest, RootManifestRequirementAppliesOnlyToNewV4Snapshots) {
+  Snapshot snapshot{.snapshot_id = 1,
+                    .sequence_number = 1,
+                    .timestamp_ms = TimePointMsFromUnixMs(1000),
+                    .summary = summary1,
+                    .schema_id = 0,
+                    .first_row_id = 0,
+                    .added_rows = 10};
+  for (int8_t version : {1, 2, 3}) {
+    SCOPED_TRACE(version);
+    EXPECT_THAT(snapshot.ValidateForFormatVersion(version, true), IsOk());
+  }
+  constexpr int8_t format_version = 4;
+  EXPECT_THAT(snapshot.ValidateForFormatVersion(format_version), IsOk());
+  EXPECT_THAT(snapshot.ValidateForFormatVersion(format_version, true),
+              HasErrorMessage("New v" + std::to_string(format_version) +
+                              " snapshots require root-manifest"));
+}
+
+TEST_F(SnapshotTest, ReadingRootManifestsIsNotSupported) {
+  Snapshot snapshot{.snapshot_id = 1,
+                    .sequence_number = 1,
+                    .timestamp_ms = TimePointMsFromUnixMs(1000),
+                    .summary = summary1,
+                    .schema_id = 0,
+                    .first_row_id = 0,
+                    .added_rows = 10,
+                    .root_manifest = "metadata/root.avro"};
+  EXPECT_THAT(SnapshotReader(&snapshot).Manifests(nullptr),
+              IsError(ErrorKind::kNotSupported));
 }
 
 }  // namespace iceberg

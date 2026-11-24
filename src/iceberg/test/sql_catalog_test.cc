@@ -31,6 +31,8 @@
 #include <unordered_map>
 #include <vector>
 
+#include <arrow/result.h>
+#include <arrow/util/uri.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 #include <nlohmann/json.hpp>
@@ -306,7 +308,8 @@ TEST_P(SqlCatalogFormatVersionTest, CreateTable) {
   ASSERT_THAT(catalog_->CreateNamespace(ns, {}), IsOk());
   const auto [staged, version] = GetParam();
   TableIdentifier ident{.ns = ns, .name = "versioned_table"};
-  const auto location = MakeTableLocation(ident.name);
+  auto location = ::arrow::util::UriFromAbsolutePath(MakeTableLocation(ident.name));
+  ASSERT_TRUE(location.ok()) << location.status().ToString();
   const std::unordered_map<std::string, std::string> properties = {
       {"format-version", std::to_string(version)}, {"owner", "alice"}};
   std::shared_ptr<Table> created;
@@ -314,7 +317,7 @@ TEST_P(SqlCatalogFormatVersionTest, CreateTable) {
     ICEBERG_UNWRAP_OR_FAIL(
         auto transaction,
         catalog_->StageCreateTable(ident, MakeSchema(), PartitionSpec::Unpartitioned(),
-                                   SortOrder::Unsorted(), location, properties));
+                                   SortOrder::Unsorted(), *location, properties));
     EXPECT_EQ(transaction->current().format_version, version);
     EXPECT_THAT(catalog_->TableExists(ident), HasValue(::testing::Eq(false)));
     ICEBERG_UNWRAP_OR_FAIL(created, transaction->Commit());
@@ -322,23 +325,24 @@ TEST_P(SqlCatalogFormatVersionTest, CreateTable) {
     ICEBERG_UNWRAP_OR_FAIL(
         created,
         catalog_->CreateTable(ident, MakeSchema(), PartitionSpec::Unpartitioned(),
-                              SortOrder::Unsorted(), location, properties));
+                              SortOrder::Unsorted(), *location, properties));
   }
   EXPECT_EQ(created->metadata()->format_version, version);
   ICEBERG_UNWRAP_OR_FAIL(auto loaded, catalog_->LoadTable(ident));
   EXPECT_EQ(loaded->metadata()->format_version, version);
   EXPECT_THAT(loaded->properties().configs(),
               ::testing::UnorderedElementsAre(::testing::Pair("owner", "alice")));
-  std::ifstream input(std::string(loaded->metadata_file_location()));
-  ASSERT_TRUE(input.is_open());
-  const auto json = nlohmann::json::parse(input);
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto content,
+      file_io_->ReadFile(std::string(loaded->metadata_file_location()), std::nullopt));
+  const auto json = nlohmann::json::parse(content);
   EXPECT_EQ(json.at("format-version"), version);
   EXPECT_FALSE(json.at("properties").contains("format-version"));
 }
 
 INSTANTIATE_TEST_SUITE_P(SupportedVersions, SqlCatalogFormatVersionTest,
                          ::testing::Combine(::testing::Bool(),
-                                            ::testing::Values(1, 2, 3)),
+                                            ::testing::Values(1, 2, 3, 4)),
                          [](const ::testing::TestParamInfo<std::tuple<bool, int>>& info) {
                            return std::string(std::get<0>(info.param) ? "StagedV"
                                                                       : "CreateV") +
@@ -411,7 +415,7 @@ INSTANTIATE_TEST_SUITE_P(
     InvalidVersions, SqlCatalogInvalidFormatVersionTest,
     ::testing::Combine(::testing::Bool(),
                        ::testing::Values("", "abc", "2x", "1.5", "2147483648", "0", "-1",
-                                         "4", "257")),
+                                         "5", "257")),
     [](const ::testing::TestParamInfo<std::tuple<bool, std::string>>& info) {
       return std::string(std::get<0>(info.param) ? "StagedCase" : "CreateCase") +
              std::to_string(info.index);

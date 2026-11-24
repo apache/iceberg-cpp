@@ -23,6 +23,7 @@
 #include <gtest/gtest.h>
 
 #include "iceberg/labels.h"
+#include "iceberg/location_provider.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_field.h"
 #include "iceberg/table_metadata.h"
@@ -241,6 +242,13 @@ TEST(StaticTableTest, NewMutatingOperationsAreNotSupported) {
   EXPECT_THAT(table->NewRewriteFiles(), IsError(ErrorKind::kNotSupported));
   EXPECT_THAT(table->NewReplacePartitions(), IsError(ErrorKind::kNotSupported));
   EXPECT_THAT(table->NewSnapshotManager(), IsError(ErrorKind::kNotSupported));
+}
+
+TYPED_TEST(TypedTableTest, MissingV4LocationCannotProduceDefaultDataPaths) {
+  this->metadata_->format_version = 4;
+  this->metadata_->location.clear();
+  ICEBERG_UNWRAP_OR_FAIL(auto table, this->MakeTable("unlocated"));
+  EXPECT_THAT(table->location_provider(), IsError(ErrorKind::kInvalidArgument));
 }
 
 }  // namespace iceberg

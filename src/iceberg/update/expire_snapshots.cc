@@ -966,7 +966,19 @@ Result<ExpireSnapshots::ApplyResult> ExpireSnapshots::Apply() {
     }
   });
 
+  if (cleanup_level_ != CleanupLevel::kNone && !result.snapshot_ids_to_remove.empty() &&
+      base.HasRootManifest()) {
+    return NotSupported(
+        "Snapshot expiration file cleanup with root manifests "
+        "is not supported yet; use CleanupLevel::kNone");
+  }
+
   if (clean_expired_metadata_) {
+    if (base.HasRootManifest()) {
+      return NotSupported(
+          "Cleaning expired schemas and partition specs with root manifests "
+          "is not supported yet; disable CleanExpiredMetadata to expire snapshots");
+    }
     ICEBERG_ASSIGN_OR_RAISE(
         auto reachable_ids,
         ParallelCollect(
@@ -1025,6 +1037,17 @@ Status ExpireSnapshots::Finalize(const TableMetadata& metadata_after_expiration)
                    "Missing pre-expiration table metadata for cleanup");
   const TableMetadata& metadata_before_expiration =
       *apply_result->metadata_before_expiration;
+
+  // Later transaction updates or the catalog's committed result may introduce
+  // root manifests after Apply(). Never treat untraversable roots as empty.
+  // The commit has succeeded, so retain files and signal the skipped cleanup.
+  if (metadata_before_expiration.HasRootManifest() ||
+      metadata_after_expiration.HasRootManifest()) {
+    ICEBERG_LOG_WARN(
+        "Skipped snapshot expiration file cleanup: root manifests prevent "
+        "reachability checks; expired snapshot files were retained");
+    return {};
+  }
 
   // Pick incremental cleanup when the expiration is a simple linear-ancestry walk:
   // no explicit snapshot IDs, no removed snapshots outside main ancestry, and no

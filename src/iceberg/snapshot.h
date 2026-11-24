@@ -417,6 +417,19 @@ struct ICEBERG_EXPORT Snapshot {
   /// encrypted key metadata of the manifest list. Set only for encrypted tables.
   std::optional<std::string> key_id;
 
+  /// Location of the root manifest for a snapshot written in format version 4
+  /// or later. Mutually exclusive with manifest_list. Snapshots written in
+  /// earlier formats retain their manifest list after a table upgrade.
+  std::optional<std::string> root_manifest;
+
+  /// \brief Validate snapshot metadata against a table format version.
+  /// New snapshots require a root manifest in format version 4 and later.
+  /// Existing snapshots from earlier formats may retain their manifest list.
+  /// \param format_version The table's current format version.
+  /// \param is_new_snapshot Whether the snapshot is being added to the table.
+  Status ValidateForFormatVersion(int8_t format_version,
+                                  bool is_new_snapshot = false) const;
+
   /// \brief Create a new Snapshot instance with validation on the inputs.
   static Result<std::unique_ptr<Snapshot>> Make(
       int64_t sequence_number, int64_t snapshot_id,

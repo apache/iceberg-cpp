@@ -856,6 +856,16 @@ Result<CommitTableResponse> RestCatalog::UpdateTableInternal(
     const std::vector<std::unique_ptr<TableUpdate>>& updates,
     auth::AuthSession& session) {
   ICEBERG_ENDPOINT_CHECK(supported_endpoints_, Endpoint::UpdateTable());
+  // The server may have roots absent from the client, including after an upgrade.
+  // Defer pruning until the server guarantees root validation at commit time.
+  if (std::ranges::any_of(updates, [](const auto& update) {
+        return update->kind() == TableUpdate::Kind::kRemoveSchemas ||
+               update->kind() == TableUpdate::Kind::kRemovePartitionSpecs;
+      })) {
+    return NotSupported(
+        "Removing schemas or partition specs through REST requires a server "
+        "guarantee for root-manifest validation");
+  }
   ICEBERG_ASSIGN_OR_RAISE(auto path, paths_->Table(identifier));
 
   CommitTableRequest request{.identifier = identifier};

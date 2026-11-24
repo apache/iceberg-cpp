@@ -39,6 +39,7 @@
 #include "iceberg/table_properties.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/test/temp_file_test_base.h"
+#include "iceberg/test/test_resource.h"
 
 namespace iceberg {
 
@@ -98,6 +99,20 @@ TEST_F(MetadataIOTest, ReadWriteMetadata) {
 
   auto metadata_read = std::move(result.value());
   EXPECT_EQ(*metadata_read, metadata);
+}
+
+TEST_F(MetadataIOTest, MissingV4TableLocationCanUseAnExplicitMetadataPath) {
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto metadata, ReadTableMetadataFromResource("TableMetadataV4ValidMinimal.json"));
+  metadata->location.clear();
+  auto missing = TableMetadataUtil::Write(*io_, nullptr, "", *metadata);
+  EXPECT_THAT(missing, IsError(ErrorKind::kInvalidArgument));
+  EXPECT_THAT(missing, HasErrorMessage(TableProperties::kWriteMetadataLocation.key()));
+  auto metadata_path = std::format("{}/metadata", location_);
+  metadata->properties.Set(TableProperties::kWriteMetadataLocation, metadata_path);
+  ICEBERG_UNWRAP_OR_FAIL(auto path,
+                         TableMetadataUtil::Write(*io_, nullptr, "", *metadata));
+  EXPECT_THAT(path, ::testing::StartsWith(metadata_path + "/"));
 }
 
 TEST_F(MetadataIOTest, ReadWriteCompressedMetadata) {

@@ -17,8 +17,13 @@
  * under the License.
  */
 
+#include <cstdint>
+#include <fstream>
+#include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
+#include <vector>
 
 #include <gtest/gtest.h>
 #include <nlohmann/json.hpp>
@@ -132,6 +137,24 @@ nlohmann::json HistoricalSortOrderWithDroppedFieldMetadataJson(
   })"_json;
   metadata_json["default-sort-order-id"] = default_sort_order_id;
   return metadata_json;
+}
+
+nlohmann::json V4MetadataJson() {
+  std::ifstream file(GetResourcePath("TableMetadataV4ValidMinimal.json"));
+  return nlohmann::json::parse(file);
+}
+
+nlohmann::json RootManifestSnapshotJson() {
+  return nlohmann::json::parse(R"({
+    "snapshot-id": 1,
+    "sequence-number": 1,
+    "timestamp-ms": 1000,
+    "root-manifest": "metadata/root.avro",
+    "summary": {"operation": "append"},
+    "schema-id": 0,
+    "first-row-id": 0,
+    "added-rows": 10
+  })");
 }
 
 }  // namespace
@@ -482,6 +505,285 @@ TEST(MetadataSerdeTest, V3DefaultValuesRoundTrip) {
   ICEBERG_UNWRAP_OR_FAIL(auto json, ToJson(*metadata));
   ICEBERG_UNWRAP_OR_FAIL(auto reparsed, TableMetadataFromJson(json));
   EXPECT_EQ(*reparsed, *metadata);
+}
+
+TEST(MetadataSerdeTest, V4RoundTrip) {
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto metadata, ReadTableMetadataFromResource("TableMetadataV4ValidMinimal.json"));
+  EXPECT_EQ(metadata->format_version, 4);
+  EXPECT_EQ(metadata->next_row_id, 0);
+  EXPECT_TRUE(metadata->snapshots.empty());
+  EXPECT_FALSE(metadata->HasRootManifest());
+  EXPECT_FALSE(metadata->table_uuid.empty());
+  ICEBERG_UNWRAP_OR_FAIL(auto json, ToJson(*metadata));
+  EXPECT_EQ(json["format-version"], 4);
+  EXPECT_EQ(json["next-row-id"], 0);
+  ICEBERG_UNWRAP_OR_FAIL(auto parsed, TableMetadataFromJson(json));
+  EXPECT_EQ(*metadata, *parsed);
+}
+
+TEST(MetadataSerdeTest, SerializationRejectsNullSnapshots) {
+  auto snapshot_json = RootManifestSnapshotJson();
+  snapshot_json.erase("root-manifest");
+  snapshot_json["manifest-list"] = "s3://bucket/metadata/legacy.avro";
+  ICEBERG_UNWRAP_OR_FAIL(auto snapshot, SnapshotFromJson(snapshot_json));
+  auto valid = std::shared_ptr<Snapshot>(std::move(snapshot));
+  for (int version : {1, 2, 3, 4}) {
+    SCOPED_TRACE(version);
+    auto json = V4MetadataJson();
+    json["format-version"] = version;
+    ICEBERG_UNWRAP_OR_FAIL(auto metadata, TableMetadataFromJson(json));
+    for (bool null_first : {false, true}) {
+      metadata->snapshots = null_first
+                                ? std::vector<std::shared_ptr<Snapshot>>{nullptr, valid}
+                                : std::vector<std::shared_ptr<Snapshot>>{valid, nullptr};
+      EXPECT_FALSE(metadata->HasRootManifest());
+      auto result = ToJson(*metadata);
+      EXPECT_THAT(result, IsError(ErrorKind::kInvalidArgument));
+      EXPECT_THAT(result, HasErrorMessage("Cannot write null snapshot"));
+    }
+  }
+}
+
+TEST(MetadataSerdeTest, V4OptionalLocation) {
+  for (bool explicit_null : {false, true}) {
+    auto json = V4MetadataJson();
+    if (explicit_null) {
+      json["location"] = nullptr;
+    } else {
+      json.erase("location");
+    }
+    ICEBERG_UNWRAP_OR_FAIL(auto parsed, TableMetadataFromJson(json));
+    EXPECT_TRUE(parsed->location.empty());
+    ICEBERG_UNWRAP_OR_FAIL(auto serialized, ToJson(*parsed));
+    EXPECT_FALSE(serialized.contains("location"));
+    for (int version : {1, 2, 3}) {
+      json["format-version"] = version;
+      EXPECT_FALSE(TableMetadataFromJson(json).has_value());
+    }
+  }
+}
+
+TEST(MetadataSerdeTest, V4RejectsRelativeLocationAndMissingRequiredFields) {
+  auto json = V4MetadataJson();
+  json["location"] = "relative/table";
+  EXPECT_THAT(TableMetadataFromJson(json), IsError(ErrorKind::kJsonParseError));
+  EXPECT_THAT(TableMetadataFromJson(json), HasErrorMessage("location must be absolute"));
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto metadata, ReadTableMetadataFromResource("TableMetadataV4ValidMinimal.json"));
+  metadata->location = "relative/table";
+  EXPECT_THAT(metadata->ValidateLocation(), IsError(ErrorKind::kInvalidArgument));
+  EXPECT_THAT(ToJson(*metadata), IsError(ErrorKind::kInvalidArgument));
+  EXPECT_THAT(ToJson(*metadata), HasErrorMessage("location must be absolute"));
+  json = V4MetadataJson();
+  json.erase("next-row-id");
+  EXPECT_FALSE(TableMetadataFromJson(json).has_value());
+}
+
+TEST(MetadataSerdeTest, V4RootManifestRoundTrip) {
+  auto json = V4MetadataJson();
+  json["snapshots"] = nlohmann::json::array({RootManifestSnapshotJson()});
+  for (int64_t sequence : {0, 1}) {
+    for (int64_t next_row_id : {0, 9, 10}) {
+      if (sequence == 1 && next_row_id == 10) {
+        continue;
+      }
+      SCOPED_TRACE(sequence);
+      SCOPED_TRACE(next_row_id);
+      auto invalid = json;
+      invalid["last-sequence-number"] = sequence;
+      invalid["next-row-id"] = next_row_id;
+      auto result = TableMetadataFromJson(invalid);
+      EXPECT_THAT(result, IsError(ErrorKind::kJsonParseError));
+      EXPECT_THAT(result, HasErrorMessage(sequence == 0 ? "last-sequence-number"
+                                                        : "next-row-id"));
+    }
+  }
+  // Counters may retain allocations from newer snapshots that have expired.
+  for (int64_t sequence : {1, 2}) {
+    for (int64_t next_row_id : {10, 20}) {
+      SCOPED_TRACE(sequence);
+      SCOPED_TRACE(next_row_id);
+      json["last-sequence-number"] = sequence;
+      json["next-row-id"] = next_row_id;
+      ICEBERG_UNWRAP_OR_FAIL(auto metadata, TableMetadataFromJson(json));
+      ASSERT_EQ(metadata->snapshots.size(), 1);
+      EXPECT_TRUE(metadata->HasRootManifest());
+      auto snapshot = metadata->snapshots.front();
+      EXPECT_EQ(snapshot->root_manifest, "metadata/root.avro");
+      EXPECT_TRUE(snapshot->manifest_list.empty());
+      ICEBERG_UNWRAP_OR_FAIL(auto serialized, ToJson(*metadata));
+      EXPECT_EQ(serialized["snapshots"][0], RootManifestSnapshotJson());
+      EXPECT_FALSE(serialized["snapshots"][0].contains("manifest-list"));
+      ICEBERG_UNWRAP_OR_FAIL(auto parsed, TableMetadataFromJson(serialized));
+      EXPECT_EQ(parsed->snapshots.front()->root_manifest, snapshot->root_manifest);
+      EXPECT_EQ(parsed->last_sequence_number, sequence);
+      EXPECT_EQ(parsed->next_row_id, next_row_id);
+    }
+  }
+}
+
+TEST(MetadataSerdeTest, V4RejectsInvalidSnapshotRoots) {
+  for (const auto* field :
+       {"root-manifest", "sequence-number", "first-row-id", "added-rows", "summary"}) {
+    auto json = RootManifestSnapshotJson();
+    json.erase(field);
+    auto table_json = V4MetadataJson();
+    table_json["snapshots"] = nlohmann::json::array({json});
+    EXPECT_FALSE(TableMetadataFromJson(table_json).has_value()) << field;
+  }
+}
+
+TEST(MetadataSerdeTest, SnapshotValidationUsesTableFormatVersion) {
+  for (int8_t version : {1, 2, 3, 4}) {
+    SCOPED_TRACE(version);
+    auto json = V4MetadataJson();
+    json["format-version"] = version;
+    json["last-sequence-number"] = 1;
+    json["next-row-id"] = 10;
+    json["snapshots"] = nlohmann::json::array({RootManifestSnapshotJson()});
+    auto root = TableMetadataFromJson(json);
+    if (version < TableMetadata::kMinFormatVersionRootManifest) {
+      EXPECT_THAT(root, IsError(ErrorKind::kJsonParseError));
+      EXPECT_THAT(
+          root,
+          HasErrorMessage("requires format version " +
+                          std::to_string(TableMetadata::kMinFormatVersionRootManifest)));
+    } else {
+      EXPECT_THAT(root, IsOk());
+    }
+    auto legacy = RootManifestSnapshotJson();
+    legacy.erase("root-manifest");
+    legacy["manifest-list"] = "legacy.avro";
+    json["snapshots"] = nlohmann::json::array({legacy});
+    EXPECT_THAT(TableMetadataFromJson(json), IsOk());
+  }
+}
+
+TEST(MetadataSerdeTest, V4RejectsWritingIdentifierFieldsWithoutMigration) {
+  for (bool historical_schema : {false, true}) {
+    ICEBERG_UNWRAP_OR_FAIL(
+        auto metadata, ReadTableMetadataFromResource("TableMetadataV4ValidMinimal.json"));
+    ICEBERG_UNWRAP_OR_FAIL(
+        auto schema, Schema::Make({SchemaField::MakeRequired(1, "id", int64())},
+                                  historical_schema ? 1 : 0, std::vector<int32_t>{1}));
+    if (historical_schema) {
+      metadata->schemas.push_back(std::move(schema));
+    } else {
+      metadata->schemas[0] = std::move(schema);
+    }
+    EXPECT_THAT(ToJson(*metadata), IsError(ErrorKind::kNotSupported));
+    ASSERT_EQ(metadata->schemas.back()->IdentifierFieldIds(), std::vector<int32_t>{1});
+  }
+}
+
+TEST(MetadataSerdeTest, V4IgnoresLegacyIdentifiersAndRejectsUnimplementedConstraints) {
+  auto json = V4MetadataJson();
+  json["schemas"][0]["identifier-field-ids"] = {999};
+  ICEBERG_UNWRAP_OR_FAIL(auto metadata, TableMetadataFromJson(json));
+  ICEBERG_UNWRAP_OR_FAIL(auto schema, metadata->Schema());
+  EXPECT_TRUE(schema->IdentifierFieldIds().empty());
+  ICEBERG_UNWRAP_OR_FAIL(auto serialized, ToJson(*metadata));
+  EXPECT_FALSE(serialized["schemas"][0].contains("identifier-field-ids"));
+  for (const auto* field : {"constraints", "last-constraint-id"}) {
+    json = V4MetadataJson();
+    json[field] = field == std::string_view("constraints")
+                      ? nlohmann::json::array({{{"constraint-id", 1}}})
+                      : nlohmann::json(1);
+    EXPECT_THAT(TableMetadataFromJson(json), IsError(ErrorKind::kNotSupported));
+  }
+  for (const auto& malformed_schema : std::vector<nlohmann::json>{nullptr, 1, "schema"}) {
+    json = V4MetadataJson();
+    json["schemas"] = nlohmann::json::array({malformed_schema});
+    EXPECT_FALSE(TableMetadataFromJson(json).has_value());
+  }
+}
+
+TEST(MetadataSerdeTest, V4ConstraintFieldsRequireTheirDeclaredJsonTypes) {
+  auto json = V4MetadataJson();
+  json["constraints"] = nlohmann::json::array();
+  json["last-constraint-id"] = 0;
+  EXPECT_THAT(TableMetadataFromJson(json), IsOk());
+  for (const auto* field : {"constraints", "last-constraint-id"}) {
+    auto nullable = json;
+    nullable[field] = nullptr;
+    EXPECT_THAT(TableMetadataFromJson(nullable), IsOk());
+  }
+  for (const auto& value : std::vector<nlohmann::json>{"constraints", true, 0, 0.0,
+                                                       nlohmann::json::object()}) {
+    SCOPED_TRACE(value.dump());
+    json = V4MetadataJson();
+    json["constraints"] = value;
+    auto result = TableMetadataFromJson(json);
+    EXPECT_THAT(result, IsError(ErrorKind::kJsonParseError));
+    EXPECT_THAT(result, HasErrorMessage("constraints"));
+  }
+  for (const auto& value : std::vector<nlohmann::json>{
+           "0", true, 0.0, 1.5, 2147483648LL, -2147483649LL, 18446744073709551615ULL,
+           nlohmann::json::array(), nlohmann::json::object()}) {
+    SCOPED_TRACE(value.dump());
+    json = V4MetadataJson();
+    json["last-constraint-id"] = value;
+    auto result = TableMetadataFromJson(json);
+    EXPECT_THAT(result, IsError(ErrorKind::kJsonParseError));
+    EXPECT_THAT(result, HasErrorMessage("last-constraint-id"));
+  }
+}
+
+TEST(MetadataSerdeTest, V4RejectsIncompleteSnapshotWrites) {
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto metadata, ReadTableMetadataFromResource("TableMetadataV4ValidMinimal.json"));
+  ICEBERG_UNWRAP_OR_FAIL(auto snapshot, SnapshotFromJson(RootManifestSnapshotJson()));
+  snapshot->first_row_id.reset();
+  metadata->snapshots.push_back(std::move(snapshot));
+  EXPECT_THAT(ToJson(*metadata), HasErrorMessage("first-row-id"));
+}
+
+TEST(MetadataSerdeTest, MissingOrNullUuidUsesTheDefaultForEveryVersion) {
+  for (int version : {1, 2, 3, 4}) {
+    auto json = V4MetadataJson();
+    json["format-version"] = version;
+    for (bool explicit_null : {false, true}) {
+      if (explicit_null) {
+        json["table-uuid"] = nullptr;
+      } else {
+        json.erase("table-uuid");
+      }
+      ICEBERG_UNWRAP_OR_FAIL(auto metadata, TableMetadataFromJson(json));
+      EXPECT_TRUE(metadata->table_uuid.empty());
+    }
+  }
+}
+
+TEST(MetadataSerdeTest, V4RootOperationValidationIsSharedAcrossMetadataPaths) {
+  for (const auto& operation :
+       std::vector<std::optional<std::string>>{std::nullopt, "", "invalid"}) {
+    auto json = RootManifestSnapshotJson();
+    if (operation.has_value()) {
+      json["summary"]["operation"] = operation.value();
+    } else {
+      json["summary"].erase("operation");
+    }
+    auto table_json = V4MetadataJson();
+    table_json["snapshots"] = nlohmann::json::array({json});
+    EXPECT_THAT(TableMetadataFromJson(table_json), HasErrorMessage("valid operation"));
+
+    ICEBERG_UNWRAP_OR_FAIL(auto snapshot, SnapshotFromJson(RootManifestSnapshotJson()));
+    if (operation.has_value()) {
+      snapshot->summary["operation"] = operation.value();
+    } else {
+      snapshot->summary.erase("operation");
+    }
+    EXPECT_THAT(snapshot->ValidateForFormatVersion(4),
+                IsError(ErrorKind::kValidationFailed));
+    ICEBERG_UNWRAP_OR_FAIL(
+        auto base, ReadTableMetadataFromResource("TableMetadataV4ValidMinimal.json"));
+    auto builder = TableMetadataBuilder::BuildFrom(base.get());
+    builder->AddSnapshot(std::make_shared<Snapshot>(*snapshot));
+    EXPECT_THAT(builder->Build(), HasErrorMessage("valid operation"));
+    base->snapshots.push_back(std::move(snapshot));
+    EXPECT_THAT(ToJson(*base), HasErrorMessage("valid operation"));
+  }
 }
 
 TEST(MetadataSerdeTest, DeserializeUnsupportedVersion) {

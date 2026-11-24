@@ -1,0 +1,40 @@
+{
+  "format-version": 4,
+  "table-uuid": "c9dc1a9f-6564-42ec-9a87-1db146e18019",
+  "location": "s3://bucket/table",
+  "last-sequence-number": 0,
+  "last-updated-ms": 1000,
+  "last-column-id": 1,
+  "schemas": [
+    {
+      "type": "struct",
+      "schema-id": 0,
+      "fields": [
+        {
+          "id": 1,
+          "name": "id",
+          "type": "long",
+          "required": true
+        }
+      ]
+    }
+  ],
+  "current-schema-id": 0,
+  "partition-specs": [
+    {
+      "spec-id": 0,
+      "fields": []
+    }
+  ],
+  "default-spec-id": 0,
+  "last-partition-id": 999,
+  "sort-orders": [
+    {
+      "order-id": 0,
+      "fields": []
+    }
+  ],
+  "default-sort-order-id": 0,
+  "next-row-id": 0,
+  "snapshots": []
+}
