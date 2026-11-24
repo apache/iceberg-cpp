@@ -17,6 +17,7 @@
  * under the License.
  */
 
+#include <limits>
 #include <optional>
 #include <string>
 
@@ -482,6 +483,100 @@ TEST(MetadataSerdeTest, V3DefaultValuesRoundTrip) {
   ICEBERG_UNWRAP_OR_FAIL(auto json, ToJson(*metadata));
   ICEBERG_UNWRAP_OR_FAIL(auto reparsed, TableMetadataFromJson(json));
   EXPECT_EQ(*reparsed, *metadata);
+}
+
+TEST(MetadataSerdeTest, TableSequenceAndRowIdBoundsCoverRetainedSnapshots) {
+  for (const auto* resource :
+       {"TableMetadataV2ValidMinimal.json", "TableMetadataV3ValidMinimal.json"}) {
+    SCOPED_TRACE(resource);
+    ICEBERG_UNWRAP_OR_FAIL(auto empty, ReadTableMetadataFromResource(resource));
+    ICEBERG_UNWRAP_OR_FAIL(auto json, ToJson(*empty));
+    json["snapshots"] = nlohmann::json::parse(R"([{
+      "snapshot-id": 1, "sequence-number": 1, "timestamp-ms": 1000,
+      "manifest-list": "metadata/manifest-list.avro", "summary": {"operation": "append"},
+      "schema-id": 0, "first-row-id": 1, "added-rows": 10
+    }])");
+    json["last-sequence-number"] = 1;
+    json["next-row-id"] = 11;
+    ICEBERG_UNWRAP_OR_FAIL(auto valid, TableMetadataFromJson(json));
+    for (const auto* field : {"last-sequence-number", "next-row-id"}) {
+      const bool is_next_row_id = std::string_view(field) == "next-row-id";
+      if (is_next_row_id && empty->format_version < 3) {
+        continue;
+      }
+      SCOPED_TRACE(field);
+      auto invalid = json;
+      invalid[field] = 0;
+      EXPECT_THAT(TableMetadataFromJson(invalid), IsError(ErrorKind::kJsonParseError));
+      auto metadata = *valid;
+      if (is_next_row_id) {
+        metadata.next_row_id = 0;
+      } else {
+        metadata.last_sequence_number = 0;
+      }
+      EXPECT_THAT(ToJson(metadata), IsError(ErrorKind::kInvalidArgument));
+      auto builder = TableMetadataBuilder::BuildFrom(&metadata);
+      EXPECT_THAT(builder->Build(), IsError(ErrorKind::kValidationFailed));
+    }
+    json["last-sequence-number"] = 5;
+    json["next-row-id"] = 20;
+    ICEBERG_UNWRAP_OR_FAIL(auto higher, TableMetadataFromJson(json));
+    EXPECT_THAT(ToJson(*higher), IsOk());
+    EXPECT_THAT(TableMetadataBuilder::BuildFrom(higher.get())->Build(), IsOk());
+  }
+}
+
+TEST(MetadataSerdeTest, V3AllowsConservativeAddedRows) {
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto metadata, ReadTableMetadataFromResource("TableMetadataV3ValidMinimal.json"));
+  ICEBERG_UNWRAP_OR_FAIL(auto json, ToJson(*metadata));
+  json["snapshots"] = nlohmann::json::parse(R"([{
+    "snapshot-id": 1, "sequence-number": 1, "timestamp-ms": 1000,
+    "manifest-list": "metadata/manifest-list.avro", "summary": {"operation": "append"},
+    "schema-id": 0, "first-row-id": 100, "added-rows": 20
+  }])");
+  json["last-sequence-number"] = 1;
+  // The writer assigned ten row IDs starting at 100 and stored an upper bound of 20.
+  json["next-row-id"] = 110;
+  ICEBERG_UNWRAP_OR_FAIL(auto parsed, TableMetadataFromJson(json));
+  ICEBERG_UNWRAP_OR_FAIL(auto built,
+                         TableMetadataBuilder::BuildFrom(parsed.get())->Build());
+  ICEBERG_UNWRAP_OR_FAIL(auto serialized, ToJson(*built));
+  EXPECT_EQ(serialized["next-row-id"], 110);
+  EXPECT_EQ(serialized["snapshots"][0]["added-rows"], 20);
+}
+
+TEST(MetadataSerdeTest, TableSequenceAndRowIdBoundsRejectInvalidJsonIntegers) {
+  for (const auto* resource :
+       {"TableMetadataV2ValidMinimal.json", "TableMetadataV3ValidMinimal.json"}) {
+    SCOPED_TRACE(resource);
+    ICEBERG_UNWRAP_OR_FAIL(auto metadata, ReadTableMetadataFromResource(resource));
+    ICEBERG_UNWRAP_OR_FAIL(auto valid_json, ToJson(*metadata));
+    for (const auto* field : {"last-sequence-number", "next-row-id"}) {
+      if (std::string_view(field) == "next-row-id" && metadata->format_version < 3) {
+        continue;
+      }
+      SCOPED_TRACE(field);
+      for (const auto& invalid : std::vector<nlohmann::json>{
+               10.5, 10.0, -0.5, true, "10", std::numeric_limits<uint64_t>::max(),
+               nlohmann::json::parse("-9223372036854775809")}) {
+        SCOPED_TRACE(invalid.dump());
+        auto json = valid_json;
+        json[field] = invalid;
+        auto result = TableMetadataFromJson(json);
+        EXPECT_THAT(result, IsError(ErrorKind::kJsonParseError));
+        EXPECT_THAT(result, HasErrorMessage(field));
+      }
+      for (int64_t value : {int64_t{0}, std::numeric_limits<int64_t>::max()}) {
+        auto json = valid_json;
+        json[field] = value;
+        ICEBERG_UNWRAP_OR_FAIL(auto parsed, TableMetadataFromJson(json));
+        EXPECT_EQ(std::string_view(field) == "next-row-id" ? parsed->next_row_id
+                                                           : parsed->last_sequence_number,
+                  value);
+      }
+    }
+  }
 }
 
 TEST(MetadataSerdeTest, DeserializeUnsupportedVersion) {

@@ -169,6 +169,10 @@ struct ICEBERG_EXPORT TableMetadata {
   /// \brief Get the next sequence number
   int64_t NextSequenceNumber() const;
 
+  /// \brief Validate the table's sequence number and row ID bounds against retained
+  /// snapshots. The bounds can exceed retained values after newer snapshots expire.
+  Status ValidateSequenceAndRowIdBounds() const;
+
   ICEBERG_EXPORT friend bool operator==(const TableMetadata& lhs,
                                         const TableMetadata& rhs);
 
