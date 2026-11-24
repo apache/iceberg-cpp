@@ -160,7 +160,7 @@ class FakeReader : public Reader {
     if (index == file_.throw_at) {
       throw std::runtime_error("injected reader exception");
     }
-    if (index >= static_cast<int>(file_.batches.size())) {
+    if (std::cmp_greater_equal(index, file_.batches.size())) {
       return std::nullopt;
     }
     ICEBERG_ASSIGN_OR_RAISE(auto array, BuildBatch(file_.batches[index]));
@@ -362,7 +362,7 @@ ReadResult ReadAll(ArrowArrayStream& stream, int64_t max_batches = -1) {
   ReadResult result;
   ArrowSchema schema{};
   EXPECT_EQ(stream.get_schema(&stream, &schema), 0);
-  while (max_batches < 0 || static_cast<int64_t>(result.batches.size()) < max_batches) {
+  while (max_batches < 0 || std::cmp_less(result.batches.size(), max_batches)) {
     ArrowArray array{};
     int code = stream.get_next(&stream, &array);
     if (code != 0) {
@@ -600,7 +600,7 @@ TEST_F(ParallelScanReaderTest, KeepsTaskLocalOrderAcrossInterleavedGroups) {
   EXPECT_THAT(ordered_ids, ElementsAreArray(Range(0, 100)));
   ASSERT_EQ(other_ids.size(), 10U);
   for (const auto& [file, ids] : other_ids) {
-    EXPECT_TRUE(std::is_sorted(ids.begin(), ids.end())) << "file " << file;
+    EXPECT_TRUE(std::ranges::is_sorted(ids)) << "file " << file;
   }
 }
 

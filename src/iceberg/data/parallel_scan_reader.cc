@@ -465,7 +465,7 @@ class ParallelScan {
 
   // Requires `mutex_`.
   bool CanAdmit(int64_t charge) const {
-    if (static_cast<int64_t>(queue_.size()) >= max_queued_batches_) {
+    if (std::cmp_greater_equal(queue_.size(), max_queued_batches_)) {
       return false;
     }
     if (charge > max_queued_bytes_) {
