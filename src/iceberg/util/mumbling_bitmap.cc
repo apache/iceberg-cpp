@@ -17,14 +17,13 @@
  * under the License.
  */
 
-#include "iceberg/util/mumbling_bitmap_internal.h"
-
 #include <algorithm>
 #include <array>
 #include <cstring>
 
 #include "iceberg/util/endian.h"
 #include "iceberg/util/macros.h"
+#include "iceberg/util/mumbling_bitmap_internal.h"
 
 // SSE2 is part of the x86-64 baseline, so it needs no extra compiler flags.
 // Define ICEBERG_MUMBLING_SSE2=0 to force the portable scalar code.
