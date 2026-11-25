@@ -25,11 +25,11 @@
 /// \file iceberg/util/cache_internal.h
 /// \brief Provide internal LRU cache and memoization helpers.
 
-#include <cstddef>
 #include <cstdint>
 #include <functional>
 #include <list>
 #include <mutex>
+#include <stdexcept>
 #include <type_traits>
 #include <unordered_map>
 #include <utility>
@@ -54,7 +54,7 @@ struct UnitWeigher {
 // used entries are evicted first to make room. `Weigher` computes the weight of an entry
 // from its key and value when the entry is inserted or replaced, e.g. its size in bytes.
 // Weights must be non-negative. With the default UnitWeigher, `max_weight` is the
-// maximum number of entries.
+// maximum number of entries. Storage grows as entries are inserted.
 template <typename Key, typename Value, typename Weigher = UnitWeigher,
           typename Hash = std::hash<Key>, typename KeyEqual = std::equal_to<Key>>
 class LruCache {
@@ -62,7 +62,6 @@ class LruCache {
   explicit LruCache(int64_t max_weight, Weigher weigher = Weigher{})
       : max_weight_(max_weight), weigher_(std::move(weigher)) {
     ICEBERG_DCHECK(max_weight_ >= 0, "Cache maximum weight must be non-negative");
-    ReserveForUnitWeight();
   }
 
   LruCache(const LruCache&) = delete;
@@ -74,8 +73,6 @@ class LruCache {
     items_.clear();
     map_.clear();
     total_weight_ = 0;
-    // The C++ spec doesn't tell whether map_.clear() will shrink the map capacity
-    ReserveForUnitWeight();
   }
 
   // Number of retained entries.
@@ -97,7 +94,6 @@ class LruCache {
     while (total_weight_ > max_weight_) {
       EvictLeastRecentlyUsed();
     }
-    ReserveForUnitWeight();
   }
 
   template <typename K>
@@ -187,14 +183,6 @@ class LruCache {
     items_.pop_back();
   }
 
-  void ReserveForUnitWeight() {
-    // Only with unit weights does the maximum weight bound the number of entries.  The
-    // map size can temporarily exceed it by one, see Replace().
-    if constexpr (std::is_same_v<Weigher, UnitWeigher>) {
-      map_.reserve(static_cast<size_t>(max_weight_) + 1);
-    }
-  }
-
   int64_t max_weight_;
   Weigher weigher_;
   int64_t total_weight_ = 0;
@@ -222,7 +210,11 @@ struct ThreadSafeMemoizer {
     lock.unlock();
     Value value = func_(key);
     lock.lock();
-    return *cache_.Replace(std::forward<K>(key), std::move(value)).second;
+    const auto* cached = cache_.Replace(std::forward<K>(key), std::move(value)).second;
+    if (cached == nullptr) {
+      throw std::invalid_argument("Memoization cache capacity must be positive");
+    }
+    return *cached;
   }
 
  private:
@@ -245,7 +237,11 @@ struct ThreadUnsafeMemoizer {
       return *value_ptr;
     }
     Value value = func_(key);
-    return *cache_.Replace(std::forward<K>(key), std::move(value)).second;
+    const auto* cached = cache_.Replace(std::forward<K>(key), std::move(value)).second;
+    if (cached == nullptr) {
+      throw std::invalid_argument("Memoization cache capacity must be positive");
+    }
+    return *cached;
   }
 
  private:
@@ -271,7 +267,7 @@ auto Memoize(Func&& func, int32_t cache_capacity) {
   return Memoizer(std::forward<Func>(func), cache_capacity);
 }
 
-// Apply a LRU memoization cache to a callable.
+// Apply a LRU memoization cache to a callable. Calls require positive capacity.
 template <typename Func>
 auto MemoizeLru(Func&& func, int32_t cache_capacity) {
   return Memoize<ThreadSafeMemoizer>(std::forward<Func>(func), cache_capacity);

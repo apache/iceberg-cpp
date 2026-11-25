@@ -19,7 +19,9 @@
 
 #include <atomic>
 #include <functional>
+#include <limits>
 #include <memory>
+#include <stdexcept>
 #include <string>
 #include <tuple>
 
@@ -55,6 +57,20 @@ struct StringLengthWeigher {
 };
 
 using WeightedCache = LruCache<int32_t, std::string, StringLengthWeigher>;
+
+TEST(LruCacheTest, LargeLimitDoesNotReserveStorage) {
+  constexpr auto kLargeLimit = std::numeric_limits<int64_t>::max();
+  LruCache<int32_t, std::string> cache(kLargeLimit);
+  ASSERT_NE(cache.Replace(1, "one").second, nullptr);
+
+  cache.Resize(1);
+  cache.Resize(kLargeLimit);
+  EXPECT_EQ(cache.max_weight(), kLargeLimit);
+  EXPECT_EQ(cache.size(), 1);
+  cache.Clear();
+  ASSERT_NE(cache.Replace(2, "two").second, nullptr);
+  EXPECT_EQ(cache.size(), 1);
+}
 
 TEST(LruCacheTest, WeightedEviction) {
   WeightedCache cache(10);
@@ -156,6 +172,21 @@ TEST(LruCacheTest, ClearResetsWeight) {
   EXPECT_EQ(cache.total_weight(), 10);
 }
 
+TEST(LruCacheTest, ShrinkingLimitEvictsByWeightInLruOrder) {
+  WeightedCache cache(10);
+  cache.Replace(1, "aaa");
+  cache.Replace(2, "bbbb");
+  cache.Replace(3, "ccc");
+  ASSERT_NE(cache.Find(1), nullptr);
+
+  cache.Resize(3);
+  EXPECT_EQ(cache.max_weight(), 3);
+  EXPECT_EQ(cache.total_weight(), 3);
+  EXPECT_EQ(cache.Find(2), nullptr);
+  EXPECT_EQ(cache.Find(3), nullptr);
+  EXPECT_NE(cache.Find(1), nullptr);
+}
+
 TEST(MemoizeLruTest, Caches) {
   std::atomic<int> calls{0};
   auto memoized = MemoizeLru(
@@ -173,6 +204,14 @@ TEST(MemoizeLruTest, Caches) {
   EXPECT_EQ(memoized(3), "3");
   EXPECT_EQ(memoized(2), "2");
   EXPECT_EQ(calls, 4);
+}
+
+TEST(MemoizeLruTest, RejectsLookupWithZeroCapacity) {
+  auto identity = [](int32_t key) { return key; };
+  auto memoized = MemoizeLru(identity, 0);
+  auto memoized_thread_unsafe = MemoizeLruThreadUnsafe(identity, 0);
+  EXPECT_THROW(memoized(1), std::invalid_argument);
+  EXPECT_THROW(memoized_thread_unsafe(1), std::invalid_argument);
 }
 
 TEST(MemoizeLruTest, MovesKey) {
