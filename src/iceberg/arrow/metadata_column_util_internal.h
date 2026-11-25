@@ -29,6 +29,7 @@
 
 #include <arrow/type_fwd.h>
 
+#include "iceberg/metadata_column_context_internal.h"
 #include "iceberg/result.h"
 
 namespace arrow {
@@ -37,22 +38,8 @@ class ArrayBuilder;
 
 namespace iceberg::arrow {
 
-/// \brief Context for populating metadata columns during reading.
-struct MetadataColumnContext {
-  std::string file_path;  // The file path to populate _file column.
-  // The file row position used when appending metadata values.
-  int64_t next_file_pos = 0;
-  std::optional<int64_t> first_row_id;          // First row ID used to populate _row_id.
-  std::optional<int64_t> data_sequence_number;  // Data sequence number for lineage.
-};
-
-/// \brief Return whether a row lineage column must be read as null.
-bool ShouldReadRowLineageAsNull(int32_t field_id,
-                                const MetadataColumnContext& metadata_context);
-
-/// \brief Check if row lineage metadata can be inherited for the column.
-bool CanInheritRowLineageValue(int32_t field_id,
-                               const MetadataColumnContext& metadata_context);
+using ::iceberg::MetadataColumnContext;
+using ::iceberg::ShouldReadRowLineageAsNull;
 
 /// \brief Append one inherited row lineage value, or null if unavailable.
 Status AppendInheritedRowLineageValue(int32_t field_id,

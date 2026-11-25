@@ -980,6 +980,10 @@ if(ICEBERG_S3 OR ICEBERG_SIGV4)
   resolve_aws_sdk_dependency()
 endif()
 
+if(ICEBERG_BUILD_BUNDLE AND NOT ICEBERG_BUILD_AVRO)
+  message(FATAL_ERROR "ICEBERG_BUILD_BUNDLE requires ICEBERG_BUILD_AVRO to be ON")
+endif()
+
 if(ICEBERG_BUILD_BUNDLE)
   resolve_arrow_dependency()
   # An installed Arrow does not export its bundled AWS SDK, which the S3 FileIO
@@ -990,6 +994,9 @@ if(ICEBERG_BUILD_BUNDLE)
     set(ICEBERG_AWSSDK_COMPONENTS core)
     resolve_aws_sdk_dependency()
   endif()
+endif()
+
+if(ICEBERG_BUILD_AVRO)
   resolve_avro_dependency()
   resolve_zstd_dependency()
 endif()

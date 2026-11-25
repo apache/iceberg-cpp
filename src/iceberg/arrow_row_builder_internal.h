@@ -134,6 +134,13 @@ ICEBERG_EXPORT Status AppendString(ArrowArray* array, std::string_view value);
 /// \brief Append a binary value to a nanoarrow array builder.
 ICEBERG_EXPORT Status AppendBytes(ArrowArray* array, std::span<const uint8_t> value);
 
+/// \brief Append a primitive literal, or a null for a null literal, to a nanoarrow
+/// array builder.
+///
+/// The literal's stored value selects the append, so the array needs a type that
+/// stores it: an int literal also appends to an int64 array, as for a promoted column.
+ICEBERG_EXPORT Status AppendLiteral(ArrowArray* array, const Literal& literal);
+
 /// \brief Append a list of int32 values to a nanoarrow list array builder.
 ICEBERG_EXPORT Status AppendIntList(ArrowArray* array,
                                     const std::vector<int32_t>& values);

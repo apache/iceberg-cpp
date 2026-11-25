@@ -29,36 +29,14 @@
 
 namespace iceberg::arrow {
 
-bool ShouldReadRowLineageAsNull(int32_t field_id,
-                                const MetadataColumnContext& metadata_context) {
-  return MetadataColumns::IsRowLineageColumn(field_id) &&
-         !metadata_context.first_row_id.has_value();
-}
-
-bool CanInheritRowLineageValue(int32_t field_id,
-                               const MetadataColumnContext& metadata_context) {
-  if (field_id == MetadataColumns::kRowIdColumnId) {
-    return metadata_context.first_row_id.has_value();
-  }
-  if (field_id == MetadataColumns::kLastUpdatedSequenceNumberColumnId) {
-    return metadata_context.first_row_id.has_value() &&
-           metadata_context.data_sequence_number.has_value();
-  }
-  return false;
-}
-
 Status AppendInheritedRowLineageValue(int32_t field_id,
                                       const MetadataColumnContext& metadata_context,
                                       ::arrow::ArrayBuilder* array_builder) {
   auto* int_builder = internal::checked_cast<::arrow::Int64Builder*>(array_builder);
-  if (!CanInheritRowLineageValue(field_id, metadata_context)) {
-    ICEBERG_ARROW_RETURN_NOT_OK(int_builder->AppendNull());
-  } else if (field_id == MetadataColumns::kRowIdColumnId) {
-    ICEBERG_ARROW_RETURN_NOT_OK(int_builder->Append(
-        metadata_context.first_row_id.value() + metadata_context.next_file_pos));
+  if (auto value = InheritedRowLineageValue(field_id, metadata_context)) {
+    ICEBERG_ARROW_RETURN_NOT_OK(int_builder->Append(*value));
   } else {
-    ICEBERG_ARROW_RETURN_NOT_OK(
-        int_builder->Append(metadata_context.data_sequence_number.value()));
+    ICEBERG_ARROW_RETURN_NOT_OK(int_builder->AppendNull());
   }
   return {};
 }

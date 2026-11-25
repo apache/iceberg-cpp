@@ -19,16 +19,20 @@
 
 #include <map>
 #include <span>
+#include <type_traits>
+#include <variant>
 #include <vector>
 
 #include <nanoarrow/nanoarrow.h>
 
 #include "iceberg/arrow_c_data_guard_internal.h"
 #include "iceberg/arrow_row_builder_internal.h"
+#include "iceberg/expression/literal.h"
 #include "iceberg/nanoarrow_status_internal.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_internal.h"
 #include "iceberg/util/decimal.h"
+#include "iceberg/util/uuid.h"
 
 namespace iceberg {
 
@@ -145,6 +149,32 @@ Status AppendBytes(ArrowArray* array, std::span<const uint8_t> value) {
   ArrowBufferView view(data, static_cast<int64_t>(value.size()));
   ICEBERG_NANOARROW_RETURN_UNEXPECTED(ArrowArrayAppendBytes(array, view));
   return {};
+}
+
+Status AppendLiteral(ArrowArray* array, const Literal& literal) {
+  return std::visit(
+      [&]<typename T>(const T& value) -> Status {
+        if constexpr (std::is_same_v<T, std::monostate>) {
+          return AppendNull(array);
+        } else if constexpr (std::is_same_v<T, bool>) {
+          return AppendBoolean(array, value);
+        } else if constexpr (std::is_same_v<T, int32_t> || std::is_same_v<T, int64_t>) {
+          return AppendInt(array, value);
+        } else if constexpr (std::is_same_v<T, float> || std::is_same_v<T, double>) {
+          return AppendDouble(array, value);
+        } else if constexpr (std::is_same_v<T, std::string>) {
+          return AppendString(array, value);
+        } else if constexpr (std::is_same_v<T, std::vector<uint8_t>>) {
+          return AppendBytes(array, value);
+        } else if constexpr (std::is_same_v<T, Decimal>) {
+          return AppendDecimal(array, value);
+        } else if constexpr (std::is_same_v<T, Uuid>) {
+          return AppendBytes(array, value.bytes());
+        } else {
+          return InvalidArgument("Cannot append literal {}", literal.ToString());
+        }
+      },
+      literal.value());
 }
 
 Status AppendIntList(ArrowArray* array, const std::vector<int32_t>& values) {

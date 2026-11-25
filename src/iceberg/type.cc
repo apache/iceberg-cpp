@@ -30,6 +30,7 @@
 #include "iceberg/schema.h"
 #include "iceberg/schema_field.h"
 #include "iceberg/util/formatter.h"  // IWYU pragma: keep
+#include "iceberg/util/int128.h"
 #include "iceberg/util/macros.h"
 #include "iceberg/util/string_util.h"
 
@@ -306,6 +307,19 @@ DecimalType::DecimalType(int32_t precision, int32_t scale)
 
 int32_t DecimalType::precision() const { return precision_; }
 int32_t DecimalType::scale() const { return scale_; }
+
+int32_t DecimalType::RequiredBytes() const {
+  uint128_t max_unscaled = 1;
+  for (int32_t i = 0; i < precision_; ++i) {
+    max_unscaled *= 10;
+  }
+  max_unscaled -= 1;
+  int32_t bytes = 1;
+  while ((static_cast<uint128_t>(1) << (8 * bytes - 1)) - 1 < max_unscaled) {
+    ++bytes;
+  }
+  return bytes;
+}
 TypeId DecimalType::type_id() const { return kTypeId; }
 std::string DecimalType::ToString() const {
   return std::format("decimal({}, {})", precision_, scale_);

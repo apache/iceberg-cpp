@@ -21,24 +21,21 @@
 
 #include <memory>
 
-#include <arrow/array.h>
-#include <arrow/array/builder_base.h>
-#include <arrow/c/bridge.h>
-#include <arrow/record_batch.h>
-#include <arrow/result.h>
 #include <avro/DataFile.hh>
 #include <avro/Generic.hh>
 #include <avro/GenericDatum.hh>
+#include <nanoarrow/nanoarrow.h>
 
-#include "iceberg/arrow/arrow_io_internal.h"
-#include "iceberg/arrow/arrow_status_internal.h"
+#include "iceberg/arrow_c_data_guard_internal.h"
 #include "iceberg/avro/avro_data_util_internal.h"
 #include "iceberg/avro/avro_direct_encoder_internal.h"
 #include "iceberg/avro/avro_metrics.h"
 #include "iceberg/avro/avro_register.h"
 #include "iceberg/avro/avro_schema_util_internal.h"
 #include "iceberg/avro/avro_stream_internal.h"
+#include "iceberg/file_io.h"
 #include "iceberg/metrics_config.h"
+#include "iceberg/nanoarrow_status_internal.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_internal.h"
 #include "iceberg/util/macros.h"
@@ -47,11 +44,12 @@ namespace iceberg::avro {
 
 namespace {
 
-Result<std::unique_ptr<AvroOutputStream>> CreateOutputStream(const WriterOptions& options,
-                                                             int64_t buffer_size) {
-  ICEBERG_ASSIGN_OR_RAISE(auto output,
-                          arrow::OpenArrowOutputStream(options.io, options.path));
-  return std::make_unique<AvroOutputStream>(output, buffer_size);
+Result<std::shared_ptr<PositionOutputStream>> CreateOutputStream(
+    const WriterOptions& options) {
+  ICEBERG_PRECHECK(options.io != nullptr, "FileIO cannot be null");
+  ICEBERG_ASSIGN_OR_RAISE(auto output_file, options.io->NewOutputFile(options.path));
+  ICEBERG_ASSIGN_OR_RAISE(auto output, output_file->CreateOrOverwrite());
+  return std::shared_ptr<PositionOutputStream>(std::move(output));
 }
 
 Result<::avro::Codec> ParseCodec(const WriterProperties& properties) {
@@ -90,7 +88,7 @@ class AvroWriteBackend {
                       const ::avro::ValidSchema& avro_schema, int64_t sync_interval,
                       ::avro::Codec codec, std::optional<int32_t> compression_level,
                       const std::map<std::string, std::vector<uint8_t>>& metadata) = 0;
-  virtual Status WriteRow(const Schema& write_schema, const ::arrow::Array& array,
+  virtual Status WriteRow(const Schema& write_schema, const ArrowArrayView& array_view,
                           int64_t row_index) = 0;
   virtual void Close() = 0;
   virtual bool Closed() const = 0;
@@ -110,11 +108,11 @@ class DirectEncoderBackend : public AvroWriteBackend {
     return {};
   }
 
-  Status WriteRow(const Schema& write_schema, const ::arrow::Array& array,
+  Status WriteRow(const Schema& write_schema, const ArrowArrayView& array_view,
                   int64_t row_index) override {
     writer_->syncIfNeeded();
     ICEBERG_RETURN_UNEXPECTED(EncodeArrowToAvro(avro_root_node_, writer_->encoder(),
-                                                write_schema, array, row_index,
+                                                write_schema, array_view, row_index,
                                                 encode_ctx_));
     writer_->incr();
     return {};
@@ -152,9 +150,9 @@ class GenericDatumBackend : public AvroWriteBackend {
     return {};
   }
 
-  Status WriteRow(const Schema& /*write_schema*/, const ::arrow::Array& array,
+  Status WriteRow(const Schema& /*write_schema*/, const ArrowArrayView& array_view,
                   int64_t row_index) override {
-    ICEBERG_RETURN_UNEXPECTED(ExtractDatumFromArray(array, row_index, datum_.get()));
+    ICEBERG_RETURN_UNEXPECTED(ExtractDatumFromArray(array_view, row_index, datum_.get()));
     writer_->write(*datum_);
     return {};
   }
@@ -179,6 +177,8 @@ class GenericDatumBackend : public AvroWriteBackend {
 
 class AvroWriter::Impl {
  public:
+  ~Impl() { ArrowArrayViewReset(&array_view_); }
+
   Status Open(const WriterOptions& options) {
     write_schema_ = options.schema;
 
@@ -193,11 +193,9 @@ class AvroWriter::Impl {
     avro_schema_ = std::make_shared<::avro::ValidSchema>(root);
 
     // Open the output stream and adapt to the avro interface.
-    ICEBERG_ASSIGN_OR_RAISE(
-        auto output_stream,
-        CreateOutputStream(options,
-                           options.properties.Get(WriterProperties::kAvroBufferSize)));
-    arrow_output_stream_ = output_stream->arrow_output_stream();
+    ICEBERG_ASSIGN_OR_RAISE(output_stream_, CreateOutputStream(options));
+    auto output_stream = std::make_unique<AvroOutputStream>(
+        output_stream_, options.properties.Get(WriterProperties::kAvroBufferSize));
 
     std::map<std::string, std::vector<uint8_t>> metadata;
     for (const auto& [key, value] : options.metadata) {
@@ -224,28 +222,33 @@ class AvroWriter::Impl {
 
     ArrowSchema c_schema;
     ICEBERG_RETURN_UNEXPECTED(ToArrowSchema(*write_schema_, &c_schema));
-    ICEBERG_ARROW_ASSIGN_OR_RETURN(arrow_schema_, ::arrow::ImportSchema(&c_schema));
+    internal::ArrowSchemaGuard schema_guard(&c_schema);
+    ArrowError error;
+    ICEBERG_NANOARROW_RETURN_UNEXPECTED_WITH_ERROR(
+        ArrowArrayViewInitFromSchema(&array_view_, &c_schema, &error), error);
     return {};
   }
 
   Status Write(ArrowArray* data) {
-    ICEBERG_ARROW_ASSIGN_OR_RETURN(auto batch,
-                                   ::arrow::ImportRecordBatch(data, arrow_schema_));
+    // The writer takes ownership of the batch and releases it once written.
+    internal::ArrowArrayGuard data_guard(data);
+    ArrowError error;
+    ICEBERG_NANOARROW_RETURN_UNEXPECTED_WITH_ERROR(
+        ArrowArrayViewSetArray(&array_view_, data, &error), error);
 
-    ICEBERG_ARROW_ASSIGN_OR_RETURN(auto struct_array, batch->ToStructArray());
-    for (int64_t i = 0; i < struct_array->length(); i++) {
-      ICEBERG_RETURN_UNEXPECTED(backend_->WriteRow(*write_schema_, *struct_array, i));
+    for (int64_t i = 0; i < array_view_.length; i++) {
+      ICEBERG_RETURN_UNEXPECTED(backend_->WriteRow(*write_schema_, array_view_, i));
     }
 
-    num_records_ += struct_array->length();
+    num_records_ += array_view_.length;
     return {};
   }
 
   Status Close() {
     if (!backend_->Closed()) {
       backend_->Close();
-      ICEBERG_ARROW_ASSIGN_OR_RETURN(total_bytes_, arrow_output_stream_->Tell());
-      ICEBERG_ARROW_RETURN_NOT_OK(arrow_output_stream_->Close());
+      ICEBERG_ASSIGN_OR_RAISE(total_bytes_, output_stream_->Position());
+      ICEBERG_RETURN_UNEXPECTED(output_stream_->Close());
     }
     return {};
   }
@@ -257,8 +260,7 @@ class AvroWriter::Impl {
       return total_bytes_;
     }
     // Return current flushed length when writer is still open
-    ICEBERG_ARROW_ASSIGN_OR_RETURN(auto current_pos, arrow_output_stream_->Tell());
-    return current_pos;
+    return output_stream_->Position();
   }
 
   Result<Metrics> metrics() const {
@@ -274,10 +276,10 @@ class AvroWriter::Impl {
   std::shared_ptr<::iceberg::Schema> write_schema_;
   // The avro schema to write.
   std::shared_ptr<::avro::ValidSchema> avro_schema_;
-  // Arrow output stream of the Avro file to write
-  std::shared_ptr<::arrow::io::OutputStream> arrow_output_stream_;
-  // Arrow schema to import C data batches.
-  std::shared_ptr<::arrow::Schema> arrow_schema_;
+  // Output stream of the Avro file to write
+  std::shared_ptr<PositionOutputStream> output_stream_;
+  // View over the batch being written, typed by the write schema.
+  ArrowArrayView array_view_{};
   // Total length of the written Avro file.
   int64_t total_bytes_ = 0;
   // Number of records written.

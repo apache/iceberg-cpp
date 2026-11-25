@@ -112,6 +112,7 @@ cmake --install build
 | `ICEBERG_BUILD_SHARED` | `OFF` | Build shared library |
 | `ICEBERG_BUILD_TESTS` | `ON` | Build tests |
 | `ICEBERG_BUILD_BUNDLE` | `ON` | Build the battery-included library |
+| `ICEBERG_BUILD_AVRO` | `ICEBERG_BUILD_BUNDLE` | Build the standalone Avro reader and writer. Enable explicitly for an Avro build without the bundle. |
 | `ICEBERG_BUILD_REST` | `ON` | Build REST catalog client |
 | `ICEBERG_BUILD_REST_INTEGRATION_TESTS` | `OFF` | Build REST catalog integration tests |
 | `ICEBERG_BUILD_VERIFICATION_TESTS` | `OFF` | Build conformance tests over the apache/iceberg-verification fixtures |

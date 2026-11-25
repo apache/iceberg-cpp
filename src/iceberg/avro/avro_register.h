@@ -22,20 +22,20 @@
 /// \file iceberg/avro/avro_register.h
 /// \brief Provide functions to register Avro implementations.
 
-#include "iceberg/iceberg_bundle_export.h"
+#include "iceberg/iceberg_avro_export.h"
 
 namespace iceberg::avro {
 
 /// \brief Register all the logical types.
-ICEBERG_BUNDLE_EXPORT void RegisterLogicalTypes();
+ICEBERG_AVRO_EXPORT void RegisterLogicalTypes();
 
 /// \brief Register Avro reader implementation.
-ICEBERG_BUNDLE_EXPORT void RegisterReader();
+ICEBERG_AVRO_EXPORT void RegisterReader();
 
 /// \brief Register Avro writer implementation.
-ICEBERG_BUNDLE_EXPORT void RegisterWriter();
+ICEBERG_AVRO_EXPORT void RegisterWriter();
 
 /// \brief Register all the logical types, Avro reader, and Avro writer.
-ICEBERG_BUNDLE_EXPORT void RegisterAll();
+ICEBERG_AVRO_EXPORT void RegisterAll();
 
 }  // namespace iceberg::avro

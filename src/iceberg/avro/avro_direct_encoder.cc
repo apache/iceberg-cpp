@@ -20,10 +20,8 @@
 #include <algorithm>
 #include <cstring>
 
-#include <arrow/array.h>
-#include <arrow/extension_type.h>
-#include <arrow/type.h>
 #include <avro/Specific.hh>
+#include <nanoarrow/nanoarrow.h>
 
 #include "iceberg/avro/avro_data_util_internal.h"
 #include "iceberg/avro/avro_direct_encoder_internal.h"
@@ -61,12 +59,12 @@ Result<UnionBranches> ValidateUnion(const ::avro::NodePtr& union_node) {
 }  // namespace
 
 Status EncodeArrowToAvro(const ::avro::NodePtr& avro_node, ::avro::Encoder& encoder,
-                         const Type& type, const ::arrow::Array& array, int64_t row_index,
-                         EncodeContext& ctx) {
-  ICEBERG_PRECHECK(row_index >= 0 && row_index < array.length(),
-                   "Row index {} out of bounds {}", row_index, array.length());
+                         const Type& type, const ArrowArrayView& array_view,
+                         int64_t row_index, EncodeContext& ctx) {
+  ICEBERG_PRECHECK(row_index >= 0 && row_index < array_view.length,
+                   "Row index {} out of bounds {}", row_index, array_view.length);
 
-  const bool is_null = array.IsNull(row_index);
+  const bool is_null = ArrowArrayViewIsNull(&array_view, row_index);
 
   if (avro_node->type() == ::avro::AVRO_UNION) {
     ICEBERG_ASSIGN_OR_RAISE(auto branches, ValidateUnion(avro_node));
@@ -78,7 +76,8 @@ Status EncodeArrowToAvro(const ::avro::NodePtr& avro_node, ::avro::Encoder& enco
     }
 
     encoder.encodeUnionIndex(branches.value_index);
-    return EncodeArrowToAvro(branches.value_node, encoder, type, array, row_index, ctx);
+    return EncodeArrowToAvro(branches.value_node, encoder, type, array_view, row_index,
+                             ctx);
   }
 
   if (avro_node->type() == ::avro::AVRO_NULL) {
@@ -91,180 +90,130 @@ Status EncodeArrowToAvro(const ::avro::NodePtr& avro_node, ::avro::Encoder& enco
   }
 
   switch (avro_node->type()) {
-    case ::avro::AVRO_BOOL: {
-      const auto& bool_array =
-          internal::checked_cast<const ::arrow::BooleanArray&>(array);
-      encoder.encodeBool(bool_array.Value(row_index));
+    case ::avro::AVRO_BOOL:
+      encoder.encodeBool(ArrowArrayViewGetIntUnsafe(&array_view, row_index) != 0);
       return {};
-    }
 
     case ::avro::AVRO_INT: {
       // AVRO_INT can represent: int32, date (days since epoch)
-      switch (array.type()->id()) {
-        case ::arrow::Type::INT32: {
-          const auto& int32_array =
-              internal::checked_cast<const ::arrow::Int32Array&>(array);
-          encoder.encodeInt(int32_array.Value(row_index));
+      switch (array_view.storage_type) {
+        case NANOARROW_TYPE_INT32:
+        case NANOARROW_TYPE_DATE32:
+          encoder.encodeInt(
+              static_cast<int32_t>(ArrowArrayViewGetIntUnsafe(&array_view, row_index)));
           return {};
-        }
-        case ::arrow::Type::DATE32: {
-          const auto& date_array =
-              internal::checked_cast<const ::arrow::Date32Array&>(array);
-          encoder.encodeInt(date_array.Value(row_index));
-          return {};
-        }
         default:
           return InvalidArgument("AVRO_INT expects Int32Array or Date32Array, got {}",
-                                 array.type()->ToString());
+                                 ArrowTypeString(array_view.storage_type));
       }
     }
 
     case ::avro::AVRO_LONG: {
       // AVRO_LONG can represent: int64, time (microseconds), timestamp (microseconds)
-      switch (array.type()->id()) {
-        case ::arrow::Type::INT64: {
-          const auto& int64_array =
-              internal::checked_cast<const ::arrow::Int64Array&>(array);
-          encoder.encodeLong(int64_array.Value(row_index));
+      switch (array_view.storage_type) {
+        case NANOARROW_TYPE_INT64:
+        case NANOARROW_TYPE_TIME64:
+        case NANOARROW_TYPE_TIMESTAMP:
+          encoder.encodeLong(ArrowArrayViewGetIntUnsafe(&array_view, row_index));
           return {};
-        }
-        case ::arrow::Type::TIME64: {
-          const auto& time_array =
-              internal::checked_cast<const ::arrow::Time64Array&>(array);
-          encoder.encodeLong(time_array.Value(row_index));
-          return {};
-        }
-        case ::arrow::Type::TIMESTAMP: {
-          const auto& timestamp_array =
-              internal::checked_cast<const ::arrow::TimestampArray&>(array);
-          encoder.encodeLong(timestamp_array.Value(row_index));
-          return {};
-        }
         default:
           return InvalidArgument(
               "AVRO_LONG expects Int64Array, Time64Array, or TimestampArray, got {}",
-              array.type()->ToString());
+              ArrowTypeString(array_view.storage_type));
       }
     }
 
-    case ::avro::AVRO_FLOAT: {
-      const auto& float_array = internal::checked_cast<const ::arrow::FloatArray&>(array);
-      encoder.encodeFloat(float_array.Value(row_index));
+    case ::avro::AVRO_FLOAT:
+      encoder.encodeFloat(
+          static_cast<float>(ArrowArrayViewGetDoubleUnsafe(&array_view, row_index)));
       return {};
-    }
 
-    case ::avro::AVRO_DOUBLE: {
-      const auto& double_array =
-          internal::checked_cast<const ::arrow::DoubleArray&>(array);
-      encoder.encodeDouble(double_array.Value(row_index));
+    case ::avro::AVRO_DOUBLE:
+      encoder.encodeDouble(ArrowArrayViewGetDoubleUnsafe(&array_view, row_index));
       return {};
-    }
 
     case ::avro::AVRO_STRING: {
-      const auto& string_array =
-          internal::checked_cast<const ::arrow::StringArray&>(array);
-      std::string_view value = string_array.GetView(row_index);
-      encoder.encodeString(std::string(value));
+      ArrowStringView value = ArrowArrayViewGetStringUnsafe(&array_view, row_index);
+      encoder.encodeString(
+          std::string(value.data, static_cast<size_t>(value.size_bytes)));
       return {};
     }
 
     case ::avro::AVRO_BYTES: {
-      const auto& binary_array =
-          internal::checked_cast<const ::arrow::BinaryArray&>(array);
-      std::string_view value = binary_array.GetView(row_index);
-      ctx.bytes_scratch.assign(value.begin(), value.end());
+      ArrowBufferView value = ArrowArrayViewGetBytesUnsafe(&array_view, row_index);
+      ctx.bytes_scratch.assign(value.data.as_uint8,
+                               value.data.as_uint8 + value.size_bytes);
       encoder.encodeBytes(ctx.bytes_scratch);
       return {};
     }
 
     case ::avro::AVRO_FIXED: {
-      // Handle UUID
-      if (avro_node->logicalType().type() == ::avro::LogicalType::UUID) {
-        const auto& extension_array =
-            internal::checked_cast<const ::arrow::ExtensionArray&>(array);
-        const auto& fixed_array =
-            internal::checked_cast<const ::arrow::FixedSizeBinaryArray&>(
-                *extension_array.storage());
-        std::string_view value = fixed_array.GetView(row_index);
-        ctx.bytes_scratch.assign(value.begin(), value.end());
-        encoder.encodeFixed(ctx.bytes_scratch.data(), ctx.bytes_scratch.size());
-        return {};
-      }
-
       // Handle DECIMAL
       if (avro_node->logicalType().type() == ::avro::LogicalType::DECIMAL) {
-        const auto& decimal_array =
-            internal::checked_cast<const ::arrow::Decimal128Array&>(array);
-        ICEBERG_RETURN_UNEXPECTED(
-            EncodeDecimalToFixed(::arrow::Decimal128(decimal_array.GetValue(row_index)),
-                                 avro_node->fixedSize(), &ctx.bytes_scratch));
+        ICEBERG_RETURN_UNEXPECTED(EncodeDecimalToFixed(GetDecimal(array_view, row_index),
+                                                       avro_node->fixedSize(),
+                                                       &ctx.bytes_scratch));
         encoder.encodeFixed(ctx.bytes_scratch.data(), ctx.bytes_scratch.size());
         return {};
       }
 
-      // Handle regular FIXED
-      const auto& fixed_array =
-          internal::checked_cast<const ::arrow::FixedSizeBinaryArray&>(array);
-      std::string_view value = fixed_array.GetView(row_index);
-      ctx.bytes_scratch.assign(value.begin(), value.end());
-      encoder.encodeFixed(ctx.bytes_scratch.data(), ctx.bytes_scratch.size());
+      // Handle UUID and regular FIXED, both stored as fixed-size binary
+      ArrowBufferView value = ArrowArrayViewGetBytesUnsafe(&array_view, row_index);
+      encoder.encodeFixed(value.data.as_uint8, static_cast<size_t>(value.size_bytes));
       return {};
     }
 
     case ::avro::AVRO_RECORD: {
-      ICEBERG_PRECHECK(array.type()->id() == ::arrow::Type::STRUCT,
+      ICEBERG_PRECHECK(array_view.storage_type == NANOARROW_TYPE_STRUCT,
                        "AVRO_RECORD expects StructArray, got {}",
-                       array.type()->ToString());
+                       ArrowTypeString(array_view.storage_type));
       ICEBERG_PRECHECK(type.type_id() == TypeId::kStruct,
                        "AVRO_RECORD expects struct type, got type {}", type.ToString());
 
-      const auto& struct_array =
-          internal::checked_cast<const ::arrow::StructArray&>(array);
       const auto& struct_type = internal::checked_cast<const StructType&>(type);
       const size_t num_fields = avro_node->leaves();
 
       ICEBERG_PRECHECK(
-          struct_array.num_fields() == static_cast<int>(num_fields),
+          array_view.n_children == static_cast<int64_t>(num_fields),
           "Field count mismatch: Arrow struct has {} fields, Avro node has {} fields",
-          struct_array.num_fields(), num_fields);
+          array_view.n_children, num_fields);
       ICEBERG_PRECHECK(
           struct_type.fields().size() == num_fields,
           "Field count mismatch: Iceberg struct has {} fields, Avro node has {} fields",
           struct_type.fields().size(), num_fields);
 
+      // A struct's offset applies to its children as well.
+      const int64_t child_index = array_view.offset + row_index;
       for (size_t i = 0; i < num_fields; ++i) {
         const auto& field_node = avro_node->leafAt(i);
-        const auto& field_array = struct_array.field(static_cast<int>(i));
+        const auto& field_view = *array_view.children[i];
         const auto& field_schema = struct_type.fields()[i];
 
         ICEBERG_RETURN_UNEXPECTED(EncodeArrowToAvro(
-            field_node, encoder, *field_schema.type(), *field_array, row_index, ctx));
+            field_node, encoder, *field_schema.type(), field_view, child_index, ctx));
       }
       return {};
     }
 
     case ::avro::AVRO_ARRAY: {
       const auto& element_node = avro_node->leafAt(0);
+      const int64_t start = GetCollectionChildOffset(array_view, row_index);
+      const int64_t end = GetCollectionChildOffset(array_view, row_index + 1);
 
       // Handle ListArray
-      if (array.type()->id() == ::arrow::Type::LIST) {
-        const auto& list_array = internal::checked_cast<const ::arrow::ListArray&>(array);
+      if (array_view.storage_type == NANOARROW_TYPE_LIST) {
         const auto& list_type = internal::checked_cast<const ListType&>(type);
 
-        const auto start = list_array.value_offset(row_index);
-        const auto end = list_array.value_offset(row_index + 1);
-        const auto length = end - start;
-
         encoder.arrayStart();
-        if (length > 0) {
-          encoder.setItemCount(length);
-          const auto& values = list_array.values();
+        if (end > start) {
+          encoder.setItemCount(end - start);
+          const auto& values = *array_view.children[0];
           const auto& element_type = *list_type.fields()[0].type();
 
           for (int64_t i = start; i < end; ++i) {
             encoder.startItem();
             ICEBERG_RETURN_UNEXPECTED(
-                EncodeArrowToAvro(element_node, encoder, element_type, *values, i, ctx));
+                EncodeArrowToAvro(element_node, encoder, element_type, values, i, ctx));
           }
         }
         encoder.arrayEnd();
@@ -272,24 +221,22 @@ Status EncodeArrowToAvro(const ::avro::NodePtr& avro_node, ::avro::Encoder& enco
       }
 
       // Handle MapArray (for Avro maps with non-string keys)
-      if (array.type()->id() == ::arrow::Type::MAP) {
+      if (array_view.storage_type == NANOARROW_TYPE_MAP) {
         ICEBERG_PRECHECK(
             element_node->type() == ::avro::AVRO_RECORD && element_node->leaves() == 2,
             "Expected AVRO_RECORD for map key-value pair, got {}",
             ::avro::toString(element_node->type()));
 
-        const auto& map_array = internal::checked_cast<const ::arrow::MapArray&>(array);
         const auto& map_type = internal::checked_cast<const MapType&>(type);
 
-        const auto start = map_array.value_offset(row_index);
-        const auto end = map_array.value_offset(row_index + 1);
-        const auto length = end - start;
-
         encoder.arrayStart();
-        if (length > 0) {
-          encoder.setItemCount(length);
-          const auto& keys = map_array.keys();
-          const auto& values = map_array.items();
+        if (end > start) {
+          encoder.setItemCount(end - start);
+          // Map offsets index the entries struct, whose offset applies to keys and
+          // values.
+          const auto& entries = *array_view.children[0];
+          const auto& keys = *entries.children[0];
+          const auto& values = *entries.children[1];
           const auto& key_type = *map_type.key().type();
           const auto& value_type = *map_type.value().type();
 
@@ -299,10 +246,10 @@ Status EncodeArrowToAvro(const ::avro::NodePtr& avro_node, ::avro::Encoder& enco
             const auto& value_node = element_node->leafAt(1);
 
             encoder.startItem();
-            ICEBERG_RETURN_UNEXPECTED(
-                EncodeArrowToAvro(key_node, encoder, key_type, *keys, i, ctx));
-            ICEBERG_RETURN_UNEXPECTED(
-                EncodeArrowToAvro(value_node, encoder, value_type, *values, i, ctx));
+            ICEBERG_RETURN_UNEXPECTED(EncodeArrowToAvro(key_node, encoder, key_type, keys,
+                                                        entries.offset + i, ctx));
+            ICEBERG_RETURN_UNEXPECTED(EncodeArrowToAvro(value_node, encoder, value_type,
+                                                        values, entries.offset + i, ctx));
           }
         }
         encoder.arrayEnd();
@@ -310,52 +257,42 @@ Status EncodeArrowToAvro(const ::avro::NodePtr& avro_node, ::avro::Encoder& enco
       }
 
       return InvalidArgument("AVRO_ARRAY must map to ListArray or MapArray, got {}",
-                             array.type()->ToString());
+                             ArrowTypeString(array_view.storage_type));
     }
 
     case ::avro::AVRO_MAP: {
-      ICEBERG_PRECHECK(array.type()->id() == ::arrow::Type::MAP,
-                       "AVRO_MAP expects MapArray, got {}", array.type()->ToString());
+      ICEBERG_PRECHECK(array_view.storage_type == NANOARROW_TYPE_MAP,
+                       "AVRO_MAP expects MapArray, got {}",
+                       ArrowTypeString(array_view.storage_type));
       ICEBERG_PRECHECK(type.type_id() == TypeId::kMap,
                        "AVRO_MAP expects MapType, got type {}", type.ToString());
 
-      const auto& map_array = internal::checked_cast<const ::arrow::MapArray&>(array);
       const auto& map_type = internal::checked_cast<const MapType&>(type);
-
-      const auto start = map_array.value_offset(row_index);
-      const auto end = map_array.value_offset(row_index + 1);
-      const auto length = end - start;
+      const int64_t start = GetCollectionChildOffset(array_view, row_index);
+      const int64_t end = GetCollectionChildOffset(array_view, row_index + 1);
 
       encoder.mapStart();
-      if (length > 0) {
-        encoder.setItemCount(length);
-        const auto& keys = map_array.keys();
-        const auto& values = map_array.items();
+      if (end > start) {
+        encoder.setItemCount(end - start);
+        // Map offsets index the entries struct, whose offset applies to keys and values.
+        const auto& entries = *array_view.children[0];
+        const auto& keys = *entries.children[0];
+        const auto& values = *entries.children[1];
         const auto& value_type = *map_type.value().type();
         const auto& value_node = avro_node->leafAt(1);
 
-        ICEBERG_PRECHECK(keys->type()->id() == ::arrow::Type::STRING ||
-                             keys->type()->id() == ::arrow::Type::LARGE_STRING,
+        ICEBERG_PRECHECK(keys.storage_type == NANOARROW_TYPE_STRING ||
+                             keys.storage_type == NANOARROW_TYPE_LARGE_STRING,
                          "AVRO_MAP keys must be StringArray, got {}",
-                         keys->type()->ToString());
+                         ArrowTypeString(keys.storage_type));
 
         for (int64_t i = start; i < end; ++i) {
           encoder.startItem();
-
-          if (keys->type()->id() == ::arrow::Type::STRING) {
-            const auto& string_array =
-                internal::checked_cast<const ::arrow::StringArray&>(*keys);
-            std::string_view key_value = string_array.GetView(i);
-            encoder.encodeString(std::string(key_value));
-          } else {
-            const auto& large_string_array =
-                internal::checked_cast<const ::arrow::LargeStringArray&>(*keys);
-            std::string_view key_value = large_string_array.GetView(i);
-            encoder.encodeString(std::string(key_value));
-          }
-
-          ICEBERG_RETURN_UNEXPECTED(
-              EncodeArrowToAvro(value_node, encoder, value_type, *values, i, ctx));
+          ArrowStringView key = ArrowArrayViewGetStringUnsafe(&keys, entries.offset + i);
+          encoder.encodeString(
+              std::string(key.data, static_cast<size_t>(key.size_bytes)));
+          ICEBERG_RETURN_UNEXPECTED(EncodeArrowToAvro(value_node, encoder, value_type,
+                                                      values, entries.offset + i, ctx));
         }
       }
       encoder.mapEnd();

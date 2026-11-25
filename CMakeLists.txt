@@ -51,6 +51,7 @@ option(ICEBERG_BUILD_SHARED "Build shared library" OFF)
 option(ICEBERG_BUILD_TESTS "Build tests" ON)
 option(ICEBERG_BUILD_BENCHMARKS "Build benchmarks" OFF)
 option(ICEBERG_BUILD_BUNDLE "Build the battery included library" ON)
+option(ICEBERG_BUILD_AVRO "Build the Avro file reader and writer" ${ICEBERG_BUILD_BUNDLE})
 option(ICEBERG_ENCRYPTION
        "Build table encryption support (Parquet modular encryption, AES GCM streams)" OFF)
 option(ICEBERG_BUILD_REST "Build rest catalog client" ON)

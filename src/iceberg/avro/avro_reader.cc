@@ -22,29 +22,22 @@
 #include <memory>
 #include <vector>
 
-#include <arrow/array/builder_base.h>
-#include <arrow/c/bridge.h>
-#include <arrow/extension_type.h>
-#include <arrow/filesystem/filesystem.h>
-#include <arrow/record_batch.h>
-#include <arrow/result.h>
-#include <arrow/type.h>
 #include <avro/DataFile.hh>
 #include <avro/Generic.hh>
 #include <avro/GenericDatum.hh>
+#include <nanoarrow/nanoarrow.h>
 
-#include "iceberg/arrow/arrow_io_internal.h"
-#include "iceberg/arrow/arrow_status_internal.h"
-#include "iceberg/arrow/metadata_column_util_internal.h"
 #include "iceberg/avro/avro_data_util_internal.h"
 #include "iceberg/avro/avro_direct_decoder_internal.h"
 #include "iceberg/avro/avro_register.h"
 #include "iceberg/avro/avro_schema_util_internal.h"
 #include "iceberg/avro/avro_stream_internal.h"
+#include "iceberg/file_io.h"
+#include "iceberg/metadata_column_context_internal.h"
 #include "iceberg/metadata_columns.h"
 #include "iceberg/name_mapping.h"
+#include "iceberg/nanoarrow_status_internal.h"
 #include "iceberg/schema_internal.h"
-#include "iceberg/util/checked_cast.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg::avro {
@@ -67,9 +60,16 @@ bool HasList(const Type& type) {
 
 Result<std::unique_ptr<AvroInputStream>> CreateInputStream(const ReaderOptions& options,
                                                            int64_t buffer_size) {
-  ICEBERG_ASSIGN_OR_RAISE(
-      auto file, arrow::OpenArrowInputStream(options.io, options.path, options.length));
-  return std::make_unique<AvroInputStream>(file, buffer_size);
+  ICEBERG_PRECHECK(options.io != nullptr, "FileIO cannot be null");
+  std::unique_ptr<InputFile> input_file;
+  if (options.length.has_value()) {
+    ICEBERG_ASSIGN_OR_RAISE(input_file,
+                            options.io->NewInputFile(options.path, *options.length));
+  } else {
+    ICEBERG_ASSIGN_OR_RAISE(input_file, options.io->NewInputFile(options.path));
+  }
+  ICEBERG_ASSIGN_OR_RAISE(auto input, input_file->Open());
+  return std::make_unique<AvroInputStream>(std::move(input), buffer_size);
 }
 
 // Check if the row position metadata column is in the read schema
@@ -102,8 +102,8 @@ class AvroReadBackend {
   virtual void InitReadContext(const ::avro::ValidSchema& reader_schema) = 0;
   virtual bool HasMore() = 0;
   virtual Status DecodeNext(const SchemaProjection& projection, const Schema& read_schema,
-                            const arrow::MetadataColumnContext& metadata_context,
-                            ::arrow::ArrayBuilder* builder) = 0;
+                            const MetadataColumnContext& metadata_context,
+                            ArrowArray* builder) = 0;
   virtual bool IsPastSync(int64_t split_end) const = 0;
   virtual const ::avro::Metadata& GetMetadata() const = 0;
   virtual const ::avro::ValidSchema& GetReaderSchema() const = 0;
@@ -134,8 +134,8 @@ class DirectDecoderBackend : public AvroReadBackend {
   bool HasMore() override { return reader_->hasMore(); }
 
   Status DecodeNext(const SchemaProjection& projection, const Schema& read_schema,
-                    const arrow::MetadataColumnContext& metadata_context,
-                    ::arrow::ArrayBuilder* builder) override {
+                    const MetadataColumnContext& metadata_context,
+                    ArrowArray* builder) override {
     reader_->decr();
     return DecodeAvroToBuilder(GetReaderSchema().root(), reader_->decoder(), projection,
                                read_schema, metadata_context, builder, decode_context_);
@@ -194,8 +194,8 @@ class GenericDatumBackend : public AvroReadBackend {
   }
 
   Status DecodeNext(const SchemaProjection& projection, const Schema& read_schema,
-                    const arrow::MetadataColumnContext& metadata_context,
-                    ::arrow::ArrayBuilder* builder) override {
+                    const MetadataColumnContext& metadata_context,
+                    ArrowArray* builder) override {
     return AppendDatumToBuilder(GetReaderSchema().root(), *datum_, projection,
                                 read_schema, metadata_context, builder);
   }
@@ -227,76 +227,13 @@ class GenericDatumBackend : public AvroReadBackend {
   bool has_more_ = false;
 };
 
-// A stateful context to keep track of the reading progress.
-struct ReadContext {
-  // The arrow schema to build the record batch.
-  std::shared_ptr<::arrow::Schema> arrow_schema_;
-  // The builder to build the record batch.
-  std::shared_ptr<::arrow::ArrayBuilder> builder_;
-};
-
-std::shared_ptr<::arrow::DataType> StorageTypeForBuilder(
-    const std::shared_ptr<::arrow::DataType>& type);
-
-std::shared_ptr<::arrow::Field> StorageFieldForBuilder(
-    const std::shared_ptr<::arrow::Field>& field) {
-  return ::arrow::field(field->name(), StorageTypeForBuilder(field->type()),
-                        field->nullable(), field->metadata());
-}
-
-// Arrow cannot construct builders for arrow.uuid extension arrays yet, so build
-// with the UUID storage type while keeping the public schema unchanged.
-std::shared_ptr<::arrow::DataType> StorageTypeForBuilder(
-    const std::shared_ptr<::arrow::DataType>& type) {
-  switch (type->id()) {
-    case ::arrow::Type::EXTENSION: {
-      const auto& extension_type =
-          internal::checked_cast<const ::arrow::ExtensionType&>(*type);
-      if (extension_type.extension_name() == kArrowUuidExtensionName) {
-        return extension_type.storage_type();
-      }
-      return type;
-    }
-    case ::arrow::Type::STRUCT: {
-      const auto& struct_type = internal::checked_cast<const ::arrow::StructType&>(*type);
-      std::vector<std::shared_ptr<::arrow::Field>> fields;
-      fields.reserve(struct_type.num_fields());
-      for (const auto& field : struct_type.fields()) {
-        fields.emplace_back(StorageFieldForBuilder(field));
-      }
-      return ::arrow::struct_(std::move(fields));
-    }
-    case ::arrow::Type::LIST: {
-      const auto& list_type = internal::checked_cast<const ::arrow::ListType&>(*type);
-      return ::arrow::list(StorageFieldForBuilder(list_type.value_field()));
-    }
-    case ::arrow::Type::LARGE_LIST: {
-      const auto& list_type =
-          internal::checked_cast<const ::arrow::LargeListType&>(*type);
-      return ::arrow::large_list(StorageFieldForBuilder(list_type.value_field()));
-    }
-    case ::arrow::Type::FIXED_SIZE_LIST: {
-      const auto& list_type =
-          internal::checked_cast<const ::arrow::FixedSizeListType&>(*type);
-      return ::arrow::fixed_size_list(StorageFieldForBuilder(list_type.value_field()),
-                                      list_type.list_size());
-    }
-    case ::arrow::Type::MAP: {
-      const auto& map_type = internal::checked_cast<const ::arrow::MapType&>(*type);
-      return ::arrow::map(StorageTypeForBuilder(map_type.key_type()),
-                          StorageFieldForBuilder(map_type.item_field()),
-                          map_type.keys_sorted());
-    }
-    default:
-      return type;
-  }
-}
-
 }  // namespace
 
 // TODO(gang.wu): collect basic reader metrics
 class AvroReader::Impl {
  public:
+  ~Impl() { ReleaseBatch(); }
+
   Status Open(const ReaderOptions& options) {
     // TODO(gangwu): perhaps adding a ReaderOptions::Validate() method
     if (options.projection == nullptr) {
@@ -377,41 +314,38 @@ class AvroReader::Impl {
   }
 
   Result<std::optional<ArrowArray>> Next() {
-    if (!context_) {
-      ICEBERG_RETURN_UNEXPECTED(InitReadContext());
+    if (!read_context_initialized_) {
+      backend_->InitReadContext(backend_->GetReaderSchema());
+      read_context_initialized_ = true;
+    }
+    if (batch_.release == nullptr) {
+      ICEBERG_RETURN_UNEXPECTED(StartBatch());
     }
 
-    while (context_->builder_->length() < batch_size_) {
+    while (batch_.length < batch_size_) {
       if (IsPastSync()) {
         break;
       }
       if (!backend_->HasMore()) {
         break;
       }
-      ICEBERG_RETURN_UNEXPECTED(backend_->DecodeNext(
-          projection_, *read_schema_, metadata_context_, context_->builder_.get()));
+      ICEBERG_RETURN_UNEXPECTED(
+          backend_->DecodeNext(projection_, *read_schema_, metadata_context_, &batch_));
       metadata_context_.next_file_pos++;
     }
 
-    return ConvertBuilderToArrowArray();
+    return FinishBatch();
   }
 
   Status Close() {
     backend_->Close();
-    context_.reset();
+    ReleaseBatch();
     return {};
   }
 
   Result<ArrowSchema> Schema() {
-    if (!context_) {
-      ICEBERG_RETURN_UNEXPECTED(InitReadContext());
-    }
     ArrowSchema arrow_schema;
-    auto export_result = ::arrow::ExportSchema(*context_->arrow_schema_, &arrow_schema);
-    if (!export_result.ok()) {
-      return InvalidSchema("Failed to export the arrow schema: {}",
-                           export_result.message());
-    }
+    ICEBERG_RETURN_UNEXPECTED(ToArrowSchema(*read_schema_, &arrow_schema));
     return arrow_schema;
   }
 
@@ -433,53 +367,36 @@ class AvroReader::Impl {
   }
 
  private:
-  Status InitReadContext() {
-    context_ = std::make_unique<ReadContext>();
-
+  // Starts an empty batch with the read schema.
+  Status StartBatch() {
     ArrowSchema arrow_schema;
     ICEBERG_RETURN_UNEXPECTED(ToArrowSchema(*read_schema_, &arrow_schema));
-    auto import_result = ::arrow::ImportSchema(&arrow_schema);
-    if (!import_result.ok()) {
-      return InvalidSchema("Failed to import the arrow schema: {}",
-                           import_result.status().message());
-    }
-    context_->arrow_schema_ = import_result.MoveValueUnsafe();
-
-    auto arrow_struct_type =
-        internal::checked_pointer_cast<::arrow::StructType>(StorageTypeForBuilder(
-            std::make_shared<::arrow::StructType>(context_->arrow_schema_->fields())));
-    auto builder_result = ::arrow::MakeBuilder(arrow_struct_type);
-    if (!builder_result.ok()) {
-      return InvalidSchema("Failed to make the arrow builder: {}",
-                           builder_result.status().message());
-    }
-    context_->builder_ = builder_result.MoveValueUnsafe();
-    ICEBERG_RETURN_UNEXPECTED(
-        PrepareDefaultScalars(projection_, context_->builder_.get()));
-    backend_->InitReadContext(backend_->GetReaderSchema());
-
+    ArrowError error;
+    const auto init_status = ArrowArrayInitFromSchema(&batch_, &arrow_schema, &error);
+    ArrowSchemaRelease(&arrow_schema);
+    ICEBERG_NANOARROW_RETURN_UNEXPECTED_WITH_ERROR(init_status, error);
+    ICEBERG_NANOARROW_RETURN_UNEXPECTED(ArrowArrayStartAppending(&batch_));
     return {};
   }
 
-  Result<std::optional<ArrowArray>> ConvertBuilderToArrowArray() {
-    if (context_->builder_->length() == 0) {
+  // Hands the batch to the caller, or returns std::nullopt when no row was read. The
+  // next call starts a new batch.
+  Result<std::optional<ArrowArray>> FinishBatch() {
+    if (batch_.length == 0) {
       return std::nullopt;
     }
+    ArrowError error;
+    ICEBERG_NANOARROW_RETURN_UNEXPECTED_WITH_ERROR(
+        ArrowArrayFinishBuildingDefault(&batch_, &error), error);
+    ArrowArray batch = batch_;
+    batch_.release = nullptr;
+    return batch;
+  }
 
-    auto builder_result = context_->builder_->Finish();
-    if (!builder_result.ok()) {
-      return InvalidArrowData("Failed to finish the arrow array builder: {}",
-                              builder_result.status().message());
+  void ReleaseBatch() {
+    if (batch_.release != nullptr) {
+      ArrowArrayRelease(&batch_);
     }
-
-    auto array = builder_result.MoveValueUnsafe();
-    ArrowArray arrow_array;
-    auto export_result = ::arrow::ExportArray(*array, &arrow_array);
-    if (!export_result.ok()) {
-      return InvalidArrowData("Failed to export the arrow array: {}",
-                              export_result.message());
-    }
-    return arrow_array;
   }
 
   bool IsPastSync() const {
@@ -499,11 +416,13 @@ class AvroReader::Impl {
   // The projection result to apply to the read schema.
   SchemaProjection projection_;
   // The metadata column context for populating _file and _pos columns.
-  arrow::MetadataColumnContext metadata_context_;
+  MetadataColumnContext metadata_context_;
   // The read backend to read data into Arrow.
   std::unique_ptr<AvroReadBackend> backend_;
-  // The context to keep track of the reading progress.
-  std::unique_ptr<ReadContext> context_;
+  // Whether the backend has been prepared to read rows.
+  bool read_context_initialized_ = false;
+  // The batch being built, or released between batches.
+  ArrowArray batch_{};
 };
 
 AvroReader::AvroReader() noexcept = default;

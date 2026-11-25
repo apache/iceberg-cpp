@@ -19,14 +19,20 @@
 
 #pragma once
 
-#include <arrow/io/interfaces.h>
+#include <cstdint>
+#include <memory>
+#include <vector>
+
 #include <avro/Stream.hh>
+
+#include "iceberg/file_io.h"
 
 namespace iceberg::avro {
 
+/// \brief Adapts a FileIO input stream to the Avro input stream interface.
 class AvroInputStream : public ::avro::SeekableInputStream {
  public:
-  explicit AvroInputStream(std::shared_ptr<::arrow::io::RandomAccessFile> input_stream,
+  explicit AvroInputStream(std::unique_ptr<::iceberg::SeekableInputStream> input_stream,
                            int64_t buffer_size);
 
   ~AvroInputStream() override;
@@ -54,7 +60,7 @@ class AvroInputStream : public ::avro::SeekableInputStream {
   void seek(int64_t position) override;
 
  private:
-  std::shared_ptr<::arrow::io::RandomAccessFile> input_stream_;
+  std::unique_ptr<::iceberg::SeekableInputStream> input_stream_;
   const int64_t buffer_size_;
   std::vector<uint8_t> buffer_;
   size_t byte_count_ = 0;       // bytes read from the input stream
@@ -62,9 +68,13 @@ class AvroInputStream : public ::avro::SeekableInputStream {
   size_t available_bytes_ = 0;  // bytes available in the buffer
 };
 
+/// \brief Adapts a FileIO output stream to the Avro output stream interface.
+///
+/// The FileIO stream is shared so that the writer can read its position and close it
+/// after the Avro writer that owns this adapter is gone.
 class AvroOutputStream : public ::avro::OutputStream {
  public:
-  explicit AvroOutputStream(std::shared_ptr<::arrow::io::OutputStream> output_stream,
+  explicit AvroOutputStream(std::shared_ptr<PositionOutputStream> output_stream,
                             int64_t buffer_size);
 
   ~AvroOutputStream() override;
@@ -87,10 +97,8 @@ class AvroOutputStream : public ::avro::OutputStream {
   /// store, if any.
   void flush() override;
 
-  const std::shared_ptr<::arrow::io::OutputStream>& arrow_output_stream() const;
-
  private:
-  std::shared_ptr<::arrow::io::OutputStream> output_stream_;
+  std::shared_ptr<PositionOutputStream> output_stream_;
   const int64_t buffer_size_;
   std::vector<uint8_t> buffer_;
   size_t buffer_pos_ = 0;       // position in the buffer
