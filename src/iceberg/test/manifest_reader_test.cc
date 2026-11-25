@@ -801,8 +801,7 @@ TEST_P(TestManifestReader, ReadsManifestListAndManifestFromCachedContent) {
   auto fs = std::make_shared<CountingMockFileSystem>(std::chrono::system_clock::now());
   auto configured_io =
       std::make_shared<FileIOWithProperties<arrow::ArrowFileSystemFileIO>>(fs);
-  configured_io->config = {
-      {std::string(internal::ContentCacheOptions::kEnabled), "true"}};
+  configured_io->config = {{internal::ContentCacheProperties::kEnabled.key(), "true"}};
   file_io_ = std::move(configured_io);
   auto table_metadata = std::make_shared<TableMetadata>();
   ICEBERG_UNWRAP_OR_FAIL(

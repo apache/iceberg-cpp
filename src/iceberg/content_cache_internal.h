@@ -30,21 +30,26 @@
 #include <vector>
 
 #include "iceberg/file_io.h"
-#include "iceberg/util/cache_internal.h"
-#include "iceberg/util/string_util.h"
+#include "iceberg/util/config.h"
 
 namespace iceberg::internal {
 
-// Cache limits apply independently to each loaded table. Expiration is not supported.
+class ContentCacheProperties : public ConfigBase<ContentCacheProperties> {
+ public:
+  inline static const Entry<bool> kEnabled{"io.manifest.cache-enabled", false};
+  inline static const Entry<int64_t> kMaxTotalBytes{"io.manifest.cache.max-total-bytes",
+                                                    100 * 1024 * 1024};
+  inline static const Entry<int64_t> kMaxContentLength{
+      "io.manifest.cache.max-content-length", 8 * 1024 * 1024};
+};
+
+// Retain only validated cache settings, independent of the storage credentials.
 struct ICEBERG_EXPORT ContentCacheOptions {
-  inline static constexpr std::string_view kEnabled = "io.manifest.cache-enabled";
-  inline static constexpr std::string_view kMaxTotalBytes =
-      "io.manifest.cache.max-total-bytes";
-  inline static constexpr std::string_view kMaxContentLength =
-      "io.manifest.cache.max-content-length";
-  bool enabled = false;
-  size_t max_total_bytes = 100 * 1024 * 1024;
-  size_t max_content_length = 8 * 1024 * 1024;
+  bool enabled = ContentCacheProperties::kEnabled.value();
+  size_t max_total_bytes =
+      static_cast<size_t>(ContentCacheProperties::kMaxTotalBytes.value());
+  size_t max_content_length =
+      static_cast<size_t>(ContentCacheProperties::kMaxContentLength.value());
   friend bool operator==(const ContentCacheOptions&,
                          const ContentCacheOptions&) = default;
   static Result<ContentCacheOptions> FromProperties(
@@ -52,12 +57,6 @@ struct ICEBERG_EXPORT ContentCacheOptions {
 };
 
 using MetadataContent = std::shared_ptr<const std::vector<std::byte>>;
-struct MetadataContentWeigher {
-  int64_t operator()(const std::string&, const MetadataContent& content) const {
-    return static_cast<int64_t>(content->size());
-  }
-};
-
 struct ContentCacheState;
 class ContentCacheRegistry;
 
@@ -78,8 +77,9 @@ class ICEBERG_EXPORT ContentCache : public std::enable_shared_from_this<ContentC
   // A load that overlaps invalidation may serve its own reader but cannot repopulate
   // the cache. Capture the generation under the same lock as the lookup.
   MetadataContent Find(std::string_view location, uint64_t* generation = nullptr);
-  void Insert(const std::string& location, MetadataContent content, uint64_t generation);
-  void Invalidate(std::string_view location);
+  void Insert(std::string_view location, MetadataContent content, uint64_t generation);
+  // Invalidate a deleted storage path, including its canonical cache key.
+  void Invalidate(FileIO& storage, std::string_view location);
   void Clear();
 
  private:

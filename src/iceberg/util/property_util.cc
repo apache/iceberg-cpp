@@ -47,6 +47,19 @@ Status PropertyUtil::ValidateCommitProperties(
   return {};
 }
 
+Result<int64_t> PropertyUtil::PropertyAsInt64(
+    const std::unordered_map<std::string, std::string>& properties, std::string_view key,
+    int64_t default_value) {
+  auto it = properties.find(std::string(key));
+  if (it == properties.end()) return default_value;
+  auto result = StringUtils::ParseNumber<int64_t>(it->second);
+  if (!result) {
+    return InvalidArgument("Invalid numeric value '{}' for property '{}': {}", it->second,
+                           key, result.error().message);
+  }
+  return result;
+}
+
 bool PropertyUtil::PropertyAsBoolean(
     const std::unordered_map<std::string, std::string>& properties, std::string_view key,
     bool default_value) {

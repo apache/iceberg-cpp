@@ -17,20 +17,25 @@
  * under the License.
  */
 
-#include "iceberg/content_cache_internal.h"
-
 #include <algorithm>
-#include <cstdlib>
 #include <cstring>
 #include <limits>
 #include <utility>
 
-#include "iceberg/logging/log_macros.h"
+#include "iceberg/content_cache_internal.h"
+#include "iceberg/util/cache_internal.h"
 #include "iceberg/util/error_util_internal.h"
 #include "iceberg/util/macros.h"
+#include "iceberg/util/property_util.h"
 #include "iceberg/util/string_util.h"
 
 namespace iceberg::internal {
+
+struct MetadataContentWeigher {
+  int64_t operator()(const std::string&, const MetadataContent& content) const {
+    return static_cast<int64_t>(content->size());
+  }
+};
 
 struct ContentCacheState {
   explicit ContentCacheState(size_t max_total_bytes)
@@ -89,39 +94,10 @@ class ContentCacheRegistry {
 
 namespace {
 
-int32_t InitialGlobalCacheCapacity() {
-  constexpr int32_t kDefaultCapacity = 8;
-  constexpr const char* kLimitEnv = "ICEBERG_IO_MANIFEST_CACHE_LIMIT";
-  if (const char* configured_limit = std::getenv(kLimitEnv)) {
-    auto limit = StringUtils::ParseNumber<int32_t>(configured_limit);
-    if (limit && *limit > 0) {
-      return *limit;
-    }
-    ICEBERG_LOG_WARN("{} must be a positive integer that fits in int32_t. Using {}.",
-                     kLimitEnv, kDefaultCapacity);
-  }
-  return kDefaultCapacity;
-}
-
 std::shared_ptr<ContentCacheRegistry> GlobalContentCacheRegistry() {
   // Handles keep the registry alive even when destroyed during static teardown.
-  static auto registry =
-      std::make_shared<ContentCacheRegistry>(InitialGlobalCacheCapacity());
+  static auto registry = std::make_shared<ContentCacheRegistry>(8);
   return registry;
-}
-
-template <typename T>
-Result<T> ParseNumberProperty(
-    const std::unordered_map<std::string, std::string>& properties, std::string_view key,
-    T fallback) {
-  auto it = properties.find(std::string(key));
-  if (it == properties.end()) return fallback;
-  auto result = StringUtils::ParseNumber<T>(it->second);
-  if (!result) {
-    return InvalidArgument("Invalid numeric value '{}' for property '{}': {}", it->second,
-                           key, result.error().message);
-  }
-  return result;
 }
 
 Result<std::vector<std::byte>> ReadInputFile(InputFile& input_file, int64_t read_size,
@@ -201,11 +177,12 @@ class CachedSeekableInputStream : public SeekableInputStream {
 class CachedInputFile : public InputFile {
  public:
   CachedInputFile(std::unique_ptr<InputFile> input, std::shared_ptr<ContentCache> cache,
-                  int64_t size)
+                  int64_t size, uint64_t generation)
       : input_(std::move(input)),
         cache_(std::move(cache)),
         location_(input_->location()),
-        size_(size) {}
+        size_(size),
+        generation_(generation) {}
   CachedInputFile(std::string location, MetadataContent content)
       : location_(std::move(location)),
         size_(static_cast<int64_t>(content->size())),
@@ -216,8 +193,7 @@ class CachedInputFile : public InputFile {
     if (content_) {
       return std::make_unique<CachedSeekableInputStream>(content_);
     }
-    uint64_t generation;
-    if (auto cached = cache_->Find(location_, &generation)) {
+    if (auto cached = cache_->Find(location_)) {
       return std::make_unique<CachedSeekableInputStream>(std::move(cached));
     }
     auto loaded = ReadInputFile(*input_, size_, location_);
@@ -233,7 +209,7 @@ class CachedInputFile : public InputFile {
     }
     auto content =
         std::make_shared<const std::vector<std::byte>>(std::move(loaded).value());
-    cache_->Insert(location_, content, generation);
+    cache_->Insert(location_, content, generation_);
     return std::make_unique<CachedSeekableInputStream>(std::move(content));
   }
 
@@ -242,11 +218,12 @@ class CachedInputFile : public InputFile {
   std::shared_ptr<ContentCache> cache_;
   std::string location_;
   int64_t size_;
+  uint64_t generation_ = 0;
   MetadataContent content_;
 };
 
-// Only manifest readers receive this adapter. Output and deletion operations are
-// forwarded unchanged, allowing manifest maintenance to use the same read context.
+// Manifest maintenance creates outputs on storage. Cleanup deletes through storage
+// and invalidates the cache after each delete attempt.
 class ManifestFileIO : public FileIO {
  public:
   ManifestFileIO(std::shared_ptr<FileIO> io, std::shared_ptr<ContentCache> cache)
@@ -269,18 +246,11 @@ class ManifestFileIO : public FileIO {
   Result<std::unique_ptr<OutputFile>> NewOutputFile(std::string location) override {
     return io_->NewOutputFile(std::move(location));
   }
-  Status DeleteFile(const std::string& location) override {
-    auto status = io_->DeleteFile(location);
-    cache_->Invalidate(location);
-    return status;
+  Status DeleteFile(const std::string& /*location*/) override {
+    return NotSupported("Delete files through the storage FileIO");
   }
-  Status DeleteFiles(const std::vector<std::string>& locations) override {
-    auto status = io_->DeleteFiles(locations);
-    // A failed bulk delete can still remove some files.
-    for (const auto& location : locations) {
-      cache_->Invalidate(location);
-    }
-    return status;
+  Status DeleteFiles(const std::vector<std::string>& /*locations*/) override {
+    return NotSupported("Delete files through the storage FileIO");
   }
   const std::unordered_map<std::string, std::string>& properties() const override {
     return io_->properties();
@@ -296,28 +266,24 @@ class ManifestFileIO : public FileIO {
 Result<ContentCacheOptions> ContentCacheOptions::FromProperties(
     const std::unordered_map<std::string, std::string>& properties) {
   ContentCacheOptions options;
-  if (auto it = properties.find(std::string(kEnabled)); it != properties.end()) {
-    options.enabled = StringUtils::ParseBoolean(it->second);
-  }
+  const auto& enabled = ContentCacheProperties::kEnabled;
+  options.enabled =
+      PropertyUtil::PropertyAsBoolean(properties, enabled.key(), enabled.value());
   if (!options.enabled) {
     return options;
   }
-  ICEBERG_ASSIGN_OR_RAISE(
-      options.max_total_bytes,
-      ParseNumberProperty(properties, kMaxTotalBytes, options.max_total_bytes));
-  ICEBERG_ASSIGN_OR_RAISE(
-      options.max_content_length,
-      ParseNumberProperty(properties, kMaxContentLength, options.max_content_length));
-  ICEBERG_PRECHECK(
-      options.max_total_bytes > 0 &&
-          std::cmp_less_equal(options.max_total_bytes,
-                              std::numeric_limits<int64_t>::max()),
-      "Manifest cache maximum total bytes must be positive and fit in int64_t");
-  ICEBERG_PRECHECK(
-      options.max_content_length > 0 &&
-          std::cmp_less_equal(options.max_content_length,
-                              std::numeric_limits<int64_t>::max()),
-      "Manifest cache maximum content length must be positive and fit in int64_t");
+  const auto read_limit = [&properties](const auto& entry) -> Result<size_t> {
+    ICEBERG_ASSIGN_OR_RAISE(auto limit, PropertyUtil::PropertyAsInt64(
+                                            properties, entry.key(), entry.value()));
+    ICEBERG_PRECHECK(limit > 0 && std::in_range<size_t>(limit),
+                     "Property '{}' must be positive and fit in size_t: {}", entry.key(),
+                     limit);
+    return static_cast<size_t>(limit);
+  };
+  ICEBERG_ASSIGN_OR_RAISE(options.max_total_bytes,
+                          read_limit(ContentCacheProperties::kMaxTotalBytes));
+  ICEBERG_ASSIGN_OR_RAISE(options.max_content_length,
+                          read_limit(ContentCacheProperties::kMaxContentLength));
   return options;
 }
 
@@ -342,7 +308,7 @@ MetadataContent ContentCache::Find(std::string_view location, uint64_t* generati
   return content ? *content : nullptr;
 }
 
-void ContentCache::Insert(const std::string& location, MetadataContent content,
+void ContentCache::Insert(std::string_view location, MetadataContent content,
                           uint64_t generation) {
   // Empty/corrupt metadata must not accumulate unbounded zero-weight entries.
   if (content->empty() || content->size() > options_.max_content_length ||
@@ -352,16 +318,43 @@ void ContentCache::Insert(const std::string& location, MetadataContent content,
   std::lock_guard lock(mutex_);
   if (generation == generation_) {
     registry_->GetOrCreate(this, options_, state_)
-        ->lru.Replace(location, std::move(content));
+        ->lru.Replace(std::string(location), std::move(content));
   }
 }
 
-void ContentCache::Invalidate(std::string_view location) {
-  std::lock_guard lock(mutex_);
-  if (auto state = state_.lock()) {
-    state->lru.Erase(location);
+void ContentCache::Invalidate(FileIO& storage, std::string_view location) {
+  {
+    std::lock_guard lock(mutex_);
+    auto state = state_.lock();
+    if (!state || state->lru.size() == 0 || state->lru.Erase(location)) {
+      ++generation_;
+      return;
+    }
   }
+
+  // A storage implementation may normalize this path. Resolve it outside the
+  // cache lock, then invalidate loads that overlapped the resolution.
+  std::unique_ptr<InputFile> input;
+  try {
+    if (auto resolved = storage.NewInputFile(std::string(location))) {
+      input = std::move(*resolved);
+    }
+  } catch (...) {
+    // Failure to resolve an alias must not turn a completed delete into a failure.
+    Clear();
+    return;
+  }
+  if (!input) {
+    // A store may no longer be able to resolve an alias after deletion.
+    Clear();
+    return;
+  }
+
+  std::lock_guard lock(mutex_);
   ++generation_;
+  if (auto state = state_.lock()) {
+    state->lru.Erase(input->location());
+  }
 }
 
 void ContentCache::Clear() {
@@ -378,7 +371,8 @@ Result<std::unique_ptr<InputFile>> ContentCache::NewInputFile(
     return InvalidArgument("File length {} exceeds int64_t max", *length);
   }
   // A hit needs neither storage resolution nor working remote credentials.
-  if (auto content = Find(location)) {
+  uint64_t generation;
+  if (auto content = Find(location, &generation)) {
     return std::make_unique<CachedInputFile>(std::move(location), std::move(content));
   }
   std::unique_ptr<InputFile> input;
@@ -402,7 +396,8 @@ Result<std::unique_ptr<InputFile>> ContentCache::NewInputFile(
       std::cmp_greater(size, options_.max_total_bytes)) {
     return input;
   }
-  return std::make_unique<CachedInputFile>(std::move(input), shared_from_this(), size);
+  return std::make_unique<CachedInputFile>(std::move(input), shared_from_this(), size,
+                                           generation);
 }
 
 }  // namespace iceberg::internal

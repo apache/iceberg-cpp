@@ -96,18 +96,12 @@ must expose the desired settings through its `properties()` method.
 
 Independent table loads have separate caches and byte budgets. A process-wide
 LRU registry retains at most eight cache states by default. To change the limit
-at launch, set `ICEBERG_IO_MANIFEST_CACHE_LIMIT` to a positive integer that fits
-in `int32_t`. For example, `ICEBERG_IO_MANIFEST_CACHE_LIMIT=16` allows up to 16
-retained caches per process. The registry reads this setting once when it
-initializes and uses the default if the setting is missing or invalid.
-
-`Table::SetManifestCacheLimit(max_caches)` overrides the initial limit for the
-entire process. Lowering the limit immediately evicts the least recently used
-cache states.
+for the process, call `Table::SetManifestCacheLimit(max_caches)` with a positive
+integer. Lowering the limit immediately evicts the least recently used cache states.
 
 Per-table handles and manifest I/O adapters retain only weak references to cache
-states. Cache states are created on first use, and an evicted table recreates an
-empty cache on its next read. Active readers and input files can still hold bytes
+states. The first cacheable insertion creates a cache state or recreates it after
+eviction. Active readers and input files can still hold bytes
 after eviction, and concurrent load buffers are outside the retained byte budget.
 Call `Table::ClearManifestCache()` to release a table's retained content explicitly.
 

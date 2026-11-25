@@ -109,15 +109,17 @@ class LruCache {
     return &list_it->value;
   }
 
+  // Return whether a cached entry was removed.
   template <typename K>
-  void Erase(const K& key) {
+  bool Erase(const K& key) {
     const auto it = map_.find(key);
     if (it == map_.end()) {
-      return;
+      return false;
     }
     total_weight_ -= it->second->weight;
     items_.erase(it->second);
     map_.erase(it);
+    return true;
   }
 
   // Insert or update the value for `key`, mark it as most recently used, and evict least

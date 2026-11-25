@@ -143,10 +143,8 @@ class ICEBERG_EXPORT Table : public std::enable_shared_from_this<Table> {
   void ClearManifestCache();
 
   /// \brief Set the process-wide maximum number of retained manifest caches.
-  /// The initial limit defaults to 8 and can be set at launch through
-  /// ICEBERG_IO_MANIFEST_CACHE_LIMIT. This setter overrides that value. The limit
-  /// must be positive. Lowering it immediately evicts the least recently used
-  /// caches. Active readers may retain bytes after eviction.
+  /// The limit defaults to 8 and must be positive. Lowering it immediately evicts
+  /// the least recently used caches. Active readers may retain bytes after eviction.
   static Status SetManifestCacheLimit(int32_t max_caches);
 
   /// \brief Returns the current metadata for this table

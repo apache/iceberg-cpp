@@ -71,14 +71,14 @@ std::unordered_map<std::string, std::string> StorageProperties(const FileIO& io)
   auto properties = io.properties();
   // Vended S3 credentials can rotate without changing the underlying storage.
   // Cache options are checked separately and do not identify a storage context.
-  constexpr std::array<std::string_view, 7> kNonStorageProperties = {
+  const std::array<std::string_view, 7> kNonStorageProperties = {
       "s3.access-key-id",
       "s3.secret-access-key",
       "s3.session-token",
       "s3.session-token-expires-at-ms",
-      internal::ContentCacheOptions::kEnabled,
-      internal::ContentCacheOptions::kMaxTotalBytes,
-      internal::ContentCacheOptions::kMaxContentLength};
+      internal::ContentCacheProperties::kEnabled.key(),
+      internal::ContentCacheProperties::kMaxTotalBytes.key(),
+      internal::ContentCacheProperties::kMaxContentLength.key()};
   for (const auto key : kNonStorageProperties) {
     properties.erase(std::string(key));
   }
@@ -155,7 +155,7 @@ const std::shared_ptr<FileIO>& internal::ManifestIO(const Table& table) {
 
 void internal::InvalidateManifestCache(const Table& table, std::string_view location) {
   if (table.content_cache_) {
-    table.content_cache_->Invalidate(location);
+    table.content_cache_->Invalidate(*table.io(), location);
   }
 }
 

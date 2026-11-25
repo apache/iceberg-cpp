@@ -34,7 +34,7 @@ inline Status FinishWithCloseStatus(Status operation_status, Status close_status
   }
   auto error = std::move(operation_status).error();
   if (!close_status.has_value()) {
-    error.message += "; additionally failed to close stream: ";
+    error.message += "; close also failed: ";
     error.message += close_status.error().message;
   }
   return unexpected<Error>(std::move(error));

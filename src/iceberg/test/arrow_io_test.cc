@@ -460,7 +460,7 @@ TEST_F(LocalFileIOTest, SizeUsesFileInfoWithoutOpeningStream) {
 TEST_F(LocalFileIOTest, CachedInputCreationUsesFileInfoWithoutOpeningStream) {
   auto fs = std::make_shared<TrackingLocalFileSystem>();
   auto file_io = std::make_shared<FileIOWithProperties<arrow::ArrowFileSystemFileIO>>(fs);
-  file_io->config = {{std::string(internal::ContentCacheOptions::kEnabled), "true"}};
+  file_io->config = {{internal::ContentCacheProperties::kEnabled.key(), "true"}};
   ASSERT_THAT(file_io->WriteFile(temp_filepath_, "hello"), IsOk());
   auto metadata = std::make_shared<TableMetadata>();
   ICEBERG_UNWRAP_OR_FAIL(
