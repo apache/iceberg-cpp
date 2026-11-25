@@ -328,6 +328,43 @@ TEST(AggregateTest, AggregatesFromDataFileWithTransform) {
   EXPECT_TRUE(evaluator->AllAggregatorsValid());
 }
 
+TEST(AggregateTest, BucketDoesNotUseFileBounds) {
+  auto check = [](const Literal& lower, const Literal& upper, int32_t num_buckets) {
+    Schema schema({SchemaField::MakeOptional(1, "value", lower.type())});
+    auto bucket = Expressions::Bucket("value", num_buckets);
+    ICEBERG_UNWRAP_OR_FAIL(auto lower_bytes, lower.Serialize());
+    ICEBERG_UNWRAP_OR_FAIL(auto upper_bytes, upper.Serialize());
+    DataFile file{.record_count = 2,
+                  .value_counts = {{1, 2}},
+                  .null_value_counts = {{1, 0}},
+                  .lower_bounds = {{1, lower_bytes}},
+                  .upper_bounds = {{1, upper_bytes}}};
+    DataFile all_nulls{
+        .record_count = 2, .value_counts = {{1, 2}}, .null_value_counts = {{1, 2}}};
+    for (const auto& expr : {Expressions::Min(bucket), Expressions::Max(bucket)}) {
+      auto agg = BindAggregate(schema, expr);
+      SCOPED_TRACE(agg->ToString());
+      EXPECT_FALSE(agg->HasValue(file));
+      ICEBERG_UNWRAP_OR_FAIL(auto from_bounds, agg->Evaluate(file));
+      EXPECT_TRUE(from_bounds.IsNull()) << from_bounds.ToString();
+      auto accumulator = agg->NewAggregator();
+      ASSERT_THAT(accumulator->Update(file), IsOk());
+      EXPECT_FALSE(accumulator->IsValid());
+
+      EXPECT_TRUE(agg->HasValue(all_nulls));
+      ICEBERG_UNWRAP_OR_FAIL(auto value, agg->Evaluate(all_nulls));
+      EXPECT_TRUE(value.IsNull());
+      EXPECT_EQ(value.type()->type_id(), TypeId::kInt);
+    }
+  };
+
+  // The Appendix B timestamps fall in buckets 1 and 0, respectively.
+  ICEBERG_UNWRAP_OR_FAIL(auto micros,
+                         TemporalUtils::ParseTimestamp("2017-11-16T22:31:08"));
+  check(Literal::Timestamp(micros), Literal::Timestamp(micros + 1), 2);
+  check(Literal::Int(3), Literal::Int(4), 4);  // buckets 3 and 2
+}
+
 TEST(AggregateTest, MaxDayUsesTimestampUpperBound) {
   Schema schema({SchemaField::MakeRequired(1, "ts", timestamp())});
   auto max_day = BindAggregate(schema, Expressions::Max(Expressions::Day("ts")));

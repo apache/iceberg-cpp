@@ -30,6 +30,7 @@
 #include "iceberg/expression/literal.h"
 #include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/row/struct_like.h"
+#include "iceberg/transform.h"
 #include "iceberg/type.h"
 #include "iceberg/util/checked_cast.h"
 #include "iceberg/util/conversions_internal.h"
@@ -65,7 +66,12 @@ Result<std::optional<Literal>> EvaluateFileExtremum(const BoundAggregate& aggreg
   const auto id = ref->field().field_id();
   const auto& bounds = aggregate.op() == Expression::Operation::kMax ? file.upper_bounds
                                                                      : file.lower_bounds;
-  if (auto it = bounds.find(id); it != bounds.end()) {
+  // A source endpoint can determine the extremum only if the term preserves order.
+  const bool preserves_order =
+      term.kind() == Term::Kind::kReference ||
+      (term.kind() == Term::Kind::kTransform &&
+       internal::checked_cast<const BoundTransform&>(term).transform()->PreservesOrder());
+  if (auto it = bounds.find(id); preserves_order && it != bounds.end()) {
     ICEBERG_ASSIGN_OR_RAISE(
         auto bound, internal::DeserializeBound(it->second, GetPrimitiveType(*ref)));
     if (bound) {
