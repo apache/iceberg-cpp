@@ -1081,7 +1081,6 @@ constexpr std::string_view kNestedSchemaWithoutIds = R"({
 })";
 
 TEST_P(AvroReaderParameterizedTest, ReadWithoutFieldIdsOrNameMapping) {
-  // Without a name mapping, fields are matched by the read schema's names.
   ASSERT_NO_FATAL_FAILURE(CreateAvroFileWithoutFieldIds(
       std::string(kFlatSchemaWithoutIds),
       {R"({"id": 1, "name": {"string": "Alice"}, "extra": 10})",
@@ -1092,10 +1091,9 @@ TEST_P(AvroReaderParameterizedTest, ReadWithoutFieldIdsOrNameMapping) {
       SchemaField::MakeOptional(3, "full_name", string()),
   });
 
-  ICEBERG_UNWRAP_OR_FAIL(auto reader, OpenReader(schema));
-  ASSERT_NO_FATAL_FAILURE(
-      VerifyNextBatch(*reader, R"([["Alice", 1, null], [null, 2, null]])"));
-  ASSERT_NO_FATAL_FAILURE(VerifyExhausted(*reader));
+  auto reader = OpenReader(schema);
+  ASSERT_THAT(reader, IsError(ErrorKind::kInvalidSchema));
+  EXPECT_THAT(reader, HasErrorMessage("no field IDs and no name mapping"));
 }
 
 TEST_P(AvroReaderParameterizedTest, ReadWithNameMappingWithoutFieldIds) {
@@ -1118,7 +1116,7 @@ TEST_P(AvroReaderParameterizedTest, ReadWithNameMappingWithoutFieldIds) {
   ASSERT_NO_FATAL_FAILURE(VerifyExhausted(*reader));
 }
 
-TEST_P(AvroReaderParameterizedTest, ReadNestedFieldsWithoutFieldIds) {
+TEST_P(AvroReaderParameterizedTest, ReadNestedFieldsWithNameMappingWithoutFieldIds) {
   ASSERT_NO_FATAL_FAILURE(CreateAvroFileWithoutFieldIds(
       std::string(kNestedSchemaWithoutIds),
       {R"({"profile": {"age": 30}, "tags": ["a", "b"], "counts": {"x": 1}})",
@@ -1137,7 +1135,9 @@ TEST_P(AvroReaderParameterizedTest, ReadNestedFieldsWithoutFieldIds) {
                                     SchemaField::MakeRequired(31, "value", int64()))),
   });
 
-  ICEBERG_UNWRAP_OR_FAIL(auto reader, OpenReader(schema));
+  ICEBERG_UNWRAP_OR_FAIL(auto mapping, CreateMapping(*schema));
+  std::shared_ptr<NameMapping> explicit_mapping = std::move(mapping);
+  ICEBERG_UNWRAP_OR_FAIL(auto reader, OpenReader(schema, std::move(explicit_mapping)));
   ASSERT_NO_FATAL_FAILURE(
       VerifyNextBatch(*reader, R"([[[30], ["a", "b"], [["x", 1]]], [[40], [], []]])"));
   ASSERT_NO_FATAL_FAILURE(VerifyExhausted(*reader));
