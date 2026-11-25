@@ -163,11 +163,26 @@ Result<std::shared_ptr<StructType>> UnifiedPartitionType(const TableMetadata& me
     }
   }
 
+  std::unordered_map<std::string, size_t> name_counts;
+  std::unordered_set<std::string> used_names;
+  for (const auto& [_, field] : fields_by_id) {
+    ++name_counts[field.name];
+    used_names.insert(field.name);
+  }
+
   std::vector<SchemaField> fields;
   fields.reserve(fields_by_id.size());
-  for (auto& [_, field] : fields_by_id) {
-    fields.emplace_back(field.definition->field_id(), std::move(field.name),
-                        std::move(field.type), /*optional=*/true);
+  for (auto& [field_id, field] : fields_by_id) {
+    // Preserve unambiguous names. Suffix every member of a collision so a bare name
+    // never silently resolves to one of several partition fields.
+    if (name_counts.at(field.name) > 1) {
+      field.name += "_" + std::to_string(field_id);
+      while (!used_names.insert(field.name).second) {
+        field.name += '_';
+      }
+    }
+    fields.emplace_back(field_id, std::move(field.name), std::move(field.type),
+                        /*optional=*/true);
   }
   return std::make_shared<StructType>(std::move(fields));
 }

@@ -18,6 +18,7 @@
  */
 
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -59,6 +60,53 @@ TEST_F(MetadataPartitionTest, ProjectsAcrossPartitionSpecEvolution) {
   ASSERT_EQ(values.num_fields(), 2);
   EXPECT_EQ(values.values()[0], Literal::Long(7));
   EXPECT_TRUE(values.values()[1].IsNull());
+}
+
+TEST_F(MetadataPartitionTest, DisambiguatesNamesReusedAcrossSpecs) {
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto old_spec,
+      PartitionSpec::Make(1, {PartitionField(1, 1000, "shard", Transform::Bucket(8))}));
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto new_spec,
+      PartitionSpec::Make(
+          2, {PartitionField(1, 1001, "shard", Transform::Bucket(16)),
+              PartitionField(2, 1002, "shard_1000", Transform::Identity())}));
+  metadata_->partition_specs = {std::move(new_spec), std::move(old_spec)};
+
+  ICEBERG_UNWRAP_OR_FAIL(auto type, UnifiedPartitionType(*metadata_));
+  ASSERT_EQ(type->fields().size(), 3);
+  EXPECT_EQ(type->fields()[0].field_id(), 1000);
+  EXPECT_EQ(type->fields()[0].name(), "shard_1000_");
+  EXPECT_EQ(type->fields()[1].field_id(), 1001);
+  EXPECT_EQ(type->fields()[1].name(), "shard_1001");
+  EXPECT_EQ(type->fields()[2].name(), "shard_1000");
+
+  Schema files_schema({SchemaField::MakeRequired(100, "file_path", string()),
+                       SchemaField::MakeOptional(102, "partition", type)});
+  ICEBERG_UNWRAP_OR_FAIL(auto projection,
+                         files_schema.Select(std::vector<std::string>{"file_path"}));
+  ASSERT_EQ(projection->fields().size(), 1);
+  EXPECT_EQ(projection->fields().front().field_id(), 100);
+  ICEBERG_UNWRAP_OR_FAIL(auto historical_field,
+                         files_schema.FindFieldByName("partition.shard_1000_"));
+  ASSERT_TRUE(historical_field.has_value());
+  EXPECT_EQ(historical_field->get().field_id(), 1000);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto old_values,
+                         ProjectPartitionValues(*type, *metadata_->partition_specs[1],
+                                                PartitionValues(Literal::Int(3))));
+  EXPECT_EQ(old_values.values()[0], Literal::Int(3));
+  EXPECT_TRUE(old_values.values()[1].IsNull());
+  EXPECT_TRUE(old_values.values()[2].IsNull());
+
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto new_values,
+      ProjectPartitionValues(
+          *type, *metadata_->partition_specs[0],
+          PartitionValues(std::vector<Literal>{Literal::Int(11), Literal::String("x")})));
+  EXPECT_TRUE(new_values.values()[0].IsNull());
+  EXPECT_EQ(new_values.values()[1], Literal::Int(11));
+  EXPECT_EQ(new_values.values()[2], Literal::String("x"));
 }
 
 TEST_F(MetadataPartitionTest, RejectsConflictingPartitionFields) {
