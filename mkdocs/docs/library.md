@@ -94,15 +94,17 @@ must expose the desired settings through its `properties()` method.
 | `io.manifest.cache.max-total-bytes` | `104857600` (100 MiB) |
 | `io.manifest.cache.max-content-length` | `8388608` (8 MiB) |
 
-Independent table loads have separate caches and byte budgets. A process-wide
-LRU registry retains at most eight cache states by default. To change the limit
-for the process, call `Table::SetManifestCacheLimit(max_caches)` with a positive
-integer. Lowering the limit immediately evicts the least recently used cache states.
+Independent table loads have separate caches and byte budgets. A table and its
+manifest I/O adapters share ownership of its cache. The process-wide registry
+tracks the cache through a weak reference once it stores its first file.
+Destroying the last cache handle frees its registry slot.
 
-Per-table handles and manifest I/O adapters retain only weak references to cache
-states. The first cacheable insertion creates a cache state or recreates it after
-eviction. Active readers and input files can still hold bytes
-after eviction, and concurrent load buffers are outside the retained byte budget.
+By default, at most eight caches retain files at once. Call
+`Table::SetManifestCacheLimit(max_caches)` with a positive integer to change the
+limit. Lowering it immediately evicts the least recently used caches, even if
+their tables are still loaded. The next cacheable insertion repopulates an
+evicted cache. Active readers and input files can still hold bytes after
+eviction, and concurrent load buffers are outside the retained byte budget.
 Call `Table::ClearManifestCache()` to release a table's retained content explicitly.
 
 Compatible refreshes and committed table handles share their source table's cache.

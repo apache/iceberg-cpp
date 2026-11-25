@@ -302,6 +302,23 @@ TEST(MetadataCacheTest, DestroyingLastCacheHandleReleasesRetainedBytes) {
   EXPECT_TRUE(weak_content.expired());
 }
 
+TEST(MetadataCacheTest, DestroyedCacheFreesItsSlotWithoutEvictingALiveCache) {
+  ScopedGlobalCacheLimit limit(2);
+  auto first = std::make_shared<internal::ContentCache>(ContentCacheOptions{});
+  first->Insert("first", std::make_shared<const std::vector<std::byte>>(1), 0);
+  std::weak_ptr<internal::ContentCache> weak_cache;
+  {
+    auto second = std::make_shared<internal::ContentCache>(ContentCacheOptions{});
+    weak_cache = second;
+    second->Insert("second", std::make_shared<const std::vector<std::byte>>(1), 0);
+  }
+  ASSERT_TRUE(weak_cache.expired());
+  auto third = std::make_shared<internal::ContentCache>(ContentCacheOptions{});
+  third->Insert("third", std::make_shared<const std::vector<std::byte>>(1), 0);
+  EXPECT_TRUE(first->Find("first"));
+  EXPECT_TRUE(third->Find("third"));
+}
+
 TEST(MetadataCacheTest, InvalidatedLoadCannotPopulateRecreatedCacheState) {
   ScopedGlobalCacheLimit limit(1);
   auto cache = std::make_shared<internal::ContentCache>(ContentCacheOptions{});
@@ -701,8 +718,8 @@ TEST(MetadataCacheTest, GlobalLimitEvictsLeastRecentlyUsedCacheWithLiveTableHand
   ASSERT_THAT(ReadCached(*internal::ManifestIO(*second), "manifest.avro"), IsOk());
   ASSERT_THAT(ReadCached(*internal::ManifestIO(*first), "manifest.avro"), IsOk());
   EXPECT_EQ(io.open_count, 2);
-  // Touching the first cache makes the second the next victim. The adapter must
-  // retain only a weak reference to its cached content, even while the table lives.
+  // Touching the first cache makes the second the next victim, even while its
+  // table and adapter are both alive.
   auto second_adapter = internal::ManifestIO(*second);
   ASSERT_THAT(ReadCached(*internal::ManifestIO(*third), "manifest.avro"), IsOk());
   ASSERT_THAT(ReadCached(*internal::ManifestIO(*first), "manifest.avro"), IsOk());

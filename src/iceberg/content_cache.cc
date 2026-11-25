@@ -20,6 +20,7 @@
 #include <algorithm>
 #include <cstring>
 #include <limits>
+#include <list>
 #include <utility>
 
 #include "iceberg/content_cache_internal.h"
@@ -37,59 +38,75 @@ struct MetadataContentWeigher {
   }
 };
 
-struct ContentCacheState {
-  explicit ContentCacheState(size_t max_total_bytes)
-      : lru(static_cast<int64_t>(max_total_bytes)) {}
+using CachedFiles = LruCache<std::string, MetadataContent, MetadataContentWeigher,
+                             StringHash, StringEqual>;
 
-  LruCache<std::string, MetadataContent, MetadataContentWeigher, StringHash, StringEqual>
-      lru;
+// Owned by the table's cache handle. Only the registry accesses these fields under
+// its mutex. A position is valid while files is non-null.
+struct ContentCacheRegistration {
+  using Entries = std::list<std::weak_ptr<ContentCacheRegistration>>;
+  Entries::iterator position;
+  std::shared_ptr<CachedFiles> files;
 };
 
-// Owns cache states, never their per-table handles or storage FileIOs. Callers hold
-// the handle's mutex before accessing a state; the registry mutex only protects the
-// global LRU. Eviction releases content without calling back into a table handle.
 class ContentCacheRegistry {
  public:
-  explicit ContentCacheRegistry(int32_t capacity) : caches_(capacity) {}
+  explicit ContentCacheRegistry(int32_t capacity) : capacity_(capacity) {}
 
-  std::shared_ptr<ContentCacheState> Find(const ContentCache* owner) {
+  // Pin the files for the calling operation. Their entries are protected by the
+  // per-table mutex, so accessing bytes never requires holding the registry lock.
+  std::shared_ptr<CachedFiles> Find(const ContentCacheRegistration& entry,
+                                    bool touch = true) {
     std::lock_guard lock(mutex_);
-    const auto* state = caches_.Find(owner);
-    return state ? *state : nullptr;
-  }
-
-  std::shared_ptr<ContentCacheState> GetOrCreate(
-      const ContentCache* owner, const ContentCacheOptions& options,
-      std::weak_ptr<ContentCacheState>& weak_state) {
-    std::lock_guard lock(mutex_);
-    if (auto* state = caches_.Find(owner)) {
-      return *state;
+    if (touch && entry.files) {
+      entries_.splice(entries_.begin(), entries_, entry.position);
     }
-    auto state = weak_state.lock();
-    if (!state) {
-      state = std::make_shared<ContentCacheState>(options.max_total_bytes);
+    return entry.files;
+  }
+
+  std::shared_ptr<CachedFiles> GetOrCreate(
+      const std::shared_ptr<ContentCacheRegistration>& entry, size_t max_total_bytes) {
+    std::lock_guard lock(mutex_);
+    if (entry->files) {
+      entries_.splice(entries_.begin(), entries_, entry->position);
+    } else {
+      auto files = std::make_shared<CachedFiles>(static_cast<int64_t>(max_total_bytes));
+      entry->position = entries_.emplace(entries_.begin(), entry);
+      entry->files = std::move(files);
+      TrimToCapacity();
     }
-    caches_.Replace(owner, state);
-    weak_state = state;
-    return state;
+    return entry->files;
   }
 
-  void Erase(const ContentCache* owner) {
+  void Erase(ContentCacheRegistration& entry) {
     std::lock_guard lock(mutex_);
-    caches_.Erase(owner);
+    if (entry.files) {
+      entries_.erase(entry.position);
+      entry.files.reset();
+    }
   }
 
-  int32_t SetCapacity(int32_t max_caches) {
-    ICEBERG_DCHECK(max_caches > 0, "Global manifest cache limit must be positive");
+  int32_t SetCapacity(int32_t capacity) {
+    ICEBERG_DCHECK(capacity > 0, "Global manifest cache limit must be positive");
     std::lock_guard lock(mutex_);
-    auto previous = static_cast<int32_t>(caches_.max_weight());
-    caches_.Resize(max_caches);
+    const auto previous = std::exchange(capacity_, capacity);
+    TrimToCapacity();
     return previous;
   }
 
  private:
+  void TrimToCapacity() {
+    while (std::cmp_greater(entries_.size(), capacity_)) {
+      if (auto entry = entries_.back().lock()) {
+        entry->files.reset();
+      }
+      entries_.pop_back();
+    }
+  }
+
   std::mutex mutex_;
-  LruCache<const ContentCache*, std::shared_ptr<ContentCacheState>> caches_;
+  int32_t capacity_;
+  ContentCacheRegistration::Entries entries_;
 };
 
 namespace {
@@ -288,9 +305,11 @@ Result<ContentCacheOptions> ContentCacheOptions::FromProperties(
 }
 
 ContentCache::ContentCache(ContentCacheOptions options)
-    : options_(options), registry_(GlobalContentCacheRegistry()) {}
+    : options_(options),
+      registry_(GlobalContentCacheRegistry()),
+      registration_(std::make_shared<ContentCacheRegistration>()) {}
 
-ContentCache::~ContentCache() { registry_->Erase(this); }
+ContentCache::~ContentCache() { registry_->Erase(*registration_); }
 
 int32_t ContentCache::SetGlobalCapacity(int32_t max_caches) {
   return GlobalContentCacheRegistry()->SetCapacity(max_caches);
@@ -303,8 +322,8 @@ std::shared_ptr<FileIO> ContentCache::Wrap(std::shared_ptr<FileIO> io) {
 MetadataContent ContentCache::Find(std::string_view location, uint64_t* generation) {
   std::lock_guard lock(mutex_);
   if (generation) *generation = generation_;
-  auto state = registry_->Find(this);
-  const auto* content = state ? state->lru.Find(location) : nullptr;
+  auto files = registry_->Find(*registration_);
+  const auto* content = files ? files->Find(location) : nullptr;
   return content ? *content : nullptr;
 }
 
@@ -317,16 +336,16 @@ void ContentCache::Insert(std::string_view location, MetadataContent content,
   }
   std::lock_guard lock(mutex_);
   if (generation == generation_) {
-    registry_->GetOrCreate(this, options_, state_)
-        ->lru.Replace(std::string(location), std::move(content));
+    registry_->GetOrCreate(registration_, options_.max_total_bytes)
+        ->Replace(std::string(location), std::move(content));
   }
 }
 
 void ContentCache::Invalidate(FileIO& storage, std::string_view location) {
   {
     std::lock_guard lock(mutex_);
-    auto state = state_.lock();
-    if (!state || state->lru.size() == 0 || state->lru.Erase(location)) {
+    auto files = registry_->Find(*registration_, /*touch=*/false);
+    if (!files || files->size() == 0 || files->Erase(location)) {
       ++generation_;
       return;
     }
@@ -352,15 +371,14 @@ void ContentCache::Invalidate(FileIO& storage, std::string_view location) {
 
   std::lock_guard lock(mutex_);
   ++generation_;
-  if (auto state = state_.lock()) {
-    state->lru.Erase(input->location());
+  if (auto files = registry_->Find(*registration_, /*touch=*/false)) {
+    files->Erase(input->location());
   }
 }
 
 void ContentCache::Clear() {
   std::lock_guard lock(mutex_);
-  registry_->Erase(this);
-  state_.reset();
+  registry_->Erase(*registration_);
   ++generation_;
 }
 

@@ -57,12 +57,11 @@ struct ICEBERG_EXPORT ContentCacheOptions {
 };
 
 using MetadataContent = std::shared_ptr<const std::vector<std::byte>>;
-struct ContentCacheState;
+struct ContentCacheRegistration;
 class ContentCacheRegistry;
 
-// A lightweight per-table handle with a weak reference to cached content. A global
-// LRU registry retains at most eight cache states by default. Readers share the
-// handle through a manifest-only FileIO adapter without pinning its cache state.
+// The per-table handle owns its cached files. The process-wide registry tracks
+// active caches through weak references and can evict their contents at capacity.
 class ICEBERG_EXPORT ContentCache : public std::enable_shared_from_this<ContentCache> {
  public:
   explicit ContentCache(ContentCacheOptions options);
@@ -86,7 +85,7 @@ class ICEBERG_EXPORT ContentCache : public std::enable_shared_from_this<ContentC
   const ContentCacheOptions options_;
   const std::shared_ptr<ContentCacheRegistry> registry_;
   std::mutex mutex_;
-  std::weak_ptr<ContentCacheState> state_;
+  const std::shared_ptr<ContentCacheRegistration> registration_;
   uint64_t generation_ = 0;
 };
 
