@@ -78,7 +78,7 @@ INSTANTIATE_TEST_SUITE_P(
         SchemaJsonParam{.json = "\"geography(srid:4326, karney)\"",
                         .type = iceberg::geography("srid:4326", EdgeAlgorithm::kKarney)},
         SchemaJsonParam{.json = "\"fixed[8]\"", .type = iceberg::fixed(8)},
-        SchemaJsonParam{.json = "\"decimal(10,2)\"", .type = iceberg::decimal(10, 2)},
+        SchemaJsonParam{.json = "\"decimal(10, 2)\"", .type = iceberg::decimal(10, 2)},
         SchemaJsonParam{.json = "\"date\"", .type = iceberg::date()},
         SchemaJsonParam{.json = "\"time\"", .type = iceberg::time()},
         SchemaJsonParam{.json = "\"timestamp\"", .type = iceberg::timestamp()},
@@ -121,6 +121,14 @@ TEST(TypeJsonTest, FromJsonWithSpaces) {
   ASSERT_NE(decimal, nullptr);
   ASSERT_EQ(decimal->precision(), 10);
   ASSERT_EQ(decimal->scale(), 2);
+  ICEBERG_UNWRAP_OR_FAIL(auto decimal_written, ToJson(*decimal));
+  ASSERT_EQ(decimal_written, "decimal(10, 2)");
+
+  ICEBERG_UNWRAP_OR_FAIL(auto no_space,
+                         TypeFromJson(nlohmann::json::parse("\"decimal(10,2)\"")));
+  ASSERT_EQ(*no_space, *iceberg::decimal(10, 2));
+  ICEBERG_UNWRAP_OR_FAIL(auto no_space_written, ToJson(*no_space));
+  ASSERT_EQ(no_space_written, "decimal(10, 2)");
 }
 
 TEST(TypeJsonTest, FromJsonV3TypesWithSpacesAndCase) {
