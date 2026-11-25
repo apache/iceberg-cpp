@@ -98,6 +98,11 @@ void BM_PforDecode(benchmark::State& state, PforData data) {
   const auto count = static_cast<size_t>(state.range(0));
   const Bytes encoded = EncodePfor(MakePforValues(data, count), kBestWidth);
   std::vector<uint8_t> out(count);
+  // Check once before timing, so a decode error isn't reported as a speedup.
+  if (auto result = DecodePforBytes(encoded, out); !result.has_value()) {
+    state.SkipWithError(result.error().message);
+    return;
+  }
   while (state.KeepRunning()) {
     auto result = DecodePforBytes(encoded, out);
     benchmark::DoNotOptimize(result);
@@ -197,6 +202,11 @@ void MaxBitmapArgs(benchmark::internal::Benchmark* b) {
 // the container offset table.
 void BM_Make(benchmark::State& state, Layout layout) {
   const Bytes bytes = MakeBitmapBytes(state, layout);
+  // Check once before timing, so a decode error isn't reported as a speedup.
+  if (auto bitmap = MumblingBitmapView::Make(bytes); !bitmap.has_value()) {
+    state.SkipWithError(bitmap.error().message);
+    return;
+  }
   while (state.KeepRunning()) {
     auto bitmap = MumblingBitmapView::Make(bytes);
     benchmark::DoNotOptimize(bitmap);
