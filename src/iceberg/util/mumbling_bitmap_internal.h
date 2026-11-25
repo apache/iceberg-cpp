@@ -48,8 +48,17 @@ namespace iceberg {
 ///
 /// \param data the encoded bytes; may extend past the encoded values.
 /// \param out receives the decoded values; its size is the number of values.
-/// \return the number of bytes read from `data`, or an error if the input is
-/// malformed or truncated.
+///   `data` and `out` must not overlap.
+/// \return the number of bytes read from `data`, or an `InvalidArgument`
+/// error for:
+///   - structural errors: a chunk header or chunk body that is truncated, a
+///     primary bit width `b1` above 8, an exception bit width `b2` above
+///     `8 - b1`, exceptions when `b1` is 8, or more exceptions than values
+///     in the chunk;
+///   - range errors: an exception offset outside the chunk, or a decoded
+///     value (after adding the chunk's base `m`) above 255.
+/// The padding bits that end each bit-packed array are ignored, not checked.
+/// On error, the contents of `out` are unspecified.
 ICEBERG_EXPORT Result<size_t> DecodePforBytes(std::span<const uint8_t> data,
                                               std::span<uint8_t> out);
 
