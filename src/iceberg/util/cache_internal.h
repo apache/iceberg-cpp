@@ -29,6 +29,7 @@
 #include <functional>
 #include <list>
 #include <mutex>
+#include <stdexcept>
 #include <type_traits>
 #include <unordered_map>
 #include <utility>
@@ -37,13 +38,30 @@
 
 namespace iceberg::internal {
 
+// Gives every entry a weight of one, so that the maximum weight of a cache is the
+// maximum number of entries.
+struct UnitWeigher {
+  template <typename Key, typename Value>
+  constexpr int64_t operator()(const Key& /*key*/,
+                               const Value& /*value*/) const noexcept {
+    return 1;
+  }
+};
+
 // A LRU (Least recently used) replacement cache
-template <typename Key, typename Value>
+//
+// The combined weight of the cached entries never exceeds `max_weight`; least recently
+// used entries are evicted first to make room. `Weigher` computes the weight of an entry
+// from its key and value when the entry is inserted or replaced, e.g. its size in bytes.
+// Weights must be non-negative. With the default UnitWeigher, `max_weight` is the
+// maximum number of entries. Storage grows as entries are inserted.
+template <typename Key, typename Value, typename Weigher = UnitWeigher,
+          typename Hash = std::hash<Key>, typename KeyEqual = std::equal_to<Key>>
 class LruCache {
  public:
-  explicit LruCache(int32_t capacity) : capacity_(capacity) {
-    // The map size can temporarily exceed the cache capacity, see Replace()
-    map_.reserve(capacity_ + 1);
+  explicit LruCache(int64_t max_weight, Weigher weigher = Weigher{})
+      : max_weight_(max_weight), weigher_(std::move(weigher)) {
+    ICEBERG_DCHECK(max_weight_ >= 0, "Cache maximum weight must be non-negative");
   }
 
   LruCache(const LruCache&) = delete;
@@ -54,13 +72,28 @@ class LruCache {
   void Clear() {
     items_.clear();
     map_.clear();
-    // The C++ spec doesn't tell whether map_.clear() will shrink the map capacity
-    map_.reserve(capacity_ + 1);
+    total_weight_ = 0;
   }
 
+  // Number of retained entries.
   int32_t size() const {
     ICEBERG_DCHECK(items_.size() == map_.size(), "Cache item and map sizes differ");
     return static_cast<int32_t>(items_.size());
+  }
+
+  // Combined weight of retained entries.
+  int64_t total_weight() const { return total_weight_; }
+
+  // Maximum combined weight allowed in this cache.
+  int64_t max_weight() const { return max_weight_; }
+
+  // Apply a new limit immediately, evicting least recently used entries as needed.
+  void Resize(int64_t max_weight) {
+    ICEBERG_DCHECK(max_weight >= 0, "Cache maximum weight must be non-negative");
+    max_weight_ = max_weight;
+    while (total_weight_ > max_weight_) {
+      EvictLeastRecentlyUsed();
+    }
   }
 
   template <typename K>
@@ -76,29 +109,58 @@ class LruCache {
     return &list_it->value;
   }
 
+  template <typename K>
+  void Erase(const K& key) {
+    const auto it = map_.find(key);
+    if (it == map_.end()) {
+      return;
+    }
+    total_weight_ -= it->second->weight;
+    items_.erase(it->second);
+    map_.erase(it);
+  }
+
+  // Insert or update the value for `key`, mark it as most recently used, and evict least
+  // recently used entries until the cache is within its maximum weight again.
+  //
+  // Returns whether a new entry was added, and a pointer to the cached value.  A value
+  // heavier than the maximum weight is not cached: any existing entry for `key` is
+  // removed, other entries are kept, and {false, nullptr} is returned.
   template <typename K, typename V>
   std::pair<bool, Value*> Replace(K&& key, V&& value) {
     // Try to insert temporary iterator
     auto [it, inserted] = map_.emplace(std::forward<K>(key), ListIt{});
+    ListIt list_it;
     if (inserted) {
       // Inserted => push item at front of the list, and update iterator
       items_.emplace_front(&it->first, std::forward<V>(value));
-      it->second = items_.begin();
-      // Did we exceed the cache capacity?  If so, remove least recently used item
-      if (static_cast<int32_t>(items_.size()) > capacity_) {
-        const bool erased = map_.erase(*items_.back().key);
-        ICEBERG_DCHECK(erased, "Failed to erase least recently used cache item");
-        static_cast<void>(erased);
-        items_.pop_back();
-      }
-      return {true, &it->second->value};
+      list_it = items_.begin();
+      it->second = list_it;
+    } else {
+      // Already exists => move item at front of the list, and update value
+      list_it = it->second;
+      items_.splice(items_.begin(), items_, list_it);
+      list_it->value = std::forward<V>(value);
+      total_weight_ -= list_it->weight;
+      list_it->weight = 0;
     }
 
-    // Already exists => move item at front of the list, and update value
-    auto list_it = it->second;
-    items_.splice(items_.begin(), items_, list_it);
-    list_it->value = std::forward<V>(value);
-    return {false, &list_it->value};
+    const int64_t weight = weigher_(it->first, list_it->value);
+    ICEBERG_DCHECK(weight >= 0, "Cache entry weight must be non-negative");
+    if (weight > max_weight_) {
+      items_.erase(list_it);
+      map_.erase(it);
+      return {false, nullptr};
+    }
+
+    // The item is at the front of the list and not yet counted in total_weight_, and
+    // `max_weight_ - weight` is non-negative, so eviction stops before reaching it.
+    while (total_weight_ > max_weight_ - weight) {
+      EvictLeastRecentlyUsed();
+    }
+    list_it->weight = weight;
+    total_weight_ += weight;
+    return {inserted, &list_it->value};
   }
 
  private:
@@ -106,14 +168,27 @@ class LruCache {
     // Pointer to the key inside the unordered_map
     const Key* key;
     Value value;
+    int64_t weight = 0;
   };
   using List = std::list<Item>;
   using ListIt = typename List::iterator;
 
-  const int32_t capacity_;
+  void EvictLeastRecentlyUsed() {
+    ICEBERG_DCHECK(!items_.empty(), "Cannot evict from an empty cache");
+    const Item& item = items_.back();
+    total_weight_ -= item.weight;
+    const bool erased = map_.erase(*item.key);
+    ICEBERG_DCHECK(erased, "Failed to erase least recently used cache item");
+    static_cast<void>(erased);
+    items_.pop_back();
+  }
+
+  int64_t max_weight_;
+  Weigher weigher_;
+  int64_t total_weight_ = 0;
   // In most to least recently used order
   std::list<Item> items_;
-  std::unordered_map<Key, ListIt> map_;
+  std::unordered_map<Key, ListIt, Hash, KeyEqual> map_;
 };
 
 template <typename Key, typename Value, typename Cache, typename Func>
@@ -135,7 +210,11 @@ struct ThreadSafeMemoizer {
     lock.unlock();
     Value value = func_(key);
     lock.lock();
-    return *cache_.Replace(std::forward<K>(key), std::move(value)).second;
+    const auto* cached = cache_.Replace(std::forward<K>(key), std::move(value)).second;
+    if (cached == nullptr) {
+      throw std::invalid_argument("Memoization cache capacity must be positive");
+    }
+    return *cached;
   }
 
  private:
@@ -158,7 +237,11 @@ struct ThreadUnsafeMemoizer {
       return *value_ptr;
     }
     Value value = func_(key);
-    return *cache_.Replace(std::forward<K>(key), std::move(value)).second;
+    const auto* cached = cache_.Replace(std::forward<K>(key), std::move(value)).second;
+    if (cached == nullptr) {
+      throw std::invalid_argument("Memoization cache capacity must be positive");
+    }
+    return *cached;
   }
 
  private:
@@ -184,7 +267,7 @@ auto Memoize(Func&& func, int32_t cache_capacity) {
   return Memoizer(std::forward<Func>(func), cache_capacity);
 }
 
-// Apply a LRU memoization cache to a callable.
+// Apply a LRU memoization cache to a callable. Calls require positive capacity.
 template <typename Func>
 auto MemoizeLru(Func&& func, int32_t cache_capacity) {
   return Memoize<ThreadSafeMemoizer>(std::forward<Func>(func), cache_capacity);
