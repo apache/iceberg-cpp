@@ -1383,7 +1383,7 @@ Result<nlohmann::json> ToJson(const TableMetadata& table_metadata) {
   if (table_metadata.format_version == 1) {
     for (const auto& partition_spec : table_metadata.partition_specs) {
       if (partition_spec->spec_id() == table_metadata.default_spec_id) {
-        json[kPartitionSpec] = ToJson(*partition_spec);
+        json[kPartitionSpec] = PartitionFieldsToJson(*partition_spec);
         break;
       }
     }

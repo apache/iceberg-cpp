@@ -178,6 +178,20 @@ TEST(MetadataSerdeTest, DeserializeV1Valid) {
   ASSERT_FALSE(metadata->Snapshot().has_value());
 }
 
+TEST(MetadataSerdeTest, SerializeV1LegacyPartitionSpecAsFields) {
+  ICEBERG_UNWRAP_OR_FAIL(auto metadata,
+                         ReadTableMetadataFromResource("TableMetadataV1Valid.json"));
+  ICEBERG_UNWRAP_OR_FAIL(auto expected_spec, metadata->PartitionSpec());
+  ICEBERG_UNWRAP_OR_FAIL(auto json, ToJson(*metadata));
+
+  ASSERT_TRUE(json.contains("partition-spec"));
+  EXPECT_TRUE(json.at("partition-spec").is_array());
+
+  json.erase("partition-specs");
+  ICEBERG_UNWRAP_OR_FAIL(auto reparsed, TableMetadataFromJson(json));
+  AssertPartitionSpec(*reparsed, *expected_spec);
+}
+
 TEST(MetadataSerdeTest, DeserializeV2Valid) {
   ICEBERG_UNWRAP_OR_FAIL(auto metadata,
                          ReadTableMetadataFromResource("TableMetadataV2Valid.json"));
