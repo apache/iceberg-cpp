@@ -182,6 +182,7 @@ constexpr std::string_view kSortOrders = "sort-orders";
 constexpr std::string_view kDefaultSortOrderId = "default-sort-order-id";
 constexpr std::string_view kRefs = "refs";
 constexpr std::string_view kStatistics = "statistics";
+constexpr std::string_view kStatsFields = "stats-fields";
 constexpr std::string_view kPartitionStatistics = "partition-statistics";
 constexpr std::string_view kNextRowId = "next-row-id";
 constexpr std::string_view kEncryptionKeys = "encryption-keys";
@@ -1345,6 +1346,7 @@ Result<EncryptedKey> EncryptedKeyFromJson(const nlohmann::json& json) {
 }
 
 Result<nlohmann::json> ToJson(const TableMetadata& table_metadata) {
+  ICEBERG_RETURN_UNEXPECTED(table_metadata.ValidateStatsFieldsForWrite());
   nlohmann::json json;
 
   json[kFormatVersion] = table_metadata.format_version;
@@ -1693,6 +1695,12 @@ Result<std::unique_ptr<TableMetadata>> TableMetadataFromJson(const nlohmann::jso
   ICEBERG_ASSIGN_OR_RAISE(
       table_metadata->encryption_keys,
       FromJsonList<EncryptedKey>(json, kEncryptionKeys, EncryptedKeyFromJson));
+  if (table_metadata->format_version >= TableMetadata::kMinFormatVersionStatsFields) {
+    ICEBERG_ASSIGN_OR_RAISE(
+        auto stats_fields,
+        GetJsonValueOptional<nlohmann::json::array_t>(json, kStatsFields));
+    table_metadata->has_stats_fields = stats_fields.has_value() && !stats_fields->empty();
+  }
   ICEBERG_ASSIGN_OR_RAISE(
       table_metadata->snapshot_log,
       FromJsonList<SnapshotLogEntry>(json, kSnapshotLog, SnapshotLogEntryFromJson));

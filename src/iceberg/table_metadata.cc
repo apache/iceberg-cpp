@@ -325,6 +325,14 @@ int64_t TableMetadata::NextSequenceNumber() const {
   return format_version > 1 ? last_sequence_number + 1 : kInitialSequenceNumber;
 }
 
+Status TableMetadata::ValidateStatsFieldsForWrite() const {
+  if (has_stats_fields) {
+    return NotSupported(
+        "Writing metadata with nonempty stats-fields is not supported yet");
+  }
+  return {};
+}
+
 namespace {
 
 template <typename T>
@@ -381,7 +389,9 @@ bool operator==(const TableMetadata& lhs, const TableMetadata& rhs) {
          SnapshotRefEquals(lhs.refs, rhs.refs) &&
          SharedPtrVectorEquals(lhs.statistics, rhs.statistics) &&
          SharedPtrVectorEquals(lhs.partition_statistics, rhs.partition_statistics) &&
-         lhs.next_row_id == rhs.next_row_id && lhs.encryption_keys == rhs.encryption_keys;
+         lhs.next_row_id == rhs.next_row_id &&
+         lhs.encryption_keys == rhs.encryption_keys &&
+         lhs.has_stats_fields == rhs.has_stats_fields;
 }
 
 // TableMetadataCache implementation
@@ -1401,6 +1411,7 @@ Result<std::unique_ptr<TableMetadata>> TableMetadataBuilder::Impl::Build() {
   // 1. Validate the format version.
   ICEBERG_PRECHECK(TableMetadata::IsSupportedFormatVersion(metadata_.format_version),
                    "Unsupported table format version: {}", metadata_.format_version);
+  ICEBERG_RETURN_UNEXPECTED(metadata_.ValidateStatsFieldsForWrite());
 
   // 2. Update last_updated_ms if there are changes
   if (metadata_.last_updated_ms == kInvalidLastUpdatedMs) {

@@ -73,6 +73,7 @@ struct ICEBERG_EXPORT MetadataLogEntry {
 struct ICEBERG_EXPORT TableMetadata {
   static constexpr int8_t kDefaultTableFormatVersion = 2;
   static constexpr int8_t kSupportedTableFormatVersion = 3;
+  static constexpr int8_t kMinFormatVersionStatsFields = 3;
   static constexpr int8_t kMinFormatVersionRowLineage = 3;
   static constexpr int8_t kMinFormatVersionDefaultValues = 3;
   static constexpr int64_t kInitialSequenceNumber = 0;
@@ -136,6 +137,12 @@ struct ICEBERG_EXPORT TableMetadata {
   int64_t next_row_id;
   /// A list of encrypted table key entries
   std::vector<EncryptedKey> encryption_keys;
+  /// Whether stats-only field definitions were loaded. They are not retained,
+  /// so metadata writes must be rejected when this is true.
+  bool has_stats_fields = false;
+
+  /// \brief Reject writes that would discard stats-only field definitions.
+  Status ValidateStatsFieldsForWrite() const;
 
   /// \brief Create table metadata from user-supplied properties.
   /// \note The reserved format-version property selects the table format version,
