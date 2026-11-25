@@ -57,6 +57,14 @@ struct ICEBERG_EXPORT ContentCacheOptions {
 };
 
 using MetadataContent = std::shared_ptr<const std::vector<std::byte>>;
+
+// Storage handles can identify aliases for cache invalidation without changing
+// the caller-visible location. The key must be the same for aliases of a file.
+class ICEBERG_EXPORT InputFileWithStoragePath : public InputFile {
+ public:
+  virtual std::optional<std::string_view> storage_path() const = 0;
+};
+
 struct ContentCacheRegistration;
 class ContentCacheRegistry;
 
@@ -76,7 +84,8 @@ class ICEBERG_EXPORT ContentCache : public std::enable_shared_from_this<ContentC
   // A load that overlaps invalidation may serve its own reader but cannot repopulate
   // the cache. Capture the generation under the same lock as the lookup.
   MetadataContent Find(std::string_view location, uint64_t* generation = nullptr);
-  void Insert(std::string_view location, MetadataContent content, uint64_t generation);
+  void Insert(std::string_view location, MetadataContent content, uint64_t generation,
+              std::optional<std::string_view> storage_path = std::nullopt);
   // Invalidate a deleted storage path, including its canonical cache key.
   void Invalidate(FileIO& storage, std::string_view location);
   void Clear();

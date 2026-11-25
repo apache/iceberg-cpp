@@ -190,6 +190,20 @@ TEST(LruCacheTest, ThrowingWeigherPreservesEntriesWeightAndRecency) {
   EXPECT_EQ(cache.total_weight(), 4);
 }
 
+TEST(LruCacheTest, EraseIfPreservesSurvivorWeightAndRecency) {
+  WeightedCache cache(8);
+  cache.Replace(1, "aa");
+  cache.Replace(2, "x");
+  cache.Replace(3, "ccc");
+  cache.Replace(4, "x");
+  cache.EraseIf([](const std::string& value) { return value == "x"; });
+  EXPECT_EQ(cache.size(), 2);
+  EXPECT_EQ(cache.total_weight(), 5);
+  cache.Resize(3);
+  EXPECT_EQ(cache.Find(1), nullptr);
+  EXPECT_NE(cache.Find(3), nullptr);
+}
+
 TEST(LruCacheTest, ClearResetsWeight) {
   WeightedCache cache(10);
   cache.Replace(1, "aaaa");
