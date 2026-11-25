@@ -19,6 +19,8 @@
 
 #include "iceberg/util/transform_util.h"
 
+#include <limits>
+
 #include <gtest/gtest.h>
 
 namespace iceberg {
@@ -138,6 +140,8 @@ TEST(TransformUtilTest, HumanTimestampWithZone) {
 }
 
 TEST(TransformUtilTest, HumanTimestampNs) {
+  EXPECT_EQ("1677-09-21T00:12:43.145224192",
+            TransformUtil::HumanTimestampNs(std::numeric_limits<int64_t>::min()));
   EXPECT_EQ("1970-01-01T00:00:00.000000001", TransformUtil::HumanTimestampNs(1));
   EXPECT_EQ("2026-01-01T00:00:01.000001001",
             TransformUtil::HumanTimestampNs(1767225601000001001L));
@@ -145,6 +149,8 @@ TEST(TransformUtilTest, HumanTimestampNs) {
 }
 
 TEST(TransformUtilTest, HumanTimestampNsWithZone) {
+  EXPECT_EQ("1677-09-21T00:12:43.145224192+00:00",
+            TransformUtil::HumanTimestampNsWithZone(std::numeric_limits<int64_t>::min()));
   EXPECT_EQ("1970-01-01T00:00:00.000000001+00:00",
             TransformUtil::HumanTimestampNsWithZone(1));
   EXPECT_EQ("2026-01-01T00:00:01.000001001+00:00",

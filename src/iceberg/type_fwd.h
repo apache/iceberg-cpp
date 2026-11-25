@@ -286,6 +286,7 @@ class PositionDeleteIndex;
 enum class MetadataTableKind : uint8_t;
 
 class HistoryTable;
+class ManifestsTable;
 class MetadataScanBuilder;
 class MetadataTable;
 class MetadataScan;

@@ -457,6 +457,10 @@ Result<std::string> Transform::ToHumanString(const Literal& value) {
     case TransformType::kUnknown:
     case TransformType::kVoid: {
       switch (value.type()->type_id()) {
+        case TypeId::kFloat:
+          return std::format("{}", std::get<float>(value.value()));
+        case TypeId::kDouble:
+          return std::format("{}", std::get<double>(value.value()));
         case TypeId::kDate:
           return TransformUtil::HumanDay(std::get<int32_t>(value.value()));
         case TypeId::kTime:

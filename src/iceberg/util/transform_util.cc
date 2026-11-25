@@ -25,6 +25,15 @@
 #include "iceberg/util/temporal_util.h"
 
 namespace iceberg {
+namespace {
+
+// Converting the floored second back to ticks can overflow near INT64_MIN.
+int64_t SubsecondRemainder(int64_t ticks, int64_t ticks_per_second) {
+  const auto remainder = ticks % ticks_per_second;
+  return remainder < 0 ? remainder + ticks_per_second : remainder;
+}
+
+}  // namespace
 
 std::string TransformUtil::HumanYear(int32_t year_ordinal) {
   auto y = internal::kEpochYmd + std::chrono::years{year_ordinal};
@@ -68,9 +77,7 @@ std::string TransformUtil::HumanTimestamp(int64_t timestamp_micros) {
       std::chrono::floor<std::chrono::seconds>(micros_since_epoch);
   auto tp = std::chrono::time_point<std::chrono::system_clock, std::chrono::seconds>{
       seconds_since_epoch};
-  auto micros = std::chrono::duration_cast<std::chrono::microseconds>(micros_since_epoch -
-                                                                      seconds_since_epoch)
-                    .count();
+  const auto micros = SubsecondRemainder(timestamp_micros, internal::kMicrosPerSecond);
   if (micros == 0) {
     return std::format("{:%FT%T}", tp);
   } else if (micros % internal::kMicrosPerMilli == 0) {
@@ -86,9 +93,7 @@ std::string TransformUtil::HumanTimestampNs(int64_t timestamp_nanos) {
       std::chrono::floor<std::chrono::seconds>(nanos_since_epoch);
   auto tp = std::chrono::time_point<std::chrono::system_clock, std::chrono::seconds>{
       seconds_since_epoch};
-  auto nanos = std::chrono::duration_cast<std::chrono::nanoseconds>(nanos_since_epoch -
-                                                                    seconds_since_epoch)
-                   .count();
+  const auto nanos = SubsecondRemainder(timestamp_nanos, internal::kNanosPerSecond);
   if (nanos == 0) {
     return std::format("{:%FT%T}", tp);
   } else if (nanos % internal::kNanosPerMilli == 0) {
@@ -106,9 +111,7 @@ std::string TransformUtil::HumanTimestampWithZone(int64_t timestamp_micros) {
       std::chrono::floor<std::chrono::seconds>(micros_since_epoch);
   auto tp = std::chrono::time_point<std::chrono::system_clock, std::chrono::seconds>{
       seconds_since_epoch};
-  auto micros = std::chrono::duration_cast<std::chrono::microseconds>(micros_since_epoch -
-                                                                      seconds_since_epoch)
-                    .count();
+  const auto micros = SubsecondRemainder(timestamp_micros, internal::kMicrosPerSecond);
   if (micros == 0) {
     return std::format("{:%FT%T}+00:00", tp);
   } else if (micros % internal::kMicrosPerMilli == 0) {
@@ -124,9 +127,7 @@ std::string TransformUtil::HumanTimestampNsWithZone(int64_t timestamp_nanos) {
       std::chrono::floor<std::chrono::seconds>(nanos_since_epoch);
   auto tp = std::chrono::time_point<std::chrono::system_clock, std::chrono::seconds>{
       seconds_since_epoch};
-  auto nanos = std::chrono::duration_cast<std::chrono::nanoseconds>(nanos_since_epoch -
-                                                                    seconds_since_epoch)
-                   .count();
+  const auto nanos = SubsecondRemainder(timestamp_nanos, internal::kNanosPerSecond);
   if (nanos == 0) {
     return std::format("{:%FT%T}+00:00", tp);
   } else if (nanos % internal::kNanosPerMilli == 0) {
