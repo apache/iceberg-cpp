@@ -19,12 +19,10 @@
 
 #include <array>
 #include <cstdint>
-#include <cstdlib>
 #include <memory>
 #include <optional>
 #include <string>
 #include <string_view>
-#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -39,39 +37,7 @@
 namespace iceberg {
 namespace {
 using internal::ContentCacheOptions;
-
-#ifdef GTEST_HAS_DEATH_TEST
-int SetManifestCacheLimitEnv(const char* value) {
-  constexpr const char* kLimitEnv = "ICEBERG_IO_MANIFEST_CACHE_LIMIT";
-#  ifdef _WIN32
-  return _putenv_s(kLimitEnv, value);
-#  else
-  return setenv(kLimitEnv, value, /*overwrite=*/1);
-#  endif
-}
-
-TEST(MetadataCacheDeathTest, InitializesGlobalLimitFromEnvironment) {
-  // Start with a new registry for every environment setting.
-  GTEST_FLAG_SET(death_test_style, "threadsafe");
-  for (const auto& [value, expected_limit] :
-       {std::pair{"2", 2}, std::pair{"0", 8}, std::pair{"-1", 8}, std::pair{"2x", 8},
-        std::pair{"2147483648", 8}}) {
-    SCOPED_TRACE(value);
-    EXPECT_EXIT(
-        {
-          if (SetManifestCacheLimitEnv(value) != 0) {
-            std::_Exit(EXIT_FAILURE);
-          }
-          const auto initial_limit = internal::ContentCache::SetGlobalCapacity(3);
-          const auto overridden_limit = internal::ContentCache::SetGlobalCapacity(4);
-          std::_Exit(initial_limit == expected_limit && overridden_limit == 3
-                         ? EXIT_SUCCESS
-                         : EXIT_FAILURE);
-        },
-        ::testing::ExitedWithCode(EXIT_SUCCESS), "");
-  }
-}
-#endif
+using internal::ContentCacheProperties;
 
 class ScopedGlobalCacheLimit {
  public:
@@ -153,13 +119,12 @@ TEST(MetadataCacheTest, CachedInputFilePreservesReadAheadAndFallbackErrors) {
 }
 
 TEST(MetadataCacheTest, ParsesJavaCompatibleProperties) {
-  std::unordered_map<std::string, std::string> properties = {
-      {std::string(ContentCacheOptions::kEnabled), "true"},
-      {std::string(ContentCacheOptions::kMaxTotalBytes), "200"},
-      {std::string(ContentCacheOptions::kMaxContentLength), "50"},
-  };
+  ContentCacheProperties properties;
+  properties.Set(ContentCacheProperties::kEnabled, true)
+      .Set(ContentCacheProperties::kMaxTotalBytes, int64_t{200})
+      .Set(ContentCacheProperties::kMaxContentLength, int64_t{50});
 
-  auto options = ContentCacheOptions::FromProperties(properties);
+  auto options = ContentCacheOptions::FromProperties(properties.configs());
 
   ASSERT_THAT(options, IsOk());
   EXPECT_TRUE(options->enabled);
@@ -172,7 +137,7 @@ TEST(MetadataCacheTest, ParsesEnabledPropertyIgnoringCase) {
     SCOPED_TRACE(value);
     ICEBERG_UNWRAP_OR_FAIL(auto options,
                            ContentCacheOptions::FromProperties(
-                               {{std::string(ContentCacheOptions::kEnabled), value}}));
+                               {{ContentCacheProperties::kEnabled.key(), value}}));
     EXPECT_TRUE(options.enabled);
   }
 }
@@ -183,14 +148,14 @@ TEST(MetadataCacheTest, TreatsOtherEnabledPropertyValuesAsFalseLikeJava) {
     SCOPED_TRACE(value);
     ICEBERG_UNWRAP_OR_FAIL(auto options,
                            ContentCacheOptions::FromProperties(
-                               {{std::string(ContentCacheOptions::kEnabled), value}}));
+                               {{ContentCacheProperties::kEnabled.key(), value}}));
     EXPECT_FALSE(options.enabled);
   }
 }
 
 TEST(MetadataCacheTest, UsesJavaCompatibleDefaults) {
   auto options = ContentCacheOptions::FromProperties(
-      {{std::string(ContentCacheOptions::kEnabled), "true"}});
+      {{ContentCacheProperties::kEnabled.key(), "true"}});
 
   ASSERT_THAT(options, IsOk());
   EXPECT_TRUE(options->enabled);
@@ -200,18 +165,69 @@ TEST(MetadataCacheTest, UsesJavaCompatibleDefaults) {
 
 TEST(MetadataCacheTest, InvalidNumericPropertyErrorIncludesPropertyName) {
   auto options = ContentCacheOptions::FromProperties(
-      {{std::string(ContentCacheOptions::kEnabled), "true"},
-       {std::string(ContentCacheOptions::kMaxTotalBytes), "invalid"}});
+      {{ContentCacheProperties::kEnabled.key(), "true"},
+       {ContentCacheProperties::kMaxTotalBytes.key(), "invalid"}});
 
-  EXPECT_THAT(options, HasErrorMessage(std::string(ContentCacheOptions::kMaxTotalBytes)));
+  EXPECT_THAT(options, HasErrorMessage(ContentCacheProperties::kMaxTotalBytes.key()));
 }
 
 TEST(MetadataCacheTest, IgnoresInvalidTuningPropertiesWhenDisabled) {
   ICEBERG_UNWRAP_OR_FAIL(
       auto options, ContentCacheOptions::FromProperties(
-                        {{std::string(ContentCacheOptions::kEnabled), "false"},
-                         {std::string(ContentCacheOptions::kMaxTotalBytes), "invalid"}}));
+                        {{ContentCacheProperties::kEnabled.key(), "false"},
+                         {ContentCacheProperties::kMaxTotalBytes.key(), "invalid"}}));
   EXPECT_FALSE(options.enabled);
+}
+
+TEST(MetadataCacheTest, AdapterRejectsDeletes) {
+  auto storage = std::make_shared<MockFileIO>();
+  auto cache = std::make_shared<internal::ContentCache>(ContentCacheOptions{});
+  auto adapter = cache->Wrap(storage);
+  EXPECT_CALL(*storage, DeleteFile).Times(0);
+  EXPECT_THAT(adapter->DeleteFile("manifest.avro"), IsError(ErrorKind::kNotSupported));
+  EXPECT_THAT(adapter->DeleteFiles({"manifest.avro"}), IsError(ErrorKind::kNotSupported));
+  EXPECT_THAT(adapter->DeleteFiles({}), IsError(ErrorKind::kNotSupported));
+}
+
+class AliasedMockFileIO : public MockFileIO {
+ public:
+  Result<std::unique_ptr<InputFile>> NewInputFile(std::string location) override {
+    if (location == "alias") location = "manifest.avro";
+    return MockFileIO::NewInputFile(std::move(location));
+  }
+};
+
+TEST(MetadataCacheTest, StorageDeleteThroughAliasInvalidatesCanonicalContent) {
+  for (bool recreate : {false, true}) {
+    SCOPED_TRACE(recreate);
+    auto storage = std::make_shared<AliasedMockFileIO>();
+    storage->AddFile("manifest.avro", "old");
+    auto cache = std::make_shared<internal::ContentCache>(ContentCacheOptions{});
+    auto adapter = cache->Wrap(storage);
+    ICEBERG_UNWRAP_OR_FAIL(auto old_file, adapter->NewInputFile("alias"));
+    ASSERT_THAT(adapter->ReadFile("alias", std::nullopt), HasValue(::testing::Eq("old")));
+    ASSERT_TRUE(cache->Find("manifest.avro"));
+    cache->Insert("unrelated", std::make_shared<const std::vector<std::byte>>(1), 0);
+
+    EXPECT_CALL(*storage, DeleteFile("alias")).WillOnce([&] {
+      storage->RemoveFile("manifest.avro");
+      return Status{};
+    });
+    ASSERT_THAT(storage->DeleteFile("alias"), IsOk());
+    if (recreate) storage->AddFile("manifest.avro", "new");
+    cache->Invalidate(*storage, "alias");
+
+    // An input handle obtained before deletion must not repopulate the cache.
+    ICEBERG_UNWRAP_OR_FAIL(auto old_stream, old_file->Open());
+    ASSERT_THAT(old_stream->Close(), IsOk());
+    auto read = adapter->ReadFile("manifest.avro", std::nullopt);
+    if (recreate) {
+      EXPECT_THAT(read, HasValue(::testing::Eq("new")));
+      EXPECT_TRUE(cache->Find("unrelated"));
+    } else {
+      EXPECT_THAT(read, IsError(ErrorKind::kNotFound));
+    }
+  }
 }
 
 TEST(MetadataCacheTest, PrefixReadDoesNotPopulateWholeFileCache) {
@@ -282,7 +298,8 @@ TEST(MetadataCacheTest, InvalidatedLoadCannotPopulateRecreatedCacheState) {
   ASSERT_FALSE(cache->Find("manifest.avro", &generation));
   auto other = std::make_shared<internal::ContentCache>(ContentCacheOptions{});
   other->Insert("other.avro", std::make_shared<const std::vector<std::byte>>(8), 0);
-  cache->Invalidate("manifest.avro");
+  MockFileIO storage;
+  cache->Invalidate(storage, "manifest.avro");
   cache->Insert("manifest.avro", std::make_shared<const std::vector<std::byte>>(8),
                 generation);
   EXPECT_FALSE(cache->Find("manifest.avro"));

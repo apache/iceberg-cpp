@@ -84,6 +84,8 @@ class MockFileIO : public FileIO {
             std::as_bytes(std::span<const char>(data.data(), data.size())));
   }
 
+  void RemoveFile(const std::string& file_location) { files_->erase(file_location); }
+
   std::vector<std::byte>& FileData(const std::string& file_location) {
     return *GetOrCreateFile(file_location);
   }
