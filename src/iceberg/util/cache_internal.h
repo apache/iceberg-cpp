@@ -97,7 +97,7 @@ class LruCache {
   }
 
   template <typename K>
-  Value* Find(K&& key) {
+  const Value* Find(K&& key) {
     const auto it = map_.find(key);
     if (it == map_.end()) {
       return nullptr;
@@ -126,41 +126,41 @@ class LruCache {
   // Returns whether a new entry was added, and a pointer to the cached value.  A value
   // heavier than the maximum weight is not cached: any existing entry for `key` is
   // removed, other entries are kept, and {false, nullptr} is returned.
+  // Use Replace to change a cached value. A successful replacement invalidates the
+  // previous value pointer. If weighing throws, the cache retains its previous state.
   template <typename K, typename V>
-  std::pair<bool, Value*> Replace(K&& key, V&& value) {
-    // Try to insert temporary iterator
-    auto [it, inserted] = map_.emplace(std::forward<K>(key), ListIt{});
-    ListIt list_it;
-    if (inserted) {
-      // Inserted => push item at front of the list, and update iterator
-      items_.emplace_front(&it->first, std::forward<V>(value));
-      list_it = items_.begin();
-      it->second = list_it;
-    } else {
-      // Already exists => move item at front of the list, and update value
-      list_it = it->second;
-      items_.splice(items_.begin(), items_, list_it);
-      list_it->value = std::forward<V>(value);
-      total_weight_ -= list_it->weight;
-      list_it->weight = 0;
+  std::pair<bool, const Value*> Replace(K&& key, V&& value) {
+    List candidate;
+    auto& item = candidate.emplace_front(nullptr, std::forward<V>(value));
+    auto [it, inserted] = map_.try_emplace(std::forward<K>(key));
+    item.key = &it->first;
+    try {
+      item.weight = weigher_(*item.key, std::as_const(item.value));
+    } catch (...) {
+      if (inserted) {
+        map_.erase(it);
+      }
+      throw;
     }
+    ICEBERG_DCHECK(item.weight >= 0, "Cache entry weight must be non-negative");
 
-    const int64_t weight = weigher_(it->first, list_it->value);
-    ICEBERG_DCHECK(weight >= 0, "Cache entry weight must be non-negative");
-    if (weight > max_weight_) {
-      items_.erase(list_it);
+    if (!inserted) {
+      total_weight_ -= it->second->weight;
+      items_.erase(it->second);
+    }
+    if (item.weight > max_weight_) {
       map_.erase(it);
       return {false, nullptr};
     }
 
-    // The item is at the front of the list and not yet counted in total_weight_, and
-    // `max_weight_ - weight` is non-negative, so eviction stops before reaching it.
-    while (total_weight_ > max_weight_ - weight) {
+    items_.splice(items_.begin(), candidate);
+    it->second = items_.begin();
+    // Subtract from the limit before adding the new weight to avoid overflow.
+    while (total_weight_ > max_weight_ - item.weight) {
       EvictLeastRecentlyUsed();
     }
-    list_it->weight = weight;
-    total_weight_ += weight;
-    return {inserted, &list_it->value};
+    total_weight_ += item.weight;
+    return {inserted, &item.value};
   }
 
  private:
