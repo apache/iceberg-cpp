@@ -276,10 +276,27 @@ class ParquetReaderTest : public TempFileTestBase {
     auto io = internal::checked_cast<arrow::ArrowFileSystemFileIO&>(*file_io_);
     auto outfile = io.fs()->OpenOutputStream(temp_parquet_file_).ValueOrDie();
 
-    ASSERT_TRUE(::parquet::arrow::WriteTable(*table, ::arrow::default_memory_pool(),
-                                             outfile, table->num_rows())
+    // Keep the Arrow names of list elements (such as "item") instead of the standard
+    // "element", so that reads exercise the name mapping's path normalization.
+    auto arrow_writer_props = ::parquet::ArrowWriterProperties::Builder()
+                                  .disable_compliant_nested_types()
+                                  ->build();
+    ASSERT_TRUE(::parquet::arrow::WriteTable(
+                    *table, ::arrow::default_memory_pool(), outfile, table->num_rows(),
+                    ::parquet::default_writer_properties(), arrow_writer_props)
                     .ok());
     ASSERT_TRUE(outfile->Close().ok());
+  }
+
+  std::vector<std::string> ParquetColumnPaths() {
+    auto& io = internal::checked_cast<arrow::ArrowFileSystemFileIO&>(*file_io_);
+    auto input_file = io.fs()->OpenInputFile(temp_parquet_file_).ValueOrDie();
+    auto metadata = ::parquet::ReadMetaData(input_file);
+    std::vector<std::string> paths;
+    for (int i = 0; i < metadata->schema()->num_columns(); ++i) {
+      paths.push_back(metadata->schema()->Column(i)->path()->ToDotString());
+    }
+    return paths;
   }
 
   void CreateListParquetFile() {
@@ -537,16 +554,52 @@ TEST_F(ParquetReaderTest, ReadTwoFields) {
 }
 
 TEST_F(ParquetReaderTest, ReadWithoutFieldIdsOrNameMapping) {
+  // Without a name mapping, columns are matched by the read schema's names.
   ASSERT_NO_FATAL_FAILURE(CreateParquetFileWithoutFieldIds(
-      ::arrow::struct_({::arrow::field("id", ::arrow::int32())}), R"([[1]])"));
-  auto schema = std::make_shared<Schema>(
-      std::vector<SchemaField>{SchemaField::MakeOptional(1, "id", int32())});
+      ::arrow::struct_({::arrow::field("id", ::arrow::int32()),
+                        ::arrow::field("name", ::arrow::utf8())}),
+      R"([[1, "Foo"], [2, "Bar"]])"));
+  auto schema = std::make_shared<Schema>(std::vector<SchemaField>{
+      SchemaField::MakeOptional(2, "name", string()),
+      SchemaField::MakeOptional(7, "id", int64()),
+      SchemaField::MakeOptional(3, "full_name", string()),
+  });
 
-  auto reader_result = ReaderFactoryRegistry::Open(
-      FileFormatType::kParquet,
-      {.path = temp_parquet_file_, .io = file_io_, .projection = schema});
-  ASSERT_THAT(reader_result, IsError(ErrorKind::kInvalidSchema));
-  EXPECT_THAT(reader_result, HasErrorMessage("no field IDs and no name mapping"));
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto reader,
+      ReaderFactoryRegistry::Open(
+          FileFormatType::kParquet,
+          {.path = temp_parquet_file_, .io = file_io_, .projection = schema}));
+  ASSERT_NO_FATAL_FAILURE(
+      VerifyNextBatch(*reader, R"([["Foo", 1, null], ["Bar", 2, null]])"));
+  ASSERT_NO_FATAL_FAILURE(VerifyExhausted(*reader));
+}
+
+TEST_F(ParquetReaderTest, ReadNestedFieldsWithoutFieldIdsOrNameMapping) {
+  auto type = ::arrow::struct_({
+      ::arrow::field("numbers", ::arrow::list(::arrow::field("item", ::arrow::int32()))),
+      ::arrow::field("counts", ::arrow::map(::arrow::utf8(), ::arrow::int32())),
+  });
+  const std::string json = R"([[[1, 2], [["a", 3]]], [null, null]])";
+  ASSERT_NO_FATAL_FAILURE(CreateParquetFileWithoutFieldIds(type, json));
+
+  auto schema = std::make_shared<Schema>(std::vector<SchemaField>{
+      SchemaField::MakeOptional(
+          1, "numbers",
+          std::make_shared<ListType>(SchemaField::MakeOptional(101, "element", int64()))),
+      SchemaField::MakeOptional(
+          2, "counts",
+          std::make_shared<MapType>(SchemaField::MakeRequired(201, "key", string()),
+                                    SchemaField::MakeOptional(202, "value", int64()))),
+  });
+
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto reader,
+      ReaderFactoryRegistry::Open(
+          FileFormatType::kParquet,
+          {.path = temp_parquet_file_, .io = file_io_, .projection = schema}));
+  ASSERT_NO_FATAL_FAILURE(VerifyNextBatch(*reader, json));
+  ASSERT_NO_FATAL_FAILURE(VerifyExhausted(*reader));
 }
 
 TEST_F(ParquetReaderTest, ReadWithNameMapping) {
@@ -610,6 +663,7 @@ TEST_F(ParquetReaderTest, ReadNestedFieldsWithNameMapping) {
     [[null], null, null]
   ])";
   ASSERT_NO_FATAL_FAILURE(CreateParquetFileWithoutFieldIds(type, json));
+  EXPECT_THAT(ParquetColumnPaths(), ::testing::Contains("numbers.list.item.value"));
 
   auto schema = std::make_shared<Schema>(std::vector<SchemaField>{
       SchemaField::MakeOptional(1, "profile",
@@ -649,6 +703,69 @@ TEST_F(ParquetReaderTest, ReadNestedFieldsWithNameMapping) {
     ASSERT_NO_FATAL_FAILURE(VerifyNextBatch(*reader, json));
     ASSERT_NO_FATAL_FAILURE(VerifyExhausted(*reader));
   }
+}
+
+TEST_F(ParquetReaderTest, ReadListWithUnmappedElementAsMissing) {
+  ASSERT_NO_FATAL_FAILURE(CreateParquetFileWithoutFieldIds(
+      ::arrow::struct_({
+          ::arrow::field("id", ::arrow::int32()),
+          ::arrow::field("tags", ::arrow::list(::arrow::utf8())),
+          ::arrow::field("counts", ::arrow::map(::arrow::utf8(), ::arrow::int32())),
+      }),
+      R"([[1, ["a"], [["x", 1]]], [2, null, null]])"));
+  auto schema = std::make_shared<Schema>(std::vector<SchemaField>{
+      SchemaField::MakeOptional(1, "id", int32()),
+      SchemaField::MakeOptional(2, "tags",
+                                std::make_shared<ListType>(
+                                    SchemaField::MakeOptional(201, "element", string()))),
+      SchemaField::MakeOptional(
+          3, "counts",
+          std::make_shared<MapType>(SchemaField::MakeRequired(301, "key", string()),
+                                    SchemaField::MakeOptional(302, "value", int32()))),
+  });
+  // The mapping covers the list and the map but not their children, so they are read
+  // as if they were missing from the file.
+  auto mapping = NameMapping::Make({
+      MappedField{.names = {"id"}, .field_id = 1},
+      MappedField{.names = {"tags"}, .field_id = 2},
+      MappedField{.names = {"counts"},
+                  .field_id = 3,
+                  .nested_mapping = MappedFields::Make({
+                      MappedField{.names = {"key"}, .field_id = 301},
+                  })},
+  });
+
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto reader, ReaderFactoryRegistry::Open(FileFormatType::kParquet,
+                                               {.path = temp_parquet_file_,
+                                                .io = file_io_,
+                                                .projection = schema,
+                                                .name_mapping = std::move(mapping)}));
+  ASSERT_NO_FATAL_FAILURE(
+      VerifyNextBatch(*reader, R"([[1, null, null], [2, null, null]])"));
+  ASSERT_NO_FATAL_FAILURE(VerifyExhausted(*reader));
+}
+
+TEST_F(ParquetReaderTest, ReadWithAliasMappedToTwoColumns) {
+  ASSERT_NO_FATAL_FAILURE(CreateParquetFileWithoutFieldIds(
+      ::arrow::struct_({::arrow::field("name", ::arrow::utf8()),
+                        ::arrow::field("full_name", ::arrow::utf8())}),
+      R"([["a", "Alice"], ["b", "Bob"]])"));
+  auto schema = std::make_shared<Schema>(
+      std::vector<SchemaField>{SchemaField::MakeOptional(2, "full_name", string())});
+  auto mapping = NameMapping::Make({
+      MappedField{.names = {"name", "full_name"}, .field_id = 2},
+  });
+
+  // Like Java, the last column mapped to the ID is read.
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto reader, ReaderFactoryRegistry::Open(FileFormatType::kParquet,
+                                               {.path = temp_parquet_file_,
+                                                .io = file_io_,
+                                                .projection = schema,
+                                                .name_mapping = std::move(mapping)}));
+  ASSERT_NO_FATAL_FAILURE(VerifyNextBatch(*reader, R"([["Alice"], ["Bob"]])"));
+  ASSERT_NO_FATAL_FAILURE(VerifyExhausted(*reader));
 }
 
 TEST_F(ParquetReaderTest, ReadMissingFieldsWithDefaults) {

@@ -19,8 +19,11 @@
 
 #include "iceberg/name_mapping.h"
 
+#include <atomic>
 #include <memory>
+#include <optional>
 #include <string>
+#include <thread>
 #include <unordered_set>
 #include <vector>
 
@@ -187,6 +190,35 @@ TEST_F(NameMappingTest, FindMethodsOnConstEmptyMapping) {
   auto field_by_parts =
       const_empty_mapping.Find(std::vector<std::string>{"test", "field"});
   EXPECT_FALSE(field_by_parts.has_value());
+}
+
+// Readers of a scan share one mapping, so concurrent lookups must not race. A data race
+// here is reliably reported only under ThreadSanitizer.
+TEST_F(NameMappingTest, ConcurrentFind) {
+  const std::shared_ptr<const NameMapping> mapping = MakeNameMapping();
+  const std::shared_ptr<const NameMapping> empty_mapping = NameMapping::MakeEmpty();
+  const auto& nested_fields = mapping->Find(3)->get().nested_mapping;
+
+  std::vector<std::thread> threads;
+  std::atomic<int> failures = 0;
+  for (int i = 0; i < 8; ++i) {
+    threads.emplace_back([&] {
+      for (int j = 0; j < 100; ++j) {
+        bool ok = mapping->Find("qux.hello").has_value() &&
+                  mapping->Find(5).has_value() &&
+                  nested_fields->Id("world") == std::optional<int32_t>(5) &&
+                  nested_fields->Field(4).has_value() &&
+                  !empty_mapping->Find("foo").has_value();
+        if (!ok) {
+          ++failures;
+        }
+      }
+    });
+  }
+  for (auto& thread : threads) {
+    thread.join();
+  }
+  EXPECT_EQ(failures, 0);
 }
 
 TEST_F(NameMappingTest, Equality) {
