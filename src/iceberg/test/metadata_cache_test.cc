@@ -218,7 +218,8 @@ TEST(MetadataCacheTest, StorageDeleteThroughAliasInvalidatesCanonicalContent) {
     ICEBERG_UNWRAP_OR_FAIL(auto old_file, adapter->NewInputFile("alias"));
     ASSERT_THAT(adapter->ReadFile("alias", std::nullopt), HasValue(::testing::Eq("old")));
     ASSERT_TRUE(cache->Find("manifest.avro"));
-    cache->Insert("unrelated", std::make_shared<const std::vector<std::byte>>(1), 0);
+    storage->AddFile("unrelated", "keep");
+    ASSERT_THAT(adapter->ReadFile("unrelated", std::nullopt), IsOk());
 
     EXPECT_CALL(*storage, DeleteFile("alias")).WillOnce([&] {
       storage->RemoveFile("manifest.avro");
@@ -317,6 +318,34 @@ TEST(MetadataCacheTest, DestroyedCacheFreesItsSlotWithoutEvictingALiveCache) {
   third->Insert("third", std::make_shared<const std::vector<std::byte>>(1), 0);
   EXPECT_TRUE(first->Find("first"));
   EXPECT_TRUE(third->Find("third"));
+}
+
+TEST(MetadataCacheTest, InvalidatingLastFileFreesItsGlobalSlot) {
+  ScopedGlobalCacheLimit limit(2);
+  auto first = std::make_shared<internal::ContentCache>(ContentCacheOptions{});
+  auto second = std::make_shared<internal::ContentCache>(ContentCacheOptions{});
+  auto third = std::make_shared<internal::ContentCache>(ContentCacheOptions{});
+  const auto bytes = std::make_shared<const std::vector<std::byte>>(1);
+  first->Insert("first", bytes, 0);
+  second->Insert("second", bytes, 0, "second");
+  MockFileIO storage;
+  storage.AddFile("second", "replacement");
+  second->Invalidate(storage, "second");
+  third->Insert("third", bytes, 0);
+  EXPECT_TRUE(first->Find("first"));
+  EXPECT_FALSE(second->Find("second"));
+  EXPECT_TRUE(third->Find("third"));
+}
+
+TEST(MetadataCacheTest, InvalidationClearsAliasesWhenStorageOnlyReportsTheRequest) {
+  FailingOpenFileIO storage(std::make_shared<FailingOpenState>());
+  auto cache = std::make_shared<internal::ContentCache>(ContentCacheOptions{});
+  const auto bytes = std::make_shared<const std::vector<std::byte>>(1);
+  cache->Insert("manifest.avro", bytes, 0);
+  cache->Insert("alias", bytes, 0);
+  cache->Invalidate(storage, "manifest.avro");
+  EXPECT_FALSE(cache->Find("manifest.avro"));
+  EXPECT_FALSE(cache->Find("alias"));
 }
 
 TEST(MetadataCacheTest, InvalidatedLoadCannotPopulateRecreatedCacheState) {

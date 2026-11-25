@@ -36,6 +36,7 @@
 #include "iceberg/arrow/arrow_io_internal.h"
 #include "iceberg/arrow/arrow_io_util.h"
 #include "iceberg/arrow/arrow_status_internal.h"
+#include "iceberg/content_cache_internal.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg::arrow {
@@ -412,7 +413,7 @@ class ArrowPositionOutputStream : public PositionOutputStream {
   int64_t closed_position_ = 0;
 };
 
-class ArrowInputFile : public InputFile {
+class ArrowInputFile : public iceberg::internal::InputFileWithStoragePath {
  public:
   ArrowInputFile(std::shared_ptr<::arrow::fs::FileSystem> fs, std::string location,
                  std::string path, std::optional<int64_t> file_size)
@@ -422,6 +423,16 @@ class ArrowInputFile : public InputFile {
         file_size_(file_size) {}
 
   std::string_view location() const override { return location_; }
+  std::optional<std::string_view> storage_path() const override {
+    const auto type = fs_->type_name();
+    // Local paths can have symlinks, and a custom filesystem defines its own aliases.
+    if (type != "s3" && type != "mock") return std::nullopt;
+    // Ignore boundary slashes for invalidation, where extra matches are harmless.
+    std::string_view key(path_);
+    const auto first = key.find_first_not_of('/');
+    if (first == std::string_view::npos) return std::nullopt;
+    return key.substr(first, key.find_last_not_of('/') - first + 1);
+  }
 
   Result<int64_t> Size() const override {
     if (file_size_.has_value()) {

@@ -36,6 +36,7 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include "iceberg/content_cache_internal.h"
 #include "iceberg/file_io.h"
 #include "iceberg/storage_credential.h"
 #include "iceberg/util/macros.h"
@@ -201,13 +202,14 @@ class MockFileIO : public FileIO {
     bool closed_ = false;
   };
 
-  class InMemoryInputFile : public InputFile {
+  class InMemoryInputFile : public internal::InputFileWithStoragePath {
    public:
     InMemoryInputFile(std::string location, std::shared_ptr<std::vector<std::byte>> data,
                       std::optional<int64_t> length)
         : location_(std::move(location)), data_(std::move(data)), length_(length) {}
 
     std::string_view location() const override { return location_; }
+    std::optional<std::string_view> storage_path() const override { return location_; }
 
     Result<int64_t> Size() const override {
       return length_.value_or(static_cast<int64_t>(data_->size()));

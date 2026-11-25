@@ -97,7 +97,7 @@ must expose the desired settings through its `properties()` method.
 Independent table loads have separate caches and byte budgets. A table and its
 manifest I/O adapters share ownership of its cache. The process-wide registry
 tracks the cache through a weak reference once it stores its first file.
-Destroying the last cache handle frees its registry slot.
+Removing the last cached file or destroying the last cache handle frees its slot.
 
 By default, at most eight caches retain files at once. Call
 `Table::SetManifestCacheLimit(max_caches)` with a positive integer to change the
@@ -106,6 +106,8 @@ their tables are still loaded. The next cacheable insertion repopulates an
 evicted cache. Active readers and input files can still hold bytes after
 eviction, and concurrent load buffers are outside the retained byte budget.
 Call `Table::ClearManifestCache()` to release a table's retained content explicitly.
+Manifest cleanup invalidates cached aliases of each deleted file. If storage
+cannot identify the deleted file across aliases, cleanup clears that table's cache.
 
 Compatible refreshes and committed table handles share their source table's cache.
 S3 access keys, secrets, session tokens, and token expiry can rotate without losing

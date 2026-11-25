@@ -32,14 +32,19 @@
 
 namespace iceberg::internal {
 
+struct CachedFile {
+  MetadataContent content;
+  std::optional<std::string> storage_path;
+};
+
 struct MetadataContentWeigher {
-  int64_t operator()(const std::string&, const MetadataContent& content) const {
-    return static_cast<int64_t>(content->size());
+  int64_t operator()(const std::string&, const CachedFile& file) const {
+    return static_cast<int64_t>(file.content->size());
   }
 };
 
-using CachedFiles = LruCache<std::string, MetadataContent, MetadataContentWeigher,
-                             StringHash, StringEqual>;
+using CachedFiles =
+    LruCache<std::string, CachedFile, MetadataContentWeigher, StringHash, StringEqual>;
 
 // Owned by the table's cache handle. Only the registry accesses these fields under
 // its mutex. A position is valid while files is non-null.
@@ -110,6 +115,13 @@ class ContentCacheRegistry {
 };
 
 namespace {
+
+std::optional<std::string_view> StoragePath(const InputFile& input) {
+  if (const auto* file = dynamic_cast<const InputFileWithStoragePath*>(&input)) {
+    return file->storage_path();
+  }
+  return std::nullopt;
+}
 
 std::shared_ptr<ContentCacheRegistry> GlobalContentCacheRegistry() {
   // Handles keep the registry alive even when destroyed during static teardown.
@@ -226,7 +238,7 @@ class CachedInputFile : public InputFile {
     }
     auto content =
         std::make_shared<const std::vector<std::byte>>(std::move(loaded).value());
-    cache_->Insert(location_, content, generation_);
+    cache_->Insert(location_, content, generation_, StoragePath(*input_));
     return std::make_unique<CachedSeekableInputStream>(std::move(content));
   }
 
@@ -323,12 +335,13 @@ MetadataContent ContentCache::Find(std::string_view location, uint64_t* generati
   std::lock_guard lock(mutex_);
   if (generation) *generation = generation_;
   auto files = registry_->Find(*registration_);
-  const auto* content = files ? files->Find(location) : nullptr;
-  return content ? *content : nullptr;
+  const auto* file = files ? files->Find(location) : nullptr;
+  return file ? file->content : nullptr;
 }
 
 void ContentCache::Insert(std::string_view location, MetadataContent content,
-                          uint64_t generation) {
+                          uint64_t generation,
+                          std::optional<std::string_view> storage_path) {
   // Empty/corrupt metadata must not accumulate unbounded zero-weight entries.
   if (content->empty() || content->size() > options_.max_content_length ||
       content->size() > options_.max_total_bytes) {
@@ -337,7 +350,9 @@ void ContentCache::Insert(std::string_view location, MetadataContent content,
   std::lock_guard lock(mutex_);
   if (generation == generation_) {
     registry_->GetOrCreate(registration_, options_.max_total_bytes)
-        ->Replace(std::string(location), std::move(content));
+        ->Replace(std::string(location),
+                  CachedFile{.content = std::move(content),
+                             .storage_path = std::optional<std::string>(storage_path)});
   }
 }
 
@@ -345,26 +360,26 @@ void ContentCache::Invalidate(FileIO& storage, std::string_view location) {
   {
     std::lock_guard lock(mutex_);
     auto files = registry_->Find(*registration_, /*touch=*/false);
-    if (!files || files->size() == 0 || files->Erase(location)) {
+    if (!files) {
       ++generation_;
       return;
     }
   }
 
-  // A storage implementation may normalize this path. Resolve it outside the
-  // cache lock, then invalidate loads that overlapped the resolution.
-  std::unique_ptr<InputFile> input;
+  // A URI may have several cached spellings, even when the deleted spelling
+  // itself was cached. Ask storage for the path it actually uses.
+  std::optional<std::string> path;
   try {
-    if (auto resolved = storage.NewInputFile(std::string(location))) {
-      input = std::move(*resolved);
+    if (auto input = storage.NewInputFile(std::string(location)); input && *input) {
+      path = StoragePath(**input);
     }
   } catch (...) {
     // Failure to resolve an alias must not turn a completed delete into a failure.
     Clear();
     return;
   }
-  if (!input) {
-    // A store may no longer be able to resolve an alias after deletion.
+  if (!path) {
+    // The public InputFile location may simply echo the requested spelling.
     Clear();
     return;
   }
@@ -372,7 +387,10 @@ void ContentCache::Invalidate(FileIO& storage, std::string_view location) {
   std::lock_guard lock(mutex_);
   ++generation_;
   if (auto files = registry_->Find(*registration_, /*touch=*/false)) {
-    files->Erase(input->location());
+    files->EraseIf([&](const CachedFile& file) {
+      return !file.storage_path || *file.storage_path == *path;
+    });
+    if (files->size() == 0) registry_->Erase(*registration_);
   }
 }
 

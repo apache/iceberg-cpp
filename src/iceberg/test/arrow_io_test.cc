@@ -19,6 +19,7 @@
 
 #include <algorithm>
 #include <array>
+#include <filesystem>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -487,6 +488,50 @@ TEST_F(LocalFileIOTest, DeleteFile) {
   del_res = file_io_->DeleteFile(temp_filepath_);
   EXPECT_THAT(del_res, IsError(ErrorKind::kIOError));
   EXPECT_THAT(del_res, HasErrorMessage("Cannot delete file"));
+}
+
+TEST(ArrowFileIOTest, AliasDeleteInvalidatesEveryCachedSpelling) {
+  std::shared_ptr<FileIO> storage = arrow::ArrowFileSystemFileIO::MakeMockFileIO();
+  const std::string canonical = "s3://manifest.avro";
+  const std::string alias = "s3a://manifest.avro";
+  const std::string unrelated = "s3://other.avro";
+  for (bool warm_alias : {false, true}) {
+    SCOPED_TRACE(warm_alias);
+    auto cache =
+        std::make_shared<internal::ContentCache>(internal::ContentCacheOptions{});
+    auto adapter = cache->Wrap(storage);
+    ASSERT_THAT(storage->WriteFile(canonical, "old"), IsOk());
+    ASSERT_THAT(storage->WriteFile(unrelated, "keep"), IsOk());
+    ASSERT_THAT(adapter->ReadFile(unrelated, std::nullopt),
+                HasValue(::testing::Eq("keep")));
+    ASSERT_THAT(adapter->ReadFile(canonical, std::nullopt),
+                HasValue(::testing::Eq("old")));
+    if (warm_alias) {
+      ASSERT_THAT(adapter->ReadFile(alias, std::nullopt), HasValue(::testing::Eq("old")));
+    }
+    ASSERT_THAT(storage->DeleteFile(alias), IsOk());
+    cache->Invalidate(*storage, alias);
+    EXPECT_TRUE(cache->Find(unrelated));
+    ASSERT_THAT(storage->WriteFile(canonical, "new"), IsOk());
+    EXPECT_THAT(adapter->ReadFile(canonical, std::nullopt),
+                HasValue(::testing::Eq("new")));
+    EXPECT_THAT(adapter->ReadFile(alias, std::nullopt), HasValue(::testing::Eq("new")));
+  }
+}
+
+TEST_F(LocalFileIOTest, AliasDeleteClearsCachedLocalPaths) {
+  auto cache = std::make_shared<internal::ContentCache>(internal::ContentCacheOptions{});
+  auto adapter = cache->Wrap(file_io_);
+  const std::filesystem::path path(temp_filepath_);
+  const auto alias = (path.parent_path() / "." / path.filename()).string();
+  ASSERT_THAT(file_io_->WriteFile(temp_filepath_, "old"), IsOk());
+  ASSERT_THAT(adapter->ReadFile(temp_filepath_, std::nullopt),
+              HasValue(::testing::Eq("old")));
+  ASSERT_THAT(file_io_->DeleteFile(alias), IsOk());
+  cache->Invalidate(*file_io_, alias);
+  ASSERT_THAT(file_io_->WriteFile(temp_filepath_, "new"), IsOk());
+  EXPECT_THAT(adapter->ReadFile(temp_filepath_, std::nullopt),
+              HasValue(::testing::Eq("new")));
 }
 
 TEST_F(LocalFileIOTest, DeleteFiles) {

@@ -122,6 +122,21 @@ class LruCache {
     return true;
   }
 
+  // Remove matching entries without changing the eviction order of the survivors.
+  template <typename Predicate>
+  void EraseIf(Predicate matches) {
+    for (auto it = map_.begin(); it != map_.end();) {
+      const auto item = it->second;
+      if (matches(std::as_const(item->value))) {
+        total_weight_ -= item->weight;
+        items_.erase(item);
+        it = map_.erase(it);
+      } else {
+        ++it;
+      }
+    }
+  }
+
   // Insert or update the value for `key`, mark it as most recently used, and evict least
   // recently used entries until the cache is within its maximum weight again.
   //
