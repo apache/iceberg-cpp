@@ -291,6 +291,23 @@ TEST(MetadataCacheTest, DestroyingLastCacheHandleReleasesRetainedBytes) {
   EXPECT_TRUE(weak_content.expired());
 }
 
+TEST(MetadataCacheTest, DestroyedCacheFreesItsSlotWithoutEvictingALiveCache) {
+  ScopedGlobalCacheLimit limit(2);
+  auto first = std::make_shared<internal::ContentCache>(ContentCacheOptions{});
+  first->Insert("first", std::make_shared<const std::vector<std::byte>>(1), 0);
+  std::weak_ptr<internal::ContentCache> weak_cache;
+  {
+    auto second = std::make_shared<internal::ContentCache>(ContentCacheOptions{});
+    weak_cache = second;
+    second->Insert("second", std::make_shared<const std::vector<std::byte>>(1), 0);
+  }
+  ASSERT_TRUE(weak_cache.expired());
+  auto third = std::make_shared<internal::ContentCache>(ContentCacheOptions{});
+  third->Insert("third", std::make_shared<const std::vector<std::byte>>(1), 0);
+  EXPECT_TRUE(first->Find("first"));
+  EXPECT_TRUE(third->Find("third"));
+}
+
 TEST(MetadataCacheTest, InvalidatedLoadCannotPopulateRecreatedCacheState) {
   ScopedGlobalCacheLimit limit(1);
   auto cache = std::make_shared<internal::ContentCache>(ContentCacheOptions{});
