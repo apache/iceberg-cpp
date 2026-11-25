@@ -319,9 +319,13 @@ class ManifestGroup::FilePlanningStream final : public FileScanTaskStream {
       ICEBERG_ASSIGN_OR_RAISE(auto residual,
                               residuals->ResidualFor(value.data_file->partition));
 
+      auto spec_iter = group_->specs_by_id_.find(spec_id);
+      ICEBERG_CHECK(spec_iter != group_->specs_by_id_.cend(),
+                    "Cannot find partition spec for ID {}", spec_id);
+
       return std::optional<std::shared_ptr<FileScanTask>>{std::make_shared<FileScanTask>(
           std::move(value.data_file), std::move(delete_files), std::move(residual),
-          group_->specs_by_id_.at(spec_id))};
+          spec_iter->second)};
     }
   }
 

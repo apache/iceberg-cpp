@@ -50,6 +50,12 @@ Result<std::unordered_map<int32_t, Literal>> ConstantsOf(const FileScanTask& tas
     }
     return id_to_constant;
   }
+  if (file.partition.num_fields() != spec->fields().size()) {
+    return InvalidArgument(
+        "Partition of file {} has {} values, but partition spec {} has {} fields",
+        file.file_path, file.partition.num_fields(), spec->spec_id(),
+        spec->fields().size());
+  }
   for (size_t i = 0; i < spec->fields().size(); ++i) {
     const auto& field = spec->fields()[i];
     if (field.transform() == nullptr) {
@@ -57,7 +63,8 @@ Result<std::unordered_map<int32_t, Literal>> ConstantsOf(const FileScanTask& tas
                              field.field_id());
     }
     if (field.transform()->transform_type() == TransformType::kIdentity) {
-      id_to_constant.emplace(field.source_id(), file.partition.values()[i]);
+      ICEBERG_ASSIGN_OR_RAISE(auto value, file.partition.ValueAt(i));
+      id_to_constant.emplace(field.source_id(), value.get());
     }
   }
   return id_to_constant;

@@ -439,9 +439,12 @@ TEST_F(FileScanTaskReaderTest, IdentityPartitionConstantsSurviveJsonAndSplit) {
   ICEBERG_UNWRAP_OR_FAIL(auto parsed, FileScanTaskFromJson(json));
   ASSERT_NE(parsed->spec(), nullptr);
   EXPECT_EQ(parsed->spec()->spec_id(), 7);
+  // Use a proper sub-range so the split constructor (not the whole-file path) is tested.
+  ASSERT_GT(parsed->length(), 1);
   ICEBERG_UNWRAP_OR_FAIL(
-      auto split, FileScanTask::MakeSplit(parsed->data_file(), 0, parsed->length(), {},
-                                          nullptr, parsed->spec()));
+      auto split, FileScanTask::MakeSplit(parsed->data_file(), 0, parsed->length() - 1,
+                                          {}, nullptr, parsed->spec()));
+  ASSERT_TRUE(split->is_split());
   EXPECT_EQ(split->spec(), parsed->spec());
   ICEBERG_UNWRAP_OR_FAIL(
       auto reader, FileScanTaskReader::Make({.io = file_io_,
@@ -581,6 +584,23 @@ TEST_F(FileScanTaskReaderTest, RejectsMissingPartitionSpec) {
                                              .projected_schema = projected_schema_}));
   file->partition = PartitionValues({Literal::String("CN")});
   EXPECT_FALSE(reader->Open(FileScanTask(file)).has_value());
+}
+
+TEST_F(FileScanTaskReaderTest, RejectsPartitionValuesNotMatchingSpec) {
+  ICEBERG_UNWRAP_OR_FAIL(auto file,
+                         MakeDataFile(table_schema_, R"([[1, "Foo", "blue"]])", 1));
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto spec, PartitionSpec::Make(7, {{2, 1000, "name", Transform::Identity()},
+                                         {3, 1001, "category", Transform::Identity()}}));
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto reader, FileScanTaskReader::Make({.io = file_io_,
+                                             .table_schema = table_schema_,
+                                             .schemas = {table_schema_},
+                                             .projected_schema = projected_schema_}));
+  file->partition_spec_id = 7;
+  file->partition = PartitionValues({Literal::String("CN")});
+  EXPECT_THAT(reader->Open(FileScanTask(file, {}, nullptr, std::move(spec))),
+              IsError(ErrorKind::kInvalidArgument));
 }
 
 TEST_F(FileScanTaskReaderTest, OpenWithoutDeletesReadsProjectedSchema) {
