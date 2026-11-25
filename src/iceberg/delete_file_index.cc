@@ -44,6 +44,42 @@
 
 namespace iceberg {
 
+namespace {
+// TODO(gangwu): Use PartitionSpec to include field names, as Java's
+// PartitionData.toString() does.
+std::string DescribePartition(const PartitionValues& partition) {
+  std::string result = "(";
+  for (const auto& value : partition.values()) {
+    if (result.size() > 1) {
+      result += ", ";
+    }
+    result += value.ToString();
+  }
+  return result + ")";
+}
+
+Status ValidatePartitionMatch(const DataFile& deletion, const DataFile& data) {
+  ICEBERG_PRECHECK(data.partition_spec_id.has_value(),
+                   "Missing partition spec id from data file {}", data.file_path);
+  ICEBERG_CHECK(deletion.partition_spec_id == data.partition_spec_id,
+                "Mismatched partition specs ({}, {}) for delete file {} and data file "
+                "{}: metadata is corrupted",
+                deletion.partition_spec_id.value_or(-1), data.partition_spec_id.value(),
+                deletion.file_path, data.file_path);
+  // Partition identity treats two nulls as equal and canonicalizes floating-point NaNs.
+  auto equal = [](const Literal& lhs, const Literal& rhs) {
+    return (lhs.IsNull() && rhs.IsNull()) || (lhs.IsNaN() && rhs.IsNaN()) || lhs == rhs;
+  };
+  ICEBERG_CHECK(
+      std::ranges::equal(deletion.partition.values(), data.partition.values(), equal),
+      "Mismatched partition tuples ({}, {}) for delete file {} and data file {}: "
+      "metadata is corrupted",
+      DescribePartition(deletion.partition), DescribePartition(data.partition),
+      deletion.file_path, data.file_path);
+  return {};
+}
+}  // namespace
+
 namespace internal {
 
 Status EqualityDeleteFile::ConvertBoundsIfNeeded() const {
@@ -439,7 +475,11 @@ Result<std::vector<std::shared_ptr<DataFile>>> DeleteFileIndex::FindPathDeletes(
     return {};
   }
 
-  return it->second->Filter(seq);
+  auto deletes = it->second->Filter(seq);
+  for (const auto& deletion : deletes) {
+    ICEBERG_RETURN_UNEXPECTED(ValidatePartitionMatch(*deletion, data_file));
+  }
+  return deletes;
 }
 
 Result<std::shared_ptr<DataFile>> DeleteFileIndex::FindDV(
@@ -458,6 +498,7 @@ Result<std::shared_ptr<DataFile>> DeleteFileIndex::FindDV(
                 "sequence number {}",
                 it->second.sequence_number.value(), seq);
 
+  ICEBERG_RETURN_UNEXPECTED(ValidatePartitionMatch(*it->second.data_file, data_file));
   return it->second.data_file;
 }
 

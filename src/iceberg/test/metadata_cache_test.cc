@@ -25,6 +25,7 @@
 #include <future>
 #include <limits>
 #include <memory>
+#include <optional>
 #include <span>
 #include <string>
 #include <string_view>
@@ -36,7 +37,6 @@
 
 #include "iceberg/content_cache_internal.h"
 #include "iceberg/file_io.h"
-#include "iceberg/file_io_registry.h"
 #include "iceberg/file_reader.h"
 #include "iceberg/schema.h"
 #include "iceberg/table.h"
@@ -92,6 +92,211 @@ class ScopedGlobalCacheLimit {
  private:
   int32_t previous_;
 };
+
+struct FailingOpenState {
+  int open_count = 0;
+  Error first_error;
+  Error fallback_error;
+};
+
+class FailingOpenInputFile : public InputFile {
+ public:
+  explicit FailingOpenInputFile(std::shared_ptr<FailingOpenState> state)
+      : state_(std::move(state)) {}
+
+  std::string_view location() const override { return "manifest.avro"; }
+  Result<int64_t> Size() const override { return 8; }
+
+  Result<std::unique_ptr<SeekableInputStream>> Open() override {
+    ++state_->open_count;
+    if (state_->open_count == 1) {
+      return unexpected<Error>(state_->first_error);
+    }
+    return unexpected<Error>(state_->fallback_error);
+  }
+
+ private:
+  std::shared_ptr<FailingOpenState> state_;
+};
+
+class FailingOpenFileIO : public FileIO {
+ public:
+  explicit FailingOpenFileIO(std::shared_ptr<FailingOpenState> state)
+      : state_(std::move(state)) {}
+
+  Result<std::unique_ptr<InputFile>> NewInputFile(
+      std::string /*file_location*/) override {
+    return std::make_unique<FailingOpenInputFile>(state_);
+  }
+
+ private:
+  std::shared_ptr<FailingOpenState> state_;
+};
+
+TEST(MetadataCacheTest, CachedInputFileDoesNotRetryNonIOErrors) {
+  auto state = std::make_shared<FailingOpenState>(FailingOpenState{
+      .first_error = {.kind = ErrorKind::kNotFound, .message = "missing"},
+      .fallback_error = {.kind = ErrorKind::kIOError, .message = "unexpected retry"},
+  });
+  auto cache = std::make_shared<internal::ContentCache>(ContentCacheOptions{});
+  auto adapter = cache->Wrap(std::make_shared<FailingOpenFileIO>(state));
+  ICEBERG_UNWRAP_OR_FAIL(auto input_file, adapter->NewInputFile("manifest.avro"));
+
+  EXPECT_THAT(input_file->Open(), IsError(ErrorKind::kNotFound));
+  EXPECT_EQ(state->open_count, 1);
+}
+
+TEST(MetadataCacheTest, CachedInputFilePreservesReadAheadAndFallbackErrors) {
+  auto state = std::make_shared<FailingOpenState>(FailingOpenState{
+      .first_error = {.kind = ErrorKind::kIOError, .message = "read-ahead failed"},
+      .fallback_error = {.kind = ErrorKind::kIOError, .message = "open failed"},
+  });
+  auto cache = std::make_shared<internal::ContentCache>(ContentCacheOptions{});
+  auto adapter = cache->Wrap(std::make_shared<FailingOpenFileIO>(state));
+  ICEBERG_UNWRAP_OR_FAIL(auto input_file, adapter->NewInputFile("manifest.avro"));
+
+  auto result = input_file->Open();
+  EXPECT_THAT(result, IsError(ErrorKind::kIOError));
+  EXPECT_THAT(result, HasErrorMessage("read-ahead failed"));
+  EXPECT_THAT(result, HasErrorMessage("fallback open failed: open failed"));
+  EXPECT_EQ(state->open_count, 2);
+}
+
+TEST(MetadataCacheTest, ParsesJavaCompatibleProperties) {
+  std::unordered_map<std::string, std::string> properties = {
+      {std::string(ContentCacheOptions::kEnabled), "true"},
+      {std::string(ContentCacheOptions::kMaxTotalBytes), "200"},
+      {std::string(ContentCacheOptions::kMaxContentLength), "50"},
+  };
+
+  auto options = ContentCacheOptions::FromProperties(properties);
+
+  ASSERT_THAT(options, IsOk());
+  EXPECT_TRUE(options->enabled);
+  EXPECT_EQ(options->max_total_bytes, 200);
+  EXPECT_EQ(options->max_content_length, 50);
+}
+
+TEST(MetadataCacheTest, ParsesEnabledPropertyIgnoringCase) {
+  for (const auto* value : {"true", "TRUE", "True", "tRuE"}) {
+    SCOPED_TRACE(value);
+    ICEBERG_UNWRAP_OR_FAIL(auto options,
+                           ContentCacheOptions::FromProperties(
+                               {{std::string(ContentCacheOptions::kEnabled), value}}));
+    EXPECT_TRUE(options.enabled);
+  }
+}
+
+TEST(MetadataCacheTest, TreatsOtherEnabledPropertyValuesAsFalseLikeJava) {
+  for (const auto* value :
+       {"false", "FALSE", "False", "fAlSe", "", "yes", "1", "ture", " true "}) {
+    SCOPED_TRACE(value);
+    ICEBERG_UNWRAP_OR_FAIL(auto options,
+                           ContentCacheOptions::FromProperties(
+                               {{std::string(ContentCacheOptions::kEnabled), value}}));
+    EXPECT_FALSE(options.enabled);
+  }
+}
+
+TEST(MetadataCacheTest, UsesJavaCompatibleDefaults) {
+  auto options = ContentCacheOptions::FromProperties(
+      {{std::string(ContentCacheOptions::kEnabled), "true"}});
+
+  ASSERT_THAT(options, IsOk());
+  EXPECT_TRUE(options->enabled);
+  EXPECT_EQ(options->max_total_bytes, 100 * 1024 * 1024);
+  EXPECT_EQ(options->max_content_length, 8 * 1024 * 1024);
+}
+
+TEST(MetadataCacheTest, InvalidNumericPropertyErrorIncludesPropertyName) {
+  auto options = ContentCacheOptions::FromProperties(
+      {{std::string(ContentCacheOptions::kEnabled), "true"},
+       {std::string(ContentCacheOptions::kMaxTotalBytes), "invalid"}});
+
+  EXPECT_THAT(options, HasErrorMessage(std::string(ContentCacheOptions::kMaxTotalBytes)));
+}
+
+TEST(MetadataCacheTest, IgnoresInvalidTuningPropertiesWhenDisabled) {
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto options, ContentCacheOptions::FromProperties(
+                        {{std::string(ContentCacheOptions::kEnabled), "false"},
+                         {std::string(ContentCacheOptions::kMaxTotalBytes), "invalid"}}));
+  EXPECT_FALSE(options.enabled);
+}
+
+TEST(MetadataCacheTest, PrefixReadDoesNotPopulateWholeFileCache) {
+  auto storage = std::make_shared<MockFileIO>();
+  storage->AddFile("manifest.avro", "manifest");
+  auto cache = std::make_shared<internal::ContentCache>(ContentCacheOptions{});
+  auto adapter = cache->Wrap(storage);
+
+  EXPECT_CALL(*storage, ReadFile("manifest.avro", std::optional<size_t>{4}))
+      .WillOnce(::testing::Return(std::string("mani")));
+  EXPECT_THAT(adapter->ReadFile("manifest.avro", 4), HasValue(::testing::Eq("mani")));
+  EXPECT_FALSE(cache->Find("manifest.avro"));
+  EXPECT_THAT(adapter->ReadFile("manifest.avro", std::nullopt),
+              HasValue(::testing::Eq("manifest")));
+}
+
+TEST(MetadataCacheTest, OversizedReadDoesNotDisplaceAWarmCache) {
+  ScopedGlobalCacheLimit limit(1);
+  auto warm = std::make_shared<internal::ContentCache>(ContentCacheOptions{});
+  warm->Insert("warm.avro", std::make_shared<const std::vector<std::byte>>(1), 0);
+
+  auto storage = std::make_shared<MockFileIO>();
+  storage->AddFile("large.avro", "large");
+  auto cold = std::make_shared<internal::ContentCache>(
+      ContentCacheOptions{.max_content_length = 4});
+  EXPECT_THAT(cold->Wrap(storage)->ReadFile("large.avro", std::nullopt),
+              HasValue(::testing::Eq("large")));
+  EXPECT_FALSE(cold->Find("large.avro"));
+  EXPECT_TRUE(warm->Find("warm.avro"));
+}
+
+TEST(MetadataCacheTest, GlobalEvictionReleasesBytesAndReadersKeepTheirContent) {
+  ScopedGlobalCacheLimit limit(1);
+  auto first = std::make_shared<internal::ContentCache>(ContentCacheOptions{});
+  auto content = std::make_shared<const std::vector<std::byte>>(8);
+  std::weak_ptr<const std::vector<std::byte>> weak_content = content;
+  first->Insert("manifest.avro", std::move(content), 0);
+  auto adapter = first->Wrap(std::make_shared<MockFileIO>());
+  ICEBERG_UNWRAP_OR_FAIL(auto file, adapter->NewInputFile("manifest.avro"));
+  ICEBERG_UNWRAP_OR_FAIL(auto reader, file->Open());
+  file.reset();
+  auto second = std::make_shared<internal::ContentCache>(ContentCacheOptions{});
+  second->Insert("other.avro", std::make_shared<const std::vector<std::byte>>(8), 0);
+  EXPECT_FALSE(first->Find("manifest.avro"));
+  // Only the active reader still owns these bytes after global eviction.
+  EXPECT_FALSE(weak_content.expired());
+  std::array<std::byte, 8> out;
+  ASSERT_THAT(reader->ReadFully(0, out), IsOk());
+  EXPECT_EQ(out, (std::array<std::byte, 8>{}));
+  reader.reset();
+  EXPECT_TRUE(weak_content.expired());
+}
+
+TEST(MetadataCacheTest, DestroyingLastCacheHandleReleasesRetainedBytes) {
+  auto cache = std::make_shared<internal::ContentCache>(ContentCacheOptions{});
+  auto content = std::make_shared<const std::vector<std::byte>>(8);
+  std::weak_ptr<const std::vector<std::byte>> weak_content = content;
+  cache->Insert("manifest.avro", std::move(content), 0);
+  ASSERT_FALSE(weak_content.expired());
+  cache.reset();
+  EXPECT_TRUE(weak_content.expired());
+}
+
+TEST(MetadataCacheTest, InvalidatedLoadCannotPopulateRecreatedCacheState) {
+  ScopedGlobalCacheLimit limit(1);
+  auto cache = std::make_shared<internal::ContentCache>(ContentCacheOptions{});
+  uint64_t generation;
+  ASSERT_FALSE(cache->Find("manifest.avro", &generation));
+  auto other = std::make_shared<internal::ContentCache>(ContentCacheOptions{});
+  other->Insert("other.avro", std::make_shared<const std::vector<std::byte>>(8), 0);
+  cache->Invalidate("manifest.avro");
+  cache->Insert("manifest.avro", std::make_shared<const std::vector<std::byte>>(8),
+                generation);
+  EXPECT_FALSE(cache->Find("manifest.avro"));
+}
 
 class CountingInputStream : public SeekableInputStream {
  public:
@@ -208,46 +413,6 @@ class NormalizingMockFileIO : public CountingMockFileIO {
   }
 };
 
-struct FailingOpenState {
-  int open_count = 0;
-  Error first_error;
-  Error fallback_error;
-};
-
-class FailingOpenInputFile : public InputFile {
- public:
-  explicit FailingOpenInputFile(std::shared_ptr<FailingOpenState> state)
-      : state_(std::move(state)) {}
-
-  std::string_view location() const override { return "manifest.avro"; }
-  Result<int64_t> Size() const override { return 8; }
-
-  Result<std::unique_ptr<SeekableInputStream>> Open() override {
-    ++state_->open_count;
-    if (state_->open_count == 1) {
-      return unexpected<Error>(state_->first_error);
-    }
-    return unexpected<Error>(state_->fallback_error);
-  }
-
- private:
-  std::shared_ptr<FailingOpenState> state_;
-};
-
-class FailingOpenFileIO : public FileIOWithProperties<FileIO> {
- public:
-  explicit FailingOpenFileIO(std::shared_ptr<FailingOpenState> state)
-      : state_(std::move(state)) {}
-
-  Result<std::unique_ptr<InputFile>> NewInputFile(
-      std::string /*file_location*/) override {
-    return std::make_unique<FailingOpenInputFile>(state_);
-  }
-
- private:
-  std::shared_ptr<FailingOpenState> state_;
-};
-
 TEST(MetadataCacheTest, TableReusesCachedContentAcrossInputFiles) {
   CountingMockFileIO file_io;
   file_io.AddFile("manifest.avro", "manifest");
@@ -288,41 +453,6 @@ TEST(MetadataCacheTest, TableUsesNormalizedLocationForCacheHits) {
 
   EXPECT_EQ(file_io.size_count, 1);
   EXPECT_EQ(file_io.open_count, 1);
-}
-
-TEST(MetadataCacheTest, CachedInputFileDoesNotRetryNonIOErrors) {
-  auto state = std::make_shared<FailingOpenState>(FailingOpenState{
-      .first_error = {.kind = ErrorKind::kNotFound, .message = "missing"},
-      .fallback_error = {.kind = ErrorKind::kIOError, .message = "unexpected retry"},
-  });
-  FailingOpenFileIO file_io(state);
-  ICEBERG_UNWRAP_OR_FAIL(
-      auto table,
-      MakeCachedTable(file_io, {{std::string(ContentCacheOptions::kEnabled), "true"}}));
-  ICEBERG_UNWRAP_OR_FAIL(auto input_file,
-                         internal::ManifestIO(*table)->NewInputFile("manifest.avro"));
-
-  EXPECT_THAT(input_file->Open(), IsError(ErrorKind::kNotFound));
-  EXPECT_EQ(state->open_count, 1);
-}
-
-TEST(MetadataCacheTest, CachedInputFilePreservesReadAheadAndFallbackErrors) {
-  auto state = std::make_shared<FailingOpenState>(FailingOpenState{
-      .first_error = {.kind = ErrorKind::kIOError, .message = "read-ahead failed"},
-      .fallback_error = {.kind = ErrorKind::kIOError, .message = "open failed"},
-  });
-  FailingOpenFileIO file_io(state);
-  ICEBERG_UNWRAP_OR_FAIL(
-      auto table,
-      MakeCachedTable(file_io, {{std::string(ContentCacheOptions::kEnabled), "true"}}));
-  ICEBERG_UNWRAP_OR_FAIL(auto input_file,
-                         internal::ManifestIO(*table)->NewInputFile("manifest.avro"));
-
-  auto result = input_file->Open();
-  EXPECT_THAT(result, IsError(ErrorKind::kIOError));
-  EXPECT_THAT(result, HasErrorMessage("read-ahead failed"));
-  EXPECT_THAT(result, HasErrorMessage("fallback open failed: open failed"));
-  EXPECT_EQ(state->open_count, 2);
 }
 
 TEST(MetadataCacheTest, TableDoesNotCacheLoadFailures) {
@@ -473,68 +603,6 @@ TEST(MetadataCacheTest, TableConcurrentReadsReturnFileContent) {
   EXPECT_FALSE(mismatch.load(std::memory_order_relaxed));
 }
 
-TEST(MetadataCacheTest, ParsesJavaCompatibleProperties) {
-  std::unordered_map<std::string, std::string> properties = {
-      {std::string(ContentCacheOptions::kEnabled), "true"},
-      {std::string(ContentCacheOptions::kMaxTotalBytes), "200"},
-      {std::string(ContentCacheOptions::kMaxContentLength), "50"},
-  };
-
-  auto options = ContentCacheOptions::FromProperties(properties);
-
-  ASSERT_THAT(options, IsOk());
-  EXPECT_TRUE(options->enabled);
-  EXPECT_EQ(options->max_total_bytes, 200);
-  EXPECT_EQ(options->max_content_length, 50);
-}
-
-TEST(MetadataCacheTest, ParsesEnabledPropertyIgnoringCase) {
-  for (const auto* value : {"true", "TRUE", "True", "tRuE"}) {
-    SCOPED_TRACE(value);
-    ICEBERG_UNWRAP_OR_FAIL(auto options,
-                           ContentCacheOptions::FromProperties(
-                               {{std::string(ContentCacheOptions::kEnabled), value}}));
-    EXPECT_TRUE(options.enabled);
-  }
-}
-
-TEST(MetadataCacheTest, TreatsOtherEnabledPropertyValuesAsFalseLikeJava) {
-  for (const auto* value :
-       {"false", "FALSE", "False", "fAlSe", "", "yes", "1", "ture", " true "}) {
-    SCOPED_TRACE(value);
-    ICEBERG_UNWRAP_OR_FAIL(auto options,
-                           ContentCacheOptions::FromProperties(
-                               {{std::string(ContentCacheOptions::kEnabled), value}}));
-    EXPECT_FALSE(options.enabled);
-  }
-}
-
-TEST(MetadataCacheTest, UsesJavaCompatibleDefaults) {
-  auto options = ContentCacheOptions::FromProperties(
-      {{std::string(ContentCacheOptions::kEnabled), "true"}});
-
-  ASSERT_THAT(options, IsOk());
-  EXPECT_TRUE(options->enabled);
-  EXPECT_EQ(options->max_total_bytes, 100 * 1024 * 1024);
-  EXPECT_EQ(options->max_content_length, 8 * 1024 * 1024);
-}
-
-TEST(MetadataCacheTest, InvalidNumericPropertyErrorIncludesPropertyName) {
-  auto options = ContentCacheOptions::FromProperties(
-      {{std::string(ContentCacheOptions::kEnabled), "true"},
-       {std::string(ContentCacheOptions::kMaxTotalBytes), "invalid"}});
-
-  EXPECT_THAT(options, HasErrorMessage(std::string(ContentCacheOptions::kMaxTotalBytes)));
-}
-
-TEST(MetadataCacheTest, IgnoresInvalidTuningPropertiesWhenDisabled) {
-  ICEBERG_UNWRAP_OR_FAIL(
-      auto options, ContentCacheOptions::FromProperties(
-                        {{std::string(ContentCacheOptions::kEnabled), "false"},
-                         {std::string(ContentCacheOptions::kMaxTotalBytes), "invalid"}}));
-  EXPECT_FALSE(options.enabled);
-}
-
 TEST(MetadataCacheTest, ReaderOptionsKeepsPositionalAggregateInitialization) {
   auto io = std::make_shared<MockFileIO>();
   auto schema = std::make_shared<Schema>(std::vector<SchemaField>{});
@@ -653,29 +721,6 @@ TEST(MetadataCacheTest, GlobalLimitEvictsLeastRecentlyUsedCacheWithLiveTableHand
   EXPECT_EQ(io.open_count, 4);
 }
 
-TEST(MetadataCacheTest, GlobalEvictionReleasesBytesAndReadersKeepTheirContent) {
-  ScopedGlobalCacheLimit limit(1);
-  auto first = std::make_shared<internal::ContentCache>(ContentCacheOptions{});
-  auto content = std::make_shared<const std::vector<std::byte>>(8);
-  std::weak_ptr<const std::vector<std::byte>> weak_content = content;
-  first->Insert("manifest.avro", std::move(content), 0);
-  CountingMockFileIO io;
-  auto adapter = first->Wrap(std::shared_ptr<FileIO>(&io, [](FileIO*) {}));
-  ICEBERG_UNWRAP_OR_FAIL(auto file, adapter->NewInputFile("manifest.avro"));
-  ICEBERG_UNWRAP_OR_FAIL(auto reader, file->Open());
-  file.reset();
-  auto second = std::make_shared<internal::ContentCache>(ContentCacheOptions{});
-  second->Insert("other.avro", std::make_shared<const std::vector<std::byte>>(8), 0);
-  EXPECT_FALSE(first->Find("manifest.avro"));
-  // Only the active reader still owns these bytes after global eviction.
-  EXPECT_FALSE(weak_content.expired());
-  std::array<std::byte, 8> out;
-  ASSERT_THAT(reader->ReadFully(0, out), IsOk());
-  EXPECT_EQ(out, (std::array<std::byte, 8>{}));
-  reader.reset();
-  EXPECT_TRUE(weak_content.expired());
-}
-
 TEST(MetadataCacheTest, LoweringGlobalLimitImmediatelyReleasesOldCacheContent) {
   ScopedGlobalCacheLimit limit(2);
   auto first = std::make_shared<internal::ContentCache>(ContentCacheOptions{});
@@ -692,29 +737,6 @@ TEST(MetadataCacheTest, LoweringGlobalLimitImmediatelyReleasesOldCacheContent) {
 TEST(MetadataCacheTest, RejectsNonPositiveGlobalLimits) {
   EXPECT_THAT(Table::SetManifestCacheLimit(0), IsError(ErrorKind::kInvalidArgument));
   EXPECT_THAT(Table::SetManifestCacheLimit(-1), IsError(ErrorKind::kInvalidArgument));
-}
-
-TEST(MetadataCacheTest, DestroyingLastCacheHandleReleasesRetainedBytes) {
-  auto cache = std::make_shared<internal::ContentCache>(ContentCacheOptions{});
-  auto content = std::make_shared<const std::vector<std::byte>>(8);
-  std::weak_ptr<const std::vector<std::byte>> weak_content = content;
-  cache->Insert("manifest.avro", std::move(content), 0);
-  ASSERT_FALSE(weak_content.expired());
-  cache.reset();
-  EXPECT_TRUE(weak_content.expired());
-}
-
-TEST(MetadataCacheTest, InvalidatedLoadCannotPopulateRecreatedCacheState) {
-  ScopedGlobalCacheLimit limit(1);
-  auto cache = std::make_shared<internal::ContentCache>(ContentCacheOptions{});
-  uint64_t generation;
-  ASSERT_FALSE(cache->Find("manifest.avro", &generation));
-  auto other = std::make_shared<internal::ContentCache>(ContentCacheOptions{});
-  other->Insert("other.avro", std::make_shared<const std::vector<std::byte>>(8), 0);
-  cache->Invalidate("manifest.avro");
-  cache->Insert("manifest.avro", std::make_shared<const std::vector<std::byte>>(8),
-                generation);
-  EXPECT_FALSE(cache->Find("manifest.avro"));
 }
 
 TEST(MetadataCacheTest, ConcurrentReadsSurviveGlobalEviction) {

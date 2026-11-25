@@ -47,9 +47,15 @@ class ContentCacheRegistry {
  public:
   explicit ContentCacheRegistry(int32_t capacity) : caches_(capacity) {}
 
-  std::shared_ptr<ContentCacheState> Get(const ContentCache* owner,
-                                         const ContentCacheOptions& options,
-                                         std::weak_ptr<ContentCacheState>& weak_state) {
+  std::shared_ptr<ContentCacheState> Find(const ContentCache* owner) {
+    std::lock_guard lock(mutex_);
+    const auto* state = caches_.Find(owner);
+    return state ? *state : nullptr;
+  }
+
+  std::shared_ptr<ContentCacheState> GetOrCreate(
+      const ContentCache* owner, const ContentCacheOptions& options,
+      std::weak_ptr<ContentCacheState>& weak_state) {
     std::lock_guard lock(mutex_);
     if (auto* state = caches_.Find(owner)) {
       return *state;
@@ -123,8 +129,7 @@ Result<std::vector<std::byte>> ReadInputFile(InputFile& input_file, int64_t read
   if (read_size < 0) {
     return Invalid("Invalid negative file size {} for {}", read_size, file_location);
   }
-  if (static_cast<uint64_t>(read_size) >
-      static_cast<uint64_t>(std::numeric_limits<size_t>::max())) {
+  if (std::cmp_greater(read_size, std::numeric_limits<size_t>::max())) {
     return Invalid("File size {} exceeds size_t max for {}", read_size, file_location);
   }
 
@@ -150,7 +155,7 @@ class CachedSeekableInputStream : public SeekableInputStream {
   Status Seek(int64_t position) override {
     ICEBERG_PRECHECK(!closed_, "Input stream is closed");
     ICEBERG_PRECHECK(position >= 0, "Position must not be negative: {}", position);
-    ICEBERG_PRECHECK(static_cast<uint64_t>(position) <= content_->size(),
+    ICEBERG_PRECHECK(std::cmp_less_equal(position, content_->size()),
                      "Position {} exceeds file size {}", position, content_->size());
     position_ = position;
     return {};
@@ -170,7 +175,7 @@ class CachedSeekableInputStream : public SeekableInputStream {
   Status ReadFully(int64_t position, std::span<std::byte> out) override {
     ICEBERG_PRECHECK(!closed_, "Input stream is closed");
     ICEBERG_PRECHECK(position >= 0, "Position must not be negative: {}", position);
-    ICEBERG_PRECHECK(static_cast<uint64_t>(position) <= content_->size(),
+    ICEBERG_PRECHECK(std::cmp_less_equal(position, content_->size()),
                      "Position {} exceeds file size {}", position, content_->size());
     auto offset = static_cast<size_t>(position);
     ICEBERG_PRECHECK(out.size() <= content_->size() - offset,
@@ -208,7 +213,9 @@ class CachedInputFile : public InputFile {
   std::string_view location() const override { return location_; }
   Result<int64_t> Size() const override { return size_; }
   Result<std::unique_ptr<SeekableInputStream>> Open() override {
-    if (content_) return std::make_unique<CachedSeekableInputStream>(content_);
+    if (content_) {
+      return std::make_unique<CachedSeekableInputStream>(content_);
+    }
     uint64_t generation;
     if (auto cached = cache_->Find(location_, &generation)) {
       return std::make_unique<CachedSeekableInputStream>(std::move(cached));
@@ -250,6 +257,14 @@ class ManifestFileIO : public FileIO {
   Result<std::unique_ptr<InputFile>> NewInputFile(std::string location,
                                                   size_t length) override {
     return cache_->NewInputFile(io_, std::move(location), length);
+  }
+  Result<std::string> ReadFile(const std::string& location,
+                               std::optional<size_t> length) override {
+    // A requested byte count can cover only a prefix of an immutable file.
+    if (length) {
+      return io_->ReadFile(location, length);
+    }
+    return FileIO::ReadFile(location, std::nullopt);
   }
   Result<std::unique_ptr<OutputFile>> NewOutputFile(std::string location) override {
     return io_->NewOutputFile(std::move(location));
@@ -322,18 +337,22 @@ std::shared_ptr<FileIO> ContentCache::Wrap(std::shared_ptr<FileIO> io) {
 MetadataContent ContentCache::Find(std::string_view location, uint64_t* generation) {
   std::lock_guard lock(mutex_);
   if (generation) *generation = generation_;
-  auto state = registry_->Get(this, options_, state_);
-  auto* content = state->lru.Find(location);
+  auto state = registry_->Find(this);
+  const auto* content = state ? state->lru.Find(location) : nullptr;
   return content ? *content : nullptr;
 }
 
 void ContentCache::Insert(const std::string& location, MetadataContent content,
                           uint64_t generation) {
   // Empty/corrupt metadata must not accumulate unbounded zero-weight entries.
-  if (content->empty()) return;
+  if (content->empty() || content->size() > options_.max_content_length ||
+      content->size() > options_.max_total_bytes) {
+    return;
+  }
   std::lock_guard lock(mutex_);
   if (generation == generation_) {
-    registry_->Get(this, options_, state_)->lru.Replace(location, std::move(content));
+    registry_->GetOrCreate(this, options_, state_)
+        ->lru.Replace(location, std::move(content));
   }
 }
 

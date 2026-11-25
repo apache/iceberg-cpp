@@ -18,6 +18,7 @@
  */
 
 #include <atomic>
+#include <concepts>
 #include <functional>
 #include <limits>
 #include <memory>
@@ -82,6 +83,8 @@ TEST(LruCacheTest, WeightedEviction) {
 
   // 7 + 6 exceeds 10, so the least recently used entry 2 is evicted.
   auto [inserted, value] = cache.Replace(3, "cccccc");
+  static_assert(std::same_as<decltype(value), const std::string*>);
+  static_assert(std::same_as<decltype(cache.Find(3)), const std::string*>);
   EXPECT_TRUE(inserted);
   ASSERT_NE(value, nullptr);
   EXPECT_EQ(*value, "cccccc");
@@ -157,6 +160,34 @@ TEST(LruCacheTest, ReplaceReweighsEntry) {
   EXPECT_EQ(cache.Find(1), nullptr);
   EXPECT_EQ(cache.size(), 0);
   EXPECT_EQ(cache.total_weight(), 0);
+}
+
+TEST(LruCacheTest, ThrowingWeigherPreservesEntriesWeightAndRecency) {
+  auto weigher = [](int32_t, const std::string& value) {
+    if (value.empty()) {
+      throw std::invalid_argument("empty value");
+    }
+    return static_cast<int64_t>(value.size());
+  };
+  LruCache<int32_t, std::string, decltype(weigher)> cache(4, weigher);
+  cache.Replace(1, "aa");
+  cache.Replace(2, "bb");
+
+  EXPECT_THROW(cache.Replace(3, ""), std::invalid_argument);
+  EXPECT_EQ(cache.Find(3), nullptr);
+  EXPECT_THROW(cache.Replace(2, ""), std::invalid_argument);
+  const auto* original = cache.Find(2);
+  ASSERT_NE(original, nullptr);
+  EXPECT_EQ(*original, "bb");
+  EXPECT_THROW(cache.Replace(1, ""), std::invalid_argument);
+  EXPECT_EQ(cache.size(), 2);
+  EXPECT_EQ(cache.total_weight(), 4);
+
+  // The failed replacement of key 1 must leave it least recently used.
+  EXPECT_TRUE(cache.Replace(3, "cc").first);
+  EXPECT_EQ(cache.Find(1), nullptr);
+  EXPECT_NE(cache.Find(2), nullptr);
+  EXPECT_EQ(cache.total_weight(), 4);
 }
 
 TEST(LruCacheTest, ClearResetsWeight) {

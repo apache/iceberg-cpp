@@ -149,7 +149,9 @@ class ICEBERG_EXPORT BoundReference
 
   Result<Literal> Evaluate(const StructLike& data) const override;
 
-  std::shared_ptr<BoundReference> reference() override { return shared_from_this(); }
+  std::shared_ptr<const BoundReference> reference() const override {
+    return shared_from_this();
+  }
 
   std::shared_ptr<Type> type() const override { return field_.type(); }
 
@@ -219,7 +221,7 @@ class ICEBERG_EXPORT BoundTransform : public BoundTerm {
 
   Result<Literal> Evaluate(const StructLike& data) const override;
 
-  std::shared_ptr<BoundReference> reference() override { return ref_; }
+  std::shared_ptr<const BoundReference> reference() const override { return ref_; }
 
   std::shared_ptr<Type> type() const override;
 

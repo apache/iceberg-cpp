@@ -1114,6 +1114,41 @@ TEST_P(DeleteFileIndexTest, TestMultipleDVs) {
   EXPECT_THAT(index_result, HasErrorMessage(file_a_->file_path));
 }
 
+TEST_P(DeleteFileIndexTest, ReferencedDeleteMustMatchDataFilePartition) {
+  const auto spec_id = partitioned_spec_->spec_id();
+  auto deletion =
+      GetParam() == 3
+          ? MakeDV("/dv.puffin", file_a_->partition, spec_id, file_a_->file_path)
+          : MakePositionDeleteFile("/pos.parquet", file_a_->partition, spec_id);
+  if (GetParam() == 2) {
+    ICEBERG_UNWRAP_OR_FAIL(auto path, Literal::String(file_a_->file_path).Serialize());
+    deletion->lower_bounds[MetadataColumns::kDeleteFilePathColumnId] = path;
+    deletion->upper_bounds[MetadataColumns::kDeleteFilePathColumnId] = path;
+  }
+  auto manifest = WriteDeleteManifest(
+      GetParam(), 1000, {MakeDeleteEntry(1000, 1, deletion)}, partitioned_spec_);
+  ICEBERG_UNWRAP_OR_FAIL(auto index, BuildIndex({manifest}));
+  ICEBERG_UNWRAP_OR_FAIL(auto matches, index->ForDataFile(1, *file_a_));
+  EXPECT_EQ(matches.size(), 1);
+
+  auto data = *file_a_;
+  data.partition = file_b_->partition;
+  auto result = index->ForDataFile(1, data);
+  EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
+  EXPECT_THAT(result, HasErrorMessage("Mismatched partition tuples ((0), (1))"));
+  data.partition = file_a_->partition;
+  data.partition_spec_id = unpartitioned_spec_->spec_id();
+  result = index->ForDataFile(1, data);
+  EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
+  EXPECT_THAT(result, HasErrorMessage("Mismatched partition specs"));
+
+  data.partition_spec_id.reset();
+  result = index->ForDataFile(1, data);
+  EXPECT_THAT(result, IsError(ErrorKind::kInvalidArgument));
+  EXPECT_THAT(result, HasErrorMessage("Missing partition spec id from data file"));
+  EXPECT_THAT(result, HasErrorMessage(data.file_path));
+}
+
 TEST_P(DeleteFileIndexTest, TestInvalidDVSequenceNumber) {
   auto version = GetParam();
   if (version < 3) {

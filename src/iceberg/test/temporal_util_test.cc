@@ -24,9 +24,28 @@
 
 #include <gtest/gtest.h>
 
+#include "iceberg/expression/literal.h"
 #include "iceberg/test/matchers.h"
 
 namespace iceberg {
+
+TEST(TemporalUtilTest, YearAndMonthAcrossCalendarRange) {
+  auto check = [](const Literal& value, int year, int month) {
+    ICEBERG_UNWRAP_OR_FAIL(auto years, TemporalUtils::ExtractYear(value));
+    EXPECT_EQ(std::get<int32_t>(years.value()), year - 1970);
+    ICEBERG_UNWRAP_OR_FAIL(auto months, TemporalUtils::ExtractMonth(value));
+    EXPECT_EQ(std::get<int32_t>(months.value()), (year - 1970) * 12 + month - 1);
+  };
+
+  check(Literal::Date(11248737), 32767, 12);
+  check(Literal::Date(11248738), 32768, 1);
+  check(Literal::Date(std::numeric_limits<int32_t>::min()), -5877641, 6);
+  check(Literal::Date(std::numeric_limits<int32_t>::max()), 5881580, 7);
+  check(Literal::Timestamp(std::numeric_limits<int64_t>::min()), -290308, 12);
+  check(Literal::TimestampTz(std::numeric_limits<int64_t>::max()), 294247, 1);
+  check(Literal::TimestampNs(-1), 1969, 12);
+  check(Literal::TimestampTzNs(-1), 1969, 12);
+}
 
 TEST(TemporalUtilTest, ParseTimestampNs) {
   ICEBERG_UNWRAP_OR_FAIL(

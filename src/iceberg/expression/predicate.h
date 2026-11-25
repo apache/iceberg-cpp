@@ -169,7 +169,9 @@ class ICEBERG_EXPORT BoundPredicate : public Predicate<BoundTerm>, public Bound 
 
   using Predicate<BoundTerm>::term;
 
-  std::shared_ptr<BoundReference> reference() override { return term_->reference(); }
+  std::shared_ptr<const BoundReference> reference() const override {
+    return term_->reference();
+  }
 
   Result<Literal> Evaluate(const StructLike& data) const override;
 
