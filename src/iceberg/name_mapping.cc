@@ -98,12 +98,11 @@ struct IndexByNameVisitor {
 
 MappedFields::MappedFields(std::vector<MappedField> fields) : fields_(std::move(fields)) {
   for (const auto& field : fields_) {
-    if (!field.field_id.has_value()) {
-      continue;
-    }
-    id_to_field_.emplace(field.field_id.value(), std::cref(field));
-    for (const auto& name : field.names) {
-      name_to_id_.emplace(name, field.field_id.value());
+    if (field.field_id.has_value()) {
+      id_to_field_.emplace(field.field_id.value(), std::cref(field));
+      for (const auto& name : field.names) {
+        name_to_id_.emplace(name, field.field_id.value());
+      }
     }
   }
 }
