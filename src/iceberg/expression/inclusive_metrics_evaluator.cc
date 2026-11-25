@@ -20,6 +20,7 @@
 #include "iceberg/expression/inclusive_metrics_evaluator.h"
 
 #include <ranges>
+#include <utility>
 
 #include "iceberg/expression/binder.h"
 #include "iceberg/expression/expression_visitor.h"
@@ -28,6 +29,8 @@
 #include "iceberg/schema.h"
 #include "iceberg/transform.h"
 #include "iceberg/util/macros.h"
+#include "iceberg/util/math_util_internal.h"
+#include "iceberg/util/temporal_util.h"
 
 namespace iceberg {
 
@@ -35,6 +38,12 @@ namespace {
 constexpr bool kRowsMightMatch = true;
 constexpr bool kRowCannotMatch = false;
 constexpr int32_t kInPredicateLimit = 200;
+
+bool HourFitsInInt32(const Literal& timestamp) {
+  constexpr auto kMicrosPerHour = internal::kMicrosPerSecond * internal::kSecondsPerHour;
+  return std::in_range<int32_t>(
+      FloorDiv(std::get<int64_t>(timestamp.value()), kMicrosPerHour));
+}
 }  // namespace
 
 class InclusiveMetricsVisitor : public BoundVisitor<bool> {
@@ -415,7 +424,7 @@ class InclusiveMetricsVisitor : public BoundVisitor<bool> {
       return ParseLowerBound(*reference);
     } else if (auto transform = dynamic_cast<BoundTransform*>(expr.get());
                transform != nullptr) {
-      return TransformLowerBound(*transform);
+      return TransformBound(*transform, /*lower=*/true);
     } else {
       return std::nullopt;
     }
@@ -428,7 +437,7 @@ class InclusiveMetricsVisitor : public BoundVisitor<bool> {
       return ParseUpperBound(*reference);
     } else if (auto transform = dynamic_cast<BoundTransform*>(expr.get());
                transform != nullptr) {
-      return TransformUpperBound(*transform);
+      return TransformBound(*transform, /*lower=*/false);
     } else {
       return std::nullopt;
     }
@@ -492,32 +501,33 @@ class InclusiveMetricsVisitor : public BoundVisitor<bool> {
     return std::nullopt;
   }
 
-  Result<std::optional<Literal>> TransformLowerBound(BoundTransform& boundTransform) {
-    auto transform = boundTransform.transform();
-    if (transform->PreservesOrder()) {
-      ICEBERG_ASSIGN_OR_RAISE(auto lower, ParseLowerBound(*boundTransform.reference()));
-      if (lower.has_value()) {
-        ICEBERG_ASSIGN_OR_RAISE(auto transform_func,
-                                transform->Bind(boundTransform.reference()->type()));
-        return transform_func->Transform(lower.value());
+  Result<std::optional<Literal>> TransformBound(const BoundTransform& term, bool lower) {
+    const auto& transform = term.transform();
+    if (!transform->PreservesOrder()) {
+      return std::nullopt;
+    }
+
+    const auto ref = term.reference();
+    ICEBERG_ASSIGN_OR_RAISE(auto bound,
+                            lower ? ParseLowerBound(*ref) : ParseUpperBound(*ref));
+    if (!bound) {
+      return std::nullopt;
+    }
+
+    const auto type_id = ref->type()->type_id();
+    if (transform->transform_type() == TransformType::kHour &&
+        (type_id == TypeId::kTimestamp || type_id == TypeId::kTimestampTz)) {
+      // Microsecond timestamps can span more hours than fit in int32. Either end
+      // of the file's range could wrap, invalidating both transformed bounds.
+      ICEBERG_ASSIGN_OR_RAISE(auto other,
+                              lower ? ParseUpperBound(*ref) : ParseLowerBound(*ref));
+      if (!other || !HourFitsInInt32(*bound) || !HourFitsInInt32(*other)) {
+        return std::nullopt;
       }
     }
 
-    return std::nullopt;
-  }
-
-  Result<std::optional<Literal>> TransformUpperBound(BoundTransform& boundTransform) {
-    auto transform = boundTransform.transform();
-    if (transform->PreservesOrder()) {
-      ICEBERG_ASSIGN_OR_RAISE(auto upper, ParseUpperBound(*boundTransform.reference()));
-      if (upper.has_value()) {
-        ICEBERG_ASSIGN_OR_RAISE(auto transform_func,
-                                transform->Bind(boundTransform.reference()->type()));
-        return transform_func->Transform(upper.value());
-      }
-    }
-
-    return std::nullopt;
+    ICEBERG_ASSIGN_OR_RAISE(auto transform_func, transform->Bind(ref->type()));
+    return transform_func->Transform(*bound);
   }
 
   /** Returns true if the expression term produces a non-null value for non-null input. */
