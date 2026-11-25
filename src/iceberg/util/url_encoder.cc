@@ -19,6 +19,7 @@
 
 #include "iceberg/util/url_encoder.h"
 
+#include <cstdint>
 #include <locale>
 
 namespace iceberg {

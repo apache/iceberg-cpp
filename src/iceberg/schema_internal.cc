@@ -66,7 +66,8 @@ Status CheckArrowCompatible(const Type& type) {
 
 // Convert an Iceberg type to Arrow schema. Return value is Nanoarrow error code.
 ArrowErrorCode ToArrowSchema(const Type& type, bool optional, std::string_view name,
-                             std::optional<int32_t> field_id, ArrowSchema* schema) {
+                             std::optional<int32_t> field_id, ArrowSchema* schema,
+                             bool use_large_list) {
   ArrowBuffer metadata_buffer;
   NANOARROW_RETURN_NOT_OK(ArrowMetadataBuilderInit(&metadata_buffer, nullptr));
   internal::ArrowArrayBufferGuard metadata_buffer_guard(&metadata_buffer);
@@ -86,17 +87,18 @@ ArrowErrorCode ToArrowSchema(const Type& type, bool optional, std::string_view n
         const auto& field = fields[i];
         NANOARROW_RETURN_NOT_OK(ToArrowSchema(*field.type(), field.optional(),
                                               field.name(), field.field_id(),
-                                              schema->children[i]));
+                                              schema->children[i], use_large_list));
       }
     } break;
     case TypeId::kList: {
-      NANOARROW_RETURN_NOT_OK(ArrowSchemaSetType(schema, NANOARROW_TYPE_LIST));
+      NANOARROW_RETURN_NOT_OK(ArrowSchemaSetType(
+          schema, use_large_list ? NANOARROW_TYPE_LARGE_LIST : NANOARROW_TYPE_LIST));
 
       const auto& list_type = static_cast<const ListType&>(type);
       const auto& elem_field = list_type.fields()[0];
       NANOARROW_RETURN_NOT_OK(ToArrowSchema(*elem_field.type(), elem_field.optional(),
                                             elem_field.name(), elem_field.field_id(),
-                                            schema->children[0]));
+                                            schema->children[0], use_large_list));
     } break;
     case TypeId::kMap: {
       NANOARROW_RETURN_NOT_OK(ArrowSchemaSetType(schema, NANOARROW_TYPE_MAP));
@@ -104,12 +106,12 @@ ArrowErrorCode ToArrowSchema(const Type& type, bool optional, std::string_view n
       const auto& map_type = static_cast<const MapType&>(type);
       const auto& key_field = map_type.key();
       const auto& value_field = map_type.value();
-      NANOARROW_RETURN_NOT_OK(ToArrowSchema(*key_field.type(), key_field.optional(),
-                                            key_field.name(), key_field.field_id(),
-                                            schema->children[0]->children[0]));
-      NANOARROW_RETURN_NOT_OK(ToArrowSchema(*value_field.type(), value_field.optional(),
-                                            value_field.name(), value_field.field_id(),
-                                            schema->children[0]->children[1]));
+      NANOARROW_RETURN_NOT_OK(ToArrowSchema(
+          *key_field.type(), key_field.optional(), key_field.name(), key_field.field_id(),
+          schema->children[0]->children[0], use_large_list));
+      NANOARROW_RETURN_NOT_OK(ToArrowSchema(
+          *value_field.type(), value_field.optional(), value_field.name(),
+          value_field.field_id(), schema->children[0]->children[1], use_large_list));
     } break;
     case TypeId::kBoolean:
       NANOARROW_RETURN_NOT_OK(ArrowSchemaSetType(schema, NANOARROW_TYPE_BOOL));
@@ -204,7 +206,7 @@ ArrowErrorCode ToArrowSchema(const Type& type, bool optional, std::string_view n
 
 }  // namespace
 
-Status ToArrowSchema(const Schema& schema, ArrowSchema* out) {
+Status ToArrowSchema(const Schema& schema, ArrowSchema* out, bool use_large_list) {
   if (out == nullptr) [[unlikely]] {
     return InvalidArgument("Output Arrow schema cannot be null");
   }
@@ -214,8 +216,9 @@ Status ToArrowSchema(const Schema& schema, ArrowSchema* out) {
   ArrowSchemaInit(out);
   internal::ArrowSchemaGuard schema_guard(out);
 
-  if (ArrowErrorCode errorCode = ToArrowSchema(schema, /*optional=*/false, /*name=*/"",
-                                               /*field_id=*/std::nullopt, out);
+  if (ArrowErrorCode errorCode =
+          ToArrowSchema(schema, /*optional=*/false, /*name=*/"",
+                        /*field_id=*/std::nullopt, out, use_large_list);
       errorCode != NANOARROW_OK) {
     return InvalidSchema(
         "Failed to convert Iceberg schema to Arrow schema, error code: {}", errorCode);

@@ -82,11 +82,12 @@ endfunction()
 # ICEBERG_AVRO_URL           - Apache Avro tarball URL
 # ICEBERG_AVRO_GIT_URL       - Apache Avro git repository URL
 # ICEBERG_NANOARROW_URL      - Nanoarrow tarball URL
-# ICEBERG_CROARING_URL       - CRoaring tarball URL
+# ICEBERG_CROARING_URL       - CRoaring git repository URL
 # ICEBERG_UTF8PROC_URL       - utf8proc tarball URL
 # ICEBERG_NLOHMANN_JSON_URL  - nlohmann-json tarball URL
-# ICEBERG_SPDLOG_URL         - spdlog tarball URL
-# ICEBERG_CPR_URL            - cpr tarball URL
+# ICEBERG_SPDLOG_URL         - spdlog git repository URL
+# ICEBERG_CPR_URL            - cpr git repository URL
+# ICEBERG_SQLPP23_URL        - sqlpp23 git repository URL
 #
 # Example usage:
 #   export ICEBERG_ARROW_URL="https://your-mirror.com/apache-arrow-25.0.0.tar.gz"
@@ -490,20 +491,25 @@ function(resolve_croaring_dependency)
   set(ENABLE_ROARING_TESTS OFF)
   set(ENABLE_ROARING_MICROBENCHMARKS OFF)
 
+  # GitHub's auto-generated tag-archive tarball is not byte-stable across
+  # requests, so it cannot be integrity-checked with URL_HASH; pin by full
+  # commit SHA (v4.7.1) via a git fetch instead.
+  set(ICEBERG_CROARING_GIT_TAG "a461e1a0d062095469217d0968a600b15c71d324")
+
   if(DEFINED ENV{ICEBERG_CROARING_URL})
-    set(CROARING_URL "$ENV{ICEBERG_CROARING_URL}")
+    set(CROARING_GIT_REPOSITORY "$ENV{ICEBERG_CROARING_URL}")
   else()
-    set(CROARING_URL
-        "https://github.com/RoaringBitmap/CRoaring/archive/refs/tags/v4.7.1.tar.gz")
+    set(CROARING_GIT_REPOSITORY "https://github.com/RoaringBitmap/CRoaring.git")
   endif()
 
   fetchcontent_declare(croaring
                        ${FC_DECLARE_COMMON_OPTIONS}
-                       URL ${CROARING_URL}
-                           FIND_PACKAGE_ARGS
-                           NAMES
-                           roaring
-                           CONFIG)
+                       GIT_REPOSITORY ${CROARING_GIT_REPOSITORY}
+                       GIT_TAG ${ICEBERG_CROARING_GIT_TAG}
+                       FIND_PACKAGE_ARGS
+                       NAMES
+                       roaring
+                       CONFIG)
   fetchcontent_makeavailable(croaring)
 
   if(croaring_SOURCE_DIR)
@@ -600,6 +606,9 @@ function(resolve_nlohmann_json_dependency)
       OFF
       CACHE BOOL "" FORCE)
 
+  set(ICEBERG_NLOHMANN_JSON_BUILD_SHA256_CHECKSUM
+      "d6c65aca6b1ed68e7a182f4757257b107ae403032760ed6ef121c9d55e81757d")
+
   if(DEFINED ENV{ICEBERG_NLOHMANN_JSON_URL})
     set(NLOHMANN_JSON_URL "$ENV{ICEBERG_NLOHMANN_JSON_URL}")
   else()
@@ -610,10 +619,11 @@ function(resolve_nlohmann_json_dependency)
   fetchcontent_declare(nlohmann_json
                        ${FC_DECLARE_COMMON_OPTIONS}
                        URL ${NLOHMANN_JSON_URL}
-                           FIND_PACKAGE_ARGS
-                           NAMES
-                           nlohmann_json
-                           CONFIG)
+                       URL_HASH "SHA256=${ICEBERG_NLOHMANN_JSON_BUILD_SHA256_CHECKSUM}"
+                       FIND_PACKAGE_ARGS
+                       NAMES
+                       nlohmann_json
+                       CONFIG)
   fetchcontent_makeavailable(nlohmann_json)
 
   if(nlohmann_json_SOURCE_DIR)
@@ -667,19 +677,25 @@ function(resolve_spdlog_dependency)
       ON
       CACHE BOOL "" FORCE)
 
+  # GitHub's auto-generated tag-archive tarball is not byte-stable across
+  # requests, so it cannot be integrity-checked with URL_HASH; pin by full
+  # commit SHA (v1.15.3) via a git fetch instead.
+  set(ICEBERG_SPDLOG_GIT_TAG "6fa36017cfd5731d617e1a934f0e5ea9c4445b13")
+
   if(DEFINED ENV{ICEBERG_SPDLOG_URL})
-    set(SPDLOG_URL "$ENV{ICEBERG_SPDLOG_URL}")
+    set(SPDLOG_GIT_REPOSITORY "$ENV{ICEBERG_SPDLOG_URL}")
   else()
-    set(SPDLOG_URL "https://github.com/gabime/spdlog/archive/refs/tags/v1.15.3.tar.gz")
+    set(SPDLOG_GIT_REPOSITORY "https://github.com/gabime/spdlog.git")
   endif()
 
   fetchcontent_declare(spdlog
                        ${FC_DECLARE_COMMON_OPTIONS}
-                       URL ${SPDLOG_URL}
-                           FIND_PACKAGE_ARGS
-                           NAMES
-                           spdlog
-                           CONFIG)
+                       GIT_REPOSITORY ${SPDLOG_GIT_REPOSITORY}
+                       GIT_TAG ${ICEBERG_SPDLOG_GIT_TAG}
+                       FIND_PACKAGE_ARGS
+                       NAMES
+                       spdlog
+                       CONFIG)
   fetchcontent_makeavailable(spdlog)
 
   if(spdlog_SOURCE_DIR)
@@ -736,10 +752,15 @@ function(resolve_cpr_dependency)
   set(CPR_USE_SYSTEM_CURL ON)
   set(CPR_USE_EXISTING_CURL_TARGET ON)
 
+  # GitHub's auto-generated tag-archive tarball is not byte-stable across
+  # requests, so it cannot be integrity-checked with URL_HASH; pin by full
+  # commit SHA (1.14.1) via a git fetch instead.
+  set(ICEBERG_CPR_GIT_TAG "c492b4fed1fd7288eacec6fe8d89e37df78d373a")
+
   if(DEFINED ENV{ICEBERG_CPR_URL})
-    set(CPR_URL "$ENV{ICEBERG_CPR_URL}")
+    set(CPR_GIT_REPOSITORY "$ENV{ICEBERG_CPR_URL}")
   else()
-    set(CPR_URL "https://github.com/libcpr/cpr/archive/refs/tags/1.14.1.tar.gz")
+    set(CPR_GIT_REPOSITORY "https://github.com/libcpr/cpr.git")
   endif()
 
   if(NOT TARGET CURL::libcurl)
@@ -748,11 +769,12 @@ function(resolve_cpr_dependency)
 
   fetchcontent_declare(cpr
                        ${FC_DECLARE_COMMON_OPTIONS}
-                       URL ${CPR_URL}
-                           FIND_PACKAGE_ARGS
-                           NAMES
-                           cpr
-                           CONFIG)
+                       GIT_REPOSITORY ${CPR_GIT_REPOSITORY}
+                       GIT_TAG ${ICEBERG_CPR_GIT_TAG}
+                       FIND_PACKAGE_ARGS
+                       NAMES
+                       cpr
+                       CONFIG)
 
   fetchcontent_makeavailable(cpr)
 
@@ -827,19 +849,25 @@ function(resolve_sql_catalog_dependencies)
   set(BUILD_POSTGRESQL_CONNECTOR ${ICEBERG_SQL_POSTGRESQL})
   set(BUILD_MYSQL_CONNECTOR ${ICEBERG_SQL_MYSQL})
 
+  # GitHub's auto-generated tag-archive tarball is not byte-stable across
+  # requests, so it cannot be integrity-checked with URL_HASH; pin by full
+  # commit SHA (0.69) via a git fetch instead.
+  set(ICEBERG_SQLPP23_GIT_TAG "1c47ff3c7c3542aa6091266be77122c7ced031e8")
+
   if(DEFINED ENV{ICEBERG_SQLPP23_URL})
-    set(SQLPP23_URL "$ENV{ICEBERG_SQLPP23_URL}")
+    set(SQLPP23_GIT_REPOSITORY "$ENV{ICEBERG_SQLPP23_URL}")
   else()
-    set(SQLPP23_URL "https://github.com/rbock/sqlpp23/archive/refs/tags/0.69.tar.gz")
+    set(SQLPP23_GIT_REPOSITORY "https://github.com/rbock/sqlpp23.git")
   endif()
 
   fetchcontent_declare(sqlpp23
                        ${FC_DECLARE_COMMON_OPTIONS}
-                       URL ${SQLPP23_URL}
-                           FIND_PACKAGE_ARGS
-                           NAMES
-                           Sqlpp23
-                           CONFIG)
+                       GIT_REPOSITORY ${SQLPP23_GIT_REPOSITORY}
+                       GIT_TAG ${ICEBERG_SQLPP23_GIT_TAG}
+                       FIND_PACKAGE_ARGS
+                       NAMES
+                       Sqlpp23
+                       CONFIG)
   fetchcontent_makeavailable(sqlpp23)
 
   # sqlpp23 locates the native client libraries within its own subdirectory

@@ -89,11 +89,11 @@
 #  define ICEBERG_EXPECTED_CPLUSPLUS __cplusplus
 #endif
 
-#if ICEBERG_EXPECTED_CPLUSPLUS < 201'703L
+#if ICEBERG_EXPECTED_CPLUSPLUS < 201703L
 static_assert(false, "This expected variant requires C++17");
 #endif
 
-#if ICEBERG_EXPECTED_CPLUSPLUS >= 202'002L
+#if ICEBERG_EXPECTED_CPLUSPLUS >= 202002L
 #  define ICEBERG_EXPECTED_CONSTEXPR_DTOR constexpr
 #else
 #  define ICEBERG_EXPECTED_CONSTEXPR_DTOR
@@ -113,7 +113,7 @@ namespace expected_detail {
 template <class T, class... Args>
 constexpr T* construct_at(T* p, Args&&... args) noexcept(
     noexcept(::new (static_cast<void*>(p)) T(std::forward<Args>(args)...))) {
-#if ICEBERG_EXPECTED_CPLUSPLUS >= 202'002L
+#if ICEBERG_EXPECTED_CPLUSPLUS >= 202002L
   return std::construct_at(p, std::forward<Args>(args)...);
 #else
   return ::new (static_cast<void*>(p)) T(std::forward<Args>(args)...);
@@ -1943,7 +1943,7 @@ class ICEBERG_TEMPLATE_CLASS_EXPORT [[nodiscard]] expected
       return x.error() == y.error();
     }
   }
-#if ICEBERG_EXPECTED_CPLUSPLUS < 202'002L
+#if ICEBERG_EXPECTED_CPLUSPLUS < 202002L
   template <class T2, class E2>
   [[nodiscard]] friend constexpr std::enable_if_t<
       !std::is_void_v<T2> &&
@@ -1968,7 +1968,7 @@ class ICEBERG_TEMPLATE_CLASS_EXPORT [[nodiscard]] expected
       return false;
     }
   }
-#if ICEBERG_EXPECTED_CPLUSPLUS < 202'002L
+#if ICEBERG_EXPECTED_CPLUSPLUS < 202002L
   template <class T2>
   [[nodiscard]] friend constexpr std::enable_if_t<
       !expected_detail::is_specialization_v<T2, iceberg::expected> &&
@@ -1989,7 +1989,7 @@ class ICEBERG_TEMPLATE_CLASS_EXPORT [[nodiscard]] expected
       return x.error() == e.error();
     }
   }
-#if ICEBERG_EXPECTED_CPLUSPLUS < 202'002L
+#if ICEBERG_EXPECTED_CPLUSPLUS < 202002L
   template <class E2>
   [[nodiscard]] friend constexpr std::enable_if_t<
       expected_detail::is_equality_result_convertible_to_bool_v<E, E2>, bool>
@@ -2540,7 +2540,7 @@ expected<void, E> : private expected_detail::move_assign_base<void, E>,
       return x.error() == y.error();
     }
   }
-#if ICEBERG_EXPECTED_CPLUSPLUS < 202'002L
+#if ICEBERG_EXPECTED_CPLUSPLUS < 202002L
   template <class T2, class E2>
   [[nodiscard]] friend constexpr std::enable_if_t<
       std::is_void_v<T2> &&
@@ -2562,7 +2562,7 @@ expected<void, E> : private expected_detail::move_assign_base<void, E>,
       return x.error() == e.error();
     }
   }
-#if ICEBERG_EXPECTED_CPLUSPLUS < 202'002L
+#if ICEBERG_EXPECTED_CPLUSPLUS < 202002L
   template <class E2>
   [[nodiscard]] friend constexpr std::enable_if_t<
       expected_detail::is_equality_result_convertible_to_bool_v<E, E2>, bool>
@@ -2572,7 +2572,7 @@ expected<void, E> : private expected_detail::move_assign_base<void, E>,
 #endif
 };
 
-#if ICEBERG_EXPECTED_CPLUSPLUS < 202'002L
+#if ICEBERG_EXPECTED_CPLUSPLUS < 202002L
 // Deduce the expected operand to reject conversions exposed by MSVC's permissive C++17
 // hidden-friend lookup.
 template <class T, class E, class T2>

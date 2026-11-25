@@ -32,17 +32,9 @@
 /// \file iceberg/catalog/rest/http_client.h
 /// \brief Http client for Iceberg REST API.
 
-namespace cpr {
-class ConnectionPool;
-}  // namespace cpr
-
 namespace iceberg::rest {
 
-/// \brief A simple wrapper for cpr::Response.
-///
-/// This class encapsulates the details of the underlying cpr library's response,
-/// providing a consistent interface that is independent of the specific network
-/// library used.
+/// \brief HTTP response status, body, and headers.
 class ICEBERG_REST_EXPORT HttpResponse {
  public:
   HttpResponse();
@@ -70,6 +62,9 @@ class ICEBERG_REST_EXPORT HttpResponse {
 };
 
 /// \brief HTTP client for making requests to Iceberg REST Catalog API.
+///
+/// Thread-safe, provided the AuthSession passed to each request supports
+/// concurrent calls to Authenticate().
 class ICEBERG_REST_EXPORT HttpClient {
  public:
   /// \param connection_timeout,socket_timeout Zero leaves requests unbounded.
@@ -116,6 +111,8 @@ class ICEBERG_REST_EXPORT HttpClient {
       const ErrorHandler& error_handler, auth::AuthSession& session);
 
  private:
+  class ConnectionPools;
+
   /// \brief Build a request URI from this client's base URI and a path.
   Result<std::string> RequestUri(const std::string& path) const;
 
@@ -123,7 +120,7 @@ class ICEBERG_REST_EXPORT HttpClient {
   std::unordered_map<std::string, std::string> default_headers_;
   std::chrono::milliseconds connection_timeout_;
   std::chrono::milliseconds socket_timeout_;
-  std::unique_ptr<cpr::ConnectionPool> connection_pool_;
+  std::unique_ptr<ConnectionPools> connection_pools_;
 };
 
 }  // namespace iceberg::rest

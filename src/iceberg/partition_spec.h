@@ -108,7 +108,7 @@ class ICEBERG_EXPORT PartitionSpec : public util::Formattable {
   /// \param schema The schema to bind the partition spec to.
   /// \param spec_id The spec ID.
   /// \param fields The partition fields.
-  /// \param allowMissingFields Whether to skip validation for partition fields whose
+  /// \param allow_missing_fields Whether to skip validation for partition fields whose
   /// source columns have been dropped from the schema.
   /// \param last_assigned_field_id The last assigned field ID assigned to ensure new
   /// fields get unique IDs.

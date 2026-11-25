@@ -26,6 +26,7 @@
 #include <string>
 #include <thread>
 #include <unordered_map>
+#include <vector>
 
 #include <arpa/inet.h>
 #include <gmock/gmock.h>
@@ -140,9 +141,9 @@ class RestCatalogIntegrationTest : public ::testing::Test {
     return CreateCatalogWithProperties({});
   }
 
-  /// Create a catalog with additional properties merged on top of defaults.
-  Result<std::shared_ptr<Catalog>> CreateCatalogWithProperties(
-      const std::unordered_map<std::string, std::string>& extra) {
+  /// Create a catalog root with additional properties merged on top of defaults.
+  Result<std::shared_ptr<RestCatalog>> CreateRootWithProperties(
+      const std::unordered_map<std::string, std::string>& extra = {}) {
     auto config = RestCatalogProperties::default_properties();
     config.Set(RestCatalogProperties::kUri, CatalogUri())
         .Set(RestCatalogProperties::kName, std::string(kCatalogName))
@@ -152,7 +153,13 @@ class RestCatalogIntegrationTest : public ::testing::Test {
     for (const auto& [k, v] : extra) {
       config.mutable_configs()[k] = v;
     }
-    ICEBERG_ASSIGN_OR_RAISE(auto root, RestCatalog::Make(config));
+    return RestCatalog::Make(config);
+  }
+
+  /// Create a catalog with additional properties merged on top of defaults.
+  Result<std::shared_ptr<Catalog>> CreateCatalogWithProperties(
+      const std::unordered_map<std::string, std::string>& extra) {
+    ICEBERG_ASSIGN_OR_RAISE(auto root, CreateRootWithProperties(extra));
     return root->AsCatalog();
   }
 
@@ -313,6 +320,13 @@ TEST_F(RestCatalogIntegrationTest, OAuthTableTypedTokenEndToEnd) {
   auto info = child->OAuth2Info();
   ASSERT_TRUE(info.has_value());
   EXPECT_EQ(info->issued_token_type, auth::AuthProperties::kAccessTokenType);
+
+  // The same typed token reuses the cached session instead of exchanging again.
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto cached,
+      manager->TableSession(
+          table, {{auth::AuthProperties::kJwtTokenType, "table-jwt-token"}}, parent));
+  EXPECT_EQ(cached, child);
 }
 
 TEST_F(RestCatalogIntegrationTest, OAuthTokenExchangeWithoutActorEndToEnd) {
@@ -416,6 +430,70 @@ TEST_F(RestCatalogIntegrationTest, FetchServerConfigDirect) {
     std::println("[INFO] Server provided {} endpoints", config.endpoints.size());
     EXPECT_GT(config.endpoints.size(), 0);
   }
+}
+
+// RestCatalog shares its HttpClient with token refresh and metrics reporting.
+TEST_F(RestCatalogIntegrationTest, ConcurrentHttpClientRequests) {
+  constexpr int kThreads = 32;
+  constexpr int kRequestsPerThread = 200;
+
+  HttpClient client({}, std::chrono::seconds(30), std::chrono::seconds(30));
+  auto noop_session = auth::AuthSession::MakeDefault({});
+  const std::string config_url = std::format("{}/v1/config", CatalogUri());
+
+  std::vector<std::thread> threads;
+  threads.reserve(kThreads);
+  for (int i = 0; i < kThreads; ++i) {
+    threads.emplace_back([&] {
+      for (int j = 0; j < kRequestsPerThread; ++j) {
+        ASSERT_THAT(client.Get(config_url, {}, /*headers=*/{},
+                               *DefaultErrorHandler::Instance(), *noop_session),
+                    IsOk());
+      }
+    });
+  }
+  for (auto& thread : threads) {
+    thread.join();
+  }
+}
+
+// Threads can share one RestCatalog and its default catalog.
+TEST_F(RestCatalogIntegrationTest, ConcurrentCatalogUse) {
+  constexpr int kThreads = 16;
+  constexpr int kIterationsPerThread = 50;
+
+  ICEBERG_UNWRAP_OR_FAIL(auto root, CreateRootWithProperties());
+
+  Namespace ns{.levels = {"test_concurrent_catalog_use"}};
+  TableIdentifier table_id{.ns = ns, .name = "events"};
+  std::string table_uuid;
+  // Drop this catalog so the threads below race to create the default catalog.
+  {
+    ICEBERG_UNWRAP_OR_FAIL(auto catalog, root->AsCatalog());
+    ASSERT_THAT(catalog->CreateNamespace(ns, {}), IsOk());
+    ICEBERG_UNWRAP_OR_FAIL(auto table, CreateDefaultTable(catalog, table_id));
+    table_uuid = table->uuid();
+  }
+
+  std::vector<std::thread> threads;
+  threads.reserve(kThreads);
+  for (int i = 0; i < kThreads; ++i) {
+    threads.emplace_back([&] {
+      ICEBERG_UNWRAP_OR_FAIL(auto catalog, root->AsCatalog());
+      for (int j = 0; j < kIterationsPerThread; ++j) {
+        ICEBERG_UNWRAP_OR_FAIL(auto table, catalog->LoadTable(table_id));
+        EXPECT_EQ(table->uuid(), table_uuid);
+        ASSERT_THAT(catalog->ListNamespaces(ns), IsOk());
+      }
+    });
+  }
+  for (auto& thread : threads) {
+    thread.join();
+  }
+
+  ICEBERG_UNWRAP_OR_FAIL(auto catalog, root->AsCatalog());
+  ASSERT_THAT(catalog->DropTable(table_id, /*purge=*/false), IsOk());
+  ASSERT_THAT(catalog->DropNamespace(ns), IsOk());
 }
 
 // -- Namespace operations --

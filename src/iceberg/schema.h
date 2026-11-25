@@ -146,7 +146,7 @@ class ICEBERG_EXPORT Schema : public StructType {
   /// \brief Returns the canonical field name for the given id.
   ///
   /// \param field_id The id of the field to get the canonical name for.
-  /// \return The canocinal column name of the field with the given id, or std::nullopt if
+  /// \return The canonical column name of the field with the given id, or std::nullopt if
   /// not found.
   Result<std::optional<std::string_view>> FindColumnNameById(int32_t field_id) const;
 

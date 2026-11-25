@@ -237,7 +237,7 @@ class ICEBERG_EXPORT Transform : public util::Formattable {
   Transform(TransformType transform_type, int32_t param);
 
   /// \brief Checks equality with another Transform instance.
-  [[nodiscard]] virtual bool Equals(const Transform& other) const;
+  virtual bool Equals(const Transform& other) const;
 
   TransformType transform_type_;
   /// Optional parameter (e.g., num_buckets, width)
@@ -283,7 +283,7 @@ class ICEBERG_EXPORT TransformFunction {
 
  protected:
   /// \brief Compare the common properties of two transform functions for equality.
-  [[nodiscard]] virtual bool Equals(const TransformFunction& other) const;
+  virtual bool Equals(const TransformFunction& other) const;
 
  private:
   TransformType transform_type_;

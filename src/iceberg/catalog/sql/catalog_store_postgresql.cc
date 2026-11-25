@@ -82,8 +82,9 @@ Result<std::shared_ptr<CatalogStore>> MakePostgreSqlCatalogStore(
     sqlpp::postgresql::connection connection(config);
     return std::make_shared<PostgresqlSingleCatalogStore>(options.catalog_name,
                                                           std::move(connection));
-  } catch (const std::exception& e) {
-    return IOError("Failed to connect to PostgreSQL '{}': {}", options.uri, e.what());
+  } catch (const std::exception&) {
+    return IOError("Failed to connect to PostgreSQL '{}'",
+                   RedactConnectionUri(options.uri));
   }
 }
 

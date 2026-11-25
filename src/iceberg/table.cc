@@ -25,6 +25,7 @@
 #include "iceberg/data_table_scan.h"
 #include "iceberg/incremental_append_scan.h"
 #include "iceberg/incremental_changelog_scan.h"
+#include "iceberg/inspect/metadata_table.h"
 #include "iceberg/labels.h"
 #include "iceberg/location_provider.h"
 #include "iceberg/partition_spec.h"
@@ -42,6 +43,7 @@
 #include "iceberg/update/overwrite_files.h"
 #include "iceberg/update/replace_partitions.h"
 #include "iceberg/update/rewrite_files.h"
+#include "iceberg/update/rewrite_manifests.h"
 #include "iceberg/update/row_delta.h"
 #include "iceberg/update/set_snapshot.h"
 #include "iceberg/update/snapshot_manager.h"
@@ -278,6 +280,12 @@ Result<std::shared_ptr<ReplacePartitions>> Table::NewReplacePartitions() {
   return ReplacePartitions::Make(name().name, std::move(ctx));
 }
 
+Result<std::shared_ptr<RewriteManifests>> Table::NewRewriteManifests() {
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto ctx, TransactionContext::Make(shared_from_this(), TransactionKind::kUpdate));
+  return RewriteManifests::Make(name().name, std::move(ctx));
+}
+
 Result<std::shared_ptr<UpdateStatistics>> Table::NewUpdateStatistics() {
   ICEBERG_ASSIGN_OR_RAISE(
       auto ctx, TransactionContext::Make(shared_from_this(), TransactionKind::kUpdate));
@@ -292,6 +300,10 @@ Result<std::shared_ptr<UpdatePartitionStatistics>> Table::NewUpdatePartitionStat
 
 Result<std::shared_ptr<SnapshotManager>> Table::NewSnapshotManager() {
   return SnapshotManager::Make(shared_from_this());
+}
+
+Result<std::unique_ptr<MetadataTable>> Table::Inspect(MetadataTableKind kind) const {
+  return MetadataTable::Make(shared_from_this(), kind);
 }
 
 Result<std::shared_ptr<StagedTable>> StagedTable::Make(
@@ -402,6 +414,10 @@ Result<std::shared_ptr<RewriteFiles>> StaticTable::NewRewriteFiles() {
 
 Result<std::shared_ptr<ReplacePartitions>> StaticTable::NewReplacePartitions() {
   return NotSupported("Cannot replace partitions for a static table");
+}
+
+Result<std::shared_ptr<RewriteManifests>> StaticTable::NewRewriteManifests() {
+  return NotSupported("Cannot create a rewrite manifests for a static table");
 }
 
 Result<std::shared_ptr<SnapshotManager>> StaticTable::NewSnapshotManager() {

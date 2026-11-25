@@ -70,7 +70,7 @@ class ICEBERG_EXPORT BucketTransform : public TransformFunction {
       std::shared_ptr<Type> const& source_type, int32_t num_buckets);
 
  private:
-  [[nodiscard]] bool Equals(const TransformFunction& other) const override;
+  bool Equals(const TransformFunction& other) const override;
 
   int32_t num_buckets_;
 };
@@ -99,7 +99,7 @@ class ICEBERG_EXPORT TruncateTransform : public TransformFunction {
       std::shared_ptr<Type> const& source_type, int32_t width);
 
  private:
-  [[nodiscard]] bool Equals(const TransformFunction& other) const override;
+  bool Equals(const TransformFunction& other) const override;
 
   int32_t width_;
 };

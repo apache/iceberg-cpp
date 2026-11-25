@@ -93,6 +93,13 @@ class ICEBERG_EXPORT PendingUpdate : public ErrorCollector,
 
   /// \brief Discard this generation's staging, retaining applied operation intent.
   virtual Status CleanStaged() { return {}; }
+
+  /// \brief Reset attempt-dependent state before transaction replay.
+  /// Called by Transaction before reapplying this update during a commit retry or
+  /// rebase. Implementations should retain the operation's intent and staged files,
+  /// which later updates in the transaction may still reference.
+  virtual Status PrepareForReplay() { return {}; }
+
   /// \brief Complete a known successful commit. Called only by Transaction with the
   /// final committed table metadata.
   virtual Status Finalize(const TableMetadata& committed);

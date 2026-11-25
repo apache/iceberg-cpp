@@ -77,7 +77,7 @@ class ICEBERG_EXPORT Expression : public util::Formattable {
   /// \brief Returns whether this expression will accept the same values as another.
   /// \param other another expression
   /// \return true if the expressions are equivalent
-  virtual bool Equals(const Expression& other) const {
+  virtual bool Equals(const Expression& /*other*/) const {
     // only bound predicates can be equivalent
     return false;
   }
@@ -365,7 +365,7 @@ class ICEBERG_EXPORT Bound {
   virtual Result<Literal> Evaluate(const StructLike& data) const = 0;
 
   /// \brief Returns the underlying bound reference for this term.
-  virtual std::shared_ptr<class BoundReference> reference() = 0;
+  virtual std::shared_ptr<const class BoundReference> reference() const = 0;
 };
 
 }  // namespace iceberg

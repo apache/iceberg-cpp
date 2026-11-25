@@ -54,7 +54,7 @@ class ICEBERG_EXPORT KeyManagementClient {
 
   /// \brief Initialize the client with the catalog properties.
   virtual Status Initialize(
-      const std::unordered_map<std::string, std::string>& properties) {
+      const std::unordered_map<std::string, std::string>& /*properties*/) {
     return {};
   }
 
@@ -72,7 +72,7 @@ class ICEBERG_EXPORT KeyManagementClient {
   virtual bool SupportsKeyGeneration() const { return false; }
 
   /// \brief Generate a new key in the KMS, returned in plain and wrapped form.
-  virtual Result<GeneratedKey> GenerateKey(std::string_view wrapping_key_id) {
+  virtual Result<GeneratedKey> GenerateKey(std::string_view /*wrapping_key_id*/) {
     return NotSupported("Key generation is not supported by this KMS client");
   }
 };

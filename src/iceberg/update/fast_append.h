@@ -106,10 +106,12 @@ class ICEBERG_EXPORT FastAppend : public SnapshotUpdate {
   // Stable input summaries for retry-safe summary_ rebuilds.
   SnapshotSummaryBuilder added_data_files_summary_;
   SnapshotSummaryBuilder appended_manifests_summary_;
+  // Copies may be reused across attempts, so their summary must survive too.
+  SnapshotSummaryBuilder copied_manifests_summary_;
   // User-provided summary properties restored after summary_ rebuilds.
   std::unordered_map<std::string, std::string> custom_summary_properties_;
   std::vector<ManifestFile> append_manifests_;
-  // Original manifests kept to recreate copied manifests after retry cleanup.
+  // Original inputs for manifests that must be copied.
   std::vector<ManifestFile> append_manifests_to_copy_;
   std::vector<ManifestFile> rewritten_append_manifests_;
   std::vector<ManifestFile> new_manifests_;

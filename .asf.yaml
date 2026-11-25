@@ -50,10 +50,6 @@ github:
     - manuzhang
   ghp_branch: gh-pages
   ghp_path: /
-  copilot_code_review:
-    enabled: true
-    review_drafts: true
-    review_on_push: true
 
 notifications:
   commits:      commits@iceberg.apache.org

@@ -231,6 +231,8 @@ TEST_F(PredicateTest, NamedReferenceBind) {
   ASSERT_THAT(bound_result, IsOk());
 
   auto bound_ref = bound_result.value();
+  const Bound& bound = *bound_ref;
+  EXPECT_EQ(bound.reference(), bound_ref);
   EXPECT_EQ(bound_ref->name(), "id");
   EXPECT_EQ(bound_ref->field().field_id(), 1);
   EXPECT_EQ(bound_ref->type()->type_id(), TypeId::kLong);
@@ -501,6 +503,26 @@ TEST_F(PredicateTest, LiteralConversionEdgeCases) {
 
   auto bound_large = bound_large_result.value();
   EXPECT_EQ(bound_large->op(), Expression::Operation::kTrue);
+}
+
+TEST_F(PredicateTest, RejectsComparisonsOnCompositeFields) {
+  Schema schema({
+      SchemaField::MakeOptional(
+          1, "s", struct_({SchemaField::MakeOptional(2, "value", int32())})),
+      SchemaField::MakeOptional(3, "l",
+                                list(SchemaField::MakeOptional(4, "element", int32()))),
+      SchemaField::MakeOptional(5, "m",
+                                map(SchemaField::MakeRequired(6, "key", string()),
+                                    SchemaField::MakeOptional(7, "value", int32()))),
+  });
+  for (const std::string name : {"s", "l", "m"}) {
+    SCOPED_TRACE(name);
+    EXPECT_THAT(Expressions::Equal(name, Literal::Int(1))->Bind(schema, true),
+                IsError(ErrorKind::kInvalidExpression));
+    EXPECT_THAT(
+        Expressions::In(name, {Literal::Int(1), Literal::Int(2)})->Bind(schema, true),
+        IsError(ErrorKind::kInvalidExpression));
+  }
 }
 
 TEST_F(PredicateTest, ComplexExpressionCombinations) {

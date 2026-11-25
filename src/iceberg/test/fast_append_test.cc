@@ -19,6 +19,7 @@
 
 #include "iceberg/update/fast_append.h"
 
+#include <chrono>
 #include <format>
 #include <functional>
 #include <limits>
@@ -26,6 +27,7 @@
 #include <optional>
 #include <stdexcept>
 #include <string>
+#include <string_view>
 #include <thread>
 #include <unordered_set>
 #include <variant>
@@ -39,7 +41,6 @@
 #include "iceberg/exception.h"
 #include "iceberg/expression/expressions.h"
 #include "iceberg/manifest/manifest_entry.h"
-#include "iceberg/manifest/manifest_reader.h"
 #include "iceberg/manifest/manifest_writer.h"
 #include "iceberg/metrics/commit_report.h"
 #include "iceberg/metrics/metrics_reporter.h"
@@ -60,6 +61,7 @@
 #include "iceberg/update/overwrite_files.h"
 #include "iceberg/update/rewrite_files.h"
 #include "iceberg/update/update_properties.h"
+#include "iceberg/util/timepoint.h"
 #include "iceberg/util/uuid.h"
 
 namespace iceberg {
@@ -175,14 +177,6 @@ class FastAppendTest : public UpdateTestBase {
     return std::vector<ManifestFile>(manifests.begin(), manifests.end());
   }
 
-  Result<std::vector<ManifestEntry>> ReadEntries(const ManifestFile& manifest) {
-    ICEBERG_ASSIGN_OR_RAISE(
-        auto spec, table_->metadata()->PartitionSpecById(manifest.partition_spec_id));
-    ICEBERG_ASSIGN_OR_RAISE(auto reader,
-                            ManifestReader::Make(manifest, file_io_, schema_, spec));
-    return reader->Entries();
-  }
-
   std::shared_ptr<PartitionSpec> spec_;
   std::shared_ptr<Schema> schema_;
   std::shared_ptr<DataFile> file_a_;
@@ -292,7 +286,7 @@ TEST_F(FastAppendTest, WriteManifestGroups) {
     ASSERT_TRUE(manifests[group_index].added_files_count.has_value());
     EXPECT_EQ(manifests[group_index].added_files_count.value(), kGroupSize);
 
-    ICEBERG_UNWRAP_OR_FAIL(auto entries, ReadEntries(manifests[group_index]));
+    ICEBERG_UNWRAP_OR_FAIL(auto entries, ReadManifestEntries(manifests[group_index]));
     ASSERT_EQ(entries.size(), kGroupSize);
     const size_t offset = group_index * kGroupSize;
     for (size_t entry_index = 0; entry_index < entries.size(); ++entry_index) {
@@ -429,7 +423,7 @@ TEST_F(FastAppendTest, TransactionApplyFailureCleansUpStagedFiles) {
   EXPECT_THAT(deleted_paths, ::testing::SizeIs(2U));
 }
 
-TEST_F(FastAppendTest, RebaseCopiesAppendManifestAgain) {
+TEST_F(FastAppendTest, RebaseReusesCopiedAppendManifest) {
   table_->metadata()->format_version = 1;
   ASSERT_THAT(
       TableMetadataUtil::Write(*file_io_, std::string(table_->metadata_file_location()),
@@ -449,18 +443,23 @@ TEST_F(FastAppendTest, RebaseCopiesAppendManifestAgain) {
       ASSERT_THAT(properties->Commit(), IsOk());
     }
     ICEBERG_UNWRAP_OR_FAIL(auto snapshot, txn->current().Snapshot());
+    EXPECT_THAT(snapshot->summary,
+                ::testing::Contains(::testing::Pair(
+                    std::string(SnapshotSummaryFields::kAddedRecords), "100")));
     SnapshotReader snapshot_reader(snapshot.get());
     ICEBERG_UNWRAP_OR_FAIL(auto manifests, snapshot_reader.DataManifests(file_io_));
     ASSERT_THAT(manifests, ::testing::SizeIs(1));
     const auto& manifest_path = manifests[0].manifest_path;
     EXPECT_NE(manifest_path, path);
-    EXPECT_THAT(attempt_manifests, ::testing::Not(::testing::Contains(manifest_path)));
+    if (!attempt_manifests.empty()) {
+      EXPECT_EQ(manifest_path, attempt_manifests.front());
+    }
+    // The copy is immutable, but each attempt needs a new manifest list.
+    EXPECT_THAT(attempt_lists,
+                ::testing::Not(::testing::Contains(snapshot->manifest_list)));
     attempt_manifests.push_back(manifest_path);
     attempt_lists.push_back(snapshot->manifest_list);
-    ICEBERG_UNWRAP_OR_FAIL(auto entries, ReadEntries(manifests[0]));
-    ASSERT_THAT(entries, ::testing::SizeIs(1));
-    ASSERT_NE(entries[0].data_file, nullptr);
-    EXPECT_EQ(entries[0].data_file->file_path, file_a_->file_path);
+    ExpectManifestEntries(manifests[0], {file_a_->file_path}, {ManifestStatus::kAdded});
   });
   ICEBERG_UNWRAP_OR_FAIL(txn, table_->NewTransaction());
   ICEBERG_UNWRAP_OR_FAIL(auto fast_append, txn->NewFastAppend());
@@ -487,12 +486,13 @@ TEST_F(FastAppendTest, RebaseCopiesAppendManifestAgain) {
   std::unordered_set<std::string> unique_deleted_paths(deleted_paths.begin(),
                                                        deleted_paths.end());
   EXPECT_THAT(unique_deleted_paths,
-              ::testing::UnorderedElementsAre(attempt_manifests[0], attempt_lists[0],
-                                              attempt_manifests[1], attempt_lists[1]));
+              ::testing::UnorderedElementsAre(attempt_lists[0], attempt_lists[1]));
+  EXPECT_THAT(deleted_paths, ::testing::SizeIs(2));
   EXPECT_THAT(deleted_paths, ::testing::Not(::testing::Contains(path)));
   EXPECT_THAT(deleted_paths,
               ::testing::Not(::testing::Contains(manifests[0].manifest_path)));
   EXPECT_THAT(file_io_->ReadFile(path, std::nullopt), IsOk());
+  EXPECT_THAT(file_io_->ReadFile(manifests[0].manifest_path, std::nullopt), IsOk());
   EXPECT_THAT(file_io_->ReadFile(attempt_lists[2], std::nullopt), IsOk());
 }
 
@@ -511,10 +511,10 @@ TEST_F(FastAppendTest, AppendManifestWithSnapshotIdInheritance) {
   ASSERT_THAT(manifests, ::testing::SizeIs(1));
   EXPECT_EQ(manifests[0].manifest_path, path);
   EXPECT_EQ(manifests[0].added_snapshot_id, snapshot->snapshot_id);
-  ICEBERG_UNWRAP_OR_FAIL(auto entries, ReadEntries(manifests[0]));
-  ASSERT_THAT(entries, ::testing::SizeIs(2));
-  EXPECT_EQ(entries[0].snapshot_id, snapshot->snapshot_id);
-  EXPECT_EQ(entries[1].snapshot_id, snapshot->snapshot_id);
+  ExpectManifestEntriesWithSnapshotIds(manifests[0],
+                                       {file_a_->file_path, file_b_->file_path},
+                                       {ManifestStatus::kAdded, ManifestStatus::kAdded},
+                                       {snapshot->snapshot_id, snapshot->snapshot_id});
 }
 
 TEST_F(FastAppendTest, AppendManifestWithExplicitInvalidSnapshotIdIsCopied) {
@@ -533,10 +533,10 @@ TEST_F(FastAppendTest, AppendManifestWithExplicitInvalidSnapshotIdIsCopied) {
   ASSERT_THAT(manifests, ::testing::SizeIs(1));
   EXPECT_NE(manifests[0].manifest_path, path);
   EXPECT_EQ(manifests[0].added_snapshot_id, snapshot->snapshot_id);
-  ICEBERG_UNWRAP_OR_FAIL(auto entries, ReadEntries(manifests[0]));
-  ASSERT_THAT(entries, ::testing::SizeIs(2));
-  EXPECT_EQ(entries[0].snapshot_id, snapshot->snapshot_id);
-  EXPECT_EQ(entries[1].snapshot_id, snapshot->snapshot_id);
+  ExpectManifestEntriesWithSnapshotIds(manifests[0],
+                                       {file_a_->file_path, file_b_->file_path},
+                                       {ManifestStatus::kAdded, ManifestStatus::kAdded},
+                                       {snapshot->snapshot_id, snapshot->snapshot_id});
 }
 
 TEST_F(FastAppendTest, AppendDuplicateFile) {
@@ -595,6 +595,116 @@ TEST_F(SnapshotUpdateTest, ConcurrentManifestPaths) {
     EXPECT_THAT(path, ::testing::HasSubstr("/metadata/"));
     EXPECT_THAT(path, ::testing::HasSubstr("-m"));
   }
+}
+
+class SnapshotTimestampTest : public UpdateTestBase {
+ protected:
+  static constexpr int64_t kOldSnapshotId = 3051729675574597004;
+  static constexpr int64_t kCurrentSnapshotId = 3055729675574597004;
+  static constexpr std::string_view kAuditBranch = "audit";
+
+  // Register TableMetadataV2Valid with main's head moved one hour into the
+  // future, which acts as a clock that does not advance past it, and an
+  // "audit" branch pointing at the older snapshot from the past.
+  void RegisterWithFutureMainHead() {
+    ICEBERG_UNWRAP_OR_FAIL(auto metadata,
+                           ReadTableMetadataFromResource("TableMetadataV2Valid.json"));
+    metadata->location = table_location_;
+    future_ms_ = CurrentTimePointMs() + std::chrono::hours(1);
+    for (auto& snapshot : metadata->snapshots) {
+      if (snapshot->snapshot_id == kCurrentSnapshotId) {
+        snapshot->timestamp_ms = future_ms_;
+      }
+    }
+    for (auto& entry : metadata->snapshot_log) {
+      if (entry.snapshot_id == kCurrentSnapshotId) {
+        entry.timestamp_ms = future_ms_;
+      }
+    }
+    ICEBERG_UNWRAP_OR_FAIL(auto audit, SnapshotRef::MakeBranch(kOldSnapshotId));
+    metadata->refs[std::string(kAuditBranch)] = std::move(audit);
+
+    std::ignore = catalog_->DropTable(table_ident_, /*purge=*/false);
+    auto metadata_location = std::format("{}/metadata/00001-{}.metadata.json",
+                                         table_location_, Uuid::GenerateV7().ToString());
+    ASSERT_THAT(TableMetadataUtil::Write(*file_io_, metadata_location, *metadata),
+                IsOk());
+    ICEBERG_UNWRAP_OR_FAIL(table_,
+                           catalog_->RegisterTable(table_ident_, metadata_location));
+  }
+
+  // Commit an empty snapshot to the branch and return the branch's new head.
+  Result<std::shared_ptr<Snapshot>> CommitTo(
+      std::string_view branch = SnapshotRef::kMainBranch) {
+    ICEBERG_ASSIGN_OR_RAISE(auto ctx,
+                            TransactionContext::Make(table_, TransactionKind::kUpdate));
+    auto update = std::make_shared<TestSnapshotUpdate>(ctx);
+    update->ToBranch(std::string(branch));
+    ICEBERG_RETURN_UNEXPECTED(update->Commit());
+    ICEBERG_RETURN_UNEXPECTED(table_->Refresh());
+    const auto& metadata = table_->metadata();
+    auto it = metadata->refs.find(std::string(branch));
+    ICEBERG_CHECK(it != metadata->refs.end(), "Missing branch {}", branch);
+    return metadata->SnapshotById(it->second->snapshot_id);
+  }
+
+  TimePointMs future_ms_;
+};
+
+TEST_F(SnapshotTimestampTest, FirstSnapshotUsesCurrentTime) {
+  RegisterTableFromResource("TableMetadataV2ValidMinimal.json");
+  ASSERT_EQ(table_->metadata()->snapshots.size(), 0);
+
+  auto before = CurrentTimePointMs();
+  ICEBERG_UNWRAP_OR_FAIL(auto snapshot, CommitTo());
+  auto after = CurrentTimePointMs();
+
+  EXPECT_FALSE(snapshot->parent_snapshot_id.has_value());
+  EXPECT_GE(snapshot->timestamp_ms, before);
+  EXPECT_LE(snapshot->timestamp_ms, after);
+}
+
+TEST_F(SnapshotTimestampTest, SuccessiveCommitsStrictlyIncrease) {
+  RegisterTableFromResource("TableMetadataV2ValidMinimal.json");
+
+  // Commits run faster than the clock ticks, so some share a millisecond.
+  ICEBERG_UNWRAP_OR_FAIL(auto previous, CommitTo());
+  for (int i = 0; i < 20; ++i) {
+    ICEBERG_UNWRAP_OR_FAIL(auto snapshot, CommitTo());
+    ASSERT_EQ(snapshot->parent_snapshot_id, previous->snapshot_id);
+    EXPECT_GT(snapshot->timestamp_ms, previous->timestamp_ms);
+    previous = std::move(snapshot);
+  }
+}
+
+TEST_F(SnapshotTimestampTest, FutureParentGetsParentPlusOne) {
+  RegisterWithFutureMainHead();
+
+  ICEBERG_UNWRAP_OR_FAIL(auto first, CommitTo());
+  EXPECT_EQ(first->parent_snapshot_id, kCurrentSnapshotId);
+  EXPECT_EQ(first->timestamp_ms, future_ms_ + std::chrono::milliseconds(1));
+
+  // The clock is still behind the parent, so the next commit bumps again.
+  ICEBERG_UNWRAP_OR_FAIL(auto second, CommitTo());
+  EXPECT_EQ(second->parent_snapshot_id, first->snapshot_id);
+  EXPECT_EQ(second->timestamp_ms, future_ms_ + std::chrono::milliseconds(2));
+}
+
+TEST_F(SnapshotTimestampTest, UsesParentOnTargetBranch) {
+  RegisterWithFutureMainHead();
+
+  // The audit branch's parent is in the past, so its commit uses the current
+  // time even though main's head is in the future.
+  auto before = CurrentTimePointMs();
+  ICEBERG_UNWRAP_OR_FAIL(auto audit, CommitTo(kAuditBranch));
+  auto after = CurrentTimePointMs();
+  EXPECT_EQ(audit->parent_snapshot_id, kOldSnapshotId);
+  EXPECT_GE(audit->timestamp_ms, before);
+  EXPECT_LE(audit->timestamp_ms, after);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto main, CommitTo());
+  EXPECT_EQ(main->parent_snapshot_id, kCurrentSnapshotId);
+  EXPECT_EQ(main->timestamp_ms, future_ms_ + std::chrono::milliseconds(1));
 }
 
 namespace {
@@ -1241,10 +1351,10 @@ TEST_F(FastAppendTest, ReplayBecomingNoopCleansStagingWithoutReporting) {
       EXPECT_EQ(committed->properties().configs().at("effective"), "value");
       EXPECT_EQ(txn->state(), TransactionState::kCommitted);
     }
-    EXPECT_EQ(deletes, 4);
+    EXPECT_EQ(deletes, 3);
     EXPECT_EQ(reports, 0);
     EXPECT_THAT(append->Commit(), IsError(ErrorKind::kValidationFailed));
-    EXPECT_EQ(deletes, 4);
+    EXPECT_EQ(deletes, 3);
   }
 }
 

@@ -22,33 +22,47 @@
 #include <memory>
 #include <utility>
 
+#include "iceberg/inspect/history_table.h"
+#include "iceberg/inspect/manifests_table.h"
+#include "iceberg/inspect/metadata_scan.h"
+#include "iceberg/inspect/refs_table.h"
+#include "iceberg/inspect/snapshots_table.h"
+
 namespace iceberg {
 
-MetadataTable::MetadataTable(std::shared_ptr<Table> source_table)
+MetadataTable::MetadataTable(std::shared_ptr<const Table> source_table)
     : source_table_(std::move(source_table)) {}
 
 MetadataTable::~MetadataTable() = default;
 
-bool MetadataTable::supports_time_travel() const noexcept { return false; }
+Result<std::unique_ptr<MetadataTable>> MetadataTable::Make(
+    std::shared_ptr<const Table> table, MetadataTableKind kind) {
+  switch (kind) {
+    case MetadataTableKind::kSnapshots:
+      return SnapshotsTable::Make(std::move(table));
+    case MetadataTableKind::kRefs:
+      return RefsTable::Make(std::move(table));
+    case MetadataTableKind::kHistory:
+      return HistoryTable::Make(std::move(table));
+    case MetadataTableKind::kManifests:
+      return ManifestsTable::Make(std::move(table));
+    default:
+      break;
+  }
+  return NotImplemented("Metadata table kind is not implemented");
+}
 
-const std::shared_ptr<Table>& MetadataTable::source_table() const {
+const std::shared_ptr<const Table>& MetadataTable::source_table() const {
   return source_table_;
 }
 
-TimeTravelMetadataTable::TimeTravelMetadataTable(std::shared_ptr<Table> source_table)
-    : MetadataTable(std::move(source_table)) {}
-
-TimeTravelMetadataTable::~TimeTravelMetadataTable() = default;
-
-bool TimeTravelMetadataTable::supports_time_travel() const noexcept { return true; }
-
-Result<ArrowArrayStream> TimeTravelMetadataTable::Scan() {
-  return ScanSnapshot(SnapshotSelection{});
+Result<std::shared_ptr<Schema>> MetadataTable::SchemaForScan(
+    const TableMetadata& metadata) const {
+  return schema();
 }
 
-Result<ArrowArrayStream> TimeTravelMetadataTable::Scan(
-    const SnapshotSelection& snapshot_selection) {
-  return ScanSnapshot(snapshot_selection);
+Result<std::unique_ptr<MetadataScanBuilder>> MetadataTable::NewScan() const {
+  return MetadataScanBuilder::Make(*this);
 }
 
 }  // namespace iceberg

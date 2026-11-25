@@ -19,7 +19,10 @@
 
 #include "iceberg/expression/strict_metrics_evaluator.h"
 
-#include <ranges>
+#include <algorithm>
+#include <optional>
+#include <string>
+#include <string_view>
 
 #include "iceberg/expression/binder.h"
 #include "iceberg/expression/expression_visitor.h"
@@ -400,34 +403,76 @@ class StrictMetricsVisitor : public BoundVisitor<bool> {
       }
       lower_bound = std::move(lower);
     }
-    auto literals_view = literal_set | std::views::filter([&](const Literal& lit) {
-                           return lower_bound.has_value() && lower_bound.value() <= lit;
-                         });
-    // if all values are less than lower bound, rows must
-    // match (notIn).
-    if (lower_bound.has_value() && literals_view.empty()) {
-      return kRowsMustMatch;
-    }
 
+    std::optional<Literal> upper_bound;
     auto upper_it = data_file_.upper_bounds.find(id);
     if (upper_it != data_file_.upper_bounds.cend()) {
       ICEBERG_ASSIGN_OR_RAISE(auto upper, ParseBound(expr, upper_it->second));
-      auto filtered_view = literals_view | std::views::filter([&](const Literal& lit) {
-                             return upper >= lit;
-                           });
-      if (filtered_view.empty()) {
-        // if all remaining values are greater than upper bound,
-        // rows must match
-        // (notIn).
-        return kRowsMustMatch;
-      }
+      upper_bound = std::move(upper);
     }
+
+    if (!lower_bound.has_value() && !upper_bound.has_value()) {
+      return kRowsMightNotMatch;
+    }
+
+    // Treat a missing bound as unbounded on that side. If no value in literal_set
+    // falls within [lower_bound, upper_bound], no row from file can be in the set,
+    // so all rows satisfy NOT IN.
+    auto within_bounds = [&](const Literal& lit) {
+      return (!lower_bound.has_value() || *lower_bound <= lit) &&
+             (!upper_bound.has_value() || *upper_bound >= lit);
+    };
+    if (std::ranges::none_of(literal_set, within_bounds)) {
+      return kRowsMustMatch;
+    }
+
     return kRowsMightNotMatch;
   }
 
   Result<bool> StartsWith(const std::shared_ptr<Bound>& expr,
                           const Literal& lit) override {
-    return kRowsMightNotMatch;
+    RETURN_IF_NOT_REFERENCE(expr);
+
+    int32_t id = expr->reference()->field().field_id();
+
+    ICEBERG_ASSIGN_OR_RAISE(auto is_nested, IsNestedColumn(id));
+    if (is_nested) {
+      return kRowsMightNotMatch;
+    }
+
+    ICEBERG_ASSIGN_OR_RAISE(auto has_nulls, CanContainNulls(id));
+    if (has_nulls) {
+      return kRowsMightNotMatch;
+    }
+
+    auto lower_it = data_file_.lower_bounds.find(id);
+    auto upper_it = data_file_.upper_bounds.find(id);
+    if (lower_it == data_file_.lower_bounds.cend() ||
+        upper_it == data_file_.upper_bounds.cend()) {
+      return kRowsMightNotMatch;
+    }
+
+    if (expr->reference()->type()->type_id() != TypeId::kString ||
+        lit.type()->type_id() != TypeId::kString ||
+        !std::holds_alternative<std::string>(lit.value())) {
+      return InvalidExpression("StartsWith requires a string column and string literal");
+    }
+    std::string_view prefix = std::get<std::string>(lit.value());
+
+    ICEBERG_ASSIGN_OR_RAISE(auto lower, ParseBound(expr, lower_it->second));
+    std::string_view lower_str = std::get<std::string>(lower.value());
+    if (!lower_str.starts_with(prefix)) {
+      return kRowsMightNotMatch;
+    }
+
+    ICEBERG_ASSIGN_OR_RAISE(auto upper, ParseBound(expr, upper_it->second));
+    std::string_view upper_str = std::get<std::string>(upper.value());
+    if (!upper_str.starts_with(prefix)) {
+      return kRowsMightNotMatch;
+    }
+
+    // Both bounds start with the prefix, so all rows must start with the prefix.
+    return kRowsMustMatch;
   }
 
   Result<bool> NotStartsWith(const std::shared_ptr<Bound>& expr,

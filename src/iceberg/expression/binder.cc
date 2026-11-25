@@ -120,22 +120,22 @@ Result<std::optional<bool>> IsBoundVisitor::Or(const std::optional<bool>& left_r
 }
 
 Result<std::optional<bool>> IsBoundVisitor::Predicate(
-    const std::shared_ptr<BoundPredicate>& pred) {
+    const std::shared_ptr<BoundPredicate>& /*pred*/) {
   return true;
 }
 
 Result<std::optional<bool>> IsBoundVisitor::Predicate(
-    const std::shared_ptr<UnboundPredicate>& pred) {
+    const std::shared_ptr<UnboundPredicate>& /*pred*/) {
   return false;
 }
 
 Result<std::optional<bool>> IsBoundVisitor::Aggregate(
-    const std::shared_ptr<BoundAggregate>& aggregate) {
+    const std::shared_ptr<BoundAggregate>& /*aggregate*/) {
   return true;
 }
 
 Result<std::optional<bool>> IsBoundVisitor::Aggregate(
-    const std::shared_ptr<UnboundAggregate>& aggregate) {
+    const std::shared_ptr<UnboundAggregate>& /*aggregate*/) {
   return false;
 }
 

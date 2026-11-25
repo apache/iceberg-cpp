@@ -222,8 +222,8 @@ nlohmann::json ToJson(const UnboundTransform& transform) {
 nlohmann::json ToJson(const BoundReference& ref) { return ref.name(); }
 
 nlohmann::json ToJson(const BoundTransform& transform) {
-  auto& mut = const_cast<BoundTransform&>(transform);
-  return MakeTransformJson(transform.transform()->ToString(), mut.reference()->name());
+  return MakeTransformJson(transform.transform()->ToString(),
+                           transform.reference()->name());
 }
 
 Result<std::unique_ptr<NamedReference>> NamedReferenceFromJson(

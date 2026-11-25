@@ -472,7 +472,8 @@ Status AppendFieldToBuilder(const ::avro::NodePtr& avro_node,
                             const SchemaField& projected_field,
                             const arrow::MetadataColumnContext& metadata_context,
                             ::arrow::ArrayBuilder* array_builder) {
-  if (projection.kind == FieldProjection::Kind::kNull) {
+  if (projection.kind == FieldProjection::Kind::kNull ||
+      arrow::ShouldReadRowLineageAsNull(projected_field.field_id(), metadata_context)) {
     ICEBERG_ARROW_RETURN_NOT_OK(array_builder->AppendNull());
     return {};
   }

@@ -58,12 +58,11 @@ const std::set<int32_t>& MetadataColumns::MetadataFieldIds() {
 }
 
 bool MetadataColumns::IsMetadataColumn(std::string_view name) {
-  return name == kPartitionColumnName ||
-         GetMetadataColumnMap().find(name) != GetMetadataColumnMap().end();
+  return name == kPartitionColumnName || GetMetadataColumnMap().contains(name);
 }
 
 bool MetadataColumns::IsMetadataColumn(int32_t id) {
-  return GetMetadataFieldIdSet().find(id) != GetMetadataFieldIdSet().end();
+  return GetMetadataFieldIdSet().contains(id);
 }
 
 bool MetadataColumns::IsRowLineageColumn(int32_t id) {

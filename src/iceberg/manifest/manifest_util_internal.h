@@ -32,6 +32,11 @@
 
 namespace iceberg {
 
+/// \brief Read the format version recorded in a manifest's file metadata.
+/// Missing format-version metadata identifies a v1 manifest.
+ICEBERG_EXPORT Result<int8_t> ReadManifestFormatVersion(
+    const ManifestFile& manifest, const std::shared_ptr<FileIO>& file_io);
+
 /// \brief Copy an append manifest with a new snapshot ID.
 ///
 /// This function copies a manifest file that contains only ADDED entries,
@@ -52,5 +57,14 @@ ICEBERG_EXPORT Result<ManifestFile> CopyAppendManifest(
     const std::shared_ptr<Schema>& schema, const std::shared_ptr<PartitionSpec>& spec,
     int64_t snapshot_id, const std::string& output_path, int8_t format_version,
     SnapshotSummaryBuilder* summary_builder = nullptr);
+
+/// \brief Copy a manifest containing only EXISTING entries, preserving their
+/// snapshot IDs, sequence numbers, and row IDs. Missing v1 sequence numbers are
+/// materialized as zero. The caller owns output_path and must clean it up if
+/// copying or committing fails.
+ICEBERG_EXPORT Result<ManifestFile> CopyRewriteManifest(
+    const ManifestFile& manifest, const std::shared_ptr<FileIO>& file_io,
+    const std::shared_ptr<Schema>& schema, const std::shared_ptr<PartitionSpec>& spec,
+    int64_t snapshot_id, const std::string& output_path, int8_t format_version);
 
 }  // namespace iceberg

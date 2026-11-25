@@ -21,17 +21,24 @@
 
 #include <algorithm>
 #include <memory>
+#include <numeric>
 #include <optional>
 #include <utility>
+#include <vector>
+
+#include <nanoarrow/nanoarrow.h>
 
 #include "iceberg/arrow_c_data_guard_internal.h"
 #include "iceberg/arrow_c_data_util_internal.h"
 #include "iceberg/data/delete_filter.h"
+#include "iceberg/expression/binder.h"
+#include "iceberg/expression/evaluator.h"
 #include "iceberg/file_reader.h"
 #include "iceberg/manifest/manifest_entry.h"
+#include "iceberg/nanoarrow_status_internal.h"
 #include "iceberg/partition_spec.h"
+#include "iceberg/row/arrow_array_wrapper.h"
 #include "iceberg/schema.h"
-#include "iceberg/schema_internal.h"
 #include "iceberg/table_scan.h"
 #include "iceberg/transform.h"
 #include "iceberg/util/macros.h"
@@ -97,26 +104,21 @@ Result<ReaderOptions> MakeReaderOptions(
   };
 }
 
-class MergeOnReadStreamSource {
+// Streams one task's rows through optional delete filtering, optional residual
+// evaluation, and projection to the caller's schema. Tasks with deletes and
+// tasks whose residual filter is enforced share the same output projection.
+// Delete-only columns and row positions are pruned before returning batches.
+class TaskStreamSource {
  public:
-  MergeOnReadStreamSource(std::unique_ptr<Reader> reader,
-                          std::unique_ptr<DeleteFilter> delete_filter,
-                          std::shared_ptr<::iceberg::Schema> required_schema,
-                          std::shared_ptr<::iceberg::Schema> projected_schema,
-                          ProjectionContext projection_context)
+  TaskStreamSource(std::unique_ptr<Reader> reader,
+                   std::unique_ptr<DeleteFilter> delete_filter,
+                   std::unique_ptr<Evaluator> residual_evaluator,
+                   bool project_all_columns, ProjectionContext projection_context)
       : reader_(std::move(reader)),
         delete_filter_(std::move(delete_filter)),
-        required_schema_(std::move(required_schema)),
-        projected_schema_(std::move(projected_schema)),
-        project_all_rows_(required_schema_->SameSchema(*projected_schema_)),
+        residual_evaluator_(std::move(residual_evaluator)),
+        project_all_columns_(project_all_columns),
         projection_context_(std::move(projection_context)) {}
-
-  ~MergeOnReadStreamSource() {
-    if (cached_schema_.has_value() && cached_schema_->release != nullptr) {
-      cached_schema_->release(&cached_schema_.value());
-    }
-  }
-
   Status Close() {
     if (reader_ == nullptr) {
       return {};
@@ -125,11 +127,9 @@ class MergeOnReadStreamSource {
   }
 
   Result<std::optional<ArrowArray>> Next() {
-    if (!cached_schema_.has_value()) {
-      // File readers expose one stable Arrow schema for every batch in the stream.
-      ICEBERG_ASSIGN_OR_RAISE(cached_schema_, reader_->Schema());
-    }
-    ArrowSchema& input_arrow_schema = cached_schema_.value();
+    // The context owns the physical Arrow schema in the layout the reader enforces,
+    // so every batch is interpreted in the layout the stream declares.
+    const ArrowSchema& input_arrow_schema = projection_context_.input_arrow_schema();
 
     while (true) {
       ICEBERG_ASSIGN_OR_RAISE(auto next_batch, reader_->Next());
@@ -140,37 +140,103 @@ class MergeOnReadStreamSource {
       ArrowArray input_batch = std::move(next_batch.value());
       internal::ArrowArrayGuard input_batch_guard(&input_batch);
 
-      ICEBERG_ASSIGN_OR_RAISE(
-          auto alive, delete_filter_->ComputeAliveRows(input_arrow_schema, input_batch));
-      if (alive.empty()) {
-        continue;
+      // Rows still selected. While `filtered` is false, every row of the batch
+      // is still a candidate and `selection` has not been materialized.
+      std::vector<int32_t> selection;
+      bool filtered = false;
+
+      if (delete_filter_ != nullptr) {
+        ICEBERG_ASSIGN_OR_RAISE(auto alive, delete_filter_->ComputeAliveRows(
+                                                input_arrow_schema, input_batch));
+        if (alive.empty()) {
+          continue;
+        }
+        filtered = alive.alive_count() != input_batch.length;
+        if (filtered) {
+          selection = std::move(alive.indices);
+        }
       }
 
-      if (alive.alive_count() == input_batch.length && project_all_rows_) {
+      if (residual_evaluator_ != nullptr) {
+        const int64_t candidate_count =
+            filtered ? static_cast<int64_t>(selection.size()) : input_batch.length;
+        ICEBERG_ASSIGN_OR_RAISE(
+            auto kept, KeepResidualMatches(input_arrow_schema, input_batch, selection,
+                                           /*all_rows_selected=*/!filtered));
+        filtered = filtered || std::cmp_not_equal(kept.size(), candidate_count);
+        if (filtered) {
+          selection = std::move(kept);
+          if (selection.empty()) {
+            continue;
+          }
+        }
+      }
+
+      if (!filtered && project_all_columns_) {
         // Transfer ownership to the stream result; the local guard must not release it.
         ArrowArray output_batch = input_batch;
         input_batch.release = nullptr;
         return output_batch;
       }
 
-      return ProjectBatch(&input_batch, alive.indices, projection_context_);
+      if (!filtered) {
+        // Project a fully selected batch, e.g. because columns were pruned or
+        // reordered for evaluation.
+        selection.resize(static_cast<size_t>(input_batch.length));
+        std::iota(selection.begin(), selection.end(), int32_t{0});  // NOLINT
+      }
+      return ProjectBatch(&input_batch, selection, projection_context_);
     }
   }
 
   Result<ArrowSchema> Schema() {
-    ArrowSchema schema;
-    ICEBERG_RETURN_UNEXPECTED(ToArrowSchema(*projected_schema_, &schema));
+    ArrowSchema schema{};
+    ICEBERG_NANOARROW_RETURN_UNEXPECTED(
+        ArrowSchemaDeepCopy(&projection_context_.output_arrow_schema(), &schema));
     return schema;
   }
 
  private:
+  // Returns the candidate rows that match the residual filter: either the
+  // previously selected rows, or every row when no filter has removed a row yet.
+  Result<std::vector<int32_t>> KeepResidualMatches(const ArrowSchema& input_arrow_schema,
+                                                   const ArrowArray& input_batch,
+                                                   const std::vector<int32_t>& selection,
+                                                   bool all_rows_selected) {
+    ICEBERG_PRECHECK(std::in_range<int32_t>(input_batch.length),
+                     "Batch length {} exceeds int32_t row index capacity",
+                     input_batch.length);
+    // DeleteFilter preserves existing field positions when adding delete keys.
+    ICEBERG_ASSIGN_OR_RAISE(auto row,
+                            ArrowArrayStructLike::Make(input_arrow_schema, input_batch));
+    std::vector<int32_t> kept;
+    auto keep = [&](int64_t index) -> Status {
+      ICEBERG_RETURN_UNEXPECTED(row->Reset(index));
+      ICEBERG_ASSIGN_OR_RAISE(bool matches, residual_evaluator_->Evaluate(*row));
+      if (matches) {
+        kept.push_back(static_cast<int32_t>(index));
+      }
+      return {};
+    };
+    if (all_rows_selected) {
+      kept.reserve(static_cast<size_t>(input_batch.length));
+      for (int64_t index = 0; index < input_batch.length; ++index) {
+        ICEBERG_RETURN_UNEXPECTED(keep(index));
+      }
+    } else {
+      kept.reserve(selection.size());
+      for (int32_t index : selection) {
+        ICEBERG_RETURN_UNEXPECTED(keep(index));
+      }
+    }
+    return kept;
+  }
+
   std::unique_ptr<Reader> reader_;
   std::unique_ptr<DeleteFilter> delete_filter_;
-  std::shared_ptr<::iceberg::Schema> required_schema_;
-  std::shared_ptr<::iceberg::Schema> projected_schema_;
-  bool project_all_rows_ = false;
+  std::unique_ptr<Evaluator> residual_evaluator_;
+  bool project_all_columns_ = false;
   ProjectionContext projection_context_;
-  std::optional<ArrowSchema> cached_schema_;
 };
 
 }  // namespace
@@ -222,8 +288,14 @@ class FileScanTaskReader::Impl {
     }
 
     auto filter = task.residual_filter();
+    const bool apply_residual = apply_residuals_ && filter != nullptr &&
+                                filter->op() != Expression::Operation::kTrue;
+    if (apply_residual) {
+      ICEBERG_ASSIGN_OR_RAISE(filter,
+                              Binder::Bind(*projected_schema_, filter, case_sensitive_));
+    }
 
-    if (task.delete_files().empty()) {
+    if (task.delete_files().empty() && !apply_residual) {
       ICEBERG_ASSIGN_OR_RAISE(
           auto options,
           MakeReaderOptions(task, io_, projected_schema_, filter, case_sensitive_,
@@ -234,23 +306,21 @@ class FileScanTaskReader::Impl {
       return MakeArrowArrayStream(std::move(reader));
     }
 
-    const bool has_position_deletes =
-        std::any_of(task.delete_files().begin(), task.delete_files().end(),
-                    [](const std::shared_ptr<DataFile>& f) {
-                      return f->content == DataFile::Content::kPositionDeletes;
-                    });
+    std::unique_ptr<DeleteFilter> delete_filter;
+    std::shared_ptr<Schema> required_schema = projected_schema_;
+    if (!task.delete_files().empty()) {
+      const bool has_position_deletes =
+          std::any_of(task.delete_files().begin(), task.delete_files().end(),
+                      [](const std::shared_ptr<DataFile>& f) {
+                        return f->content == DataFile::Content::kPositionDeletes;
+                      });
 
-    ICEBERG_ASSIGN_OR_RAISE(
-        auto delete_filter,
-        DeleteFilter::Make(data_file->file_path, task.delete_files(), projected_schema_,
-                           io_, field_lookup_, has_position_deletes, delete_counter_));
-
-    auto required_schema = delete_filter->RequiredSchema();
-    auto project_batch_function = ProjectionContext::ResolveProjectBatchFunction();
-    // ProjectionContext borrows schemas that are kept in MergeOnReadStreamSource.
-    ICEBERG_ASSIGN_OR_RAISE(auto projection_context,
-                            ProjectionContext::Make(*required_schema, *projected_schema_,
-                                                    project_batch_function));
+      ICEBERG_ASSIGN_OR_RAISE(
+          delete_filter,
+          DeleteFilter::Make(data_file->file_path, task.delete_files(), projected_schema_,
+                             io_, field_lookup_, has_position_deletes, delete_counter_));
+      required_schema = delete_filter->RequiredSchema();
+    }
 
     ICEBERG_ASSIGN_OR_RAISE(
         auto options,
@@ -260,10 +330,27 @@ class FileScanTaskReader::Impl {
     ICEBERG_ASSIGN_OR_RAISE(auto reader,
                             ReaderFactoryRegistry::Open(data_file->file_format, options));
 
-    auto mor_reader = std::make_unique<MergeOnReadStreamSource>(
-        std::move(reader), std::move(delete_filter), std::move(required_schema),
-        projected_schema_, std::move(projection_context));
-    return MakeArrowArrayStream(std::move(mor_reader));
+    // Readers enforce the configured list type. Use the same setting for projection
+    // so pass-through and filtered batches match the stream's declared schema.
+    ICEBERG_ASSIGN_OR_RAISE(
+        auto projection_context,
+        ProjectionContext::Make(*required_schema, *projected_schema_,
+                                ProjectionContext::ResolveProjectBatchFunction(),
+                                properties_.Get(ReaderProperties::kArrowValidateBatch),
+                                properties_.Get(ReaderProperties::kArrowUseLargeList)));
+
+    std::unique_ptr<Evaluator> residual_evaluator;
+    if (apply_residual) {
+      ICEBERG_ASSIGN_OR_RAISE(
+          residual_evaluator,
+          Evaluator::Make(*projected_schema_, task.residual_filter(), case_sensitive_));
+    }
+
+    const bool project_all_columns = required_schema->SameSchema(*projected_schema_);
+    auto task_source = std::make_unique<TaskStreamSource>(
+        std::move(reader), std::move(delete_filter), std::move(residual_evaluator),
+        project_all_columns, std::move(projection_context));
+    return MakeArrowArrayStream(std::move(task_source));
   }
 
  private:
@@ -275,6 +362,7 @@ class FileScanTaskReader::Impl {
         case_sensitive_(options.case_sensitive),
         name_mapping_(std::move(options.name_mapping)),
         properties_(ReaderProperties::FromMap(options.properties)),
+        apply_residuals_(options.apply_residuals),
         field_lookup_(std::move(field_lookup)),
         delete_counter_(std::move(delete_counter)) {}
 
@@ -284,6 +372,7 @@ class FileScanTaskReader::Impl {
   bool case_sensitive_;
   std::shared_ptr<NameMapping> name_mapping_;
   ReaderProperties properties_;
+  bool apply_residuals_ = false;
   DeleteFilter::FieldLookup field_lookup_;
   std::shared_ptr<DeleteCounter> delete_counter_;
 };

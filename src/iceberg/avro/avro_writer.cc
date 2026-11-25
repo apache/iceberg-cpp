@@ -286,6 +286,8 @@ class AvroWriter::Impl {
   std::unique_ptr<AvroWriteBackend> backend_;
 };
 
+AvroWriter::AvroWriter() noexcept = default;
+
 AvroWriter::~AvroWriter() = default;
 
 Status AvroWriter::Write(ArrowArray* data) { return impl_->Write(data); }

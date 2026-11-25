@@ -95,6 +95,8 @@ class PositionPathVisitor {
   std::unordered_map<int32_t, std::vector<size_t>> Finish();
 
  private:
+  Status RecordPosition(const Type& type);
+
   constexpr static int32_t kUnassignedFieldId = -1;
   int32_t current_field_id_ = kUnassignedFieldId;
   std::vector<size_t> current_path_;

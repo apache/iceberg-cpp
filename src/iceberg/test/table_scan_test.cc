@@ -17,22 +17,36 @@
  * under the License.
  */
 
+#include <algorithm>
 #include <limits>
 #include <memory>
+#include <numeric>
 #include <optional>
 #include <string>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
+#include <arrow/array.h>
+#include <arrow/c/bridge.h>
+#include <arrow/json/from_string.h>
+#include <arrow/record_batch.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include "iceberg/data/data_writer.h"
+#include "iceberg/data/file_scan_task_reader.h"
 #include "iceberg/data_table_scan.h"
 #include "iceberg/expression/expressions.h"
+#include "iceberg/metadata_columns.h"
+#include "iceberg/parquet/parquet_register.h"
+#include "iceberg/schema_internal.h"
 #include "iceberg/snapshot.h"
 #include "iceberg/table_metadata.h"
+#include "iceberg/table_properties.h"
 #include "iceberg/test/executor.h"
 #include "iceberg/test/scan_test_base.h"
+#include "iceberg/util/macros.h"
 
 namespace iceberg {
 
@@ -77,6 +91,86 @@ class TableScanTest : public ScanTestBase {
                       .refs = {{"main", std::make_shared<SnapshotRef>(SnapshotRef{
                                             .snapshot_id = kSnapshotId,
                                             .retention = SnapshotRef::Branch{}})}}});
+  }
+
+  /// \brief Write a real Parquet data file into the mock file IO and return its
+  /// manifest entry data file.
+  Result<std::shared_ptr<DataFile>> WriteParquetDataFile(const std::string& path,
+                                                         int64_t row_count,
+                                                         int64_t max_row_group_rows) {
+    std::string rows = "[";
+    for (int64_t row = 0; row < row_count; ++row) {
+      if (row > 0) {
+        rows += ",";
+      }
+      rows += std::format("[{},\"value-{}\"]", row, row % 10);
+    }
+    rows += "]";
+
+    ArrowSchema arrow_c_schema;
+    ICEBERG_THROW_NOT_OK(ToArrowSchema(*schema_, &arrow_c_schema));
+    auto arrow_schema = ::arrow::ImportType(&arrow_c_schema).ValueOrDie();
+    auto array =
+        ::arrow::json::ArrayFromJSONString(::arrow::struct_(arrow_schema->fields()), rows)
+            .ValueOrDie();
+
+    struct ExportedArray {
+      ArrowArray array{};
+      ~ExportedArray() {
+        if (array.release != nullptr) {
+          array.release(&array);
+        }
+      }
+    } exported;
+    if (!::arrow::ExportArray(*array, &exported.array).ok()) {
+      return Invalid("Failed to export test batch for {}", path);
+    }
+
+    ICEBERG_ASSIGN_OR_RAISE(
+        auto writer,
+        DataWriter::Make({.path = path,
+                          .schema = schema_,
+                          .spec = unpartitioned_spec_,
+                          .partition = PartitionValues{},
+                          .format = FileFormatType::kParquet,
+                          .io = file_io_,
+                          .properties = {{"write.parquet.max-row-group-rows",
+                                          std::to_string(max_row_group_rows)}}}));
+    ICEBERG_RETURN_UNEXPECTED(writer->Write(&exported.array));
+    ICEBERG_RETURN_UNEXPECTED(writer->Close());
+    ICEBERG_ASSIGN_OR_RAISE(auto result, writer->Metadata());
+    if (result.data_files.empty()) {
+      return Invalid("Data writer produced no data file for {}", path);
+    }
+    return result.data_files[0];
+  }
+
+  /// \brief Write manifests for the given entries and build a table metadata whose
+  /// single snapshot references them.
+  std::shared_ptr<TableMetadata> MakeTaskPlanningMetadata(
+      std::vector<ManifestEntry> data_entries,
+      std::vector<ManifestEntry> delete_entries = {}) {
+    constexpr int64_t kSnapshotId = 1000L;
+    constexpr int64_t kSequenceNumber = 1L;
+
+    std::vector<ManifestFile> manifests;
+    manifests.push_back(WriteDataManifest(GetParam(), kSnapshotId,
+                                          std::move(data_entries), unpartitioned_spec_));
+    if (!delete_entries.empty()) {
+      manifests.push_back(WriteDeleteManifest(
+          GetParam(), kSnapshotId, std::move(delete_entries), unpartitioned_spec_));
+    }
+    std::string manifest_list_path =
+        WriteManifestList(GetParam(), kSnapshotId, kSequenceNumber, std::move(manifests));
+    auto snapshot = std::make_shared<Snapshot>(
+        Snapshot{.snapshot_id = kSnapshotId,
+                 .parent_snapshot_id = std::nullopt,
+                 .sequence_number = kSequenceNumber,
+                 .timestamp_ms = TimePointMsFromUnixMs(1609459200000L),
+                 .manifest_list = manifest_list_path,
+                 .schema_id = schema_->schema_id()});
+    return ScanTestBase::MakeTableMetadata({snapshot}, kSnapshotId, {},
+                                           unpartitioned_spec_);
   }
 
   std::shared_ptr<DataFile> MakePositionDeleteFile(
@@ -735,6 +829,65 @@ TEST_P(TableScanTest, PlanFilesWithDeleteFiles) {
   verify_tasks(streamed_tasks);
 }
 
+TEST_P(TableScanTest, PlanFilesValidatesReferencedDeletePartition) {
+  const int version = GetParam();
+  if (version < 2) GTEST_SKIP() << "Requires row-level deletes";
+
+  auto check = [&](const PartitionValues& data_partition,
+                   const PartitionValues& delete_partition,
+                   const std::shared_ptr<PartitionSpec>& delete_spec,
+                   std::string_view error) {
+    constexpr int64_t snapshot_id = 1000;
+    auto data =
+        MakeDataFile("/data.parquet", data_partition, partitioned_spec_->spec_id());
+    auto deletion = MakePositionDeleteFile("/deletion", delete_partition,
+                                           delete_spec->spec_id(), data->file_path);
+    if (version >= 3) {
+      deletion->file_format = FileFormatType::kPuffin;
+      deletion->content_offset = 4;
+      deletion->content_size_in_bytes = 6;
+    } else {
+      ICEBERG_UNWRAP_OR_FAIL(auto path, Literal::String(data->file_path).Serialize());
+      deletion->lower_bounds[MetadataColumns::kDeleteFilePathColumnId] = path;
+      deletion->upper_bounds[MetadataColumns::kDeleteFilePathColumnId] = path;
+    }
+    auto added = [&](auto file) {
+      return MakeEntry(ManifestStatus::kAdded, snapshot_id, 1, file);
+    };
+    auto manifest =
+        WriteDataManifest(version, snapshot_id, {added(data)}, partitioned_spec_);
+    auto deletes =
+        WriteDeleteManifest(version, snapshot_id, {added(deletion)}, delete_spec);
+    auto snapshot = std::make_shared<Snapshot>(Snapshot{
+        .snapshot_id = snapshot_id,
+        .sequence_number = 1,
+        .manifest_list = WriteManifestList(version, snapshot_id, 1, {manifest, deletes}),
+        .schema_id = schema_->schema_id()});
+    auto metadata =
+        ScanTestBase::MakeTableMetadata({snapshot}, snapshot_id, {}, delete_spec);
+    ICEBERG_UNWRAP_OR_FAIL(auto builder, MakeScanBuilder<DataTableScan>(metadata));
+    ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
+    auto planned = scan->PlanFiles();
+    if (error.empty()) {
+      ASSERT_TRUE(planned.has_value()) << planned.error().message;
+      ASSERT_EQ(planned->size(), 1U);
+      EXPECT_EQ(planned->front()->delete_files().size(), 1U);
+    } else {
+      ASSERT_FALSE(planned.has_value());
+      EXPECT_EQ(planned.error().kind, ErrorKind::kValidationFailed);
+      EXPECT_THAT(planned.error().message, testing::HasSubstr(std::string(error)));
+      EXPECT_THAT(planned.error().message, testing::HasSubstr(data->file_path));
+      EXPECT_THAT(planned.error().message, testing::HasSubstr(deletion->file_path));
+    }
+  };
+  PartitionValues zero(Literal::Int(0));
+  check(zero, PartitionValues(Literal::Int(1)), partitioned_spec_,
+        "Mismatched partition tuples");
+  check(zero, PartitionValues{}, unpartitioned_spec_, "Mismatched partition specs");
+  PartitionValues null_partition(Literal::Null(int32()));
+  check(null_partition, null_partition, partitioned_spec_, "");
+}
+
 TEST_P(TableScanTest, SchemaWithSelectedColumnsAndFilter) {
   auto schema = std::make_shared<Schema>(std::vector<SchemaField>{
       SchemaField::MakeRequired(/*field_id=*/1, "id", int32()),
@@ -855,6 +1008,266 @@ TEST_P(TableScanTest, SchemaWithSelectedColumnsAndFilter) {
     ICEBERG_UNWRAP_OR_FAIL(auto projected_schema, scan->schema());
 
     EXPECT_EQ(*projected_schema, *schema);
+  }
+}
+
+namespace {
+
+// A data file for split-planning tests. The path need not exist.
+std::shared_ptr<DataFile> MakeSplitPlanningDataFile(const std::string& path,
+                                                    int64_t file_size,
+                                                    std::vector<int64_t> split_offsets,
+                                                    int64_t record_count) {
+  auto file = std::make_shared<DataFile>();
+  file->file_path = path;
+  file->file_format = FileFormatType::kParquet;
+  file->record_count = record_count;
+  file->file_size_in_bytes = file_size;
+  file->split_offsets = std::move(split_offsets);
+  file->sort_order_id = 0;
+  file->partition_spec_id = 0;
+  return file;
+}
+
+std::vector<std::pair<int64_t, int64_t>> CollectGroupRanges(
+    const std::vector<std::shared_ptr<FileScanTaskGroup>>& groups) {
+  std::vector<std::pair<int64_t, int64_t>> ranges;
+  for (const auto& group : groups) {
+    for (const auto& task : group->tasks()) {
+      ranges.emplace_back(task->start(), task->length());
+    }
+  }
+  return ranges;
+}
+
+}  // namespace
+
+TEST_P(TableScanTest, PlanTasksWithManifestSplitOffsets) {
+  auto metadata = MakeTaskPlanningMetadata({MakeEntry(
+      ManifestStatus::kAdded, 1000L, 1L,
+      MakeSplitPlanningDataFile("/missing/data.parquet", 3000, {1200, 2300}, 30))});
+
+  ICEBERG_UNWRAP_OR_FAIL(auto builder, MakeScanBuilder<DataTableScan>(metadata));
+  builder->Option("read.split.target-size", "1000");
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
+  ICEBERG_UNWRAP_OR_FAIL(auto groups, scan->PlanTasks());
+
+  // These boundaries differ from the fixed-size fallback.
+  ASSERT_THAT(groups.size(), testing::Eq(3));
+  EXPECT_THAT(CollectGroupRanges(groups),
+              testing::ElementsAre(std::pair<int64_t, int64_t>{0, 1200},
+                                   std::pair<int64_t, int64_t>{1200, 1100},
+                                   std::pair<int64_t, int64_t>{2300, 700}));
+  for (const auto& group : groups) {
+    ASSERT_THAT(group->tasks().size(), testing::Eq(1));
+    EXPECT_TRUE(group->tasks()[0]->is_split());
+    EXPECT_THAT(group->tasks()[0]->data_file()->file_path,
+                testing::Eq("/missing/data.parquet"));
+  }
+}
+
+TEST_P(TableScanTest, PlanTasksUsesFixedByteRangesWithoutUsableManifestOffsets) {
+  // The data file does not exist. Neither absent nor unusable offsets need a footer.
+  for (const auto& offsets :
+       std::vector<std::vector<int64_t>>{{}, {1200, 1200}, {1200, 1100}, {1200, 2600}}) {
+    auto metadata = MakeTaskPlanningMetadata({MakeEntry(
+        ManifestStatus::kAdded, 1000L, 1L,
+        MakeSplitPlanningDataFile("/missing/data.parquet", 2600, offsets, 26))});
+    ICEBERG_UNWRAP_OR_FAIL(auto builder, MakeScanBuilder<DataTableScan>(metadata));
+    builder->Option("read.split.target-size", "1000");
+    builder->Option("read.split.planning-lookback", "1");
+    ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
+    ICEBERG_UNWRAP_OR_FAIL(auto groups, scan->PlanTasks());
+    EXPECT_THAT(CollectGroupRanges(groups),
+                testing::ElementsAre(std::pair<int64_t, int64_t>{0, 1000},
+                                     std::pair<int64_t, int64_t>{1000, 1000},
+                                     std::pair<int64_t, int64_t>{2000, 600}));
+  }
+}
+
+TEST_P(TableScanTest, FixedByteRangesReadEveryParquetRowOnce) {
+  parquet::RegisterAll();
+
+  constexpr int32_t kRows = 200;
+  ICEBERG_UNWRAP_OR_FAIL(auto entry_file,
+                         WriteParquetDataFile("planned-data.parquet", kRows, 50));
+  ASSERT_GT(entry_file->split_offsets.size(), 1);
+  entry_file->split_offsets.clear();
+  auto metadata = MakeTaskPlanningMetadata(
+      {MakeEntry(ManifestStatus::kAdded, 1000L, 1L, entry_file)});
+
+  const int64_t target = entry_file->file_size_in_bytes / 4;
+  ICEBERG_UNWRAP_OR_FAIL(auto builder, MakeScanBuilder<DataTableScan>(metadata));
+  builder->Option("read.split.target-size", std::to_string(target));
+  builder->Option("read.split.planning-lookback", "1");
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
+  ICEBERG_UNWRAP_OR_FAIL(auto groups, scan->PlanTasks());
+
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto reader,
+      FileScanTaskReader::Make(
+          {.io = file_io_, .table_schema = schema_, .projected_schema = schema_}));
+  std::vector<int32_t> ids;
+  for (const auto& group : groups) {
+    for (const auto& task : group->tasks()) {
+      ICEBERG_UNWRAP_OR_FAIL(auto stream, reader->Open(*task));
+      auto batches = ::arrow::ImportRecordBatchReader(&stream).ValueOrDie();
+      for (auto next : *batches) {
+        ASSERT_TRUE(next.ok()) << next.status();
+        const auto& column = static_cast<const ::arrow::Int32Array&>(*(*next)->column(0));
+        for (int64_t row = 0; row < column.length(); ++row) {
+          ids.push_back(column.Value(row));
+        }
+      }
+    }
+  }
+  std::ranges::sort(ids);
+  std::vector<int32_t> expected(kRows);
+  std::ranges::iota(expected, 0);
+  EXPECT_EQ(ids, expected);
+}
+
+TEST_P(TableScanTest, PlanTasksKeepsFilesAtOrBelowTargetWholeWithoutOffsets) {
+  for (int64_t file_size : {900, 1000}) {
+    auto metadata = MakeTaskPlanningMetadata({MakeEntry(
+        ManifestStatus::kAdded, 1000L, 1L,
+        MakeSplitPlanningDataFile("/missing/small.parquet", file_size, {}, 10))});
+    ICEBERG_UNWRAP_OR_FAIL(auto builder, MakeScanBuilder<DataTableScan>(metadata));
+    builder->Option("read.split.target-size", "1000");
+    ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
+    ICEBERG_UNWRAP_OR_FAIL(auto groups, scan->PlanTasks());
+    ASSERT_THAT(groups.size(), testing::Eq(1));
+    ASSERT_THAT(groups[0]->tasks().size(), testing::Eq(1));
+    EXPECT_FALSE(groups[0]->tasks()[0]->is_split());
+    EXPECT_EQ(groups[0]->tasks()[0]->length(), file_size);
+  }
+}
+
+TEST_P(TableScanTest, PlanTasksSettingsResolveScanOptionThenTableProperty) {
+  auto metadata = MakeTaskPlanningMetadata({MakeEntry(
+      ManifestStatus::kAdded, 1000L, 1L,
+      MakeSplitPlanningDataFile("/missing/data.parquet", 3000, {1000, 2000}, 30))});
+  metadata->properties = TableProperties::FromMap({{"read.split.target-size", "1000"}});
+
+  // The table property applies when the scan sets no option.
+  {
+    ICEBERG_UNWRAP_OR_FAIL(auto builder, MakeScanBuilder<DataTableScan>(metadata));
+    ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
+    ICEBERG_UNWRAP_OR_FAIL(auto groups, scan->PlanTasks());
+    ASSERT_THAT(groups.size(), testing::Eq(3));
+  }
+
+  // The scan option wins over the table property.
+  {
+    ICEBERG_UNWRAP_OR_FAIL(auto builder, MakeScanBuilder<DataTableScan>(metadata));
+    builder->Option("read.split.target-size", "5000");
+    ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
+    ICEBERG_UNWRAP_OR_FAIL(auto groups, scan->PlanTasks());
+    ASSERT_THAT(groups.size(), testing::Eq(1));
+    ASSERT_THAT(groups[0]->tasks().size(), testing::Eq(1));
+    EXPECT_FALSE(groups[0]->tasks()[0]->is_split());
+  }
+
+  // A malformed scan option fails planning.
+  {
+    ICEBERG_UNWRAP_OR_FAIL(auto builder, MakeScanBuilder<DataTableScan>(metadata));
+    builder->Option("read.split.target-size", "not-a-number");
+    ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
+    EXPECT_THAT(scan->PlanTasksStream(), IsError(ErrorKind::kInvalidArgument));
+  }
+
+  // An invalid table property fails planning when the scan sets no option.
+  {
+    auto invalid_metadata = MakeTaskPlanningMetadata({MakeEntry(
+        ManifestStatus::kAdded, 1000L, 1L,
+        MakeSplitPlanningDataFile("/missing/data.parquet", 3000, {1000, 2000}, 30))});
+    invalid_metadata->properties =
+        TableProperties::FromMap({{"read.split.target-size", "0"}});
+    ICEBERG_UNWRAP_OR_FAIL(auto builder,
+                           MakeScanBuilder<DataTableScan>(invalid_metadata));
+    ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
+    EXPECT_THAT(scan->PlanTasksStream(), IsError(ErrorKind::kInvalid));
+  }
+}
+
+TEST_P(TableScanTest, PlanTasksWithNoSnapshot) {
+  auto empty_metadata = std::make_shared<TableMetadata>(
+      TableMetadata{.format_version = GetParam(),
+                    .schemas = {schema_},
+                    .current_schema_id = schema_->schema_id(),
+                    .partition_specs = {unpartitioned_spec_},
+                    .default_spec_id = unpartitioned_spec_->spec_id(),
+                    .current_snapshot_id = -1,
+                    .snapshots = {},
+                    .refs = {}});
+
+  ICEBERG_UNWRAP_OR_FAIL(auto builder, MakeScanBuilder<DataTableScan>(empty_metadata));
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
+  ICEBERG_UNWRAP_OR_FAIL(auto groups, scan->PlanTasks());
+  EXPECT_TRUE(groups.empty());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto stream, scan->PlanTasksStream());
+  ICEBERG_UNWRAP_OR_FAIL(auto next, stream->Next());
+  EXPECT_FALSE(next.has_value());
+}
+
+TEST_P(TableScanTest, PlanTasksStreamConsumesGroupsIncrementally) {
+  auto metadata = MakeTaskPlanningMetadata({MakeEntry(
+      ManifestStatus::kAdded, 1000L, 1L,
+      MakeSplitPlanningDataFile("/missing/data.parquet", 3000, {1000, 2000}, 30))});
+
+  ICEBERG_UNWRAP_OR_FAIL(auto builder, MakeScanBuilder<DataTableScan>(metadata));
+  builder->Option("read.split.target-size", "1000");
+  builder->Option("read.split.planning-lookback", "1");
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
+
+  {
+    // Destroying the stream after one group releases the planning resources.
+    ICEBERG_UNWRAP_OR_FAIL(auto stream, scan->PlanTasksStream());
+    ICEBERG_UNWRAP_OR_FAIL(auto group, stream->Next());
+    ASSERT_TRUE(group.has_value());
+    EXPECT_THAT((*group)->tasks().size(), testing::Eq(1));
+  }
+
+  ICEBERG_UNWRAP_OR_FAIL(auto stream, scan->PlanTasksStream());
+  int64_t expected_start = 0;
+  while (true) {
+    ICEBERG_UNWRAP_OR_FAIL(auto group, stream->Next());
+    if (!group.has_value()) {
+      break;
+    }
+    ASSERT_THAT((*group)->tasks().size(), testing::Eq(1));
+    const auto& task = (*group)->tasks()[0];
+    EXPECT_THAT(task->start(), testing::Eq(expected_start));
+    expected_start += task->length();
+  }
+  EXPECT_THAT(expected_start, testing::Eq(3000));
+}
+
+TEST_P(TableScanTest, PlanTasksCarriesDeleteFilesIntoSplits) {
+  if (GetParam() < 2) {
+    GTEST_SKIP() << "delete manifests require format version 2";
+  }
+  const std::string data_path = "/missing/data-with-deletes.parquet";
+  auto metadata = MakeTaskPlanningMetadata(
+      {MakeEntry(ManifestStatus::kAdded, 1000L, 1L,
+                 MakeSplitPlanningDataFile(data_path, 3000, {1000, 2000}, 30))},
+      {MakeEntry(ManifestStatus::kAdded, 1000L, 1L,
+                 MakePositionDeleteFile("/missing/pos-deletes.parquet",
+                                        PartitionValues(std::vector<Literal>{}),
+                                        unpartitioned_spec_->spec_id(), data_path))});
+
+  ICEBERG_UNWRAP_OR_FAIL(auto builder, MakeScanBuilder<DataTableScan>(metadata));
+  builder->Option("read.split.target-size", "1000");
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
+  ICEBERG_UNWRAP_OR_FAIL(auto groups, scan->PlanTasks());
+
+  ASSERT_THAT(groups.size(), testing::Eq(3));
+  for (const auto& group : groups) {
+    ASSERT_THAT(group->tasks().size(), testing::Eq(1));
+    ASSERT_THAT(group->tasks()[0]->delete_files().size(), testing::Eq(1u));
+    EXPECT_THAT(group->tasks()[0]->delete_files()[0]->file_path,
+                testing::Eq("/missing/pos-deletes.parquet"));
   }
 }
 

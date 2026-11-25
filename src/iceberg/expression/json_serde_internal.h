@@ -33,7 +33,7 @@ namespace iceberg {
 
 /// \brief Converts an operation type string to an Expression::Operation.
 ///
-/// \param typeStr The operation type string
+/// \param json The JSON value containing the operation type string
 /// \return The corresponding Operation or an error if unknown
 ICEBERG_EXPORT Result<Expression::Operation> OperationTypeFromJson(
     const nlohmann::json& json);

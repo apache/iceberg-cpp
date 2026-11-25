@@ -61,20 +61,26 @@ class ICEBERG_EXPORT ProjectionContext {
   /// \brief Resolve the registered ProjectBatch implementation.
   static auto ResolveProjectBatchFunction() -> ProjectBatchFunction;
 
-  /// \brief Build reusable projection state for a validated schema pair.
+  /// \brief Build reusable projection state using the configured Arrow list type.
   ///
   /// \param input_schema Schema that describes every input batch.
   /// \param output_schema Final schema and column order requested by the caller.
   /// \param project_batch_function Optional implementation returned by
   ///   ProjectionContext::ResolveProjectBatchFunction, or nullptr to use the nanoarrow
   ///   path.
+  /// \param validate_batch Whether to perform full content validation. Disable only for
+  /// trusted input.
+  /// \param use_large_list Whether lists use 64-bit offsets. Must match the reader.
   /// \note It validates that output_schema selects or reorders complete top-level fields
-  /// by field id. Nested pruning and type changes are rejected. The input_schema and
-  /// output_schema passed to Make must outlive the context. ProjectBatch may lazily
-  /// initialize backend cache; do not share one context across concurrent calls.
+  /// by field id. Nested pruning and type changes are rejected. Schema inputs are only
+  /// used during construction; the context owns its physical Arrow schemas.
+  /// ProjectBatch may lazily initialize backend cache; do not share one context across
+  /// concurrent calls.
   static Result<ProjectionContext> Make(const Schema& input_schema,
                                         const Schema& output_schema,
-                                        ProjectBatchFunction project_batch_function);
+                                        ProjectBatchFunction project_batch_function,
+                                        bool validate_batch = true,
+                                        bool use_large_list = false);
 
   ProjectionContext(ProjectionContext&&) noexcept;
   ProjectionContext& operator=(ProjectionContext&&) noexcept;
@@ -82,10 +88,6 @@ class ICEBERG_EXPORT ProjectionContext {
 
   ProjectionContext(const ProjectionContext&) = delete;
   ProjectionContext& operator=(const ProjectionContext&) = delete;
-
-  const Schema& input_schema() const;
-
-  const Schema& output_schema() const;
 
   const ArrowSchema& input_arrow_schema() const;
 
@@ -97,18 +99,17 @@ class ICEBERG_EXPORT ProjectionContext {
 
   ProjectBatchState& project_batch_state();
 
+  bool validate_batch() const;
+
  private:
   ProjectionContext() = default;
 
-  // Raw schema pointers are borrowed from caller-owned schemas. FileScanTaskReader
-  // keeps those schema objects alive in the same stream source that owns this context.
-  const Schema* input_schema_ = nullptr;
-  const Schema* output_schema_ = nullptr;
   std::vector<int32_t> selected_field_indices_;
   ArrowSchema input_arrow_schema_{};
   ArrowSchema output_arrow_schema_{};
   ProjectBatchFunction project_batch_function_ = nullptr;
   ProjectBatchState project_batch_state_;
+  bool validate_batch_ = true;
 };
 
 /// \brief Concept for sources that can be wrapped as ArrowArrayStreams.
@@ -228,16 +229,17 @@ ICEBERG_EXPORT Result<ArrowArrayStream> MakeArrowArrayStream(
 /// \brief Project selected rows from a batch into complete top-level fields.
 ///
 /// `input_batch` is consumed by this function. If the projection carries a registered
-/// implementation, the call is delegated to it; otherwise the built-in nanoarrow
-/// implementation is used. The projection must have been created for the stable schema
-/// pair that describes the input batch and requested output. This function does not
-/// revalidate schema compatibility on each batch.
+/// implementation, the call is delegated to it after validation; otherwise the built-in
+/// nanoarrow implementation is used. The projection must have been created for the stable
+/// schema pair that describes the input batch and requested output. This function does
+/// not revalidate schema compatibility on each batch. Input arrays are validated
+/// according to the context policy before either backend runs.
 ///
 /// \param input_batch Owned Arrow C Data batch to project.
 /// \param row_indices Zero-based row positions to copy from `input_batch`.
 /// \param projection Reusable schema/projection state created by
 ///   ProjectionContext::Make.
-/// \return A newly owned ArrowArray matching `projection.output_schema()`.
+/// \return A newly owned ArrowArray matching `projection.output_arrow_schema()`.
 ICEBERG_EXPORT Result<ArrowArray> ProjectBatch(ArrowArray* input_batch,
                                                std::span<const int32_t> row_indices,
                                                ProjectionContext& projection);

@@ -173,11 +173,15 @@ TEST(PartitionSpecTest, PartitionTypeMissingSource) {
               PartitionField(3, 1001, "dropped_bucket", Transform::Bucket(16)),
               PartitionField(2, 1002, "ts_day", Transform::Day()),
               PartitionField(4, 1003, "dropped_day", Transform::Day()),
-              PartitionField(4, 1004, "dropped_year", Transform::Year())}));
+              PartitionField(4, 1004, "dropped_year", Transform::Year()),
+              PartitionField(4, 1005, "dropped_month", Transform::Month()),
+              PartitionField(4, 1006, "dropped_hour", Transform::Hour()),
+              PartitionField(5, 1007, "dropped_truncate", Transform::Truncate(4)),
+              PartitionField(6, 1008, "dropped_void", Transform::Void())}));
 
   ICEBERG_UNWRAP_OR_FAIL(auto partition_type, spec->PartitionType(schema));
 
-  ASSERT_EQ(partition_type->fields().size(), 5U);
+  ASSERT_EQ(partition_type->fields().size(), 9U);
   EXPECT_EQ(partition_type->fields()[0],
             SchemaField::MakeOptional(1000, "dropped_identity", unknown()));
   EXPECT_EQ(partition_type->fields()[1],
@@ -188,6 +192,14 @@ TEST(PartitionSpecTest, PartitionTypeMissingSource) {
             SchemaField::MakeOptional(1003, "dropped_day", date()));
   EXPECT_EQ(partition_type->fields()[4],
             SchemaField::MakeOptional(1004, "dropped_year", int32()));
+  EXPECT_EQ(partition_type->fields()[5],
+            SchemaField::MakeOptional(1005, "dropped_month", int32()));
+  EXPECT_EQ(partition_type->fields()[6],
+            SchemaField::MakeOptional(1006, "dropped_hour", int32()));
+  EXPECT_EQ(partition_type->fields()[7],
+            SchemaField::MakeOptional(1007, "dropped_truncate", unknown()));
+  EXPECT_EQ(partition_type->fields()[8],
+            SchemaField::MakeOptional(1008, "dropped_void", unknown()));
 }
 
 TEST(PartitionSpecTest, RawPartitionTypeNoReassign) {

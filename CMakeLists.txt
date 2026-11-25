@@ -55,6 +55,8 @@ option(ICEBERG_ENCRYPTION
        "Build table encryption support (Parquet modular encryption, AES GCM streams)" OFF)
 option(ICEBERG_BUILD_REST "Build rest catalog client" ON)
 option(ICEBERG_BUILD_REST_INTEGRATION_TESTS "Build rest catalog integration tests" OFF)
+option(ICEBERG_BUILD_VERIFICATION_TESTS
+       "Build conformance tests over the apache/iceberg-verification fixtures" OFF)
 option(ICEBERG_BUILD_HIVE "Build hive (HMS) catalog client" OFF)
 option(ICEBERG_BUILD_SQL_CATALOG "Build SQL catalog client" OFF)
 # Built-in SQL catalog database connectors. Disable all of them to build a SQL
