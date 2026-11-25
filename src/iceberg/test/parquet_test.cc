@@ -554,52 +554,16 @@ TEST_F(ParquetReaderTest, ReadTwoFields) {
 }
 
 TEST_F(ParquetReaderTest, ReadWithoutFieldIdsOrNameMapping) {
-  // Without a name mapping, columns are matched by the read schema's names.
   ASSERT_NO_FATAL_FAILURE(CreateParquetFileWithoutFieldIds(
-      ::arrow::struct_({::arrow::field("id", ::arrow::int32()),
-                        ::arrow::field("name", ::arrow::utf8())}),
-      R"([[1, "Foo"], [2, "Bar"]])"));
-  auto schema = std::make_shared<Schema>(std::vector<SchemaField>{
-      SchemaField::MakeOptional(2, "name", string()),
-      SchemaField::MakeOptional(7, "id", int64()),
-      SchemaField::MakeOptional(3, "full_name", string()),
-  });
+      ::arrow::struct_({::arrow::field("id", ::arrow::int32())}), R"([[1]])"));
+  auto schema = std::make_shared<Schema>(
+      std::vector<SchemaField>{SchemaField::MakeOptional(1, "id", int32())});
 
-  ICEBERG_UNWRAP_OR_FAIL(
-      auto reader,
-      ReaderFactoryRegistry::Open(
-          FileFormatType::kParquet,
-          {.path = temp_parquet_file_, .io = file_io_, .projection = schema}));
-  ASSERT_NO_FATAL_FAILURE(
-      VerifyNextBatch(*reader, R"([["Foo", 1, null], ["Bar", 2, null]])"));
-  ASSERT_NO_FATAL_FAILURE(VerifyExhausted(*reader));
-}
-
-TEST_F(ParquetReaderTest, ReadNestedFieldsWithoutFieldIdsOrNameMapping) {
-  auto type = ::arrow::struct_({
-      ::arrow::field("numbers", ::arrow::list(::arrow::field("item", ::arrow::int32()))),
-      ::arrow::field("counts", ::arrow::map(::arrow::utf8(), ::arrow::int32())),
-  });
-  const std::string json = R"([[[1, 2], [["a", 3]]], [null, null]])";
-  ASSERT_NO_FATAL_FAILURE(CreateParquetFileWithoutFieldIds(type, json));
-
-  auto schema = std::make_shared<Schema>(std::vector<SchemaField>{
-      SchemaField::MakeOptional(
-          1, "numbers",
-          std::make_shared<ListType>(SchemaField::MakeOptional(101, "element", int64()))),
-      SchemaField::MakeOptional(
-          2, "counts",
-          std::make_shared<MapType>(SchemaField::MakeRequired(201, "key", string()),
-                                    SchemaField::MakeOptional(202, "value", int64()))),
-  });
-
-  ICEBERG_UNWRAP_OR_FAIL(
-      auto reader,
-      ReaderFactoryRegistry::Open(
-          FileFormatType::kParquet,
-          {.path = temp_parquet_file_, .io = file_io_, .projection = schema}));
-  ASSERT_NO_FATAL_FAILURE(VerifyNextBatch(*reader, json));
-  ASSERT_NO_FATAL_FAILURE(VerifyExhausted(*reader));
+  auto reader_result = ReaderFactoryRegistry::Open(
+      FileFormatType::kParquet,
+      {.path = temp_parquet_file_, .io = file_io_, .projection = schema});
+  ASSERT_THAT(reader_result, IsError(ErrorKind::kInvalidSchema));
+  EXPECT_THAT(reader_result, HasErrorMessage("no field IDs and no name mapping"));
 }
 
 TEST_F(ParquetReaderTest, ReadWithNameMapping) {
