@@ -22,13 +22,11 @@
 #include <array>
 #include <cstddef>
 #include <cstdint>
-#include <format>
 #include <memory>
 #include <optional>
 #include <string>
 #include <unordered_map>
 #include <utility>
-#include <variant>
 #include <vector>
 
 #include <nanoarrow/nanoarrow.h>
@@ -71,15 +69,6 @@ Status AppendPartitionBound(ArrowArray* array, const PartitionField& field,
   auto primitive = internal::checked_pointer_cast<PrimitiveType>(type);
   ICEBERG_ASSIGN_OR_RAISE(auto literal,
                           Conversions::FromBytes(std::move(primitive), *bound));
-  // The default floating-point format preserves enough digits to round trip.
-  switch (type->type_id()) {
-    case TypeId::kFloat:
-      return AppendString(array, std::format("{}", std::get<float>(literal.value())));
-    case TypeId::kDouble:
-      return AppendString(array, std::format("{}", std::get<double>(literal.value())));
-    default:
-      break;
-  }
   ICEBERG_ASSIGN_OR_RAISE(auto text, field.transform()->ToHumanString(literal));
   return AppendString(array, text);
 }
