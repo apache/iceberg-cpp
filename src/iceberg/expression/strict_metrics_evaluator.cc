@@ -508,7 +508,7 @@ class StrictMetricsVisitor : public BoundVisitor<bool> {
         lower_it != data_file_.lower_bounds.cend()) {
       ICEBERG_ASSIGN_OR_RAISE(auto lower, ParseBound(expr, lower_it->second));
       std::string_view lower_str = std::get<std::string>(lower.value());
-      if (lower_str > prefix && !lower_str.starts_with(prefix)) {
+      if (lower_str.compare(0, prefix.size(), prefix) > 0) {
         return kRowsMustMatch;
       }
     }
