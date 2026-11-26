@@ -39,9 +39,11 @@ ctest --test-dir build --output-on-failure
 
 ## Build with CMake
 
-Dependencies managed with CMake FetchContent use the pinned sources by default.
-Set `-DFETCHCONTENT_TRY_FIND_PACKAGE_MODE=OPT_IN` to try installed packages before
-fetching sources. Use a fresh build directory when changing this setting.
+Iceberg leaves CMake's `FETCHCONTENT_TRY_FIND_PACKAGE_MODE` unchanged. In `OPT_IN`
+mode (CMake's default), dependencies that declare package lookup, such as Arrow,
+try installed packages before fetching the pinned sources. Set
+`-DFETCHCONTENT_TRY_FIND_PACKAGE_MODE=NEVER` to skip installed-package lookup in
+FetchContent. Use a fresh build directory when changing this setting.
 
 Provided Apache Arrow and Parquet packages must satisfy the minimum version set
 by `ICEBERG_ARROW_BUILD_VERSION` in `cmake_modules/IcebergThirdpartyToolchain.cmake`.
@@ -78,7 +80,7 @@ cmake --install build
 
 | Option | Default | Description |
 |--------|---------|-------------|
-| `FETCHCONTENT_TRY_FIND_PACKAGE_MODE` | `NEVER` | Set to `OPT_IN` to try installed FetchContent dependencies before fetching sources |
+| `FETCHCONTENT_TRY_FIND_PACKAGE_MODE` | `OPT_IN` (CMake default) | Set to `NEVER` to skip installed-package lookup in FetchContent |
 | `ICEBERG_BUILD_STATIC` | `ON` | Build static library |
 | `ICEBERG_BUILD_SHARED` | `OFF` | Build shared library |
 | `ICEBERG_BUILD_TESTS` | `ON` | Build tests |
