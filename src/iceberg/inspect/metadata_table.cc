@@ -25,6 +25,7 @@
 #include "iceberg/inspect/history_table.h"
 #include "iceberg/inspect/manifests_table.h"
 #include "iceberg/inspect/metadata_scan.h"
+#include "iceberg/inspect/position_deletes_table.h"
 #include "iceberg/inspect/refs_table.h"
 #include "iceberg/inspect/snapshots_table.h"
 
@@ -40,6 +41,8 @@ Result<std::unique_ptr<MetadataTable>> MetadataTable::Make(
   switch (kind) {
     case MetadataTableKind::kSnapshots:
       return SnapshotsTable::Make(std::move(table));
+    case MetadataTableKind::kPositionDeletes:
+      return PositionDeletesTable::Make(std::move(table));
     case MetadataTableKind::kRefs:
       return RefsTable::Make(std::move(table));
     case MetadataTableKind::kHistory:

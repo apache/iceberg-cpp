@@ -200,6 +200,7 @@ class ManifestListWriter;
 class ManifestReader;
 class ManifestWriter;
 class PartitionSummary;
+class PositionDeletesTable;
 
 /// \brief File I/O.
 struct ReaderOptions;
