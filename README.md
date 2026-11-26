@@ -56,12 +56,6 @@ ctest --test-dir build --output-on-failure
 
 ## Build with CMake
 
-Iceberg leaves CMake's `FETCHCONTENT_TRY_FIND_PACKAGE_MODE` unchanged. In `OPT_IN`
-mode (CMake's default), dependencies that declare package lookup, such as Arrow,
-try installed packages before fetching the pinned sources. Set
-`-DFETCHCONTENT_TRY_FIND_PACKAGE_MODE=NEVER` to skip installed-package lookup in
-FetchContent. Use a fresh build directory when changing this setting.
-
 ### Build, Run Tests and Install Core Libraries
 
 ```bash
@@ -91,7 +85,7 @@ cmake --install build
 #### Provided Apache Arrow
 
 ```bash
-cmake -S . -B build -G Ninja -DCMAKE_INSTALL_PREFIX=/path/to/install -DCMAKE_PREFIX_PATH=/path/to/arrow -DICEBERG_BUILD_BUNDLE=ON -DFETCHCONTENT_TRY_FIND_PACKAGE_MODE=OPT_IN
+cmake -S . -B build -G Ninja -DCMAKE_INSTALL_PREFIX=/path/to/install -DCMAKE_PREFIX_PATH=/path/to/arrow -DICEBERG_BUILD_BUNDLE=ON
 cmake --build build
 ctest --test-dir build --output-on-failure
 cmake --install build
@@ -101,7 +95,6 @@ cmake --install build
 
 | Option | Default | Description |
 |--------|---------|-------------|
-| `FETCHCONTENT_TRY_FIND_PACKAGE_MODE` | `OPT_IN` (CMake default) | Set to `NEVER` to skip installed-package lookup in FetchContent |
 | `ICEBERG_BUILD_STATIC` | `ON` | Build static library |
 | `ICEBERG_BUILD_SHARED` | `OFF` | Build shared library |
 | `ICEBERG_BUILD_TESTS` | `ON` | Build tests |
