@@ -504,8 +504,8 @@ class StrictMetricsVisitor : public BoundVisitor<bool> {
     // prefix range:
     //   1. lower > prefix and does not start with prefix (all values are past it), or
     //   2. upper < prefix (all values are strictly before it).
-    auto lower_it = data_file_.lower_bounds.find(id);
-    if (lower_it != data_file_.lower_bounds.cend()) {
+    if (auto lower_it = data_file_.lower_bounds.find(id);
+        lower_it != data_file_.lower_bounds.cend()) {
       ICEBERG_ASSIGN_OR_RAISE(auto lower, ParseBound(expr, lower_it->second));
       std::string_view lower_str = std::get<std::string>(lower.value());
       if (lower_str > prefix && !lower_str.starts_with(prefix)) {
