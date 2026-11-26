@@ -309,13 +309,13 @@ TEST(ScanTaskPlanningTest, PackingFillsFirstGroupThatFits) {
 
 TEST(ScanTaskPlanningTest, PackingClosesLargestOpenGroupFirst) {
   // With lookback 2, opening a third group closes the largest open group.
-  auto a = MakeTask(MakeDataFile("a", 100));
-  auto b = MakeTask(MakeDataFile("b", 60));
+  auto a = MakeTask(MakeDataFile("a", 60));
+  auto b = MakeTask(MakeDataFile("b", 100));
   auto c = MakeTask(MakeDataFile("c", 60));
   ICEBERG_UNWRAP_OR_FAIL(auto groups, PlanAll({a, b, c}, Options(100, /*lookback=*/2)));
   ASSERT_THAT(groups.size(), Eq(3));
-  EXPECT_THAT(groups[0]->tasks(), ElementsAre(a));
-  EXPECT_THAT(groups[1]->tasks(), ElementsAre(b));
+  EXPECT_THAT(groups[0]->tasks(), ElementsAre(b));
+  EXPECT_THAT(groups[1]->tasks(), ElementsAre(a));
   EXPECT_THAT(groups[2]->tasks(), ElementsAre(c));
 }
 

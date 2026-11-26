@@ -20,7 +20,6 @@
 #include <algorithm>
 #include <cstddef>
 #include <cstdint>
-#include <deque>
 #include <limits>
 #include <memory>
 #include <optional>
@@ -33,6 +32,7 @@
 #include "iceberg/result.h"
 #include "iceberg/scan_task_planning_internal.h"
 #include "iceberg/table_properties.h"
+#include "iceberg/util/bin_packing_internal.h"
 #include "iceberg/util/content_file_util.h"
 #include "iceberg/util/int128.h"
 #include "iceberg/util/string_util.h"
@@ -62,13 +62,6 @@ int128_t DeleteContentBytes(const FileScanTask& task) {
   }
   return total;
 }
-
-// One group that is still open while packing. Mirrors Java's BinPacking.Bin.
-struct OpenGroup {
-  std::vector<std::shared_ptr<FileScanTask>> tasks;
-  int128_t weight = 0;
-  int64_t count = 0;
-};
 
 }  // namespace
 
@@ -171,69 +164,6 @@ class FileScanTaskSplitCursor {
   size_t next_boundary_ = 0;
 };
 
-// Packs tasks into groups, mirroring Java's BinPacking.PackingIterator with
-// largestBinFirst=true: at most `lookback` groups stay open, a task joins the first
-// open group that fits, and the largest open group is closed first when a new group
-// opens.
-class TaskGroupPacker {
- public:
-  explicit TaskGroupPacker(const TaskGroupPlanningOptions& options) : options_(options) {}
-
-  /// Adds a task and returns a closed group when packing closes one.
-  Result<std::optional<std::shared_ptr<FileScanTaskGroup>>> Add(
-      std::shared_ptr<FileScanTask> task) {
-    ICEBERG_ASSIGN_OR_RAISE(auto weight, TaskGroupWeight(*task, options_.open_file_cost));
-    for (auto& group : open_groups_) {
-      if (group.weight + weight <= options_.target_size &&
-          group.count < kMaxTasksPerTaskGroup) {
-        group.tasks.push_back(std::move(task));
-        group.weight += weight;
-        ++group.count;
-        return std::nullopt;
-      }
-    }
-    OpenGroup group;
-    group.tasks.push_back(std::move(task));
-    group.weight = weight;
-    group.count = 1;
-    open_groups_.push_back(std::move(group));
-    if (std::cmp_greater(open_groups_.size(), options_.lookback)) {
-      return std::optional<std::shared_ptr<FileScanTaskGroup>>{CloseLargestGroup()};
-    }
-    return std::nullopt;
-  }
-
-  /// Returns the next remaining group after the input ends, or std::nullopt when all
-  /// groups have been returned.
-  std::optional<std::shared_ptr<FileScanTaskGroup>> NextRemainingGroup() {
-    if (open_groups_.empty()) {
-      return std::nullopt;
-    }
-    std::vector<std::shared_ptr<FileScanTask>> tasks =
-        std::move(open_groups_.front().tasks);
-    open_groups_.pop_front();
-    return std::make_shared<FileScanTaskGroup>(std::move(tasks));
-  }
-
- private:
-  std::shared_ptr<FileScanTaskGroup> CloseLargestGroup() {
-    // Like Java's Collections.max, the first open group with the largest weight is
-    // closed.
-    auto largest = open_groups_.begin();
-    for (auto group = std::next(largest); group != open_groups_.end(); ++group) {
-      if (group->weight > largest->weight) {
-        largest = group;
-      }
-    }
-    std::vector<std::shared_ptr<FileScanTask>> tasks = std::move(largest->tasks);
-    open_groups_.erase(largest);
-    return std::make_shared<FileScanTaskGroup>(std::move(tasks));
-  }
-
-  TaskGroupPlanningOptions options_;
-  std::deque<OpenGroup> open_groups_;
-};
-
 // Splits and packs one task stream into groups on demand. The stream owns the task
 // stream, so destroying it releases the underlying planning resources, including a
 // borrowed planning executor's work.
@@ -241,19 +171,24 @@ class TaskGroupPlanningStream final : public FileScanTaskGroupStream {
  public:
   TaskGroupPlanningStream(FileScanTaskStreamPtr tasks,
                           const TaskGroupPlanningOptions& options)
-      : tasks_(std::move(tasks)), target_size_(options.target_size), packer_(options) {}
+      : tasks_(std::move(tasks)),
+        target_size_(options.target_size),
+        packer_([this] { return NextTask(); }, options.target_size, options.lookback,
+                kMaxTasksPerTaskGroup,
+                [open_file_cost = options.open_file_cost](const auto& task) {
+                  return TaskGroupWeight(*task, open_file_cost);
+                },
+                /*largest_bin_first=*/true) {}
+
+  TaskGroupPlanningStream(TaskGroupPlanningStream&&) = delete;
+  TaskGroupPlanningStream& operator=(TaskGroupPlanningStream&&) = delete;
 
   Result<std::optional<std::shared_ptr<FileScanTaskGroup>>> NextImpl() override {
-    while (true) {
-      ICEBERG_ASSIGN_OR_RAISE(auto task, NextTask());
-      if (!task.has_value()) {
-        return packer_.NextRemainingGroup();
-      }
-      ICEBERG_ASSIGN_OR_RAISE(auto group, packer_.Add(std::move(*task)));
-      if (group.has_value()) {
-        return group;
-      }
+    ICEBERG_ASSIGN_OR_RAISE(auto tasks, packer_.Next());
+    if (!tasks) {
+      return std::nullopt;
     }
+    return std::make_shared<FileScanTaskGroup>(std::move(*tasks));
   }
 
  private:
@@ -276,7 +211,7 @@ class TaskGroupPlanningStream final : public FileScanTaskGroupStream {
 
   FileScanTaskStreamPtr tasks_;
   int64_t target_size_;
-  TaskGroupPacker packer_;
+  bin_packing::PackingIterator<std::shared_ptr<FileScanTask>> packer_;
   std::optional<FileScanTaskSplitCursor> splits_;
 };
 
