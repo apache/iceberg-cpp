@@ -18,6 +18,7 @@
  */
 
 #include <algorithm>
+#include <cerrno>
 #include <chrono>
 #include <limits>
 #include <mutex>
@@ -30,6 +31,7 @@
 #include <arrow/io/interfaces.h>
 #include <arrow/result.h>
 #include <arrow/status.h>
+#include <arrow/util/io_util.h>
 #include <arrow/util/uri.h>
 
 #include "iceberg/arrow/arrow_io_internal.h"
@@ -448,6 +450,20 @@ class ArrowInputFile : public InputFile {
   std::optional<int64_t> file_size_;
 };
 
+// Hierarchical filesystems require the partition directory to exist. Keep the
+// ordinary write path to one open, including for object stores with virtual directories.
+::arrow::Result<std::shared_ptr<::arrow::io::OutputStream>> OpenOutputWithParent(
+    ::arrow::fs::FileSystem& fs, const std::string& path) {
+  auto output = fs.OpenOutputStream(path);
+  if (output.ok()) return output;
+  const auto parent = ::arrow::fs::FileInfo(path).dir_name();
+  if (parent.empty()) return output;
+  auto info = fs.GetFileInfo(parent);
+  if (!info.ok() || info->type() != ::arrow::fs::FileType::NotFound) return output;
+  ARROW_RETURN_NOT_OK(fs.CreateDir(parent));
+  return fs.OpenOutputStream(path);
+}
+
 class ArrowOutputFile : public OutputFile {
  public:
   ArrowOutputFile(std::shared_ptr<::arrow::fs::FileSystem> fs, std::string location,
@@ -472,7 +488,7 @@ class ArrowOutputFile : public OutputFile {
         return AlreadyExists("File already exists: {}", location_);
       }
     }
-    ICEBERG_ARROW_ASSIGN_OR_RETURN(auto output, fs_->OpenOutputStream(path_));
+    ICEBERG_ARROW_ASSIGN_OR_RETURN(auto output, OpenOutputWithParent(*fs_, path_));
     return std::make_unique<ArrowPositionOutputStream>(std::move(output));
   }
 
@@ -551,8 +567,8 @@ Result<std::shared_ptr<::arrow::io::OutputStream>> OpenArrowOutputStream(
         return AlreadyExists("File already exists: {}", path);
       }
     }
-    ICEBERG_ARROW_ASSIGN_OR_RETURN(auto output,
-                                   arrow_io->arrow_fs_->OpenOutputStream(resolved_path));
+    ICEBERG_ARROW_ASSIGN_OR_RETURN(
+        auto output, OpenOutputWithParent(*arrow_io->arrow_fs_, resolved_path));
     return output;
   }
 
@@ -591,7 +607,11 @@ Result<std::unique_ptr<OutputFile>> ArrowFileSystemFileIO::NewOutputFile(
 /// \brief Delete a file at the given location.
 Status ArrowFileSystemFileIO::DeleteFile(const std::string& file_location) {
   ICEBERG_ASSIGN_OR_RAISE(auto path, ResolvePath(file_location));
-  ICEBERG_ARROW_RETURN_NOT_OK(arrow_fs_->DeleteFile(path));
+  auto status = arrow_fs_->DeleteFile(path);
+  if (::arrow::internal::ErrnoFromStatus(status) == ENOENT) {
+    return {};
+  }
+  ICEBERG_ARROW_RETURN_NOT_OK(status);
   return {};
 }
 
