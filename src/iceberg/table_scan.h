@@ -404,6 +404,10 @@ class ICEBERG_TEMPLATE_CLASS_EXPORT TableScanBuilder : public ErrorCollector {
   /// \note InvalidArgument will be returned if the snapshot cannot be found
   TableScanBuilder& UseSnapshot(int64_t snapshot_id);
 
+  /// Pin the snapshot while choosing whether its historical schema or the current
+  /// table schema is used to resolve the scan.
+  TableScanBuilder& UseSnapshot(int64_t snapshot_id, bool use_snapshot_schema);
+
   /// \brief Request this scan to use the given reference.
   /// \param ref reference
   /// \note InvalidArgument will be returned if a reference with the given name

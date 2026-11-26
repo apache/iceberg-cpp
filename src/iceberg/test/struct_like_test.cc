@@ -40,6 +40,7 @@
 #include "iceberg/manifest/manifest_reader_internal.h"
 #include "iceberg/row/arrow_array_wrapper.h"
 #include "iceberg/row/manifest_wrapper.h"
+#include "iceberg/row/partition_values.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_internal.h"
 #include "iceberg/test/matchers.h"
@@ -181,9 +182,7 @@ TEST(LiteralToScalarTest, Uuid) {
 TEST(StructLikeAccessorTest, GetLiteralUuid) {
   ICEBERG_UNWRAP_OR_FAIL(auto uuid,
                          Uuid::FromString("123e4567-e89b-12d3-a456-426614174000"));
-  const auto& bytes = uuid.bytes();
-  std::string_view uuid_data(reinterpret_cast<const char*>(bytes.data()), bytes.size());
-  SingleFieldStructLike row(Scalar{uuid_data});
+  PartitionValues row(Literal::UUID(uuid));
   std::array<size_t, 1> path = {0};
   StructLikeAccessor accessor(iceberg::uuid(), path, {false});
 
