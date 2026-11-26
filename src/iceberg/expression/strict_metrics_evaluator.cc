@@ -513,8 +513,8 @@ class StrictMetricsVisitor : public BoundVisitor<bool> {
       }
     }
 
-    auto upper_it = data_file_.upper_bounds.find(id);
-    if (upper_it != data_file_.upper_bounds.cend()) {
+    if (auto upper_it = data_file_.upper_bounds.find(id);
+        upper_it != data_file_.upper_bounds.cend()) {
       ICEBERG_ASSIGN_OR_RAISE(auto upper, ParseBound(expr, upper_it->second));
       std::string_view upper_str = std::get<std::string>(upper.value());
       if (upper_str < prefix) {
