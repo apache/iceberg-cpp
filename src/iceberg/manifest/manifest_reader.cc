@@ -469,11 +469,16 @@ Status ParsePartitionValues(ArrowArrayView* view, int64_t row_idx,
       partition.AddValue(
           Literal::String(std::string(str_value.data, str_value.size_bytes)));
     } break;
+    case ArrowType::NANOARROW_TYPE_FIXED_SIZE_BINARY:
     case ArrowType::NANOARROW_TYPE_BINARY: {
-      auto buf_value = ArrowArrayViewGetBytesUnsafe(view, row_idx);
-      partition.AddValue(Literal::Binary(std::vector<uint8_t>(
-          buf_value.data.as_char, buf_value.data.as_char + buf_value.size_bytes)));
-    } break;
+      auto bytes = ArrowArrayViewGetBytesUnsafe(view, row_idx);
+      ICEBERG_ASSIGN_OR_RAISE(
+          auto literal,
+          Literal::Deserialize(
+              {bytes.data.as_uint8, static_cast<size_t>(bytes.size_bytes)}, field_type));
+      partition.AddValue(std::move(literal));
+      break;
+    }
     default:
       return InvalidManifest("Unsupported type {} for partition values",
                              ArrowTypeString(view->storage_type));

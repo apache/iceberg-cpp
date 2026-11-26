@@ -59,6 +59,12 @@ class ICEBERG_EXPORT Reader {
   /// Readers must reject unsupported list widths before emitting any batches.
   virtual Result<ArrowSchema> Schema() = 0;
 
+  /// \brief Check whether a top-level field ID exists in the physical file schema.
+  /// \return Presence, or NotImplemented for readers without schema inspection.
+  virtual Result<bool> HasTopLevelField(int32_t field_id) {
+    return NotImplemented("Physical schema inspection is not supported");
+  }
+
   /// \brief Get the metadata of the file.
   virtual Result<std::unordered_map<std::string, std::string>> Metadata() = 0;
 };

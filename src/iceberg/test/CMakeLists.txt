@@ -239,6 +239,9 @@ if(ICEBERG_BUILD_BUNDLE)
                    inspect/snapshots_table_test.cc
                    inspect/manifests_table_test.cc)
 
+  add_iceberg_test(position_deletes_table_test USE_BUNDLE SOURCES
+                   position_deletes_table_test.cc)
+
   add_iceberg_test(eval_expr_test
                    USE_BUNDLE
                    SOURCES
