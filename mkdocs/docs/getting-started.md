@@ -62,11 +62,10 @@ cmake --install build
 ### Bundle Library (with provided Apache Arrow)
 
 Provided Arrow and Parquet packages must meet the minimum version set by
-`ICEBERG_ARROW_BUILD_VERSION`. With `OPT_IN`, CMake tries installed Arrow first
-and falls back to the pinned source if no compatible Arrow is found.
+`ICEBERG_ARROW_BUILD_VERSION`.
 
 ```bash
-cmake -S . -B build -G Ninja -DCMAKE_INSTALL_PREFIX=/path/to/install -DCMAKE_PREFIX_PATH=/path/to/arrow -DICEBERG_BUILD_BUNDLE=ON -DFETCHCONTENT_TRY_FIND_PACKAGE_MODE=OPT_IN
+cmake -S . -B build -G Ninja -DCMAKE_INSTALL_PREFIX=/path/to/install -DCMAKE_PREFIX_PATH=/path/to/arrow -DICEBERG_BUILD_BUNDLE=ON
 cmake --build build
 cmake --install build
 ```
