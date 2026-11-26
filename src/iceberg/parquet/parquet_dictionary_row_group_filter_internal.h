@@ -32,6 +32,15 @@
 
 namespace iceberg::parquet {
 
+inline Status ValidateDictionaryPageEncoding(::parquet::Encoding::type encoding) {
+  if (encoding != ::parquet::Encoding::PLAIN &&
+      encoding != ::parquet::Encoding::PLAIN_DICTIONARY) {
+    return Invalid("Invalid Parquet dictionary page encoding: {}",
+                   ::parquet::EncodingToString(encoding));
+  }
+  return {};
+}
+
 // Inclusive dictionary filtering, following Java's
 // ParquetDictionaryRowGroupFilter. False proves that the row group cannot match;
 // true still requires evaluating the residual predicate on the returned rows.

@@ -24,7 +24,9 @@
 
 #include <concepts>
 #include <memory>
+#include <string>
 #include <typeinfo>
+#include <variant>
 
 #include "iceberg/expression/aggregate.h"
 #include "iceberg/expression/expression.h"
@@ -33,6 +35,7 @@
 #include "iceberg/expression/term.h"
 #include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
+#include "iceberg/type.h"
 #include "iceberg/util/checked_cast.h"
 #include "iceberg/util/macros.h"
 
@@ -233,9 +236,17 @@ class ICEBERG_EXPORT BoundVisitor : public ExpressionVisitor<R> {
           case Expression::Operation::kNotEq:
             return NotEq(pred->term(), literal_pred.literal());
           case Expression::Operation::kStartsWith:
-            return StartsWith(pred->term(), literal_pred.literal());
-          case Expression::Operation::kNotStartsWith:
-            return NotStartsWith(pred->term(), literal_pred.literal());
+          case Expression::Operation::kNotStartsWith: {
+            const auto& prefix = literal_pred.literal();
+            if (pred->term()->type()->type_id() != TypeId::kString ||
+                !std::holds_alternative<std::string>(prefix.value())) {
+              return InvalidExpression("{} requires a string term and a string prefix",
+                                       ToString(pred->op()));
+            }
+            return pred->op() == Expression::Operation::kStartsWith
+                       ? StartsWith(pred->term(), prefix)
+                       : NotStartsWith(pred->term(), prefix);
+          }
           default:
             return InvalidExpression("Invalid operation for BoundLiteralPredicate: {}",
                                      ToString(pred->op()));

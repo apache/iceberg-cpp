@@ -36,6 +36,7 @@
 #include "iceberg/parquet/parquet_dictionary_row_group_filter_internal.h"
 #include "iceberg/parquet/parquet_schema_util_internal.h"
 #include "iceberg/parquet/parquet_value_util_internal.h"
+#include "iceberg/util/checked_cast.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg::parquet {
@@ -84,10 +85,8 @@ template <typename DType>
 Result<std::vector<Literal>> DecodeDictionary(const ::parquet::DictionaryPage& page,
                                               const ::parquet::ColumnDescriptor& column,
                                               const PrimitiveType& type) {
-  auto encoding = page.encoding() == ::parquet::Encoding::PLAIN_DICTIONARY
-                      ? ::parquet::Encoding::PLAIN
-                      : page.encoding();
-  auto decoder = ::parquet::MakeTypedDecoder<DType>(encoding, &column);
+  ICEBERG_RETURN_UNEXPECTED(ValidateDictionaryPageEncoding(page.encoding()));
+  auto decoder = ::parquet::MakeTypedDecoder<DType>(::parquet::Encoding::PLAIN, &column);
   decoder->SetData(page.num_values(), page.data(), page.size());
   std::array<typename DType::c_type, 1024> buffer;
   std::vector<Literal> values;
@@ -220,17 +219,16 @@ class DictionaryVisitor : public BoundVisitor<bool> {
   Result<bool> AnyMatch(const std::shared_ptr<Bound>& expr, Predicate predicate,
                         bool nulls_match = false) {
     auto ref = std::dynamic_pointer_cast<BoundReference>(expr);
-    ICEBERG_ASSIGN_OR_RAISE(auto dictionary, GetDictionary(ref));
-    if (!dictionary || (nulls_match && MayContainNull(*ref))) {
+    ICEBERG_ASSIGN_OR_RAISE(auto dictionary, GetDictionary(ref, nulls_match));
+    if (!dictionary) {
       return kRowsMightMatch;
     }
     return std::ranges::any_of(*dictionary, predicate);
   }
 
-  bool MayContainNull(const BoundReference& ref) const {
-    const auto column = row_group_.ColumnChunk(columns_.at(ref.field_id()));
+  static bool MayContainNull(const ::parquet::ColumnChunkMetaData& column) {
     try {
-      auto stats = column->statistics();
+      auto stats = column.statistics();
       return !stats || !stats->HasNullCount() || stats->null_count() != 0;
     } catch (const ::parquet::ParquetException&) {
       // Optional, unusable statistics cannot prove that nulls are absent.
@@ -239,7 +237,7 @@ class DictionaryVisitor : public BoundVisitor<bool> {
   }
 
   Result<const std::vector<Literal>*> GetDictionary(
-      const std::shared_ptr<BoundReference>& ref) {
+      const std::shared_ptr<BoundReference>& ref, bool nulls_match) {
     if (!ref || !ref->type()->is_primitive() ||
         ref->type()->type_id() == TypeId::kUnknown ||
         MetadataColumns::IsMetadataColumn(ref->field_id())) {
@@ -255,9 +253,13 @@ class DictionaryVisitor : public BoundVisitor<bool> {
         !ValidateParquetTypeCompatibility(*ref->type(), *field->second)) {
       return nullptr;
     }
+    const auto column = row_group_.ColumnChunk(index->second);
+    if (nulls_match && MayContainNull(*column)) {
+      // A matching null keeps this group without consulting its dictionary.
+      return nullptr;
+    }
     auto [cached, inserted] = dictionaries_.try_emplace(ref->field_id());
     if (inserted) {
-      const auto column = row_group_.ColumnChunk(index->second);
       const auto* descriptor = manifest_.descr->Column(index->second);
       // A raw dictionary slice has no Parquet column decryption context. Leave
       // encrypted columns to the normal reader rather than interpreting ciphertext.
@@ -271,9 +273,11 @@ class DictionaryVisitor : public BoundVisitor<bool> {
       // Restrict planning I/O to the dictionary page, including its header.
       const int64_t start = column->dictionary_page_offset();
       const int64_t end = column->data_page_offset();
+      const int64_t chunk_size = column->total_compressed_size();
       ICEBERG_ARROW_ASSIGN_OR_RETURN(auto file_size, input_->GetSize());
       if (!column->has_dictionary_page() || start < 4 || end <= start ||
-          end > file_size) {
+          end > file_size || chunk_size > file_size - start ||
+          end - start >= chunk_size) {
         // Unusable offsets cannot prove that the predicate cannot match.
         return nullptr;
       }
@@ -331,6 +335,32 @@ class DictionaryVisitor : public BoundVisitor<bool> {
   std::unordered_map<int32_t, std::optional<std::vector<Literal>>> dictionaries_;
 };
 
+// Evaluating a predicate may read its column dictionary. Skip the right subtree
+// when the left subtree already determines whether to retain the row group.
+Result<bool> Evaluate(const std::shared_ptr<Expression>& expr,
+                      DictionaryVisitor& visitor) {
+  switch (expr->op()) {
+    case Expression::Operation::kAnd: {
+      auto conjunction = internal::checked_pointer_cast<And>(expr);
+      ICEBERG_ASSIGN_OR_RAISE(auto left, Evaluate(conjunction->left(), visitor));
+      if (!left) {
+        return kRowsCannotMatch;
+      }
+      return Evaluate(conjunction->right(), visitor);
+    }
+    case Expression::Operation::kOr: {
+      auto disjunction = internal::checked_pointer_cast<Or>(expr);
+      ICEBERG_ASSIGN_OR_RAISE(auto left, Evaluate(disjunction->left(), visitor));
+      if (left) {
+        return kRowsMightMatch;
+      }
+      return Evaluate(disjunction->right(), visitor);
+    }
+    default:
+      return Visit<bool>(expr, visitor);
+  }
+}
+
 }  // namespace
 
 Result<std::unique_ptr<ParquetDictionaryRowGroupFilter>>
@@ -363,7 +393,7 @@ Result<bool> ParquetDictionaryRowGroupFilter::ShouldRead(
   try {
     DictionaryVisitor visitor(manifest, *row_group, field_id_to_column_idx_, input,
                               properties, metadata.writer_version());
-    return Visit<bool>(bound_, visitor);
+    return Evaluate(bound_, visitor);
   } catch (const ::parquet::ParquetException& e) {
     return Invalid("Cannot read Parquet dictionary: {}", e.what());
   }

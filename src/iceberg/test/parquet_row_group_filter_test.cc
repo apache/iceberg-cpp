@@ -1083,6 +1083,24 @@ TEST_F(ParquetDictionaryFilterTest, Prefixes) {
   CheckDictionaries(Expressions::NotStartsWith("key", ""), {false, false, true});
 }
 
+TEST_F(ParquetDictionaryFilterTest, OpenRejectsInvalidBoundPrefixOperands) {
+  SetKeyType(string());
+  ASSERT_THAT(Write(false, R"([["aa",0],["ab",1]])"), IsOk());
+  for (const auto& [column, prefix] : {std::pair{"key", Literal::Int(1)},
+                                       {"key", Literal::Null(string())},
+                                       {"value", Literal::String("a")}}) {
+    ICEBERG_UNWRAP_OR_FAIL(auto ref, Expressions::Ref(column)->Bind(*schema_, true));
+    for (auto op :
+         {Expression::Operation::kStartsWith, Expression::Operation::kNotStartsWith}) {
+      ICEBERG_UNWRAP_OR_FAIL(auto filter, BoundLiteralPredicate::Make(op, ref, prefix));
+      EXPECT_THAT(ReaderFactoryRegistry::Open(FileFormatType::kParquet,
+                                              Options(std::move(filter))),
+                  IsError(ErrorKind::kInvalidExpression))
+          << ToString(op) << " on " << column << " with prefix " << prefix.ToString();
+    }
+  }
+}
+
 TEST_F(ParquetDictionaryFilterTest, FloatingPointNaNAndSignedZero) {
   for (const auto& type : std::vector<std::shared_ptr<Type>>{float32(), float64()}) {
     SetKeyType(type);
@@ -1169,6 +1187,22 @@ TEST_F(ParquetDictionaryFilterTest, PhysicalTypesAndPromotions) {
     SetKeyType(test.read_type);
     CheckDictionaries(Expressions::Equal("key", test.value), {false, true, false});
     Check(Options(Expressions::Equal("key", test.value)), {2, 3});
+  }
+}
+
+TEST_F(ParquetDictionaryFilterTest, DictionaryPageEncodings) {
+  for (auto version :
+       {::parquet::ParquetVersion::PARQUET_1_0, ::parquet::ParquetVersion::PARQUET_2_6}) {
+    SCOPED_TRACE(version);
+    ::parquet::WriterProperties::Builder properties;
+    writer_properties_ = properties.enable_dictionary()->version(version)->build();
+    ASSERT_THAT(Write(false), IsOk());
+    CheckDictionaries(Expressions::Equal("key", Literal::Int(10)), {false, true, false});
+  }
+  for (auto encoding :
+       {::parquet::Encoding::BYTE_STREAM_SPLIT, ::parquet::Encoding::RLE_DICTIONARY}) {
+    SCOPED_TRACE(::parquet::EncodingToString(encoding));
+    EXPECT_THAT(ValidateDictionaryPageEncoding(encoding), IsError(ErrorKind::kInvalid));
   }
 }
 
@@ -1365,6 +1399,36 @@ TEST_F(ParquetDictionaryFilterTest, UuidBoundsUseUnsignedByteOrder) {
       {2, 3});
 }
 
+TEST_F(ParquetDictionaryFilterTest, BooleanExpressionsShortCircuitDictionaryReads) {
+  ASSERT_THAT(Write(false, "[[0,0],[1,1]]"), IsOk());
+  auto group = metadata_->RowGroup(0);
+  auto dictionary_range = [&](int column_index) {
+    auto column = group->ColumnChunk(column_index);
+    return DictionaryReadRange{
+        .offset = column->dictionary_page_offset(),
+        .length = column->data_page_offset() - column->dictionary_page_offset()};
+  };
+  const auto key_range = dictionary_range(0);
+  const auto value_range = dictionary_range(1);
+  auto io = std::static_pointer_cast<DictionaryRecordingFileIO>(io_);
+  auto check = [&](const std::shared_ptr<Expression>& filter, bool should_read,
+                   const std::vector<DictionaryReadRange>& expected_reads) {
+    SCOPED_TRACE(filter->ToString());
+    io->reads.clear();
+    CheckDictionaries(filter, {should_read});
+    EXPECT_EQ(io->reads, expected_reads);
+  };
+
+  auto key_present = Expressions::Equal("key", Literal::Int(0));
+  auto key_absent = Expressions::Equal("key", Literal::Int(2));
+  auto value_present = Expressions::Equal("value", Literal::Long(1));
+  auto value_absent = Expressions::Equal("value", Literal::Long(2));
+  check(Expressions::And(key_absent, value_present), false, {key_range});
+  check(Expressions::Or(key_present, value_absent), true, {key_range});
+  check(Expressions::And(key_present, value_absent), false, {key_range, value_range});
+  check(Expressions::Or(key_absent, value_present), true, {key_range, value_range});
+}
+
 TEST_F(ParquetDictionaryFilterTest, EncodingMetadataAndDictionaryCache) {
   ASSERT_THAT(Write(), IsOk());
   ICEBERG_UNWRAP_OR_FAIL(auto input, arrow::OpenArrowInputStream(io_, path_));
@@ -1373,7 +1437,7 @@ TEST_F(ParquetDictionaryFilterTest, EncodingMetadataAndDictionaryCache) {
                   metadata_->schema(), nullptr,
                   ::parquet::default_arrow_reader_properties(), &manifest)
                   .ok());
-  auto expr = Expressions::And(Expressions::Equal("key", Literal::Int(100)),
+  auto expr = Expressions::And(Expressions::Equal("key", Literal::Int(0)),
                                Expressions::Equal("key", Literal::Int(101)));
   ICEBERG_UNWRAP_OR_FAIL(auto filter, ParquetDictionaryRowGroupFilter::Make(
                                           Options(expr).filter, *metadata_->schema()));
@@ -1411,6 +1475,8 @@ TEST_F(ParquetDictionaryFilterTest, InvalidDictionaryOffsetsRetainGroups) {
   int64_t start = column->dictionary_page_offset();
   int64_t end = column->data_page_offset();
   int64_t size = input->GetSize().ValueOrDie();
+  const int64_t chunk_end = start + column->total_compressed_size();
+  ASSERT_LT(chunk_end + 1, size);
   auto io = std::static_pointer_cast<DictionaryRecordingFileIO>(io_);
   for (const auto& [dictionary_offset, data_offset] :
        std::vector<std::pair<int64_t, int64_t>>{{-1, end},
@@ -1418,6 +1484,8 @@ TEST_F(ParquetDictionaryFilterTest, InvalidDictionaryOffsetsRetainGroups) {
                                                 {3, end},
                                                 {start, start},
                                                 {end, start},
+                                                {start, chunk_end},
+                                                {start, chunk_end + 1},
                                                 {start, size + 1}}) {
     SCOPED_TRACE(std::to_string(dictionary_offset) + ":" + std::to_string(data_offset));
     auto rebuilt = RebuildMetadata(false, true, dictionary_offset, data_offset);
@@ -1517,23 +1585,24 @@ TEST_F(ParquetDictionaryFilterTest, OpenReadsOnlyDictionaryPage) {
   }
 }
 
-TEST_F(ParquetDictionaryFilterTest, UnreadableStatisticsRetainNegativePredicates) {
+TEST_F(ParquetDictionaryFilterTest, NegativePredicatesReadDictionariesOnlyWithZeroNulls) {
   struct Case {
     std::shared_ptr<Type> type;
     std::string json;
     std::vector<std::shared_ptr<Expression>> predicates;
   };
+  auto io = std::static_pointer_cast<DictionaryRecordingFileIO>(io_);
   for (const auto& test :
        std::vector<Case>{{.type = int32(),
-                          .json = "[[5,0],[5,1]]",
+                          .json = "[[5,0],[5,1],[null,2],[5,3]]",
                           .predicates = {Expressions::NotEqual("key", Literal::Int(5)),
                                          Expressions::NotIn(
                                              "key", {Literal::Int(5), Literal::Int(6)})}},
                          {.type = float64(),
-                          .json = "[[NaN,0],[NaN,1]]",
+                          .json = "[[NaN,0],[NaN,1],[null,2],[NaN,3]]",
                           .predicates = {Expressions::NotNaN("key")}},
                          {.type = string(),
-                          .json = R"([["abc",0],["abc",1]])",
+                          .json = R"([["abc",0],["abc",1],[null,2],["abc",3]])",
                           .predicates = {Expressions::NotStartsWith("key", "a")}}}) {
     SetKeyType(test.type);
     ASSERT_THAT(Write(true, test.json), IsOk());
@@ -1551,18 +1620,27 @@ TEST_F(ParquetDictionaryFilterTest, UnreadableStatisticsRetainNegativePredicates
       ICEBERG_UNWRAP_OR_FAIL(
           auto filter, ParquetDictionaryRowGroupFilter::Make(Options(predicate).filter,
                                                              *metadata_->schema()));
+      io->reads.clear();
       ICEBERG_UNWRAP_OR_FAIL(auto clean_result,
                              filter->ShouldRead(manifest, *metadata_, 0, input,
                                                 ::parquet::default_reader_properties()));
       EXPECT_FALSE(clean_result);
+      EXPECT_EQ(io->reads.size(), 1);
+      io->reads.clear();
+      ICEBERG_UNWRAP_OR_FAIL(auto has_nulls,
+                             filter->ShouldRead(manifest, *metadata_, 1, input,
+                                                ::parquet::default_reader_properties()));
+      EXPECT_TRUE(has_nulls);
+      EXPECT_TRUE(io->reads.empty());
       ICEBERG_UNWRAP_OR_FAIL(auto result,
                              filter->ShouldRead(manifest, *rebuilt, 0, input,
                                                 ::parquet::default_reader_properties()));
       EXPECT_TRUE(result);
+      EXPECT_TRUE(io->reads.empty());
     }
     ReplaceFooter(*rebuilt);
     for (const auto& predicate : test.predicates) {
-      Check(Options(predicate), {0, 1});  // Includes footer filtering and Open().
+      Check(Options(predicate), {0, 1, 2, 3});  // Includes footer filtering and Open().
     }
   }
 }
