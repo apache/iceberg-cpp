@@ -1568,6 +1568,11 @@ Status TableMetadataBuilder::Impl::RemovePartitionSpecs(
         return !spec_ids_to_remove.contains(spec->spec_id());
       }) |
       std::ranges::to<std::vector<std::shared_ptr<PartitionSpec>>>();
+
+  for (const auto& spec_id : spec_ids_to_remove) {
+    specs_by_id_.erase(spec_id);
+  }
+
   changes_.push_back(std::make_unique<table::RemovePartitionSpecs>(spec_ids));
 
   return {};
