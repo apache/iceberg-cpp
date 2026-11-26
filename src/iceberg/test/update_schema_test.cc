@@ -2378,6 +2378,26 @@ TEST_F(UpdateSchemaTest, TestMoveMissingReferenceColumnFails) {
   EXPECT_THAT(result2, HasErrorMessage("Cannot move y after missing column: items"));
 }
 
+TEST_F(UpdateSchemaTest, TestMoveWithDeletedColumnFails) {
+  ICEBERG_UNWRAP_OR_FAIL(auto update1, table_->NewUpdateSchema());
+  update1->MoveFirst("z").DeleteColumn("z");
+  auto result1 = update1->Apply();
+  EXPECT_THAT(result1, IsError(ErrorKind::kValidationFailed));
+  EXPECT_THAT(result1, HasErrorMessage("Cannot move missing column with id"));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto update2, table_->NewUpdateSchema());
+  update2->SetIdentifierFields({}).MoveBefore("x", "z").DeleteColumn("z");
+  auto result2 = update2->Apply();
+  EXPECT_THAT(result2, IsError(ErrorKind::kValidationFailed));
+  EXPECT_THAT(result2, HasErrorMessage("missing reference column with id"));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto update3, table_->NewUpdateSchema());
+  update3->SetIdentifierFields({}).MoveAfter("x", "z").DeleteColumn("z");
+  auto result3 = update3->Apply();
+  EXPECT_THAT(result3, IsError(ErrorKind::kValidationFailed));
+  EXPECT_THAT(result3, HasErrorMessage("missing reference column with id"));
+}
+
 TEST_F(UpdateSchemaTest, TestMovePrimitiveMapKeyFails) {
   ICEBERG_UNWRAP_OR_FAIL(auto setup, table_->NewUpdateSchema());
   auto map_type = std::make_shared<MapType>(SchemaField(98, "key", string(), false),
