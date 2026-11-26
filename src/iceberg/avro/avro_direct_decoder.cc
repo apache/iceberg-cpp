@@ -216,7 +216,8 @@ Status DecodeStructToBuilder(const ::avro::NodePtr& avro_node, ::avro::Decoder& 
     auto* field_builder = struct_builder->field_builder(static_cast<int>(proj_idx));
     if (field_projection.kind == FieldProjection::Kind::kNull) {
       ICEBERG_ARROW_RETURN_NOT_OK(field_builder->AppendNull());
-    } else if (field_projection.kind == FieldProjection::Kind::kDefault) {
+    } else if (field_projection.kind == FieldProjection::Kind::kDefault ||
+               field_projection.kind == FieldProjection::Kind::kConstant) {
       ICEBERG_RETURN_UNEXPECTED(AppendDefaultToBuilder(field_projection, field_builder));
     } else if (field_projection.kind == FieldProjection::Kind::kMetadata) {
       int32_t field_id = expected_field.field_id();

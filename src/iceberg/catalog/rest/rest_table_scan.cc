@@ -286,9 +286,9 @@ class RestFileScanTaskStream final : public FileScanTaskStream {
           // The server may leave row filtering to the client.
           ICEBERG_ASSIGN_OR_RAISE(
               task,
-              FileScanTask::MakeSplit(task->data_file(), task->start(), task->length(),
-                                      task->delete_files(),
-                                      ignore_residuals_ ? True::Instance() : filter_));
+              FileScanTask::MakeSplit(
+                  task->data_file(), task->start(), task->length(), task->delete_files(),
+                  ignore_residuals_ ? True::Instance() : filter_, task->spec()));
         }
         return task;
       }

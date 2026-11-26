@@ -252,7 +252,8 @@ Result<std::shared_ptr<::arrow::Array>> ProjectStructArray(
             projected_array,
             ProjectPrimitiveArray(parquet_array, output_arrow_type, pool));
       }
-    } else if (field_projection.kind == FieldProjection::Kind::kDefault) {
+    } else if (field_projection.kind == FieldProjection::Kind::kDefault ||
+               field_projection.kind == FieldProjection::Kind::kConstant) {
       ICEBERG_ASSIGN_OR_RAISE(
           projected_array,
           arrow::MakeDefaultArray(std::get<Literal>(field_projection.from),

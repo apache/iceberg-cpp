@@ -290,6 +290,10 @@ TEST_P(ManifestGroupTest, CreateAndGetEntries) {
   ASSERT_EQ(tasks.size(), 2);
   EXPECT_THAT(GetPaths(tasks), testing::UnorderedElementsAre("/path/to/data1.parquet",
                                                              "/path/to/data2.parquet"));
+  for (const auto& task : tasks) {
+    ASSERT_NE(task->spec(), nullptr);
+    EXPECT_EQ(task->spec()->spec_id(), task->data_file()->partition_spec_id);
+  }
   EXPECT_EQ(tasks[0]->delete_files().size(), 1);
   EXPECT_EQ(tasks[1]->delete_files()[0]->file_path, "/path/to/delete.parquet");
   EXPECT_EQ(tasks[1]->delete_files().size(), 1);

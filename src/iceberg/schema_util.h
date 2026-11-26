@@ -24,6 +24,7 @@
 
 #include <memory>
 #include <string>
+#include <unordered_map>
 #include <variant>
 #include <vector>
 
@@ -99,10 +100,14 @@ enum class ProjectionMode {
 /// field in `FieldProjection` exactly reflects the position (relative to its nesting
 /// level) to get the column value from the reader.
 /// \param mode Whether to project for reading or writing.
+/// \param id_to_constant Primitive values keyed by source field ID. Constants override
+/// physical fields and defaults, including primitive leaves of existing structs. Only
+/// applied when `mode` is `ProjectionMode::kRead`.
 /// \return The projection result.
 ICEBERG_EXPORT Result<SchemaProjection> Project(
     const Schema& expected_schema, const Schema& source_schema, bool prune_source,
-    ProjectionMode mode = ProjectionMode::kRead);
+    ProjectionMode mode = ProjectionMode::kRead,
+    const std::unordered_map<int32_t, Literal>& id_to_constant = {});
 
 ICEBERG_EXPORT std::string_view ToString(FieldProjection::Kind kind);
 ICEBERG_EXPORT std::string ToString(const FieldProjection& projection);
