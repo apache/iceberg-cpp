@@ -1590,4 +1590,30 @@ TEST(TableMetadataBuilderTest, RemovePartitionSpecNotExist) {
   ASSERT_EQ(metadata->partition_specs.size(), 1);
 }
 
+TEST(TableMetadataBuilderTest,
+     SetDefaultPartitionSpecAfterRemoveNotConfusedByStaleIndex) {
+  auto base = CreateBaseMetadata();
+  auto builder = TableMetadataBuilder::BuildFrom(base.get());
+
+  PartitionField data_field(2, 1000, "data", Transform::Identity());
+  ICEBERG_UNWRAP_OR_FAIL(auto data_spec, PartitionSpec::Make(1, {data_field}));
+  builder->AddPartitionSpec(std::move(data_spec));
+  ICEBERG_UNWRAP_OR_FAIL(auto metadata, builder->Build());
+  ASSERT_EQ(metadata->partition_specs.size(), 2);
+  ASSERT_EQ(metadata->default_spec_id, 0);
+
+  builder = TableMetadataBuilder::BuildFrom(metadata.get());
+  builder->RemovePartitionSpecs({1});
+  PartitionField ts_field(3, 1001, "ts", Transform::Identity());
+  ICEBERG_UNWRAP_OR_FAIL(auto ts_spec, PartitionSpec::Make(1, {ts_field}));
+  builder->SetDefaultPartitionSpec(std::move(ts_spec));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto rebuilt, builder->Build());
+  ASSERT_EQ(rebuilt->partition_specs.size(), 2);
+  EXPECT_EQ(rebuilt->default_spec_id, 1);
+  ICEBERG_UNWRAP_OR_FAIL(auto default_spec, rebuilt->PartitionSpec());
+  ASSERT_EQ(default_spec->fields().size(), 1);
+  EXPECT_EQ(default_spec->fields()[0].source_id(), 3);
+}
+
 }  // namespace iceberg
