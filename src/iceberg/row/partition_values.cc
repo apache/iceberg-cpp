@@ -19,10 +19,6 @@
 
 #include "iceberg/row/partition_values.h"
 
-#include <string_view>
-
-#include "iceberg/util/uuid.h"
-
 namespace iceberg {
 
 PartitionValues& PartitionValues::operator=(const PartitionValues& other) {
@@ -43,52 +39,7 @@ Result<Scalar> PartitionValues::GetField(size_t pos) const {
         values_.size());
   }
 
-  const auto& literal = values_[pos];
-
-  // Handle null values
-  if (literal.IsNull()) {
-    return Scalar{std::monostate{}};
-  }
-
-  // Convert Literal to Scalar based on type
-  switch (literal.type()->type_id()) {
-    case TypeId::kBoolean:
-      return Scalar{std::get<bool>(literal.value())};
-    case TypeId::kInt:
-    case TypeId::kDate:
-      return Scalar{std::get<int32_t>(literal.value())};
-    case TypeId::kLong:
-    case TypeId::kTime:
-    case TypeId::kTimestamp:
-    case TypeId::kTimestampTz:
-    case TypeId::kTimestampNs:
-    case TypeId::kTimestampTzNs:
-      return Scalar{std::get<int64_t>(literal.value())};
-    case TypeId::kFloat:
-      return Scalar{std::get<float>(literal.value())};
-    case TypeId::kDouble:
-      return Scalar{std::get<double>(literal.value())};
-    case TypeId::kString: {
-      const auto& str = std::get<std::string>(literal.value());
-      return Scalar{std::string_view(str)};
-    }
-    case TypeId::kBinary:
-    case TypeId::kFixed: {
-      const auto& bytes = std::get<std::vector<uint8_t>>(literal.value());
-      return Scalar{
-          std::string_view(reinterpret_cast<const char*>(bytes.data()), bytes.size())};
-    }
-    case TypeId::kUuid: {
-      const auto bytes = std::get<Uuid>(literal.value()).bytes();
-      return Scalar{
-          std::string_view(reinterpret_cast<const char*>(bytes.data()), bytes.size())};
-    }
-    case TypeId::kDecimal:
-      return Scalar{std::get<Decimal>(literal.value())};
-    default:
-      return NotSupported("Cannot convert literal of type {} to Scalar",
-                          literal.type()->ToString());
-  }
+  return LiteralToScalar(values_[pos]);
 }
 
 Result<std::reference_wrapper<const Literal>> PartitionValues::ValueAt(size_t pos) const {
