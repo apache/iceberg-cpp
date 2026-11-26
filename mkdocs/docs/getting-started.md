@@ -50,6 +50,9 @@ cmake --install build
 
 ### Bundle Library (with vendored dependencies)
 
+To build Arrow from source even when it is already installed, set
+`FETCHCONTENT_TRY_FIND_PACKAGE_MODE=NEVER` to skip FetchContent's installed-package lookup.
+
 ```bash
 cmake -S . -B build -G Ninja -DCMAKE_INSTALL_PREFIX=/path/to/install -DICEBERG_BUILD_BUNDLE=ON -DFETCHCONTENT_TRY_FIND_PACKAGE_MODE=NEVER
 cmake --build build
