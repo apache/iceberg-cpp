@@ -21,6 +21,7 @@
 #include <cstring>
 #include <limits>
 #include <list>
+#include <stdexcept>
 #include <utility>
 
 #include "iceberg/content_cache_internal.h"
@@ -32,19 +33,7 @@
 
 namespace iceberg::internal {
 
-struct CachedFile {
-  MetadataContent content;
-  std::optional<std::string> storage_path;
-};
-
-struct MetadataContentWeigher {
-  int64_t operator()(const std::string&, const CachedFile& file) const {
-    return static_cast<int64_t>(file.content->size());
-  }
-};
-
-using CachedFiles =
-    LruCache<std::string, CachedFile, MetadataContentWeigher, StringHash, StringEqual>;
+using CachedFiles = LruCache<std::string, MetadataContent, StringHash, StringEqual>;
 
 // Owned by the table's cache handle. Only the registry accesses these fields under
 // its mutex. A position is valid while files is non-null.
@@ -60,10 +49,9 @@ class ContentCacheRegistry {
 
   // Pin the files for the calling operation. Their entries are protected by the
   // per-table mutex, so accessing bytes never requires holding the registry lock.
-  std::shared_ptr<CachedFiles> Find(const ContentCacheRegistration& entry,
-                                    bool touch = true) {
+  std::shared_ptr<CachedFiles> Find(const ContentCacheRegistration& entry) {
     std::lock_guard lock(mutex_);
-    if (touch && entry.files) {
+    if (entry.files) {
       entries_.splice(entries_.begin(), entries_, entry.position);
     }
     return entry.files;
@@ -71,6 +59,7 @@ class ContentCacheRegistry {
 
   std::shared_ptr<CachedFiles> GetOrCreate(
       const std::shared_ptr<ContentCacheRegistration>& entry, size_t max_total_bytes) {
+    std::shared_ptr<CachedFiles> evicted;
     std::lock_guard lock(mutex_);
     if (entry->files) {
       entries_.splice(entries_.begin(), entries_, entry->position);
@@ -78,35 +67,43 @@ class ContentCacheRegistry {
       auto files = std::make_shared<CachedFiles>(static_cast<int64_t>(max_total_bytes));
       entry->position = entries_.emplace(entries_.begin(), entry);
       entry->files = std::move(files);
-      TrimToCapacity();
+      if (std::cmp_greater(entries_.size(), capacity_)) {
+        evicted = PopLeastRecentlyUsed();
+      }
     }
     return entry->files;
   }
 
   void Erase(ContentCacheRegistration& entry) {
+    std::shared_ptr<CachedFiles> evicted;
     std::lock_guard lock(mutex_);
     if (entry.files) {
       entries_.erase(entry.position);
-      entry.files.reset();
+      evicted = std::move(entry.files);
     }
   }
 
   int32_t SetCapacity(int32_t capacity) {
-    ICEBERG_DCHECK(capacity > 0, "Global manifest cache limit must be positive");
+    if (capacity <= 0) {
+      throw std::invalid_argument("Global manifest cache limit must be positive");
+    }
+    std::vector<std::shared_ptr<CachedFiles>> evicted;
     std::lock_guard lock(mutex_);
-    const auto previous = std::exchange(capacity_, capacity);
-    TrimToCapacity();
-    return previous;
+    if (std::cmp_greater(entries_.size(), capacity)) {
+      evicted.reserve(entries_.size() - static_cast<size_t>(capacity));
+      while (std::cmp_greater(entries_.size(), capacity)) {
+        evicted.push_back(PopLeastRecentlyUsed());
+      }
+    }
+    return std::exchange(capacity_, capacity);
   }
 
  private:
-  void TrimToCapacity() {
-    while (std::cmp_greater(entries_.size(), capacity_)) {
-      if (auto entry = entries_.back().lock()) {
-        entry->files.reset();
-      }
-      entries_.pop_back();
-    }
+  // Transfer ownership to the caller so destruction happens after unlocking.
+  std::shared_ptr<CachedFiles> PopLeastRecentlyUsed() {
+    auto entry = entries_.back().lock();
+    entries_.pop_back();
+    return entry ? std::move(entry->files) : nullptr;
   }
 
   std::mutex mutex_;
@@ -115,13 +112,6 @@ class ContentCacheRegistry {
 };
 
 namespace {
-
-std::optional<std::string_view> StoragePath(const InputFile& input) {
-  if (const auto* file = dynamic_cast<const InputFileWithStoragePath*>(&input)) {
-    return file->storage_path();
-  }
-  return std::nullopt;
-}
 
 std::shared_ptr<ContentCacheRegistry> GlobalContentCacheRegistry() {
   // Handles keep the registry alive even when destroyed during static teardown.
@@ -222,7 +212,9 @@ class CachedInputFile : public InputFile {
     if (content_) {
       return std::make_unique<CachedSeekableInputStream>(content_);
     }
-    if (auto cached = cache_->Find(location_)) {
+    uint64_t generation;
+    auto cached = cache_->Find(location_, &generation);
+    if (cached && generation == generation_ && std::cmp_equal(cached->size(), size_)) {
       return std::make_unique<CachedSeekableInputStream>(std::move(cached));
     }
     auto loaded = ReadInputFile(*input_, size_, location_);
@@ -238,7 +230,7 @@ class CachedInputFile : public InputFile {
     }
     auto content =
         std::make_shared<const std::vector<std::byte>>(std::move(loaded).value());
-    cache_->Insert(location_, content, generation_, StoragePath(*input_));
+    if (!cached) cache_->Insert(location_, content, generation_);
     return std::make_unique<CachedSeekableInputStream>(std::move(content));
   }
 
@@ -251,8 +243,7 @@ class CachedInputFile : public InputFile {
   MetadataContent content_;
 };
 
-// Manifest maintenance creates outputs on storage. Cleanup deletes through storage
-// and invalidates the cache after each delete attempt.
+// Clear once after each cleanup, including partially successful batch deletes.
 class ManifestFileIO : public FileIO {
  public:
   ManifestFileIO(std::shared_ptr<FileIO> io, std::shared_ptr<ContentCache> cache)
@@ -275,17 +266,24 @@ class ManifestFileIO : public FileIO {
   Result<std::unique_ptr<OutputFile>> NewOutputFile(std::string location) override {
     return io_->NewOutputFile(std::move(location));
   }
-  Status DeleteFile(const std::string& /*location*/) override {
-    return NotSupported("Delete files through the storage FileIO");
+  Status DeleteFile(const std::string& location) override {
+    ClearAfterDelete cleanup{*cache_};
+    return io_->DeleteFile(location);
   }
-  Status DeleteFiles(const std::vector<std::string>& /*locations*/) override {
-    return NotSupported("Delete files through the storage FileIO");
+  Status DeleteFiles(const std::vector<std::string>& locations) override {
+    if (locations.empty()) return io_->DeleteFiles(locations);
+    ClearAfterDelete cleanup{*cache_};
+    return io_->DeleteFiles(locations);
   }
   const std::unordered_map<std::string, std::string>& properties() const override {
     return io_->properties();
   }
 
  private:
+  struct ClearAfterDelete {
+    ContentCache& cache;
+    ~ClearAfterDelete() { cache.Clear(); }
+  };
   std::shared_ptr<FileIO> io_;
   std::shared_ptr<ContentCache> cache_;
 };
@@ -336,12 +334,11 @@ MetadataContent ContentCache::Find(std::string_view location, uint64_t* generati
   if (generation) *generation = generation_;
   auto files = registry_->Find(*registration_);
   const auto* file = files ? files->Find(location) : nullptr;
-  return file ? file->content : nullptr;
+  return file ? *file : nullptr;
 }
 
 void ContentCache::Insert(std::string_view location, MetadataContent content,
-                          uint64_t generation,
-                          std::optional<std::string_view> storage_path) {
+                          uint64_t generation) {
   // Empty/corrupt metadata must not accumulate unbounded zero-weight entries.
   if (content->empty() || content->size() > options_.max_content_length ||
       content->size() > options_.max_total_bytes) {
@@ -349,48 +346,9 @@ void ContentCache::Insert(std::string_view location, MetadataContent content,
   }
   std::lock_guard lock(mutex_);
   if (generation == generation_) {
+    const auto weight = static_cast<int64_t>(content->size());
     registry_->GetOrCreate(registration_, options_.max_total_bytes)
-        ->Replace(std::string(location),
-                  CachedFile{.content = std::move(content),
-                             .storage_path = std::optional<std::string>(storage_path)});
-  }
-}
-
-void ContentCache::Invalidate(FileIO& storage, std::string_view location) {
-  {
-    std::lock_guard lock(mutex_);
-    auto files = registry_->Find(*registration_, /*touch=*/false);
-    if (!files) {
-      ++generation_;
-      return;
-    }
-  }
-
-  // A URI may have several cached spellings, even when the deleted spelling
-  // itself was cached. Ask storage for the path it actually uses.
-  std::optional<std::string> path;
-  try {
-    if (auto input = storage.NewInputFile(std::string(location)); input && *input) {
-      path = StoragePath(**input);
-    }
-  } catch (...) {
-    // Failure to resolve an alias must not turn a completed delete into a failure.
-    Clear();
-    return;
-  }
-  if (!path) {
-    // The public InputFile location may simply echo the requested spelling.
-    Clear();
-    return;
-  }
-
-  std::lock_guard lock(mutex_);
-  ++generation_;
-  if (auto files = registry_->Find(*registration_, /*touch=*/false)) {
-    files->EraseIf([&](const CachedFile& file) {
-      return !file.storage_path || *file.storage_path == *path;
-    });
-    if (files->size() == 0) registry_->Erase(*registration_);
+        ->Replace(std::string(location), std::move(content), weight);
   }
 }
 
@@ -421,12 +379,7 @@ Result<std::unique_ptr<InputFile>> ContentCache::NewInputFile(
     return std::make_unique<CachedInputFile>(std::string(input->location()),
                                              std::move(content));
   }
-  int64_t size;
-  if (length) {
-    size = static_cast<int64_t>(*length);
-  } else {
-    ICEBERG_ASSIGN_OR_RAISE(size, input->Size());
-  }
+  ICEBERG_ASSIGN_OR_RAISE(auto size, input->Size());
   ICEBERG_PRECHECK(size >= 0, "Invalid negative file size {}", size);
   if (size == 0 || std::cmp_greater(size, options_.max_content_length) ||
       std::cmp_greater(size, options_.max_total_bytes)) {

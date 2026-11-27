@@ -29,6 +29,7 @@
 #include <gtest/gtest.h>
 
 #include "iceberg/test/executor.h"
+#include "iceberg/test/matchers.h"
 #include "iceberg/util/cache_internal.h"
 #include "iceberg/util/task_group.h"
 
@@ -51,21 +52,13 @@ TEST(LruCacheTest, Eviction) {
   EXPECT_EQ(cache.total_weight(), 2);
 }
 
-struct StringLengthWeigher {
-  int64_t operator()(int32_t /*key*/, const std::string& value) const {
-    return static_cast<int64_t>(value.size());
-  }
-};
-
-using WeightedCache = LruCache<int32_t, std::string, StringLengthWeigher>;
-
 TEST(LruCacheTest, LargeLimitDoesNotReserveStorage) {
   constexpr auto kLargeLimit = std::numeric_limits<int64_t>::max();
   LruCache<int32_t, std::string> cache(kLargeLimit);
   ASSERT_NE(cache.Replace(1, "one").second, nullptr);
 
-  cache.Resize(1);
-  cache.Resize(kLargeLimit);
+  ASSERT_THAT(cache.Resize(1), IsOk());
+  ASSERT_THAT(cache.Resize(kLargeLimit), IsOk());
   EXPECT_EQ(cache.max_weight(), kLargeLimit);
   EXPECT_EQ(cache.size(), 1);
   cache.Clear();
@@ -74,15 +67,15 @@ TEST(LruCacheTest, LargeLimitDoesNotReserveStorage) {
 }
 
 TEST(LruCacheTest, WeightedEviction) {
-  WeightedCache cache(10);
+  LruCache<int32_t, std::string> cache(10);
 
-  EXPECT_TRUE(cache.Replace(1, "aaaa").first);
-  EXPECT_TRUE(cache.Replace(2, "bbb").first);
+  EXPECT_TRUE(cache.Replace(1, "aaaa", 4).first);
+  EXPECT_TRUE(cache.Replace(2, "bbb", 3).first);
   ASSERT_NE(cache.Find(1), nullptr);
   EXPECT_EQ(cache.total_weight(), 7);
 
   // 7 + 6 exceeds 10, so the least recently used entry 2 is evicted.
-  auto [inserted, value] = cache.Replace(3, "cccccc");
+  auto [inserted, value] = cache.Replace(3, "cccccc", 6);
   static_assert(std::same_as<decltype(value), const std::string*>);
   static_assert(std::same_as<decltype(cache.Find(3)), const std::string*>);
   EXPECT_TRUE(inserted);
@@ -96,13 +89,13 @@ TEST(LruCacheTest, WeightedEviction) {
 }
 
 TEST(LruCacheTest, WeightedEvictionRemovesMultipleEntries) {
-  WeightedCache cache(10);
-  cache.Replace(1, "aaa");
-  cache.Replace(2, "bbb");
-  cache.Replace(3, "ccc");
+  LruCache<int32_t, std::string> cache(10);
+  cache.Replace(1, "aaa", 3);
+  cache.Replace(2, "bbb", 3);
+  cache.Replace(3, "ccc", 3);
 
   // Making room for 7 requires evicting the two least recently used entries.
-  ASSERT_NE(cache.Replace(4, "ddddddd").second, nullptr);
+  ASSERT_NE(cache.Replace(4, "ddddddd", 7).second, nullptr);
   EXPECT_EQ(cache.Find(1), nullptr);
   EXPECT_EQ(cache.Find(2), nullptr);
   EXPECT_NE(cache.Find(3), nullptr);
@@ -112,10 +105,10 @@ TEST(LruCacheTest, WeightedEvictionRemovesMultipleEntries) {
 }
 
 TEST(LruCacheTest, OversizedValueIsNotCached) {
-  WeightedCache cache(5);
-  cache.Replace(1, "aa");
+  LruCache<int32_t, std::string> cache(5);
+  cache.Replace(1, "aa", 2);
 
-  auto [inserted, value] = cache.Replace(2, "bbbbbb");
+  auto [inserted, value] = cache.Replace(2, "bbbbbb", 6);
   EXPECT_FALSE(inserted);
   EXPECT_EQ(value, nullptr);
   EXPECT_EQ(cache.Find(2), nullptr);
@@ -125,23 +118,23 @@ TEST(LruCacheTest, OversizedValueIsNotCached) {
   EXPECT_EQ(cache.total_weight(), 2);
 
   // A value exactly at the maximum weight fits.
-  ASSERT_NE(cache.Replace(3, "ccccc").second, nullptr);
+  ASSERT_NE(cache.Replace(3, "ccccc", 5).second, nullptr);
   EXPECT_EQ(cache.Find(1), nullptr);
   EXPECT_EQ(cache.total_weight(), 5);
 }
 
 TEST(LruCacheTest, ReplaceReweighsEntry) {
-  WeightedCache cache(10);
-  cache.Replace(1, "aaa");
-  cache.Replace(2, "bbb");
+  LruCache<int32_t, std::string> cache(10);
+  cache.Replace(1, "aaa", 3);
+  cache.Replace(2, "bbb", 3);
 
   // Growing entry 2 from 3 to 7 still fits next to entry 1.
-  EXPECT_FALSE(cache.Replace(2, "bbbbbbb").first);
+  EXPECT_FALSE(cache.Replace(2, "bbbbbbb", 7).first);
   EXPECT_EQ(cache.size(), 2);
   EXPECT_EQ(cache.total_weight(), 10);
 
   // Growing entry 1 to 8 makes it most recently used and evicts entry 2.
-  auto [inserted, value] = cache.Replace(1, "aaaaaaaa");
+  auto [inserted, value] = cache.Replace(1, "aaaaaaaa", 8);
   EXPECT_FALSE(inserted);
   ASSERT_NE(value, nullptr);
   EXPECT_EQ(*value, "aaaaaaaa");
@@ -150,11 +143,11 @@ TEST(LruCacheTest, ReplaceReweighsEntry) {
   EXPECT_EQ(cache.total_weight(), 8);
 
   // Shrinking releases weight.
-  cache.Replace(1, "a");
+  cache.Replace(1, "a", 1);
   EXPECT_EQ(cache.total_weight(), 1);
 
   // Replacing with an oversized value removes the existing entry.
-  std::tie(inserted, value) = cache.Replace(1, std::string(11, 'a'));
+  std::tie(inserted, value) = cache.Replace(1, std::string(11, 'a'), 11);
   EXPECT_FALSE(inserted);
   EXPECT_EQ(value, nullptr);
   EXPECT_EQ(cache.Find(1), nullptr);
@@ -162,69 +155,40 @@ TEST(LruCacheTest, ReplaceReweighsEntry) {
   EXPECT_EQ(cache.total_weight(), 0);
 }
 
-TEST(LruCacheTest, ThrowingWeigherPreservesEntriesWeightAndRecency) {
-  auto weigher = [](int32_t, const std::string& value) {
-    if (value.empty()) {
-      throw std::invalid_argument("empty value");
-    }
-    return static_cast<int64_t>(value.size());
-  };
-  LruCache<int32_t, std::string, decltype(weigher)> cache(4, weigher);
-  cache.Replace(1, "aa");
-  cache.Replace(2, "bb");
-
-  EXPECT_THROW(cache.Replace(3, ""), std::invalid_argument);
-  EXPECT_EQ(cache.Find(3), nullptr);
-  EXPECT_THROW(cache.Replace(2, ""), std::invalid_argument);
-  const auto* original = cache.Find(2);
-  ASSERT_NE(original, nullptr);
-  EXPECT_EQ(*original, "bb");
-  EXPECT_THROW(cache.Replace(1, ""), std::invalid_argument);
-  EXPECT_EQ(cache.size(), 2);
-  EXPECT_EQ(cache.total_weight(), 4);
-
-  // The failed replacement of key 1 must leave it least recently used.
-  EXPECT_TRUE(cache.Replace(3, "cc").first);
-  EXPECT_EQ(cache.Find(1), nullptr);
-  EXPECT_NE(cache.Find(2), nullptr);
-  EXPECT_EQ(cache.total_weight(), 4);
-}
-
-TEST(LruCacheTest, EraseIfPreservesSurvivorWeightAndRecency) {
-  WeightedCache cache(8);
-  cache.Replace(1, "aa");
-  cache.Replace(2, "x");
-  cache.Replace(3, "ccc");
-  cache.Replace(4, "x");
-  cache.EraseIf([](const std::string& value) { return value == "x"; });
-  EXPECT_EQ(cache.size(), 2);
-  EXPECT_EQ(cache.total_weight(), 5);
-  cache.Resize(3);
-  EXPECT_EQ(cache.Find(1), nullptr);
-  EXPECT_NE(cache.Find(3), nullptr);
+TEST(LruCacheTest, InvalidWeightsLeaveCacheUnchanged) {
+  using Cache = LruCache<int32_t, std::string>;
+  EXPECT_THROW(Cache(-1), std::invalid_argument);
+  Cache cache(4);
+  cache.Replace(1, "old", 3);
+  EXPECT_THAT(cache.Resize(-1), IsError(ErrorKind::kInvalidArgument));
+  EXPECT_THROW(cache.Replace(1, "new", -1), std::invalid_argument);
+  EXPECT_EQ(cache.max_weight(), 4);
+  EXPECT_EQ(cache.total_weight(), 3);
+  ASSERT_NE(cache.Find(1), nullptr);
+  EXPECT_EQ(*cache.Find(1), "old");
 }
 
 TEST(LruCacheTest, ClearResetsWeight) {
-  WeightedCache cache(10);
-  cache.Replace(1, "aaaa");
-  cache.Replace(2, "bbbb");
+  LruCache<int32_t, std::string> cache(10);
+  cache.Replace(1, "aaaa", 4);
+  cache.Replace(2, "bbbb", 4);
 
   cache.Clear();
   EXPECT_EQ(cache.size(), 0);
   EXPECT_EQ(cache.total_weight(), 0);
 
-  ASSERT_NE(cache.Replace(3, std::string(10, 'c')).second, nullptr);
+  ASSERT_NE(cache.Replace(3, std::string(10, 'c'), 10).second, nullptr);
   EXPECT_EQ(cache.total_weight(), 10);
 }
 
 TEST(LruCacheTest, ShrinkingLimitEvictsByWeightInLruOrder) {
-  WeightedCache cache(10);
-  cache.Replace(1, "aaa");
-  cache.Replace(2, "bbbb");
-  cache.Replace(3, "ccc");
+  LruCache<int32_t, std::string> cache(10);
+  cache.Replace(1, "aaa", 3);
+  cache.Replace(2, "bbbb", 4);
+  cache.Replace(3, "ccc", 3);
   ASSERT_NE(cache.Find(1), nullptr);
 
-  cache.Resize(3);
+  ASSERT_THAT(cache.Resize(3), IsOk());
   EXPECT_EQ(cache.max_weight(), 3);
   EXPECT_EQ(cache.total_weight(), 3);
   EXPECT_EQ(cache.Find(2), nullptr);

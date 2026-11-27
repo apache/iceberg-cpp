@@ -21,6 +21,8 @@
 #include <cstdint>
 #include <memory>
 #include <optional>
+#include <span>
+#include <stdexcept>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -179,56 +181,100 @@ TEST(MetadataCacheTest, IgnoresInvalidTuningPropertiesWhenDisabled) {
   EXPECT_FALSE(options.enabled);
 }
 
-TEST(MetadataCacheTest, AdapterRejectsDeletes) {
+TEST(MetadataCacheTest, PartialBatchDeleteClearsCacheAndPreservesStorageError) {
   auto storage = std::make_shared<MockFileIO>();
   auto cache = std::make_shared<internal::ContentCache>(ContentCacheOptions{});
   auto adapter = cache->Wrap(storage);
-  EXPECT_CALL(*storage, DeleteFile).Times(0);
-  EXPECT_THAT(adapter->DeleteFile("manifest.avro"), IsError(ErrorKind::kNotSupported));
-  EXPECT_THAT(adapter->DeleteFiles({"manifest.avro"}), IsError(ErrorKind::kNotSupported));
-  EXPECT_THAT(adapter->DeleteFiles({}), IsError(ErrorKind::kNotSupported));
+  cache->Insert("alias", std::make_shared<const std::vector<std::byte>>(1), 0);
+
+  ASSERT_THAT(adapter->DeleteFiles({}), IsOk());
+  ASSERT_TRUE(cache->Find("alias"));
+  ::testing::InSequence sequence;
+  EXPECT_CALL(*storage, DeleteFile("canonical")).WillOnce(::testing::Return(Status{}));
+  EXPECT_CALL(*storage, DeleteFile("missing")).WillOnce([] {
+    return NotFound("missing");
+  });
+  EXPECT_THAT(adapter->DeleteFiles({"canonical", "missing"}),
+              IsError(ErrorKind::kNotFound));
+  uint64_t generation;
+  EXPECT_FALSE(cache->Find("alias", &generation));
+  EXPECT_EQ(generation, 1);
 }
 
-class AliasedMockFileIO : public MockFileIO {
- public:
-  Result<std::unique_ptr<InputFile>> NewInputFile(std::string location) override {
-    if (location == "alias") location = "manifest.avro";
-    return MockFileIO::NewInputFile(std::move(location));
-  }
-};
-
-TEST(MetadataCacheTest, StorageDeleteThroughAliasInvalidatesCanonicalContent) {
-  for (bool recreate : {false, true}) {
-    SCOPED_TRACE(recreate);
-    auto storage = std::make_shared<AliasedMockFileIO>();
+TEST(MetadataCacheTest, OldInputHandleOpensAfterReplacementIsCached) {
+  for (const auto* replacement : {"new", "longer"}) {
+    SCOPED_TRACE(replacement);
+    auto storage = std::make_shared<MockFileIO>();
     storage->AddFile("manifest.avro", "old");
     auto cache = std::make_shared<internal::ContentCache>(ContentCacheOptions{});
     auto adapter = cache->Wrap(storage);
-    ICEBERG_UNWRAP_OR_FAIL(auto old_file, adapter->NewInputFile("alias"));
-    ASSERT_THAT(adapter->ReadFile("alias", std::nullopt), HasValue(::testing::Eq("old")));
-    ASSERT_TRUE(cache->Find("manifest.avro"));
-    storage->AddFile("unrelated", "keep");
-    ASSERT_THAT(adapter->ReadFile("unrelated", std::nullopt), IsOk());
-
-    EXPECT_CALL(*storage, DeleteFile("alias")).WillOnce([&] {
+    ICEBERG_UNWRAP_OR_FAIL(auto old_file, adapter->NewInputFile("manifest.avro"));
+    EXPECT_CALL(*storage, DeleteFile("manifest.avro")).WillOnce([&] {
       storage->RemoveFile("manifest.avro");
       return Status{};
     });
-    ASSERT_THAT(storage->DeleteFile("alias"), IsOk());
-    if (recreate) storage->AddFile("manifest.avro", "new");
-    cache->Invalidate(*storage, "alias");
+    ASSERT_THAT(adapter->DeleteFile("manifest.avro"), IsOk());
+    storage->AddFile("manifest.avro", replacement);
+    ASSERT_THAT(adapter->ReadFile("manifest.avro", std::nullopt),
+                HasValue(::testing::Eq(replacement)));
 
-    // An input handle obtained before deletion must not repopulate the cache.
+    EXPECT_THAT(old_file->Size(), HasValue(::testing::Eq(3)));
     ICEBERG_UNWRAP_OR_FAIL(auto old_stream, old_file->Open());
-    ASSERT_THAT(old_stream->Close(), IsOk());
-    auto read = adapter->ReadFile("manifest.avro", std::nullopt);
-    if (recreate) {
-      EXPECT_THAT(read, HasValue(::testing::Eq("new")));
-      EXPECT_TRUE(cache->Find("unrelated"));
-    } else {
-      EXPECT_THAT(read, IsError(ErrorKind::kNotFound));
-    }
+    std::string bytes(8, ' ');
+    EXPECT_THAT(old_stream->Read(std::as_writable_bytes(std::span(bytes))),
+                HasValue(::testing::Eq(3)));
+    EXPECT_EQ(bytes.substr(0, 3), "old");
+    EXPECT_THAT(adapter->ReadFile("manifest.avro", std::nullopt),
+                HasValue(::testing::Eq(replacement)));
   }
+}
+
+TEST(MetadataCacheTest, OpenRespectsHandleSizeWhenALongerEntryIsAlreadyCached) {
+  auto storage = std::make_shared<MockFileIO>();
+  storage->AddFile("manifest.avro", "manifest");
+  auto cache = std::make_shared<internal::ContentCache>(ContentCacheOptions{});
+  auto adapter = cache->Wrap(storage);
+  ICEBERG_UNWRAP_OR_FAIL(auto short_file, adapter->NewInputFile("manifest.avro", 4));
+  ASSERT_THAT(short_file->Size(), HasValue(::testing::Eq(4)));
+  ASSERT_THAT(adapter->ReadFile("manifest.avro", std::nullopt),
+              HasValue(::testing::Eq("manifest")));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto stream, short_file->Open());
+  std::array<std::byte, 8> bytes;
+  EXPECT_THAT(stream->Read(bytes), HasValue(::testing::Eq(4)));
+  EXPECT_THAT(adapter->ReadFile("manifest.avro", std::nullopt),
+              HasValue(::testing::Eq("manifest")));
+}
+
+class IgnoredHintFileIO : public MockFileIO {
+ public:
+  Result<std::unique_ptr<InputFile>> NewInputFile(std::string location,
+                                                  size_t length) override {
+    ++hinted_calls;
+    EXPECT_EQ(length, 4);
+    return MockFileIO::NewInputFile(std::move(location));
+  }
+
+  int hinted_calls = 0;
+};
+
+TEST(MetadataCacheTest, HintedInputUsesSizeReportedByStorage) {
+  auto storage = std::make_shared<IgnoredHintFileIO>();
+  storage->AddFile("manifest.avro", "manifest");
+  for (size_t limit : {4, 8}) {
+    SCOPED_TRACE(limit);
+    auto cache = std::make_shared<internal::ContentCache>(
+        ContentCacheOptions{.max_content_length = limit});
+    auto adapter = cache->Wrap(storage);
+    ICEBERG_UNWRAP_OR_FAIL(auto file, adapter->NewInputFile("manifest.avro", 4));
+    EXPECT_THAT(file->Size(), HasValue(::testing::Eq(8)));
+    ICEBERG_UNWRAP_OR_FAIL(auto stream, file->Open());
+    EXPECT_THAT(stream->Close(), IsOk());
+    EXPECT_EQ(static_cast<bool>(cache->Find("manifest.avro")), limit == 8);
+    EXPECT_THAT(adapter->ReadFile("manifest.avro", std::nullopt),
+                HasValue(::testing::Eq("manifest")));
+  }
+  EXPECT_EQ(storage->hinted_calls, 2);
 }
 
 TEST(MetadataCacheTest, PrefixReadDoesNotPopulateWholeFileCache) {
@@ -309,32 +355,36 @@ TEST(MetadataCacheTest, DestroyedCacheFreesItsSlotWithoutEvictingALiveCache) {
   EXPECT_TRUE(third->Find("third"));
 }
 
-TEST(MetadataCacheTest, InvalidatingLastFileFreesItsGlobalSlot) {
+TEST(MetadataCacheTest, LoweringGlobalCapacityEvictsLeastRecentlyUsedTables) {
+  ScopedGlobalCacheLimit limit(3);
+  auto first = std::make_shared<internal::ContentCache>(ContentCacheOptions{});
+  auto second = std::make_shared<internal::ContentCache>(ContentCacheOptions{});
+  auto third = std::make_shared<internal::ContentCache>(ContentCacheOptions{});
+  const auto bytes = std::make_shared<const std::vector<std::byte>>(1);
+  first->Insert("first", bytes, 0);
+  second->Insert("second", bytes, 0);
+  third->Insert("third", bytes, 0);
+  ASSERT_TRUE(first->Find("first"));
+  EXPECT_THROW(internal::ContentCache::SetGlobalCapacity(0), std::invalid_argument);
+  EXPECT_EQ(internal::ContentCache::SetGlobalCapacity(1), 3);
+  EXPECT_TRUE(first->Find("first"));
+  EXPECT_FALSE(second->Find("second"));
+  EXPECT_FALSE(third->Find("third"));
+}
+
+TEST(MetadataCacheTest, ClearingCacheFreesItsGlobalSlot) {
   ScopedGlobalCacheLimit limit(2);
   auto first = std::make_shared<internal::ContentCache>(ContentCacheOptions{});
   auto second = std::make_shared<internal::ContentCache>(ContentCacheOptions{});
   auto third = std::make_shared<internal::ContentCache>(ContentCacheOptions{});
   const auto bytes = std::make_shared<const std::vector<std::byte>>(1);
   first->Insert("first", bytes, 0);
-  second->Insert("second", bytes, 0, "second");
-  MockFileIO storage;
-  storage.AddFile("second", "replacement");
-  second->Invalidate(storage, "second");
+  second->Insert("second", bytes, 0);
+  second->Clear();
   third->Insert("third", bytes, 0);
   EXPECT_TRUE(first->Find("first"));
   EXPECT_FALSE(second->Find("second"));
   EXPECT_TRUE(third->Find("third"));
-}
-
-TEST(MetadataCacheTest, InvalidationClearsAliasesWhenStorageOnlyReportsTheRequest) {
-  FailingOpenFileIO storage(std::make_shared<FailingOpenState>());
-  auto cache = std::make_shared<internal::ContentCache>(ContentCacheOptions{});
-  const auto bytes = std::make_shared<const std::vector<std::byte>>(1);
-  cache->Insert("manifest.avro", bytes, 0);
-  cache->Insert("alias", bytes, 0);
-  cache->Invalidate(storage, "manifest.avro");
-  EXPECT_FALSE(cache->Find("manifest.avro"));
-  EXPECT_FALSE(cache->Find("alias"));
 }
 
 TEST(MetadataCacheTest, InvalidatedLoadCannotPopulateRecreatedCacheState) {
@@ -344,8 +394,7 @@ TEST(MetadataCacheTest, InvalidatedLoadCannotPopulateRecreatedCacheState) {
   ASSERT_FALSE(cache->Find("manifest.avro", &generation));
   auto other = std::make_shared<internal::ContentCache>(ContentCacheOptions{});
   other->Insert("other.avro", std::make_shared<const std::vector<std::byte>>(8), 0);
-  MockFileIO storage;
-  cache->Invalidate(storage, "manifest.avro");
+  cache->Clear();
   cache->Insert("manifest.avro", std::make_shared<const std::vector<std::byte>>(8),
                 generation);
   EXPECT_FALSE(cache->Find("manifest.avro"));

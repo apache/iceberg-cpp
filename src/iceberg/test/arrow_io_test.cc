@@ -389,9 +389,8 @@ TEST(ArrowFileIOTest, AliasDeleteInvalidatesEveryCachedSpelling) {
     if (warm_alias) {
       ASSERT_THAT(adapter->ReadFile(alias, std::nullopt), HasValue(::testing::Eq("old")));
     }
-    ASSERT_THAT(storage->DeleteFile(alias), IsOk());
-    cache->Invalidate(*storage, alias);
-    EXPECT_TRUE(cache->Find(unrelated));
+    ASSERT_THAT(adapter->DeleteFiles({alias, unrelated}), IsOk());
+    EXPECT_FALSE(cache->Find(unrelated));
     ASSERT_THAT(storage->WriteFile(canonical, "new"), IsOk());
     EXPECT_THAT(adapter->ReadFile(canonical, std::nullopt),
                 HasValue(::testing::Eq("new")));
@@ -407,8 +406,7 @@ TEST_F(LocalFileIOTest, AliasDeleteClearsCachedLocalPaths) {
   ASSERT_THAT(file_io_->WriteFile(temp_filepath_, "old"), IsOk());
   ASSERT_THAT(adapter->ReadFile(temp_filepath_, std::nullopt),
               HasValue(::testing::Eq("old")));
-  ASSERT_THAT(file_io_->DeleteFile(alias), IsOk());
-  cache->Invalidate(*file_io_, alias);
+  ASSERT_THAT(adapter->DeleteFile(alias), IsOk());
   ASSERT_THAT(file_io_->WriteFile(temp_filepath_, "new"), IsOk());
   EXPECT_THAT(adapter->ReadFile(temp_filepath_, std::nullopt),
               HasValue(::testing::Eq("new")));

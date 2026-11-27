@@ -38,30 +38,16 @@
 
 namespace iceberg::internal {
 
-// Gives every entry a weight of one, so that the maximum weight of a cache is the
-// maximum number of entries.
-struct UnitWeigher {
-  template <typename Key, typename Value>
-  constexpr int64_t operator()(const Key& /*key*/,
-                               const Value& /*value*/) const noexcept {
-    return 1;
-  }
-};
-
-// A LRU (Least recently used) replacement cache
-//
-// The combined weight of the cached entries never exceeds `max_weight`; least recently
-// used entries are evicted first to make room. `Weigher` computes the weight of an entry
-// from its key and value when the entry is inserted or replaced, e.g. its size in bytes.
-// Weights must be non-negative. With the default UnitWeigher, `max_weight` is the
-// maximum number of entries. Storage grows as entries are inserted.
-template <typename Key, typename Value, typename Weigher = UnitWeigher,
-          typename Hash = std::hash<Key>, typename KeyEqual = std::equal_to<Key>>
+// A least recently used cache. Replace accepts an entry weight (one by default).
+// Storage grows as entries are inserted, up to the maximum combined weight.
+template <typename Key, typename Value, typename Hash = std::hash<Key>,
+          typename KeyEqual = std::equal_to<Key>>
 class LruCache {
  public:
-  explicit LruCache(int64_t max_weight, Weigher weigher = Weigher{})
-      : max_weight_(max_weight), weigher_(std::move(weigher)) {
-    ICEBERG_DCHECK(max_weight_ >= 0, "Cache maximum weight must be non-negative");
+  explicit LruCache(int64_t max_weight) : max_weight_(max_weight) {
+    if (max_weight < 0) {
+      throw std::invalid_argument("Cache maximum weight must be non-negative");
+    }
   }
 
   LruCache(const LruCache&) = delete;
@@ -88,12 +74,13 @@ class LruCache {
   int64_t max_weight() const { return max_weight_; }
 
   // Apply a new limit immediately, evicting least recently used entries as needed.
-  void Resize(int64_t max_weight) {
-    ICEBERG_DCHECK(max_weight >= 0, "Cache maximum weight must be non-negative");
+  Status Resize(int64_t max_weight) {
+    ICEBERG_PRECHECK(max_weight >= 0, "Cache maximum weight must be non-negative");
     max_weight_ = max_weight;
     while (total_weight_ > max_weight_) {
       EvictLeastRecentlyUsed();
     }
+    return {};
   }
 
   template <typename K>
@@ -109,34 +96,6 @@ class LruCache {
     return &list_it->value;
   }
 
-  // Return whether a cached entry was removed.
-  template <typename K>
-  bool Erase(const K& key) {
-    const auto it = map_.find(key);
-    if (it == map_.end()) {
-      return false;
-    }
-    total_weight_ -= it->second->weight;
-    items_.erase(it->second);
-    map_.erase(it);
-    return true;
-  }
-
-  // Remove matching entries without changing the eviction order of the survivors.
-  template <typename Predicate>
-  void EraseIf(Predicate matches) {
-    for (auto it = map_.begin(); it != map_.end();) {
-      const auto item = it->second;
-      if (matches(std::as_const(item->value))) {
-        total_weight_ -= item->weight;
-        items_.erase(item);
-        it = map_.erase(it);
-      } else {
-        ++it;
-      }
-    }
-  }
-
   // Insert or update the value for `key`, mark it as most recently used, and evict least
   // recently used entries until the cache is within its maximum weight again.
   //
@@ -144,23 +103,16 @@ class LruCache {
   // heavier than the maximum weight is not cached: any existing entry for `key` is
   // removed, other entries are kept, and {false, nullptr} is returned.
   // Use Replace to change a cached value. A successful replacement invalidates the
-  // previous value pointer. If weighing throws, the cache retains its previous state.
+  // previous value pointer.
   template <typename K, typename V>
-  std::pair<bool, const Value*> Replace(K&& key, V&& value) {
+  std::pair<bool, const Value*> Replace(K&& key, V&& value, int64_t weight = 1) {
+    if (weight < 0) {
+      throw std::invalid_argument("Cache entry weight must be non-negative");
+    }
     List candidate;
-    auto& item = candidate.emplace_front(nullptr, std::forward<V>(value));
+    auto& item = candidate.emplace_front(nullptr, std::forward<V>(value), weight);
     auto [it, inserted] = map_.try_emplace(std::forward<K>(key));
     item.key = &it->first;
-    try {
-      item.weight = weigher_(*item.key, std::as_const(item.value));
-    } catch (...) {
-      if (inserted) {
-        map_.erase(it);
-      }
-      throw;
-    }
-    ICEBERG_DCHECK(item.weight >= 0, "Cache entry weight must be non-negative");
-
     if (!inserted) {
       total_weight_ -= it->second->weight;
       items_.erase(it->second);
@@ -185,7 +137,7 @@ class LruCache {
     // Pointer to the key inside the unordered_map
     const Key* key;
     Value value;
-    int64_t weight = 0;
+    int64_t weight;
   };
   using List = std::list<Item>;
   using ListIt = typename List::iterator;
@@ -201,7 +153,6 @@ class LruCache {
   }
 
   int64_t max_weight_;
-  Weigher weigher_;
   int64_t total_weight_ = 0;
   // In most to least recently used order
   std::list<Item> items_;
