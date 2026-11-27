@@ -1346,9 +1346,8 @@ Result<EncryptedKey> EncryptedKeyFromJson(const nlohmann::json& json) {
 }
 
 Result<nlohmann::json> ToJson(const TableMetadata& table_metadata) {
-  if (auto status = table_metadata.ValidateSequenceAndRowIdBounds(); !status) {
-    return InvalidArgument("Invalid table sequence and row ID bounds: {}",
-                           status.error().message);
+  if (auto status = table_metadata.Validate(); !status) {
+    return InvalidArgument("Invalid table metadata: {}", status.error().message);
   }
   nlohmann::json json;
 
@@ -1689,10 +1688,6 @@ Result<std::unique_ptr<TableMetadata>> TableMetadataFromJson(const nlohmann::jso
 
   ICEBERG_ASSIGN_OR_RAISE(table_metadata->snapshots,
                           FromJsonList<Snapshot>(json, kSnapshots, SnapshotFromJson));
-  if (auto status = table_metadata->ValidateSequenceAndRowIdBounds(); !status) {
-    return JsonParseError("Invalid table sequence and row ID bounds: {}",
-                          status.error().message);
-  }
   ICEBERG_ASSIGN_OR_RAISE(
       table_metadata->statistics,
       FromJsonList<StatisticsFile>(json, kStatistics, StatisticsFileFromJson));
@@ -1710,6 +1705,9 @@ Result<std::unique_ptr<TableMetadata>> TableMetadataFromJson(const nlohmann::jso
       table_metadata->metadata_log,
       FromJsonList<MetadataLogEntry>(json, kMetadataLog, MetadataLogEntryFromJson));
 
+  if (auto status = table_metadata->Validate(); !status) {
+    return JsonParseError("Invalid table metadata: {}", status.error().message);
+  }
   return table_metadata;
 }
 

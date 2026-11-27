@@ -523,6 +523,15 @@ TEST(MetadataSerdeTest, TableSequenceAndRowIdBoundsCoverRetainedSnapshots) {
     ICEBERG_UNWRAP_OR_FAIL(auto higher, TableMetadataFromJson(json));
     EXPECT_THAT(ToJson(*higher), IsOk());
     EXPECT_THAT(TableMetadataBuilder::BuildFrom(higher.get())->Build(), IsOk());
+
+    json["snapshots"][0]["sequence-number"] = -1;
+    auto parsed = TableMetadataFromJson(json);
+    EXPECT_THAT(parsed, IsError(ErrorKind::kJsonParseError));
+    EXPECT_THAT(parsed, HasErrorMessage("Snapshot 1 sequence-number cannot be negative"));
+    higher->snapshots.front()->sequence_number = -1;
+    EXPECT_THAT(ToJson(*higher), IsError(ErrorKind::kInvalidArgument));
+    EXPECT_THAT(TableMetadataBuilder::BuildFrom(higher.get())->Build(),
+                IsError(ErrorKind::kValidationFailed));
   }
 }
 

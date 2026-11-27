@@ -320,7 +320,7 @@ Result<std::shared_ptr<Snapshot>> TableMetadata::SnapshotById(int64_t snapshot_i
   return *iter;
 }
 
-Status TableMetadata::ValidateSequenceAndRowIdBounds() const {
+Status TableMetadata::Validate() const {
   if (format_version > 1) {
     ICEBERG_CHECK(last_sequence_number >= kInitialSequenceNumber,
                   "last-sequence-number cannot be negative: {}", last_sequence_number);
@@ -332,6 +332,9 @@ Status TableMetadata::ValidateSequenceAndRowIdBounds() const {
   for (const auto& snapshot : snapshots) {
     ICEBERG_CHECK(snapshot != nullptr, "Cannot validate a null snapshot");
     if (format_version > 1) {
+      ICEBERG_CHECK(snapshot->sequence_number >= kInitialSequenceNumber,
+                    "Snapshot {} sequence-number cannot be negative: {}",
+                    snapshot->snapshot_id, snapshot->sequence_number);
       ICEBERG_CHECK(
           last_sequence_number >= snapshot->sequence_number,
           "last-sequence-number {} is below retained snapshot {} sequence-number {}",
@@ -1433,9 +1436,8 @@ Result<std::vector<SnapshotLogEntry>> TableMetadataBuilder::Impl::UpdateSnapshot
 }
 
 Result<std::unique_ptr<TableMetadata>> TableMetadataBuilder::Impl::Build() {
-  // 1. Validate metadata consistency through TableMetadata#Validate
-
-  ICEBERG_RETURN_UNEXPECTED(metadata_.ValidateSequenceAndRowIdBounds());
+  // 1. Validate metadata consistency
+  ICEBERG_RETURN_UNEXPECTED(metadata_.Validate());
 
   // 2. Update last_updated_ms if there are changes
   if (metadata_.last_updated_ms == kInvalidLastUpdatedMs) {
