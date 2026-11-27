@@ -615,7 +615,23 @@ TEST(HasIdVisitorTest, ArrayWithoutElementId) {
 
   HasIdVisitor visitor;
   EXPECT_THAT(visitor.Visit(::avro::compileJsonSchemaFromString(schema_json)), IsOk());
-  EXPECT_FALSE(visitor.HasNoIds());
+  EXPECT_TRUE(visitor.HasNoIds());
+  EXPECT_FALSE(visitor.AllHaveIds());
+}
+
+TEST(HasIdVisitorTest, RecordWithoutFieldIds) {
+  const std::string schema_json = R"({
+    "type": "record",
+    "name": "test_record",
+    "fields": [
+      {"name": "int_field", "type": "int"},
+      {"name": "list_field", "type": {"type": "array", "items": "string"}}
+    ]
+  })";
+
+  HasIdVisitor visitor;
+  EXPECT_THAT(visitor.Visit(::avro::compileJsonSchemaFromString(schema_json)), IsOk());
+  EXPECT_TRUE(visitor.HasNoIds());
   EXPECT_FALSE(visitor.AllHaveIds());
 }
 
@@ -1813,17 +1829,86 @@ TEST_F(NameMappingAvroSchemaTest, ApplyNameMappingToMap) {
   ASSERT_NO_FATAL_FAILURE(CheckFieldIdAt(new_node, /*index=*/0, /*field_id=*/1));
   ASSERT_NO_FATAL_FAILURE(CheckFieldIdAt(new_node, /*index=*/1, /*field_id=*/2));
 
-  // Check map field structure and key-value field IDs
+  // Check map field structure and key-value field IDs. Like maps written by Iceberg,
+  // both IDs are in the map's single set of custom attributes.
   const auto& map_node = new_node->leafAt(1);
   EXPECT_EQ(map_node->type(), ::avro::AVRO_MAP);
-  ASSERT_GE(map_node->leaves(), 2);
+  ASSERT_EQ(map_node->leaves(), 2);
   EXPECT_EQ(map_node->leafAt(0)->type(), ::avro::AVRO_STRING);
   EXPECT_EQ(map_node->leafAt(1)->type(), ::avro::AVRO_STRING);
-  ASSERT_EQ(map_node->customAttributes(), 2);
+  ASSERT_EQ(map_node->customAttributes(), 1);
   ASSERT_NO_FATAL_FAILURE(CheckFieldIdAt(map_node, /*index=*/0, /*field_id=*/30,
                                          /*key=*/"key-id"));
-  ASSERT_NO_FATAL_FAILURE(CheckFieldIdAt(map_node, /*index=*/1, /*field_id=*/31,
+  ASSERT_NO_FATAL_FAILURE(CheckFieldIdAt(map_node, /*index=*/0, /*field_id=*/31,
                                          /*key=*/"value-id"));
+
+  // The mapped schema can be projected.
+  Schema expected_schema({
+      SchemaField::MakeRequired(/*field_id=*/1, "id", int32()),
+      SchemaField::MakeRequired(
+          /*field_id=*/2, "properties",
+          std::make_shared<MapType>(
+              SchemaField::MakeRequired(/*field_id=*/30, "key", string()),
+              SchemaField::MakeRequired(/*field_id=*/31, "value", string()))),
+  });
+  auto projection_result = Project(expected_schema, new_node, /*prune_source=*/false);
+  ASSERT_THAT(projection_result, IsOk());
+  ASSERT_EQ(projection_result->fields.size(), 2);
+  ASSERT_EQ(projection_result->fields[1].kind, FieldProjection::Kind::kProjected);
+  ASSERT_EQ(std::get<1>(projection_result->fields[1].from), 1);
+  ASSERT_EQ(projection_result->fields[1].children.size(), 2);
+}
+
+TEST_F(NameMappingAvroSchemaTest, ApplyNameMappingToArrayBackedMap) {
+  ::iceberg::avro::RegisterLogicalTypes();
+  std::string avro_schema_json = R"({
+    "type": "record",
+    "name": "test_record",
+    "fields": [
+      {"name": "id", "type": "int"},
+      {"name": "counts", "type": {
+        "type": "array",
+        "items": {
+          "type": "record",
+          "name": "key_value",
+          "fields": [
+            {"name": "key", "type": "int"},
+            {"name": "value", "type": "long"}
+          ]
+        },
+        "logicalType": "map"
+      }}
+    ]
+  })";
+  auto avro_schema = ::avro::compileJsonSchemaFromString(avro_schema_json);
+  auto name_mapping = NameMapping::Make({
+      MappedField{.names = {"id"}, .field_id = 1},
+      MappedField{.names = {"counts"},
+                  .field_id = 2,
+                  .nested_mapping = MappedFields::Make({
+                      MappedField{.names = {"key"}, .field_id = 20},
+                      MappedField{.names = {"value"}, .field_id = 21},
+                  })},
+  });
+
+  ICEBERG_UNWRAP_OR_FAIL(auto new_node,
+                         MakeAvroNodeWithFieldIds(avro_schema.root(), *name_mapping));
+  const auto& array_node = new_node->leafAt(1);
+  EXPECT_TRUE(HasMapLogicalType(array_node));
+  ASSERT_NO_FATAL_FAILURE(CheckFieldIdAt(array_node->leafAt(0), /*index=*/0, 20));
+  ASSERT_NO_FATAL_FAILURE(CheckFieldIdAt(array_node->leafAt(0), /*index=*/1, 21));
+
+  Schema expected_schema({
+      SchemaField::MakeRequired(
+          /*field_id=*/2, "counts",
+          std::make_shared<MapType>(
+              SchemaField::MakeRequired(/*field_id=*/20, "key", int32()),
+              SchemaField::MakeRequired(/*field_id=*/21, "value", int64()))),
+  });
+  auto projection_result = Project(expected_schema, new_node, /*prune_source=*/false);
+  ASSERT_THAT(projection_result, IsOk());
+  ASSERT_EQ(projection_result->fields[0].kind, FieldProjection::Kind::kProjected);
+  ASSERT_EQ(std::get<1>(projection_result->fields[0].from), 1);
 }
 
 TEST_F(NameMappingAvroSchemaTest, ApplyNameMappingToComplexMap) {
@@ -1921,25 +2006,65 @@ TEST_F(NameMappingAvroSchemaTest, ApplyNameMappingToUnion) {
   EXPECT_EQ(non_null_branch->type(), ::avro::AVRO_STRING);
 }
 
-TEST_F(NameMappingAvroSchemaTest, MissingFieldIdError) {
-  // Create a name mapping with missing field ID
+TEST_F(NameMappingAvroSchemaTest, UnmappedFieldsHaveNoFieldIds) {
+  // "name" is mapped without an ID, and "extra" and the list element are not mapped.
   std::vector<MappedField> fields;
   fields.emplace_back(MappedField{.names = {"id"}, .field_id = 1});
-  fields.emplace_back(MappedField{.names = {"name"}});  // Missing field_id
+  fields.emplace_back(MappedField{.names = {"name"}});
+  fields.emplace_back(MappedField{.names = {"tags"}, .field_id = 3});
   auto name_mapping = NameMapping::Make(std::move(fields));
 
-  // Create a simple Avro record schema
   std::string avro_schema_json = R"({
     "type": "record",
     "name": "test_record",
     "fields": [
       {"name": "id", "type": "int"},
-      {"name": "name", "type": "string"}
+      {"name": "name", "type": "string"},
+      {"name": "extra", "type": "long"},
+      {"name": "tags", "type": {"type": "array", "items": "string"}}
     ]
   })";
   auto avro_schema = ::avro::compileJsonSchemaFromString(avro_schema_json);
 
-  auto result = MakeAvroNodeWithFieldIds(avro_schema.root(), *name_mapping);
-  ASSERT_THAT(result, IsError(ErrorKind::kInvalidSchema));
+  ICEBERG_UNWRAP_OR_FAIL(auto new_node,
+                         MakeAvroNodeWithFieldIds(avro_schema.root(), *name_mapping));
+  ASSERT_EQ(new_node->leaves(), 4);
+  ASSERT_EQ(new_node->customAttributes(), 4);
+  ASSERT_NO_FATAL_FAILURE(CheckFieldIdAt(new_node, /*index=*/0, /*field_id=*/1));
+  EXPECT_FALSE(new_node->customAttributesAt(1).getAttribute("field-id").has_value());
+  EXPECT_FALSE(new_node->customAttributesAt(2).getAttribute("field-id").has_value());
+  ASSERT_NO_FATAL_FAILURE(CheckFieldIdAt(new_node, /*index=*/3, /*field_id=*/3));
+  const auto& list_node = new_node->leafAt(3);
+  ASSERT_EQ(list_node->customAttributes(), 1);
+  EXPECT_FALSE(list_node->customAttributesAt(0).getAttribute("element-id").has_value());
+
+  // Fields without IDs are not read, and a list whose element has no ID is read as
+  // missing.
+  Schema expected_schema({
+      SchemaField::MakeRequired(/*field_id=*/1, "id", int32()),
+      SchemaField::MakeOptional(/*field_id=*/2, "name", string()),
+      SchemaField::MakeOptional(
+          /*field_id=*/3, "tags",
+          std::make_shared<ListType>(
+              SchemaField::MakeOptional(/*field_id=*/30, "element", string()))),
+  });
+  auto projection_result = Project(expected_schema, new_node, /*prune_source=*/false);
+  ASSERT_THAT(projection_result, IsOk());
+  const auto& projection = *projection_result;
+  ASSERT_EQ(projection.fields.size(), 3);
+  ASSERT_EQ(projection.fields[0].kind, FieldProjection::Kind::kProjected);
+  ASSERT_EQ(std::get<1>(projection.fields[0].from), 0);
+  ASSERT_EQ(projection.fields[1].kind, FieldProjection::Kind::kNull);
+  ASSERT_EQ(projection.fields[2].kind, FieldProjection::Kind::kNull);
+
+  // A required list that cannot be read is still an error.
+  Schema required_schema({
+      SchemaField::MakeRequired(
+          /*field_id=*/3, "tags",
+          std::make_shared<ListType>(
+              SchemaField::MakeOptional(/*field_id=*/30, "element", string()))),
+  });
+  EXPECT_THAT(Project(required_schema, new_node, /*prune_source=*/false),
+              HasErrorMessage("Missing required field with ID: 3"));
 }
 }  // namespace iceberg::avro
