@@ -19,28 +19,12 @@
 
 #include "iceberg/file_io.h"
 
-#include <limits>
 #include <utility>
 
+#include "iceberg/util/error_util_internal.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg {
-
-namespace {
-
-Status FinishWithCloseStatus(Status operation_status, Status close_status) {
-  if (!operation_status.has_value()) {
-    auto error = operation_status.error();
-    if (!close_status.has_value()) {
-      error.message += "; additionally failed to close stream: ";
-      error.message += close_status.error().message;
-    }
-    return ::iceberg::unexpected<Error>(std::move(error));
-  }
-  return close_status;
-}
-
-}  // namespace
 
 Result<std::unique_ptr<InputFile>> FileIO::NewInputFile(std::string file_location) {
   return NotImplemented("NewInputFile not implemented for {}", file_location);
@@ -60,17 +44,17 @@ Result<std::string> FileIO::ReadFile(const std::string& file_location,
   int64_t read_size;
   std::unique_ptr<InputFile> input_file;
   if (length.has_value()) {
-    if (*length > static_cast<size_t>(std::numeric_limits<int64_t>::max())) {
-      return InvalidArgument("Requested read length {} exceeds int64_t max", *length);
-    }
+    ICEBERG_PRECHECK(std::in_range<int64_t>(*length),
+                     "Requested read length {} exceeds int64_t max", *length);
     ICEBERG_ASSIGN_OR_RAISE(input_file, NewInputFile(file_location, *length));
     read_size = static_cast<int64_t>(*length);
   } else {
     ICEBERG_ASSIGN_OR_RAISE(input_file, NewInputFile(file_location));
     ICEBERG_ASSIGN_OR_RAISE(read_size, input_file->Size());
   }
-  if (read_size < 0) {
-    return Invalid("Invalid negative file size {} for {}", read_size, file_location);
+  if (!std::in_range<size_t>(read_size)) {
+    return Invalid("File size {} for {} does not fit in size_t", read_size,
+                   file_location);
   }
 
   auto size = static_cast<size_t>(read_size);
@@ -82,7 +66,7 @@ Result<std::string> FileIO::ReadFile(const std::string& file_location,
     read_status = stream->ReadFully(/*position=*/0, bytes);
   }
   ICEBERG_RETURN_UNEXPECTED(
-      FinishWithCloseStatus(std::move(read_status), stream->Close()));
+      internal::FinishWithCloseStatus(std::move(read_status), stream->Close()));
   return content;
 }
 
@@ -97,7 +81,7 @@ Status FileIO::WriteFile(const std::string& file_location, std::string_view cont
   if (status.has_value()) {
     status = stream->Flush();
   }
-  return FinishWithCloseStatus(std::move(status), stream->Close());
+  return internal::FinishWithCloseStatus(std::move(status), stream->Close());
 }
 
 Status FileIO::DeleteFiles(const std::vector<std::string>& file_locations) {

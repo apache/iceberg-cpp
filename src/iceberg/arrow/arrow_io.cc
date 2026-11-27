@@ -18,10 +18,12 @@
  */
 
 #include <algorithm>
+#include <atomic>
 #include <chrono>
 #include <limits>
 #include <mutex>
 #include <optional>
+#include <utility>
 #include <vector>
 
 #include <arrow/buffer.h>
@@ -42,9 +44,8 @@ namespace iceberg::arrow {
 namespace {
 
 Result<int64_t> ToInt64Length(size_t length) {
-  if (length > static_cast<size_t>(std::numeric_limits<int64_t>::max())) {
-    return InvalidArgument("File length {} exceeds int64_t max", length);
-  }
+  ICEBERG_PRECHECK(std::in_range<int64_t>(length), "File length {} exceeds int64_t max",
+                   length);
   return static_cast<int64_t>(length);
 }
 
@@ -317,17 +318,14 @@ class ArrowSeekableInputStream : public SeekableInputStream {
   }
 
   Status ReadFully(int64_t position, std::span<std::byte> out) override {
-    if (position < 0) {
-      return InvalidArgument("Cannot read from negative position {}", position);
-    }
+    ICEBERG_PRECHECK(position >= 0, "Cannot read from negative position {}", position);
     ICEBERG_ASSIGN_OR_RAISE(auto size, ToInt64Length(out.size()));
     if (size == 0) {
       return {};
     }
-    if (position > std::numeric_limits<int64_t>::max() - size) {
-      return InvalidArgument(
-          "Read range starting at {} with length {} exceeds int64_t max", position, size);
-    }
+    ICEBERG_PRECHECK(position <= std::numeric_limits<int64_t>::max() - size,
+                     "Read range starting at {} with length {} exceeds int64_t max",
+                     position, size);
 
     Status read_status = {};
     int64_t bytes_read = 0;
@@ -418,25 +416,36 @@ class ArrowInputFile : public InputFile {
       : fs_(std::move(fs)),
         location_(std::move(location)),
         path_(std::move(path)),
-        file_size_(file_size) {}
+        file_size_(file_size.value_or(::arrow::fs::kNoSize)) {}
 
   std::string_view location() const override { return location_; }
 
   Result<int64_t> Size() const override {
-    if (file_size_.has_value()) {
-      return *file_size_;
+    if (auto size = file_size_.load(std::memory_order_relaxed); size >= 0) {
+      return size;
+    }
+    auto info = fs_->GetFileInfo(path_);
+    if (info.ok() && info->IsFile() && info->size() >= 0) {
+      file_size_.store(info->size(), std::memory_order_relaxed);
+      return info->size();
     }
     ::arrow::fs::FileInfo file_info(path_, ::arrow::fs::FileType::File);
     ICEBERG_ARROW_ASSIGN_OR_RETURN(auto input, fs_->OpenInputFile(file_info));
-    ICEBERG_ARROW_ASSIGN_OR_RETURN(auto size, input->GetSize());
-    return size;
+    auto size = input->GetSize();
+    auto closed = input->Close();
+    if (!size.ok() && !closed.ok()) {
+      ICEBERG_ARROW_RETURN_NOT_OK(size.status().WithMessage(
+          size.status().message(), "; close also failed: ", closed.ToString()));
+    }
+    ICEBERG_ARROW_RETURN_NOT_OK(size.status());
+    ICEBERG_ARROW_RETURN_NOT_OK(closed);
+    file_size_.store(*size, std::memory_order_relaxed);
+    return *size;
   }
 
   Result<std::unique_ptr<SeekableInputStream>> Open() override {
     ::arrow::fs::FileInfo file_info(path_, ::arrow::fs::FileType::File);
-    if (file_size_.has_value()) {
-      file_info.set_size(*file_size_);
-    }
+    file_info.set_size(file_size_.load(std::memory_order_relaxed));
     ICEBERG_ARROW_ASSIGN_OR_RETURN(auto input, fs_->OpenInputFile(file_info));
     return std::make_unique<ArrowSeekableInputStream>(std::move(input));
   }
@@ -445,7 +454,7 @@ class ArrowInputFile : public InputFile {
   std::shared_ptr<::arrow::fs::FileSystem> fs_;
   std::string location_;
   std::string path_;
-  std::optional<int64_t> file_size_;
+  mutable std::atomic<int64_t> file_size_;
 };
 
 class ArrowOutputFile : public OutputFile {

@@ -22,6 +22,7 @@
 /// \file iceberg/util/property_util.h
 /// \brief Provide property conversion helpers.
 
+#include <cstdint>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -36,6 +37,11 @@ class ICEBERG_EXPORT PropertyUtil {
  public:
   static Status ValidateCommitProperties(
       const std::unordered_map<std::string, std::string>& properties);
+
+  /// \brief Read a signed 64-bit property, returning the default when absent.
+  static Result<int64_t> PropertyAsInt64(
+      const std::unordered_map<std::string, std::string>& properties,
+      std::string_view key, int64_t default_value);
 
   /// \brief Read a boolean property from a property map.
   ///

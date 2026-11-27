@@ -19,23 +19,27 @@
 
 #include <algorithm>
 #include <array>
+#include <filesystem>
 #include <memory>
 #include <string>
 #include <string_view>
 #include <vector>
 
 #include <arrow/filesystem/localfs.h>
+#include <arrow/io/interfaces.h>
 #include <arrow/result.h>
 #include <arrow/status.h>
 #include <gtest/gtest.h>
 
 #include "iceberg/arrow/arrow_io_internal.h"
 #include "iceberg/arrow/arrow_register.h"
+#include "iceberg/content_cache_internal.h"
 #include "iceberg/file_io_registry.h"
 #include "iceberg/resolving_file_io.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/test/std_io.h"
 #include "iceberg/test/temp_file_test_base.h"
+#include "iceberg/util/macros.h"
 
 namespace iceberg {
 
@@ -174,9 +178,7 @@ class PermissiveInputStream : public SeekableInputStream {
   Result<int64_t> Position() const override { return state_->position; }
 
   Status Seek(int64_t position) override {
-    if (position < 0) {
-      return InvalidArgument("Cannot seek to negative position {}", position);
-    }
+    ICEBERG_PRECHECK(position >= 0, "Cannot seek to negative position {}", position);
     state_->position = position;
     return {};
   }
@@ -194,9 +196,7 @@ class PermissiveInputStream : public SeekableInputStream {
   }
 
   Status ReadFully(int64_t position, std::span<std::byte> out) override {
-    if (position < 0) {
-      return InvalidArgument("Cannot read from negative position {}", position);
-    }
+    ICEBERG_PRECHECK(position >= 0, "Cannot read from negative position {}", position);
     auto offset = static_cast<size_t>(position);
     if (offset > state_->data.size() || out.size() > state_->data.size() - offset) {
       return IOError("Unexpected EOF");
@@ -366,6 +366,116 @@ TEST_F(LocalFileIOTest, DeleteFile) {
   del_res = file_io_->DeleteFile(temp_filepath_);
   EXPECT_THAT(del_res, IsError(ErrorKind::kIOError));
   EXPECT_THAT(del_res, HasErrorMessage("Cannot delete file"));
+}
+
+TEST(ArrowFileIOTest, AliasDeleteInvalidatesEveryCachedSpelling) {
+  std::shared_ptr<FileIO> storage = arrow::ArrowFileSystemFileIO::MakeMockFileIO();
+  const std::string canonical = "s3://manifest.avro";
+  const std::string alias = "s3a://manifest.avro";
+  const std::string unrelated = "s3://other.avro";
+  for (bool warm_alias : {false, true}) {
+    SCOPED_TRACE(warm_alias);
+    auto cache = std::make_shared<internal::ContentCache>(
+        storage, internal::ContentCacheOptions{});
+    auto adapter = cache->Wrap();
+    ASSERT_THAT(storage->WriteFile(canonical, "old"), IsOk());
+    ASSERT_THAT(storage->WriteFile(unrelated, "keep"), IsOk());
+    ASSERT_THAT(adapter->ReadFile(unrelated, std::nullopt),
+                HasValue(::testing::Eq("keep")));
+    ASSERT_THAT(adapter->ReadFile(canonical, std::nullopt),
+                HasValue(::testing::Eq("old")));
+    if (warm_alias) {
+      ASSERT_THAT(adapter->ReadFile(alias, std::nullopt), HasValue(::testing::Eq("old")));
+    }
+    ASSERT_THAT(adapter->DeleteFiles({alias, unrelated}), IsOk());
+    EXPECT_FALSE(cache->Find(unrelated));
+    ASSERT_THAT(storage->WriteFile(canonical, "new"), IsOk());
+    EXPECT_THAT(adapter->ReadFile(canonical, std::nullopt),
+                HasValue(::testing::Eq("new")));
+    EXPECT_THAT(adapter->ReadFile(alias, std::nullopt), HasValue(::testing::Eq("new")));
+  }
+}
+
+TEST_F(LocalFileIOTest, AliasDeleteClearsCachedLocalPaths) {
+  auto cache =
+      std::make_shared<internal::ContentCache>(file_io_, internal::ContentCacheOptions{});
+  auto adapter = cache->Wrap();
+  const std::filesystem::path path(temp_filepath_);
+  const auto alias = (path.parent_path() / "." / path.filename()).string();
+  ASSERT_THAT(file_io_->WriteFile(temp_filepath_, "old"), IsOk());
+  ASSERT_THAT(adapter->ReadFile(temp_filepath_, std::nullopt),
+              HasValue(::testing::Eq("old")));
+  ASSERT_THAT(adapter->DeleteFile(alias), IsOk());
+  ASSERT_THAT(file_io_->WriteFile(temp_filepath_, "new"), IsOk());
+  EXPECT_THAT(adapter->ReadFile(temp_filepath_, std::nullopt),
+              HasValue(::testing::Eq("new")));
+}
+
+TEST_F(LocalFileIOTest, StatFailureClosesTemporaryInputAndKeepsDiscoveredSize) {
+  class NoStatFileSystem : public ::arrow::fs::LocalFileSystem {
+   public:
+    using LocalFileSystem::GetFileInfo;
+    using LocalFileSystem::OpenInputFile;
+    ::arrow::Result<::arrow::fs::FileInfo> GetFileInfo(const std::string&) override {
+      ++stats;
+      return ::arrow::Status::IOError("stat unavailable");
+    }
+    ::arrow::Result<std::shared_ptr<::arrow::io::RandomAccessFile>> OpenInputFile(
+        const ::arrow::fs::FileInfo& info) override {
+      sizes.push_back(info.size());
+      ARROW_ASSIGN_OR_RAISE(auto file, LocalFileSystem::OpenInputFile(info.path()));
+      opened.push_back(file);
+      return file;
+    }
+    int stats = 0;
+    std::vector<int64_t> sizes;
+    std::vector<std::shared_ptr<::arrow::io::RandomAccessFile>> opened;
+  };
+  ASSERT_THAT(file_io_->WriteFile(temp_filepath_, "file"), IsOk());
+  auto fs = std::make_shared<NoStatFileSystem>();
+  arrow::ArrowFileSystemFileIO storage(fs);
+  ICEBERG_UNWRAP_OR_FAIL(auto file, storage.NewInputFile(temp_filepath_));
+  EXPECT_THAT(file->Size(), HasValue(::testing::Eq(4)));
+  EXPECT_THAT(file->Size(), HasValue(::testing::Eq(4)));
+  ASSERT_EQ(fs->opened.size(), 1);
+  EXPECT_TRUE(fs->opened.front()->closed());
+  ICEBERG_UNWRAP_OR_FAIL(auto stream, file->Open());
+  EXPECT_EQ(fs->stats, 1);
+  EXPECT_THAT(fs->sizes, ::testing::ElementsAre(::arrow::fs::kNoSize, 4));
+  EXPECT_THAT(stream->Close(), IsOk());
+}
+
+TEST_F(LocalFileIOTest, OverwritingThroughAnAliasInvalidatesTheCachedFile) {
+  auto cache =
+      std::make_shared<internal::ContentCache>(file_io_, internal::ContentCacheOptions{});
+  auto adapter = cache->Wrap();
+  const auto path = std::filesystem::path(temp_filepath_);
+  const auto alias = (path.parent_path() / "." / path.filename()).string();
+  ASSERT_THAT(adapter->WriteFile(temp_filepath_, "old"), IsOk());
+  ASSERT_THAT(adapter->ReadFile(temp_filepath_, std::nullopt),
+              HasValue(::testing::Eq("old")));
+  ASSERT_THAT(adapter->WriteFile(alias, "new"), IsOk());
+  EXPECT_THAT(adapter->ReadFile(temp_filepath_, std::nullopt),
+              HasValue(::testing::Eq("new")));
+}
+
+TEST_F(LocalFileIOTest, RecreatingAFileAfterAnotherCacheDeletesItReadsNewBytes) {
+  auto writer =
+      std::make_shared<internal::ContentCache>(file_io_, internal::ContentCacheOptions{})
+          ->Wrap();
+  auto cleaner =
+      std::make_shared<internal::ContentCache>(file_io_, internal::ContentCacheOptions{})
+          ->Wrap();
+  const std::filesystem::path path(temp_filepath_);
+  const auto alias = (path.parent_path() / "." / path.filename()).string();
+  ASSERT_THAT(writer->WriteFile(temp_filepath_, "old"), IsOk());
+  ASSERT_THAT(writer->ReadFile(temp_filepath_, std::nullopt),
+              HasValue(::testing::Eq("old")));
+  ASSERT_THAT(cleaner->DeleteFile(alias), IsOk());
+  ASSERT_THAT(writer->WriteFile(alias, "new"), IsOk());
+  EXPECT_THAT(writer->ReadFile(temp_filepath_, std::nullopt),
+              HasValue(::testing::Eq("new")));
+  EXPECT_THAT(writer->ReadFile(alias, std::nullopt), HasValue(::testing::Eq("new")));
 }
 
 TEST_F(LocalFileIOTest, DeleteFiles) {
