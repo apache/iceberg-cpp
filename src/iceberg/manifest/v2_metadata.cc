@@ -80,7 +80,7 @@ Status ManifestEntryAdapterV2::Init() {
                           PartitionFieldsToJsonString(*partition_spec_));
   metadata_["partition-spec-id"] = std::to_string(partition_spec_->spec_id());
   metadata_["format-version"] = "2";
-  metadata_["content"] = content_ == ManifestContent::kData ? "data" : "delete";
+  metadata_["content"] = content_ == ManifestContent::kData ? "data" : "deletes";
 
   ICEBERG_ASSIGN_OR_RAISE(partition_type_,
                           partition_spec_->PartitionType(*current_schema_));

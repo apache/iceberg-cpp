@@ -165,6 +165,7 @@ add_iceberg_test(util_test
                  USE_DATA
                  SOURCES
                  base64_test.cc
+                 bin_packing_test.cc
                  bucket_util_test.cc
                  cache_test.cc
                  config_test.cc
@@ -235,7 +236,8 @@ if(ICEBERG_BUILD_BUNDLE)
                    inspect/history_table_test.cc
                    inspect/metadata_table_test.cc
                    inspect/refs_table_test.cc
-                   inspect/snapshots_table_test.cc)
+                   inspect/snapshots_table_test.cc
+                   inspect/manifests_table_test.cc)
 
   add_iceberg_test(eval_expr_test
                    USE_BUNDLE

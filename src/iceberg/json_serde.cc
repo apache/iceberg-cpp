@@ -663,7 +663,7 @@ Result<nlohmann::json> ToJson(const Type& type) {
       return "double";
     case TypeId::kDecimal: {
       const auto& decimal_type = internal::checked_cast<const DecimalType&>(type);
-      return std::format("decimal({},{})", decimal_type.precision(),
+      return std::format("decimal({}, {})", decimal_type.precision(),
                          decimal_type.scale());
     }
     case TypeId::kDate:
@@ -855,6 +855,10 @@ Result<std::unique_ptr<Type>> TypeFromJson(const nlohmann::json& json) {
                                 StringUtils::ParseNumber<int32_t>(match[1].str()));
         ICEBERG_ASSIGN_OR_RAISE(auto scale,
                                 StringUtils::ParseNumber<int32_t>(match[2].str()));
+        if (precision > DecimalType::kMaxPrecision) {
+          return JsonParseError("Invalid decimal type: {}, precision must be at most {}",
+                                type_name, DecimalType::kMaxPrecision);
+        }
         return std::make_unique<DecimalType>(precision, scale);
       }
       return JsonParseError("Invalid decimal type: {}", type_name);
@@ -1387,7 +1391,7 @@ Result<nlohmann::json> ToJson(const TableMetadata& table_metadata) {
   if (table_metadata.format_version == 1) {
     for (const auto& partition_spec : table_metadata.partition_specs) {
       if (partition_spec->spec_id() == table_metadata.default_spec_id) {
-        json[kPartitionSpec] = ToJson(*partition_spec);
+        json[kPartitionSpec] = PartitionFieldsToJson(*partition_spec);
         break;
       }
     }
@@ -1598,13 +1602,12 @@ Result<std::unique_ptr<TableMetadata>> TableMetadataFromJson(const nlohmann::jso
 
   auto table_metadata = std::make_unique<TableMetadata>();
 
-  ICEBERG_ASSIGN_OR_RAISE(table_metadata->format_version,
-                          GetJsonValue<int8_t>(json, kFormatVersion));
-  if (table_metadata->format_version < 1 ||
-      table_metadata->format_version > TableMetadata::kSupportedTableFormatVersion) {
-    return JsonParseError("Cannot read unsupported version: {}",
-                          table_metadata->format_version);
+  ICEBERG_ASSIGN_OR_RAISE(auto format_version,
+                          GetJsonInteger<int8_t>(json, kFormatVersion));
+  if (!TableMetadata::IsSupportedFormatVersion(format_version)) {
+    return JsonParseError("Cannot read unsupported version: {}", format_version);
   }
+  table_metadata->format_version = format_version;
 
   ICEBERG_ASSIGN_OR_RAISE(table_metadata->table_uuid,
                           GetJsonValueOrDefault<std::string>(json, kTableUuid));
@@ -2089,7 +2092,7 @@ Result<std::unique_ptr<TableUpdate>> TableUpdateFromJson(const nlohmann::json& j
   }
   if (action == kActionUpgradeFormatVersion) {
     ICEBERG_ASSIGN_OR_RAISE(auto format_version,
-                            GetJsonValue<int8_t>(json, kFormatVersion));
+                            GetJsonInteger<int8_t>(json, kFormatVersion));
     return std::make_unique<table::UpgradeFormatVersion>(format_version);
   }
   if (action == kActionAddSchema) {

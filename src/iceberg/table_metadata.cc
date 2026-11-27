@@ -217,7 +217,8 @@ Result<std::unique_ptr<TableMetadata>> TableMetadata::Make(
     const iceberg::Schema& schema, const iceberg::PartitionSpec& spec,
     const iceberg::SortOrder& sort_order, const std::string& location,
     const std::unordered_map<std::string, std::string>& properties, int format_version) {
-  if (format_version < 1 || format_version > kSupportedTableFormatVersion) {
+  if (!std::in_range<int8_t>(format_version) ||
+      !IsSupportedFormatVersion(static_cast<int8_t>(format_version))) {
     return InvalidArgument("Unsupported table format version: {} (supported: 1-{})",
                            format_version, kSupportedTableFormatVersion);
   }
@@ -812,7 +813,7 @@ Status TableMetadataBuilder::Impl::AssignUUID(std::string_view uuid) {
 
 Status TableMetadataBuilder::Impl::UpgradeFormatVersion(int8_t new_format_version) {
   // Check that the new format version is supported
-  if (new_format_version > TableMetadata::kSupportedTableFormatVersion) {
+  if (!TableMetadata::IsSupportedFormatVersion(new_format_version)) {
     return InvalidArgument(
         "Cannot upgrade table to unsupported format version: v{} (supported: v{})",
         new_format_version, TableMetadata::kSupportedTableFormatVersion);
@@ -1436,7 +1437,9 @@ Result<std::vector<SnapshotLogEntry>> TableMetadataBuilder::Impl::UpdateSnapshot
 }
 
 Result<std::unique_ptr<TableMetadata>> TableMetadataBuilder::Impl::Build() {
-  // 1. Validate metadata consistency
+  // 1. Validate the format version and metadata consistency.
+  ICEBERG_PRECHECK(TableMetadata::IsSupportedFormatVersion(metadata_.format_version),
+                   "Unsupported table format version: {}", metadata_.format_version);
   ICEBERG_RETURN_UNEXPECTED(metadata_.Validate());
 
   // 2. Update last_updated_ms if there are changes
@@ -1605,6 +1608,11 @@ Status TableMetadataBuilder::Impl::RemovePartitionSpecs(
         return !spec_ids_to_remove.contains(spec->spec_id());
       }) |
       std::ranges::to<std::vector<std::shared_ptr<PartitionSpec>>>();
+
+  for (const auto& spec_id : spec_ids_to_remove) {
+    specs_by_id_.erase(spec_id);
+  }
+
   changes_.push_back(std::make_unique<table::RemovePartitionSpecs>(spec_ids));
 
   return {};

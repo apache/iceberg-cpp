@@ -18,6 +18,8 @@
  */
 
 #include <algorithm>
+#include <array>
+#include <limits>
 #include <memory>
 #include <ranges>
 #include <string>
@@ -550,6 +552,45 @@ TEST(TableMetadataBuilderTest, UpgradeFormatVersion) {
   builder = TableMetadataBuilder::BuildFromEmpty(2);
   builder->UpgradeFormatVersion(1);
   EXPECT_THAT(builder->Build(), HasErrorMessage("Cannot downgrade"));
+}
+
+TEST(TableMetadataBuilderTest, UpgradeFormatVersionRejectsUnsupportedVersions) {
+  auto base = CreateBaseMetadata();
+  for (int8_t version : std::vector<int8_t>{
+           0, -1, std::numeric_limits<int8_t>::min(), std::numeric_limits<int8_t>::max(),
+           static_cast<int8_t>(TableMetadata::kSupportedTableFormatVersion + 1)}) {
+    SCOPED_TRACE(version);
+    auto empty_builder = TableMetadataBuilder::BuildFromEmpty(version);
+    auto empty_result = empty_builder->Build();
+    EXPECT_THAT(empty_result, IsError(ErrorKind::kInvalidArgument));
+    EXPECT_THAT(empty_result, HasErrorMessage("Unsupported table format version: " +
+                                              std::to_string(version)));
+
+    auto builder = TableMetadataBuilder::BuildFrom(base.get());
+    builder->UpgradeFormatVersion(version);
+    auto result = builder->Build();
+    EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
+    EXPECT_THAT(result,
+                HasErrorMessage("Cannot upgrade table to unsupported format version: v" +
+                                std::to_string(version)));
+    EXPECT_TRUE(builder->changes().empty());
+
+    table::UpgradeFormatVersion update(version);
+    auto cloned = update.Clone();
+    EXPECT_EQ(*cloned, update);
+    const std::array<const TableUpdate*, 2> updates{&update, cloned.get()};
+    for (const auto* candidate : updates) {
+      auto update_builder = TableMetadataBuilder::BuildFrom(base.get());
+      candidate->ApplyTo(*update_builder);
+      auto update_result = update_builder->Build();
+      EXPECT_THAT(update_result, IsError(ErrorKind::kValidationFailed));
+      EXPECT_THAT(
+          update_result,
+          HasErrorMessage("Cannot upgrade table to unsupported format version: v" +
+                          std::to_string(version)));
+      EXPECT_TRUE(update_builder->changes().empty());
+    }
+  }
 }
 
 // Test AddSortOrder
@@ -1547,6 +1588,32 @@ TEST(TableMetadataBuilderTest, RemovePartitionSpecNotExist) {
   builder->RemovePartitionSpecs({2, 3});
   ICEBERG_UNWRAP_OR_FAIL(metadata, builder->Build());
   ASSERT_EQ(metadata->partition_specs.size(), 1);
+}
+
+TEST(TableMetadataBuilderTest,
+     SetDefaultPartitionSpecAfterRemoveNotConfusedByStaleIndex) {
+  auto base = CreateBaseMetadata();
+  auto builder = TableMetadataBuilder::BuildFrom(base.get());
+
+  PartitionField data_field(2, 1000, "data", Transform::Identity());
+  ICEBERG_UNWRAP_OR_FAIL(auto data_spec, PartitionSpec::Make(1, {data_field}));
+  builder->AddPartitionSpec(std::move(data_spec));
+  ICEBERG_UNWRAP_OR_FAIL(auto metadata, builder->Build());
+  ASSERT_EQ(metadata->partition_specs.size(), 2);
+  ASSERT_EQ(metadata->default_spec_id, 0);
+
+  builder = TableMetadataBuilder::BuildFrom(metadata.get());
+  builder->RemovePartitionSpecs({1});
+  PartitionField ts_field(3, 1001, "ts", Transform::Identity());
+  ICEBERG_UNWRAP_OR_FAIL(auto ts_spec, PartitionSpec::Make(1, {ts_field}));
+  builder->SetDefaultPartitionSpec(std::move(ts_spec));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto rebuilt, builder->Build());
+  ASSERT_EQ(rebuilt->partition_specs.size(), 2);
+  EXPECT_EQ(rebuilt->default_spec_id, 1);
+  ICEBERG_UNWRAP_OR_FAIL(auto default_spec, rebuilt->PartitionSpec());
+  ASSERT_EQ(default_spec->fields().size(), 1);
+  EXPECT_EQ(default_spec->fields()[0].source_id(), 3);
 }
 
 }  // namespace iceberg

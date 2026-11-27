@@ -629,21 +629,22 @@ TEST_F(ManifestWriterVersionsTest, TestV3ManifestRewriteWithInheritance) {
 class ManifestWriterHeaderTest : public ManifestWriterVersionsTest,
                                  public ::testing::WithParamInterface<int8_t> {
  protected:
-  /// \brief Write a manifest with a single data file and return the key-value
+  /// \brief Write a manifest with a single content file and return the key-value
   /// metadata stored in the header of the written Avro file.
   std::unordered_map<std::string, std::string> WriteManifestAndReadHeader(
       std::shared_ptr<PartitionSpec> spec, std::shared_ptr<Schema> schema,
-      PartitionValues partition) {
-    auto data_file = CreateDataFile(kFirstRowId);
-    data_file->partition = std::move(partition);
+      PartitionValues partition, ManifestContent content = ManifestContent::kData) {
+    auto file = content == ManifestContent::kData ? CreateDataFile(kFirstRowId)
+                                                  : CreateDeleteFile();
+    file->partition = std::move(partition);
 
     const std::string manifest_path = CreateManifestPath();
     auto writer_result = ManifestWriter::MakeWriter(
         GetParam(), kSnapshotId, manifest_path, file_io_, std::move(spec),
-        std::move(schema), ManifestContent::kData, kFirstRowId);
+        std::move(schema), content, kFirstRowId);
     EXPECT_THAT(writer_result, IsOk());
     auto writer = std::move(writer_result.value());
-    EXPECT_THAT(writer->WriteAddedEntry(std::move(data_file)), IsOk());
+    EXPECT_THAT(writer->WriteAddedEntry(std::move(file)), IsOk());
     EXPECT_THAT(writer->Close(), IsOk());
 
     auto manifest_result = writer->ToManifestFile();
@@ -705,6 +706,32 @@ TEST_P(ManifestWriterHeaderTest, PartitionedManifestHeader) {
   ASSERT_TRUE(metadata.contains("schema-id"));
   EXPECT_EQ(metadata.at("schema-id"), std::to_string(kSchemaId));
   EXPECT_EQ(nlohmann::json::parse(metadata.at("schema"))["schema-id"], kSchemaId);
+}
+
+TEST_P(ManifestWriterHeaderTest, DataManifestContentHeader) {
+  auto metadata = WriteManifestAndReadHeader(PartitionSpec::Unpartitioned(), schema_,
+                                             PartitionValues{}, ManifestContent::kData);
+
+  if (GetParam() == 1) {
+    // The content key was added in v2, so v1 manifests omit it.
+    EXPECT_FALSE(metadata.contains("content"));
+  } else {
+    ASSERT_TRUE(metadata.contains("content"));
+    EXPECT_EQ(metadata.at("content"), "data");
+  }
+}
+
+TEST_P(ManifestWriterHeaderTest, DeleteManifestContentHeader) {
+  auto format_version = GetParam();
+  if (format_version < 2) {
+    GTEST_SKIP() << "Delete manifests only supported in V2+";
+  }
+
+  auto metadata =
+      WriteManifestAndReadHeader(PartitionSpec::Unpartitioned(), schema_,
+                                 PartitionValues{}, ManifestContent::kDeletes);
+  ASSERT_TRUE(metadata.contains("content"));
+  EXPECT_EQ(metadata.at("content"), "deletes");
 }
 
 INSTANTIATE_TEST_SUITE_P(ManifestWriterHeaderVersions, ManifestWriterHeaderTest,

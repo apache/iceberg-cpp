@@ -713,16 +713,51 @@ TEST(JsonInternalTest, TableUpdateAssignUUID) {
 }
 
 TEST(JsonInternalTest, TableUpdateUpgradeFormatVersion) {
-  table::UpgradeFormatVersion update(2);
-  nlohmann::json expected =
-      R"({"action":"upgrade-format-version","format-version":2})"_json;
+  for (int8_t version :
+       std::array<int8_t, 8>{1, 2, 3, 4, 0, 5, std::numeric_limits<int8_t>::min(),
+                             std::numeric_limits<int8_t>::max()}) {
+    SCOPED_TRACE(static_cast<int>(version));
+    table::UpgradeFormatVersion update(version);
+    nlohmann::json expected = {{"action", "upgrade-format-version"},
+                               {"format-version", version}};
+    ICEBERG_UNWRAP_OR_FAIL(auto json, ToJson(update));
+    EXPECT_EQ(json, expected);
+    ICEBERG_UNWRAP_OR_FAIL(auto parsed, TableUpdateFromJson(expected));
+    const auto& actual =
+        internal::checked_cast<const table::UpgradeFormatVersion&>(*parsed);
+    EXPECT_EQ(actual.format_version(), version);
+    EXPECT_EQ(actual, update);
+  }
+}
 
-  ICEBERG_UNWRAP_OR_FAIL(auto json, ToJson(update));
-  EXPECT_EQ(json, expected);
-  auto parsed = TableUpdateFromJson(expected);
-  ASSERT_THAT(parsed, IsOk());
-  EXPECT_EQ(*internal::checked_cast<table::UpgradeFormatVersion*>(parsed.value().get()),
-            update);
+TEST(JsonInternalTest, TableUpdateUpgradeFormatVersionRejectsInvalidIntegers) {
+  for (const auto& value : {nlohmann::json(128),
+                            nlohmann::json(-129),
+                            nlohmann::json(257),
+                            nlohmann::json(258),
+                            nlohmann::json(259),
+                            nlohmann::json(260),
+                            nlohmann::json(-255),
+                            nlohmann::json(-254),
+                            nlohmann::json(-253),
+                            nlohmann::json(-252),
+                            nlohmann::json(4294967300LL),
+                            nlohmann::json(-4294967292LL),
+                            nlohmann::json(2147483648LL),
+                            nlohmann::json(-2147483649LL),
+                            nlohmann::json(std::numeric_limits<uint64_t>::max()),
+                            nlohmann::json(2.0),
+                            nlohmann::json(2.5),
+                            nlohmann::json("2"),
+                            nlohmann::json(true),
+                            nlohmann::json(nullptr)}) {
+    SCOPED_TRACE(value.dump());
+    nlohmann::json json = {{"action", "upgrade-format-version"},
+                           {"format-version", value}};
+    EXPECT_THAT(TableUpdateFromJson(json), IsError(ErrorKind::kJsonParseError));
+  }
+  EXPECT_THAT(TableUpdateFromJson({{"action", "upgrade-format-version"}}),
+              IsError(ErrorKind::kJsonParseError));
 }
 
 TEST(JsonInternalTest, TableUpdateAddSchema) {
