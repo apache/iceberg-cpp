@@ -42,7 +42,7 @@ constexpr int8_t FromHex(char c) {
 }
 
 std::string EncodeComponent(std::string_view str_to_encode, Encoding encoding) {
-  static constexpr char kHexChars[] = "0123456789ABCDEF";
+  static constexpr std::string_view kHexChars = "0123456789ABCDEF";
   std::string result;
   result.reserve(str_to_encode.size() * 3 / 2 /* Heuristic reservation */);
 

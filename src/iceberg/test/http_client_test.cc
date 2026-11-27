@@ -287,7 +287,7 @@ std::unordered_map<std::string, std::string> RequestForm(const std::string& requ
   auto header_end = request.find("\r\n\r\n");
   if (header_end == std::string::npos) return form;
   auto body = request.substr(header_end + 4);
-  std::replace(body.begin(), body.end(), '+', ' ');
+  std::ranges::replace(body, '+', ' ');
   size_t start = 0;
   while (start < body.size()) {
     auto end = body.find('&', start);
@@ -407,7 +407,7 @@ TEST(HttpClientTest, OAuth2SessionRefreshesTokensOverHttp) {
 
 namespace {
 
-constexpr char kGatewayAuthorization[] = "Basic Z2F0ZXdheTpzZWNyZXQ=";
+constexpr std::string_view kGatewayAuthorization = "Basic Z2F0ZXdheTpzZWNyZXQ=";
 
 class GatewayHttpClient : public HttpClient {
  public:
@@ -464,7 +464,7 @@ void CheckPublicOAuth2FactoryRefresh(const std::shared_ptr<HttpClient>& client) 
 TEST(HttpClientTest, PublicOAuth2FactoryPreservesAuthorizationOnRefresh) {
   CheckPublicOAuth2FactoryRefresh(std::make_shared<HttpClient>(
       std::unordered_map<std::string, std::string>{
-          {"authorization", kGatewayAuthorization}},
+          {"authorization", std::string(kGatewayAuthorization)}},
       std::chrono::seconds(2), std::chrono::seconds(2)));
 }
 
