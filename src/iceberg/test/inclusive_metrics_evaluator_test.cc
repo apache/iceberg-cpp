@@ -1185,4 +1185,35 @@ TEST_F(InclusiveMetricsEvaluatorMigratedTest,
                Literal::Double(5.0), Literal::Double(10.0));
 }
 
+TEST_F(InclusiveMetricsEvaluatorMigratedTest, NegativeNaNUpperBound) {
+  auto check = [&](const std::string& col, int32_t field_id, const Literal& lower,
+                   const Literal& upper, const Literal& lit, const Literal& other) {
+    auto file = std::make_shared<DataFile>();
+    file->file_path = "nan_bounds.orc";
+    file->file_format = FileFormatType::kOrc;
+    file->record_count = 50;
+    file->value_counts = {{field_id, 50L}};
+    file->null_value_counts = {{field_id, 0L}};
+    file->lower_bounds = {{field_id, lower.Serialize().value()}};
+    file->upper_bounds = {{field_id, upper.Serialize().value()}};
+
+    RunTest(Expressions::GreaterThan(col, lit), kRowsMightMatch, file);
+    RunTest(Expressions::GreaterThanOrEqual(col, lit), kRowsMightMatch, file);
+    RunTest(Expressions::Equal(col, lit), kRowsMightMatch, file);
+    RunTest(Expressions::In(col, {lit, other}), kRowsMightMatch, file);
+  };
+
+  // Both bounds -NaN (ORC stats when first value is -NaN).
+  check("no_nans", 9, Literal::Float(-kFloatNan), Literal::Float(-kFloatNan),
+        Literal::Float(50.0F), Literal::Float(60.0F));
+  check("no_nan_stats", 13, Literal::Double(-kDoubleNan), Literal::Double(-kDoubleNan),
+        Literal::Double(50.0), Literal::Double(60.0));
+
+  // Finite lower bound with -NaN upper bound (reaches upper check in In).
+  check("no_nans", 9, Literal::Float(1.0F), Literal::Float(-kFloatNan),
+        Literal::Float(50.0F), Literal::Float(60.0F));
+  check("no_nan_stats", 13, Literal::Double(1.0), Literal::Double(-kDoubleNan),
+        Literal::Double(50.0), Literal::Double(60.0));
+}
+
 }  // namespace iceberg

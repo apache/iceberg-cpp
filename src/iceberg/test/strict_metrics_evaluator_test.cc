@@ -1233,6 +1233,49 @@ TEST_F(StrictMetricsEvaluatorMigratedTest, NotStartsWithRejectsInvalidBind) {
               IsError(ErrorKind::kInvalidExpression));
 }
 
+TEST_F(StrictMetricsEvaluatorMigratedTest, NegativeNaNUpperBound) {
+  const float neg_float_nan = -std::numeric_limits<float>::quiet_NaN();
+  const double neg_double_nan = -std::numeric_limits<double>::quiet_NaN();
+
+  auto check = [&](const std::string& col, int32_t field_id, std::optional<Literal> lower,
+                   const Literal& upper, const Literal& lit, const Literal& other) {
+    auto file = std::make_shared<DataFile>();
+    file->file_path = "nan_bounds.orc";
+    file->file_format = FileFormatType::kOrc;
+    file->record_count = 50;
+    file->value_counts = {{field_id, 50L}};
+    file->null_value_counts = {{field_id, 0L}};
+    file->nan_value_counts = {{field_id, 0L}};
+    if (lower.has_value()) {
+      file->lower_bounds = {{field_id, lower->Serialize().value()}};
+    }
+    file->upper_bounds = {{field_id, upper.Serialize().value()}};
+
+    ExpectShouldRead(Expressions::LessThan(col, lit), kRowsMightNotMatch, file);
+    ExpectShouldRead(Expressions::LessThanOrEqual(col, lit), kRowsMightNotMatch, file);
+    ExpectShouldRead(Expressions::NotEqual(col, lit), kRowsMightNotMatch, file);
+    ExpectShouldRead(Expressions::NotIn(col, {lit, other}), kRowsMightNotMatch, file);
+  };
+
+  // Both bounds -NaN.
+  check("no_nans", 10, Literal::Float(neg_float_nan), Literal::Float(neg_float_nan),
+        Literal::Float(50.0F), Literal::Float(60.0F));
+  check("no_nan_stats", 14, Literal::Double(neg_double_nan),
+        Literal::Double(neg_double_nan), Literal::Double(50.0), Literal::Double(60.0));
+
+  // Missing lower bound with -NaN upper bound (reaches upper check in NotEq/NotIn).
+  check("no_nans", 10, std::nullopt, Literal::Float(neg_float_nan), Literal::Float(50.0F),
+        Literal::Float(60.0F));
+  check("no_nan_stats", 14, std::nullopt, Literal::Double(neg_double_nan),
+        Literal::Double(50.0), Literal::Double(60.0));
+
+  // Finite lower bound with -NaN upper bound.
+  check("no_nans", 10, Literal::Float(1.0F), Literal::Float(neg_float_nan),
+        Literal::Float(50.0F), Literal::Float(60.0F));
+  check("no_nan_stats", 14, Literal::Double(1.0), Literal::Double(neg_double_nan),
+        Literal::Double(50.0), Literal::Double(60.0));
+}
+
 TEST(StrictMetricsEvaluatorRegressionTest, MissingNullCountForField) {
   // Field 14 (no_nan_stats, float64, optional) has bounds and value_counts but is
   // missing from null_value_counts. The evaluator must conservatively assume nulls
