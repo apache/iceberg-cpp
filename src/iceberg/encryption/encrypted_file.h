@@ -63,38 +63,21 @@ class ICEBERG_EXPORT BaseEncryptedInputFile : public EncryptedInputFile {
   std::shared_ptr<EncryptionKeyMetadata> key_metadata_;
 };
 
-/// \brief An encrypted input file for formats, such as Parquet, that perform their own
-/// native (modular) decryption rather than using the AGS1 stream format.
+/// \brief An encrypted input file that supports both read paths of Java's
+/// NativeEncryptionInputFile.
 ///
-/// Also implements InputFile so that the still-encrypted bytes remain directly
-/// readable; the native reader uses key_metadata() to obtain the key parameters needed
-/// to decrypt the individual modules it reads.
+/// - Native path, for formats such as Parquet that perform their own modular decryption:
+///   ReleaseInputFile() gives the still-encrypted raw file and key_metadata() gives the
+///   key parameters (and AAD prefix) the native reader needs.
+/// - Stream path: the InputFile methods read the file as an AES GCM stream (AGS1),
+///   decrypting it, and require the encrypted file length in the key metadata.
+///
+/// Implementations may defer building the stream reader until the InputFile methods are
+/// first used, so native-only callers are not subject to the stream path's requirements.
 class ICEBERG_EXPORT NativeEncryptionInputFile : public EncryptedInputFile,
                                                  public InputFile {
  public:
-  NativeEncryptionInputFile(std::unique_ptr<InputFile> encrypted_file,
-                            std::shared_ptr<NativeEncryptionKeyMetadata> key_metadata)
-      : encrypted_file_(std::move(encrypted_file)),
-        key_metadata_(std::move(key_metadata)) {}
-
-  // EncryptedInputFile
-  std::unique_ptr<InputFile> ReleaseInputFile() override {
-    return std::move(encrypted_file_);
-  }
-  const NativeEncryptionKeyMetadata& key_metadata() const override {
-    return *key_metadata_;
-  }
-
-  // InputFile, passed through to the still-encrypted raw file.
-  std::string_view location() const override { return encrypted_file_->location(); }
-  Result<int64_t> Size() const override { return encrypted_file_->Size(); }
-  Result<std::unique_ptr<SeekableInputStream>> Open() override {
-    return encrypted_file_->Open();
-  }
-
- private:
-  std::unique_ptr<InputFile> encrypted_file_;
-  std::shared_ptr<NativeEncryptionKeyMetadata> key_metadata_;
+  const NativeEncryptionKeyMetadata& key_metadata() const override = 0;
 };
 
 /// \brief An encrypting output file together with the key metadata that was used (or
@@ -128,37 +111,32 @@ class ICEBERG_EXPORT BaseEncryptedOutputFile : public EncryptedOutputFile {
   std::shared_ptr<EncryptionKeyMetadata> key_metadata_;
 };
 
-/// \brief An encrypted output file for formats, such as Parquet, that perform their own
-/// native (modular) encryption rather than using the AGS1 stream format.
+/// \brief An encrypting output file that supports both write paths of Java's
+/// NativeEncryptionOutputFile.
 ///
-/// Also implements OutputFile so the plaintext bytes can be written directly; the
-/// native writer uses key_metadata() to obtain the key parameters it needs to encrypt
-/// the individual modules it writes.
+/// - Native path, for formats such as Parquet that perform their own modular encryption:
+///   plain_output_file() gives the file to write the (already encrypted) bytes to and
+///   key_metadata() gives the key parameters (and AAD prefix) the native writer needs.
+/// - Stream path: encrypting_output_file(), and the OutputFile methods that delegate to
+///   it, write the file as an AES GCM stream (AGS1).
 class ICEBERG_EXPORT NativeEncryptionOutputFile : public EncryptedOutputFile,
                                                   public OutputFile {
  public:
-  NativeEncryptionOutputFile(std::unique_ptr<OutputFile> plain_file,
-                             std::shared_ptr<NativeEncryptionKeyMetadata> key_metadata)
-      : plain_file_(std::move(plain_file)), key_metadata_(std::move(key_metadata)) {}
+  /// \brief The underlying plain output file, for native writers.
+  virtual OutputFile& plain_output_file() const = 0;
 
-  // EncryptedOutputFile
-  OutputFile& encrypting_output_file() const override { return *plain_file_; }
-  const NativeEncryptionKeyMetadata& key_metadata() const override {
-    return *key_metadata_;
+  const NativeEncryptionKeyMetadata& key_metadata() const override = 0;
+
+  // OutputFile, delegating to the stream path.
+  std::string_view location() const override {
+    return encrypting_output_file().location();
   }
-
-  // OutputFile, passed through to the plaintext file that the native writer fills in.
-  std::string_view location() const override { return plain_file_->location(); }
   Result<std::unique_ptr<PositionOutputStream>> Create() override {
-    return plain_file_->Create();
+    return encrypting_output_file().Create();
   }
   Result<std::unique_ptr<PositionOutputStream>> CreateOrOverwrite() override {
-    return plain_file_->CreateOrOverwrite();
+    return encrypting_output_file().CreateOrOverwrite();
   }
-
- private:
-  std::unique_ptr<OutputFile> plain_file_;
-  std::shared_ptr<NativeEncryptionKeyMetadata> key_metadata_;
 };
 
 }  // namespace iceberg

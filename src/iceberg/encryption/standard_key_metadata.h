@@ -23,6 +23,7 @@
 /// Key metadata of the standard Iceberg encryption scheme.
 
 #include <cstdint>
+#include <memory>
 #include <optional>
 #include <span>
 #include <vector>
@@ -77,9 +78,17 @@ struct ICEBERG_EXPORT StandardKeyMetadata : public NativeEncryptionKeyMetadata {
   StandardKeyMetadata WithFileLength(int64_t length) const;
 
   std::vector<uint8_t> buffer() const override { return Serialize(); }
+  std::shared_ptr<EncryptionKeyMetadata> Copy() const override {
+    return std::make_shared<StandardKeyMetadata>(*this);
+  }
   const std::vector<uint8_t>& EncryptionKey() const override { return encryption_key; }
   const std::optional<std::vector<uint8_t>>& AadPrefix() const override {
     return aad_prefix;
+  }
+  Result<std::optional<int64_t>> FileLength() const override { return file_length; }
+  Result<std::shared_ptr<NativeEncryptionKeyMetadata>> CopyWithLength(
+      int64_t length) const override {
+    return std::make_shared<StandardKeyMetadata>(WithFileLength(length));
   }
 
   friend bool operator==(const StandardKeyMetadata& lhs, const StandardKeyMetadata& rhs) {

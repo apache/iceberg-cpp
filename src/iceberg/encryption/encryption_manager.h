@@ -74,6 +74,10 @@ class ICEBERG_EXPORT EncryptionManager {
 /// them.
 class ICEBERG_EXPORT PlaintextEncryptionManager : public EncryptionManager {
  public:
+  // Keep the batch overloads visible: overriding the single-file ones would hide them.
+  using EncryptionManager::Decrypt;
+  using EncryptionManager::Encrypt;
+
   Result<std::unique_ptr<InputFile>> Decrypt(
       std::unique_ptr<EncryptedInputFile> encrypted) override;
 

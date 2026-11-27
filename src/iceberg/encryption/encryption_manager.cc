@@ -54,9 +54,8 @@ Result<std::unique_ptr<InputFile>> PlaintextEncryptionManager::Decrypt(
 
 Result<std::unique_ptr<EncryptedOutputFile>> PlaintextEncryptionManager::Encrypt(
     std::unique_ptr<OutputFile> plain) {
-  return std::make_unique<BaseEncryptedOutputFile>(
-      std::move(plain),
-      std::make_shared<BaseEncryptionKeyMetadata>(std::vector<uint8_t>{}));
+  return std::make_unique<BaseEncryptedOutputFile>(std::move(plain),
+                                                   BaseEncryptionKeyMetadata::Empty());
 }
 
 namespace {

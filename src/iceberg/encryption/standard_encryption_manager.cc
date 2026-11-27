@@ -63,6 +63,113 @@ std::optional<int64_t> ParseTimestamp(const EncryptedKey& key) {
   return value;
 }
 
+// Forwards to a file owned elsewhere, so one underlying file can serve both the native
+// path and the AGS1 stream path of a Native wrapper.
+class SharedInputFile : public InputFile {
+ public:
+  explicit SharedInputFile(std::shared_ptr<InputFile> file) : file_(std::move(file)) {}
+
+  std::string_view location() const override { return file_->location(); }
+  Result<int64_t> Size() const override { return file_->Size(); }
+  Result<std::unique_ptr<SeekableInputStream>> Open() override { return file_->Open(); }
+
+ private:
+  std::shared_ptr<InputFile> file_;
+};
+
+class SharedOutputFile : public OutputFile {
+ public:
+  explicit SharedOutputFile(std::shared_ptr<OutputFile> file) : file_(std::move(file)) {}
+
+  std::string_view location() const override { return file_->location(); }
+  Result<std::unique_ptr<PositionOutputStream>> Create() override {
+    return file_->Create();
+  }
+  Result<std::unique_ptr<PositionOutputStream>> CreateOrOverwrite() override {
+    return file_->CreateOrOverwrite();
+  }
+
+ private:
+  std::shared_ptr<OutputFile> file_;
+};
+
+// Mirrors Java's StandardDecryptedInputFile: the raw file and key metadata are available
+// to native readers right away, while the AGS1 reader, which needs the encrypted file
+// length from the key metadata, is built on first use of the InputFile methods.
+class StandardDecryptedInputFile : public NativeEncryptionInputFile {
+ public:
+  StandardDecryptedInputFile(std::shared_ptr<InputFile> raw, StandardKeyMetadata metadata)
+      : raw_(std::move(raw)), metadata_(std::move(metadata)) {}
+
+  std::unique_ptr<InputFile> ReleaseInputFile() override {
+    return std::make_unique<SharedInputFile>(raw_);
+  }
+  const NativeEncryptionKeyMetadata& key_metadata() const override { return metadata_; }
+
+  std::string_view location() const override { return raw_->location(); }
+  Result<int64_t> Size() const override {
+    ICEBERG_ASSIGN_OR_RAISE(auto file, Decrypting());
+    return file->Size();
+  }
+  Result<std::unique_ptr<SeekableInputStream>> Open() override {
+    ICEBERG_ASSIGN_OR_RAISE(auto file, Decrypting());
+    return file->Open();
+  }
+
+ private:
+  Result<AesGcmInputFile*> Decrypting() const {
+    if (decrypting_ == nullptr) {
+      if (!metadata_.file_length.has_value()) {
+        // The length must come from trusted key metadata, not from the file system, so
+        // that truncation is detected (format/gcm-stream-spec.md, "File length").
+        return Invalid("Cannot read AES GCM stream {}: key metadata has no file length",
+                       raw_->location());
+      }
+      decrypting_ = std::make_unique<AesGcmInputFile>(
+          std::make_unique<SharedInputFile>(raw_), metadata_.encryption_key,
+          metadata_.aad_prefix.value_or(std::vector<uint8_t>{}), *metadata_.file_length);
+    }
+    return decrypting_.get();
+  }
+
+  std::shared_ptr<InputFile> raw_;
+  StandardKeyMetadata metadata_;
+  mutable std::unique_ptr<AesGcmInputFile> decrypting_;
+};
+
+// Mirrors Java's StandardEncryptedOutputFile: native writers use the plain file and the
+// key metadata; the AGS1 writer over the same file and key is built on first use.
+class StandardEncryptedOutputFile : public NativeEncryptionOutputFile {
+ public:
+  StandardEncryptedOutputFile(std::shared_ptr<OutputFile> plain,
+                              StandardKeyMetadata metadata)
+      : plain_(std::move(plain)), metadata_(std::move(metadata)) {}
+
+  OutputFile& plain_output_file() const override { return *plain_; }
+  OutputFile& encrypting_output_file() const override {
+    if (encrypting_ == nullptr) {
+      encrypting_ = std::make_unique<AesGcmOutputFile>(
+          std::make_unique<SharedOutputFile>(plain_), metadata_.encryption_key,
+          metadata_.aad_prefix.value_or(std::vector<uint8_t>{}));
+    }
+    return *encrypting_;
+  }
+  const NativeEncryptionKeyMetadata& key_metadata() const override { return metadata_; }
+
+ private:
+  std::shared_ptr<OutputFile> plain_;
+  StandardKeyMetadata metadata_;
+  mutable std::unique_ptr<AesGcmOutputFile> encrypting_;
+};
+
+Result<StandardKeyMetadata> CastOrParse(const EncryptionKeyMetadata& key_metadata) {
+  if (const auto* standard = dynamic_cast<const StandardKeyMetadata*>(&key_metadata)) {
+    return *standard;
+  }
+  auto buffer = key_metadata.buffer();
+  return StandardKeyMetadata::Parse(buffer);
+}
+
 }  // namespace
 
 Result<std::shared_ptr<StandardEncryptionManager>> StandardEncryptionManager::Make(
@@ -236,18 +343,24 @@ Result<FileEncryptionKeys> StandardEncryptionManager::RegisterManifestListKeyMet
 Result<std::unique_ptr<InputFile>> StandardEncryptionManager::Decrypt(
     std::unique_ptr<EncryptedInputFile> encrypted) {
   ICEBERG_PRECHECK(encrypted != nullptr, "Encrypted input file cannot be null");
-  std::vector<uint8_t> key_metadata = encrypted->key_metadata().buffer();
-  return NewDecryptingInputFile(encrypted->ReleaseInputFile(), key_metadata);
+  // A native wrapper already carries both the native and the stream path.
+  if (auto* native = dynamic_cast<NativeEncryptionInputFile*>(encrypted.get())) {
+    encrypted.release();
+    return std::unique_ptr<InputFile>(native);
+  }
+  ICEBERG_ASSIGN_OR_RAISE(auto metadata, CastOrParse(encrypted->key_metadata()));
+  std::shared_ptr<InputFile> raw = encrypted->ReleaseInputFile();
+  ICEBERG_PRECHECK(raw != nullptr, "Encrypted input file has no underlying file");
+  return std::make_unique<StandardDecryptedInputFile>(std::move(raw),
+                                                      std::move(metadata));
 }
 
 Result<std::unique_ptr<EncryptedOutputFile>> StandardEncryptionManager::Encrypt(
     std::unique_ptr<OutputFile> plain) {
+  ICEBERG_PRECHECK(plain != nullptr, "Output file cannot be null");
   ICEBERG_ASSIGN_OR_RAISE(auto key_metadata, NewKeyMetadata());
-  ICEBERG_ASSIGN_OR_RAISE(auto encrypting_output_file,
-                          NewEncryptingOutputFile(std::move(plain), key_metadata));
-  return std::make_unique<BaseEncryptedOutputFile>(
-      std::move(encrypting_output_file),
-      std::make_shared<BaseEncryptionKeyMetadata>(key_metadata.Serialize()));
+  return std::make_unique<StandardEncryptedOutputFile>(std::move(plain),
+                                                       std::move(key_metadata));
 }
 
 std::vector<EncryptedKey> StandardEncryptionManager::encryption_keys() const {

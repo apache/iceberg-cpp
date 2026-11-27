@@ -66,9 +66,27 @@ class ICEBERG_BUNDLE_EXPORT StandardEncryptionManager : public EncryptionManager
   static Result<std::shared_ptr<StandardEncryptionManager>> Make(
       EncryptionManagerRegistry::Options options);
 
-  // EncryptionManager
+  // EncryptionManager. The batch overloads are re-exposed because overriding the
+  // single-file ones would otherwise hide them from callers of the concrete type.
+  using EncryptionManager::Decrypt;
+  using EncryptionManager::Encrypt;
+
+  /// \brief Decrypt a file.
+  ///
+  /// If the argument is already a NativeEncryptionInputFile it is returned unchanged.
+  /// Otherwise the result is a NativeEncryptionInputFile (callers can dynamic_cast to it
+  /// to reach the native path) whose key metadata is parsed here but whose AGS1 stream
+  /// reader is only built when the file is opened or sized; only that stream path needs
+  /// the key metadata to carry the encrypted file length.
   Result<std::unique_ptr<InputFile>> Decrypt(
       std::unique_ptr<EncryptedInputFile> encrypted) override;
+
+  /// \brief Wrap a plain output file for encryption.
+  ///
+  /// The result is a NativeEncryptionOutputFile (callers can dynamic_cast to it to reach
+  /// the native path): plain_output_file() is the plain file for native writers, and
+  /// encrypting_output_file() writes an AGS1 stream with the same key and AAD prefix.
+  /// Neither is thread-safe.
   Result<std::unique_ptr<EncryptedOutputFile>> Encrypt(
       std::unique_ptr<OutputFile> plain) override;
 
