@@ -66,7 +66,9 @@ class ContentCacheRegistry {
   explicit ContentCacheRegistry(int32_t capacity) : capacity_(capacity) {}
 
   ContentCacheStorage& Bind(FileIO* io) {
-    if (!io) throw std::invalid_argument("Content cache requires a storage FileIO");
+    if (!io) {
+      throw std::invalid_argument("Content cache requires a storage FileIO");
+    }
     std::lock_guard lock(mutex_);
     auto& storage = storage_.try_emplace(io, io).first->second;
     ++storage.caches;
@@ -75,14 +77,20 @@ class ContentCacheRegistry {
 
   void Unbind(ContentCacheStorage& storage) {
     std::lock_guard lock(mutex_);
-    if (--storage.caches == 0) storage_.erase(storage.io);
+    if (--storage.caches == 0) {
+      storage_.erase(storage.io);
+    }
   }
 
   bool IsActive(const ContentCacheRegistration& entry,
                 const std::shared_ptr<CachedFiles>& files, bool promote) {
     std::lock_guard lock(mutex_);
-    if (entry.files != files) return false;
-    if (promote) entries_.splice(entries_.begin(), entries_, entry.position);
+    if (entry.files != files) {
+      return false;
+    }
+    if (promote) {
+      entries_.splice(entries_.begin(), entries_, entry.position);
+    }
     return true;
   }
 
@@ -184,7 +192,9 @@ class SizedInputStream : public SeekableInputStream {
     ICEBERG_PRECHECK(position >= 0, "Position must not be negative: {}", position);
     ICEBERG_PRECHECK(std::cmp_less_equal(position, size_),
                      "Position {} exceeds file size {}", position, size_);
-    if (input_) return input_->Seek(position);
+    if (input_) {
+      return input_->Seek(position);
+    }
     position_ = position;
     return {};
   }
@@ -216,7 +226,9 @@ class SizedInputStream : public SeekableInputStream {
     ICEBERG_PRECHECK(out.size() <= size_ - offset,
                      "Read out of bounds: offset {} + length {} exceeds file size {}",
                      position, out.size(), size_);
-    if (input_) return input_->ReadFully(position, out);
+    if (input_) {
+      return input_->ReadFully(position, out);
+    }
     if (!out.empty()) {
       std::memcpy(out.data(), content_->data() + offset, out.size());
     }
@@ -257,7 +269,9 @@ class CachedInputFile : public InputFile {
     if (content_) {
       return std::make_unique<SizedInputStream>(content_);
     }
-    if (!cache_) return input_->Open();
+    if (!cache_) {
+      return input_->Open();
+    }
     bool can_load;
     if (auto cached = cache_->FindForHandle(location_, generation_, size_, &can_load)) {
       return std::make_unique<SizedInputStream>(std::move(cached));
@@ -278,7 +292,9 @@ class CachedInputFile : public InputFile {
     auto loaded = ReadInputFile(*input_, size_, location_);
     if (!loaded) {
       auto error = std::move(loaded).error();
-      if (error.kind != ErrorKind::kIOError) return unexpected<Error>(std::move(error));
+      if (error.kind != ErrorKind::kIOError) {
+        return unexpected<Error>(std::move(error));
+      }
       auto fallback = input_->Open();
       if (!fallback) {
         error.message += "; fallback open failed: " + fallback.error().message;
@@ -341,7 +357,9 @@ class ContentCache::ManifestFileIO final : public FileIO {
     return cache_->storage_.io->DeleteFile(location);
   }
   Status DeleteFiles(const std::vector<std::string>& locations) override {
-    if (locations.empty()) return cache_->storage_.io->DeleteFiles(locations);
+    if (locations.empty()) {
+      return cache_->storage_.io->DeleteFiles(locations);
+    }
     ClearAfterDelete cleanup{*cache_};
     return cache_->storage_.io->DeleteFiles(locations);
   }
@@ -391,7 +409,9 @@ class ContentCache::ManifestFileIO final : public FileIO {
     Status Flush() override { return stream_->Flush(); }
     Status Close() override {
       auto status = stream_->Close();
-      if (status) Finish();
+      if (status) {
+        Finish();
+      }
       return status;
     }
 
@@ -501,7 +521,9 @@ MetadataContent ContentCache::Find(std::string_view location, uint64_t* generati
   std::shared_lock storage_lock(storage_.mutex);
   std::lock_guard lock(mutex_);
   const auto current = SyncGenerationLocked();
-  if (generation) *generation = current;
+  if (generation) {
+    *generation = current;
+  }
   return FindLocked(location, std::nullopt);
 }
 
@@ -511,20 +533,28 @@ MetadataContent ContentCache::FindForHandle(std::string_view location,
   std::shared_lock storage_lock(storage_.mutex);
   std::lock_guard lock(mutex_);
   const bool current = generation == SyncGenerationLocked();
-  if (can_load) *can_load = current && storage_.active_writes == 0;
-  if (!current) return nullptr;
+  if (can_load) {
+    *can_load = current && storage_.active_writes == 0;
+  }
+  if (!current) {
+    return nullptr;
+  }
   return FindLocked(location, size);
 }
 
 MetadataContent ContentCache::FindLocked(std::string_view location,
                                          std::optional<int64_t> size) {
   auto files = registration_->last_files.lock();
-  if (!files) return nullptr;
+  if (!files) {
+    return nullptr;
+  }
   auto fits = [size](const MetadataContent& value) {
     return !size || std::cmp_equal(value->size(), *size);
   };
   const auto* file = files->FindAndPromoteIf(location, fits);
-  if (!file || !fits(*file)) return nullptr;
+  if (!file || !fits(*file)) {
+    return nullptr;
+  }
   return registry_->IsActive(*registration_, files, /*promote=*/true) ? *file : nullptr;
 }
 

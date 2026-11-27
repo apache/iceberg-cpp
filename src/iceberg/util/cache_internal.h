@@ -110,7 +110,9 @@ class LruCache {
     }
 
     auto list_it = it->second;
-    if (promote(list_it->value)) items_.splice(items_.begin(), items_, list_it);
+    if (promote(list_it->value)) {
+      items_.splice(items_.begin(), items_, list_it);
+    }
     return &list_it->value;
   }
 

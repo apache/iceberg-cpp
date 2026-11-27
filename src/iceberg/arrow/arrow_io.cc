@@ -424,7 +424,9 @@ class ArrowInputFile : public InputFile {
   std::string_view location() const override { return location_; }
 
   Result<int64_t> Size() const override {
-    if (auto size = file_size_.load(std::memory_order_relaxed); size >= 0) return size;
+    if (auto size = file_size_.load(std::memory_order_relaxed); size >= 0) {
+      return size;
+    }
     auto info = fs_->GetFileInfo(path_);
     if (info.ok() && info->IsFile() && info->size() >= 0) {
       file_size_.store(info->size(), std::memory_order_relaxed);
