@@ -79,9 +79,6 @@ class ICEBERG_REST_EXPORT HttpClient {
   HttpClient(HttpClient&&) = delete;
   HttpClient& operator=(HttpClient&&) = delete;
 
-  /// \brief Whether this client has a nonempty default Authorization header.
-  bool HasDefaultAuthorization() const;
-
   /// \brief Sends a GET request.
   virtual Result<HttpResponse> Get(
       const std::string& path, const std::unordered_map<std::string, std::string>& params,

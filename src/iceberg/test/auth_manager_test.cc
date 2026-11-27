@@ -683,8 +683,6 @@ namespace {
 
 class RefreshHttpClient : public HttpClient {
  public:
-  using HttpClient::HttpClient;
-
   struct Request {
     std::string path;
     std::unordered_map<std::string, std::string> form;
@@ -1327,12 +1325,8 @@ TEST_F(OAuth2ExchangeRefreshTest, ExpiredJwtSharesSevenAttemptBudget) {
   EXPECT_FALSE(session_->IsRefreshable());
 }
 
-class OAuth2MissingCredentialTest : public OAuth2ExchangeRefreshTest,
-                                    public ::testing::WithParamInterface<bool> {};
-
-TEST_P(OAuth2MissingCredentialTest, DoesNotSendUnrecoverableRequest) {
+TEST_F(OAuth2ExchangeRefreshTest, MissingCredentialSkipsExpiredTokenRecovery) {
   ExpectRefreshes(1);
-  config_.exchange_enabled = GetParam();
   token_.expires_in_secs = 0;
   ASSERT_THAT(Start(), IsOk());
   test::FakeRetryEnvironment fake_retry;
@@ -1344,27 +1338,8 @@ TEST_P(OAuth2MissingCredentialTest, DoesNotSendUnrecoverableRequest) {
   EXPECT_FALSE(session_->IsRefreshable());
 }
 
-INSTANTIATE_TEST_SUITE_P(GrantModes, OAuth2MissingCredentialTest, ::testing::Bool());
-
-TEST_F(OAuth2ExchangeRefreshTest, PublicFactorySkipsRefreshWithEmptyAuthorization) {
-  ExpectRefreshes(1);
-  auto client = std::make_shared<RefreshHttpClient>(
-      std::unordered_map<std::string, std::string>{{"Authorization", ""}});
-  ICEBERG_UNWRAP_OR_FAIL(
-      auto session,
-      AuthSession::MakeOAuth2(ExpiredInitialToken(), config_.token_endpoint, "", "",
-                              "catalog", true, {}, client, &executor_));
-  test::FakeRetryEnvironment fake_retry;
-  ScopedRetryTestHooks hooks(fake_retry.hooks());
-  ASSERT_NO_FATAL_FAILURE(RunRefresh());
-  EXPECT_EQ(client->requests, 0);
-  EXPECT_EQ(session->OAuth2Info()->token, "initial");
-}
-
 TEST_F(OAuth2ExchangeRefreshTest, MissingCredentialSkipsFinalRecovery) {
   ExpectRefreshes(1);
-  client_ = std::make_shared<RefreshHttpClient>(
-      std::unordered_map<std::string, std::string>{{"Authorization", "Bearer shared"}});
   ASSERT_THAT(Start(), IsOk());
   test::FakeRetryEnvironment fake_retry;
   ScopedRetryTestHooks hooks(fake_retry.hooks());

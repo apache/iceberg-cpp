@@ -317,8 +317,7 @@ class OAuth2Session final : public AuthSession,
         recover = recover || (expires_at_ != std::chrono::steady_clock::time_point{} &&
                               expires_at_ <= config_.now());
       }
-      if (config_.credential.empty() &&
-          (config_.exchange_enabled ? recover : !client_->HasDefaultAuthorization())) {
+      if (config_.exchange_enabled && recover && config_.credential.empty()) {
         ICEBERG_LOG_WARN("Stopping OAuth2 token refresh: no credential available");
         return std::nullopt;
       }

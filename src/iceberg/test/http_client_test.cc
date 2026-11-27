@@ -405,12 +405,30 @@ TEST(HttpClientTest, OAuth2SessionRefreshesTokensOverHttp) {
   EXPECT_EQ(server.request_count(), 4);
 }
 
-TEST(HttpClientTest, PublicOAuth2FactoryPreservesAuthorizationOnRefresh) {
-  constexpr std::string_view kAuthorization = "Basic Z2F0ZXdheTpzZWNyZXQ=";
-  LoopbackHttpServer server([&](const std::string& request) {
+namespace {
+
+constexpr char kGatewayAuthorization[] = "Basic Z2F0ZXdheTpzZWNyZXQ=";
+
+class GatewayHttpClient : public HttpClient {
+ public:
+  GatewayHttpClient()
+      : HttpClient({}, std::chrono::seconds(2), std::chrono::seconds(2)) {}
+
+  Result<HttpResponse> PostForm(
+      const std::string& path, const std::unordered_map<std::string, std::string>& form,
+      const std::unordered_map<std::string, std::string>& headers,
+      const ErrorHandler& error_handler, auth::AuthSession& session) override {
+    auto gateway_headers = headers;
+    gateway_headers["Authorization"] = kGatewayAuthorization;
+    return HttpClient::PostForm(path, form, gateway_headers, error_handler, session);
+  }
+};
+
+void CheckPublicOAuth2FactoryRefresh(const std::shared_ptr<HttpClient>& client) {
+  LoopbackHttpServer server([](const std::string& request) {
     EXPECT_TRUE(request.starts_with("POST /v1/oauth/tokens "));
     auto headers = RequestHeaders(request);
-    EXPECT_EQ(headers["Authorization"], kAuthorization);
+    EXPECT_EQ(headers["Authorization"], kGatewayAuthorization);
     const std::unordered_map<std::string, std::string> expected_form{
         {"grant_type", "client_credentials"},
         {"client_secret", ""},
@@ -428,10 +446,6 @@ TEST(HttpClientTest, PublicOAuth2FactoryPreservesAuthorizationOnRefresh) {
     queued.set_value(std::move(task));
     return {};
   });
-  auto client = std::make_shared<HttpClient>(
-      std::unordered_map<std::string, std::string>{
-          {"authorization", std::string(kAuthorization)}},
-      std::chrono::seconds(2), std::chrono::seconds(2));
   ICEBERG_UNWRAP_OR_FAIL(
       auto session,
       auth::AuthSession::MakeOAuth2(
@@ -443,6 +457,19 @@ TEST(HttpClientTest, PublicOAuth2FactoryPreservesAuthorizationOnRefresh) {
 
   EXPECT_EQ(session->OAuth2Info()->token, "refreshed");
   EXPECT_EQ(server.request_count(), 1);
+}
+
+}  // namespace
+
+TEST(HttpClientTest, PublicOAuth2FactoryPreservesAuthorizationOnRefresh) {
+  CheckPublicOAuth2FactoryRefresh(std::make_shared<HttpClient>(
+      std::unordered_map<std::string, std::string>{
+          {"authorization", kGatewayAuthorization}},
+      std::chrono::seconds(2), std::chrono::seconds(2)));
+}
+
+TEST(HttpClientTest, PublicOAuth2FactoryRefreshesWithAuthorizationAddedByPostForm) {
+  CheckPublicOAuth2FactoryRefresh(std::make_shared<GatewayHttpClient>());
 }
 
 class OAuth2HttpRecoveryTest : public ::testing::TestWithParam<bool> {};
