@@ -848,6 +848,25 @@ TEST_F(InclusiveMetricsEvaluatorMigratedTest, StringStartsWithTest) {
   RunTest(Expressions::StartsWith("required", above_max), kRowCannotMatch, file4_);
 }
 
+TEST_F(InclusiveMetricsEvaluatorMigratedTest, StringStartsWithSingleBoundTest) {
+  // file2_ has required column 3 with bounds ["aa", "dC"].
+  auto upper_only = std::make_shared<DataFile>(*file2_);
+  upper_only->lower_bounds.clear();
+  RunTest(Expressions::StartsWith("required", "dWX"), kRowCannotMatch, upper_only);
+  RunTest(Expressions::StartsWith("required", "e"), kRowCannotMatch, upper_only);
+  RunTest(Expressions::StartsWith("required", "dCa"), kRowCannotMatch, upper_only);
+  RunTest(Expressions::StartsWith("required", "dC"), kRowsMightMatch, upper_only);
+  RunTest(Expressions::StartsWith("required", "d"), kRowsMightMatch, upper_only);
+  RunTest(Expressions::StartsWith("required", "a"), kRowsMightMatch, upper_only);
+  RunTest(Expressions::StartsWith("required", ""), kRowsMightMatch, upper_only);
+
+  auto lower_only = std::make_shared<DataFile>(*file2_);
+  lower_only->upper_bounds.clear();
+  RunTest(Expressions::StartsWith("required", "aB"), kRowCannotMatch, lower_only);
+  RunTest(Expressions::StartsWith("required", "aa"), kRowsMightMatch, lower_only);
+  RunTest(Expressions::StartsWith("required", "z"), kRowsMightMatch, lower_only);
+}
+
 TEST_F(InclusiveMetricsEvaluatorMigratedTest, StringNotStartsWithTest) {
   RunTest(Expressions::NotStartsWith("required", "a"), kRowsMightMatch, file1_);
   RunTest(Expressions::NotStartsWith("required", "a"), kRowsMightMatch, file2_);

@@ -20,6 +20,7 @@
 #include "iceberg/expression/inclusive_metrics_evaluator.h"
 
 #include <ranges>
+#include <string_view>
 #include <utility>
 
 #include "iceberg/expression/binder.h"
@@ -315,32 +316,22 @@ class InclusiveMetricsVisitor : public BoundVisitor<bool> {
     if (lit.type()->type_id() != TypeId::kString) {
       return kRowCannotMatch;
     }
-    const auto& prefix = std::get<std::string>(lit.value());
+    std::string_view prefix = std::get<std::string>(lit.value());
 
     ICEBERG_ASSIGN_OR_RAISE(auto lower, LowerBound(expr));
-    if (!lower.has_value() || lower->IsNull()) {
-      return kRowsMightMatch;
-    }
-    const auto& lower_str = std::get<std::string>(lower->value());
-    // truncate lower bound so that its length in bytes is not greater than the length of
-    // prefix
-    size_t length = std::min(prefix.size(), lower_str.size());
-    // if prefix of lower bound is greater than prefix, rows cannot match
-    if (lower_str.substr(0, length) > prefix) {
-      return kRowCannotMatch;
+    if (lower.has_value() && !lower->IsNull()) {
+      std::string_view lower_str = std::get<std::string>(lower->value());
+      if (lower_str.compare(0, prefix.size(), prefix) > 0) {
+        return kRowCannotMatch;
+      }
     }
 
     ICEBERG_ASSIGN_OR_RAISE(auto upper, UpperBound(expr));
-    if (!upper.has_value() || upper->IsNull()) {
-      return kRowsMightMatch;
-    }
-    const auto& upper_str = std::get<std::string>(upper->value());
-    // truncate upper bound so that its length in bytes is not greater than the length of
-    // prefix
-    length = std::min(prefix.size(), upper_str.size());
-    // if prefix of upper bound is less than prefix, rows cannot match
-    if (upper_str.substr(0, length) < prefix) {
-      return kRowCannotMatch;
+    if (upper.has_value() && !upper->IsNull()) {
+      std::string_view upper_str = std::get<std::string>(upper->value());
+      if (upper_str < prefix) {
+        return kRowCannotMatch;
+      }
     }
 
     return kRowsMightMatch;
