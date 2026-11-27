@@ -52,8 +52,20 @@ class LruCache {
 
   LruCache(const LruCache&) = delete;
   LruCache& operator=(const LruCache&) = delete;
-  LruCache(LruCache&&) noexcept = default;
-  LruCache& operator=(LruCache&&) noexcept = default;
+  LruCache(LruCache&& other) noexcept : LruCache(other.max_weight_) {
+    *this = std::move(other);
+  }
+
+  LruCache& operator=(LruCache&& other) noexcept {
+    if (this != &other) {
+      Clear();
+      items_.swap(other.items_);
+      map_.swap(other.map_);
+      max_weight_ = other.max_weight_;
+      total_weight_ = std::exchange(other.total_weight_, 0);
+    }
+    return *this;
+  }
 
   void Clear() {
     items_.clear();

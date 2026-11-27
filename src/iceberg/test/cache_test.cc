@@ -25,6 +25,7 @@
 #include <stdexcept>
 #include <string>
 #include <tuple>
+#include <utility>
 
 #include <gtest/gtest.h>
 
@@ -166,6 +167,34 @@ TEST(LruCacheTest, InvalidWeightsLeaveCacheUnchanged) {
   EXPECT_EQ(cache.total_weight(), 3);
   ASSERT_NE(cache.Find(1), nullptr);
   EXPECT_EQ(*cache.Find(1), "old");
+}
+
+TEST(LruCacheTest, MovesTransferEntriesAndWeightTogether) {
+  LruCache<int32_t, std::string> source(5);
+  source.Replace(1, "first", 2);
+  source.Replace(2, "second", 3);
+
+  auto moved = std::move(source);
+  EXPECT_EQ(source.size(), 0);
+  ASSERT_EQ(source.total_weight(), 0);
+  ASSERT_THAT(source.Resize(1), IsOk());
+  EXPECT_TRUE(source.Replace(3, "reused").first);
+
+  // Moving into a populated cache must also discard its previous entries.
+  source = std::move(moved);
+  EXPECT_EQ(moved.size(), 0);
+  ASSERT_EQ(moved.total_weight(), 0);
+  ASSERT_THAT(moved.Resize(1), IsOk());
+  EXPECT_TRUE(moved.Replace(4, "reused").first);
+
+  EXPECT_EQ(source.Find(3), nullptr);
+  EXPECT_EQ(source.size(), 2);
+  EXPECT_EQ(source.total_weight(), 5);
+  EXPECT_EQ(source.max_weight(), 5);
+  ASSERT_THAT(source.Resize(3), IsOk());
+  EXPECT_EQ(source.Find(1), nullptr);
+  ASSERT_NE(source.Find(2), nullptr);
+  EXPECT_EQ(*source.Find(2), "second");
 }
 
 TEST(LruCacheTest, ClearResetsWeight) {
