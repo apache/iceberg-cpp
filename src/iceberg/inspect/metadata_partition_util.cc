@@ -17,8 +17,6 @@
  * under the License.
  */
 
-#include "iceberg/inspect/metadata_partition_util_internal.h"
-
 #include <algorithm>
 #include <cstdint>
 #include <functional>
@@ -34,6 +32,7 @@
 #include <nanoarrow/nanoarrow.h>
 
 #include "iceberg/arrow_row_builder_internal.h"
+#include "iceberg/inspect/metadata_partition_util_internal.h"
 #include "iceberg/nanoarrow_status_internal.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/schema.h"
