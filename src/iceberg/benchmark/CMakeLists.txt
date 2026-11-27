@@ -27,3 +27,11 @@ endfunction()
 
 add_iceberg_benchmark(benchmark_smoke)
 add_iceberg_benchmark(metrics_evaluator_benchmark)
+
+# Reads real Parquet tables, so it needs the bundle.
+if(ICEBERG_BUILD_BUNDLE)
+  add_executable(parallel_scan_benchmark parallel_scan_benchmark.cc)
+  target_link_libraries(parallel_scan_benchmark
+                        PRIVATE "$<IF:$<TARGET_EXISTS:iceberg_bundle_static>,iceberg_bundle_static,iceberg_bundle_shared>"
+  )
+endif()
