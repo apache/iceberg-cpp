@@ -50,10 +50,8 @@ Status AppendLiteral(ArrowArray* array, const Literal& literal) {
   if (literal.IsNull()) {
     return AppendNull(array);
   }
-  if (literal.IsAboveMax() || literal.IsBelowMin()) {
-    return InvalidArgument("Cannot append non-value partition literal {}",
-                           literal.ToString());
-  }
+  ICEBERG_PRECHECK(!literal.IsAboveMax() && !literal.IsBelowMin(),
+                   "Cannot append non-value partition literal {}", literal.ToString());
 
   switch (literal.type()->type_id()) {
     case TypeId::kBoolean:
