@@ -156,6 +156,9 @@ class StrictMetricsVisitor : public BoundVisitor<bool> {
     auto it = data_file_.upper_bounds.find(id);
     if (it != data_file_.upper_bounds.cend()) {
       ICEBERG_ASSIGN_OR_RAISE(auto upper, ParseBound(expr, it->second));
+      if (upper.IsNaN()) {
+        return kRowsMightNotMatch;
+      }
       if (upper < lit) {
         return kRowsMustMatch;
       }
@@ -184,6 +187,9 @@ class StrictMetricsVisitor : public BoundVisitor<bool> {
     auto it = data_file_.upper_bounds.find(id);
     if (it != data_file_.upper_bounds.cend()) {
       ICEBERG_ASSIGN_OR_RAISE(auto upper, ParseBound(expr, it->second));
+      if (upper.IsNaN()) {
+        return kRowsMightNotMatch;
+      }
       if (upper <= lit) {
         return kRowsMustMatch;
       }
@@ -326,6 +332,9 @@ class StrictMetricsVisitor : public BoundVisitor<bool> {
     auto upper_it = data_file_.upper_bounds.find(id);
     if (upper_it != data_file_.upper_bounds.cend()) {
       ICEBERG_ASSIGN_OR_RAISE(auto upper, ParseBound(expr, upper_it->second));
+      if (upper.IsNaN()) {
+        return kRowsMightNotMatch;
+      }
       if (upper < lit) {
         return kRowsMustMatch;
       }
@@ -408,6 +417,9 @@ class StrictMetricsVisitor : public BoundVisitor<bool> {
     auto upper_it = data_file_.upper_bounds.find(id);
     if (upper_it != data_file_.upper_bounds.cend()) {
       ICEBERG_ASSIGN_OR_RAISE(auto upper, ParseBound(expr, upper_it->second));
+      if (upper.IsNaN()) {
+        return kRowsMightNotMatch;
+      }
       upper_bound = std::move(upper);
     }
 

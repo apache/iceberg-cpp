@@ -177,7 +177,7 @@ class InclusiveMetricsVisitor : public BoundVisitor<bool> {
     }
 
     ICEBERG_ASSIGN_OR_RAISE(auto upper, UpperBound(expr));
-    if (!upper.has_value() || upper->IsNull()) {
+    if (!upper.has_value() || upper->IsNull() || upper->IsNaN()) {
       return kRowsMightMatch;
     }
     if (upper.value() <= lit) {
@@ -195,7 +195,7 @@ class InclusiveMetricsVisitor : public BoundVisitor<bool> {
     }
 
     ICEBERG_ASSIGN_OR_RAISE(auto upper, UpperBound(expr));
-    if (!upper.has_value() || upper->IsNull()) {
+    if (!upper.has_value() || upper->IsNull() || upper->IsNaN()) {
       return kRowsMightMatch;
     }
     if (upper.value() < lit) {
@@ -220,7 +220,7 @@ class InclusiveMetricsVisitor : public BoundVisitor<bool> {
     }
 
     ICEBERG_ASSIGN_OR_RAISE(auto upper, UpperBound(expr));
-    if (!upper.has_value() || upper->IsNull()) {
+    if (!upper.has_value() || upper->IsNull() || upper->IsNaN()) {
       return kRowsMightMatch;
     }
     if (upper.value() < lit) {
@@ -270,7 +270,7 @@ class InclusiveMetricsVisitor : public BoundVisitor<bool> {
     }
 
     ICEBERG_ASSIGN_OR_RAISE(auto upper, UpperBound(expr));
-    if (!upper.has_value() || upper->IsNull()) {
+    if (!upper.has_value() || upper->IsNull() || upper->IsNaN()) {
       return kRowsMightMatch;
     }
     auto filtered_view = literals_view | std::views::filter([&](const Literal& lit) {
