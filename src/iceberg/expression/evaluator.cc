@@ -313,18 +313,19 @@ class ReferencePredicateNode : public EvaluatorNode {
         return !is_null;
       case Operation::kIsNan:
       case Operation::kNotNan: {
-        std::optional<bool> is_nan;
+        bool is_nan;
         if (is_null) {
           is_nan = false;
-        } else if (const auto* f = std::get_if<float>(&value)) {
+        } else if (const auto* f = std::get_if<float>(&value);
+                   type_id_ == TypeId::kFloat && f != nullptr) {
           is_nan = std::isnan(*f);
-        } else if (const auto* d = std::get_if<double>(&value)) {
+        } else if (const auto* d = std::get_if<double>(&value);
+                   type_id_ == TypeId::kDouble && d != nullptr) {
           is_nan = std::isnan(*d);
-        }
-        if (!is_nan.has_value()) {
+        } else {
           return fallback_.Evaluate(row);
         }
-        return op_ == Operation::kIsNan ? *is_nan : !*is_nan;
+        return op_ == Operation::kIsNan ? is_nan : !is_nan;
       }
       case Operation::kStartsWith:
       case Operation::kNotStartsWith: {
@@ -364,25 +365,27 @@ class ReferencePredicateNode : public EvaluatorNode {
     }
   }
 
-  // Returns true when this node can evaluate `op` for a field of `type_id`.
-  static bool Supports(Operation op, TypeId type_id) {
-    switch (op) {
+  static bool Supports(const BoundPredicate& predicate, TypeId type_id) {
+    using Kind = BoundPredicate::Kind;
+    const auto kind = predicate.kind();
+    switch (predicate.op()) {
       case Operation::kIsNull:
       case Operation::kNotNull:
-        return true;
+        return kind == Kind::kUnary;
       case Operation::kIsNan:
       case Operation::kNotNan:
-        return type_id == TypeId::kFloat || type_id == TypeId::kDouble;
+        return kind == Kind::kUnary &&
+               (type_id == TypeId::kFloat || type_id == TypeId::kDouble);
       case Operation::kStartsWith:
       case Operation::kNotStartsWith:
-        return type_id == TypeId::kString;
+        return kind == Kind::kLiteral && type_id == TypeId::kString;
       case Operation::kLt:
       case Operation::kLtEq:
       case Operation::kGt:
       case Operation::kGtEq:
       case Operation::kEq:
       case Operation::kNotEq:
-        return HasRawComparison(type_id);
+        return kind == Kind::kLiteral && HasRawComparison(type_id);
       default:
         return false;
     }
@@ -490,7 +493,7 @@ NodePtr CompileReferencePredicate(const std::shared_ptr<Expression>& expr) {
     return nullptr;
   }
   const TypeId type_id = reference->type()->type_id();
-  if (!ReferencePredicateNode::Supports(predicate->op(), type_id)) {
+  if (!ReferencePredicateNode::Supports(*predicate, type_id)) {
     return nullptr;
   }
 

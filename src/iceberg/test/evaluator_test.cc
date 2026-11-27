@@ -30,6 +30,7 @@
 #include <string>
 #include <string_view>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include <arrow/array.h>
@@ -1204,6 +1205,30 @@ TEST(EvaluatorRawComparisonTest, MatchesLiteralSemantics) {
   EXPECT_GT(checked, 1000);
 }
 
+TEST(EvaluatorRawComparisonTest, RejectsUnaryOperationOnLiteralPredicate) {
+  Schema schema({SchemaField::MakeOptional(1, "id", int32())});
+  auto expr = Expressions::Predicate(Expression::Operation::kIsNull, "id",
+                                     std::vector<Literal>{Literal::Int(1)});
+  ICEBERG_UNWRAP_OR_FAIL(auto evaluator, Evaluator::Make(schema, expr));
+  EXPECT_THAT(evaluator->Evaluate(ScalarRow({int32_t{1}})),
+              IsError(ErrorKind::kInvalidExpression));
+}
+
+TEST(EvaluatorRawComparisonTest, NanPredicatesRejectMismatchedFloatTypes) {
+  Schema schema({SchemaField::MakeOptional(1, "f", float32()),
+                 SchemaField::MakeOptional(2, "d", float64())});
+  ScalarRow row({std::numeric_limits<double>::quiet_NaN(),
+                 std::numeric_limits<float>::quiet_NaN()});
+  for (auto op : {Expression::Operation::kIsNan, Expression::Operation::kNotNan}) {
+    for (const auto* field : {"f", "d"}) {
+      auto expr = Expressions::Predicate(op, field);
+      SCOPED_TRACE(expr->ToString());
+      ICEBERG_UNWRAP_OR_FAIL(auto evaluator, Evaluator::Make(schema, expr));
+      EXPECT_THROW(static_cast<void>(evaluator->Evaluate(row)), std::bad_variant_access);
+    }
+  }
+}
+
 TEST(EvaluatorRawComparisonTest, CompoundExpressionsKeepErrorsFromBothSides) {
   Schema schema({SchemaField::MakeRequired(1, "id", int32()),
                  SchemaField::MakeOptional(2, "name", string())});
@@ -1231,12 +1256,13 @@ TEST(EvaluatorRawComparisonTest, TransformsAndSetsUseLiteralEvaluation) {
 
   auto bucket = Expressions::Equal(
       std::shared_ptr<UnboundTerm<BoundTransform>>(Expressions::Bucket("id", 4)),
-      Literal::Int(0));
+      Literal::Int(3));
   ICEBERG_UNWRAP_OR_FAIL(auto bucket_evaluator, Evaluator::Make(schema, bucket));
-  for (int32_t id = 0; id < 8; ++id) {
-    auto result = bucket_evaluator->Evaluate(ScalarRow({id}));
-    ASSERT_TRUE(result.has_value()) << result.error().message;
-  }
+  // bucket[4](34) is 3 and bucket[4](0) is 0.
+  EXPECT_THAT(bucket_evaluator->Evaluate(ScalarRow({int32_t{34}})),
+              HasValue(::testing::Eq(true)));
+  EXPECT_THAT(bucket_evaluator->Evaluate(ScalarRow({int32_t{0}})),
+              HasValue(::testing::Eq(false)));
 }
 
 }  // namespace iceberg
