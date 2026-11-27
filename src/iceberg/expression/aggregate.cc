@@ -62,15 +62,21 @@ class SingleValueStructLike : public StructLike {
 Result<std::optional<Literal>> EvaluateFileExtremum(const BoundAggregate& aggregate,
                                                     const DataFile& file) {
   const auto& term = *aggregate.term();
+  bool preserves_order = term.kind() == Term::Kind::kReference;
+  if (term.kind() == Term::Kind::kTransform) {
+    const auto& transform =
+        internal::checked_cast<const BoundTransform&>(term).transform();
+    if (transform->transform_type() == TransformType::kVoid) {
+      return Literal::Null(GetPrimitiveType(term));
+    }
+    preserves_order = transform->PreservesOrder();
+  }
+
   const auto ref = term.reference();
   const auto id = ref->field().field_id();
   const auto& bounds = aggregate.op() == Expression::Operation::kMax ? file.upper_bounds
                                                                      : file.lower_bounds;
   // A source endpoint can determine the extremum only if the term preserves order.
-  const bool preserves_order =
-      term.kind() == Term::Kind::kReference ||
-      (term.kind() == Term::Kind::kTransform &&
-       internal::checked_cast<const BoundTransform&>(term).transform()->PreservesOrder());
   if (auto it = bounds.find(id); preserves_order && it != bounds.end()) {
     ICEBERG_ASSIGN_OR_RAISE(
         auto bound, internal::DeserializeBound(it->second, GetPrimitiveType(*ref)));

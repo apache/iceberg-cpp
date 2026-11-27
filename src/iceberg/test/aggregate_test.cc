@@ -27,6 +27,7 @@
 #include "iceberg/row/struct_like.h"
 #include "iceberg/schema.h"
 #include "iceberg/test/matchers.h"
+#include "iceberg/transform.h"
 #include "iceberg/type.h"
 #include "iceberg/util/temporal_util.h"
 
@@ -363,6 +364,28 @@ TEST(AggregateTest, BucketDoesNotUseFileBounds) {
                          TemporalUtils::ParseTimestamp("2017-11-16T22:31:08"));
   check(Literal::Timestamp(micros), Literal::Timestamp(micros + 1), 2);
   check(Literal::Int(3), Literal::Int(4), 4);  // buckets 3 and 2
+}
+
+TEST(AggregateTest, VoidExtremaAreKnownNullWithOrWithoutBounds) {
+  Schema schema({SchemaField::MakeRequired(1, "id", int32())});
+  auto term = Expressions::Transform("id", Transform::Void());
+  ICEBERG_UNWRAP_OR_FAIL(auto bound, Literal::Int(42).Serialize());
+  DataFile with_bounds{
+      .record_count = 1, .lower_bounds = {{1, bound}}, .upper_bounds = {{1, bound}}};
+  DataFile without_bounds{.record_count = 1};
+  for (const auto& expr : {Expressions::Min(term), Expressions::Max(term)}) {
+    auto agg = BindAggregate(schema, expr);
+    SCOPED_TRACE(agg->ToString());
+    auto accumulator = agg->NewAggregator();
+    for (const auto* file : {&with_bounds, &without_bounds}) {
+      EXPECT_TRUE(agg->HasValue(*file));
+      ASSERT_THAT(accumulator->Update(*file), IsOk());
+      EXPECT_TRUE(accumulator->IsValid());
+    }
+    auto value = accumulator->GetResult();
+    EXPECT_TRUE(value.IsNull());
+    EXPECT_EQ(value.type()->type_id(), TypeId::kInt);
+  }
 }
 
 TEST(AggregateTest, MaxDayUsesTimestampUpperBound) {
