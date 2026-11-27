@@ -17,14 +17,27 @@
 
 iceberg_install_all_headers(iceberg/encryption
                             PATTERN
+                            encrypted_file.h
+                            encrypted_files.h
                             encrypted_key.h
+                            encryption_key_metadata.h
+                            encryption_manager.h
                             key_management_client.h
                             standard_key_metadata.h)
-if(ICEBERG_BUILD_BUNDLE AND ICEBERG_ENCRYPTION)
+if(ICEBERG_BUILD_BUNDLE)
   iceberg_install_all_headers(iceberg/encryption
                               PATTERN
-                              aes_gcm_stream.h
-                              in_memory_kms.h
+                              encryption_register.h
                               HEADER_GROUP
-                              ICEBERG_PUBLIC_HEADERS_ENCRYPTION)
+                              ICEBERG_PUBLIC_HEADERS_BUNDLE)
+  if(ICEBERG_ENCRYPTION)
+    iceberg_install_all_headers(iceberg/encryption
+                                PATTERN
+                                aes_gcm_stream.h
+                                encryption_util.h
+                                in_memory_kms.h
+                                standard_encryption_manager.h
+                                HEADER_GROUP
+                                ICEBERG_PUBLIC_HEADERS_ENCRYPTION)
+  endif()
 endif()

@@ -23,10 +23,12 @@
 /// Key metadata of the standard Iceberg encryption scheme.
 
 #include <cstdint>
+#include <memory>
 #include <optional>
 #include <span>
 #include <vector>
 
+#include "iceberg/encryption/encryption_key_metadata.h"
 #include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
 
@@ -46,7 +48,7 @@ namespace iceberg {
 /// version (1) followed by an Avro binary encoded record with the fields
 /// `encryption_key: bytes`, `aad_prefix: union{null, bytes}` and
 /// `file_length: union{null, long}`.
-struct ICEBERG_EXPORT StandardKeyMetadata {
+struct ICEBERG_EXPORT StandardKeyMetadata : public NativeEncryptionKeyMetadata {
   static constexpr uint8_t kV1 = 1;
 
   /// \brief The data encryption key (16, 24 or 32 bytes).
@@ -55,6 +57,16 @@ struct ICEBERG_EXPORT StandardKeyMetadata {
   std::optional<std::vector<uint8_t>> aad_prefix;
   /// \brief The encrypted (stored) file length, required to read AES GCM streams.
   std::optional<int64_t> file_length;
+
+  StandardKeyMetadata() = default;
+
+  explicit StandardKeyMetadata(
+      std::vector<uint8_t> encryption_key,
+      std::optional<std::vector<uint8_t>> aad_prefix = std::nullopt,
+      std::optional<int64_t> file_length = std::nullopt)
+      : encryption_key(std::move(encryption_key)),
+        aad_prefix(std::move(aad_prefix)),
+        file_length(file_length) {}
 
   /// \brief Parse serialized key metadata.
   static Result<StandardKeyMetadata> Parse(std::span<const uint8_t> buffer);
@@ -65,8 +77,24 @@ struct ICEBERG_EXPORT StandardKeyMetadata {
   /// \brief Return a copy with the given encrypted file length.
   StandardKeyMetadata WithFileLength(int64_t length) const;
 
-  friend bool operator==(const StandardKeyMetadata&,
-                         const StandardKeyMetadata&) = default;
+  std::vector<uint8_t> buffer() const override { return Serialize(); }
+  std::shared_ptr<EncryptionKeyMetadata> Copy() const override {
+    return std::make_shared<StandardKeyMetadata>(*this);
+  }
+  const std::vector<uint8_t>& EncryptionKey() const override { return encryption_key; }
+  const std::optional<std::vector<uint8_t>>& AadPrefix() const override {
+    return aad_prefix;
+  }
+  Result<std::optional<int64_t>> FileLength() const override { return file_length; }
+  Result<std::shared_ptr<NativeEncryptionKeyMetadata>> CopyWithLength(
+      int64_t length) const override {
+    return std::make_shared<StandardKeyMetadata>(WithFileLength(length));
+  }
+
+  friend bool operator==(const StandardKeyMetadata& lhs, const StandardKeyMetadata& rhs) {
+    return lhs.encryption_key == rhs.encryption_key && lhs.aad_prefix == rhs.aad_prefix &&
+           lhs.file_length == rhs.file_length;
+  }
 };
 
 }  // namespace iceberg
