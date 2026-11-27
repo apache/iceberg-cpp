@@ -21,9 +21,9 @@
 
 #include <vector>
 
-#include <arrow/record_batch.h>
 #include <avro/Encoder.hh>
 #include <avro/Node.hh>
+#include <nanoarrow/nanoarrow.h>
 
 #include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
@@ -43,17 +43,17 @@ struct EncodeContext {
 /// \brief Directly encode Arrow data to Avro without GenericDatum
 ///
 /// Eliminates the GenericDatum intermediate layer by directly calling Avro encoder
-/// methods from Arrow arrays.
+/// methods from Arrow arrays, read through nanoarrow array views.
 ///
 /// \param avro_node The Avro schema node for the data being encoded
 /// \param encoder The Avro encoder to write data to
 /// \param type The Iceberg type for the data
-/// \param array The Arrow array containing the data to encode
-/// \param row_index The index of the row to encode within the array
+/// \param array_view The view of the array containing the data to encode
+/// \param row_index The index of the row to encode within the array view
 /// \param ctx Encode context for reusing scratch buffers
 /// \return Status indicating success, or an error status
 Status EncodeArrowToAvro(const ::avro::NodePtr& avro_node, ::avro::Encoder& encoder,
-                         const Type& type, const ::arrow::Array& array, int64_t row_index,
-                         EncodeContext& ctx);
+                         const Type& type, const ArrowArrayView& array_view,
+                         int64_t row_index, EncodeContext& ctx);
 
 }  // namespace iceberg::avro

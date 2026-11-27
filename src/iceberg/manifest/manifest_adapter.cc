@@ -97,71 +97,12 @@ Status ManifestEntryAdapter::AppendPartitionValues(
   for (size_t i = 0; i < fields.size(); i++) {
     const auto& partition_value = partition_values.ValueAt(i)->get();
     const auto& partition_field = fields[i];
-    auto child_array = array->children[i];
-    if (partition_value.IsNull()) {
-      ICEBERG_RETURN_UNEXPECTED(AppendNull(child_array));
-      continue;
+    // TODO(xiao.dong) Literals do not currently support nested types
+    if (!partition_field.type()->is_primitive()) {
+      return InvalidManifest("Unsupported partition type: {}",
+                             partition_field.ToString());
     }
-    switch (partition_field.type()->type_id()) {
-      case TypeId::kBoolean:
-        ICEBERG_RETURN_UNEXPECTED(
-            AppendBoolean(child_array, std::get<bool>(partition_value.value())));
-        break;
-      case TypeId::kInt:
-        ICEBERG_RETURN_UNEXPECTED(
-            AppendInt(child_array,
-                      static_cast<int64_t>(std::get<int32_t>(partition_value.value()))));
-        break;
-      case TypeId::kLong:
-        ICEBERG_RETURN_UNEXPECTED(
-            AppendInt(child_array, std::get<int64_t>(partition_value.value())));
-        break;
-      case TypeId::kFloat:
-        ICEBERG_RETURN_UNEXPECTED(AppendDouble(
-            child_array, static_cast<double>(std::get<float>(partition_value.value()))));
-        break;
-      case TypeId::kDouble:
-        ICEBERG_RETURN_UNEXPECTED(
-            AppendDouble(child_array, std::get<double>(partition_value.value())));
-        break;
-      case TypeId::kString:
-        ICEBERG_RETURN_UNEXPECTED(
-            AppendString(child_array, std::get<std::string>(partition_value.value())));
-        break;
-      case TypeId::kFixed:
-      case TypeId::kBinary:
-        ICEBERG_RETURN_UNEXPECTED(AppendBytes(
-            child_array, std::get<std::vector<uint8_t>>(partition_value.value())));
-        break;
-      case TypeId::kDate:
-        ICEBERG_RETURN_UNEXPECTED(
-            AppendInt(child_array,
-                      static_cast<int64_t>(std::get<int32_t>(partition_value.value()))));
-        break;
-      case TypeId::kTime:
-      case TypeId::kTimestamp:
-      case TypeId::kTimestampTz:
-      case TypeId::kTimestampNs:
-      case TypeId::kTimestampTzNs:
-        ICEBERG_RETURN_UNEXPECTED(
-            AppendInt(child_array, std::get<int64_t>(partition_value.value())));
-        break;
-      case TypeId::kDecimal:
-        ICEBERG_RETURN_UNEXPECTED(
-            AppendDecimal(child_array, std::get<Decimal>(partition_value.value())));
-        break;
-      case TypeId::kUuid:
-        ICEBERG_RETURN_UNEXPECTED(
-            AppendBytes(child_array, std::get<Uuid>(partition_value.value()).bytes()));
-        break;
-      case TypeId::kStruct:
-      case TypeId::kList:
-      case TypeId::kMap:
-        // TODO(xiao.dong) Literals do not currently support these types
-      default:
-        return InvalidManifest("Unsupported partition type: {}",
-                               partition_field.ToString());
-    }
+    ICEBERG_RETURN_UNEXPECTED(AppendLiteral(array->children[i], partition_value));
   }
   ICEBERG_NANOARROW_RETURN_UNEXPECTED(ArrowArrayFinishElement(array));
   return {};

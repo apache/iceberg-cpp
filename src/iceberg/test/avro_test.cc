@@ -1120,8 +1120,9 @@ class AvroWriterTest : public ::testing::Test,
   }
 
   ::avro::ValidSchema PhysicalAvroSchema() {
-    auto& mock_io = internal::checked_cast<arrow::ArrowFileSystemFileIO&>(*file_io_);
-    auto input = mock_io.fs()->OpenInputFile(temp_avro_file_).ValueOrDie();
+    auto input = file_io_->NewInputFile(temp_avro_file_)
+                     .and_then([](auto file) { return file->Open(); })
+                     .value();
     auto input_stream = std::make_unique<AvroInputStream>(std::move(input), 1024 * 1024);
     ::avro::DataFileReader<::avro::GenericDatum> avro_reader(std::move(input_stream));
     return avro_reader.dataSchema();
@@ -1483,6 +1484,40 @@ TEST_P(AvroWriterTest, WriteMapTypeWithNonStringKey) {
   VerifyWrittenData(test_data);
 }
 
+TEST_P(AvroWriterTest, WriteSlicedListsAndMaps) {
+  auto schema = std::make_shared<Schema>(std::vector<SchemaField>{
+      SchemaField::MakeRequired(
+          1, "list",
+          std::make_shared<ListType>(SchemaField::MakeRequired(2, "element", int32()))),
+      SchemaField::MakeRequired(
+          3, "string_map",
+          std::make_shared<MapType>(SchemaField::MakeRequired(4, "key", string()),
+                                    SchemaField::MakeRequired(5, "value", int32()))),
+      SchemaField::MakeRequired(
+          6, "int_map",
+          std::make_shared<MapType>(SchemaField::MakeRequired(7, "key", int32()),
+                                    SchemaField::MakeRequired(8, "value", string())))});
+
+  ArrowSchema c_schema;
+  ASSERT_THAT(ToArrowSchema(*schema, &c_schema), IsOk());
+  auto arrow_type = ::arrow::ImportType(&c_schema).ValueOrDie();
+  auto array = ::arrow::json::ArrayFromJSONString(arrow_type, R"([
+    [[10], [["a", 10]], [[1, "a"]]],
+    [[20, 21], [["b", 20], ["c", 21]], [[2, "b"], [3, "c"]]],
+    [[], [], []]
+  ])")
+                   .ValueOrDie();
+
+  // Slice the collection columns so their offsets are independent of the struct.
+  const auto& rows = internal::checked_cast<const ::arrow::StructArray&>(*array);
+  std::vector<std::shared_ptr<::arrow::Array>> columns;
+  for (const auto& column : rows.fields()) {
+    columns.push_back(column->Slice(1));
+  }
+  auto sliced = ::arrow::StructArray::Make(columns, arrow_type->fields()).ValueOrDie();
+  ASSERT_NO_FATAL_FAILURE(WriteArrowArrayAndVerify(schema, sliced));
+}
+
 TEST_P(AvroWriterTest, WriteEmptyMaps) {
   auto schema = std::make_shared<iceberg::Schema>(std::vector<SchemaField>{
       SchemaField::MakeRequired(
@@ -1706,8 +1741,9 @@ TEST_P(AvroWriterTest, MultipleAvroBlocks) {
     VerifyWrittenData(json_data);
 
     // Use raw avro-cpp reader to count blocks by tracking previousSync() changes
-    auto mock_io = internal::checked_pointer_cast<arrow::ArrowFileSystemFileIO>(file_io_);
-    auto input = mock_io->fs()->OpenInputFile(temp_avro_file_).ValueOrDie();
+    auto input = file_io_->NewInputFile(temp_avro_file_)
+                     .and_then([](auto file) { return file->Open(); })
+                     .value();
     auto input_stream = std::make_unique<AvroInputStream>(std::move(input), 1024 * 1024);
     ::avro::DataFileReader<::avro::GenericDatum> avro_reader(std::move(input_stream));
     ::avro::GenericDatum datum(avro_reader.dataSchema());

@@ -22,7 +22,7 @@
 /// \file iceberg/avro/avro_metrics.h
 /// \brief Compute Iceberg metrics for Avro data files.
 
-#include "iceberg/iceberg_bundle_export.h"
+#include "iceberg/iceberg_avro_export.h"
 #include "iceberg/metrics.h"
 
 namespace iceberg {
@@ -33,7 +33,7 @@ class MetricsConfig;
 namespace iceberg::avro {
 
 /// \brief Utility class for computing Avro file metrics.
-class ICEBERG_BUNDLE_EXPORT AvroMetrics {
+class ICEBERG_AVRO_EXPORT AvroMetrics {
  public:
   AvroMetrics() = delete;
 

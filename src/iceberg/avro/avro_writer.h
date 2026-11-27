@@ -23,12 +23,12 @@
 /// \brief Provide the Avro file writer interface.
 
 #include "iceberg/file_writer.h"
-#include "iceberg/iceberg_bundle_export.h"
+#include "iceberg/iceberg_avro_export.h"
 
 namespace iceberg::avro {
 
 /// \brief A writer for serializing ArrowArray to Avro files.
-class ICEBERG_BUNDLE_EXPORT AvroWriter : public Writer {
+class ICEBERG_AVRO_EXPORT AvroWriter : public Writer {
  public:
   AvroWriter() noexcept;
 

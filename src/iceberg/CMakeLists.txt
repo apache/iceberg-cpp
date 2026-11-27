@@ -311,6 +311,63 @@ add_subdirectory(inspect)
 add_subdirectory(metrics)
 add_subdirectory(logging)
 
+if(ICEBERG_BUILD_AVRO)
+  set(ICEBERG_AVRO_SOURCES
+      avro/avro_data_util.cc
+      avro/avro_direct_decoder.cc
+      avro/avro_direct_encoder.cc
+      avro/avro_metrics.cc
+      avro/avro_reader.cc
+      avro/avro_register.cc
+      avro/avro_schema_util.cc
+      avro/avro_stream_internal.cc
+      avro/avro_writer.cc)
+
+  # The Avro reader and writer exchange Arrow C data through nanoarrow and FileIO
+  # streams, so this library needs no Arrow C++ library.
+  set(ICEBERG_AVRO_STATIC_BUILD_INTERFACE_LIBS)
+  set(ICEBERG_AVRO_SHARED_BUILD_INTERFACE_LIBS)
+  set(ICEBERG_AVRO_STATIC_INSTALL_INTERFACE_LIBS)
+  set(ICEBERG_AVRO_SHARED_INSTALL_INTERFACE_LIBS)
+
+  list(APPEND
+       ICEBERG_AVRO_STATIC_BUILD_INTERFACE_LIBS
+       "$<IF:$<TARGET_EXISTS:iceberg_static>,iceberg_static,iceberg_shared>"
+       "$<IF:$<TARGET_EXISTS:avro-cpp::avrocpp_static>,avro-cpp::avrocpp_static,avro-cpp::avrocpp_shared>"
+  )
+  list(APPEND
+       ICEBERG_AVRO_SHARED_BUILD_INTERFACE_LIBS
+       "$<IF:$<TARGET_EXISTS:iceberg_shared>,iceberg_shared,iceberg_static>"
+       "$<IF:$<TARGET_EXISTS:avro-cpp::avrocpp_shared>,avro-cpp::avrocpp_shared,avro-cpp::avrocpp_static>"
+  )
+  list(APPEND
+       ICEBERG_AVRO_STATIC_INSTALL_INTERFACE_LIBS
+       "$<IF:$<TARGET_EXISTS:iceberg::iceberg_static>,iceberg::iceberg_static,iceberg::iceberg_shared>"
+       "$<IF:$<BOOL:${AVRO_VENDORED}>,iceberg::avrocpp_s,$<IF:$<TARGET_EXISTS:avro-cpp::avrocpp_static>,avro-cpp::avrocpp_static,avro-cpp::avrocpp_shared>>"
+  )
+  list(APPEND
+       ICEBERG_AVRO_SHARED_INSTALL_INTERFACE_LIBS
+       "$<IF:$<TARGET_EXISTS:iceberg::iceberg_shared>,iceberg::iceberg_shared,iceberg::iceberg_static>"
+       "$<IF:$<BOOL:${AVRO_VENDORED}>,iceberg::avrocpp_s,$<IF:$<TARGET_EXISTS:avro-cpp::avrocpp_shared>,avro-cpp::avrocpp_shared,avro-cpp::avrocpp_static>>"
+  )
+
+  add_iceberg_lib(iceberg_avro
+                  SOURCES
+                  ${ICEBERG_AVRO_SOURCES}
+                  EXTRA_INCLUDES
+                  ${ICEBERG_INCLUDES}
+                  SHARED_LINK_LIBS
+                  ${ICEBERG_AVRO_SHARED_BUILD_INTERFACE_LIBS}
+                  STATIC_LINK_LIBS
+                  ${ICEBERG_AVRO_STATIC_BUILD_INTERFACE_LIBS}
+                  STATIC_INSTALL_INTERFACE_LIBS
+                  ${ICEBERG_AVRO_STATIC_INSTALL_INTERFACE_LIBS}
+                  SHARED_INSTALL_INTERFACE_LIBS
+                  ${ICEBERG_AVRO_SHARED_INSTALL_INTERFACE_LIBS})
+
+  add_subdirectory(avro)
+endif()
+
 if(ICEBERG_BUILD_BUNDLE)
   set(ICEBERG_BUNDLE_SOURCES
       arrow/arrow_c_data_util.cc
@@ -319,15 +376,6 @@ if(ICEBERG_BUILD_BUNDLE)
       arrow/arrow_register.cc
       arrow/literal_util.cc
       arrow/metadata_column_util.cc
-      avro/avro_data_util.cc
-      avro/avro_direct_decoder.cc
-      avro/avro_direct_encoder.cc
-      avro/avro_metrics.cc
-      avro/avro_reader.cc
-      avro/avro_writer.cc
-      avro/avro_register.cc
-      avro/avro_schema_util.cc
-      avro/avro_stream_internal.cc
       parquet/parquet_data_util.cc
       parquet/parquet_metrics.cc
       parquet/parquet_metrics_row_group_filter.cc
@@ -356,14 +404,14 @@ if(ICEBERG_BUILD_BUNDLE)
        "$<IF:$<TARGET_EXISTS:iceberg_data_static>,iceberg_data_static,iceberg_data_shared>"
        "$<IF:$<TARGET_EXISTS:Arrow::arrow_static>,Arrow::arrow_static,Arrow::arrow_shared>"
        "$<IF:$<TARGET_EXISTS:Parquet::parquet_static>,Parquet::parquet_static,Parquet::parquet_shared>"
-       "$<IF:$<TARGET_EXISTS:avro-cpp::avrocpp_static>,avro-cpp::avrocpp_static,avro-cpp::avrocpp_shared>"
+       "$<IF:$<TARGET_EXISTS:iceberg_avro_static>,iceberg_avro_static,iceberg_avro_shared>"
   )
   list(APPEND
        ICEBERG_BUNDLE_SHARED_BUILD_INTERFACE_LIBS
        "$<IF:$<TARGET_EXISTS:iceberg_data_shared>,iceberg_data_shared,iceberg_data_static>"
        "$<IF:$<TARGET_EXISTS:Arrow::arrow_shared>,Arrow::arrow_shared,Arrow::arrow_static>"
        "$<IF:$<TARGET_EXISTS:Parquet::parquet_shared>,Parquet::parquet_shared,Parquet::parquet_static>"
-       "$<IF:$<TARGET_EXISTS:avro-cpp::avrocpp_shared>,avro-cpp::avrocpp_shared,avro-cpp::avrocpp_static>"
+       "$<IF:$<TARGET_EXISTS:iceberg_avro_shared>,iceberg_avro_shared,iceberg_avro_static>"
   )
 
   list(APPEND
@@ -371,14 +419,14 @@ if(ICEBERG_BUILD_BUNDLE)
        "$<IF:$<TARGET_EXISTS:iceberg::iceberg_data_static>,iceberg::iceberg_data_static,iceberg::iceberg_data_shared>"
        "$<IF:$<BOOL:${ARROW_VENDORED}>,iceberg::arrow_static,$<IF:$<TARGET_EXISTS:Arrow::arrow_static>,Arrow::arrow_static,Arrow::arrow_shared>>"
        "$<IF:$<BOOL:${ARROW_VENDORED}>,iceberg::parquet_static,$<IF:$<TARGET_EXISTS:Parquet::parquet_static>,Parquet::parquet_static,Parquet::parquet_shared>>"
-       "$<IF:$<BOOL:${AVRO_VENDORED}>,iceberg::avrocpp_s,$<IF:$<TARGET_EXISTS:avro-cpp::avrocpp_static>,avro-cpp::avrocpp_static,avro-cpp::avrocpp_shared>>"
+       "$<IF:$<TARGET_EXISTS:iceberg::iceberg_avro_static>,iceberg::iceberg_avro_static,iceberg::iceberg_avro_shared>"
   )
   list(APPEND
        ICEBERG_BUNDLE_SHARED_INSTALL_INTERFACE_LIBS
        "$<IF:$<TARGET_EXISTS:iceberg::iceberg_data_shared>,iceberg::iceberg_data_shared,iceberg::iceberg_data_static>"
        "$<IF:$<BOOL:${ARROW_VENDORED}>,iceberg::arrow_static,$<IF:$<TARGET_EXISTS:Arrow::arrow_shared>,Arrow::arrow_shared,Arrow::arrow_static>>"
        "$<IF:$<BOOL:${ARROW_VENDORED}>,iceberg::parquet_static,$<IF:$<TARGET_EXISTS:Parquet::parquet_shared>,Parquet::parquet_shared,Parquet::parquet_static>>"
-       "$<IF:$<BOOL:${AVRO_VENDORED}>,iceberg::avrocpp_s,$<IF:$<TARGET_EXISTS:avro-cpp::avrocpp_shared>,avro-cpp::avrocpp_shared,avro-cpp::avrocpp_static>>"
+       "$<IF:$<TARGET_EXISTS:iceberg::iceberg_avro_shared>,iceberg::iceberg_avro_shared,iceberg::iceberg_avro_static>"
   )
 
   if(ICEBERG_ENCRYPTION)
@@ -428,7 +476,6 @@ if(ICEBERG_BUILD_BUNDLE)
   endforeach()
 
   add_subdirectory(arrow)
-  add_subdirectory(avro)
   add_subdirectory(parquet)
 endif()
 

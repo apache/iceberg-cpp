@@ -346,6 +346,10 @@ class ICEBERG_EXPORT DecimalType : public PrimitiveType {
   /// \brief Get the scale (essentially, the number of decimal digits after
   ///   the decimal point; precisely, the value is scaled by $$10^{-s}$$.).
   int32_t scale() const;
+  /// \brief The fewest bytes that hold every unscaled value of this precision as
+  ///   a two's-complement integer, the width of a fixed-length decimal in Avro and
+  ///   Parquet files.
+  int32_t RequiredBytes() const;
 
   TypeId type_id() const override;
   std::string ToString() const override;

@@ -19,16 +19,16 @@
 
 #include "avro_stream_internal.h"
 
+#include <cstddef>
 #include <format>
-
-#include <arrow/result.h>
+#include <span>
 
 #include "iceberg/exception.h"
 
 namespace iceberg::avro {
 
 AvroInputStream::AvroInputStream(
-    std::shared_ptr<arrow::io::RandomAccessFile> input_stream, int64_t buffer_size)
+    std::unique_ptr<::iceberg::SeekableInputStream> input_stream, int64_t buffer_size)
     : input_stream_(std::move(input_stream)),
       buffer_size_(buffer_size),
       buffer_(buffer_size) {}
@@ -46,14 +46,14 @@ bool AvroInputStream::next(const uint8_t** data, size_t* len) {
   }
 
   // Read from the input stream when the buffer is empty
-  auto result = input_stream_->Read(buffer_.size(), buffer_.data());
+  auto result = input_stream_->Read(std::as_writable_bytes(std::span(buffer_)));
   // TODO(xiao.dong) Avro interface requires to return false if an error has occurred or
   // reach EOF, so error message can not be raised to the caller, add some log after we
   // have a logging system
-  if (!result.ok() || result.ValueUnsafe() <= 0) {
+  if (!result.has_value() || result.value() <= 0) {
     return false;
   }
-  available_bytes_ = result.ValueUnsafe();
+  available_bytes_ = static_cast<size_t>(result.value());
   buffer_pos_ = 0;
 
   // Return the whole buffer
@@ -89,15 +89,15 @@ size_t AvroInputStream::byteCount() const { return byte_count_; }
 
 void AvroInputStream::seek(int64_t position) {
   auto status = input_stream_->Seek(position);
-  ICEBERG_CHECK_OR_DIE(status.ok(), "Failed to seek to {}, got {}", position,
-                       status.ToString());
+  ICEBERG_CHECK_OR_DIE(status.has_value(), "Failed to seek to {}, got {}", position,
+                       status.has_value() ? "" : status.error().message);
 
   buffer_pos_ = 0;
   available_bytes_ = 0;
   byte_count_ = position;
 }
 
-AvroOutputStream::AvroOutputStream(std::shared_ptr<arrow::io::OutputStream> output_stream,
+AvroOutputStream::AvroOutputStream(std::shared_ptr<PositionOutputStream> output_stream,
                                    int64_t buffer_size)
     : output_stream_(std::move(output_stream)),
       buffer_size_(buffer_size),
@@ -128,18 +128,16 @@ uint64_t AvroOutputStream::byteCount() const { return flushed_bytes_ + buffer_po
 
 void AvroOutputStream::flush() {
   if (buffer_pos_ > 0) {
-    auto status = output_stream_->Write(buffer_.data(), buffer_pos_);
-    ICEBERG_CHECK_OR_DIE(status.ok(), "Write failed {}", status.ToString());
+    auto status = output_stream_->Write(
+        std::as_bytes(std::span(buffer_.data(), static_cast<size_t>(buffer_pos_))));
+    ICEBERG_CHECK_OR_DIE(status.has_value(), "Write failed {}",
+                         status.has_value() ? "" : status.error().message);
     flushed_bytes_ += buffer_pos_;
     buffer_pos_ = 0;
   }
   auto status = output_stream_->Flush();
-  ICEBERG_CHECK_OR_DIE(status.ok(), "Flush failed {}", status.ToString());
-}
-
-const std::shared_ptr<::arrow::io::OutputStream>& AvroOutputStream::arrow_output_stream()
-    const {
-  return output_stream_;
+  ICEBERG_CHECK_OR_DIE(status.has_value(), "Flush failed {}",
+                       status.has_value() ? "" : status.error().message);
 }
 
 }  // namespace iceberg::avro

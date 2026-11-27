@@ -23,12 +23,12 @@
 /// \brief Provide the Avro file reader interface.
 
 #include "iceberg/file_reader.h"
-#include "iceberg/iceberg_bundle_export.h"
+#include "iceberg/iceberg_avro_export.h"
 
 namespace iceberg::avro {
 
 /// \brief A reader that reads ArrowArray from Avro files.
-class ICEBERG_BUNDLE_EXPORT AvroReader : public Reader {
+class ICEBERG_AVRO_EXPORT AvroReader : public Reader {
  public:
   AvroReader() noexcept;
 

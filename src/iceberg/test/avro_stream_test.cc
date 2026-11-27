@@ -17,11 +17,13 @@
  * under the License.
  */
 
-#include <arrow/filesystem/localfs.h>
-#include <arrow/result.h>
+#include <span>
+
 #include <gtest/gtest.h>
 
+#include "iceberg/arrow/arrow_io_util.h"
 #include "iceberg/avro/avro_stream_internal.h"
+#include "iceberg/file_io.h"
 #include "iceberg/test/temp_file_test_base.h"
 
 namespace iceberg::avro {
@@ -31,29 +33,31 @@ class AVROStreamTest : public TempFileTestBase {
   void SetUp() override {
     TempFileTestBase::SetUp();
     temp_filepath_ = CreateNewTempFilePath();
-    local_fs_ = std::make_shared<::arrow::fs::LocalFileSystem>();
+    file_io_ = arrow::MakeLocalFileIO();
+  }
+
+  std::shared_ptr<PositionOutputStream> OpenOutputStream(const std::string& path) {
+    auto output = file_io_->NewOutputFile(path).and_then(
+        [](auto file) { return file->CreateOrOverwrite(); });
+    if (!output.has_value()) {
+      throw std::runtime_error("Failed to open output stream: " + output.error().message);
+    }
+    return std::move(output.value());
   }
 
   std::shared_ptr<AvroOutputStream> CreateOutputStream(const std::string& path,
                                                        int64_t buffer_size) {
-    auto arrow_out_ret = local_fs_->OpenOutputStream(path);
-    if (!arrow_out_ret.ok()) {
-      throw std::runtime_error("Failed to open output stream: " +
-                               arrow_out_ret.status().message());
-    }
-    return std::make_shared<AvroOutputStream>(std::move(arrow_out_ret.ValueUnsafe()),
-                                              buffer_size);
+    return std::make_shared<AvroOutputStream>(OpenOutputStream(path), buffer_size);
   }
 
   std::shared_ptr<AvroInputStream> CreateInputStream(const std::string& path,
                                                      int64_t buffer_size) {
-    auto arrow_in_ret = local_fs_->OpenInputFile(path);
-    if (!arrow_in_ret.ok()) {
-      throw std::runtime_error("Failed to open input stream: " +
-                               arrow_in_ret.status().message());
+    auto input =
+        file_io_->NewInputFile(path).and_then([](auto file) { return file->Open(); });
+    if (!input.has_value()) {
+      throw std::runtime_error("Failed to open input stream: " + input.error().message);
     }
-    return std::make_shared<AvroInputStream>(std::move(arrow_in_ret.ValueUnsafe()),
-                                             buffer_size);
+    return std::make_shared<AvroInputStream>(std::move(input.value()), buffer_size);
   }
 
   void WriteDataToStream(const std::shared_ptr<AvroOutputStream>& avro_output_stream,
@@ -81,7 +85,7 @@ class AVROStreamTest : public TempFileTestBase {
   }
 
   int64_t buffer_size_ = 1024;
-  std::shared_ptr<::arrow::fs::LocalFileSystem> local_fs_;
+  std::unique_ptr<FileIO> file_io_;
   std::string temp_filepath_;
 };
 
@@ -263,19 +267,11 @@ TEST_F(AVROStreamTest, InputStreamLargeData) {
     test_data[i] = static_cast<char>(i % 256);
   }
 
-  auto arrow_out_ret = local_fs_->OpenOutputStream(temp_filepath_);
-  if (!arrow_out_ret.ok()) {
-    throw std::runtime_error("Failed to open output stream: " +
-                             arrow_out_ret.status().message());
-  }
-  auto arrow_out = arrow_out_ret.ValueUnsafe();
+  auto output = OpenOutputStream(temp_filepath_);
   // Write the test data
-  auto status = arrow_out->Write(test_data.data(), test_data.size());
-  ASSERT_TRUE(status.ok());
-  status = arrow_out->Flush();
-  ASSERT_TRUE(status.ok());
-  status = arrow_out->Close();
-  ASSERT_TRUE(status.ok());
+  ASSERT_TRUE(output->Write(std::as_bytes(std::span(test_data))).has_value());
+  ASSERT_TRUE(output->Flush().has_value());
+  ASSERT_TRUE(output->Close().has_value());
 
   // Create an AvroInputStream with a smaller buffer
   const int64_t smallBufferSize = buffer_size_ / 2;

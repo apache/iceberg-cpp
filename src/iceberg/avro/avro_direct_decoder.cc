@@ -17,29 +17,24 @@
  * under the License.
  */
 
-#include <arrow/array/builder_binary.h>
-#include <arrow/array/builder_decimal.h>
-#include <arrow/array/builder_nested.h>
-#include <arrow/array/builder_primitive.h>
-#include <arrow/type.h>
-#include <arrow/util/decimal.h>
 #include <avro/Decoder.hh>
 #include <avro/Node.hh>
 #include <avro/NodeImpl.hh>
 #include <avro/Types.hh>
+#include <nanoarrow/nanoarrow.h>
 
-#include "iceberg/arrow/arrow_status_internal.h"
+#include "iceberg/arrow_row_builder_internal.h"
 #include "iceberg/avro/avro_data_util_internal.h"
 #include "iceberg/avro/avro_direct_decoder_internal.h"
 #include "iceberg/avro/avro_schema_util_internal.h"
 #include "iceberg/metadata_columns.h"
+#include "iceberg/nanoarrow_status_internal.h"
 #include "iceberg/schema.h"
 #include "iceberg/util/checked_cast.h"
+#include "iceberg/util/decimal.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg::avro {
-
-using ::iceberg::arrow::ToErrorKind;
 
 namespace {
 
@@ -47,8 +42,8 @@ namespace {
 Status DecodeFieldToBuilder(const ::avro::NodePtr& avro_node, ::avro::Decoder& decoder,
                             const FieldProjection& projection,
                             const SchemaField& projected_field,
-                            const arrow::MetadataColumnContext& metadata_context,
-                            ::arrow::ArrayBuilder* array_builder, DecodeContext& ctx);
+                            const MetadataColumnContext& metadata_context,
+                            ArrowArray* array_builder, DecodeContext& ctx);
 
 /// \brief Skip an Avro value based on its schema without decoding
 Status SkipAvroValue(const ::avro::NodePtr& avro_node, ::avro::Decoder& decoder) {
@@ -145,18 +140,15 @@ Status SkipAvroValue(const ::avro::NodePtr& avro_node, ::avro::Decoder& decoder)
   }
 }
 
-/// \brief Decode Avro record directly to Arrow struct builder.
+/// \brief Decode Avro record directly to a nanoarrow struct builder.
 Status DecodeStructToBuilder(const ::avro::NodePtr& avro_node, ::avro::Decoder& decoder,
                              const std::span<const FieldProjection>& projections,
                              const StructType& struct_type,
-                             const arrow::MetadataColumnContext& metadata_context,
-                             ::arrow::ArrayBuilder* array_builder, DecodeContext& ctx) {
+                             const MetadataColumnContext& metadata_context,
+                             ArrowArray* array_builder, DecodeContext& ctx) {
   if (avro_node->type() != ::avro::AVRO_RECORD) {
     return InvalidArgument("Expected Avro record, got type: {}", ToString(avro_node));
   }
-
-  auto* struct_builder = internal::checked_cast<::arrow::StructBuilder*>(array_builder);
-  ICEBERG_ARROW_RETURN_NOT_OK(struct_builder->Append());
 
   // Build a map from Avro field index to projection index (cached per struct schema)
   // -1 means the field should be skipped
@@ -201,7 +193,7 @@ Status DecodeStructToBuilder(const ::avro::NodePtr& avro_node, ::avro::Decoder& 
       const auto& field_projection = projections[proj_idx];
       const auto& expected_field = struct_type.fields()[proj_idx];
       const auto& avro_field_node = avro_node->leafAt(avro_idx);
-      auto* field_builder = struct_builder->field_builder(proj_idx);
+      auto* field_builder = array_builder->children[proj_idx];
 
       ICEBERG_RETURN_UNEXPECTED(
           DecodeFieldToBuilder(avro_field_node, decoder, field_projection, expected_field,
@@ -213,48 +205,34 @@ Status DecodeStructToBuilder(const ::avro::NodePtr& avro_node, ::avro::Decoder& 
   for (size_t proj_idx = 0; proj_idx < projections.size(); ++proj_idx) {
     const auto& field_projection = projections[proj_idx];
     const auto& expected_field = struct_type.fields()[proj_idx];
-    auto* field_builder = struct_builder->field_builder(static_cast<int>(proj_idx));
+    auto* field_builder = array_builder->children[proj_idx];
     if (field_projection.kind == FieldProjection::Kind::kNull) {
-      ICEBERG_ARROW_RETURN_NOT_OK(field_builder->AppendNull());
+      ICEBERG_RETURN_UNEXPECTED(AppendNull(field_builder));
     } else if (field_projection.kind == FieldProjection::Kind::kDefault) {
       ICEBERG_RETURN_UNEXPECTED(AppendDefaultToBuilder(field_projection, field_builder));
     } else if (field_projection.kind == FieldProjection::Kind::kMetadata) {
-      int32_t field_id = expected_field.field_id();
-      if (field_id == MetadataColumns::kFilePathColumnId) {
-        auto string_builder =
-            internal::checked_cast<::arrow::StringBuilder*>(field_builder);
-        ICEBERG_ARROW_RETURN_NOT_OK(string_builder->Append(metadata_context.file_path));
-      } else if (field_id == MetadataColumns::kFilePositionColumnId) {
-        auto int_builder = internal::checked_cast<::arrow::Int64Builder*>(field_builder);
-        ICEBERG_ARROW_RETURN_NOT_OK(int_builder->Append(metadata_context.next_file_pos));
-      } else if (MetadataColumns::IsRowLineageColumn(field_id)) {
-        ICEBERG_RETURN_UNEXPECTED(arrow::AppendInheritedRowLineageValue(
-            field_id, metadata_context, field_builder));
-      } else {
-        return NotSupported("Unsupported metadata column field id: {}", field_id);
-      }
+      ICEBERG_RETURN_UNEXPECTED(AppendMetadataToBuilder(expected_field.field_id(),
+                                                        metadata_context, field_builder));
     } else if (field_projection.kind != FieldProjection::Kind::kProjected) {
       return InvalidArgument("Unsupported field projection kind: {}",
                              static_cast<int>(field_projection.kind));
     }
   }
+  ICEBERG_NANOARROW_RETURN_UNEXPECTED(ArrowArrayFinishElement(array_builder));
   return {};
 }
 
-/// \brief Decode Avro array directly to Arrow list builder.
+/// \brief Decode Avro array directly to a nanoarrow list builder.
 Status DecodeListToBuilder(const ::avro::NodePtr& avro_node, ::avro::Decoder& decoder,
                            const FieldProjection& element_projection,
                            const ListType& list_type,
-                           const arrow::MetadataColumnContext& metadata_context,
-                           ::arrow::ArrayBuilder* array_builder, DecodeContext& ctx) {
+                           const MetadataColumnContext& metadata_context,
+                           ArrowArray* array_builder, DecodeContext& ctx) {
   if (avro_node->type() != ::avro::AVRO_ARRAY) {
     return InvalidArgument("Expected Avro array, got type: {}", ToString(avro_node));
   }
 
-  auto* list_builder = internal::checked_cast<::arrow::ListBuilder*>(array_builder);
-  ICEBERG_ARROW_RETURN_NOT_OK(list_builder->Append());
-
-  auto* value_builder = list_builder->value_builder();
+  auto* value_builder = array_builder->children[0];
   const auto& element_node = avro_node->leafAt(0);
   const auto& element_field = list_type.fields().back();
 
@@ -269,17 +247,21 @@ Status DecodeListToBuilder(const ::avro::NodePtr& avro_node, ::avro::Decoder& de
     block_count = decoder.arrayNext();
   }
 
+  ICEBERG_NANOARROW_RETURN_UNEXPECTED(ArrowArrayFinishElement(array_builder));
   return {};
 }
 
-/// \brief Decode Avro map directly to Arrow map builder.
+/// \brief Decode Avro map directly to a nanoarrow map builder.
 Status DecodeMapToBuilder(const ::avro::NodePtr& avro_node, ::avro::Decoder& decoder,
                           const FieldProjection& key_projection,
                           const FieldProjection& value_projection,
                           const MapType& map_type,
-                          const arrow::MetadataColumnContext& metadata_context,
-                          ::arrow::ArrayBuilder* array_builder, DecodeContext& ctx) {
-  auto* map_builder = internal::checked_cast<::arrow::MapBuilder*>(array_builder);
+                          const MetadataColumnContext& metadata_context,
+                          ArrowArray* array_builder, DecodeContext& ctx) {
+  // A map array holds one struct of key and value per entry.
+  auto* entries_builder = array_builder->children[0];
+  auto* key_builder = entries_builder->children[0];
+  auto* item_builder = entries_builder->children[1];
 
   if (avro_node->type() == ::avro::AVRO_MAP) {
     // Handle regular Avro map: map<string, value>
@@ -287,10 +269,6 @@ Status DecodeMapToBuilder(const ::avro::NodePtr& avro_node, ::avro::Decoder& dec
     const auto& value_node = avro_node->leafAt(1);
     const auto& key_field = map_type.key();
     const auto& value_field = map_type.value();
-
-    ICEBERG_ARROW_RETURN_NOT_OK(map_builder->Append());
-    auto* key_builder = map_builder->key_builder();
-    auto* item_builder = map_builder->item_builder();
 
     // Read map block count
     int64_t block_count = decoder.mapStart();
@@ -302,19 +280,14 @@ Status DecodeMapToBuilder(const ::avro::NodePtr& avro_node, ::avro::Decoder& dec
         ICEBERG_RETURN_UNEXPECTED(
             DecodeFieldToBuilder(value_node, decoder, value_projection, value_field,
                                  metadata_context, item_builder, ctx));
+        ICEBERG_NANOARROW_RETURN_UNEXPECTED(ArrowArrayFinishElement(entries_builder));
       }
       block_count = decoder.mapNext();
     }
-
-    return {};
   } else if (avro_node->type() == ::avro::AVRO_ARRAY && HasMapLogicalType(avro_node)) {
     // Handle array-based map: list<struct<key, value>>
     const auto& key_field = map_type.key();
     const auto& value_field = map_type.value();
-
-    ICEBERG_ARROW_RETURN_NOT_OK(map_builder->Append());
-    auto* key_builder = map_builder->key_builder();
-    auto* item_builder = map_builder->item_builder();
 
     const auto& record_node = avro_node->leafAt(0);
     if (record_node->type() != ::avro::AVRO_RECORD || record_node->leaves() != 2) {
@@ -335,25 +308,25 @@ Status DecodeMapToBuilder(const ::avro::NodePtr& avro_node, ::avro::Decoder& dec
         ICEBERG_RETURN_UNEXPECTED(
             DecodeFieldToBuilder(value_node, decoder, value_projection, value_field,
                                  metadata_context, item_builder, ctx));
+        ICEBERG_NANOARROW_RETURN_UNEXPECTED(ArrowArrayFinishElement(entries_builder));
       }
       block_count = decoder.arrayNext();
     }
-
-    return {};
   } else {
     return InvalidArgument("Expected Avro map or array with map logical type, got: {}",
                            ToString(avro_node));
   }
+  ICEBERG_NANOARROW_RETURN_UNEXPECTED(ArrowArrayFinishElement(array_builder));
+  return {};
 }
 
-/// \brief Decode nested Avro data directly to Arrow array builder.
+/// \brief Decode nested Avro data directly to a nanoarrow array builder.
 Status DecodeNestedValueToBuilder(const ::avro::NodePtr& avro_node,
                                   ::avro::Decoder& decoder,
                                   const std::span<const FieldProjection>& projections,
                                   const NestedType& projected_type,
-                                  const arrow::MetadataColumnContext& metadata_context,
-                                  ::arrow::ArrayBuilder* array_builder,
-                                  DecodeContext& ctx) {
+                                  const MetadataColumnContext& metadata_context,
+                                  ArrowArray* array_builder, DecodeContext& ctx) {
   switch (projected_type.type_id()) {
     case TypeId::kStruct: {
       const auto& struct_type = internal::checked_cast<const StructType&>(projected_type);
@@ -389,8 +362,7 @@ Status DecodeNestedValueToBuilder(const ::avro::NodePtr& avro_node,
 Status DecodePrimitiveValueToBuilder(const ::avro::NodePtr& avro_node,
                                      ::avro::Decoder& decoder,
                                      const SchemaField& projected_field,
-                                     ::arrow::ArrayBuilder* array_builder,
-                                     DecodeContext& ctx) {
+                                     ArrowArray* array_builder, DecodeContext& ctx) {
   const auto& projected_type = *projected_field.type();
   if (!projected_type.is_primitive()) {
     return InvalidArgument("Expected primitive type, got: {}", projected_type.ToString());
@@ -402,10 +374,7 @@ Status DecodePrimitiveValueToBuilder(const ::avro::NodePtr& avro_node,
         return InvalidArgument("Expected Avro boolean for boolean field, got: {}",
                                ToString(avro_node));
       }
-      auto* builder = internal::checked_cast<::arrow::BooleanBuilder*>(array_builder);
-      bool value = decoder.decodeBool();
-      ICEBERG_ARROW_RETURN_NOT_OK(builder->Append(value));
-      return {};
+      return AppendBoolean(array_builder, decoder.decodeBool());
     }
 
     case TypeId::kInt: {
@@ -413,25 +382,18 @@ Status DecodePrimitiveValueToBuilder(const ::avro::NodePtr& avro_node,
         return InvalidArgument("Expected Avro int for int field, got: {}",
                                ToString(avro_node));
       }
-      auto* builder = internal::checked_cast<::arrow::Int32Builder*>(array_builder);
-      int32_t value = decoder.decodeInt();
-      ICEBERG_ARROW_RETURN_NOT_OK(builder->Append(value));
-      return {};
+      return AppendInt(array_builder, decoder.decodeInt());
     }
 
     case TypeId::kLong: {
-      auto* builder = internal::checked_cast<::arrow::Int64Builder*>(array_builder);
       if (avro_node->type() == ::avro::AVRO_LONG) {
-        int64_t value = decoder.decodeLong();
-        ICEBERG_ARROW_RETURN_NOT_OK(builder->Append(value));
-      } else if (avro_node->type() == ::avro::AVRO_INT) {
-        int32_t value = decoder.decodeInt();
-        ICEBERG_ARROW_RETURN_NOT_OK(builder->Append(static_cast<int64_t>(value)));
-      } else {
-        return InvalidArgument("Expected Avro int/long for long field, got: {}",
-                               ToString(avro_node));
+        return AppendInt(array_builder, decoder.decodeLong());
       }
-      return {};
+      if (avro_node->type() == ::avro::AVRO_INT) {
+        return AppendInt(array_builder, decoder.decodeInt());
+      }
+      return InvalidArgument("Expected Avro int/long for long field, got: {}",
+                             ToString(avro_node));
     }
 
     case TypeId::kFloat: {
@@ -439,25 +401,18 @@ Status DecodePrimitiveValueToBuilder(const ::avro::NodePtr& avro_node,
         return InvalidArgument("Expected Avro float for float field, got: {}",
                                ToString(avro_node));
       }
-      auto* builder = internal::checked_cast<::arrow::FloatBuilder*>(array_builder);
-      float value = decoder.decodeFloat();
-      ICEBERG_ARROW_RETURN_NOT_OK(builder->Append(value));
-      return {};
+      return AppendDouble(array_builder, decoder.decodeFloat());
     }
 
     case TypeId::kDouble: {
-      auto* builder = internal::checked_cast<::arrow::DoubleBuilder*>(array_builder);
       if (avro_node->type() == ::avro::AVRO_DOUBLE) {
-        double value = decoder.decodeDouble();
-        ICEBERG_ARROW_RETURN_NOT_OK(builder->Append(value));
-      } else if (avro_node->type() == ::avro::AVRO_FLOAT) {
-        float value = decoder.decodeFloat();
-        ICEBERG_ARROW_RETURN_NOT_OK(builder->Append(static_cast<double>(value)));
-      } else {
-        return InvalidArgument("Expected Avro float/double for double field, got: {}",
-                               ToString(avro_node));
+        return AppendDouble(array_builder, decoder.decodeDouble());
       }
-      return {};
+      if (avro_node->type() == ::avro::AVRO_FLOAT) {
+        return AppendDouble(array_builder, decoder.decodeFloat());
+      }
+      return InvalidArgument("Expected Avro float/double for double field, got: {}",
+                             ToString(avro_node));
     }
 
     case TypeId::kString: {
@@ -465,10 +420,8 @@ Status DecodePrimitiveValueToBuilder(const ::avro::NodePtr& avro_node,
         return InvalidArgument("Expected Avro string for string field, got: {}",
                                ToString(avro_node));
       }
-      auto* builder = internal::checked_cast<::arrow::StringBuilder*>(array_builder);
       decoder.decodeString(ctx.string_scratch);
-      ICEBERG_ARROW_RETURN_NOT_OK(builder->Append(ctx.string_scratch));
-      return {};
+      return AppendString(array_builder, ctx.string_scratch);
     }
 
     case TypeId::kBinary:
@@ -478,11 +431,8 @@ Status DecodePrimitiveValueToBuilder(const ::avro::NodePtr& avro_node,
         return InvalidArgument("Expected Avro bytes for binary field, got: {}",
                                ToString(avro_node));
       }
-      auto* builder = internal::checked_cast<::arrow::BinaryBuilder*>(array_builder);
       decoder.decodeBytes(ctx.bytes_scratch);
-      ICEBERG_ARROW_RETURN_NOT_OK(builder->Append(
-          ctx.bytes_scratch.data(), static_cast<int32_t>(ctx.bytes_scratch.size())));
-      return {};
+      return AppendBytes(array_builder, ctx.bytes_scratch);
     }
 
     case TypeId::kFixed: {
@@ -491,13 +441,9 @@ Status DecodePrimitiveValueToBuilder(const ::avro::NodePtr& avro_node,
                                ToString(avro_node));
       }
       const auto& fixed_type = internal::checked_cast<const FixedType&>(projected_type);
-      auto* builder =
-          internal::checked_cast<::arrow::FixedSizeBinaryBuilder*>(array_builder);
-
       ctx.bytes_scratch.resize(fixed_type.length());
       decoder.decodeFixed(fixed_type.length(), ctx.bytes_scratch);
-      ICEBERG_ARROW_RETURN_NOT_OK(builder->Append(ctx.bytes_scratch.data()));
-      return {};
+      return AppendBytes(array_builder, ctx.bytes_scratch);
     }
 
     case TypeId::kUuid: {
@@ -506,14 +452,9 @@ Status DecodePrimitiveValueToBuilder(const ::avro::NodePtr& avro_node,
         return InvalidArgument("Expected Avro fixed for uuid field, got: {}",
                                ToString(avro_node));
       }
-
-      auto* builder =
-          internal::checked_cast<::arrow::FixedSizeBinaryBuilder*>(array_builder);
-
       ctx.bytes_scratch.resize(16);
       decoder.decodeFixed(16, ctx.bytes_scratch);
-      ICEBERG_ARROW_RETURN_NOT_OK(builder->Append(ctx.bytes_scratch.data()));
-      return {};
+      return AppendBytes(array_builder, ctx.bytes_scratch);
     }
 
     case TypeId::kDecimal: {
@@ -525,15 +466,12 @@ Status DecodePrimitiveValueToBuilder(const ::avro::NodePtr& avro_node,
       }
 
       size_t byte_width = avro_node->fixedSize();
-      auto* builder = internal::checked_cast<::arrow::Decimal128Builder*>(array_builder);
-
       ctx.bytes_scratch.resize(byte_width);
       decoder.decodeFixed(byte_width, ctx.bytes_scratch);
-      ICEBERG_ARROW_ASSIGN_OR_RETURN(
-          auto decimal, ::arrow::Decimal128::FromBigEndian(ctx.bytes_scratch.data(),
-                                                           ctx.bytes_scratch.size()));
-      ICEBERG_ARROW_RETURN_NOT_OK(builder->Append(decimal));
-      return {};
+      ICEBERG_ASSIGN_OR_RAISE(auto decimal,
+                              Decimal::FromBigEndian(ctx.bytes_scratch.data(),
+                                                     static_cast<int32_t>(byte_width)));
+      return AppendDecimal(array_builder, decimal);
     }
 
     case TypeId::kDate: {
@@ -543,10 +481,7 @@ Status DecodePrimitiveValueToBuilder(const ::avro::NodePtr& avro_node,
             "{}",
             ToString(avro_node));
       }
-      auto* builder = internal::checked_cast<::arrow::Date32Builder*>(array_builder);
-      int32_t value = decoder.decodeInt();
-      ICEBERG_ARROW_RETURN_NOT_OK(builder->Append(value));
-      return {};
+      return AppendInt(array_builder, decoder.decodeInt());
     }
 
     case TypeId::kTime: {
@@ -556,10 +491,7 @@ Status DecodePrimitiveValueToBuilder(const ::avro::NodePtr& avro_node,
             "Expected Avro long with TIME_MICROS for time field, got: {}",
             ToString(avro_node));
       }
-      auto* builder = internal::checked_cast<::arrow::Time64Builder*>(array_builder);
-      int64_t value = decoder.decodeLong();
-      ICEBERG_ARROW_RETURN_NOT_OK(builder->Append(value));
-      return {};
+      return AppendInt(array_builder, decoder.decodeLong());
     }
 
     case TypeId::kTimestamp:
@@ -570,10 +502,7 @@ Status DecodePrimitiveValueToBuilder(const ::avro::NodePtr& avro_node,
             "Expected Avro long with TIMESTAMP_MICROS for timestamp field, got: {}",
             ToString(avro_node));
       }
-      auto* builder = internal::checked_cast<::arrow::TimestampBuilder*>(array_builder);
-      int64_t value = decoder.decodeLong();
-      ICEBERG_ARROW_RETURN_NOT_OK(builder->Append(value));
-      return {};
+      return AppendInt(array_builder, decoder.decodeLong());
     }
 
     case TypeId::kTimestampNs:
@@ -584,10 +513,7 @@ Status DecodePrimitiveValueToBuilder(const ::avro::NodePtr& avro_node,
             "Expected Avro long with TIMESTAMP_NANOS for timestamp field, got: {}",
             ToString(avro_node));
       }
-      auto* builder = internal::checked_cast<::arrow::TimestampBuilder*>(array_builder);
-      int64_t value = decoder.decodeLong();
-      ICEBERG_ARROW_RETURN_NOT_OK(builder->Append(value));
-      return {};
+      return AppendInt(array_builder, decoder.decodeLong());
     }
 
     default:
@@ -600,13 +526,12 @@ Status DecodePrimitiveValueToBuilder(const ::avro::NodePtr& avro_node,
 Status DecodeFieldToBuilder(const ::avro::NodePtr& avro_node, ::avro::Decoder& decoder,
                             const FieldProjection& projection,
                             const SchemaField& projected_field,
-                            const arrow::MetadataColumnContext& metadata_context,
-                            ::arrow::ArrayBuilder* array_builder, DecodeContext& ctx) {
+                            const MetadataColumnContext& metadata_context,
+                            ArrowArray* array_builder, DecodeContext& ctx) {
   if (projection.kind == FieldProjection::Kind::kNull ||
-      arrow::ShouldReadRowLineageAsNull(projected_field.field_id(), metadata_context)) {
+      ShouldReadRowLineageAsNull(projected_field.field_id(), metadata_context)) {
     ICEBERG_RETURN_UNEXPECTED(SkipAvroValue(avro_node, decoder));
-    ICEBERG_ARROW_RETURN_NOT_OK(array_builder->AppendNull());
-    return {};
+    return AppendNull(array_builder);
   }
 
   const bool is_row_lineage =
@@ -624,12 +549,12 @@ Status DecodeFieldToBuilder(const ::avro::NodePtr& avro_node, ::avro::Decoder& d
 
     const auto& branch_node = avro_node->leafAt(branch_index);
     if (branch_node->type() == ::avro::AVRO_NULL) {
+      // A null row lineage value is inherited from the file.
       if (is_row_lineage) {
-        return arrow::AppendInheritedRowLineageValue(projected_field.field_id(),
-                                                     metadata_context, array_builder);
+        return AppendMetadataToBuilder(projected_field.field_id(), metadata_context,
+                                       array_builder);
       }
-      ICEBERG_ARROW_RETURN_NOT_OK(array_builder->AppendNull());
-      return {};
+      return AppendNull(array_builder);
     } else {
       return DecodeFieldToBuilder(branch_node, decoder, projection, projected_field,
                                   metadata_context, array_builder, ctx);
@@ -652,8 +577,8 @@ Status DecodeFieldToBuilder(const ::avro::NodePtr& avro_node, ::avro::Decoder& d
 Status DecodeAvroToBuilder(const ::avro::NodePtr& avro_node, ::avro::Decoder& decoder,
                            const SchemaProjection& projection,
                            const Schema& projected_schema,
-                           const arrow::MetadataColumnContext& metadata_context,
-                           ::arrow::ArrayBuilder* array_builder, DecodeContext& ctx) {
+                           const MetadataColumnContext& metadata_context,
+                           ArrowArray* array_builder, DecodeContext& ctx) {
   return DecodeNestedValueToBuilder(avro_node, decoder, projection.fields,
                                     projected_schema, metadata_context, array_builder,
                                     ctx);

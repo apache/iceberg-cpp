@@ -21,54 +21,30 @@
 
 #include <cstddef>
 #include <cstdint>
-#include <memory>
 #include <vector>
 
-#include <arrow/array/builder_base.h>
-#include <arrow/scalar.h>
-#include <arrow/util/decimal.h>
 #include <avro/GenericDatum.hh>
+#include <nanoarrow/nanoarrow.h>
 
-#include "iceberg/arrow/metadata_column_util_internal.h"
-#include "iceberg/expression/literal.h"
+#include "iceberg/arrow_c_data.h"
+#include "iceberg/metadata_column_context_internal.h"
+#include "iceberg/result.h"
 #include "iceberg/schema_util.h"
+#include "iceberg/util/decimal.h"
 
 namespace iceberg::avro {
 
-/// \brief Avro-specific per-field projection attributes.
-///
-/// `FieldProjection` has a single attributes slot, so all Avro-side attributes live in
-/// one container (mirroring `ParquetExtraAttributes`) rather than separate subclasses
-/// that could not coexist. `default_scalar` is the Arrow scalar for a `kDefault` field,
-/// materialized once (see `PrepareDefaultScalars`) so row-by-row decode only needs
-/// `AppendScalar` instead of repeating `ToArrowScalar` / `CastTo` per row.
-struct AvroExtraAttributes : FieldProjection::ExtraAttributes {
-  std::shared_ptr<::arrow::Scalar> default_scalar;
-};
+/// \brief Append the default value of a `kDefault` projection to a nanoarrow array
+/// builder.
+Status AppendDefaultToBuilder(const FieldProjection& projection, ArrowArray* builder);
 
-/// \brief Precompute cast Arrow scalars for every `kDefault` field under `projection`.
-///
-/// Walks `root_builder` in lockstep with the projection so each default is cast to the
-/// builder's Arrow type once per scan. Safe to call repeatedly; existing
-/// `AvroExtraAttributes` entries are left unchanged.
-Status PrepareDefaultScalars(SchemaProjection& projection,
-                             ::arrow::ArrayBuilder* root_builder);
+/// \brief Append the value of a metadata column (_file, _pos, _row_id or
+/// _last_updated_sequence_number) for the current row to a nanoarrow array builder.
+Status AppendMetadataToBuilder(int32_t field_id,
+                               const MetadataColumnContext& metadata_context,
+                               ArrowArray* builder);
 
-/// \brief Append a literal once to `builder` while decoding Avro row-by-row.
-///
-/// Used to materialize `FieldProjection::Kind::kDefault`. Shares `ToArrowScalar` with
-/// Parquet's batch path (`MakeDefaultArray`); the append shape stays Avro-local because
-/// Avro builds Arrow arrays via per-row `ArrayBuilder`s rather than whole-column arrays.
-/// Prefer the `FieldProjection` overload after `PrepareDefaultScalars` so the scalar is
-/// reused across rows.
-Status AppendDefaultToBuilder(const Literal& literal, ::arrow::ArrayBuilder* builder);
-
-/// \brief Append a `kDefault` projection, reusing a scalar cached on
-/// `projection.attributes` when present.
-Status AppendDefaultToBuilder(const FieldProjection& projection,
-                              ::arrow::ArrayBuilder* builder);
-
-/// \brief Append an Avro datum to an Arrow array builder.
+/// \brief Append an Avro datum to a nanoarrow array builder.
 ///
 /// This function handles schema evolution by using the provided projection to map
 /// fields from the Avro data to the expected Arrow schema.
@@ -78,27 +54,36 @@ Status AppendDefaultToBuilder(const FieldProjection& projection,
 /// \param projection Schema projection from `projected_schema` to `avro_node`
 /// \param projected_schema The projected schema
 /// \param metadata_context Context for populating metadata columns
-/// \param array_builder The Arrow array builder to append to (must be a struct builder)
+/// \param array_builder The nanoarrow struct array to append one row to
 /// \return Status indicating success or failure
 Status AppendDatumToBuilder(const ::avro::NodePtr& avro_node,
                             const ::avro::GenericDatum& avro_datum,
                             const SchemaProjection& projection,
                             const Schema& projected_schema,
-                            const arrow::MetadataColumnContext& metadata_context,
-                            ::arrow::ArrayBuilder* array_builder);
+                            const MetadataColumnContext& metadata_context,
+                            ArrowArray* array_builder);
 
 /// \brief Encode a decimal as exactly `fixed_size` big-endian signed bytes.
 /// Sign-extends smaller values and rejects values that cannot fit the fixed width.
-Status EncodeDecimalToFixed(const ::arrow::Decimal128& value, size_t fixed_size,
+Status EncodeDecimalToFixed(const Decimal& value, size_t fixed_size,
                             std::vector<uint8_t>* bytes);
 
-/// \brief Extract an Avro datum from an Arrow array.
+/// \brief Read the decimal128 value at `index` of a nanoarrow array view.
+Decimal GetDecimal(const ArrowArrayView& array_view, int64_t index);
+
+/// \brief Read a list or map offset at a logical index in a possibly sliced array.
+inline int64_t GetCollectionChildOffset(const ArrowArrayView& array_view, int64_t index) {
+  // Nanoarrow indexes the raw offset buffer without applying the array offset.
+  return ArrowArrayViewListChildOffset(&array_view, array_view.offset + index);
+}
+
+/// \brief Extract an Avro datum from a nanoarrow array view.
 ///
-/// \param array The Arrow array to extract from.
+/// \param array_view The view of the array to extract from.
 /// \param index The index of the element to extract.
 /// \param datum The Avro datum to extract to. Its Avro type should be consistent with the
 /// Arrow type.
-Status ExtractDatumFromArray(const ::arrow::Array& array, int64_t index,
+Status ExtractDatumFromArray(const ArrowArrayView& array_view, int64_t index,
                              ::avro::GenericDatum* datum);
 
 }  // namespace iceberg::avro

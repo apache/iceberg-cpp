@@ -74,6 +74,7 @@
 #include "iceberg/file_reader.h"
 #include "iceberg/file_writer.h"
 #include "iceberg/geospatial.h"
+#include "iceberg/iceberg_avro_export.h"
 #include "iceberg/iceberg_bundle_export.h"
 #include "iceberg/iceberg_data_export.h"
 #include "iceberg/iceberg_export.h"

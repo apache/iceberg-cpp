@@ -21,7 +21,6 @@
 #include <sstream>
 #include <string_view>
 
-#include <arrow/type.h>
 #include <avro/CustomAttributes.hh>
 #include <avro/LogicalType.hh>
 #include <avro/NodeImpl.hh>
@@ -160,7 +159,7 @@ Status ToAvroNodeVisitor::Visit(const DecimalType& type, ::avro::NodePtr* node) 
   *node = std::make_shared<::avro::NodeFixed>();
   (*node)->setName(
       ::avro::Name(std::format("decimal_{}_{}", type.precision(), type.scale())));
-  (*node)->setFixedSize(::arrow::DecimalType::DecimalSize(type.precision()));
+  (*node)->setFixedSize(type.RequiredBytes());
 
   ::avro::LogicalType logical_type(::avro::LogicalType::DECIMAL);
   logical_type.setPrecision(type.precision());

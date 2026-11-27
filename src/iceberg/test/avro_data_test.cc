@@ -37,7 +37,9 @@
 #include <avro/Types.hh>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
+#include <nanoarrow/nanoarrow.h>
 
+#include "iceberg/arrow_c_data_guard_internal.h"
 #include "iceberg/avro/avro_data_util_internal.h"
 #include "iceberg/avro/avro_direct_decoder_internal.h"
 #include "iceberg/avro/avro_direct_encoder_internal.h"
@@ -48,9 +50,45 @@
 #include "iceberg/schema_util.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/type.h"
+#include "iceberg/util/decimal.h"
 #include "iceberg/util/string_util.h"
 
 namespace iceberg::avro {
+
+namespace {
+
+/// \brief Exposes an Arrow C++ array through a nanoarrow view, the form in which the
+/// Avro writer reads its input.
+class ExportedArrayView {
+ public:
+  explicit ExportedArrayView(const ::arrow::Array& array) {
+    EXPECT_TRUE(::arrow::ExportArray(array, &array_, &schema_).ok());
+    ArrowError error;
+    EXPECT_EQ(ArrowArrayViewInitFromSchema(&view_, &schema_, &error), NANOARROW_OK)
+        << error.message;
+    EXPECT_EQ(ArrowArrayViewSetArray(&view_, &array_, &error), NANOARROW_OK)
+        << error.message;
+  }
+
+  ~ExportedArrayView() {
+    ArrowArrayViewReset(&view_);
+    if (array_.release != nullptr) {
+      array_.release(&array_);
+    }
+    if (schema_.release != nullptr) {
+      schema_.release(&schema_);
+    }
+  }
+
+  const ArrowArrayView& view() const { return view_; }
+
+ private:
+  ArrowSchema schema_{};
+  ArrowArray array_{};
+  ArrowArrayView view_{};
+};
+
+}  // namespace
 
 class AvroDecimalEncodingTest : public ::testing::TestWithParam<bool> {};
 
@@ -121,10 +159,13 @@ TEST_P(AvroDecimalEncodingTest, FixedWidthBigEndianBytes) {
     encoder->init(*stream);
     if (GetParam()) {
       EncodeContext context;
-      ASSERT_THAT(EncodeArrowToAvro(node, *encoder, *type, *array, 0, context), IsOk());
+      ASSERT_THAT(EncodeArrowToAvro(node, *encoder, *type,
+                                    ExportedArrayView(*array).view(), 0, context),
+                  IsOk());
     } else {
       ::avro::GenericDatum datum(node);
-      ASSERT_THAT(ExtractDatumFromArray(*array, 0, &datum), IsOk());
+      ASSERT_THAT(ExtractDatumFromArray(ExportedArrayView(*array).view(), 0, &datum),
+                  IsOk());
       EXPECT_EQ(datum.value<::avro::GenericFixed>().value(), expected);
       ::avro::encode(*encoder, datum);
     }
@@ -150,11 +191,12 @@ TEST_P(AvroDecimalEncodingTest, RejectsFixedWidthOverflow) {
     encoder->init(*stream);
     if (GetParam()) {
       EncodeContext context;
-      EXPECT_THAT(EncodeArrowToAvro(node, *encoder, *type, *array, 0, context),
+      EXPECT_THAT(EncodeArrowToAvro(node, *encoder, *type,
+                                    ExportedArrayView(*array).view(), 0, context),
                   IsError(ErrorKind::kInvalidArgument));
     } else {
       ::avro::GenericDatum datum(node);
-      EXPECT_THAT(ExtractDatumFromArray(*array, 0, &datum),
+      EXPECT_THAT(ExtractDatumFromArray(ExportedArrayView(*array).view(), 0, &datum),
                   IsError(ErrorKind::kInvalidArgument));
     }
     encoder->flush();
@@ -164,19 +206,19 @@ TEST_P(AvroDecimalEncodingTest, RejectsFixedWidthOverflow) {
 
 TEST(AvroDecimalFixedTest, SignedBoundariesAndPadding) {
   std::vector<uint8_t> bytes;
-  ASSERT_THAT(EncodeDecimalToFixed(::arrow::Decimal128(127), 1, &bytes), IsOk());
+  ASSERT_THAT(EncodeDecimalToFixed(Decimal(127), 1, &bytes), IsOk());
   EXPECT_EQ(bytes, (std::vector<uint8_t>{0x7f}));
-  ASSERT_THAT(EncodeDecimalToFixed(::arrow::Decimal128(-128), 1, &bytes), IsOk());
+  ASSERT_THAT(EncodeDecimalToFixed(Decimal(-128), 1, &bytes), IsOk());
   EXPECT_EQ(bytes, (std::vector<uint8_t>{0x80}));
-  ASSERT_THAT(EncodeDecimalToFixed(::arrow::Decimal128(1), 17, &bytes), IsOk());
+  ASSERT_THAT(EncodeDecimalToFixed(Decimal(1), 17, &bytes), IsOk());
   ICEBERG_UNWRAP_OR_FAIL(
       auto positive, StringUtils::HexStringToBytes("0000000000000000000000000000000001"));
   EXPECT_EQ(bytes, positive);
-  ASSERT_THAT(EncodeDecimalToFixed(::arrow::Decimal128(-1), 17, &bytes), IsOk());
+  ASSERT_THAT(EncodeDecimalToFixed(Decimal(-1), 17, &bytes), IsOk());
   ICEBERG_UNWRAP_OR_FAIL(
       auto negative, StringUtils::HexStringToBytes("ffffffffffffffffffffffffffffffffff"));
   EXPECT_EQ(bytes, negative);
-  EXPECT_THAT(EncodeDecimalToFixed(::arrow::Decimal128(0), 0, &bytes),
+  EXPECT_THAT(EncodeDecimalToFixed(Decimal(0), 0, &bytes),
               IsError(ErrorKind::kInvalidArgument));
 }
 
@@ -218,25 +260,28 @@ void VerifyAppendDatumToBuilder(const Schema& projected_schema,
   ASSERT_THAT(projection_result, IsOk());
   auto projection = std::move(projection_result.value());
 
-  // Create arrow schema and array builder
+  // Create the arrow schema and a nanoarrow array to append to
   ArrowSchema arrow_c_schema;
   ASSERT_THAT(ToArrowSchema(projected_schema, &arrow_c_schema), IsOk());
-  auto arrow_schema = ::arrow::ImportSchema(&arrow_c_schema).ValueOrDie();
-  auto arrow_struct_type = std::make_shared<::arrow::StructType>(arrow_schema->fields());
-  auto builder = ::arrow::MakeBuilder(arrow_struct_type).ValueOrDie();
+  ArrowArray builder;
+  ArrowError error;
+  ASSERT_EQ(ArrowArrayInitFromSchema(&builder, &arrow_c_schema, &error), NANOARROW_OK)
+      << error.message;
+  ASSERT_EQ(ArrowArrayStartAppending(&builder), NANOARROW_OK);
 
   // Call AppendDatumToBuilder repeatedly to append the datum
   for (const auto& avro_datum : avro_data) {
     ASSERT_THAT(AppendDatumToBuilder(avro_node, avro_datum, projection, projected_schema,
-                                     /*metadata_context=*/{}, builder.get()),
+                                     /*metadata_context=*/{}, &builder),
                 IsOk());
   }
 
   // Verify the result
-  auto array = builder->Finish().ValueOrDie();
+  ASSERT_EQ(ArrowArrayFinishBuildingDefault(&builder, &error), NANOARROW_OK)
+      << error.message;
+  auto array = ::arrow::ImportArray(&builder, &arrow_c_schema).ValueOrDie();
   auto expected_array =
-      ::arrow::json::ArrayFromJSONString(arrow_struct_type, expected_array_json)
-          .ValueOrDie();
+      ::arrow::json::ArrayFromJSONString(array->type(), expected_array_json).ValueOrDie();
   ASSERT_TRUE(array->Equals(*expected_array))
       << "array: " << array->ToString()
       << "\nexpected_array: " << expected_array->ToString();
@@ -903,122 +948,36 @@ TEST(AppendDatumToBuilderTest, NestedListOfListStructWithMissingDefaultField) {
                                                      avro_data, expected_json));
 }
 
+/// \brief Appends the default of a `kDefault` projection holding `literal` to a fresh
+/// int64 array `count` times, and returns the values appended.
+std::vector<int64_t> AppendDefaultToInt64Array(const Literal& literal, int count) {
+  FieldProjection projection;
+  projection.kind = FieldProjection::Kind::kDefault;
+  projection.from = literal;
+
+  ArrowArray array;
+  EXPECT_EQ(ArrowArrayInitFromType(&array, NANOARROW_TYPE_INT64), NANOARROW_OK);
+  EXPECT_EQ(ArrowArrayStartAppending(&array), NANOARROW_OK);
+  for (int i = 0; i < count; ++i) {
+    EXPECT_THAT(AppendDefaultToBuilder(projection, &array), IsOk());
+  }
+  EXPECT_EQ(ArrowArrayFinishBuildingDefault(&array, nullptr), NANOARROW_OK);
+
+  const auto* values = static_cast<const int64_t*>(array.buffers[1]);
+  std::vector<int64_t> result(values, values + array.length);
+  array.release(&array);
+  return result;
+}
+
 TEST(AppendDefaultToBuilderTest, AppendsValue) {
-  ::arrow::Int64Builder builder;
-  ASSERT_THAT(AppendDefaultToBuilder(Literal::Long(42), &builder), IsOk());
-  ASSERT_THAT(AppendDefaultToBuilder(Literal::Long(42), &builder), IsOk());
-
-  std::shared_ptr<::arrow::Array> array;
-  ASSERT_TRUE(builder.Finish(&array).ok());
-  ASSERT_EQ(array->length(), 2);
-  const auto& long_array = static_cast<const ::arrow::Int64Array&>(*array);
-  ASSERT_EQ(long_array.Value(0), 42);
-  ASSERT_EQ(long_array.Value(1), 42);
+  EXPECT_THAT(AppendDefaultToInt64Array(Literal::Long(42), 2),
+              ::testing::ElementsAre(42, 42));
 }
 
-TEST(AppendDefaultToBuilderTest, CastsToBuilderType) {
-  // The literal's natural type (int32) differs from the builder type (int64); the value
-  // is cast to the builder type.
-  ::arrow::Int64Builder builder;
-  ASSERT_THAT(AppendDefaultToBuilder(Literal::Int(7), &builder), IsOk());
-
-  std::shared_ptr<::arrow::Array> array;
-  ASSERT_TRUE(builder.Finish(&array).ok());
-  ASSERT_EQ(array->length(), 1);
-  ASSERT_EQ(static_cast<const ::arrow::Int64Array&>(*array).Value(0), 7);
-}
-
-TEST(AppendDefaultToBuilderTest, ReusesPreparedScalar) {
-  auto pool = ::arrow::default_memory_pool();
-  auto child = std::make_shared<::arrow::Int64Builder>(pool);
-  ::arrow::StructBuilder struct_builder(
-      ::arrow::struct_({::arrow::field("d", ::arrow::int64())}), pool, {child});
-
-  FieldProjection projection;
-  projection.kind = FieldProjection::Kind::kDefault;
-  projection.from = Literal::Long(42);
-
-  SchemaProjection schema_projection;
-  schema_projection.fields.push_back(projection);
-  ASSERT_THAT(PrepareDefaultScalars(schema_projection, &struct_builder), IsOk());
-  ASSERT_NE(dynamic_cast<const AvroExtraAttributes*>(
-                schema_projection.fields[0].attributes.get()),
-            nullptr);
-
-  auto* field_builder = struct_builder.field_builder(0);
-  ASSERT_THAT(AppendDefaultToBuilder(schema_projection.fields[0], field_builder), IsOk());
-  ASSERT_THAT(AppendDefaultToBuilder(schema_projection.fields[0], field_builder), IsOk());
-
-  std::shared_ptr<::arrow::Array> array;
-  ASSERT_TRUE(field_builder->Finish(&array).ok());
-  ASSERT_EQ(array->length(), 2);
-  const auto& long_array = static_cast<const ::arrow::Int64Array&>(*array);
-  ASSERT_EQ(long_array.Value(0), 42);
-  ASSERT_EQ(long_array.Value(1), 42);
-}
-
-TEST(AppendDefaultToBuilderTest, PreparesScalarWhenContainerAlreadyExists) {
-  // The Avro attributes container may already exist (e.g. attached by another Avro
-  // attribute) with default_scalar unset. Preparation must still fill default_scalar
-  // rather than skip on the container's mere presence, otherwise the append path falls
-  // back to rebuilding the scalar per row.
-  auto pool = ::arrow::default_memory_pool();
-  auto child = std::make_shared<::arrow::Int64Builder>(pool);
-  ::arrow::StructBuilder struct_builder(
-      ::arrow::struct_({::arrow::field("d", ::arrow::int64())}), pool, {child});
-
-  FieldProjection projection;
-  projection.kind = FieldProjection::Kind::kDefault;
-  projection.from = Literal::Long(42);
-  // Pre-attach an empty container, simulating another attribute having created it.
-  projection.attributes = std::make_shared<AvroExtraAttributes>();
-
-  SchemaProjection schema_projection;
-  schema_projection.fields.push_back(projection);
-  ASSERT_THAT(PrepareDefaultScalars(schema_projection, &struct_builder), IsOk());
-
-  const auto* attrs = dynamic_cast<const AvroExtraAttributes*>(
-      schema_projection.fields[0].attributes.get());
-  ASSERT_NE(attrs, nullptr);
-  ASSERT_NE(attrs->default_scalar, nullptr);
-}
-
-TEST(AppendDefaultToBuilderTest, PreparesScalarUnderNestedCollections) {
-  // A default under `list<list<struct<...>>>` must be prepared too, so decoding reuses
-  // the cached scalar instead of rebuilding it for every element.
-  auto pool = ::arrow::default_memory_pool();
-  auto leaf = std::make_shared<::arrow::Int64Builder>(pool);
-  auto point_builder = std::make_shared<::arrow::StructBuilder>(
-      ::arrow::struct_({::arrow::field("y", ::arrow::int64())}), pool,
-      std::vector<std::shared_ptr<::arrow::ArrayBuilder>>{leaf});
-  auto inner_list = std::make_shared<::arrow::ListBuilder>(pool, point_builder);
-  auto outer_list = std::make_shared<::arrow::ListBuilder>(pool, inner_list);
-  ::arrow::StructBuilder root_builder(
-      ::arrow::struct_({::arrow::field("matrix", outer_list->type())}), pool,
-      std::vector<std::shared_ptr<::arrow::ArrayBuilder>>{outer_list});
-
-  FieldProjection leaf_default;
-  leaf_default.kind = FieldProjection::Kind::kDefault;
-  leaf_default.from = Literal::Long(7);
-
-  FieldProjection point_projection;
-  point_projection.kind = FieldProjection::Kind::kProjected;
-  point_projection.children.push_back(leaf_default);
-
-  FieldProjection inner_element;
-  inner_element.kind = FieldProjection::Kind::kProjected;
-  inner_element.children.push_back(point_projection);
-
-  FieldProjection outer_element;
-  outer_element.kind = FieldProjection::Kind::kProjected;
-  outer_element.children.push_back(inner_element);
-
-  SchemaProjection schema_projection;
-  schema_projection.fields.push_back(outer_element);
-  ASSERT_THAT(PrepareDefaultScalars(schema_projection, &root_builder), IsOk());
-
-  const auto& prepared = schema_projection.fields[0].children[0].children[0].children[0];
-  ASSERT_NE(dynamic_cast<const AvroExtraAttributes*>(prepared.attributes.get()), nullptr);
+TEST(AppendDefaultToBuilderTest, AppendsIntToLongColumn) {
+  // The literal's natural type (int32) differs from the column type (int64), as for a
+  // column promoted from int to long.
+  EXPECT_THAT(AppendDefaultToInt64Array(Literal::Int(7), 1), ::testing::ElementsAre(7));
 }
 
 TEST(AppendDatumToBuilderTest, NestedStructWithMissingOptionalFields) {
@@ -1164,7 +1123,9 @@ void VerifyExtractDatumFromArray(const ExtractDatumParam& test_case) {
 
   for (int64_t i = 0; i < arrow_array->length(); ++i) {
     ::avro::GenericDatum extracted_datum(avro_node);
-    ASSERT_THAT(ExtractDatumFromArray(*arrow_array, i, &extracted_datum), IsOk())
+    ASSERT_THAT(ExtractDatumFromArray(ExportedArrayView(*arrow_array).view(), i,
+                                      &extracted_datum),
+                IsOk())
         << "Failed to extract at index " << i;
     test_case.value_verifier(extracted_datum, static_cast<int>(i));
   }
@@ -1394,7 +1355,9 @@ TEST(ExtractDatumFromArrayTest, StructWithTwoFields) {
 
   auto verify_record = [&](int64_t index, const ExpectedData& expected_data) {
     ::avro::GenericDatum extracted_datum(avro_node);
-    ASSERT_THAT(ExtractDatumFromArray(*arrow_array, index, &extracted_datum), IsOk());
+    ASSERT_THAT(ExtractDatumFromArray(ExportedArrayView(*arrow_array).view(), index,
+                                      &extracted_datum),
+                IsOk());
     const auto& record = extracted_datum.value<::avro::GenericRecord>();
     EXPECT_EQ(record.fieldAt(0).value<int32_t>(), expected_data.id);
     EXPECT_EQ(record.fieldAt(1).value<std::string>(), expected_data.name);
@@ -1442,7 +1405,9 @@ TEST(ExtractDatumFromArrayTest, NestedStruct) {
 
   auto verify_record = [&](int64_t index, const ExpectedData& expected_data) {
     ::avro::GenericDatum extracted_datum(avro_node);
-    ASSERT_THAT(ExtractDatumFromArray(*arrow_array, index, &extracted_datum), IsOk());
+    ASSERT_THAT(ExtractDatumFromArray(ExportedArrayView(*arrow_array).view(), index,
+                                      &extracted_datum),
+                IsOk());
     const auto& record = extracted_datum.value<::avro::GenericRecord>();
     EXPECT_EQ(record.fieldAt(0).value<int32_t>(), expected_data.id);
     const auto& person_record = record.fieldAt(1).value<::avro::GenericRecord>();
@@ -1482,7 +1447,9 @@ TEST(ExtractDatumFromArrayTest, ListOfIntegers) {
 
   auto verify_record = [&](int64_t index, const std::vector<int32_t>& expected_numbers) {
     ::avro::GenericDatum extracted_datum(avro_node);
-    ASSERT_THAT(ExtractDatumFromArray(*arrow_array, index, &extracted_datum), IsOk());
+    ASSERT_THAT(ExtractDatumFromArray(ExportedArrayView(*arrow_array).view(), index,
+                                      &extracted_datum),
+                IsOk());
     const auto& record = extracted_datum.value<::avro::GenericRecord>();
     const auto& array = record.fieldAt(0).value<::avro::GenericArray>();
     const auto& elements = array.value();
@@ -1530,7 +1497,9 @@ TEST(ExtractDatumFromArrayTest, MapStringToInt) {
 
   auto verify_record = [&](int64_t index, const std::vector<MapEntry>& expected_entries) {
     ::avro::GenericDatum extracted_datum(avro_node);
-    ASSERT_THAT(ExtractDatumFromArray(*arrow_array, index, &extracted_datum), IsOk());
+    ASSERT_THAT(ExtractDatumFromArray(ExportedArrayView(*arrow_array).view(), index,
+                                      &extracted_datum),
+                IsOk());
     const auto& record = extracted_datum.value<::avro::GenericRecord>();
     const auto& map = record.fieldAt(0).value<::avro::GenericMap>();
     const auto& entries = map.value();
@@ -1564,11 +1533,11 @@ TEST(ExtractDatumFromArrayTest, ErrorHandling) {
   ::avro::GenericDatum datum(avro_node);
 
   // Test negative index
-  EXPECT_THAT(ExtractDatumFromArray(*arrow_array, -1, &datum),
+  EXPECT_THAT(ExtractDatumFromArray(ExportedArrayView(*arrow_array).view(), -1, &datum),
               HasErrorMessage("Cannot extract datum from array at index -1"));
 
   // Test index beyond array length
-  EXPECT_THAT(ExtractDatumFromArray(*arrow_array, 3, &datum),
+  EXPECT_THAT(ExtractDatumFromArray(ExportedArrayView(*arrow_array).view(), 3, &datum),
               HasErrorMessage("Cannot extract datum from array at index 3"));
 }
 
@@ -1587,14 +1556,16 @@ TEST(ExtractDatumFromArrayTest, NullHandling) {
           .ValueOrDie();
 
   ::avro::GenericDatum datum(avro_node);
-  ASSERT_THAT(ExtractDatumFromArray(*arrow_array, 0, &datum), IsOk());
+  ASSERT_THAT(ExtractDatumFromArray(ExportedArrayView(*arrow_array).view(), 0, &datum),
+              IsOk());
 
   const auto& record = datum.value<::avro::GenericRecord>();
   EXPECT_EQ(record.fieldAt(0).unionBranch(), 1);
   EXPECT_EQ(record.fieldAt(0).type(), ::avro::AVRO_INT);
   EXPECT_EQ(record.fieldAt(0).value<int32_t>(), 42);
 
-  ASSERT_THAT(ExtractDatumFromArray(*arrow_array, 1, &datum), IsOk());
+  ASSERT_THAT(ExtractDatumFromArray(ExportedArrayView(*arrow_array).view(), 1, &datum),
+              IsOk());
   const auto& record2 = datum.value<::avro::GenericRecord>();
   EXPECT_EQ(record2.fieldAt(0).unionBranch(), 0);
   EXPECT_EQ(record2.fieldAt(0).type(), ::avro::AVRO_NULL);
@@ -1615,7 +1586,8 @@ TEST(ExtractDatumFromArrayTest, UnknownType) {
           .ValueOrDie();
 
   ::avro::GenericDatum datum(avro_node);
-  ASSERT_THAT(ExtractDatumFromArray(*arrow_array, 0, &datum), IsOk());
+  ASSERT_THAT(ExtractDatumFromArray(ExportedArrayView(*arrow_array).view(), 0, &datum),
+              IsOk());
 
   const auto& record = datum.value<::avro::GenericRecord>();
   EXPECT_EQ(record.fieldAt(0).type(), ::avro::AVRO_NULL);
@@ -1643,7 +1615,9 @@ void VerifyRoundTripConversion(const RoundTripParam& test_case) {
   std::vector<::avro::GenericDatum> extracted_data;
   for (int64_t i = 0; i < original_array->length(); ++i) {
     ::avro::GenericDatum datum(avro_node);
-    ASSERT_THAT(ExtractDatumFromArray(*original_array, i, &datum), IsOk())
+    ASSERT_THAT(
+        ExtractDatumFromArray(ExportedArrayView(*original_array).view(), i, &datum),
+        IsOk())
         << "Failed to extract datum at index " << i;
     extracted_data.push_back(datum);
   }
@@ -1653,15 +1627,23 @@ void VerifyRoundTripConversion(const RoundTripParam& test_case) {
   ASSERT_THAT(projection_result, IsOk());
   auto projection = std::move(projection_result.value());
 
-  auto builder = ::arrow::MakeBuilder(arrow_struct_type).ValueOrDie();
+  ArrowSchema rebuilt_schema;
+  ASSERT_THAT(ToArrowSchema(*test_case.iceberg_schema, &rebuilt_schema), IsOk());
+  ArrowArray builder;
+  ArrowError error;
+  ASSERT_EQ(ArrowArrayInitFromSchema(&builder, &rebuilt_schema, &error), NANOARROW_OK)
+      << error.message;
+  ASSERT_EQ(ArrowArrayStartAppending(&builder), NANOARROW_OK);
   for (const auto& datum : extracted_data) {
     ASSERT_THAT(
         AppendDatumToBuilder(avro_node, datum, projection, *test_case.iceberg_schema,
-                             /*metadata_context=*/{}, builder.get()),
+                             /*metadata_context=*/{}, &builder),
         IsOk());
   }
 
-  auto rebuilt_array = builder->Finish().ValueOrDie();
+  ASSERT_EQ(ArrowArrayFinishBuildingDefault(&builder, &error), NANOARROW_OK)
+      << error.message;
+  auto rebuilt_array = ::arrow::ImportArray(&builder, &rebuilt_schema).ValueOrDie();
 
   ASSERT_TRUE(original_array->Equals(*rebuilt_array))
       << "Round-trip consistency failed!\n"
@@ -1931,16 +1913,19 @@ TEST(DirectDecoderTest, ProjectionCacheKeyedPerAvroNodeForEmptyStructs) {
   auto decoder = ::avro::binaryDecoder();
   decoder->init(*in);
 
-  ArrowSchema arrow_c_schema;
+  ArrowSchema arrow_c_schema{};
+  internal::ArrowSchemaGuard schema_guard(&arrow_c_schema);
   ASSERT_THAT(ToArrowSchema(read_schema, &arrow_c_schema), IsOk());
-  auto arrow_schema = ::arrow::ImportSchema(&arrow_c_schema).ValueOrDie();
-  auto builder =
-      ::arrow::MakeBuilder(std::make_shared<::arrow::StructType>(arrow_schema->fields()))
-          .ValueOrDie();
+  ArrowArray builder{};
+  internal::ArrowArrayGuard array_guard(&builder);
+  ArrowError error;
+  ASSERT_EQ(ArrowArrayInitFromSchema(&builder, &arrow_c_schema, &error), NANOARROW_OK)
+      << error.message;
+  ASSERT_EQ(ArrowArrayStartAppending(&builder), NANOARROW_OK);
 
   DecodeContext ctx;
   ASSERT_THAT(DecodeAvroToBuilder(avro_node, *decoder, projection, read_schema,
-                                  /*metadata_context=*/{}, builder.get(), ctx),
+                                  /*metadata_context=*/{}, &builder, ctx),
               IsOk());
 
   std::vector<size_t> mapping_sizes;
