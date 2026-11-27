@@ -498,8 +498,9 @@ MetadataContent ContentCache::Insert(std::string_view location, MetadataContent 
     return content;
   }
   std::lock_guard lock(mutex_);
-  if (!SyncInnerCache() || generation != generation_ || active_writes_ != 0)
+  if (!SyncInnerCache() || generation != generation_ || active_writes_ != 0) {
     return content;
+  }
   if (auto retained = registration_->last_files.lock()) {
     auto fits = [&](const MetadataContent& value) {
       return value->size() == content->size();
@@ -553,8 +554,9 @@ Result<std::unique_ptr<InputFile>> ContentCache::NewInputFile(
                           std::cmp_less_equal(size, options_.max_content_length) &&
                           std::cmp_less_equal(size, options_.max_total_bytes);
   std::optional<std::string> verify_location;
-  if (read_ahead && length && std::cmp_equal(size, *length))
+  if (read_ahead && length && std::cmp_equal(size, *length)) {
     verify_location = std::move(location);
+  }
   return std::make_unique<CachedInputFile>(std::move(input),
                                            read_ahead ? shared_from_this() : nullptr,
                                            size, generation, std::move(verify_location));

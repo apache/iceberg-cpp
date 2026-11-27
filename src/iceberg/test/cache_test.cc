@@ -175,6 +175,8 @@ TEST(LruCacheTest, MovesTransferEntriesAndWeightTogether) {
   source.Replace(2, "second", 3);
 
   auto moved = std::move(source);
+  // Both move operations leave the source cache empty and reusable.
+  // NOLINTNEXTLINE(clang-analyzer-cplusplus.Move)
   EXPECT_EQ(source.size(), 0);
   ASSERT_EQ(source.total_weight(), 0);
   ASSERT_THAT(source.Resize(1), IsOk());
@@ -182,6 +184,7 @@ TEST(LruCacheTest, MovesTransferEntriesAndWeightTogether) {
 
   // Moving into a populated cache must also discard its previous entries.
   source = std::move(moved);
+  // NOLINTNEXTLINE(clang-analyzer-cplusplus.Move)
   EXPECT_EQ(moved.size(), 0);
   ASSERT_EQ(moved.total_weight(), 0);
   ASSERT_THAT(moved.Resize(1), IsOk());
