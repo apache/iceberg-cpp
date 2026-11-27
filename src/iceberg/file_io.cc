@@ -19,7 +19,6 @@
 
 #include "iceberg/file_io.h"
 
-#include <limits>
 #include <utility>
 
 #include "iceberg/util/error_util_internal.h"
@@ -45,17 +44,17 @@ Result<std::string> FileIO::ReadFile(const std::string& file_location,
   int64_t read_size;
   std::unique_ptr<InputFile> input_file;
   if (length.has_value()) {
-    if (*length > static_cast<size_t>(std::numeric_limits<int64_t>::max())) {
-      return InvalidArgument("Requested read length {} exceeds int64_t max", *length);
-    }
+    ICEBERG_PRECHECK(std::in_range<int64_t>(*length),
+                     "Requested read length {} exceeds int64_t max", *length);
     ICEBERG_ASSIGN_OR_RAISE(input_file, NewInputFile(file_location, *length));
     read_size = static_cast<int64_t>(*length);
   } else {
     ICEBERG_ASSIGN_OR_RAISE(input_file, NewInputFile(file_location));
     ICEBERG_ASSIGN_OR_RAISE(read_size, input_file->Size());
   }
-  if (read_size < 0) {
-    return Invalid("Invalid negative file size {} for {}", read_size, file_location);
+  if (!std::in_range<size_t>(read_size)) {
+    return Invalid("File size {} for {} does not fit in size_t", read_size,
+                   file_location);
   }
 
   auto size = static_cast<size_t>(read_size);

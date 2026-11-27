@@ -53,6 +53,7 @@ class ScopedGlobalCacheLimit {
 
 struct FailingOpenState {
   int open_count = 0;
+  int64_t size = 8;
   Error first_error;
   Error fallback_error;
 };
@@ -63,7 +64,7 @@ class FailingOpenInputFile : public InputFile {
       : state_(std::move(state)) {}
 
   std::string_view location() const override { return "manifest.avro"; }
-  Result<int64_t> Size() const override { return 8; }
+  Result<int64_t> Size() const override { return state_->size; }
 
   Result<std::unique_ptr<SeekableInputStream>> Open() override {
     ++state_->open_count;
@@ -90,6 +91,19 @@ class FailingOpenFileIO : public FileIO {
  private:
   std::shared_ptr<FailingOpenState> state_;
 };
+
+TEST(MetadataCacheTest, NegativeStorageSizeIsInvalidWithOrWithoutCaching) {
+  auto state = std::make_shared<FailingOpenState>();
+  state->size = -1;
+  std::shared_ptr<FileIO> storage = std::make_shared<FailingOpenFileIO>(state);
+  auto cache = std::make_shared<internal::ContentCache>(ContentCacheOptions{});
+  for (const auto& io : {storage, cache->Wrap(storage)}) {
+    auto result = io->ReadFile("manifest.avro", std::nullopt);
+    EXPECT_THAT(result, IsError(ErrorKind::kInvalid));
+    EXPECT_THAT(result, HasErrorMessage("File size -1 for manifest.avro"));
+  }
+  EXPECT_EQ(state->open_count, 0);
+}
 
 TEST(MetadataCacheTest, CachedInputFileDoesNotRetryNonIOErrors) {
   auto state = std::make_shared<FailingOpenState>(FailingOpenState{

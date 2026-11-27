@@ -20,7 +20,6 @@
 #include <algorithm>
 #include <cstring>
 #include <format>
-#include <limits>
 #include <list>
 #include <stdexcept>
 #include <utility>
@@ -360,9 +359,8 @@ void ContentCache::Clear() {
 Result<std::unique_ptr<InputFile>> ContentCache::NewInputFile(
     const std::shared_ptr<FileIO>& io, std::string location,
     std::optional<size_t> length) {
-  if (length && std::cmp_greater(*length, std::numeric_limits<int64_t>::max())) {
-    return InvalidArgument("File length {} exceeds int64_t max", *length);
-  }
+  ICEBERG_PRECHECK(!length || std::in_range<int64_t>(*length),
+                   "File length {} exceeds int64_t max", *length);
   // A hit needs neither storage resolution nor working remote credentials.
   uint64_t generation;
   if (auto content = Find(location, &generation)) {
@@ -379,7 +377,9 @@ Result<std::unique_ptr<InputFile>> ContentCache::NewInputFile(
                                              std::move(content));
   }
   ICEBERG_ASSIGN_OR_RAISE(auto size, input->Size());
-  ICEBERG_PRECHECK(size >= 0, "Invalid negative file size {}", size);
+  if (size < 0) {
+    return Invalid("File size {} for {} does not fit in size_t", size, input->location());
+  }
   if (size == 0 || std::cmp_greater(size, options_.max_content_length) ||
       std::cmp_greater(size, options_.max_total_bytes)) {
     return input;
