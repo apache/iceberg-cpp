@@ -23,6 +23,7 @@
 #include <map>
 #include <ranges>
 #include <string>
+#include <tuple>
 #include <unordered_map>
 #include <unordered_set>
 #include <utility>
@@ -128,13 +129,12 @@ Result<std::shared_ptr<StructType>> UnifiedPartitionType(const TableMetadata& me
     ICEBERG_PRECHECK(spec_type->fields().size() == spec->fields().size(),
                      "Partition spec {} has mismatched field and type counts",
                      spec->spec_id());
-    for (size_t index = 0; index < spec->fields().size(); ++index) {
-      const auto& partition_field = spec->fields()[index];
-      if (!active_field_ids.contains(partition_field.field_id())) {
-        continue;
-      }
-
-      const auto& spec_field = spec_type->fields()[index];
+    auto active_fields =
+        std::views::zip(spec->fields(), spec_type->fields()) |
+        std::views::filter([&active_field_ids](const auto& fields) {
+          return active_field_ids.contains(std::get<0>(fields).field_id());
+        });
+    for (const auto& [partition_field, spec_field] : active_fields) {
       auto [iter, inserted] =
           fields_by_id.try_emplace(partition_field.field_id(),
                                    ProjectedField{.definition = &partition_field,
@@ -203,19 +203,18 @@ Result<PartitionValues> ProjectPartitionValues(const StructType& partition_type,
   projected.reserve(partition_type.fields().size());
   for (const auto& field : partition_type.fields()) {
     auto target_type = checked_pointer_cast<PrimitiveType>(field.type());
-    auto position = positions.find(field.field_id());
-    if (position == positions.end()) {
+    if (auto position = positions.find(field.field_id()); position == positions.end()) {
       projected.push_back(Literal::Null(std::move(target_type)));
-      continue;
-    }
-    ICEBERG_ASSIGN_OR_RAISE(auto value, values.ValueAt(position->second));
-    if (value.get().IsNull()) {
-      projected.push_back(Literal::Null(std::move(target_type)));
-    } else if (value.get().type()->type_id() == target_type->type_id()) {
-      projected.push_back(value.get());
     } else {
-      ICEBERG_ASSIGN_OR_RAISE(auto coerced, value.get().CastTo(target_type));
-      projected.push_back(std::move(coerced));
+      ICEBERG_ASSIGN_OR_RAISE(auto value, values.ValueAt(position->second));
+      if (value.get().IsNull()) {
+        projected.push_back(Literal::Null(std::move(target_type)));
+      } else if (value.get().type()->type_id() == target_type->type_id()) {
+        projected.push_back(value.get());
+      } else {
+        ICEBERG_ASSIGN_OR_RAISE(auto coerced, value.get().CastTo(target_type));
+        projected.push_back(std::move(coerced));
+      }
     }
   }
   return PartitionValues(std::move(projected));
