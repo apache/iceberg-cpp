@@ -41,6 +41,12 @@ namespace {
 using internal::ContentCacheOptions;
 using internal::ContentCacheProperties;
 
+std::shared_ptr<internal::ContentCache> MakeCache(
+    std::shared_ptr<FileIO> storage = std::make_shared<MockFileIO>(),
+    ContentCacheOptions options = {}) {
+  return std::make_shared<internal::ContentCache>(std::move(storage), options);
+}
+
 class ScopedGlobalCacheLimit {
  public:
   explicit ScopedGlobalCacheLimit(int32_t limit)
@@ -92,12 +98,30 @@ class FailingOpenFileIO : public FileIO {
   std::shared_ptr<FailingOpenState> state_;
 };
 
+TEST(MetadataCacheTest, IdenticalLocationsOnDifferentBackendsHaveIndependentContents) {
+  auto first = std::make_shared<MockFileIO>();
+  auto second = std::make_shared<MockFileIO>();
+  first->AddFile("manifest.avro", "first");
+  second->AddFile("manifest.avro", "second");
+
+  auto cache = MakeCache(first);
+  ASSERT_THAT(cache->Wrap()->ReadFile("manifest.avro", std::nullopt),
+              HasValue(::testing::Eq("first")));
+  first->RemoveFile("manifest.avro");
+
+  auto replacement = MakeCache(second);
+  EXPECT_THAT(replacement->Wrap()->ReadFile("manifest.avro", std::nullopt),
+              HasValue(::testing::Eq("second")));
+  EXPECT_THAT(cache->Wrap()->ReadFile("manifest.avro", std::nullopt),
+              HasValue(::testing::Eq("first")));
+}
+
 TEST(MetadataCacheTest, NegativeStorageSizeIsInvalidWithOrWithoutCaching) {
   auto state = std::make_shared<FailingOpenState>();
   state->size = -1;
   std::shared_ptr<FileIO> storage = std::make_shared<FailingOpenFileIO>(state);
-  auto cache = std::make_shared<internal::ContentCache>(ContentCacheOptions{});
-  for (const auto& io : {storage, cache->Wrap(storage)}) {
+  auto cache = MakeCache(storage);
+  for (const auto& io : {storage, cache->Wrap()}) {
     auto result = io->ReadFile("manifest.avro", std::nullopt);
     EXPECT_THAT(result, IsError(ErrorKind::kInvalid));
     EXPECT_THAT(result, HasErrorMessage("File size -1 for manifest.avro"));
@@ -110,8 +134,8 @@ TEST(MetadataCacheTest, CachedInputFileDoesNotRetryNonIOErrors) {
       .first_error = {.kind = ErrorKind::kNotFound, .message = "missing"},
       .fallback_error = {.kind = ErrorKind::kIOError, .message = "unexpected retry"},
   });
-  auto cache = std::make_shared<internal::ContentCache>(ContentCacheOptions{});
-  auto adapter = cache->Wrap(std::make_shared<FailingOpenFileIO>(state));
+  auto cache = MakeCache(std::make_shared<FailingOpenFileIO>(state));
+  auto adapter = cache->Wrap();
   ICEBERG_UNWRAP_OR_FAIL(auto input_file, adapter->NewInputFile("manifest.avro"));
 
   EXPECT_THAT(input_file->Open(), IsError(ErrorKind::kNotFound));
@@ -123,8 +147,8 @@ TEST(MetadataCacheTest, CachedInputFilePreservesReadAheadAndFallbackErrors) {
       .first_error = {.kind = ErrorKind::kIOError, .message = "read-ahead failed"},
       .fallback_error = {.kind = ErrorKind::kIOError, .message = "open failed"},
   });
-  auto cache = std::make_shared<internal::ContentCache>(ContentCacheOptions{});
-  auto adapter = cache->Wrap(std::make_shared<FailingOpenFileIO>(state));
+  auto cache = MakeCache(std::make_shared<FailingOpenFileIO>(state));
+  auto adapter = cache->Wrap();
   ICEBERG_UNWRAP_OR_FAIL(auto input_file, adapter->NewInputFile("manifest.avro"));
 
   auto result = input_file->Open();
@@ -197,8 +221,8 @@ TEST(MetadataCacheTest, IgnoresInvalidTuningPropertiesWhenDisabled) {
 
 TEST(MetadataCacheTest, PartialBatchDeleteClearsCacheAndPreservesStorageError) {
   auto storage = std::make_shared<MockFileIO>();
-  auto cache = std::make_shared<internal::ContentCache>(ContentCacheOptions{});
-  auto adapter = cache->Wrap(storage);
+  auto cache = MakeCache(storage);
+  auto adapter = cache->Wrap();
   cache->Insert("alias", std::make_shared<const std::vector<std::byte>>(1), 0);
 
   ASSERT_THAT(adapter->DeleteFiles({}), IsOk());
@@ -220,8 +244,8 @@ TEST(MetadataCacheTest, OldInputHandleOpensAfterReplacementIsCached) {
     SCOPED_TRACE(replacement);
     auto storage = std::make_shared<MockFileIO>();
     storage->AddFile("manifest.avro", "old");
-    auto cache = std::make_shared<internal::ContentCache>(ContentCacheOptions{});
-    auto adapter = cache->Wrap(storage);
+    auto cache = MakeCache(storage);
+    auto adapter = cache->Wrap();
     ICEBERG_UNWRAP_OR_FAIL(auto old_file, adapter->NewInputFile("manifest.avro"));
     EXPECT_CALL(*storage, DeleteFile("manifest.avro")).WillOnce([&] {
       storage->RemoveFile("manifest.avro");
@@ -246,8 +270,8 @@ TEST(MetadataCacheTest, OldInputHandleOpensAfterReplacementIsCached) {
 TEST(MetadataCacheTest, OpenRespectsHandleSizeWhenALongerEntryIsAlreadyCached) {
   auto storage = std::make_shared<MockFileIO>();
   storage->AddFile("manifest.avro", "manifest");
-  auto cache = std::make_shared<internal::ContentCache>(ContentCacheOptions{});
-  auto adapter = cache->Wrap(storage);
+  auto cache = MakeCache(storage);
+  auto adapter = cache->Wrap();
   ICEBERG_UNWRAP_OR_FAIL(auto short_file, adapter->NewInputFile("manifest.avro", 4));
   ASSERT_THAT(short_file->Size(), HasValue(::testing::Eq(4)));
   ASSERT_THAT(adapter->ReadFile("manifest.avro", std::nullopt),
@@ -277,9 +301,8 @@ TEST(MetadataCacheTest, HintedInputUsesSizeReportedByStorage) {
   storage->AddFile("manifest.avro", "manifest");
   for (size_t limit : {4, 8}) {
     SCOPED_TRACE(limit);
-    auto cache = std::make_shared<internal::ContentCache>(
-        ContentCacheOptions{.max_content_length = limit});
-    auto adapter = cache->Wrap(storage);
+    auto cache = MakeCache(storage, ContentCacheOptions{.max_content_length = limit});
+    auto adapter = cache->Wrap();
     ICEBERG_UNWRAP_OR_FAIL(auto file, adapter->NewInputFile("manifest.avro", 4));
     EXPECT_THAT(file->Size(), HasValue(::testing::Eq(8)));
     ICEBERG_UNWRAP_OR_FAIL(auto stream, file->Open());
@@ -294,8 +317,8 @@ TEST(MetadataCacheTest, HintedInputUsesSizeReportedByStorage) {
 TEST(MetadataCacheTest, PrefixReadDoesNotPopulateWholeFileCache) {
   auto storage = std::make_shared<MockFileIO>();
   storage->AddFile("manifest.avro", "manifest");
-  auto cache = std::make_shared<internal::ContentCache>(ContentCacheOptions{});
-  auto adapter = cache->Wrap(storage);
+  auto cache = MakeCache(storage);
+  auto adapter = cache->Wrap();
 
   EXPECT_CALL(*storage, ReadFile("manifest.avro", std::optional<size_t>{4}))
       .WillOnce(::testing::Return(std::string("mani")));
@@ -307,14 +330,13 @@ TEST(MetadataCacheTest, PrefixReadDoesNotPopulateWholeFileCache) {
 
 TEST(MetadataCacheTest, OversizedReadDoesNotDisplaceAWarmCache) {
   ScopedGlobalCacheLimit limit(1);
-  auto warm = std::make_shared<internal::ContentCache>(ContentCacheOptions{});
+  auto warm = MakeCache();
   warm->Insert("warm.avro", std::make_shared<const std::vector<std::byte>>(1), 0);
 
   auto storage = std::make_shared<MockFileIO>();
   storage->AddFile("large.avro", "large");
-  auto cold = std::make_shared<internal::ContentCache>(
-      ContentCacheOptions{.max_content_length = 4});
-  EXPECT_THAT(cold->Wrap(storage)->ReadFile("large.avro", std::nullopt),
+  auto cold = MakeCache(storage, ContentCacheOptions{.max_content_length = 4});
+  EXPECT_THAT(cold->Wrap()->ReadFile("large.avro", std::nullopt),
               HasValue(::testing::Eq("large")));
   EXPECT_FALSE(cold->Find("large.avro"));
   EXPECT_TRUE(warm->Find("warm.avro"));
@@ -322,15 +344,15 @@ TEST(MetadataCacheTest, OversizedReadDoesNotDisplaceAWarmCache) {
 
 TEST(MetadataCacheTest, GlobalEvictionReleasesBytesAndReadersKeepTheirContent) {
   ScopedGlobalCacheLimit limit(1);
-  auto first = std::make_shared<internal::ContentCache>(ContentCacheOptions{});
+  auto first = MakeCache();
   auto content = std::make_shared<const std::vector<std::byte>>(8);
   std::weak_ptr<const std::vector<std::byte>> weak_content = content;
   first->Insert("manifest.avro", std::move(content), 0);
-  auto adapter = first->Wrap(std::make_shared<MockFileIO>());
+  auto adapter = first->Wrap();
   ICEBERG_UNWRAP_OR_FAIL(auto file, adapter->NewInputFile("manifest.avro"));
   ICEBERG_UNWRAP_OR_FAIL(auto reader, file->Open());
   file.reset();
-  auto second = std::make_shared<internal::ContentCache>(ContentCacheOptions{});
+  auto second = MakeCache();
   second->Insert("other.avro", std::make_shared<const std::vector<std::byte>>(8), 0);
   EXPECT_FALSE(first->Find("manifest.avro"));
   // Only the active reader still owns these bytes after global eviction.
@@ -343,7 +365,7 @@ TEST(MetadataCacheTest, GlobalEvictionReleasesBytesAndReadersKeepTheirContent) {
 }
 
 TEST(MetadataCacheTest, DestroyingLastCacheHandleReleasesRetainedBytes) {
-  auto cache = std::make_shared<internal::ContentCache>(ContentCacheOptions{});
+  auto cache = MakeCache();
   auto content = std::make_shared<const std::vector<std::byte>>(8);
   std::weak_ptr<const std::vector<std::byte>> weak_content = content;
   cache->Insert("manifest.avro", std::move(content), 0);
@@ -354,16 +376,16 @@ TEST(MetadataCacheTest, DestroyingLastCacheHandleReleasesRetainedBytes) {
 
 TEST(MetadataCacheTest, DestroyedCacheFreesItsSlotWithoutEvictingALiveCache) {
   ScopedGlobalCacheLimit limit(2);
-  auto first = std::make_shared<internal::ContentCache>(ContentCacheOptions{});
+  auto first = MakeCache();
   first->Insert("first", std::make_shared<const std::vector<std::byte>>(1), 0);
   std::weak_ptr<internal::ContentCache> weak_cache;
   {
-    auto second = std::make_shared<internal::ContentCache>(ContentCacheOptions{});
+    auto second = MakeCache();
     weak_cache = second;
     second->Insert("second", std::make_shared<const std::vector<std::byte>>(1), 0);
   }
   ASSERT_TRUE(weak_cache.expired());
-  auto third = std::make_shared<internal::ContentCache>(ContentCacheOptions{});
+  auto third = MakeCache();
   third->Insert("third", std::make_shared<const std::vector<std::byte>>(1), 0);
   EXPECT_TRUE(first->Find("first"));
   EXPECT_TRUE(third->Find("third"));
@@ -371,9 +393,9 @@ TEST(MetadataCacheTest, DestroyedCacheFreesItsSlotWithoutEvictingALiveCache) {
 
 TEST(MetadataCacheTest, LoweringGlobalCapacityEvictsLeastRecentlyUsedTables) {
   ScopedGlobalCacheLimit limit(3);
-  auto first = std::make_shared<internal::ContentCache>(ContentCacheOptions{});
-  auto second = std::make_shared<internal::ContentCache>(ContentCacheOptions{});
-  auto third = std::make_shared<internal::ContentCache>(ContentCacheOptions{});
+  auto first = MakeCache();
+  auto second = MakeCache();
+  auto third = MakeCache();
   const auto bytes = std::make_shared<const std::vector<std::byte>>(1);
   first->Insert("first", bytes, 0);
   second->Insert("second", bytes, 0);
@@ -391,9 +413,9 @@ TEST(MetadataCacheTest, LoweringGlobalCapacityEvictsLeastRecentlyUsedTables) {
 
 TEST(MetadataCacheTest, ClearingCacheFreesItsGlobalSlot) {
   ScopedGlobalCacheLimit limit(2);
-  auto first = std::make_shared<internal::ContentCache>(ContentCacheOptions{});
-  auto second = std::make_shared<internal::ContentCache>(ContentCacheOptions{});
-  auto third = std::make_shared<internal::ContentCache>(ContentCacheOptions{});
+  auto first = MakeCache();
+  auto second = MakeCache();
+  auto third = MakeCache();
   const auto bytes = std::make_shared<const std::vector<std::byte>>(1);
   first->Insert("first", bytes, 0);
   second->Insert("second", bytes, 0);
@@ -406,10 +428,10 @@ TEST(MetadataCacheTest, ClearingCacheFreesItsGlobalSlot) {
 
 TEST(MetadataCacheTest, InvalidatedLoadCannotPopulateRecreatedCacheState) {
   ScopedGlobalCacheLimit limit(1);
-  auto cache = std::make_shared<internal::ContentCache>(ContentCacheOptions{});
+  auto cache = MakeCache();
   uint64_t generation;
   ASSERT_FALSE(cache->Find("manifest.avro", &generation));
-  auto other = std::make_shared<internal::ContentCache>(ContentCacheOptions{});
+  auto other = MakeCache();
   other->Insert("other.avro", std::make_shared<const std::vector<std::byte>>(8), 0);
   cache->Clear();
   cache->Insert("manifest.avro", std::make_shared<const std::vector<std::byte>>(8),

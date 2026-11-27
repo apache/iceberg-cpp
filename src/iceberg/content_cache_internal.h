@@ -65,17 +65,16 @@ class ContentCacheRegistry;
 // active caches through weak references and can evict their contents at capacity.
 class ICEBERG_EXPORT ContentCache : public std::enable_shared_from_this<ContentCache> {
  public:
-  explicit ContentCache(ContentCacheOptions options);
+  // A cache and all its adapters use this FileIO for their entire lifetime.
+  // Construct a new cache when replacing the storage FileIO.
+  ContentCache(std::shared_ptr<FileIO> io, ContentCacheOptions options);
   ~ContentCache();
   // Return the previous process-wide capacity. The new capacity must be positive.
   static int32_t SetGlobalCapacity(int32_t max_caches);
   const ContentCacheOptions& options() const { return options_; }
-  // All FileIOs bound to this cache must resolve a given location to the same file.
-  // Use a separate cache for each storage namespace.
-  std::shared_ptr<FileIO> Wrap(std::shared_ptr<FileIO> io);
+  std::shared_ptr<FileIO> Wrap();
   Result<std::unique_ptr<InputFile>> NewInputFile(
-      const std::shared_ptr<FileIO>& io, std::string location,
-      std::optional<size_t> length = std::nullopt);
+      std::string location, std::optional<size_t> length = std::nullopt);
   // A load that overlaps invalidation may serve its own reader but cannot repopulate
   // the cache. Capture the generation under the same lock as the lookup.
   MetadataContent Find(std::string_view location, uint64_t* generation = nullptr);
@@ -83,6 +82,9 @@ class ICEBERG_EXPORT ContentCache : public std::enable_shared_from_this<ContentC
   void Clear();
 
  private:
+  class ManifestFileIO;
+
+  const std::shared_ptr<FileIO> io_;
   const ContentCacheOptions options_;
   const std::shared_ptr<ContentCacheRegistry> registry_;
   std::mutex mutex_;

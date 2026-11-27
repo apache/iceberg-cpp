@@ -377,9 +377,9 @@ TEST(ArrowFileIOTest, AliasDeleteInvalidatesEveryCachedSpelling) {
   const std::string unrelated = "s3://other.avro";
   for (bool warm_alias : {false, true}) {
     SCOPED_TRACE(warm_alias);
-    auto cache =
-        std::make_shared<internal::ContentCache>(internal::ContentCacheOptions{});
-    auto adapter = cache->Wrap(storage);
+    auto cache = std::make_shared<internal::ContentCache>(
+        storage, internal::ContentCacheOptions{});
+    auto adapter = cache->Wrap();
     ASSERT_THAT(storage->WriteFile(canonical, "old"), IsOk());
     ASSERT_THAT(storage->WriteFile(unrelated, "keep"), IsOk());
     ASSERT_THAT(adapter->ReadFile(unrelated, std::nullopt),
@@ -399,8 +399,9 @@ TEST(ArrowFileIOTest, AliasDeleteInvalidatesEveryCachedSpelling) {
 }
 
 TEST_F(LocalFileIOTest, AliasDeleteClearsCachedLocalPaths) {
-  auto cache = std::make_shared<internal::ContentCache>(internal::ContentCacheOptions{});
-  auto adapter = cache->Wrap(file_io_);
+  auto cache =
+      std::make_shared<internal::ContentCache>(file_io_, internal::ContentCacheOptions{});
+  auto adapter = cache->Wrap();
   const std::filesystem::path path(temp_filepath_);
   const auto alias = (path.parent_path() / "." / path.filename()).string();
   ASSERT_THAT(file_io_->WriteFile(temp_filepath_, "old"), IsOk());

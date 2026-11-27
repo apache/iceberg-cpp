@@ -241,40 +241,42 @@ class CachedInputFile : public InputFile {
   MetadataContent content_;
 };
 
+}  // namespace
+
 // Clear once after each cleanup, including partially successful batch deletes.
-class ManifestFileIO : public FileIO {
+class ContentCache::ManifestFileIO : public FileIO {
  public:
-  ManifestFileIO(std::shared_ptr<FileIO> io, std::shared_ptr<ContentCache> cache)
-      : io_(std::move(io)), cache_(std::move(cache)) {}
+  explicit ManifestFileIO(std::shared_ptr<ContentCache> cache)
+      : cache_(std::move(cache)) {}
   Result<std::unique_ptr<InputFile>> NewInputFile(std::string location) override {
-    return cache_->NewInputFile(io_, std::move(location));
+    return cache_->NewInputFile(std::move(location));
   }
   Result<std::unique_ptr<InputFile>> NewInputFile(std::string location,
                                                   size_t length) override {
-    return cache_->NewInputFile(io_, std::move(location), length);
+    return cache_->NewInputFile(std::move(location), length);
   }
   Result<std::string> ReadFile(const std::string& location,
                                std::optional<size_t> length) override {
     // A requested byte count can cover only a prefix of an immutable file.
     if (length) {
-      return io_->ReadFile(location, length);
+      return cache_->io_->ReadFile(location, length);
     }
     return FileIO::ReadFile(location, std::nullopt);
   }
   Result<std::unique_ptr<OutputFile>> NewOutputFile(std::string location) override {
-    return io_->NewOutputFile(std::move(location));
+    return cache_->io_->NewOutputFile(std::move(location));
   }
   Status DeleteFile(const std::string& location) override {
     ClearAfterDelete cleanup{*cache_};
-    return io_->DeleteFile(location);
+    return cache_->io_->DeleteFile(location);
   }
   Status DeleteFiles(const std::vector<std::string>& locations) override {
-    if (locations.empty()) return io_->DeleteFiles(locations);
+    if (locations.empty()) return cache_->io_->DeleteFiles(locations);
     ClearAfterDelete cleanup{*cache_};
-    return io_->DeleteFiles(locations);
+    return cache_->io_->DeleteFiles(locations);
   }
   const std::unordered_map<std::string, std::string>& properties() const override {
-    return io_->properties();
+    return cache_->io_->properties();
   }
 
  private:
@@ -282,11 +284,8 @@ class ManifestFileIO : public FileIO {
     ContentCache& cache;
     ~ClearAfterDelete() { cache.Clear(); }
   };
-  std::shared_ptr<FileIO> io_;
   std::shared_ptr<ContentCache> cache_;
 };
-
-}  // namespace
 
 Result<ContentCacheOptions> ContentCacheOptions::FromProperties(
     const std::unordered_map<std::string, std::string>& properties) {
@@ -312,10 +311,13 @@ Result<ContentCacheOptions> ContentCacheOptions::FromProperties(
   return options;
 }
 
-ContentCache::ContentCache(ContentCacheOptions options)
-    : options_(options),
+ContentCache::ContentCache(std::shared_ptr<FileIO> io, ContentCacheOptions options)
+    : io_(std::move(io)),
+      options_(options),
       registry_(GlobalContentCacheRegistry()),
-      registration_(std::make_shared<ContentCacheRegistration>()) {}
+      registration_(std::make_shared<ContentCacheRegistration>()) {
+  if (!io_) throw std::invalid_argument("Content cache requires a storage FileIO");
+}
 
 ContentCache::~ContentCache() { registry_->Erase(*registration_); }
 
@@ -323,8 +325,8 @@ int32_t ContentCache::SetGlobalCapacity(int32_t max_caches) {
   return GlobalContentCacheRegistry()->SetCapacity(max_caches);
 }
 
-std::shared_ptr<FileIO> ContentCache::Wrap(std::shared_ptr<FileIO> io) {
-  return std::make_shared<ManifestFileIO>(std::move(io), shared_from_this());
+std::shared_ptr<FileIO> ContentCache::Wrap() {
+  return std::make_shared<ManifestFileIO>(shared_from_this());
 }
 
 MetadataContent ContentCache::Find(std::string_view location, uint64_t* generation) {
@@ -357,8 +359,7 @@ void ContentCache::Clear() {
 }
 
 Result<std::unique_ptr<InputFile>> ContentCache::NewInputFile(
-    const std::shared_ptr<FileIO>& io, std::string location,
-    std::optional<size_t> length) {
+    std::string location, std::optional<size_t> length) {
   ICEBERG_PRECHECK(!length || std::in_range<int64_t>(*length),
                    "File length {} exceeds int64_t max", *length);
   // A hit needs neither storage resolution nor working remote credentials.
@@ -368,9 +369,9 @@ Result<std::unique_ptr<InputFile>> ContentCache::NewInputFile(
   }
   std::unique_ptr<InputFile> input;
   if (length) {
-    ICEBERG_ASSIGN_OR_RAISE(input, io->NewInputFile(location, *length));
+    ICEBERG_ASSIGN_OR_RAISE(input, io_->NewInputFile(location, *length));
   } else {
-    ICEBERG_ASSIGN_OR_RAISE(input, io->NewInputFile(location));
+    ICEBERG_ASSIGN_OR_RAISE(input, io_->NewInputFile(location));
   }
   if (auto content = Find(input->location())) {
     return std::make_unique<CachedInputFile>(std::string(input->location()),
