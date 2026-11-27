@@ -23,6 +23,7 @@
 #include <limits>
 #include <mutex>
 #include <optional>
+#include <utility>
 #include <vector>
 
 #include <arrow/buffer.h>
@@ -43,9 +44,8 @@ namespace iceberg::arrow {
 namespace {
 
 Result<int64_t> ToInt64Length(size_t length) {
-  if (length > static_cast<size_t>(std::numeric_limits<int64_t>::max())) {
-    return InvalidArgument("File length {} exceeds int64_t max", length);
-  }
+  ICEBERG_PRECHECK(std::in_range<int64_t>(length), "File length {} exceeds int64_t max",
+                   length);
   return static_cast<int64_t>(length);
 }
 
@@ -318,17 +318,14 @@ class ArrowSeekableInputStream : public SeekableInputStream {
   }
 
   Status ReadFully(int64_t position, std::span<std::byte> out) override {
-    if (position < 0) {
-      return InvalidArgument("Cannot read from negative position {}", position);
-    }
+    ICEBERG_PRECHECK(position >= 0, "Cannot read from negative position {}", position);
     ICEBERG_ASSIGN_OR_RAISE(auto size, ToInt64Length(out.size()));
     if (size == 0) {
       return {};
     }
-    if (position > std::numeric_limits<int64_t>::max() - size) {
-      return InvalidArgument(
-          "Read range starting at {} with length {} exceeds int64_t max", position, size);
-    }
+    ICEBERG_PRECHECK(position <= std::numeric_limits<int64_t>::max() - size,
+                     "Read range starting at {} with length {} exceeds int64_t max",
+                     position, size);
 
     Status read_status = {};
     int64_t bytes_read = 0;

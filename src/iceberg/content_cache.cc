@@ -583,8 +583,11 @@ MetadataContent ContentCache::Insert(std::string_view location, MetadataContent 
   }
   auto files = registry_->GetOrCreate(registration_, options_.max_total_bytes);
   registration_->last_files = files;
-  files->Replace(std::string(location), content, static_cast<int64_t>(content->size()));
-  storage_.ever_cached.store(true, std::memory_order_relaxed);
+  auto entry = files->Replace(std::string(location), content,
+                              static_cast<int64_t>(content->size()));
+  if (entry && entry->second != nullptr) {
+    storage_.ever_cached.store(true, std::memory_order_relaxed);
+  }
   return content;
 }
 

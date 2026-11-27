@@ -121,14 +121,13 @@ class LruCache {
   //
   // Returns whether a new entry was added, and a pointer to the cached value.  A value
   // heavier than the maximum weight is not cached: any existing entry for `key` is
-  // removed, other entries are kept, and {false, nullptr} is returned.
+  // removed, other entries are kept, and {false, nullptr} is returned. A negative
+  // weight returns InvalidArgument before modifying the cache.
   // Use Replace to change a cached value. A successful replacement invalidates the
   // previous value pointer.
   template <typename K, typename V>
-  std::pair<bool, const Value*> Replace(K&& key, V&& value, int64_t weight = 1) {
-    if (weight < 0) {
-      throw std::invalid_argument("Cache entry weight must be non-negative");
-    }
+  Result<std::pair<bool, const Value*>> Replace(K&& key, V&& value, int64_t weight = 1) {
+    ICEBERG_PRECHECK(weight >= 0, "Cache entry weight must be non-negative");
     List candidate;
     auto& item = candidate.emplace_front(nullptr, std::forward<V>(value), weight);
     auto [it, inserted] = map_.try_emplace(std::forward<K>(key));
@@ -139,7 +138,7 @@ class LruCache {
     }
     if (item.weight > max_weight_) {
       map_.erase(it);
-      return {false, nullptr};
+      return std::pair<bool, const Value*>{false, nullptr};
     }
 
     items_.splice(items_.begin(), candidate);
@@ -149,7 +148,7 @@ class LruCache {
       EvictLeastRecentlyUsed();
     }
     total_weight_ += item.weight;
-    return {inserted, &item.value};
+    return std::pair<bool, const Value*>{inserted, &item.value};
   }
 
  private:
@@ -198,11 +197,12 @@ struct ThreadSafeMemoizer {
     lock.unlock();
     Value value = func_(key);
     lock.lock();
-    const auto* cached = cache_.Replace(std::forward<K>(key), std::move(value)).second;
-    if (cached == nullptr) {
+    ICEBERG_ASSIGN_OR_THROW(auto entry,
+                            cache_.Replace(std::forward<K>(key), std::move(value)));
+    if (entry.second == nullptr) {
       throw std::invalid_argument("Memoization cache capacity must be positive");
     }
-    return *cached;
+    return *entry.second;
   }
 
  private:
@@ -225,11 +225,12 @@ struct ThreadUnsafeMemoizer {
       return *value_ptr;
     }
     Value value = func_(key);
-    const auto* cached = cache_.Replace(std::forward<K>(key), std::move(value)).second;
-    if (cached == nullptr) {
+    ICEBERG_ASSIGN_OR_THROW(auto entry,
+                            cache_.Replace(std::forward<K>(key), std::move(value)));
+    if (entry.second == nullptr) {
       throw std::invalid_argument("Memoization cache capacity must be positive");
     }
-    return *cached;
+    return *entry.second;
   }
 
  private:
