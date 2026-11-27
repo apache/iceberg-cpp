@@ -23,8 +23,20 @@
 #include <string_view>
 
 #include "iceberg/logging/log_macros.h"
+#include "iceberg/result.h"
 
 namespace iceberg::internal {
+
+template <typename Action>
+auto CatchExceptions(std::string_view name, Action&& action) -> decltype(action()) {
+  try {
+    return action();
+  } catch (const std::exception& e) {
+    return UnknownError("{} threw: {}", name, e.what());
+  } catch (...) {
+    return UnknownError("{} threw an unknown exception", name);
+  }
+}
 
 template <typename Action>
 void LogAndIgnoreFailure(std::string_view name, Action&& action) noexcept {

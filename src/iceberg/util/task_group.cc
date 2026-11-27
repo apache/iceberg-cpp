@@ -19,12 +19,15 @@
 
 #include "iceberg/util/task_group.h"
 
+#include <atomic>
 #include <format>
 #include <future>
 #include <string>
 #include <utility>
 
+#include "iceberg/util/error_util_internal.h"
 #include "iceberg/util/macros.h"
+#include "iceberg/util/task_group_internal.h"
 
 namespace iceberg::internal {
 
@@ -46,7 +49,8 @@ Status AggregateTaskErrors(std::vector<Error> errors) {
   return ::iceberg::unexpected(Error{.kind = kind, .message = std::move(message)});
 }
 
-Result<std::future<Status>> SubmitTask(Executor& executor, FnOnce<Status()> task) {
+template <typename Task>
+Result<std::future<Status>> SubmitTask(Executor& executor, Task task) {
   std::promise<Status> promise;
   auto future = promise.get_future();
 
@@ -55,46 +59,65 @@ Result<std::future<Status>> SubmitTask(Executor& executor, FnOnce<Status()> task
         promise.set_value(std::move(task)());
       });
 
-  ICEBERG_RETURN_UNEXPECTED(executor.Submit(std::move(executor_task)));
+  ICEBERG_RETURN_UNEXPECTED(CatchExceptions(
+      "Submit task", [&] { return executor.Submit(std::move(executor_task)); }));
 
   return future;
+}
+
+template <typename Task>
+Status RunTasks(size_t size, OptionalExecutor executor, const Task& task,
+                bool stop_on_failure) {
+  std::vector<std::future<Status>> futures;
+  if (executor) futures.reserve(size);
+  std::vector<Error> errors;
+  std::atomic<bool> stop{false};
+  for (size_t i = 0; i < size && !stop.load(); ++i) {
+    auto run = [&, i]() -> Status {
+      if (stop.load()) return {};
+      auto status = CatchExceptions("Run task", [&] { return task(i); });
+      if (stop_on_failure && !status) stop.store(true);
+      return status;
+    };
+    if (executor) {
+      auto future = SubmitTask(executor->get(), std::move(run));
+      if (future) {
+        futures.push_back(std::move(*future));
+      } else {
+        errors.push_back(std::move(future.error()));
+        if (stop_on_failure) stop.store(true);
+      }
+    } else if (auto status = run(); !status) {
+      errors.push_back(std::move(status.error()));
+    }
+  }
+
+  for (auto& future : futures) {
+    auto status = CatchExceptions("Wait for task", [&] { return future.get(); });
+    if (!status.has_value()) {
+      errors.push_back(std::move(status.error()));
+    }
+  }
+
+  return AggregateTaskErrors(std::move(errors));
 }
 
 }  // namespace
 
 Status RunTasksSingleThreaded(std::vector<FnOnce<Status()>> tasks) {
-  std::vector<Error> errors;
-  for (auto& task : tasks) {
-    auto status = std::move(task)();
-    if (!status.has_value()) {
-      errors.push_back(std::move(status.error()));
-    }
-  }
-  return AggregateTaskErrors(std::move(errors));
+  return RunTasks(
+      tasks.size(), std::nullopt, [&](size_t i) { return std::move(tasks[i])(); }, false);
 }
 
 Status RunTasksParallel(Executor& executor, std::vector<FnOnce<Status()>> tasks) {
-  std::vector<std::future<Status>> futures;
-  futures.reserve(tasks.size());
+  return RunTasks(
+      tasks.size(), std::ref(executor), [&](size_t i) { return std::move(tasks[i])(); },
+      false);
+}
 
-  std::vector<Error> errors;
-  for (auto& task : tasks) {
-    auto future = SubmitTask(executor, std::move(task));
-    if (!future.has_value()) {
-      errors.push_back(std::move(future.error()));
-      continue;
-    }
-    futures.push_back(std::move(future.value()));
-  }
-
-  for (auto& future : futures) {
-    auto status = future.get();
-    if (!status.has_value()) {
-      errors.push_back(std::move(status.error()));
-    }
-  }
-
-  return AggregateTaskErrors(std::move(errors));
+Status RunTasksWithStopOnFailure(size_t size, OptionalExecutor executor,
+                                 const std::function<Status(size_t)>& task) {
+  return RunTasks(size, executor, task, true);
 }
 
 }  // namespace iceberg::internal
