@@ -17,8 +17,6 @@
  * under the License.
  */
 
-#include "iceberg/util/mumbling_bitmap_internal.h"
-
 #include <algorithm>
 #include <array>
 #include <bit>
@@ -38,6 +36,7 @@
 #include "iceberg/test/matchers.h"
 #include "iceberg/test/mumbling_bitmap_test_util.h"
 #include "iceberg/test/test_resource.h"
+#include "iceberg/util/mumbling_bitmap_internal.h"
 
 namespace iceberg {
 

@@ -25,7 +25,7 @@
 // The inputs are serialized with the test encoder in
 // iceberg/test/mumbling_bitmap_test_util.h, which picks PFOR bit widths the way
 // the Java encoder does (checked against Java-generated fixtures in
-// mumbling_bitmap_internal_test.cc).
+// mumbling_bitmap_test.cc).
 
 #include <algorithm>
 #include <cstdint>
