@@ -23,7 +23,6 @@
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
-#include <limits>
 #include <memory>
 #include <optional>
 #include <span>
@@ -58,9 +57,8 @@ class MockFileIO : public FileIO {
 
   Result<std::unique_ptr<InputFile>> NewInputFile(std::string file_location,
                                                   size_t length) override {
-    if (length > static_cast<size_t>(std::numeric_limits<int64_t>::max())) {
-      return InvalidArgument("File length {} exceeds int64_t max", length);
-    }
+    ICEBERG_PRECHECK(std::in_range<int64_t>(length), "File length {} exceeds int64_t max",
+                     length);
     auto file = FindFile(file_location);
     if (!file) {
       return NotFound("File does not exist: {}", file_location);

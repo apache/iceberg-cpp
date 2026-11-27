@@ -38,6 +38,7 @@
 #include "iceberg/test/matchers.h"
 #include "iceberg/test/std_io.h"
 #include "iceberg/test/temp_file_test_base.h"
+#include "iceberg/util/macros.h"
 
 namespace iceberg {
 
@@ -176,9 +177,7 @@ class PermissiveInputStream : public SeekableInputStream {
   Result<int64_t> Position() const override { return state_->position; }
 
   Status Seek(int64_t position) override {
-    if (position < 0) {
-      return InvalidArgument("Cannot seek to negative position {}", position);
-    }
+    ICEBERG_PRECHECK(position >= 0, "Cannot seek to negative position {}", position);
     state_->position = position;
     return {};
   }
@@ -196,9 +195,7 @@ class PermissiveInputStream : public SeekableInputStream {
   }
 
   Status ReadFully(int64_t position, std::span<std::byte> out) override {
-    if (position < 0) {
-      return InvalidArgument("Cannot read from negative position {}", position);
-    }
+    ICEBERG_PRECHECK(position >= 0, "Cannot read from negative position {}", position);
     auto offset = static_cast<size_t>(position);
     if (offset > state_->data.size() || out.size() > state_->data.size() - offset) {
       return IOError("Unexpected EOF");

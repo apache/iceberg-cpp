@@ -23,6 +23,7 @@
 #include <string>
 
 #include "iceberg/table_properties.h"
+#include "iceberg/util/macros.h"
 #include "iceberg/util/string_util.h"
 
 namespace iceberg {
@@ -53,10 +54,8 @@ Result<int64_t> PropertyUtil::PropertyAsInt64(
   auto it = properties.find(std::string(key));
   if (it == properties.end()) return default_value;
   auto result = StringUtils::ParseNumber<int64_t>(it->second);
-  if (!result) {
-    return InvalidArgument("Invalid numeric value '{}' for property '{}': {}", it->second,
-                           key, result.error().message);
-  }
+  ICEBERG_PRECHECK(result.has_value(), "Invalid numeric value '{}' for property '{}': {}",
+                   it->second, key, result.error().message);
   return result;
 }
 

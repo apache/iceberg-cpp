@@ -208,6 +208,7 @@ TEST(MetadataCacheTest, InvalidNumericPropertyErrorIncludesPropertyName) {
       {{ContentCacheProperties::kEnabled.key(), "true"},
        {ContentCacheProperties::kMaxTotalBytes.key(), "invalid"}});
 
+  EXPECT_THAT(options, IsError(ErrorKind::kInvalidArgument));
   EXPECT_THAT(options, HasErrorMessage(ContentCacheProperties::kMaxTotalBytes.key()));
 }
 
