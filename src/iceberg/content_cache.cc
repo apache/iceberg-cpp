@@ -18,9 +18,12 @@
  */
 
 #include <algorithm>
+#include <atomic>
 #include <cstring>
 #include <format>
 #include <list>
+#include <mutex>
+#include <shared_mutex>
 #include <stdexcept>
 #include <utility>
 
@@ -45,9 +48,35 @@ struct ContentCacheRegistration {
   std::weak_ptr<CachedFiles> last_files;
 };
 
+// Adapters over one storage FileIO share mutation state. Each table still owns
+// its own cached bytes. The registry mutex protects the number of bound caches.
+struct ContentCacheStorage {
+  explicit ContentCacheStorage(FileIO* file_io) : io(file_io) {}
+  FileIO* const io;
+  size_t caches = 0;
+  std::shared_mutex mutex;
+  size_t active_writes = 0;
+  uint64_t finished_writes = 0;
+  uint64_t invalidations = 0;
+  std::atomic<bool> ever_cached = false;
+};
+
 class ContentCacheRegistry {
  public:
   explicit ContentCacheRegistry(int32_t capacity) : capacity_(capacity) {}
+
+  ContentCacheStorage& Bind(FileIO* io) {
+    if (!io) throw std::invalid_argument("Content cache requires a storage FileIO");
+    std::lock_guard lock(mutex_);
+    auto& storage = storage_.try_emplace(io, io).first->second;
+    ++storage.caches;
+    return storage;
+  }
+
+  void Unbind(ContentCacheStorage& storage) {
+    std::lock_guard lock(mutex_);
+    if (--storage.caches == 0) storage_.erase(storage.io);
+  }
 
   bool IsActive(const ContentCacheRegistration& entry,
                 const std::shared_ptr<CachedFiles>& files, bool promote) {
@@ -110,6 +139,7 @@ class ContentCacheRegistry {
   std::mutex mutex_;
   int32_t capacity_;
   ContentCacheRegistration::Entries entries_;
+  std::unordered_map<const FileIO*, ContentCacheStorage> storage_;
 };
 
 namespace {
@@ -277,14 +307,13 @@ class CachedInputFile : public InputFile {
 }  // namespace
 
 // Clear once after each cleanup, including partially successful batch deletes.
-class ContentCache::ManifestFileIO : public FileIO {
+class ContentCache::ManifestFileIO final : public FileIO {
  public:
   explicit ManifestFileIO(std::shared_ptr<ContentCache> cache)
       : cache_(std::move(cache)) {}
-  std::optional<uint64_t> ReadGeneration() const {
-    std::lock_guard lock(cache_->mutex_);
-    if (!cache_->SyncInnerCache() || cache_->active_writes_ != 0) return std::nullopt;
-    return cache_->generation_;
+  static const ContentCache* GetCache(FileIO* io) {
+    const auto* adapter = dynamic_cast<const ManifestFileIO*>(io);
+    return adapter ? adapter->cache_.get() : nullptr;
   }
   Result<std::unique_ptr<InputFile>> NewInputFile(std::string location) override {
     return cache_->NewInputFile(std::move(location));
@@ -302,17 +331,19 @@ class ContentCache::ManifestFileIO : public FileIO {
     return FileIO::ReadFile(location, std::nullopt);
   }
   Result<std::unique_ptr<OutputFile>> NewOutputFile(std::string location) override {
-    ICEBERG_ASSIGN_OR_RAISE(auto output, cache_->io_->NewOutputFile(std::move(location)));
+    // Record each mutation once, even when the read adapters are nested.
+    ICEBERG_ASSIGN_OR_RAISE(auto output,
+                            cache_->storage_.io->NewOutputFile(std::move(location)));
     return std::make_unique<CachedOutputFile>(std::move(output), cache_);
   }
   Status DeleteFile(const std::string& location) override {
     ClearAfterDelete cleanup{*cache_};
-    return cache_->io_->DeleteFile(location);
+    return cache_->storage_.io->DeleteFile(location);
   }
   Status DeleteFiles(const std::vector<std::string>& locations) override {
-    if (locations.empty()) return cache_->io_->DeleteFiles(locations);
+    if (locations.empty()) return cache_->storage_.io->DeleteFiles(locations);
     ClearAfterDelete cleanup{*cache_};
-    return cache_->io_->DeleteFiles(locations);
+    return cache_->storage_.io->DeleteFiles(locations);
   }
   const std::unordered_map<std::string, std::string>& properties() const override {
     return cache_->io_->properties();
@@ -325,9 +356,10 @@ class ContentCache::ManifestFileIO : public FileIO {
    public:
     explicit WritingStream(std::shared_ptr<ContentCache> cache)
         : cache_(std::move(cache)) {
-      std::lock_guard lock(cache_->mutex_);
-      ++cache_->active_writes_;
-      has_cached_files_ = !cache_->registration_->last_files.expired();
+      std::lock_guard lock(cache_->storage_.mutex);
+      ++cache_->storage_.active_writes;
+      may_have_cached_files_ =
+          cache_->storage_.ever_cached.load(std::memory_order_relaxed);
     }
 
     ~WritingStream() override {
@@ -336,7 +368,7 @@ class ContentCache::ManifestFileIO : public FileIO {
     }
 
     Status Open(OutputFile& output, bool overwrite) {
-      if (overwrite && !has_cached_files_) {
+      if (overwrite && !may_have_cached_files_) {
         ICEBERG_ASSIGN_OR_RAISE(stream_, output.CreateOrOverwrite());
         return {};
       }
@@ -344,7 +376,7 @@ class ContentCache::ManifestFileIO : public FileIO {
       if (!created && overwrite) {
         // The path may already exist under a cached alias. Clear before storage can
         // truncate it, including when opening the overwrite stream itself fails.
-        cache_->Clear();
+        cache_->InvalidateStorage();
         created = output.CreateOrOverwrite();
       }
       ICEBERG_ASSIGN_OR_RAISE(stream_, std::move(created));
@@ -366,14 +398,14 @@ class ContentCache::ManifestFileIO : public FileIO {
    private:
     void Finish() {
       if (auto cache = std::move(cache_)) {
-        std::lock_guard lock(cache->mutex_);
-        --cache->active_writes_;
-        ++cache->generation_;
+        std::lock_guard lock(cache->storage_.mutex);
+        --cache->storage_.active_writes;
+        ++cache->storage_.finished_writes;
       }
     }
     std::shared_ptr<ContentCache> cache_;
     std::unique_ptr<PositionOutputStream> stream_;
-    bool has_cached_files_;
+    bool may_have_cached_files_;
   };
 
   class CachedOutputFile : public OutputFile {
@@ -401,7 +433,7 @@ class ContentCache::ManifestFileIO : public FileIO {
 
   struct ClearAfterDelete {
     ContentCache& cache;
-    ~ClearAfterDelete() { cache.Clear(); }
+    ~ClearAfterDelete() { cache.InvalidateStorage(); }
   };
   std::shared_ptr<ContentCache> cache_;
 };
@@ -432,15 +464,16 @@ Result<ContentCacheOptions> ContentCacheOptions::FromProperties(
 
 ContentCache::ContentCache(std::shared_ptr<FileIO> io, ContentCacheOptions options)
     : io_(std::move(io)),
-      inner_adapter_(dynamic_cast<const ManifestFileIO*>(io_.get())),
+      inner_cache_(ManifestFileIO::GetCache(io_.get())),
       options_(options),
       registry_(GlobalContentCacheRegistry()),
-      registration_(std::make_shared<ContentCacheRegistration>()) {
-  if (!io_) throw std::invalid_argument("Content cache requires a storage FileIO");
-  if (inner_adapter_) inner_generation_ = inner_adapter_->ReadGeneration();
-}
+      registration_(std::make_shared<ContentCacheRegistration>()),
+      storage_(registry_->Bind(inner_cache_ ? inner_cache_->storage_.io : io_.get())) {}
 
-ContentCache::~ContentCache() { registry_->Erase(*registration_); }
+ContentCache::~ContentCache() {
+  registry_->Erase(*registration_);
+  registry_->Unbind(storage_);
+}
 
 int32_t ContentCache::SetGlobalCapacity(int32_t max_caches) {
   return GlobalContentCacheRegistry()->SetCapacity(max_caches);
@@ -450,30 +483,35 @@ std::shared_ptr<FileIO> ContentCache::Wrap() {
   return std::make_shared<ManifestFileIO>(shared_from_this());
 }
 
-bool ContentCache::SyncInnerCache() {
-  if (!inner_adapter_) return true;
-  auto current = inner_adapter_->ReadGeneration();
-  if (current != inner_generation_) {
-    registry_->Erase(*registration_);
-    inner_generation_ = current;
-    ++generation_;
+uint64_t ContentCache::SyncGenerationLocked() {
+  auto invalidations = storage_.invalidations;
+  // An explicit table clear also invalidates adapters layered on that table.
+  for (const ContentCache* cache = this; cache; cache = cache->inner_cache_) {
+    invalidations += cache->local_clears_;
   }
-  return current.has_value();
+  if (observed_invalidations_ != invalidations) {
+    registry_->Erase(*registration_);
+    observed_invalidations_ = invalidations;
+  }
+  // A fresh create only fences in-flight loads. Retained entries stay usable.
+  return invalidations + storage_.finished_writes;
 }
 
 MetadataContent ContentCache::Find(std::string_view location, uint64_t* generation) {
+  std::shared_lock storage_lock(storage_.mutex);
   std::lock_guard lock(mutex_);
-  const bool cacheable = SyncInnerCache();
-  if (generation) *generation = generation_;
-  return cacheable ? FindLocked(location, std::nullopt) : nullptr;
+  const auto current = SyncGenerationLocked();
+  if (generation) *generation = current;
+  return FindLocked(location, std::nullopt);
 }
 
 MetadataContent ContentCache::FindForHandle(std::string_view location,
                                             uint64_t generation,
                                             std::optional<int64_t> size, bool* can_load) {
+  std::shared_lock storage_lock(storage_.mutex);
   std::lock_guard lock(mutex_);
-  const bool current = SyncInnerCache() && generation == generation_;
-  if (can_load) *can_load = current && active_writes_ == 0;
+  const bool current = generation == SyncGenerationLocked();
+  if (can_load) *can_load = current && storage_.active_writes == 0;
   if (!current) return nullptr;
   return FindLocked(location, size);
 }
@@ -497,8 +535,9 @@ MetadataContent ContentCache::Insert(std::string_view location, MetadataContent 
       content->size() > options_.max_total_bytes) {
     return content;
   }
+  std::shared_lock storage_lock(storage_.mutex);
   std::lock_guard lock(mutex_);
-  if (!SyncInnerCache() || generation != generation_ || active_writes_ != 0) {
+  if (generation != SyncGenerationLocked() || storage_.active_writes != 0) {
     return content;
   }
   if (auto retained = registration_->last_files.lock()) {
@@ -515,13 +554,20 @@ MetadataContent ContentCache::Insert(std::string_view location, MetadataContent 
   auto files = registry_->GetOrCreate(registration_, options_.max_total_bytes);
   registration_->last_files = files;
   files->Replace(std::string(location), content, static_cast<int64_t>(content->size()));
+  storage_.ever_cached.store(true, std::memory_order_relaxed);
   return content;
 }
 
 void ContentCache::Clear() {
-  std::lock_guard lock(mutex_);
-  registry_->Erase(*registration_);
-  ++generation_;
+  std::lock_guard lock(storage_.mutex);
+  ++local_clears_;
+  SyncGenerationLocked();
+}
+
+void ContentCache::InvalidateStorage() {
+  std::lock_guard lock(storage_.mutex);
+  ++storage_.invalidations;
+  SyncGenerationLocked();
 }
 
 Result<std::unique_ptr<InputFile>> ContentCache::NewInputFile(
@@ -539,7 +585,6 @@ Result<std::unique_ptr<InputFile>> ContentCache::NewInputFile(
   } else {
     ICEBERG_ASSIGN_OR_RAISE(input, io_->NewInputFile(location));
   }
-  if (inner_adapter_ && !inner_adapter_->ReadGeneration()) return input;
   if (input->location() != location) {
     if (auto content = FindForHandle(input->location(), generation)) {
       return std::make_unique<CachedInputFile>(std::string(input->location()),

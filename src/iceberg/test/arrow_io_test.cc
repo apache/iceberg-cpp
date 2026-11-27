@@ -459,6 +459,25 @@ TEST_F(LocalFileIOTest, OverwritingThroughAnAliasInvalidatesTheCachedFile) {
               HasValue(::testing::Eq("new")));
 }
 
+TEST_F(LocalFileIOTest, RecreatingAFileAfterAnotherCacheDeletesItReadsNewBytes) {
+  auto writer =
+      std::make_shared<internal::ContentCache>(file_io_, internal::ContentCacheOptions{})
+          ->Wrap();
+  auto cleaner =
+      std::make_shared<internal::ContentCache>(file_io_, internal::ContentCacheOptions{})
+          ->Wrap();
+  const std::filesystem::path path(temp_filepath_);
+  const auto alias = (path.parent_path() / "." / path.filename()).string();
+  ASSERT_THAT(writer->WriteFile(temp_filepath_, "old"), IsOk());
+  ASSERT_THAT(writer->ReadFile(temp_filepath_, std::nullopt),
+              HasValue(::testing::Eq("old")));
+  ASSERT_THAT(cleaner->DeleteFile(alias), IsOk());
+  ASSERT_THAT(writer->WriteFile(alias, "new"), IsOk());
+  EXPECT_THAT(writer->ReadFile(temp_filepath_, std::nullopt),
+              HasValue(::testing::Eq("new")));
+  EXPECT_THAT(writer->ReadFile(alias, std::nullopt), HasValue(::testing::Eq("new")));
+}
+
 TEST_F(LocalFileIOTest, DeleteFiles) {
   auto first_path = CreateNewTempFilePath();
   auto second_path = CreateNewTempFilePath();

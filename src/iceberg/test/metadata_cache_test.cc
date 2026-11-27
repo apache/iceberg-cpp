@@ -390,11 +390,55 @@ TEST(MetadataCacheTest, CredentialedFileIOCanCacheInAStableNamespace) {
 TEST(MetadataCacheTest, NestedCacheFollowsInnerOverwrites) {
   auto storage = std::make_shared<MockFileIO>();
   storage->AddFile("manifest", "old");
-  auto inner = MakeCache(storage)->Wrap();
+  // Only the outer adapter retains this file.
+  auto inner = MakeCache(storage, ContentCacheOptions{.max_content_length = 1})->Wrap();
   auto outer = MakeCache(inner)->Wrap();
   ASSERT_THAT(outer->ReadFile("manifest", std::nullopt), HasValue(::testing::Eq("old")));
   ASSERT_THAT(inner->WriteFile("manifest", "new"), IsOk());
   EXPECT_THAT(outer->ReadFile("manifest", std::nullopt), HasValue(::testing::Eq("new")));
+}
+
+TEST(MetadataCacheTest, NestedCacheKeepsWarmFilesAcrossFreshWrites) {
+  auto storage = std::make_shared<MockFileIO>();
+  storage->AddFile("warm", "manifest");
+  auto inner = MakeCache(storage, ContentCacheOptions{.max_content_length = 1})->Wrap();
+  auto cache = MakeCache(inner);
+  auto outer = cache->Wrap();
+  ASSERT_THAT(outer->ReadFile("warm", std::nullopt), HasValue(::testing::Eq("manifest")));
+  auto warm = cache->Find("warm");
+  ASSERT_TRUE(warm);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto file, inner->NewOutputFile("fresh"));
+  ICEBERG_UNWRAP_OR_FAIL(auto writer, file->CreateOrOverwrite());
+  EXPECT_EQ(cache->Find("warm"), warm);
+  auto bytes = std::as_bytes(std::span("ab", 2));
+  ASSERT_THAT(writer->Write(bytes), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto partial, outer->NewInputFile("fresh"));
+  ASSERT_THAT(outer->ReadFile("fresh", std::nullopt), HasValue(::testing::Eq("ab")));
+  EXPECT_FALSE(cache->Find("fresh"));
+  ASSERT_THAT(writer->Write(bytes), IsOk());
+  ASSERT_THAT(writer->Close(), IsOk());
+
+  ASSERT_THAT(partial->Open(), IsOk());
+  EXPECT_FALSE(cache->Find("fresh"));
+  EXPECT_EQ(cache->Find("warm"), warm);
+  EXPECT_THAT(outer->ReadFile("fresh", std::nullopt), HasValue(::testing::Eq("abab")));
+}
+
+TEST(MetadataCacheTest, ExplicitClearOnlyAffectsTheTableAndItsOuterAdapters) {
+  auto storage = std::make_shared<MockFileIO>();
+  storage->AddFile("manifest", "content");
+  auto table = MakeCache(storage);
+  auto outer = MakeCache(table->Wrap());
+  auto sibling = MakeCache(storage);
+  for (const auto& cache : {outer, sibling}) {
+    ASSERT_THAT(cache->Wrap()->ReadFile("manifest", std::nullopt),
+                HasValue(::testing::Eq("content")));
+  }
+  table->Clear();
+  EXPECT_FALSE(table->Find("manifest"));
+  EXPECT_FALSE(outer->Find("manifest"));
+  EXPECT_TRUE(sibling->Find("manifest"));
 }
 
 TEST(MetadataCacheTest, ConcurrentInsertionsShareTheWinnerForTheSameSizeAndGeneration) {

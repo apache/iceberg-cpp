@@ -59,6 +59,7 @@ struct ICEBERG_EXPORT ContentCacheOptions {
 using MetadataContent = std::shared_ptr<const std::vector<std::byte>>;
 
 struct ContentCacheRegistration;
+struct ContentCacheStorage;
 class ContentCacheRegistry;
 
 // The per-table handle owns its cached files. The process-wide registry tracks
@@ -92,17 +93,20 @@ class ICEBERG_EXPORT ContentCache : public std::enable_shared_from_this<ContentC
  private:
   class ManifestFileIO;
 
-  bool SyncInnerCache();
+  uint64_t SyncGenerationLocked();
+  void InvalidateStorage();
   MetadataContent FindLocked(std::string_view location, std::optional<int64_t> size);
   const std::shared_ptr<FileIO> io_;
-  const ManifestFileIO* const inner_adapter_;
+  const ContentCache* const inner_cache_;
   const ContentCacheOptions options_;
   const std::shared_ptr<ContentCacheRegistry> registry_;
-  std::mutex mutex_;
   const std::shared_ptr<ContentCacheRegistration> registration_;
-  size_t active_writes_ = 0;
-  std::optional<uint64_t> inner_generation_;
-  uint64_t generation_ = 0;
+  ContentCacheStorage& storage_;
+  // Cache operations take the shared storage lock before the table mutex.
+  // A clear takes the exclusive storage lock so outer adapters see local clears.
+  std::mutex mutex_;
+  uint64_t local_clears_ = 0;
+  uint64_t observed_invalidations_ = 0;
 };
 
 }  // namespace iceberg::internal
