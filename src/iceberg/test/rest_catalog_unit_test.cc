@@ -800,7 +800,8 @@ TEST_F(RestCatalogOAuth2UriTest, FinalExchangeUpdatesBusinessRequests) {
   properties_["token-refresh-enabled"] = "true";
   properties_["token-exchange-enabled"] = "true";
   properties_["credential"] = ":SeCrEt:Tail";
-  ExpectInit({}, R"({"access_token":"Initial","token_type":"bearer","expires_in":1})");
+  ExpectInit({.overrides = {{"oauth2-server-uri", "https://server-auth.example/token"}}},
+             R"({"access_token":"Initial","token_type":"bearer","expires_in":1})");
 
   const std::unordered_map<std::string, std::string> exchange_form{
       {"grant_type", "urn:ietf:params:oauth:grant-type:token-exchange"},
@@ -887,6 +888,7 @@ TEST_F(RestCatalogOAuth2UriTest, RefreshUsesTheClientEndpointByDefault) {
     return {};
   });
   properties_["token-refresh-enabled"] = "true";
+  properties_["token-exchange-enabled"] = "false";
   ExpectInit({.overrides = {{"uri", "https://other-catalog.example"},
                             {"oauth2-server-uri", "https://server-auth.example/token"},
                             {"rest.auth.oauth2.trust-server-uri", "true"}}},
