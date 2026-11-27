@@ -22,6 +22,7 @@
 /// \file iceberg/resolving_file_io.h
 /// \brief FileIO that resolves the concrete implementation per file-path scheme.
 
+#include <atomic>
 #include <cstdint>
 #include <memory>
 #include <shared_mutex>
@@ -33,7 +34,7 @@
 #include "iceberg/file_io.h"
 #include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
-#include "iceberg/storage_credential.h"
+#include "iceberg/storage_namespace.h"
 #include "iceberg/util/string_util.h"
 
 namespace iceberg {
@@ -43,7 +44,8 @@ namespace iceberg {
 /// Vended credentials and any credential provider are forwarded to every resolved
 /// implementation that supports them; each applies what it understands.
 class ICEBERG_EXPORT ResolvingFileIO final : public FileIO,
-                                             public SupportsStorageCredentials {
+                                             public SupportsStorageCredentials,
+                                             public StorageNamespace {
  public:
   explicit ResolvingFileIO(std::unordered_map<std::string, std::string> properties);
   ~ResolvingFileIO() override;
@@ -79,7 +81,10 @@ class ICEBERG_EXPORT ResolvingFileIO final : public FileIO,
 
   SupportsStorageCredentials* AsSupportsStorageCredentials() override { return this; }
 
+  std::optional<uint64_t> namespace_generation() const override;
+
  private:
+  void UpdateNamespace(const std::vector<StorageCredential>& credentials);
   /// \brief Load or reuse the implementation serving `location`.
   Result<std::shared_ptr<FileIO>> FileIOForPath(std::string_view location);
 
@@ -91,6 +96,15 @@ class ICEBERG_EXPORT ResolvingFileIO final : public FileIO,
   // Bumped by every credential install, so a delegate loaded from an older set
   // never reaches the cache.
   uint64_t credential_generation_ = 0;
+  std::atomic<uint64_t> namespace_generation_{0};
+  std::atomic<bool> cacheable_{true};
+  // Retain route comparisons across successive installs, even before the next read.
+  struct DelegateRoutes {
+    SameRoutes compare;
+    std::unordered_map<std::string, std::string> properties;
+  };
+  std::unordered_map<std::string, DelegateRoutes, StringHash, StringEqual>
+      routes_by_name_;
   std::unordered_map<std::string, std::shared_ptr<FileIO>, StringHash, StringEqual>
       io_by_name_;
 };

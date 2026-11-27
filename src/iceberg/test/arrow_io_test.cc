@@ -26,6 +26,7 @@
 #include <vector>
 
 #include <arrow/filesystem/localfs.h>
+#include <arrow/io/interfaces.h>
 #include <arrow/result.h>
 #include <arrow/status.h>
 #include <gtest/gtest.h>
@@ -406,6 +407,54 @@ TEST_F(LocalFileIOTest, AliasDeleteClearsCachedLocalPaths) {
               HasValue(::testing::Eq("old")));
   ASSERT_THAT(adapter->DeleteFile(alias), IsOk());
   ASSERT_THAT(file_io_->WriteFile(temp_filepath_, "new"), IsOk());
+  EXPECT_THAT(adapter->ReadFile(temp_filepath_, std::nullopt),
+              HasValue(::testing::Eq("new")));
+}
+
+TEST_F(LocalFileIOTest, StatFailureClosesTemporaryInputAndKeepsDiscoveredSize) {
+  class NoStatFileSystem : public ::arrow::fs::LocalFileSystem {
+   public:
+    using LocalFileSystem::GetFileInfo;
+    using LocalFileSystem::OpenInputFile;
+    ::arrow::Result<::arrow::fs::FileInfo> GetFileInfo(const std::string&) override {
+      ++stats;
+      return ::arrow::Status::IOError("stat unavailable");
+    }
+    ::arrow::Result<std::shared_ptr<::arrow::io::RandomAccessFile>> OpenInputFile(
+        const ::arrow::fs::FileInfo& info) override {
+      sizes.push_back(info.size());
+      ARROW_ASSIGN_OR_RAISE(auto file, LocalFileSystem::OpenInputFile(info.path()));
+      opened.push_back(file);
+      return file;
+    }
+    int stats = 0;
+    std::vector<int64_t> sizes;
+    std::vector<std::shared_ptr<::arrow::io::RandomAccessFile>> opened;
+  };
+  ASSERT_THAT(file_io_->WriteFile(temp_filepath_, "file"), IsOk());
+  auto fs = std::make_shared<NoStatFileSystem>();
+  arrow::ArrowFileSystemFileIO storage(fs);
+  ICEBERG_UNWRAP_OR_FAIL(auto file, storage.NewInputFile(temp_filepath_));
+  EXPECT_THAT(file->Size(), HasValue(::testing::Eq(4)));
+  EXPECT_THAT(file->Size(), HasValue(::testing::Eq(4)));
+  ASSERT_EQ(fs->opened.size(), 1);
+  EXPECT_TRUE(fs->opened.front()->closed());
+  ICEBERG_UNWRAP_OR_FAIL(auto stream, file->Open());
+  EXPECT_EQ(fs->stats, 1);
+  EXPECT_THAT(fs->sizes, ::testing::ElementsAre(::arrow::fs::kNoSize, 4));
+  EXPECT_THAT(stream->Close(), IsOk());
+}
+
+TEST_F(LocalFileIOTest, OverwritingThroughAnAliasInvalidatesTheCachedFile) {
+  auto cache =
+      std::make_shared<internal::ContentCache>(file_io_, internal::ContentCacheOptions{});
+  auto adapter = cache->Wrap();
+  const auto path = std::filesystem::path(temp_filepath_);
+  const auto alias = (path.parent_path() / "." / path.filename()).string();
+  ASSERT_THAT(adapter->WriteFile(temp_filepath_, "old"), IsOk());
+  ASSERT_THAT(adapter->ReadFile(temp_filepath_, std::nullopt),
+              HasValue(::testing::Eq("old")));
+  ASSERT_THAT(adapter->WriteFile(alias, "new"), IsOk());
   EXPECT_THAT(adapter->ReadFile(temp_filepath_, std::nullopt),
               HasValue(::testing::Eq("new")));
 }

@@ -137,6 +137,7 @@
 #include "iceberg/sort_order.h"
 #include "iceberg/statistics_file.h"
 #include "iceberg/storage_credential.h"
+#include "iceberg/storage_namespace.h"
 #include "iceberg/table.h"
 #include "iceberg/table_identifier.h"
 #include "iceberg/table_metadata.h"

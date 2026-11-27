@@ -43,15 +43,18 @@
 
 #if ICEBERG_S3_ENABLED
 #  include <arrow/filesystem/s3fs.h>
+#  include <arrow/util/io_util.h>
 #endif
 
 #include "iceberg/arrow/arrow_io_internal.h"
 #include "iceberg/arrow/arrow_io_util.h"
 #include "iceberg/arrow/arrow_register.h"
 #include "iceberg/arrow/s3/s3_properties.h"
+#include "iceberg/content_cache_internal.h"
 #include "iceberg/file_io.h"
 #include "iceberg/file_io_registry.h"
 #include "iceberg/logging/logger.h"
+#include "iceberg/resolving_file_io.h"
 #include "iceberg/result.h"
 #include "iceberg/storage_credential.h"
 #include "iceberg/test/executor.h"
@@ -450,6 +453,45 @@ TEST_F(ArrowS3FileIOTest, StoresCredentials) {
                   {std::string(S3Properties::kSecretAccessKey), "secret"}}}};
   EXPECT_THAT(credentialed->SetStorageCredentials(credentials), IsOk());
   EXPECT_EQ(credentialed->credentials(), credentials);
+}
+
+TEST_F(ArrowS3FileIOTest, CacheSurvivesKeyRotationAndRejectsLoadsFromRetiredRoutes) {
+  RegisterAll();
+  const std::string path = "s3://bucket/table/manifest";
+  for (bool resolving : {false, true}) {
+    SCOPED_TRACE(resolving);
+    std::shared_ptr<FileIO> io;
+    if (resolving) {
+      io = std::make_shared<ResolvingFileIO>(FileIORegistry::Properties{});
+    } else {
+      ICEBERG_UNWRAP_OR_FAIL(io, MakeS3FileIO({}));
+    }
+    auto* credentialed = io->AsSupportsStorageCredentials();
+    std::vector<StorageCredential> credentials{{"s3://bucket",
+                                                {{"s3.endpoint", "http://first.invalid"},
+                                                 {"s3.access-key-id", "key"},
+                                                 {"s3.secret-access-key", "secret"}}}};
+    ASSERT_THAT(credentialed->SetStorageCredentials(credentials), IsOk());
+    // Construct a handle to resolve the delegate without contacting an object store.
+    ASSERT_THAT(io->NewInputFile(path, 4), IsOk());
+    auto cache =
+        std::make_shared<internal::ContentCache>(io, internal::ContentCacheOptions{});
+    uint64_t generation;
+    ASSERT_FALSE(cache->Find(path, &generation));
+    auto bytes = std::make_shared<const std::vector<std::byte>>(4, std::byte{'a'});
+    cache->Insert(path, bytes, generation);
+    credentials.front().config["s3.secret-access-key"] = "rotated";
+    ASSERT_THAT(credentialed->SetStorageCredentials(credentials), IsOk());
+    ASSERT_THAT(cache->Wrap()->ReadFile(path, std::nullopt),
+                HasValue(::testing::Eq("aaaa")));
+
+    // The resolver can receive both installs before it rebuilds its delegate.
+    credentials.front().config["s3.endpoint"] = "http://second.invalid";
+    ASSERT_THAT(credentialed->SetStorageCredentials(credentials), IsOk());
+    EXPECT_FALSE(cache->Find(path));
+    cache->Insert(path, bytes, generation);
+    EXPECT_FALSE(cache->Find(path));
+  }
 }
 
 TEST_F(ArrowS3FileIOTest, PropertiesExposeFileIOConfiguration) {
@@ -1430,6 +1472,45 @@ TEST_F(ArrowS3FileIOTest, InputFileOutlivesCredentialInstall) {
 }
 
 #if ICEBERG_S3_ENABLED
+TEST_F(ArrowS3FileIOTest, ReinstallKeepsTheEndpointSelectedAtConstruction) {
+  auto endpoint = GetEnvIfSet("ICEBERG_TEST_S3_ENDPOINT");
+  if (!HasIntegrationEnv() || !endpoint) GTEST_SKIP() << "Requires an S3 test endpoint";
+  constexpr auto variable = "AWS_ENDPOINT_URL_S3";
+  struct RestoreEndpoint {
+    ::arrow::Result<std::string> previous;
+    ~RestoreEndpoint() {
+      auto status = previous.ok()
+                        ? ::arrow::internal::SetEnvVar("AWS_ENDPOINT_URL_S3", *previous)
+                        : ::arrow::internal::DelEnvVar("AWS_ENDPOINT_URL_S3");
+      EXPECT_TRUE(status.ok()) << status;
+    }
+  } restore{::arrow::internal::GetEnvVar(variable)};
+  auto properties = PropertiesFromEnv();
+  properties.erase(std::string(S3Properties::kEndpoint));
+  RegisterAll();
+  for (bool resolving : {false, true}) {
+    SCOPED_TRACE(resolving);
+    ASSERT_TRUE(::arrow::internal::SetEnvVar(variable, *endpoint).ok());
+    std::shared_ptr<FileIO> io;
+    if (resolving) {
+      io = std::make_shared<ResolvingFileIO>(properties);
+    } else {
+      ICEBERG_UNWRAP_OR_FAIL(io, MakeS3FileIO(properties));
+    }
+    const auto path = ObjectUri("cache-endpoint-snapshot");
+    const auto credentials =
+        std::vector<StorageCredential>{{BaseUri(), {{"s3.connect-timeout-ms", "1000"}}}};
+    ASSERT_THAT(io->AsSupportsStorageCredentials()->SetStorageCredentials(credentials),
+                IsOk());
+    ASSERT_THAT(io->WriteFile(path, "first"), IsOk());
+    ASSERT_TRUE(::arrow::internal::SetEnvVar(variable, "http://127.0.0.1:1").ok());
+    ASSERT_THAT(io->AsSupportsStorageCredentials()->SetStorageCredentials(credentials),
+                IsOk());
+    EXPECT_THAT(io->ReadFile(path, std::nullopt), HasValue(::testing::Eq("first")));
+    EXPECT_THAT(io->DeleteFile(path), IsOk());
+  }
+}
+
 TEST_F(ArrowS3FileIOTest, ClientRegion) {
   auto result =
       ConfigureS3Options({{std::string(S3Properties::kClientRegion), "us-east-1"}});

@@ -18,6 +18,7 @@
  */
 
 #include <array>
+#include <barrier>
 #include <cstdint>
 #include <memory>
 #include <optional>
@@ -25,6 +26,7 @@
 #include <stdexcept>
 #include <string>
 #include <string_view>
+#include <thread>
 #include <utility>
 #include <vector>
 
@@ -59,6 +61,7 @@ class ScopedGlobalCacheLimit {
 
 struct FailingOpenState {
   int open_count = 0;
+  int size_count = 0;
   int64_t size = 8;
   Error first_error;
   Error fallback_error;
@@ -70,7 +73,10 @@ class FailingOpenInputFile : public InputFile {
       : state_(std::move(state)) {}
 
   std::string_view location() const override { return "manifest.avro"; }
-  Result<int64_t> Size() const override { return state_->size; }
+  Result<int64_t> Size() const override {
+    ++state_->size_count;
+    return state_->size;
+  }
 
   Result<std::unique_ptr<SeekableInputStream>> Open() override {
     ++state_->open_count;
@@ -313,6 +319,147 @@ TEST(MetadataCacheTest, HintedInputUsesSizeReportedByStorage) {
                 HasValue(::testing::Eq("manifest")));
   }
   EXPECT_EQ(storage->hinted_calls, 2);
+}
+
+TEST(MetadataCacheTest, ShortHintOnFirstOpenDoesNotPublishAPrefix) {
+  class CountingFileIO : public MockFileIO {
+   public:
+    using MockFileIO::NewInputFile;
+    Result<std::unique_ptr<InputFile>> NewInputFile(std::string location) override {
+      ++unhinted_calls;
+      return MockFileIO::NewInputFile(std::move(location));
+    }
+    int unhinted_calls = 0;
+  };
+  auto storage = std::make_shared<CountingFileIO>();
+  storage->AddFile("manifest.avro", "manifest");
+  auto cache = MakeCache(storage);
+  auto adapter = cache->Wrap();
+  ICEBERG_UNWRAP_OR_FAIL(auto file, adapter->NewInputFile("manifest.avro", 4));
+  EXPECT_EQ(storage->unhinted_calls, 0);
+  ICEBERG_UNWRAP_OR_FAIL(auto stream, file->Open());
+  ASSERT_THAT(file->Open(), IsOk());
+  EXPECT_EQ(storage->unhinted_calls, 1);
+  std::array<std::byte, 8> buffer;
+  EXPECT_THAT(stream->Read(buffer), HasValue(::testing::Eq(4)));
+  EXPECT_FALSE(cache->Find("manifest.avro"));
+  EXPECT_THAT(adapter->ReadFile("manifest.avro", std::nullopt),
+              HasValue(::testing::Eq("manifest")));
+}
+
+TEST(MetadataCacheTest, BypassedHandlesReuseTheirStorageSize) {
+  for (int64_t size : {0, 9}) {
+    auto state = std::make_shared<FailingOpenState>();
+    state->size = size;
+    auto cache = MakeCache(std::make_shared<FailingOpenFileIO>(state),
+                           ContentCacheOptions{.max_content_length = 8});
+    ICEBERG_UNWRAP_OR_FAIL(auto input, cache->NewInputFile("manifest.avro"));
+    EXPECT_THAT(input->Size(), HasValue(::testing::Eq(size)));
+    EXPECT_THAT(input->Size(), HasValue(::testing::Eq(size)));
+    EXPECT_EQ(state->size_count, 1);
+    EXPECT_EQ(state->open_count, 0);
+  }
+}
+
+TEST(MetadataCacheTest, UnknownNamespaceSkipsReadAheadAndHintVerification) {
+  class UntrackedFileIO : public FailingOpenFileIO, public SupportsStorageCredentials {
+   public:
+    using FailingOpenFileIO::FailingOpenFileIO;
+    SupportsStorageCredentials* AsSupportsStorageCredentials() override { return this; }
+    Status SetStorageCredentials(const std::vector<StorageCredential>&) override {
+      return {};
+    }
+    std::vector<StorageCredential> credentials() const override { return {}; }
+  };
+  auto state = std::make_shared<FailingOpenState>();
+  state->first_error = {.kind = ErrorKind::kIOError, .message = "storage unavailable"};
+  auto cache = MakeCache(std::make_shared<UntrackedFileIO>(state));
+  ICEBERG_UNWRAP_OR_FAIL(auto input, cache->Wrap()->NewInputFile("manifest.avro", 8));
+  EXPECT_EQ(state->size_count, 0);
+  EXPECT_THAT(input->Open(), IsError(ErrorKind::kIOError));
+  EXPECT_EQ(state->open_count, 1);
+}
+
+TEST(MetadataCacheTest, NestedCacheFollowsInnerOverwrites) {
+  auto storage = std::make_shared<MockFileIO>();
+  storage->AddFile("manifest", "old");
+  auto inner = MakeCache(storage)->Wrap();
+  auto outer = MakeCache(inner)->Wrap();
+  ASSERT_THAT(outer->ReadFile("manifest", std::nullopt), HasValue(::testing::Eq("old")));
+  ASSERT_THAT(inner->WriteFile("manifest", "new"), IsOk());
+  EXPECT_THAT(outer->ReadFile("manifest", std::nullopt), HasValue(::testing::Eq("new")));
+}
+
+TEST(MetadataCacheTest, ConcurrentInsertionsShareTheWinnerForTheSameSizeAndGeneration) {
+  auto cache = MakeCache();
+  auto insert = [&](size_t size, uint64_t generation) {
+    return cache->Insert("manifest", std::make_shared<const std::vector<std::byte>>(size),
+                         generation);
+  };
+  std::barrier start(2);
+  internal::MetadataContent first;
+  std::jthread loader([&] {
+    start.arrive_and_wait();
+    first = insert(8, 0);
+  });
+  start.arrive_and_wait();
+  auto second = insert(8, 0);
+  loader.join();
+  ASSERT_EQ(first, second);
+  EXPECT_NE(insert(4, 0), first);
+  EXPECT_EQ(cache->Find("manifest"), first);
+  cache->Clear();
+  auto replacement = insert(8, 1);
+  EXPECT_NE(insert(8, 0), replacement);
+  EXPECT_EQ(cache->Find("manifest"), replacement);
+}
+
+TEST(MetadataCacheTest, SizeMismatchDoesNotPromoteAFileWithinItsTable) {
+  auto cache = MakeCache(std::make_shared<MockFileIO>(),
+                         ContentCacheOptions{.max_total_bytes = 4});
+  auto bytes = std::make_shared<const std::vector<std::byte>>(2);
+  cache->Insert("a", bytes, 0);
+  cache->Insert("b", bytes, 0);
+  EXPECT_FALSE(cache->FindForHandle("a", 0, 1));
+  cache->Insert("a", std::make_shared<const std::vector<std::byte>>(1), 0);
+  cache->Insert("c", bytes, 0);
+  EXPECT_FALSE(cache->Find("a"));
+  EXPECT_EQ(cache->Find("b"), bytes);
+}
+
+TEST(MetadataCacheTest, MissInAnActiveTableDoesNotRefreshItsGlobalSlot) {
+  ScopedGlobalCacheLimit limit(2);
+  auto first = MakeCache();
+  auto second = MakeCache();
+  auto third = MakeCache();
+  auto bytes = std::make_shared<const std::vector<std::byte>>(1);
+  first->Insert("a", bytes, 0);
+  second->Insert("b", bytes, 0);
+  EXPECT_FALSE(first->Find("missing"));
+  third->Insert("c", bytes, 0);
+  EXPECT_FALSE(first->Find("a"));
+  EXPECT_TRUE(second->Find("b"));
+}
+
+TEST(MetadataCacheTest, ReadersOverlappingFreshWritesCannotPublishPartialBytes) {
+  auto storage = std::make_shared<MockFileIO>();
+  auto cache = MakeCache(storage);
+  auto adapter = cache->Wrap();
+  auto warm = std::make_shared<const std::vector<std::byte>>(8);
+  cache->Insert("warm", warm, 0);
+  ICEBERG_UNWRAP_OR_FAIL(auto output, adapter->NewOutputFile("fresh"));
+  ICEBERG_UNWRAP_OR_FAIL(auto writer, output->CreateOrOverwrite());
+  auto bytes = std::as_bytes(std::span("ab", 2));
+  ASSERT_THAT(writer->Write(bytes), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto partial, adapter->NewInputFile("fresh"));
+  EXPECT_THAT(adapter->ReadFile("fresh", std::nullopt), HasValue(::testing::Eq("ab")));
+  ASSERT_FALSE(cache->Find("fresh"));
+  ASSERT_THAT(writer->Write(bytes), IsOk());
+  ASSERT_THAT(writer->Close(), IsOk());
+  ASSERT_THAT(partial->Open(), IsOk());
+  EXPECT_FALSE(cache->Find("fresh"));
+  EXPECT_EQ(cache->Find("warm"), warm);
+  EXPECT_THAT(adapter->ReadFile("fresh", std::nullopt), HasValue(::testing::Eq("abab")));
 }
 
 TEST(MetadataCacheTest, PrefixReadDoesNotPopulateWholeFileCache) {

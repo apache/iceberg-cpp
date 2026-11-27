@@ -30,6 +30,7 @@
 #include <vector>
 
 #include "iceberg/file_io.h"
+#include "iceberg/storage_namespace.h"
 #include "iceberg/util/config.h"
 
 namespace iceberg::internal {
@@ -66,7 +67,8 @@ class ContentCacheRegistry;
 class ICEBERG_EXPORT ContentCache : public std::enable_shared_from_this<ContentCache> {
  public:
   // A cache and all its adapters use this FileIO for their entire lifetime.
-  // Construct a new cache when replacing the storage FileIO.
+  // Construct a new cache when replacing the storage FileIO. FileIOs with mutable
+  // routing must report their storage namespace generation for location-only hits.
   ContentCache(std::shared_ptr<FileIO> io, ContentCacheOptions options);
   ~ContentCache();
   // Return the previous process-wide capacity. The new capacity must be positive.
@@ -78,17 +80,28 @@ class ICEBERG_EXPORT ContentCache : public std::enable_shared_from_this<ContentC
   // A load that overlaps invalidation may serve its own reader but cannot repopulate
   // the cache. Capture the generation under the same lock as the lookup.
   MetadataContent Find(std::string_view location, uint64_t* generation = nullptr);
-  void Insert(std::string_view location, MetadataContent content, uint64_t generation);
+  MetadataContent FindForHandle(std::string_view location, uint64_t generation,
+                                std::optional<int64_t> size = std::nullopt,
+                                bool* can_load = nullptr);
+  bool MatchesStorageSize(const std::string& location, int64_t size) const;
+  // A competing load of the same size in this generation shares the winner's bytes.
+  MetadataContent Insert(std::string_view location, MetadataContent content,
+                         uint64_t generation);
   void Clear();
 
  private:
   class ManifestFileIO;
 
+  bool RefreshNamespace();
+  MetadataContent FindLocked(std::string_view location, std::optional<int64_t> size);
   const std::shared_ptr<FileIO> io_;
+  const StorageNamespace* const routes_;
   const ContentCacheOptions options_;
   const std::shared_ptr<ContentCacheRegistry> registry_;
   std::mutex mutex_;
   const std::shared_ptr<ContentCacheRegistration> registration_;
+  size_t active_writes_ = 0;
+  std::optional<uint64_t> namespace_generation_ = 0;
   uint64_t generation_ = 0;
 };
 

@@ -18,6 +18,7 @@
  */
 
 #include <algorithm>
+#include <array>
 #include <atomic>
 #include <chrono>
 #include <cstdint>
@@ -26,6 +27,8 @@
 #include <format>
 #include <functional>
 #include <future>
+#include <iterator>
+#include <map>
 #include <memory>
 #include <mutex>
 #include <optional>
@@ -52,6 +55,7 @@
 #include "iceberg/arrow/s3/s3_properties.h"
 #include "iceberg/logging/log_macros.h"
 #include "iceberg/logging/logger.h"
+#include "iceberg/storage_namespace.h"
 #include "iceberg/util/executor.h"
 #include "iceberg/util/macros.h"
 #include "iceberg/util/property_util.h"
@@ -257,12 +261,6 @@ Result<::arrow::fs::S3Options> ConfigureS3Options(
   if (const auto* endpoint = FindProperty(properties, S3Properties::kEndpoint);
       endpoint != nullptr) {
     options.endpoint_override = SplitEndpointScheme(*endpoint, options);
-  } else if (const char* s3_endpoint_env = std::getenv("AWS_ENDPOINT_URL_S3");
-             s3_endpoint_env != nullptr) {
-    options.endpoint_override = SplitEndpointScheme(s3_endpoint_env, options);
-  } else if (const char* endpoint_env = std::getenv("AWS_ENDPOINT_URL");
-             endpoint_env != nullptr) {
-    options.endpoint_override = SplitEndpointScheme(endpoint_env, options);
   }
 
   // Both boolean properties below read through PropertyUtil, so a value that does not
@@ -325,6 +323,50 @@ std::string NormalizeS3Location(std::string_view location) {
         .append(location.substr(separator));
   }
   return std::string(location);
+}
+
+// Only these options affect which storage serves a given bucket and object key.
+using Route = std::array<std::optional<std::string_view>, 4>;
+using Routes = std::map<std::string, Route>;
+
+Routes S3Routes(const std::unordered_map<std::string, std::string>& defaults,
+                const std::vector<StorageCredential>& credentials) {
+  constexpr std::array keys{S3Properties::kEndpoint, S3Properties::kClientRegion,
+                            S3Properties::kPathStyleAccess, S3Properties::kSslEnabled};
+  auto apply = [&](Route route, const auto& properties) {
+    for (size_t i = 0; i < keys.size(); ++i) {
+      if (auto it = properties.find(std::string(keys[i])); it != properties.end()) {
+        route[i] = it->second;
+      }
+    }
+    return route;
+  };
+  auto base = apply({}, defaults);
+  Routes routes{{"", base}};
+  for (const auto& credential : credentials) {
+    if (IsS3CredentialPrefix(credential.prefix)) {
+      routes.try_emplace(NormalizeS3Location(credential.prefix),
+                         apply(base, credential.config));
+    }
+  }
+  // Sorted prefixes visit each parent before its descendants. Remove redundant
+  // overrides, so changing only the credential scope preserves the namespace.
+  std::vector<Routes::const_iterator> parents{routes.begin()};
+  for (auto it = std::next(routes.begin()); it != routes.end();) {
+    while (!it->first.starts_with(parents.back()->first)) parents.pop_back();
+    if (parents.back()->second == it->second) {
+      it = routes.erase(it);
+    } else {
+      parents.push_back(it++);
+    }
+  }
+  return routes;
+}
+
+bool SameS3StorageRoutes(const std::unordered_map<std::string, std::string>& defaults,
+                         const std::vector<StorageCredential>& previous,
+                         const std::vector<StorageCredential>& next) {
+  return S3Routes(defaults, previous) == S3Routes(defaults, next);
 }
 
 // Start refreshing five minutes before the earliest token expires.
@@ -726,7 +768,9 @@ class VendedCredentialsProvider final : public Aws::Auth::AWSCredentialsProvider
   Aws::Auth::AWSCredentials credentials_;
 };
 
-class ArrowS3FileIO final : public FileIO, public SupportsStorageCredentials {
+class ArrowS3FileIO final : public FileIO,
+                            public SupportsStorageCredentials,
+                            public StorageNamespace {
  public:
   ArrowS3FileIO(std::shared_ptr<::arrow::fs::FileSystem> arrow_fs,
                 std::unordered_map<std::string, std::string> default_properties,
@@ -763,6 +807,10 @@ class ArrowS3FileIO final : public FileIO, public SupportsStorageCredentials {
   }
 
   SupportsStorageCredentials* AsSupportsStorageCredentials() override { return this; }
+  std::optional<uint64_t> namespace_generation() const override {
+    return namespace_generation_.load();
+  }
+  SameRoutes same_routes() const override { return SameS3StorageRoutes; }
 
  private:
   using DelegatesByPrefix =
@@ -795,6 +843,7 @@ class ArrowS3FileIO final : public FileIO, public SupportsStorageCredentials {
   // Guards everything below; shared because reads happen per file operation.
   mutable std::shared_mutex mutex_;
   DelegatesByPrefix file_io_by_prefix_;
+  std::atomic<uint64_t> namespace_generation_{0};
 };
 
 Status ArrowS3FileIO::InitializeStorageCredentials(
@@ -816,6 +865,10 @@ Status ArrowS3FileIO::InstallStorageCredentials(
   auto credentials = storage_credentials;
   {
     std::unique_lock lock(mutex_);
+    if (!SameS3StorageRoutes(properties(), credential_store_->credentials(),
+                             credentials)) {
+      ++namespace_generation_;
+    }
     file_io_by_prefix_.swap(delegates);
     credential_store_->Install(std::move(credentials), std::move(provider));
     installed->store(true);
@@ -927,9 +980,17 @@ Result<std::unique_ptr<FileIO>> MakeS3FileIO(
     ICEBERG_PRECHECK(count > 0, "{} must be positive", S3Properties::kDeleteNumThreads);
     delete_parallelism = static_cast<size_t>(count);
   }
-  // Uses default credentials if properties are empty.
-  ICEBERG_ASSIGN_OR_RAISE(auto fs, BuildArrowS3FileSystem(properties));
-  return std::make_unique<ArrowS3FileIO>(std::move(fs), properties, delete_parallelism);
+  // Snapshot the ambient endpoint (including its absence). A later key install
+  // or lazy resolver rebuild must construct clients in the same default namespace.
+  auto defaults = properties;
+  if (!FindProperty(defaults, S3Properties::kEndpoint)) {
+    auto endpoint = std::getenv("AWS_ENDPOINT_URL_S3");
+    if (!endpoint) endpoint = std::getenv("AWS_ENDPOINT_URL");
+    defaults.emplace(S3Properties::kEndpoint, endpoint ? endpoint : "");
+  }
+  ICEBERG_ASSIGN_OR_RAISE(auto fs, BuildArrowS3FileSystem(defaults));
+  return std::make_unique<ArrowS3FileIO>(std::move(fs), std::move(defaults),
+                                         delete_parallelism);
 }
 
 Status FinalizeS3() {

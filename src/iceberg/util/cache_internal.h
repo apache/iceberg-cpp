@@ -97,14 +97,20 @@ class LruCache {
 
   template <typename K>
   const Value* Find(K&& key) {
+    return FindAndPromoteIf(std::forward<K>(key), [](const Value&) { return true; });
+  }
+
+  // Return the stored value even when the caller cannot use it. Only a value
+  // accepted by the caller counts as a use for eviction order.
+  template <typename K, typename Predicate>
+  const Value* FindAndPromoteIf(K&& key, Predicate promote) {
     const auto it = map_.find(key);
     if (it == map_.end()) {
       return nullptr;
     }
 
-    // Found => move item at front of the list
     auto list_it = it->second;
-    items_.splice(items_.begin(), items_, list_it);
+    if (promote(list_it->value)) items_.splice(items_.begin(), items_, list_it);
     return &list_it->value;
   }
 

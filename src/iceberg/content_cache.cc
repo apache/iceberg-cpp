@@ -35,26 +35,26 @@ namespace iceberg::internal {
 
 using CachedFiles = LruCache<std::string, MetadataContent, StringHash, StringEqual>;
 
-// Owned by the table's cache handle. Only the registry accesses these fields under
-// its mutex. A position is valid while files is non-null.
+// Owned by the table. The registry guards files and position under its mutex.
+// A position is valid while files is non-null.
 struct ContentCacheRegistration {
   using Entries = std::list<std::weak_ptr<ContentCacheRegistration>>;
   Entries::iterator position;
   std::shared_ptr<CachedFiles> files;
+  // Accessed under the per-table mutex. A miss needs no registry lock.
+  std::weak_ptr<CachedFiles> last_files;
 };
 
 class ContentCacheRegistry {
  public:
   explicit ContentCacheRegistry(int32_t capacity) : capacity_(capacity) {}
 
-  // Pin the files for the calling operation. Their entries are protected by the
-  // per-table mutex, so accessing bytes never requires holding the registry lock.
-  std::shared_ptr<CachedFiles> Find(const ContentCacheRegistration& entry) {
+  bool IsActive(const ContentCacheRegistration& entry,
+                const std::shared_ptr<CachedFiles>& files, bool promote) {
     std::lock_guard lock(mutex_);
-    if (entry.files) {
-      entries_.splice(entries_.begin(), entries_, entry.position);
-    }
-    return entry.files;
+    if (entry.files != files) return false;
+    if (promote) entries_.splice(entries_.begin(), entries_, entry.position);
+    return true;
   }
 
   std::shared_ptr<CachedFiles> GetOrCreate(
@@ -138,26 +138,38 @@ Result<std::vector<std::byte>> ReadInputFile(InputFile& input_file, int64_t read
   return content;
 }
 
-class CachedSeekableInputStream : public SeekableInputStream {
+class SizedInputStream : public SeekableInputStream {
  public:
-  explicit CachedSeekableInputStream(MetadataContent content)
-      : content_(std::move(content)) {}
+  explicit SizedInputStream(MetadataContent content)
+      : size_(content->size()), content_(std::move(content)) {}
+  SizedInputStream(std::unique_ptr<SeekableInputStream> input, size_t size)
+      : size_(size), input_(std::move(input)) {}
 
-  Result<int64_t> Position() const override { return position_; }
+  Result<int64_t> Position() const override {
+    return input_ ? input_->Position() : Result<int64_t>(position_);
+  }
 
   Status Seek(int64_t position) override {
     ICEBERG_PRECHECK(!closed_, "Input stream is closed");
     ICEBERG_PRECHECK(position >= 0, "Position must not be negative: {}", position);
-    ICEBERG_PRECHECK(std::cmp_less_equal(position, content_->size()),
-                     "Position {} exceeds file size {}", position, content_->size());
+    ICEBERG_PRECHECK(std::cmp_less_equal(position, size_),
+                     "Position {} exceeds file size {}", position, size_);
+    if (input_) return input_->Seek(position);
     position_ = position;
     return {};
   }
 
   Result<int64_t> Read(std::span<std::byte> out) override {
     ICEBERG_PRECHECK(!closed_, "Input stream is closed");
+    if (input_) {
+      ICEBERG_ASSIGN_OR_RAISE(auto current, input_->Position());
+      ICEBERG_PRECHECK(current >= 0 && std::cmp_less_equal(current, size_),
+                       "Invalid stream position {}", current);
+      return input_->Read(
+          out.first(std::min(out.size(), size_ - static_cast<size_t>(current))));
+    }
     auto position = static_cast<size_t>(position_);
-    auto bytes_to_read = std::min(out.size(), content_->size() - position);
+    auto bytes_to_read = std::min(out.size(), size_ - position);
     if (bytes_to_read > 0) {
       std::memcpy(out.data(), content_->data() + position, bytes_to_read);
       position_ += static_cast<int64_t>(bytes_to_read);
@@ -168,12 +180,13 @@ class CachedSeekableInputStream : public SeekableInputStream {
   Status ReadFully(int64_t position, std::span<std::byte> out) override {
     ICEBERG_PRECHECK(!closed_, "Input stream is closed");
     ICEBERG_PRECHECK(position >= 0, "Position must not be negative: {}", position);
-    ICEBERG_PRECHECK(std::cmp_less_equal(position, content_->size()),
-                     "Position {} exceeds file size {}", position, content_->size());
+    ICEBERG_PRECHECK(std::cmp_less_equal(position, size_),
+                     "Position {} exceeds file size {}", position, size_);
     auto offset = static_cast<size_t>(position);
-    ICEBERG_PRECHECK(out.size() <= content_->size() - offset,
+    ICEBERG_PRECHECK(out.size() <= size_ - offset,
                      "Read out of bounds: offset {} + length {} exceeds file size {}",
-                     position, out.size(), content_->size());
+                     position, out.size(), size_);
+    if (input_) return input_->ReadFully(position, out);
     if (!out.empty()) {
       std::memcpy(out.data(), content_->data() + offset, out.size());
     }
@@ -182,10 +195,12 @@ class CachedSeekableInputStream : public SeekableInputStream {
 
   Status Close() override {
     closed_ = true;
-    return {};
+    return input_ ? input_->Close() : Status{};
   }
 
  private:
+  size_t size_;
+  std::unique_ptr<SeekableInputStream> input_;
   MetadataContent content_;
   int64_t position_ = 0;
   bool closed_ = false;
@@ -194,12 +209,14 @@ class CachedSeekableInputStream : public SeekableInputStream {
 class CachedInputFile : public InputFile {
  public:
   CachedInputFile(std::unique_ptr<InputFile> input, std::shared_ptr<ContentCache> cache,
-                  int64_t size, uint64_t generation)
+                  int64_t size, uint64_t generation,
+                  std::optional<std::string> verify_location)
       : input_(std::move(input)),
         cache_(std::move(cache)),
         location_(input_->location()),
         size_(size),
-        generation_(generation) {}
+        generation_(generation),
+        verify_location_(std::move(verify_location)) {}
   CachedInputFile(std::string location, MetadataContent content)
       : location_(std::move(location)),
         size_(static_cast<int64_t>(content->size())),
@@ -208,12 +225,25 @@ class CachedInputFile : public InputFile {
   Result<int64_t> Size() const override { return size_; }
   Result<std::unique_ptr<SeekableInputStream>> Open() override {
     if (content_) {
-      return std::make_unique<CachedSeekableInputStream>(content_);
+      return std::make_unique<SizedInputStream>(content_);
     }
-    uint64_t generation;
-    auto cached = cache_->Find(location_, &generation);
-    if (cached && generation == generation_ && std::cmp_equal(cached->size(), size_)) {
-      return std::make_unique<CachedSeekableInputStream>(std::move(cached));
+    if (!cache_) return input_->Open();
+    bool can_load;
+    if (auto cached = cache_->FindForHandle(location_, generation_, size_, &can_load)) {
+      return std::make_unique<SizedInputStream>(std::move(cached));
+    }
+    if (can_load && verify_location_) {
+      // A hinted Arrow stream can report EOF at the hint. Confirm the full length
+      // independently once, only if this handle actually needs to populate the cache.
+      std::call_once(verify_once_, [&] {
+        complete_ = cache_->MatchesStorageSize(*verify_location_, size_);
+      });
+      can_load = complete_;
+    }
+    if (!can_load) {
+      ICEBERG_ASSIGN_OR_RAISE(auto stream, input_->Open());
+      return std::make_unique<SizedInputStream>(std::move(stream),
+                                                static_cast<size_t>(size_));
     }
     auto loaded = ReadInputFile(*input_, size_, location_);
     if (!loaded) {
@@ -228,8 +258,8 @@ class CachedInputFile : public InputFile {
     }
     auto content =
         std::make_shared<const std::vector<std::byte>>(std::move(loaded).value());
-    if (!cached) cache_->Insert(location_, content, generation_);
-    return std::make_unique<CachedSeekableInputStream>(std::move(content));
+    content = cache_->Insert(location_, std::move(content), generation_);
+    return std::make_unique<SizedInputStream>(std::move(content));
   }
 
  private:
@@ -238,16 +268,24 @@ class CachedInputFile : public InputFile {
   std::string location_;
   int64_t size_;
   uint64_t generation_ = 0;
+  std::optional<std::string> verify_location_;
+  std::once_flag verify_once_;
+  bool complete_ = false;
   MetadataContent content_;
 };
 
 }  // namespace
 
 // Clear once after each cleanup, including partially successful batch deletes.
-class ContentCache::ManifestFileIO : public FileIO {
+class ContentCache::ManifestFileIO : public FileIO, public StorageNamespace {
  public:
   explicit ManifestFileIO(std::shared_ptr<ContentCache> cache)
       : cache_(std::move(cache)) {}
+  std::optional<uint64_t> namespace_generation() const override {
+    std::lock_guard lock(cache_->mutex_);
+    if (!cache_->RefreshNamespace() || cache_->active_writes_ != 0) return std::nullopt;
+    return cache_->generation_;
+  }
   Result<std::unique_ptr<InputFile>> NewInputFile(std::string location) override {
     return cache_->NewInputFile(std::move(location));
   }
@@ -264,7 +302,8 @@ class ContentCache::ManifestFileIO : public FileIO {
     return FileIO::ReadFile(location, std::nullopt);
   }
   Result<std::unique_ptr<OutputFile>> NewOutputFile(std::string location) override {
-    return cache_->io_->NewOutputFile(std::move(location));
+    ICEBERG_ASSIGN_OR_RAISE(auto output, cache_->io_->NewOutputFile(std::move(location)));
+    return std::make_unique<CachedOutputFile>(std::move(output), cache_);
   }
   Status DeleteFile(const std::string& location) override {
     ClearAfterDelete cleanup{*cache_};
@@ -280,6 +319,86 @@ class ContentCache::ManifestFileIO : public FileIO {
   }
 
  private:
+  // A reader overlapping any write can see partial bytes through another spelling
+  // of the path. Existing immutable entries remain usable during create-only writes.
+  class WritingStream : public PositionOutputStream {
+   public:
+    explicit WritingStream(std::shared_ptr<ContentCache> cache)
+        : cache_(std::move(cache)) {
+      std::lock_guard lock(cache_->mutex_);
+      ++cache_->active_writes_;
+      has_cached_files_ = !cache_->registration_->last_files.expired();
+    }
+
+    ~WritingStream() override {
+      stream_.reset();
+      Finish();
+    }
+
+    Status Open(OutputFile& output, bool overwrite) {
+      if (overwrite && !has_cached_files_) {
+        ICEBERG_ASSIGN_OR_RAISE(stream_, output.CreateOrOverwrite());
+        return {};
+      }
+      auto created = output.Create();
+      if (!created && overwrite) {
+        // The path may already exist under a cached alias. Clear before storage can
+        // truncate it, including when opening the overwrite stream itself fails.
+        cache_->Clear();
+        created = output.CreateOrOverwrite();
+      }
+      ICEBERG_ASSIGN_OR_RAISE(stream_, std::move(created));
+      return {};
+    }
+
+    Result<int64_t> Position() const override { return stream_->Position(); }
+    Result<int64_t> StoredLength() const override { return stream_->StoredLength(); }
+    Status Write(std::span<const std::byte> data) override {
+      return stream_->Write(data);
+    }
+    Status Flush() override { return stream_->Flush(); }
+    Status Close() override {
+      auto status = stream_->Close();
+      if (status) Finish();
+      return status;
+    }
+
+   private:
+    void Finish() {
+      if (auto cache = std::move(cache_)) {
+        std::lock_guard lock(cache->mutex_);
+        --cache->active_writes_;
+        ++cache->generation_;
+      }
+    }
+    std::shared_ptr<ContentCache> cache_;
+    std::unique_ptr<PositionOutputStream> stream_;
+    bool has_cached_files_;
+  };
+
+  class CachedOutputFile : public OutputFile {
+   public:
+    CachedOutputFile(std::unique_ptr<OutputFile> output,
+                     std::shared_ptr<ContentCache> cache)
+        : output_(std::move(output)), cache_(std::move(cache)) {}
+    std::string_view location() const override { return output_->location(); }
+    Result<std::unique_ptr<PositionOutputStream>> Create() override {
+      return Open(false);
+    }
+    Result<std::unique_ptr<PositionOutputStream>> CreateOrOverwrite() override {
+      return Open(true);
+    }
+
+   private:
+    Result<std::unique_ptr<PositionOutputStream>> Open(bool overwrite) {
+      auto stream = std::make_unique<WritingStream>(cache_);
+      ICEBERG_RETURN_UNEXPECTED(stream->Open(*output_, overwrite));
+      return stream;
+    }
+    std::unique_ptr<OutputFile> output_;
+    std::shared_ptr<ContentCache> cache_;
+  };
+
   struct ClearAfterDelete {
     ContentCache& cache;
     ~ClearAfterDelete() { cache.Clear(); }
@@ -313,10 +432,16 @@ Result<ContentCacheOptions> ContentCacheOptions::FromProperties(
 
 ContentCache::ContentCache(std::shared_ptr<FileIO> io, ContentCacheOptions options)
     : io_(std::move(io)),
+      routes_(dynamic_cast<const StorageNamespace*>(io_.get())),
       options_(options),
       registry_(GlobalContentCacheRegistry()),
       registration_(std::make_shared<ContentCacheRegistration>()) {
   if (!io_) throw std::invalid_argument("Content cache requires a storage FileIO");
+  if (routes_) {
+    namespace_generation_ = routes_->namespace_generation();
+  } else if (io_->AsSupportsStorageCredentials()) {
+    namespace_generation_.reset();
+  }
 }
 
 ContentCache::~ContentCache() { registry_->Erase(*registration_); }
@@ -329,27 +454,70 @@ std::shared_ptr<FileIO> ContentCache::Wrap() {
   return std::make_shared<ManifestFileIO>(shared_from_this());
 }
 
-MetadataContent ContentCache::Find(std::string_view location, uint64_t* generation) {
-  std::lock_guard lock(mutex_);
-  if (generation) *generation = generation_;
-  auto files = registry_->Find(*registration_);
-  const auto* file = files ? files->Find(location) : nullptr;
-  return file ? *file : nullptr;
+bool ContentCache::RefreshNamespace() {
+  auto current = routes_ ? routes_->namespace_generation() : namespace_generation_;
+  if (current != namespace_generation_) {
+    registry_->Erase(*registration_);
+    namespace_generation_ = current;
+    ++generation_;
+  }
+  return current.has_value();
 }
 
-void ContentCache::Insert(std::string_view location, MetadataContent content,
-                          uint64_t generation) {
+MetadataContent ContentCache::Find(std::string_view location, uint64_t* generation) {
+  std::lock_guard lock(mutex_);
+  const bool cacheable = RefreshNamespace();
+  if (generation) *generation = generation_;
+  return cacheable ? FindLocked(location, std::nullopt) : nullptr;
+}
+
+MetadataContent ContentCache::FindForHandle(std::string_view location,
+                                            uint64_t generation,
+                                            std::optional<int64_t> size, bool* can_load) {
+  std::lock_guard lock(mutex_);
+  const bool current = RefreshNamespace() && generation == generation_;
+  if (can_load) *can_load = current && active_writes_ == 0;
+  if (!current) return nullptr;
+  return FindLocked(location, size);
+}
+
+MetadataContent ContentCache::FindLocked(std::string_view location,
+                                         std::optional<int64_t> size) {
+  auto files = registration_->last_files.lock();
+  if (!files) return nullptr;
+  auto fits = [size](const MetadataContent& value) {
+    return !size || std::cmp_equal(value->size(), *size);
+  };
+  const auto* file = files->FindAndPromoteIf(location, fits);
+  if (!file || !fits(*file)) return nullptr;
+  return registry_->IsActive(*registration_, files, /*promote=*/true) ? *file : nullptr;
+}
+
+MetadataContent ContentCache::Insert(std::string_view location, MetadataContent content,
+                                     uint64_t generation) {
   // Empty/corrupt metadata must not accumulate unbounded zero-weight entries.
   if (content->empty() || content->size() > options_.max_content_length ||
       content->size() > options_.max_total_bytes) {
-    return;
+    return content;
   }
   std::lock_guard lock(mutex_);
-  if (generation == generation_) {
-    const auto weight = static_cast<int64_t>(content->size());
-    registry_->GetOrCreate(registration_, options_.max_total_bytes)
-        ->Replace(std::string(location), std::move(content), weight);
+  if (!RefreshNamespace() || generation != generation_ || active_writes_ != 0)
+    return content;
+  if (auto retained = registration_->last_files.lock()) {
+    auto fits = [&](const MetadataContent& value) {
+      return value->size() == content->size();
+    };
+    if (auto* winner = retained->FindAndPromoteIf(location, fits)) {
+      const bool same_size = fits(*winner);
+      if (registry_->IsActive(*registration_, retained, /*promote=*/same_size)) {
+        return same_size ? *winner : content;
+      }
+    }
   }
+  auto files = registry_->GetOrCreate(registration_, options_.max_total_bytes);
+  registration_->last_files = files;
+  files->Replace(std::string(location), content, static_cast<int64_t>(content->size()));
+  return content;
 }
 
 void ContentCache::Clear() {
@@ -373,20 +541,36 @@ Result<std::unique_ptr<InputFile>> ContentCache::NewInputFile(
   } else {
     ICEBERG_ASSIGN_OR_RAISE(input, io_->NewInputFile(location));
   }
-  if (auto content = Find(input->location())) {
-    return std::make_unique<CachedInputFile>(std::string(input->location()),
-                                             std::move(content));
+  // A resolver may first discover an untrackable backend while resolving this
+  // handle. Bypass read-ahead as well as admission in that case.
+  if (routes_ ? !routes_->namespace_generation()
+              : io_->AsSupportsStorageCredentials() != nullptr) {
+    return input;
+  }
+  if (input->location() != location) {
+    if (auto content = FindForHandle(input->location(), generation)) {
+      return std::make_unique<CachedInputFile>(std::string(input->location()),
+                                               std::move(content));
+    }
   }
   ICEBERG_ASSIGN_OR_RAISE(auto size, input->Size());
   if (size < 0) {
     return Invalid("File size {} for {} does not fit in size_t", size, input->location());
   }
-  if (size == 0 || std::cmp_greater(size, options_.max_content_length) ||
-      std::cmp_greater(size, options_.max_total_bytes)) {
-    return input;
-  }
-  return std::make_unique<CachedInputFile>(std::move(input), shared_from_this(), size,
-                                           generation);
+  const bool read_ahead = size > 0 &&
+                          std::cmp_less_equal(size, options_.max_content_length) &&
+                          std::cmp_less_equal(size, options_.max_total_bytes);
+  std::optional<std::string> verify_location;
+  if (read_ahead && length && std::cmp_equal(size, *length))
+    verify_location = std::move(location);
+  return std::make_unique<CachedInputFile>(std::move(input),
+                                           read_ahead ? shared_from_this() : nullptr,
+                                           size, generation, std::move(verify_location));
+}
+
+bool ContentCache::MatchesStorageSize(const std::string& location, int64_t size) const {
+  auto whole = io_->NewInputFile(location);
+  return whole && (*whole)->Size().value_or(-1) == size;
 }
 
 }  // namespace iceberg::internal

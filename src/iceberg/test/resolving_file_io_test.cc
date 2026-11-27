@@ -34,6 +34,7 @@
 
 #include "iceberg/file_io_registry.h"
 #include "iceberg/test/matchers.h"
+#include "iceberg/test/mock_io.h"
 
 namespace iceberg {
 
@@ -207,6 +208,24 @@ TEST(ResolvingFileIOTest, RoutesPathsAndCachesResolvedImplementations) {
 
   auto unsupported = io.NewInputFile("gs://bucket/file.parquet");
   EXPECT_THAT(unsupported, IsError(ErrorKind::kNotSupported));
+}
+
+TEST(ResolvingFileIOTest, CredentialInstallKeepsInstanceOwnedNonCredentialStorage) {
+  auto calls = std::make_shared<int>(0);
+  FileIORegistry::Register(
+      "test.cache.instance",
+      {.create =
+           [calls](const FileIORegistry::Properties&) -> Result<std::unique_ptr<FileIO>> {
+         ++*calls;
+         return std::make_unique<MockFileIO>();
+       },
+       .accepts = [](std::string_view scheme) { return scheme == "instance-test"; }});
+  ResolvingFileIO io({});
+  const std::string path = "instance-test://manifest";
+  ASSERT_THAT(io.WriteFile(path, "first"), IsOk());
+  ASSERT_THAT(io.SetStorageCredentials({{"s3", {{"key", "new"}}}}), IsOk());
+  EXPECT_THAT(io.ReadFile(path, std::nullopt), HasValue(::testing::Eq("first")));
+  EXPECT_EQ(*calls, 1);
 }
 
 TEST(ResolvingFileIOTest, GroupsBulkDeletesByResolvedImplementation) {
