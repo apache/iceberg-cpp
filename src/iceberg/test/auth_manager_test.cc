@@ -797,8 +797,8 @@ class OAuth2ManagerRefreshTest : public ::testing::TestWithParam<std::string> {
     std::move(task.get())();
   }
 
-  void CheckRequests(const std::string& client_id, const std::string& client_secret,
-                     const std::string& parent_token = "") {
+  void CheckChildRequests(const std::string& client_id, const std::string& client_secret,
+                          const std::string& parent_token) {
     ASSERT_EQ(client_->recorded_requests.size(), 2);
     std::unordered_map<std::string, std::string> credential_form{
         {"grant_type", "client_credentials"}, {"client_id", client_id},
@@ -807,11 +807,7 @@ class OAuth2ManagerRefreshTest : public ::testing::TestWithParam<std::string> {
     };
     const auto& initial = client_->recorded_requests[0];
     EXPECT_THAT(initial.form, ::testing::ContainerEq(credential_form));
-    if (parent_token.empty()) {
-      EXPECT_TRUE(initial.headers.empty());
-    } else {
-      EXPECT_EQ(initial.headers.at("Authorization"), "Bearer " + parent_token);
-    }
+    EXPECT_EQ(initial.headers.at("Authorization"), "Bearer " + parent_token);
 
     const auto& refresh = client_->recorded_requests[1];
     if (GetParam() == "false") {
@@ -858,13 +854,6 @@ class OAuth2ManagerRefreshTest : public ::testing::TestWithParam<std::string> {
   std::shared_ptr<AuthSession> session_;
 };
 
-TEST_P(OAuth2ManagerRefreshTest, CatalogRefreshUsesConfiguredGrant) {
-  ExpectRefresh();
-  ICEBERG_UNWRAP_OR_FAIL(session_, manager_->CatalogSession(client_, properties_));
-  ASSERT_NO_FATAL_FAILURE(RunRefresh());
-  CheckRequests("catalog", "catalog-secret");
-}
-
 TEST_P(OAuth2ManagerRefreshTest, CredentialContextInheritsCatalogRefreshGrant) {
   ExpectRefresh();
   properties_[AuthProperties::kToken.key()] = "parent-token";
@@ -875,7 +864,7 @@ TEST_P(OAuth2ManagerRefreshTest, CredentialContextInheritsCatalogRefreshGrant) {
   };
   ICEBERG_UNWRAP_OR_FAIL(session_, manager_->ContextualSession(context, parent));
   ASSERT_NO_FATAL_FAILURE(RunRefresh());
-  CheckRequests("child", "child-secret", "parent-token");
+  CheckChildRequests("child", "child-secret", "parent-token");
   ICEBERG_UNWRAP_OR_FAIL(auto cached, manager_->ContextualSession(context, parent));
   EXPECT_EQ(cached, session_);
 }

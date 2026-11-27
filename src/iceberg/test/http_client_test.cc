@@ -19,6 +19,7 @@
 
 #include "iceberg/catalog/rest/http_client.h"
 
+#include <algorithm>
 #include <array>
 #include <atomic>
 #include <cctype>
@@ -286,6 +287,7 @@ std::unordered_map<std::string, std::string> RequestForm(const std::string& requ
   auto header_end = request.find("\r\n\r\n");
   if (header_end == std::string::npos) return form;
   auto body = request.substr(header_end + 4);
+  std::replace(body.begin(), body.end(), '+', ' ');
   size_t start = 0;
   while (start < body.size()) {
     auto end = body.find('&', start);
@@ -338,7 +340,7 @@ TEST(HttpClientTest, OAuth2SessionRefreshesTokensOverHttp) {
         {"grant_type", "urn:ietf:params:oauth:grant-type:token-exchange"},
         {"subject_token", tokens.at(generation)},
         {"subject_token_type", types.at(generation)},
-        {"scope", "catalog"},
+        {"scope", "catalog reports+read"},
     };
     if (!request.starts_with("POST /v1/oauth/tokens ") || !authenticated ||
         (headers.find("Content-Type") == headers.end() ||
@@ -377,7 +379,7 @@ TEST(HttpClientTest, OAuth2SessionRefreshesTokensOverHttp) {
                          .expires_in_secs = 1,
                          .issued_token_type = types[0]},
                         {.token_endpoint = server.url("/v1/oauth/tokens"),
-                         .scope = "catalog",
+                         .scope = "catalog reports+read",
                          .exchange_enabled = true,
                          .refresh_executor = &executor,
                          // Worker latency must not expire the subject.
@@ -604,6 +606,15 @@ class CapturingAuthSession final : public auth::AuthSession {
  private:
   HttpRequest request_;
 };
+
+TEST(HttpClientTest, PostFormEncodesFieldNamesAndValuesBeforeAuthentication) {
+  HttpClient client;
+  CapturingAuthSession session;
+  auto result = client.PostForm("https://auth.example/token", {{"a b+c", "x y+z&="}}, {},
+                                *DefaultErrorHandler::Instance(), session);
+  EXPECT_THAT(result, IsError(ErrorKind::kInvalidArgument));
+  EXPECT_EQ(session.request().body, "a+b%2Bc=x+y%2Bz%26%3D");
+}
 
 TEST(HttpClientTest, BuildsRequestUriLikeJavaHttpRequest) {
   HttpClient client({}, {}, {}, std::string("https://catalog.example/api/"));

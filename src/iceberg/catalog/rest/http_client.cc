@@ -30,6 +30,7 @@
 #include "iceberg/result.h"
 #include "iceberg/util/macros.h"
 #include "iceberg/util/string_util.h"
+#include "iceberg/util/url_encoder.h"
 
 namespace iceberg::rest {
 
@@ -283,14 +284,15 @@ Result<HttpResponse> HttpClient::PostForm(
   ICEBERG_ASSIGN_OR_RAISE(auto request_uri, RequestUri(path));
   std::unordered_map<std::string, std::string> form_headers(headers);
   form_headers.insert_or_assign(kHeaderContentType, kMimeTypeFormUrlEncoded);
-  std::vector<cpr::Pair> pair_list;
-  pair_list.reserve(form_data.size());
-  for (const auto& [key, val] : form_data) {
-    pair_list.emplace_back(key, val);
+  std::string encoded_body;
+  for (const auto& [key, value] : form_data) {
+    if (!encoded_body.empty()) {
+      encoded_body += '&';
+    }
+    encoded_body += UrlEncoder::EncodeFormComponent(key);
+    encoded_body += '=';
+    encoded_body += UrlEncoder::EncodeFormComponent(value);
   }
-  // Sign the exact bytes cpr will put on the wire.
-  std::string encoded_body =
-      cpr::Payload(pair_list.begin(), pair_list.end()).GetContent();
   ICEBERG_ASSIGN_OR_RAISE(
       auto authenticated,
       AuthenticateRequest(session, HttpMethod::kPost, std::move(request_uri),
