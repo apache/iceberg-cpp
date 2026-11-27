@@ -600,6 +600,7 @@ Result<std::shared_ptr<Table>> Transaction::Commit() {
     return commit_result;
   }
 
+  commit_result.value()->ReuseManifestCache(*ctx_->table);
   ctx_->table = std::move(commit_result.value());
   state_ = TransactionState::kCommitted;
   FinalizeUpdates(*ctx_->table->metadata());
@@ -649,8 +650,8 @@ void Transaction::FinalizeUpdates(const TableMetadata& committed) noexcept {
     }
     ICEBERG_ASSIGN_OR_RAISE(
         committed_files,
-        CommittedTransactionFiles(committed, ctx_->table->io(), std::move(snapshot_ids),
-                                  std::move(content_paths)));
+        CommittedTransactionFiles(committed, internal::ManifestIO(*ctx_->table),
+                                  std::move(snapshot_ids), std::move(content_paths)));
     return {};
   });
   // Skip staging cleanup on discovery failure to protect committed files.

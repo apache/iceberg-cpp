@@ -33,6 +33,7 @@
 #include <variant>
 #include <vector>
 
+#include <arrow/result.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
@@ -337,6 +338,61 @@ TEST_F(FastAppendTest, AppendNullFile) {
   EXPECT_FALSE(result.has_value());
   EXPECT_THAT(result, HasErrorMessage("Invalid data file: null"));
   EXPECT_THAT(table_->current_snapshot(), HasErrorMessage("No current snapshot"));
+}
+
+TEST_F(FastAppendTest, AbortInvalidatesCachedStagedManifests) {
+  auto& io = static_cast<FileIOWithProperties<arrow::ArrowFileSystemFileIO>&>(*file_io_);
+  io.config["io.manifest.cache-enabled"] = "true";
+  ICEBERG_UNWRAP_OR_FAIL(table_, catalog_->LoadTable(table_ident_));
+  ASSERT_TRUE(table_->ManifestCacheEnabled());
+  const auto& manifest_io = internal::ManifestIO(*table_);
+  const auto retained = table_location_ + "/metadata/retained.avro";
+  ASSERT_THAT(io.WriteFile(retained, "retained"), IsOk());
+  ASSERT_THAT(manifest_io->ReadFile(retained, std::nullopt), IsOk());
+  ASSERT_THAT(io.DeleteFile(retained), IsOk());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto txn, table_->NewTransaction());
+  ICEBERG_UNWRAP_OR_FAIL(auto append, txn->NewFastAppend());
+  append->AppendFile(file_a_);
+  ASSERT_THAT(append->Commit(), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto snapshot, txn->current().Snapshot());
+  SnapshotReader reader(snapshot.get());
+  ICEBERG_UNWRAP_OR_FAIL(auto manifests, reader.Manifests(file_io_));
+  ASSERT_EQ(manifests.size(), 1U);
+  const std::vector<std::string> staged = {snapshot->manifest_list,
+                                           manifests.front().manifest_path};
+  for (const auto& path : staged) {
+    ASSERT_THAT(manifest_io->ReadFile(path, std::nullopt), IsOk());
+  }
+
+  ASSERT_THAT(txn->Abort(), IsOk());
+  for (const auto& path : staged) {
+    EXPECT_FALSE(manifest_io->ReadFile(path, std::nullopt).has_value());
+  }
+  EXPECT_THAT(manifest_io->ReadFile(retained, std::nullopt),
+              HasValue(::testing::Eq("retained")));
+}
+
+TEST_F(FastAppendTest, InvalidManifestCacheSettingsDoNotDeleteCommittedFiles) {
+  auto& io = static_cast<FileIOWithProperties<arrow::ArrowFileSystemFileIO>&>(*file_io_);
+  io.config = {{"io.manifest.cache-enabled", "true"},
+               {"io.manifest.cache.max-total-bytes", "invalid"}};
+  ICEBERG_UNWRAP_OR_FAIL(table_, catalog_->LoadTable(table_ident_));
+  ICEBERG_UNWRAP_OR_FAIL(auto txn, table_->NewTransaction());
+  ICEBERG_UNWRAP_OR_FAIL(auto append, txn->NewFastAppend());
+  append->AppendFile(file_a_);
+  ASSERT_THAT(append->Commit(), IsOk());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto committed, txn->Commit());
+  EXPECT_FALSE(committed->ManifestCacheEnabled());
+  ICEBERG_UNWRAP_OR_FAIL(auto reloaded, catalog_->LoadTable(table_ident_));
+  ICEBERG_UNWRAP_OR_FAIL(auto snapshot, reloaded->current_snapshot());
+  SnapshotReader reader(snapshot.get());
+  ICEBERG_UNWRAP_OR_FAIL(auto manifests, reader.Manifests(file_io_));
+  ASSERT_FALSE(manifests.empty());
+  for (const auto& manifest : manifests) {
+    EXPECT_THAT(file_io_->ReadFile(manifest.manifest_path, std::nullopt), IsOk());
+  }
 }
 
 TEST_F(FastAppendTest, AbortIgnoresCleanupDeleteFailure) {

@@ -36,11 +36,24 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include "iceberg/content_cache_internal.h"
 #include "iceberg/file_io.h"
 #include "iceberg/storage_credential.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg {
+
+template <typename Base>
+class FileIOWithProperties : public Base {
+ public:
+  using Base::Base;
+
+  const std::unordered_map<std::string, std::string>& properties() const override {
+    return config;
+  }
+
+  std::unordered_map<std::string, std::string> config;
+};
 
 class MockFileIO : public FileIO {
  public:
@@ -83,6 +96,8 @@ class MockFileIO : public FileIO {
     AddFile(std::move(file_location),
             std::as_bytes(std::span<const char>(data.data(), data.size())));
   }
+
+  void RemoveFile(const std::string& file_location) { files_->erase(file_location); }
 
   std::vector<std::byte>& FileData(const std::string& file_location) {
     return *GetOrCreateFile(file_location);
@@ -187,13 +202,14 @@ class MockFileIO : public FileIO {
     bool closed_ = false;
   };
 
-  class InMemoryInputFile : public InputFile {
+  class InMemoryInputFile : public internal::InputFileWithStoragePath {
    public:
     InMemoryInputFile(std::string location, std::shared_ptr<std::vector<std::byte>> data,
                       std::optional<int64_t> length)
         : location_(std::move(location)), data_(std::move(data)), length_(length) {}
 
     std::string_view location() const override { return location_; }
+    std::optional<std::string_view> storage_path() const override { return location_; }
 
     Result<int64_t> Size() const override {
       return length_.value_or(static_cast<int64_t>(data_->size()));

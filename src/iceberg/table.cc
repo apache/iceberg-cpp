@@ -19,15 +19,22 @@
 
 #include "iceberg/table.h"
 
+#include <array>
 #include <memory>
+#include <string>
+#include <string_view>
+#include <unordered_map>
 
 #include "iceberg/catalog.h"
+#include "iceberg/content_cache_internal.h"
 #include "iceberg/data_table_scan.h"
+#include "iceberg/file_io.h"
 #include "iceberg/incremental_append_scan.h"
 #include "iceberg/incremental_changelog_scan.h"
 #include "iceberg/inspect/metadata_table.h"
 #include "iceberg/labels.h"
 #include "iceberg/location_provider.h"
+#include "iceberg/logging/log_macros.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/result.h"
 #include "iceberg/schema.h"
@@ -58,6 +65,32 @@
 #include "iceberg/util/macros.h"
 
 namespace iceberg {
+namespace {
+
+std::unordered_map<std::string, std::string> StorageProperties(const FileIO& io) {
+  auto properties = io.properties();
+  // Vended S3 credentials can rotate without changing the underlying storage.
+  // Cache options are checked separately and do not identify a storage context.
+  const std::array<std::string_view, 7> kNonStorageProperties = {
+      "s3.access-key-id",
+      "s3.secret-access-key",
+      "s3.session-token",
+      "s3.session-token-expires-at-ms",
+      internal::ContentCacheProperties::kEnabled.key(),
+      internal::ContentCacheProperties::kMaxTotalBytes.key(),
+      internal::ContentCacheProperties::kMaxContentLength.key()};
+  for (const auto key : kNonStorageProperties) {
+    properties.erase(std::string(key));
+  }
+  return properties;
+}
+
+bool HasS3Credentials(const FileIO& io) {
+  return io.properties().contains("s3.access-key-id") &&
+         io.properties().contains("s3.secret-access-key");
+}
+
+}  // namespace
 
 Result<std::shared_ptr<Table>> Table::Make(
     TableIdentifier identifier, std::shared_ptr<TableMetadata> metadata,
@@ -76,10 +109,11 @@ Result<std::shared_ptr<Table>> Table::Make(
   if (catalog == nullptr) [[unlikely]] {
     return InvalidArgument("Catalog cannot be null");
   }
-  return std::shared_ptr<Table>(new Table(std::move(identifier), std::move(metadata),
-                                          std::move(metadata_location), std::move(io),
-                                          std::move(catalog), std::move(full_name),
-                                          std::move(reporter), std::move(labels)));
+  auto table = std::shared_ptr<Table>(
+      new Table(std::move(identifier), std::move(metadata), std::move(metadata_location),
+                std::move(io), std::move(catalog), std::move(full_name),
+                std::move(reporter), std::move(labels)));
+  return table;
 }
 
 Table::~Table() = default;
@@ -93,19 +127,79 @@ Table::Table(TableIdentifier identifier, std::shared_ptr<TableMetadata> metadata
       metadata_(std::move(metadata)),
       metadata_location_(std::move(metadata_location)),
       io_(std::move(io)),
+      manifest_io_(io_),
       catalog_(std::move(catalog)),
       reporter_(std::move(reporter)),
       metadata_cache_(std::make_unique<TableMetadataCache>(metadata_.get())),
-      labels_(labels && !labels->empty() ? std::move(labels) : nullptr) {}
+      labels_(labels && !labels->empty() ? std::move(labels) : nullptr) {
+  InitializeManifestCache();
+}
+
+void Table::InitializeManifestCache() {
+  auto options = internal::ContentCacheOptions::FromProperties(io_->properties());
+  if (!options.has_value()) {
+    // Table construction can happen after the catalog has committed new metadata.
+    ICEBERG_LOG_WARN("Manifest cache disabled for table {}: {}", full_name_,
+                     options.error().message);
+    return;
+  }
+  if (options->enabled) {
+    content_cache_ = std::make_shared<internal::ContentCache>(*options);
+    manifest_io_ = content_cache_->Wrap(io_);
+  }
+}
+
+const std::shared_ptr<FileIO>& internal::ManifestIO(const Table& table) {
+  return table.manifest_io_;
+}
+
+void internal::InvalidateManifestCache(const Table& table, std::string_view location) {
+  if (table.content_cache_) {
+    table.content_cache_->Invalidate(*table.io(), location);
+  }
+}
+
+void Table::ClearManifestCache() {
+  if (content_cache_) content_cache_->Clear();
+}
+
+Status Table::SetManifestCacheLimit(int32_t max_caches) {
+  ICEBERG_PRECHECK(max_caches > 0, "Global manifest cache limit must be positive");
+  internal::ContentCache::SetGlobalCapacity(max_caches);
+  return {};
+}
+
+void Table::ReuseManifestCache(const Table& source) {
+  if (!content_cache_ || !source.content_cache_ || uuid() != source.uuid() ||
+      content_cache_->options() != source.content_cache_->options()) {
+    return;
+  }
+  // Without comparable settings or S3 credentials, a replacement may represent a
+  // different opaque filesystem. S3 credentials alone use the default S3 endpoint.
+  if (io_ != source.io_) {
+    auto properties = StorageProperties(*io_);
+    if (properties != StorageProperties(*source.io_) ||
+        (properties.empty() && !HasS3Credentials(*io_) &&
+         !HasS3Credentials(*source.io_))) {
+      return;
+    }
+  }
+  content_cache_ = source.content_cache_;
+  manifest_io_ = content_cache_->Wrap(io_);
+}
 
 const std::string& Table::uuid() const { return metadata_->table_uuid; }
 
 Status Table::Refresh() {
   ICEBERG_ASSIGN_OR_RAISE(auto refreshed_table, catalog_->LoadTable(identifier_));
+  refreshed_table->ReuseManifestCache(*this);
+  // Credentials and I/O configuration can change even when metadata is unchanged.
+  content_cache_ = std::move(refreshed_table->content_cache_);
+  manifest_io_ = std::move(refreshed_table->manifest_io_);
+  io_ = std::move(refreshed_table->io_);
   if (metadata_location_ != refreshed_table->metadata_file_location()) {
     metadata_ = std::move(refreshed_table->metadata_);
     metadata_location_ = std::string(refreshed_table->metadata_file_location());
-    io_ = std::move(refreshed_table->io_);
     metadata_cache_ = std::make_unique<TableMetadataCache>(metadata_.get());
   }
   return {};
@@ -320,10 +414,11 @@ Result<std::shared_ptr<StagedTable>> StagedTable::Make(
   if (catalog == nullptr) [[unlikely]] {
     return InvalidArgument("Catalog cannot be null");
   }
-  return std::shared_ptr<StagedTable>(
+  auto table = std::shared_ptr<StagedTable>(
       new StagedTable(std::move(identifier), std::move(metadata),
                       std::move(metadata_location), std::move(io), std::move(catalog),
                       std::move(full_name), std::move(reporter), /*labels=*/nullptr));
+  return table;
 }
 
 StagedTable::~StagedTable() = default;
@@ -341,10 +436,11 @@ Result<std::shared_ptr<StaticTable>> StaticTable::Make(
   if (io == nullptr) [[unlikely]] {
     return InvalidArgument("FileIO cannot be null");
   }
-  return std::shared_ptr<StaticTable>(
+  auto table = std::shared_ptr<StaticTable>(
       new StaticTable(std::move(identifier), std::move(metadata),
                       std::move(metadata_location), std::move(io), /*catalog=*/nullptr,
                       std::move(full_name), /*reporter=*/nullptr, /*labels=*/nullptr));
+  return table;
 }
 
 StaticTable::~StaticTable() = default;

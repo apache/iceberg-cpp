@@ -1300,7 +1300,7 @@ TEST_F(ArrowS3FileIOTest, DeleteFilesAttemptsEveryFile) {
             2);
   EXPECT_THAT(io->ReadFile(allowed, std::nullopt),
               ::testing::AllOf(IsError(ErrorKind::kIOError),
-                               HasErrorMessage("Path does not exist")));
+                               HasErrorMessage("File does not exist: " + allowed)));
 
   // The denied files remain: Arrow fails to delete a missing object.
   ASSERT_THAT(credentialed->SetStorageCredentials({}), IsOk());

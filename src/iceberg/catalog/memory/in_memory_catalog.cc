@@ -343,6 +343,7 @@ Result<std::shared_ptr<InMemoryCatalog>> InMemoryCatalog::Make(
     const std::string& name, const std::shared_ptr<FileIO>& file_io,
     const std::string& warehouse_location,
     const std::unordered_map<std::string, std::string>& properties) {
+  ICEBERG_PRECHECK(file_io != nullptr, "InMemoryCatalog requires a non-null FileIO");
   std::shared_ptr<MetricsReporter> reporter;
   auto it = properties.find(std::string(kMetricsReporterImpl));
   if (it != properties.end() && !it->second.empty() &&

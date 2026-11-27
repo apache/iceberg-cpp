@@ -215,25 +215,26 @@ Status OverwriteFiles::Validate(const TableMetadata& current_metadata,
   if (validate_new_data_files_) {
     ICEBERG_RETURN_UNEXPECTED(ValidateAddedDataFiles(
         current_metadata, starting_snapshot_id_, DataConflictDetectionFilter(), snapshot,
-        ctx_->table->io(), IsCaseSensitive()));
+        internal::ManifestIO(*ctx_->table), IsCaseSensitive()));
   }
 
   if (validate_new_deletes_) {
     if (row_filter != nullptr && row_filter != Expressions::AlwaysFalse()) {
       auto filter =
           conflict_detection_filter_ != nullptr ? conflict_detection_filter_ : row_filter;
-      ICEBERG_RETURN_UNEXPECTED(
-          ValidateNoNewDeleteFiles(current_metadata, starting_snapshot_id_, filter,
-                                   snapshot, ctx_->table->io(), IsCaseSensitive()));
-      ICEBERG_RETURN_UNEXPECTED(
-          ValidateDeletedDataFiles(current_metadata, starting_snapshot_id_, filter,
-                                   snapshot, ctx_->table->io(), IsCaseSensitive()));
+      ICEBERG_RETURN_UNEXPECTED(ValidateNoNewDeleteFiles(
+          current_metadata, starting_snapshot_id_, filter, snapshot,
+          internal::ManifestIO(*ctx_->table), IsCaseSensitive()));
+      ICEBERG_RETURN_UNEXPECTED(ValidateDeletedDataFiles(
+          current_metadata, starting_snapshot_id_, filter, snapshot,
+          internal::ManifestIO(*ctx_->table), IsCaseSensitive()));
     }
 
     if (!deleted_data_files_.empty()) {
       ICEBERG_RETURN_UNEXPECTED(ValidateNoNewDeletesForDataFiles(
           current_metadata, starting_snapshot_id_, conflict_detection_filter_,
-          deleted_data_files_, snapshot, ctx_->table->io(), IsCaseSensitive()));
+          deleted_data_files_, snapshot, internal::ManifestIO(*ctx_->table),
+          IsCaseSensitive()));
     }
   }
 

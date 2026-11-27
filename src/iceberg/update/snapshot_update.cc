@@ -344,7 +344,8 @@ Result<SnapshotUpdate::ApplyResult> SnapshotUpdate::Apply() {
       continue;
     }
     metadata_tasks.Submit([&manifest, this]() -> Status {
-      ICEBERG_ASSIGN_OR_RAISE(manifest, AddMetadata(manifest, ctx_->table->io(), base()));
+      ICEBERG_ASSIGN_OR_RAISE(
+          manifest, AddMetadata(manifest, internal::ManifestIO(*ctx_->table), base()));
       return {};
     });
   }
@@ -516,6 +517,7 @@ void SnapshotUpdate::RegisterStagedFile(const std::string& path, bool is_content
 Status SnapshotUpdate::DeleteStagedFile(const std::string& path) noexcept {
   try {
     auto result = delete_func_ ? delete_func_(path) : ctx_->table->io()->DeleteFile(path);
+    internal::InvalidateManifestCache(*ctx_->table, path);
     if (!result && result.error().kind != ErrorKind::kNotFound) {
       ICEBERG_LOG_WARN("Cannot clean staged file {}: {}", path, result.error().message);
       return {};
