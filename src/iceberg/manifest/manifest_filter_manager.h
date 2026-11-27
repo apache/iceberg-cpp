@@ -199,6 +199,8 @@ class ICEBERG_EXPORT ManifestFilterManager {
   Status CleanUncommitted(const std::unordered_set<std::string>& committed);
 
  private:
+  friend class MergingSnapshotUpdate;
+
   ManifestFilterManager(ManifestContent content, std::shared_ptr<FileIO> file_io,
                         std::function<Status(const std::string&)> delete_file);
 

@@ -104,6 +104,23 @@ class TypedTableTest : public ::testing::Test {
   std::shared_ptr<TableMetadata> metadata_;
 };
 
+using TableRefreshTest = TypedTableTest<Table>;
+
+TEST_F(TableRefreshTest, AdoptsAssignedUUIDForLegacyV1Table) {
+  metadata_->format_version = 1;
+  ICEBERG_UNWRAP_OR_FAIL(auto table, MakeTable("legacy"));
+  ASSERT_TRUE(table->uuid().empty());
+  auto upgraded = std::make_shared<TableMetadata>(*metadata_);
+  upgraded->format_version = 2;
+  upgraded->table_uuid = "386b9f01-002b-4d8c-b77f-42c3fd3b7c9b";
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto refreshed,
+      Table::Make(table->name(), upgraded, "s3://bucket/upgraded.json", io_, catalog_));
+  EXPECT_CALL(*catalog_, LoadTable(table->name())).WillOnce(::testing::Return(refreshed));
+  ASSERT_THAT(table->Refresh(), IsOk());
+  EXPECT_EQ(table->uuid(), upgraded->table_uuid);
+}
+
 using TableTypes = ::testing::Types<Table, StaticTable, StagedTable>;
 TYPED_TEST_SUITE(TypedTableTest, TableTypes);
 
@@ -198,6 +215,9 @@ TEST_P(TableLabelsRefreshTest, RefreshKeepsLabels) {
 
     EXPECT_EQ(table->metadata_file_location(), metadata_location);
     EXPECT_EQ(table->labels(), labels_);
+    // A catalog may share the loaded handle with other readers.
+    EXPECT_EQ(refreshed->metadata(), metadata_);
+    EXPECT_EQ(refreshed->io(), io_);
   }
 }
 

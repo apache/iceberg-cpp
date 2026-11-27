@@ -21,6 +21,7 @@
 
 #include <algorithm>
 #include <array>
+#include <exception>
 #include <format>
 #include <optional>
 #include <span>
@@ -463,6 +464,26 @@ MergingSnapshotUpdate::MergingSnapshotUpdate(std::string table_name,
   } else {
     delete_merge_manager_ = std::move(delete_merge_manager.value());
   }
+}
+
+Status MergingSnapshotUpdate::Commit() {
+  ICEBERG_RETURN_UNEXPECTED(CheckCommitAllowed());
+  if (!ctx_->transaction && ctx_->kind == TransactionKind::kUpdate && CheckErrors()) {
+    // Expiration can remove the old parent's manifest list before the first catalog CAS.
+    // An explicit transaction instead reads the metadata staged by its earlier updates.
+    try {
+      ICEBERG_RETURN_UNEXPECTED(ctx_->table->Refresh());
+    } catch (const std::exception& e) {
+      return UnknownError("Refresh table for snapshot update threw: {}", e.what());
+    } catch (...) {
+      return UnknownError("Refresh table for snapshot update threw an unknown exception");
+    }
+    if (ctx_->base() != ctx_->table->metadata().get()) {
+      ctx_->ResetMetadataBuilder(ctx_->table->metadata());
+      ICEBERG_RETURN_UNEXPECTED(PrepareForReplay());
+    }
+  }
+  return SnapshotUpdate::Commit();
 }
 
 // -------------------------------------------------------------------------
@@ -923,7 +944,14 @@ Status MergingSnapshotUpdate::PrepareForReplay() {
   ICEBERG_RETURN_UNEXPECTED(SnapshotUpdate::PrepareForReplay());
   // The same path can inherit new sequence numbers and row IDs on replay.
   // Drop derived caches, but keep their files staged for terminal cleanup.
-  return CleanUncommittedManagers({});
+  ICEBERG_RETURN_UNEXPECTED(CleanUncommittedManagers({}));
+  // The catalog can return a new FileIO for the refreshed head.
+  const auto& io = ctx_->table->io();
+  data_filter_manager_->file_io_ = io;
+  delete_filter_manager_->file_io_ = io;
+  data_merge_manager_->file_io_ = io;
+  delete_merge_manager_->file_io_ = io;
+  return {};
 }
 
 Result<std::vector<ManifestFile>> MergingSnapshotUpdate::Apply(

@@ -52,6 +52,7 @@
 #include "iceberg/table_properties.h"
 #include "iceberg/test/executor.h"
 #include "iceberg/test/matchers.h"
+#include "iceberg/test/mock_catalog.h"
 #include "iceberg/test/retry.h"
 #include "iceberg/test/update_test_base.h"
 #include "iceberg/transaction.h"
@@ -59,6 +60,7 @@
 #include "iceberg/update/expire_snapshots.h"
 #include "iceberg/update/fast_append.h"
 #include "iceberg/update/merge_append.h"
+#include "iceberg/update/overwrite_files.h"
 #include "iceberg/update/row_delta.h"
 #include "iceberg/update/snapshot_manager.h"
 #include "iceberg/update/update_partition_spec.h"
@@ -566,6 +568,118 @@ TEST_F(MergingSnapshotUpdateTest, DeletesDataFilesTrueAfterRegisterDelete) {
 // -------------------------------------------------------------------------
 // Apply / Commit tests
 // -------------------------------------------------------------------------
+
+TEST_F(MergingSnapshotUpdateTest, StandaloneOverwriteRefreshesExpiredParentBeforeApply) {
+  CommitFileA();
+  ICEBERG_UNWRAP_OR_FAIL(auto base, table_->current_snapshot());
+  ICEBERG_UNWRAP_OR_FAIL(auto writer, catalog_->LoadTable(table_ident_));
+  ICEBERG_UNWRAP_OR_FAIL(auto overwrite, writer->NewOverwrite());
+  overwrite->DeleteFile(file_a_)
+      .AddFile(file_c_)
+      .ValidateFromSnapshot(base->snapshot_id)
+      .ConflictDetectionFilter(Expressions::Equal("x", Literal::Long(1)))
+      .ValidateNoConflictingData();
+
+  ICEBERG_UNWRAP_OR_FAIL(auto append, table_->NewFastAppend());
+  ASSERT_THAT(append->AppendFile(file_b_).Commit(), IsOk());
+  ASSERT_THAT(table_->Refresh(), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto parent, table_->current_snapshot());
+  ICEBERG_UNWRAP_OR_FAIL(auto expiration, table_->NewExpireSnapshots());
+  ASSERT_THAT(expiration->ExpireSnapshotId(base->snapshot_id).Commit(), IsOk());
+  ASSERT_FALSE(file_io_->ReadFile(base->manifest_list, std::nullopt).has_value());
+  ICEBERG_UNWRAP_OR_FAIL(auto writer_head, writer->current_snapshot());
+  ASSERT_EQ(writer_head->snapshot_id, base->snapshot_id);
+
+  ASSERT_THAT(overwrite->Commit(), IsOk());
+  ASSERT_THAT(table_->Refresh(), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, table_->current_snapshot());
+  EXPECT_EQ(result->parent_snapshot_id, parent->snapshot_id);
+  EXPECT_EQ(result->summary.at(SnapshotSummaryFields::kDeletedDataFiles), "1");
+  EXPECT_EQ(result->summary.at(SnapshotSummaryFields::kTotalDataFiles), "2");
+}
+
+TEST_F(MergingSnapshotUpdateTest, StandaloneAppendRejectsRecreatedTable) {
+  ICEBERG_UNWRAP_OR_FAIL(auto append, table_->NewMergeAppend());
+  append->AppendFile(file_a_);
+  const auto original_metadata = table_->metadata();
+  ICEBERG_UNWRAP_OR_FAIL(auto order, table_->sort_order());
+  ASSERT_THAT(catalog_->DropTable(table_ident_, /*purge=*/false), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto recreated,
+      catalog_->CreateTable(table_ident_, schema_, spec_, order, table_location_, {}));
+  ASSERT_NE(recreated->uuid(), original_metadata->table_uuid);
+
+  EXPECT_THAT(append->Commit(),
+              ::testing::AllOf(IsError(ErrorKind::kValidationFailed),
+                               HasErrorMessage("Table UUID does not match")));
+  EXPECT_EQ(table_->metadata(), original_metadata);
+  ICEBERG_UNWRAP_OR_FAIL(auto actual, catalog_->LoadTable(table_ident_));
+  EXPECT_EQ(actual->uuid(), recreated->uuid());
+  EXPECT_THAT(actual->current_snapshot(), IsError(ErrorKind::kNotFound));
+}
+
+TEST_F(MergingSnapshotUpdateTest, ExplicitTransactionAppliesAgainstItsOwnStagedSnapshot) {
+  auto catalog = std::make_shared<::testing::StrictMock<MockCatalog>>();
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto writer,
+      Table::Make(table_ident_, table_->metadata(),
+                  std::string(table_->metadata_file_location()), file_io_, catalog));
+  EXPECT_CALL(*catalog, LoadTable(::testing::_)).Times(0);
+  ICEBERG_UNWRAP_OR_FAIL(auto txn, writer->NewTransaction());
+  ICEBERG_UNWRAP_OR_FAIL(auto append, txn->NewMergeAppend());
+  ASSERT_THAT(append->AppendFile(file_a_).Commit(), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto added, txn->current().Snapshot());
+  ICEBERG_UNWRAP_OR_FAIL(auto remove, txn->NewDeleteFiles());
+  ASSERT_THAT(remove->DeleteFile(file_a_).ValidateFilesExist().Commit(), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto removed, txn->current().Snapshot());
+  EXPECT_EQ(removed->parent_snapshot_id, added->snapshot_id);
+  EXPECT_EQ(removed->summary.at(SnapshotSummaryFields::kDeletedDataFiles), "1");
+  ASSERT_THAT(txn->Abort(), IsOk());
+  EXPECT_THAT(table_->current_snapshot(), IsError(ErrorKind::kNotFound));
+}
+
+TEST_F(MergingSnapshotUpdateTest, RefreshedFileIOReadsDataAndDeleteManifests) {
+  ICEBERG_UNWRAP_OR_FAIL(auto props, table_->NewUpdateProperties());
+  ASSERT_THAT(props->Set(TableProperties::kManifestMinMergeCount.key(), "1").Commit(),
+              IsOk());
+  ASSERT_THAT(table_->Refresh(), IsOk());
+  // The writer was created at an empty head. Only the newly loaded FileIO can
+  // open the manifests published while it was preparing the row delta.
+  std::shared_ptr<FileIO> old_io = arrow::ArrowFileSystemFileIO::MakeMockFileIO();
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto writer,
+      Table::Make(table_ident_, table_->metadata(),
+                  std::string(table_->metadata_file_location()), old_io, catalog_));
+  auto delete_a = MakeDeleteFile("/delete/a.parquet", 1);
+  auto delete_b = MakeDeleteFile("/delete/b.parquet", 2);
+  auto delete_c = MakeDeleteFile("/delete/c.parquet", 3);
+  ICEBERG_UNWRAP_OR_FAIL(auto pending, writer->NewRowDelta());
+  pending->RemoveRows(file_a_).AddRows(file_c_).RemoveDeletes(delete_a).AddDeletes(
+      delete_c);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto insert, table_->NewRowDelta());
+  ASSERT_THAT(insert->AddRows(file_a_)
+                  .AddRows(file_b_)
+                  .AddDeletes(delete_a)
+                  .AddDeletes(delete_b)
+                  .Commit(),
+              IsOk());
+  ASSERT_THAT(pending->Commit(), IsOk());
+  EXPECT_EQ(writer->io(), file_io_);
+  ASSERT_THAT(table_->Refresh(), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto snapshot, table_->current_snapshot());
+  SnapshotReader reader(snapshot.get());
+  ICEBERG_UNWRAP_OR_FAIL(auto data, reader.DataManifests(file_io_));
+  ICEBERG_UNWRAP_OR_FAIL(auto deletes, reader.DeleteManifests(file_io_));
+  ASSERT_EQ(data.size(), 1);
+  ASSERT_EQ(deletes.size(), 1);
+  ExpectManifestEntries(
+      data[0], {file_a_->file_path, file_b_->file_path, file_c_->file_path},
+      {ManifestStatus::kDeleted, ManifestStatus::kExisting, ManifestStatus::kAdded});
+  ExpectManifestEntries(
+      deletes[0], {delete_a->file_path, delete_b->file_path, delete_c->file_path},
+      {ManifestStatus::kDeleted, ManifestStatus::kExisting, ManifestStatus::kAdded});
+}
 
 TEST_F(MergingSnapshotUpdateTest, CommitNewDataFile) {
   ICEBERG_UNWRAP_OR_FAIL(auto op, NewMergeAppend());
@@ -1314,6 +1428,9 @@ TEST_F(MergingSnapshotUpdateTest,
        CommitRejectsV2StagedPositionDeleteAfterV3UpgradeOnReplay) {
   auto del_file = MakeDeleteFile("/delete/del_a.parquet", 1L);
 
+  ICEBERG_UNWRAP_OR_FAIL(auto txn, table_->NewTransaction());
+  ICEBERG_UNWRAP_OR_FAIL(auto staged, txn->NewRowDelta());
+  ASSERT_THAT(staged->AddDeletes(del_file).Commit(), IsOk());
   ICEBERG_UNWRAP_OR_FAIL(auto op, NewMergeAppend());
   EXPECT_THAT(op->AddDelete(del_file), IsOk());
 
@@ -1321,7 +1438,11 @@ TEST_F(MergingSnapshotUpdateTest,
   properties->Set("format-version", "3");
   ASSERT_THAT(properties->Commit(), IsOk());
   ASSERT_THAT(table_->Refresh(), IsOk());
-  EXPECT_THAT(op->Commit(),
+  EXPECT_THAT(
+      op->Commit(),
+      ::testing::AllOf(IsError(ErrorKind::kInvalidArgument),
+                       HasErrorMessage("Must use DVs for position deletes in V3")));
+  EXPECT_THAT(txn->Commit(),
               ::testing::AllOf(
                   IsError(ErrorKind::kValidationFailed),
                   HasErrorMessage("Transaction replay failed: Must use DVs for position "
