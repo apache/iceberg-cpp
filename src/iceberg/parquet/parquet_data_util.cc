@@ -222,7 +222,12 @@ Result<std::shared_ptr<::arrow::Array>> ProjectStructArray(
 
     std::shared_ptr<::arrow::Array> projected_array;
 
-    if (field_projection.kind == FieldProjection::Kind::kProjected) {
+    if (field_projection.kind == FieldProjection::Kind::kNull ||
+        arrow::ShouldReadRowLineageAsNull(projected_field.field_id(), metadata_context)) {
+      ICEBERG_ASSIGN_OR_RAISE(
+          projected_array,
+          MakeNullArray(output_arrow_type, struct_array->length(), pool));
+    } else if (field_projection.kind == FieldProjection::Kind::kProjected) {
       auto parquet_field_index =
           static_cast<int>(std::get<size_t>(field_projection.from));
       if (parquet_field_index >= struct_array->num_fields()) {
@@ -247,10 +252,6 @@ Result<std::shared_ptr<::arrow::Array>> ProjectStructArray(
             projected_array,
             ProjectPrimitiveArray(parquet_array, output_arrow_type, pool));
       }
-    } else if (field_projection.kind == FieldProjection::Kind::kNull) {
-      ICEBERG_ASSIGN_OR_RAISE(
-          projected_array,
-          MakeNullArray(output_arrow_type, struct_array->length(), pool));
     } else if (field_projection.kind == FieldProjection::Kind::kDefault) {
       ICEBERG_ASSIGN_OR_RAISE(
           projected_array,

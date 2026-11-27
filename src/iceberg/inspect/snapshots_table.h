@@ -48,11 +48,11 @@ class ICEBERG_EXPORT SnapshotsTable : public MetadataTable {
     return MetadataTableKind::kSnapshots;
   }
 
-  const std::shared_ptr<Schema>& schema() const override;
+  std::shared_ptr<Schema> schema() const override;
 
  protected:
   Result<std::unique_ptr<MetadataScan>> MakeScan(
-      internal::MetadataScanContext context) const override;
+      internal::MetadataScanContext context, std::shared_ptr<FileIO> io) const override;
 
  private:
   friend class MetadataScanTaskReader;
@@ -62,24 +62,6 @@ class ICEBERG_EXPORT SnapshotsTable : public MetadataTable {
       const std::shared_ptr<Schema>& projected_schema, int64_t batch_size);
 
   explicit SnapshotsTable(std::shared_ptr<const Table> table);
-};
-
-/// \brief Scan the snapshots metadata captured from a table.
-class ICEBERG_EXPORT SnapshotsScan final : public MetadataScan {
- public:
-  /// \brief Create a scan from captured metadata table settings.
-  static Result<std::unique_ptr<SnapshotsScan>> Make(
-      internal::MetadataScanContext context);
-
-  ~SnapshotsScan() override;
-
-  Result<MetadataScanTaskStreamPtr> PlanTasksStream() const override;
-
- private:
-  SnapshotsScan(internal::MetadataScanContext context,
-                std::shared_ptr<MetadataScanTask> task);
-
-  const std::shared_ptr<MetadataScanTask> task_;
 };
 
 }  // namespace iceberg

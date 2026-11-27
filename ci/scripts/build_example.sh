@@ -82,8 +82,17 @@ if [[ -z "${source_dir}" || -z "${build_type}" || -z "${cxx_standard}" ]]; then
     exit 2
 fi
 
+case "${cxx_standard}" in
+    *[!0-9]*)
+        echo "--cxx-standard must be numeric, got '${cxx_standard}'" >&2
+        exit 2
+        ;;
+esac
+
 set -x
-build_dir=${source_dir}/build
+# Keep successive C++ standard builds separate while Windows may still hold binaries.
+build_dir=${source_dir}/build/cxx${cxx_standard}
+mkdir -p "${source_dir}/build"
 
 # Clean up before configuring. If Windows still holds a just-built exe/dll
 # after the retries, let mkdir fail rather than reuse a half-deleted tree.

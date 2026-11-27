@@ -164,6 +164,7 @@ class ICEBERG_EXPORT ExpireSnapshots : public PendingUpdate {
   friend class Transaction;
 
   Status Finalize(const TableMetadata& committed) override;
+  Status PrepareForReplay() override { return CleanStaged(); }
   Status CleanStaged() override {
     apply_result_.reset();
     return {};

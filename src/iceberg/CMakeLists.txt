@@ -59,10 +59,12 @@ set(ICEBERG_SOURCES
     incremental_append_scan.cc
     incremental_changelog_scan.cc
     inspect/history_table.cc
+    inspect/manifests_table.cc
     inspect/metadata_scan.cc
     inspect/metadata_table.cc
     inspect/metadata_scan_task.cc
     inspect/metadata_scan_task_reader.cc
+    inspect/metadata_table_util.cc
     inspect/refs_table.cc
     inspect/snapshots_table.cc
     inheritable_metadata.cc
@@ -108,6 +110,7 @@ set(ICEBERG_SOURCES
     row/manifest_wrapper.cc
     row/partition_values.cc
     row/struct_like.cc
+    scan_task_planning.cc
     schema.cc
     schema_field.cc
     schema_internal.cc

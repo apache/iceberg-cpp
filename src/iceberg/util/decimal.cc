@@ -552,11 +552,25 @@ Result<Decimal> Decimal::Rescale(int32_t orig_scale, int32_t new_scale) const {
     return *this;
   }
 
-  const int32_t delta_scale = new_scale - orig_scale;
+  // Compute the delta in 64 bits so unvalidated scales cannot cause signed
+  // overflow, and range-check it in release builds: kDecimal128PowersOfTen
+  // has only kMaxScale + 1 entries, so a DCHECK alone would be an
+  // out-of-bounds read under NDEBUG.
+  const int64_t delta_scale64 =
+      static_cast<int64_t>(new_scale) - static_cast<int64_t>(orig_scale);
+  if (delta_scale64 > kMaxScale || delta_scale64 < -kMaxScale) [[unlikely]] {
+    if (data_ == 0) {
+      // Zero is exact at every scale.
+      return *this;
+    }
+    // Shifting a nonzero 128-bit decimal by more than kMaxScale digits either
+    // overflows (scaling up) or truncates every digit (scaling down).
+    return Invalid("Rescale {} from {} to {} would cause data loss", ToIntegerString(),
+                   orig_scale, new_scale);
+  }
+  const auto delta_scale = static_cast<int32_t>(delta_scale64);
   const int32_t abs_delta_scale = std::abs(delta_scale);
   Decimal out;
-
-  ICEBERG_DCHECK(abs_delta_scale <= kMaxScale, "");
 
   auto& multiplier = kDecimal128PowersOfTen[abs_delta_scale];
 
@@ -590,10 +604,24 @@ std::partial_ordering Decimal::Compare(const Decimal& lhs, const Decimal& rhs,
   // Both are negative
   bool negative = lhs.data_ < 0 && rhs.data_ < 0;
 
-  const int32_t delta_scale = lhs_scale - rhs_scale;
+  // Compute the delta in 64 bits so unvalidated scales cannot cause signed
+  // overflow, and range-check it in release builds: kDecimal128PowersOfTen
+  // has only kMaxScale + 1 entries, so a DCHECK alone would be an
+  // out-of-bounds read under NDEBUG.
+  const int64_t delta_scale64 =
+      static_cast<int64_t>(lhs_scale) - static_cast<int64_t>(rhs_scale);
+  if (delta_scale64 > kMaxScale || delta_scale64 < -kMaxScale) [[unlikely]] {
+    // Aligning the lower-scale operand would multiply a nonzero 128-bit value
+    // by more than 10^kMaxScale, which always overflows. That is exactly the
+    // data-loss case below, so return the same sign-based ordering. Both
+    // operands are nonzero here (handled above).
+    if (delta_scale64 < 0) {
+      return negative ? std::partial_ordering::less : std::partial_ordering::greater;
+    }
+    return negative ? std::partial_ordering::greater : std::partial_ordering::less;
+  }
+  const auto delta_scale = static_cast<int32_t>(delta_scale64);
   const int32_t abs_delta_scale = std::abs(delta_scale);
-
-  ICEBERG_DCHECK(abs_delta_scale <= kMaxScale, "");
 
   const auto& multiplier = kDecimal128PowersOfTen[abs_delta_scale];
 

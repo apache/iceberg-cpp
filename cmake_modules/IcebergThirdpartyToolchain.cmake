@@ -260,7 +260,8 @@ function(resolve_arrow_dependency)
                        URL ${ARROW_SOURCE_URL}
                        URL_HASH "SHA256=${ICEBERG_ARROW_BUILD_SHA256_CHECKSUM}"
                        PATCH_COMMAND ${ARROW_PATCH_COMMAND} SOURCE_SUBDIR cpp
-                                     FIND_PACKAGE_ARGS CONFIG)
+                                     FIND_PACKAGE_ARGS ${ICEBERG_ARROW_BUILD_VERSION}
+                                     CONFIG)
 
   fetchcontent_makeavailable(Arrow)
 
@@ -330,8 +331,8 @@ function(resolve_arrow_dependency)
     endif()
   else()
     set(ARROW_VENDORED FALSE)
-    find_package(Arrow CONFIG REQUIRED)
-    find_package(Parquet CONFIG REQUIRED)
+    find_package(Arrow ${ICEBERG_ARROW_BUILD_VERSION} CONFIG REQUIRED)
+    find_package(Parquet ${ICEBERG_ARROW_BUILD_VERSION} CONFIG REQUIRED)
     list(APPEND ICEBERG_SYSTEM_DEPENDENCIES Arrow Parquet)
   endif()
 

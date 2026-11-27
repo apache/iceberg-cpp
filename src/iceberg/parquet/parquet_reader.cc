@@ -369,6 +369,8 @@ class ParquetReader::Impl {
   std::unique_ptr<ReadContext> context_;
 };
 
+ParquetReader::ParquetReader() noexcept = default;
+
 ParquetReader::~ParquetReader() = default;
 
 Result<std::optional<ArrowArray>> ParquetReader::Next() { return impl_->Next(); }

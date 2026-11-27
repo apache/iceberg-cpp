@@ -80,9 +80,10 @@ class ICEBERG_REST_EXPORT RestCatalogProperties
 
   /// \brief Whether server configuration may select the OAuth2 token endpoint.
   /// When false, the client must explicitly configure an absolute http:// or https://
-  /// oauth2-server-uri. This setting is read from client configuration only.
+  /// oauth2-server-uri when using a client credential. This setting is read from
+  /// client configuration only.
   inline static Entry<bool> kTrustServerOAuth2Uri{"rest.auth.oauth2.trust-server-uri",
-                                                  true};
+                                                  false};
 
   /// \brief Create a default RestCatalogProperties instance.
   static RestCatalogProperties default_properties();

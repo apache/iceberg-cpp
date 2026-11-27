@@ -467,6 +467,8 @@ Result<std::shared_ptr<Table>> InMemoryCatalog::UpdateTable(
         format_version =
             internal::checked_cast<const table::UpgradeFormatVersion&>(*update)
                 .format_version();
+        // Start at the initial version and replay later upgrades in order.
+        break;
       }
     }
     builder = TableMetadataBuilder::BuildFromEmpty(format_version);

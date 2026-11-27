@@ -30,6 +30,10 @@
 
 namespace iceberg {
 
+namespace internal {
+class EvaluatorNode;
+}  // namespace internal
+
 /// \brief Evaluates an Expression against data rows.
 ///
 /// This class evaluates bound expressions against StructLike data rows to determine
@@ -57,9 +61,14 @@ class ICEBERG_EXPORT Evaluator {
   Result<bool> Evaluate(const StructLike& row) const;
 
  private:
-  explicit Evaluator(std::shared_ptr<Expression> bound_expr);
+  Evaluator(std::shared_ptr<Expression> bound_expr,
+            std::unique_ptr<const internal::EvaluatorNode> root);
 
+  // Owns the bound expression that the compiled nodes refer to.
   std::shared_ptr<Expression> bound_expr_;
+  // The bound expression compiled once into evaluation nodes, so evaluating a row
+  // does not traverse or cast the expression tree.
+  std::unique_ptr<const internal::EvaluatorNode> root_;
 };
 
 }  // namespace iceberg

@@ -102,6 +102,7 @@ class ICEBERG_EXPORT RewriteManifests : public SnapshotUpdate {
       const std::shared_ptr<Snapshot>& snapshot) override;
   std::unordered_map<std::string, std::string> Summary() override;
   Status CleanUncommitted(const std::unordered_set<std::string>& committed) override;
+  Status PrepareForReplay() override;
 
   explicit RewriteManifests(std::string table_name,
                             std::shared_ptr<TransactionContext> ctx);
@@ -139,8 +140,6 @@ class ICEBERG_EXPORT RewriteManifests : public SnapshotUpdate {
       const std::shared_ptr<PartitionSpec>& spec);
   Status CloseWriters();
 
-  void DeleteUncommitted(std::vector<ManifestFile>& manifests,
-                         const std::unordered_set<std::string>& committed);
   void Reset();
 
  private:

@@ -47,6 +47,11 @@ Result<std::unique_ptr<MetadataScanTaskReader>> MetadataScanTaskReader::Make(
 Result<ArrowArrayStream> MetadataScanTaskReader::Open(
     const MetadataScanTask& task) const {
   switch (task.task_kind()) {
+    case MetadataScanTask::TaskKind::kSnapshot: {
+      const auto& snapshot_task =
+          internal::checked_cast<const SnapshotMetadataTask&>(task);
+      return snapshot_task.Open(options_.batch_size);
+    }
     case MetadataScanTask::TaskKind::kStatic: {
       const auto& static_task = internal::checked_cast<const StaticMetadataTask&>(task);
       switch (static_task.table_kind()) {

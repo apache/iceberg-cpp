@@ -17,7 +17,9 @@
  * under the License.
  */
 
+#include <limits>
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -480,6 +482,71 @@ TEST_F(InclusiveMetricsEvaluatorWithTransformTest, IntegerNotIn) {
     ids.emplace_back(Literal::Long(i));
   }
   ExpectShouldRead(Expressions::NotIn(day_ts, ids), kRowsMightMatch);
+}
+
+TEST(InclusiveMetricsHourTest, PruneOnlyWithinInt32HourRange) {
+  constexpr int64_t kMicrosPerHour =
+      internal::kMicrosPerSecond * internal::kSecondsPerHour;
+  constexpr int64_t kFirstMicros = std::numeric_limits<int32_t>::min() * kMicrosPerHour;
+  constexpr int64_t kPastLastMicros = -kFirstMicros;
+  for (const auto& type :
+       std::vector<std::shared_ptr<PrimitiveType>>{timestamp(), timestamp_tz()}) {
+    SCOPED_TRACE(type->ToString());
+    Schema schema({SchemaField::MakeRequired(1, "ts", type)});
+    auto hour = ToBoundTransform(Expressions::Hour("ts"));
+    ICEBERG_UNWRAP_OR_FAIL(
+        auto negative, InclusiveMetricsEvaluator::Make(
+                           Expressions::LessThan(hour, Literal::Int(0)), schema, true));
+    ICEBERG_UNWRAP_OR_FAIL(
+        auto positive,
+        InclusiveMetricsEvaluator::Make(Expressions::GreaterThan(hour, Literal::Int(0)),
+                                        schema, true));
+
+    auto check = [&](std::optional<int64_t> lower, std::optional<int64_t> upper,
+                     bool may_be_negative, bool may_be_positive) {
+      SCOPED_TRACE(::testing::Message() << "lower=" << ::testing::PrintToString(lower)
+                                        << ", upper=" << ::testing::PrintToString(upper));
+      DataFile file{.record_count = 2};
+      if (lower) {
+        ICEBERG_UNWRAP_OR_FAIL(file.lower_bounds[1],
+                               Literal::Timestamp(*lower).Serialize());
+      }
+      if (upper) {
+        ICEBERG_UNWRAP_OR_FAIL(file.upper_bounds[1],
+                               Literal::Timestamp(*upper).Serialize());
+      }
+      ICEBERG_UNWRAP_OR_FAIL(auto negative_matches, negative->Evaluate(file));
+      ICEBERG_UNWRAP_OR_FAIL(auto positive_matches, positive->Evaluate(file));
+      EXPECT_EQ(negative_matches, may_be_negative);
+      EXPECT_EQ(positive_matches, may_be_positive);
+    };
+
+    check(0, kPastLastMicros - 1, false, true);
+    check(kFirstMicros, 0, true, false);
+    // Crossing either edge by one microsecond wraps the hour to the opposite sign.
+    check(0, kPastLastMicros, true, true);
+    check(kFirstMicros - 1, 0, true, true);
+    check(0, std::nullopt, true, true);
+    check(std::nullopt, 0, true, true);
+  }
+}
+
+TEST(InclusiveMetricsHourTest, NanosecondTimestampSupportsOneSidedPruning) {
+  for (const auto& type :
+       std::vector<std::shared_ptr<PrimitiveType>>{timestamp_ns(), timestamptz_ns()}) {
+    SCOPED_TRACE(type->ToString());
+    Schema schema({SchemaField::MakeRequired(1, "ts", type)});
+    ICEBERG_UNWRAP_OR_FAIL(
+        auto negative,
+        InclusiveMetricsEvaluator::Make(
+            Expressions::LessThan(ToBoundTransform(Expressions::Hour("ts")),
+                                  Literal::Int(0)),
+            schema, true));
+    ICEBERG_UNWRAP_OR_FAIL(auto epoch, Literal::TimestampNs(0).Serialize());
+    DataFile file{.record_count = 1, .lower_bounds = {{1, epoch}}};
+    ICEBERG_UNWRAP_OR_FAIL(auto matches, negative->Evaluate(file));
+    EXPECT_EQ(matches, kRowCannotMatch);
+  }
 }
 
 }  // namespace iceberg

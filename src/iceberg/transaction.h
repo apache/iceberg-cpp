@@ -219,12 +219,16 @@ class ICEBERG_EXPORT TransactionContext {
   static Result<std::shared_ptr<TransactionContext>> Make(std::shared_ptr<Table> table,
                                                           TransactionKind kind);
 
+  void ResetMetadataBuilder(std::shared_ptr<TableMetadata> base);
+
   const TableMetadata* base() const;
   const TableMetadata& current() const;
   std::string MetadataFileLocation(std::string_view filename) const;
   Result<std::unique_ptr<LocationProvider>> NewLocationProvider() const;
 
   std::shared_ptr<Table> table;
+  // Keep the builder's borrowed base alive even when the shared Table refreshes.
+  std::shared_ptr<TableMetadata> base_metadata;
   std::unique_ptr<TableMetadataBuilder> metadata_builder;
   TransactionKind kind;
   // If PendingUpdate is created directly from Table, this is nullopt;

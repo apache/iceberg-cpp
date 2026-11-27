@@ -33,6 +33,7 @@
 #include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/manifest/manifest_reader.h"
 #include "iceberg/table_metadata.h"
+#include "iceberg/util/bin_packing_internal.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg {
@@ -126,35 +127,12 @@ Result<std::vector<ManifestFile>> ManifestMergeManager::MergeManifests(
 Result<std::vector<ManifestFile>> ManifestMergeManager::MergeGroup(
     const std::vector<const ManifestFile*>& group, const ManifestFile* first,
     const TableMetadata& metadata, const ManifestWriterFactory& writer_factory) {
-  // Match packEnd(group, ManifestFile::length) with lookback 1:
-  //   1. Process manifests in reverse order (oldest-first).
-  //   2. Greedy forward-pack with lookback=1: emit the current bin when the next item
-  //      doesn't fit, then start a new bin.
-  //   3. Reverse each bin (restoring original item order within a bin).
-  //   4. Reverse the bin list (newest manifest's bin ends up first).
-  // Effect: the newest manifest is in the first, possibly under-filled, bin.
-  std::vector<std::vector<const ManifestFile*>> bins;
-  std::vector<const ManifestFile*> current_bin;
-  int64_t bin_size = 0;
-
-  for (const auto* manifest : std::views::reverse(group)) {
-    if (!current_bin.empty() &&
-        bin_size + manifest->manifest_length > target_size_bytes_) {
-      bins.push_back(std::move(current_bin));
-      current_bin.clear();
-      bin_size = 0;
-    }
-    current_bin.push_back(manifest);
-    bin_size += manifest->manifest_length;
-  }
-  if (!current_bin.empty()) {
-    bins.push_back(std::move(current_bin));
-  }
-
-  for (auto& bin : bins) {
-    std::ranges::reverse(bin);
-  }
-  std::ranges::reverse(bins);
+  // Pack from the end with lookback 1 to keep manifest order and leave the newest
+  // bin under-filled for the next merge.
+  internal::bin_packing::ListPacker<const ManifestFile*> packer(
+      target_size_bytes_, /*lookback=*/1, /*largest_bin_first=*/false);
+  ICEBERG_ASSIGN_OR_RAISE(auto bins,
+                          packer.PackEnd(group, &ManifestFile::manifest_length));
 
   // Process each bin: if the bin contains the newest manifest and is too small,
   // pass its contents through unchanged.

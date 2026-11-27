@@ -30,7 +30,7 @@ namespace iceberg::avro {
 /// \brief A writer for serializing ArrowArray to Avro files.
 class ICEBERG_BUNDLE_EXPORT AvroWriter : public Writer {
  public:
-  AvroWriter() = default;
+  AvroWriter() noexcept;
 
   ~AvroWriter() override;
 

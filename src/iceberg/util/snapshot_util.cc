@@ -31,6 +31,10 @@
 
 namespace iceberg {
 
+bool SnapshotUtil::IsMainBranch(std::string_view ref) {
+  return ref.empty() || ref == SnapshotRef::kMainBranch;
+}
+
 // Shorthand to return for a NotFound error.
 #define ICEBERG_ACTION_FOR_NOT_FOUND(result, action)     \
   if (!result.has_value()) [[unlikely]] {                \
@@ -372,7 +376,7 @@ Result<std::shared_ptr<Schema>> SnapshotUtil::SchemaFor(const Table& table,
 
 Result<std::shared_ptr<Schema>> SnapshotUtil::SchemaFor(const Table& table,
                                                         const std::string& ref) {
-  if (ref.empty() || ref == SnapshotRef::kMainBranch) {
+  if (IsMainBranch(ref)) {
     return table.schema();
   }
 
@@ -387,7 +391,7 @@ Result<std::shared_ptr<Schema>> SnapshotUtil::SchemaFor(const Table& table,
 
 Result<std::shared_ptr<Schema>> SnapshotUtil::SchemaFor(const TableMetadata& metadata,
                                                         const std::string& ref) {
-  if (ref.empty() || ref == SnapshotRef::kMainBranch) {
+  if (IsMainBranch(ref)) {
     return metadata.Schema();
   }
 
@@ -411,7 +415,7 @@ Result<std::shared_ptr<Snapshot>> SnapshotUtil::LatestSnapshot(
 
 Result<std::shared_ptr<Snapshot>> SnapshotUtil::LatestSnapshot(
     const TableMetadata& metadata, const std::string& branch) {
-  if (branch.empty() || branch == SnapshotRef::kMainBranch) {
+  if (IsMainBranch(branch)) {
     return metadata.Snapshot();
   }
 

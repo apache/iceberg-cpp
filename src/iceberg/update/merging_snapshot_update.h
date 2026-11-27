@@ -71,6 +71,7 @@ class ICEBERG_EXPORT MergingSnapshotUpdate : public SnapshotUpdate {
       const std::shared_ptr<Snapshot>& snapshot) override;
 
   Status CleanUncommitted(const std::unordered_set<std::string>& committed) override;
+  Status PrepareForReplay() override;
 
   std::unordered_map<std::string, std::string> Summary() override;
 
@@ -348,10 +349,8 @@ class ICEBERG_EXPORT MergingSnapshotUpdate : public SnapshotUpdate {
   /// \brief Write new delete manifests for staged delete files; caches the result.
   Result<std::vector<ManifestFile>> WriteNewDeleteManifests();
 
-  Status CleanUncommittedAppends(const std::unordered_set<std::string>& committed);
-
-  Status DeleteUncommitted(std::vector<ManifestFile>& manifests,
-                           const std::unordered_set<std::string>& committed, bool clear);
+  Status CleanUncommittedManagers(const std::unordered_set<std::string>& committed);
+  void CleanUncommittedAppends(const std::unordered_set<std::string>& committed);
 
   // Used for commit event notifications and diagnostic log messages.
   std::string table_name_;
@@ -363,6 +362,8 @@ class ICEBERG_EXPORT MergingSnapshotUpdate : public SnapshotUpdate {
   SnapshotSummaryBuilder added_data_files_summary_;
   SnapshotSummaryBuilder added_delete_files_summary_;
   SnapshotSummaryBuilder appended_manifests_summary_;
+  // Copies may be reused across attempts, so their summary must survive too.
+  SnapshotSummaryBuilder copied_manifests_summary_;
   std::unordered_map<std::string, std::string> custom_summary_properties_;
 
   std::unique_ptr<ManifestFilterManager> data_filter_manager_;
@@ -378,7 +379,7 @@ class ICEBERG_EXPORT MergingSnapshotUpdate : public SnapshotUpdate {
   // Manifests passed via AddManifest(): inherit path (no copy needed) and
   // rewrite path (must be copied with the current snapshot ID).
   std::vector<ManifestFile> append_manifests_;
-  // Original manifests kept to recreate copied manifests after retry cleanup.
+  // Original inputs for manifests that must be copied.
   std::vector<ManifestFile> append_manifests_to_copy_;
   std::vector<ManifestFile> rewritten_append_manifests_;
 
@@ -389,7 +390,6 @@ class ICEBERG_EXPORT MergingSnapshotUpdate : public SnapshotUpdate {
 
   std::vector<ManifestFile> cached_new_data_manifests_;
   std::vector<ManifestFile> cached_new_delete_manifests_;
-  std::vector<PendingDeleteFile> merged_dvs_;
   int32_t dv_merge_attempt_ = 0;
 };
 

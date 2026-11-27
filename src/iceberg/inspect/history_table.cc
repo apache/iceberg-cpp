@@ -40,6 +40,23 @@
 namespace iceberg {
 namespace {
 
+/// \brief Scan the history metadata captured from a table.
+class HistoryScan final : public MetadataScan {
+ public:
+  /// \brief Create a scan from captured metadata table settings.
+  static Result<std::unique_ptr<HistoryScan>> Make(internal::MetadataScanContext context);
+
+  ~HistoryScan() override;
+
+  Result<MetadataScanTaskStreamPtr> PlanTasksStream() const override;
+
+ private:
+  HistoryScan(internal::MetadataScanContext context,
+              std::shared_ptr<MetadataScanTask> task);
+
+  const std::shared_ptr<MetadataScanTask> task_;
+};
+
 struct HistoryRow {
   const SnapshotLogEntry& entry;
   const Snapshot* snapshot;
@@ -77,7 +94,7 @@ HistoryTable::HistoryTable(std::shared_ptr<const Table> table)
 
 HistoryTable::~HistoryTable() = default;
 
-const std::shared_ptr<Schema>& HistoryTable::schema() const { return CanonicalSchema(); }
+std::shared_ptr<Schema> HistoryTable::schema() const { return CanonicalSchema(); }
 
 const std::shared_ptr<Schema>& HistoryTable::CanonicalSchema() {
   static const auto schema = std::make_shared<Schema>(std::vector<SchemaField>{
@@ -95,7 +112,7 @@ Result<std::unique_ptr<HistoryTable>> HistoryTable::Make(
 }
 
 Result<std::unique_ptr<MetadataScan>> HistoryTable::MakeScan(
-    internal::MetadataScanContext context) const {
+    internal::MetadataScanContext context, std::shared_ptr<FileIO> /*io*/) const {
   return HistoryScan::Make(std::move(context));
 }
 
@@ -136,6 +153,8 @@ Result<ArrowArrayStream> HistoryTable::ReadRows(
       });
 }
 
+namespace {
+
 // HistoryScan implementation
 HistoryScan::HistoryScan(internal::MetadataScanContext context,
                          std::shared_ptr<MetadataScanTask> task)
@@ -151,10 +170,7 @@ Result<std::unique_ptr<HistoryScan>> HistoryScan::Make(
       context.as_of_time_in_millis.has_value()) {
     return NotSupported("Metadata table does not support time travel");
   }
-  ICEBERG_PRECHECK(context.table_metadata != nullptr, "Table metadata cannot be null");
-  ICEBERG_PRECHECK(context.schema != nullptr, "Metadata table schema cannot be null");
-  ICEBERG_PRECHECK(context.projected_schema != nullptr,
-                   "Projected schema cannot be null");
+  ICEBERG_RETURN_UNEXPECTED(context.Validate());
   ICEBERG_RETURN_UNEXPECTED(internal::SelectAppendFns<HistoryRow>(
       *HistoryTable::CanonicalSchema(), *context.projected_schema, kHistoryColumns));
   ICEBERG_ASSIGN_OR_RAISE(auto task,
@@ -167,5 +183,7 @@ Result<std::unique_ptr<HistoryScan>> HistoryScan::Make(
 Result<MetadataScanTaskStreamPtr> HistoryScan::PlanTasksStream() const {
   return MetadataScanTaskStream::FromVector({task_});
 }
+
+}  // namespace
 
 }  // namespace iceberg

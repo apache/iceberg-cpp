@@ -319,7 +319,7 @@ class ParquetReaderTest : public TempFileTestBase {
         ::arrow::json::ArrayFromJSONString(::arrow::struct_(arrow_schema->fields()),
                                            R"([[1, null, null],
                                               [2, 777, 8],
-                                              [3, null, null]])")
+                                              [3, 778, null]])")
             .ValueOrDie();
 
     WriterProperties writer_properties;
@@ -1597,9 +1597,9 @@ TEST_F(ParquetReaderTest, ReadPartialLineage) {
                          OpenRowLineageReader(schema, std::nullopt, 7L));
 
   ASSERT_NO_FATAL_FAILURE(VerifyNextBatch(*reader_with_sequence,
-                                          R"([[1, null, 7],
-                                             [2, null, 7],
-                                             [3, null, 7]])"));
+                                          R"([[1, null, null],
+                                             [2, null, null],
+                                             [3, null, null]])"));
 }
 
 TEST_F(ParquetReaderTest, ReadPhysicalLineage) {
@@ -1611,7 +1611,13 @@ TEST_F(ParquetReaderTest, ReadPhysicalLineage) {
 
   ASSERT_NO_FATAL_FAILURE(VerifyNextBatch(*reader, R"([[1, 100, null],
                                                        [2, 777, 8],
-                                                       [3, 102, null]])"));
+                                                       [3, 778, null]])"));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto reader_with_sequence,
+                         OpenRowLineageReader(schema, 100L, 7L));
+  ASSERT_NO_FATAL_FAILURE(VerifyNextBatch(*reader_with_sequence, R"([[1, 100, 7],
+                                                                     [2, 777, 8],
+                                                                     [3, 778, 7]])"));
 }
 
 TEST_F(ParquetReaderTest, ReadPositionsAndLineageAcrossRowGroups) {

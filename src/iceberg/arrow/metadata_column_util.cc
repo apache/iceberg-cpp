@@ -29,13 +29,20 @@
 
 namespace iceberg::arrow {
 
+bool ShouldReadRowLineageAsNull(int32_t field_id,
+                                const MetadataColumnContext& metadata_context) {
+  return MetadataColumns::IsRowLineageColumn(field_id) &&
+         !metadata_context.first_row_id.has_value();
+}
+
 bool CanInheritRowLineageValue(int32_t field_id,
                                const MetadataColumnContext& metadata_context) {
   if (field_id == MetadataColumns::kRowIdColumnId) {
     return metadata_context.first_row_id.has_value();
   }
   if (field_id == MetadataColumns::kLastUpdatedSequenceNumberColumnId) {
-    return metadata_context.data_sequence_number.has_value();
+    return metadata_context.first_row_id.has_value() &&
+           metadata_context.data_sequence_number.has_value();
   }
   return false;
 }

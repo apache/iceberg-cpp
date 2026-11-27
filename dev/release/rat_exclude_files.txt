@@ -17,6 +17,7 @@
 
 .github/copilot-instructions.md
 .gitignore
+.gitmodules
 LICENSE
 NOTICE
 build/**

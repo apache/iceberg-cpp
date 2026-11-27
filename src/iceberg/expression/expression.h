@@ -365,7 +365,7 @@ class ICEBERG_EXPORT Bound {
   virtual Result<Literal> Evaluate(const StructLike& data) const = 0;
 
   /// \brief Returns the underlying bound reference for this term.
-  virtual std::shared_ptr<class BoundReference> reference() = 0;
+  virtual std::shared_ptr<const class BoundReference> reference() const = 0;
 };
 
 }  // namespace iceberg

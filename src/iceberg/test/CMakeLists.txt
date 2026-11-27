@@ -19,6 +19,22 @@
 
 set(ICEBERG_TEST_RESOURCES "${CMAKE_SOURCE_DIR}/src/iceberg/test/resources")
 
+# Conformance fixtures from apache/iceberg-verification, pinned as a git submodule.
+if(ICEBERG_BUILD_VERIFICATION_TESTS)
+  set(ICEBERG_VERIFICATION_DIR
+      "${PROJECT_SOURCE_DIR}/testing/iceberg-verification"
+      CACHE PATH "Path to an apache/iceberg-verification checkout")
+  # The path is pasted into a C string literal, so turn Windows backslashes into
+  # forward slashes, which would otherwise read as escape sequences.
+  cmake_path(SET ICEBERG_VERIFICATION_DIR "${ICEBERG_VERIFICATION_DIR}")
+  if(NOT IS_DIRECTORY "${ICEBERG_VERIFICATION_DIR}/table-spec")
+    message(FATAL_ERROR "ICEBERG_BUILD_VERIFICATION_TESTS is ON but no "
+                        "iceberg-verification fixtures were found at "
+                        "${ICEBERG_VERIFICATION_DIR}. Run `git submodule update --init "
+                        "testing/iceberg-verification` or set ICEBERG_VERIFICATION_DIR.")
+  endif()
+endif()
+
 configure_file("test_config.h.in" "test_config.h")
 
 # vcpkg's z-applocal POST_BUILD copies dependency DLLs into this shared test
@@ -91,6 +107,7 @@ add_iceberg_test(table_test
                  metrics_config_test.cc
                  metrics_reporter_test.cc
                  metrics_test.cc
+                 scan_task_planning_test.cc
                  snapshot_summary_builder_test.cc
                  snapshot_test.cc
                  snapshot_util_test.cc
@@ -133,6 +150,14 @@ add_iceberg_test(json_serde_test
                  metadata_serde_test.cc
                  schema_json_test.cc)
 
+if(ICEBERG_BUILD_VERIFICATION_TESTS)
+  add_iceberg_test(verification_test
+                   SOURCES
+                   verification/schema_verification_test.cc
+                   verification/types_verification_test.cc
+                   verification/verification_util.cc)
+endif()
+
 add_iceberg_test(scheduled_executor_test SOURCES scheduled_executor_test.cc)
 set_tests_properties(scheduled_executor_test PROPERTIES TIMEOUT 60)
 
@@ -140,6 +165,7 @@ add_iceberg_test(util_test
                  USE_DATA
                  SOURCES
                  base64_test.cc
+                 bin_packing_test.cc
                  bucket_util_test.cc
                  cache_test.cc
                  config_test.cc
@@ -206,10 +232,12 @@ if(ICEBERG_BUILD_BUNDLE)
   add_iceberg_test(metadata_table_test
                    USE_BUNDLE
                    SOURCES
+                   inspect/metadata_snapshot_scan_test.cc
                    inspect/history_table_test.cc
                    inspect/metadata_table_test.cc
                    inspect/refs_table_test.cc
-                   inspect/snapshots_table_test.cc)
+                   inspect/snapshots_table_test.cc
+                   inspect/manifests_table_test.cc)
 
   add_iceberg_test(eval_expr_test
                    USE_BUNDLE

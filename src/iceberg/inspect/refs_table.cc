@@ -43,6 +43,22 @@
 namespace iceberg {
 namespace {
 
+/// \brief Scan the refs metadata captured from a table.
+class RefsScan final : public MetadataScan {
+ public:
+  /// \brief Create a scan from captured metadata table settings.
+  static Result<std::unique_ptr<RefsScan>> Make(internal::MetadataScanContext context);
+
+  ~RefsScan() override;
+
+  Result<MetadataScanTaskStreamPtr> PlanTasksStream() const override;
+
+ private:
+  RefsScan(internal::MetadataScanContext context, std::shared_ptr<MetadataScanTask> task);
+
+  const std::shared_ptr<MetadataScanTask> task_;
+};
+
 struct RefRow {
   std::string name;
   std::string type;
@@ -91,7 +107,7 @@ RefsTable::RefsTable(std::shared_ptr<const Table> table)
 
 RefsTable::~RefsTable() = default;
 
-const std::shared_ptr<Schema>& RefsTable::schema() const { return CanonicalSchema(); }
+std::shared_ptr<Schema> RefsTable::schema() const { return CanonicalSchema(); }
 
 const std::shared_ptr<Schema>& RefsTable::CanonicalSchema() {
   static const auto schema = std::make_shared<Schema>(std::vector<SchemaField>{
@@ -111,7 +127,7 @@ Result<std::unique_ptr<RefsTable>> RefsTable::Make(std::shared_ptr<const Table> 
 }
 
 Result<std::unique_ptr<MetadataScan>> RefsTable::MakeScan(
-    internal::MetadataScanContext context) const {
+    internal::MetadataScanContext context, std::shared_ptr<FileIO> /*io*/) const {
   return RefsScan::Make(std::move(context));
 }
 
@@ -146,6 +162,8 @@ Result<ArrowArrayStream> RefsTable::ReadRows(
       [rows = std::move(rows)](size_t index) -> const RefRow& { return rows[index]; });
 }
 
+namespace {
+
 // RefsScan implementation
 RefsScan::RefsScan(internal::MetadataScanContext context,
                    std::shared_ptr<MetadataScanTask> task)
@@ -160,10 +178,7 @@ Result<std::unique_ptr<RefsScan>> RefsScan::Make(internal::MetadataScanContext c
       context.as_of_time_in_millis.has_value()) {
     return NotSupported("Metadata table does not support time travel");
   }
-  ICEBERG_PRECHECK(context.table_metadata != nullptr, "Table metadata cannot be null");
-  ICEBERG_PRECHECK(context.schema != nullptr, "Metadata table schema cannot be null");
-  ICEBERG_PRECHECK(context.projected_schema != nullptr,
-                   "Projected schema cannot be null");
+  ICEBERG_RETURN_UNEXPECTED(context.Validate());
   ICEBERG_RETURN_UNEXPECTED(internal::SelectAppendFns<RefRow>(
       *RefsTable::CanonicalSchema(), *context.projected_schema, kRefColumns));
   ICEBERG_ASSIGN_OR_RAISE(auto task,
@@ -175,5 +190,7 @@ Result<std::unique_ptr<RefsScan>> RefsScan::Make(internal::MetadataScanContext c
 Result<MetadataScanTaskStreamPtr> RefsScan::PlanTasksStream() const {
   return MetadataScanTaskStream::FromVector({task_});
 }
+
+}  // namespace
 
 }  // namespace iceberg

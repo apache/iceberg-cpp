@@ -22,6 +22,7 @@
 /// \file iceberg/util/location_util.h
 /// \brief Provide location path utilities.
 
+#include <string>
 #include <string_view>
 
 #include "iceberg/iceberg_export.h"
@@ -38,6 +39,32 @@ class ICEBERG_EXPORT LocationUtil {
   /// single letter is a drive rather than a scheme. The rest of the location is
   /// not validated.
   static std::string_view ParseScheme(std::string_view location);
+
+  /// \brief Whether a location starts with a URI scheme.
+  ///
+  /// This is the spec's test for an absolute path (see "Paths in Metadata"):
+  /// the text before the first colon must be a non-empty RFC 3986 scheme. It
+  /// is strict on every platform: unlike ParseScheme, a single letter such as
+  /// `C:` counts as a scheme.
+  static bool HasScheme(std::string_view location);
+
+  /// \brief Resolve a location against a table location.
+  ///
+  /// A location with a URI scheme is absolute and is returned unchanged.
+  /// Otherwise the result is `table_location + "/" + location`, with no `/`
+  /// added when the table location already ends in one. The join does not
+  /// interpret `.` or `..`, and a location starting with `/` yields `//`.
+  static std::string ResolveLocation(std::string_view table_location,
+                                     std::string_view location);
+
+  /// \brief Relativize a location against a table location.
+  ///
+  /// If the location starts with the table location immediately followed by
+  /// `/`, the remainder after that separator is returned. Otherwise the
+  /// location is returned unchanged. A table location that ends in `/`
+  /// already includes the separator.
+  static std::string_view RelativizeLocation(std::string_view table_location,
+                                             std::string_view location);
 
   static std::string_view StripTrailingSlash(std::string_view path) {
     if (path.empty()) {

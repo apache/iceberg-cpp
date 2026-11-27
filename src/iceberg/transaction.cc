@@ -21,11 +21,18 @@
 #include <format>
 #include <iterator>
 #include <memory>
+#include <mutex>
+#include <optional>
 #include <string>
+#include <unordered_set>
+#include <utility>
+#include <vector>
 
 #include "iceberg/catalog.h"
 #include "iceberg/location_provider.h"
 #include "iceberg/logging/log_macros.h"
+#include "iceberg/manifest/manifest_entry.h"
+#include "iceberg/manifest/manifest_reader.h"
 #include "iceberg/schema.h"
 #include "iceberg/snapshot.h"
 #include "iceberg/statistics_file.h"
@@ -99,6 +106,87 @@ std::string FormatCommittedSnapshots(
   return detail;
 }
 
+// Resolve every expected snapshot before reading any files.
+Result<std::vector<const Snapshot*>> FindAddedSnapshots(
+    const TableMetadata& metadata, std::unordered_set<int64_t> snapshot_ids) {
+  std::vector<const Snapshot*> snapshots;
+  snapshots.reserve(snapshot_ids.size());
+  for (const auto& snapshot : metadata.snapshots) {
+    if (snapshot_ids.empty()) {
+      break;
+    }
+    if (snapshot && snapshot_ids.erase(snapshot->snapshot_id) != 0) {
+      snapshots.push_back(snapshot.get());
+    }
+  }
+  // A catalog may omit snapshots. Never clean files with a partial keep-set.
+  ICEBERG_CHECK(snapshot_ids.empty(), "Committed metadata is missing {} added snapshots",
+                snapshot_ids.size());
+  return snapshots;
+}
+
+// Find owned content files still referenced by this delete manifest.
+Result<std::unordered_set<std::string>> FindReferencedContentFiles(
+    const TableMetadata& metadata, const std::shared_ptr<FileIO>& io,
+    const ManifestFile& manifest,
+    std::unordered_set<std::string>& remaining_content_paths) {
+  ICEBERG_ASSIGN_OR_RAISE(auto schema, metadata.Schema());
+  ICEBERG_ASSIGN_OR_RAISE(auto spec,
+                          metadata.PartitionSpecById(manifest.partition_spec_id));
+  ICEBERG_ASSIGN_OR_RAISE(auto reader, ManifestReader::Make(manifest, io, schema, spec));
+  ICEBERG_ASSIGN_OR_RAISE(auto entries, reader->LiveEntriesStream());
+  std::unordered_set<std::string> referenced;
+  while (!remaining_content_paths.empty()) {
+    ICEBERG_ASSIGN_OR_RAISE(auto entry, entries->Next());
+    if (!entry) {
+      return referenced;
+    }
+    ICEBERG_CHECK(entry->data_file != nullptr,
+                  "Missing content file in committed manifest {}",
+                  manifest.manifest_path);
+    // A merged DV can be shared by several retained snapshots.
+    if (remaining_content_paths.erase(entry->data_file->file_path) != 0) {
+      referenced.insert(entry->data_file->file_path);
+    }
+  }
+  return referenced;
+}
+
+/// Collect files that must survive transaction finalization.
+///
+/// The set includes manifests and manifest lists from all snapshots created by
+/// this transaction. It also includes owned content files still referenced by
+/// retained delete manifests.
+///
+/// \param metadata The metadata after the transaction commit.
+/// \param io FileIO used to read manifest lists and delete manifests.
+/// \param snapshot_ids Snapshot IDs in the committed AddSnapshot changes.
+/// \param content_paths Owned files whose live references have not been found.
+Result<std::unordered_set<std::string>> CommittedTransactionFiles(
+    const TableMetadata& metadata, const std::shared_ptr<FileIO>& io,
+    std::unordered_set<int64_t> snapshot_ids,
+    std::unordered_set<std::string> content_paths) {
+  ICEBERG_ASSIGN_OR_RAISE(auto snapshots,
+                          FindAddedSnapshots(metadata, std::move(snapshot_ids)));
+  std::unordered_set<std::string> committed;
+  for (const auto* snapshot : snapshots) {
+    committed.insert(snapshot->manifest_list);
+    SnapshotReader snapshot_reader(snapshot);
+    ICEBERG_ASSIGN_OR_RAISE(auto manifests, snapshot_reader.Manifests(io));
+    for (const auto& manifest : manifests) {
+      const bool first_seen = committed.insert(manifest.manifest_path).second;
+      if (first_seen && !content_paths.empty() &&
+          manifest.content == ManifestContent::kDeletes) {
+        ICEBERG_ASSIGN_OR_RAISE(
+            auto referenced,
+            FindReferencedContentFiles(metadata, io, manifest, content_paths));
+        committed.merge(referenced);
+      }
+    }
+  }
+  return committed;
+}
+
 }  // namespace
 
 // ---------------------------------------------------------------------------
@@ -115,12 +203,18 @@ Result<std::shared_ptr<TransactionContext>> TransactionContext::Make(
   ctx->kind = kind;
   ctx->table = std::move(table);
   if (kind == TransactionKind::kCreate) {
-    ctx->metadata_builder = TableMetadataBuilder::BuildFromEmpty();
+    ctx->metadata_builder =
+        TableMetadataBuilder::BuildFromEmpty(ctx->table->metadata()->format_version);
     std::ignore = ctx->metadata_builder->ApplyChangesForCreate(*ctx->table->metadata());
   } else {
-    ctx->metadata_builder = TableMetadataBuilder::BuildFrom(ctx->table->metadata().get());
+    ctx->ResetMetadataBuilder(ctx->table->metadata());
   }
   return ctx;
+}
+
+void TransactionContext::ResetMetadataBuilder(std::shared_ptr<TableMetadata> base) {
+  metadata_builder = TableMetadataBuilder::BuildFrom(base.get());
+  base_metadata = std::move(base);
 }
 
 const TableMetadata* TransactionContext::base() const { return metadata_builder->base(); }
@@ -222,6 +316,7 @@ Status Transaction::ReplayUpdates() {
   ICEBERG_CHECK(state_ == TransactionState::kReady,
                 "Replay requires a ready transaction");
   for (const auto& update : pending_updates_) {
+    ICEBERG_RETURN_UNEXPECTED(update->PrepareForReplay());
     ICEBERG_RETURN_UNEXPECTED(ApplyUpdate(*update));
   }
   return {};
@@ -375,10 +470,8 @@ Status Transaction::ApplyUpdateSnapshot(SnapshotUpdate& update) {
   ICEBERG_RETURN_UNEXPECTED(temp_update->CheckErrors());
 
   if (temp_update->changes().empty()) {
-    // A no-op may still write temporary files. Clean them now; the update remains
-    // registered so it can be replayed after a refresh.
-    internal::LogAndIgnoreFailure("Update staging cleanup",
-                                  [&update] { return update.CleanStaged(); });
+    // A later replay may reuse these files. Terminal cleanup will remove leftovers.
+    update.staged_snapshot_.reset();
     return {};
   }
 
@@ -534,7 +627,40 @@ void Transaction::CleanupUpdates() noexcept {
 }
 
 void Transaction::FinalizeUpdates(const TableMetadata& committed) noexcept {
+  std::optional<std::unordered_set<std::string>> committed_files;
+  internal::LogAndIgnoreFailure("Transaction file discovery", [&]() -> Status {
+    // TODO(gangwu): Clean staging for snapshots added and expired in one transaction.
+    std::unordered_set<int64_t> snapshot_ids;
+    for (const auto& change : ctx_->metadata_builder->changes()) {
+      if (change->kind() == TableUpdate::Kind::kAddSnapshot) {
+        const auto& snapshot =
+            internal::checked_cast<const table::AddSnapshot&>(*change).snapshot();
+        snapshot_ids.insert(snapshot->snapshot_id);
+      }
+    }
+    std::unordered_set<std::string> content_paths;
+    for (const auto& update : pending_updates_) {
+      if (update->kind() == PendingUpdate::Kind::kUpdateSnapshot) {
+        auto& snapshot_update = internal::checked_cast<SnapshotUpdate&>(*update);
+        std::lock_guard lock(snapshot_update.staging_mutex_);
+        content_paths.insert(snapshot_update.staged_content_files_.begin(),
+                             snapshot_update.staged_content_files_.end());
+      }
+    }
+    ICEBERG_ASSIGN_OR_RAISE(
+        committed_files,
+        CommittedTransactionFiles(committed, ctx_->table->io(), std::move(snapshot_ids),
+                                  std::move(content_paths)));
+    return {};
+  });
+  // Skip staging cleanup on discovery failure to protect committed files.
   for (const auto& update : pending_updates_) {
+    if (update->kind() == PendingUpdate::Kind::kUpdateSnapshot && committed_files) {
+      internal::LogAndIgnoreFailure("Snapshot cleanup", [&] {
+        return internal::checked_cast<SnapshotUpdate&>(*update).CleanUncommittedFiles(
+            *committed_files);
+      });
+    }
     internal::LogAndIgnoreFailure("Update finalization", [&update, &committed] {
       return update->Finalize(committed);
     });
@@ -544,10 +670,7 @@ void Transaction::FinalizeUpdates(const TableMetadata& committed) noexcept {
 Result<std::shared_ptr<Table>> Transaction::CommitOnce(bool is_first_attempt) {
   std::vector<std::unique_ptr<TableRequirement>> requirements;
   if (ctx_->kind == TransactionKind::kUpdate) {
-    std::shared_ptr<TableMetadata> metadata_before_refresh;
     if (!is_first_attempt) {
-      // Keep the builder's base alive while Refresh replaces the table metadata.
-      metadata_before_refresh = ctx_->table->metadata();
       ICEBERG_RETURN_UNEXPECTED(ctx_->table->Refresh());
     }
     const bool metadata_changed =
@@ -556,9 +679,7 @@ Result<std::shared_ptr<Table>> Transaction::CommitOnce(bool is_first_attempt) {
     if (metadata_changed || standalone_retry) {
       ICEBERG_CHECK(CanRetry(),
                     "Cannot rebase a transaction containing a non-retryable update");
-      CleanupUpdates();
-      ctx_->metadata_builder =
-          TableMetadataBuilder::BuildFrom(ctx_->table->metadata().get());
+      ctx_->ResetMetadataBuilder(ctx_->table->metadata());
       auto applied = ReplayUpdates();
       if (!applied) {
         return ValidationFailed("Transaction replay failed: {}", applied.error().message);

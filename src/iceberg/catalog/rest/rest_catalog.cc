@@ -470,7 +470,10 @@ Result<std::shared_ptr<RestCatalog>> RestCatalog::Make(
       config.Get(RestCatalogProperties::kTrustServerOAuth2Uri);
   const auto endpoint =
       config.configs().find(auth::AuthProperties::kOAuth2ServerUri.key());
-  if (!trust_server_oauth2_uri) {
+  const auto credential = config.configs().find(auth::AuthProperties::kCredential.key());
+  const bool has_client_credential =
+      credential != config.configs().end() && !credential->second.empty();
+  if (!trust_server_oauth2_uri && has_client_credential) {
     ICEBERG_PRECHECK(
         endpoint != config.configs().end() && (endpoint->second.starts_with("https://") ||
                                                endpoint->second.starts_with("http://")),
@@ -499,9 +502,9 @@ Result<std::shared_ptr<RestCatalog>> RestCatalog::Make(
   RestCatalogProperties final_config = RestCatalogProperties::FromMap(
       MergeConfigs(server_config.defaults, config.configs(), server_config.overrides));
   // The server cannot change the client's endpoint trust policy or, when disabled,
-  // move the OAuth endpoint directly or through an override of the catalog URI.
+  // move a client credential directly or through an override of the catalog URI.
   final_config.Set(RestCatalogProperties::kTrustServerOAuth2Uri, trust_server_oauth2_uri);
-  if (!trust_server_oauth2_uri) {
+  if (!trust_server_oauth2_uri && has_client_credential) {
     final_config.mutable_configs().insert_or_assign(endpoint->first, endpoint->second);
   }
 
@@ -584,6 +587,7 @@ RestCatalog::RestCatalog(RestCatalogProperties config, std::shared_ptr<FileIO> f
 std::string_view RestCatalog::name() const { return name_; }
 
 Result<std::shared_ptr<Catalog>> RestCatalog::AsCatalog() {
+  std::lock_guard lock(default_catalog_mutex_);
   if (auto catalog = default_catalog_.lock()) {
     return catalog;
   }

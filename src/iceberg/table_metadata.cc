@@ -54,6 +54,7 @@
 #include "iceberg/util/location_util.h"
 #include "iceberg/util/macros.h"
 #include "iceberg/util/property_util.h"
+#include "iceberg/util/string_util.h"
 #include "iceberg/util/timepoint.h"
 #include "iceberg/util/type_util.h"
 #include "iceberg/util/uuid.h"
@@ -197,7 +198,30 @@ std::string ToString(const MetadataLogEntry& entry) {
 Result<std::unique_ptr<TableMetadata>> TableMetadata::Make(
     const iceberg::Schema& schema, const iceberg::PartitionSpec& spec,
     const iceberg::SortOrder& sort_order, const std::string& location,
+    const std::unordered_map<std::string, std::string>& properties) {
+  auto persisted_properties = properties;
+  int format_version = kDefaultTableFormatVersion;
+  auto iter = persisted_properties.find(TableProperties::kFormatVersion.key());
+  if (iter != persisted_properties.end()) {
+    auto parsed_version = StringUtils::ParseNumber<int>(iter->second);
+    if (!parsed_version.has_value()) {
+      return InvalidArgument("Invalid format-version property: '{}'", iter->second);
+    }
+    format_version = parsed_version.value();
+    persisted_properties.erase(iter);
+  }
+  return Make(schema, spec, sort_order, location, persisted_properties, format_version);
+}
+
+Result<std::unique_ptr<TableMetadata>> TableMetadata::Make(
+    const iceberg::Schema& schema, const iceberg::PartitionSpec& spec,
+    const iceberg::SortOrder& sort_order, const std::string& location,
     const std::unordered_map<std::string, std::string>& properties, int format_version) {
+  if (!std::in_range<int8_t>(format_version) ||
+      !IsSupportedFormatVersion(static_cast<int8_t>(format_version))) {
+    return InvalidArgument("Unsupported table format version: {} (supported: 1-{})",
+                           format_version, kSupportedTableFormatVersion);
+  }
   for (const auto& [key, _] : properties) {
     if (TableProperties::reserved_properties().contains(key)) {
       return InvalidArgument(
@@ -227,7 +251,7 @@ Result<std::unique_ptr<TableMetadata>> TableMetadata::Make(
 
   ICEBERG_RETURN_UNEXPECTED(PropertyUtil::ValidateCommitProperties(properties));
 
-  return TableMetadataBuilder::BuildFromEmpty(format_version)
+  return TableMetadataBuilder::BuildFromEmpty(static_cast<int8_t>(format_version))
       ->AssignUUID()
       .SetLocation(location)
       .SetCurrentSchema(std::move(fresh_schema), last_column_id)
@@ -567,6 +591,8 @@ class TableMetadataBuilder::Impl {
   // Constructor for new table
   explicit Impl(int8_t format_version) : base_(nullptr), metadata_{} {
     metadata_.format_version = format_version;
+    // Create commits must carry the initial version even when no upgrade occurs.
+    changes_.push_back(std::make_unique<table::UpgradeFormatVersion>(format_version));
     metadata_.last_sequence_number = TableMetadata::kInitialSequenceNumber;
     metadata_.last_updated_ms = kInvalidLastUpdatedMs;
     metadata_.last_column_id = Schema::kInvalidColumnId;
@@ -748,7 +774,7 @@ Status TableMetadataBuilder::Impl::AssignUUID(std::string_view uuid) {
 
 Status TableMetadataBuilder::Impl::UpgradeFormatVersion(int8_t new_format_version) {
   // Check that the new format version is supported
-  if (new_format_version > TableMetadata::kSupportedTableFormatVersion) {
+  if (!TableMetadata::IsSupportedFormatVersion(new_format_version)) {
     return InvalidArgument(
         "Cannot upgrade table to unsupported format version: v{} (supported: v{})",
         new_format_version, TableMetadata::kSupportedTableFormatVersion);
@@ -1372,7 +1398,9 @@ Result<std::vector<SnapshotLogEntry>> TableMetadataBuilder::Impl::UpdateSnapshot
 }
 
 Result<std::unique_ptr<TableMetadata>> TableMetadataBuilder::Impl::Build() {
-  // 1. Validate metadata consistency through TableMetadata#Validate
+  // 1. Validate the format version.
+  ICEBERG_PRECHECK(TableMetadata::IsSupportedFormatVersion(metadata_.format_version),
+                   "Unsupported table format version: {}", metadata_.format_version);
 
   // 2. Update last_updated_ms if there are changes
   if (metadata_.last_updated_ms == kInvalidLastUpdatedMs) {
@@ -1540,6 +1568,11 @@ Status TableMetadataBuilder::Impl::RemovePartitionSpecs(
         return !spec_ids_to_remove.contains(spec->spec_id());
       }) |
       std::ranges::to<std::vector<std::shared_ptr<PartitionSpec>>>();
+
+  for (const auto& spec_id : spec_ids_to_remove) {
+    specs_by_id_.erase(spec_id);
+  }
+
   changes_.push_back(std::make_unique<table::RemovePartitionSpecs>(spec_ids));
 
   return {};

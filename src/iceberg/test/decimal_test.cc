@@ -23,6 +23,7 @@
 #include <array>
 #include <bit>
 #include <cstdint>
+#include <limits>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
@@ -714,6 +715,16 @@ TEST(DecimalTest, Rescale) {
   ASSERT_EQ(Decimal(500000), Decimal(5).Rescale(1, 6).value());
 
   ASSERT_THAT(Decimal(5555555).Rescale(6, 1), IsError(ErrorKind::kInvalid));
+
+  // Scale deltas beyond kMaxScale must fail cleanly instead of indexing past
+  // the powers-of-ten table (previously DCHECK-only, a no-op under NDEBUG).
+  ASSERT_THAT(Decimal(1).Rescale(0, 100), IsError(ErrorKind::kInvalid));
+  ASSERT_THAT(Decimal(1).Rescale(100, 0), IsError(ErrorKind::kInvalid));
+  ASSERT_THAT(Decimal(1).Rescale(std::numeric_limits<int32_t>::min(),
+                                 std::numeric_limits<int32_t>::max()),
+              IsError(ErrorKind::kInvalid));
+  // Zero is exact at every scale.
+  ASSERT_EQ(Decimal(0), Decimal(0).Rescale(0, 100).value());
 }
 
 TEST(DecimalTest, Compare) {
@@ -767,6 +778,19 @@ TEST(DecimalTest, Compare) {
   ASSERT_EQ(Decimal::Compare(Decimal("0"), Decimal("123456789"), 2, 3),
             std::partial_ordering::less);
   ASSERT_EQ(Decimal::Compare(Decimal("-123456789"), Decimal("0"), 2, 3),
+            std::partial_ordering::less);
+
+  // scale deltas beyond kMaxScale must not read past the powers-of-ten table
+  // (previously DCHECK-only, a no-op under NDEBUG); the lower-scale operand
+  // dominates because aligning it always overflows.
+  ASSERT_EQ(Decimal::Compare(Decimal(1), Decimal(5), 100, 0),
+            std::partial_ordering::less);
+  ASSERT_EQ(Decimal::Compare(Decimal(5), Decimal(1), 0, 100),
+            std::partial_ordering::greater);
+  ASSERT_EQ(Decimal::Compare(Decimal(-1), Decimal(-5), 100, 0),
+            std::partial_ordering::greater);
+  ASSERT_EQ(Decimal::Compare(Decimal(1), Decimal(1), std::numeric_limits<int32_t>::max(),
+                             std::numeric_limits<int32_t>::min()),
             std::partial_ordering::less);
 }
 

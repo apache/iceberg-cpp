@@ -78,8 +78,8 @@ class ICEBERG_EXPORT MetadataTable {
   /// \brief Return this metadata table's kind.
   virtual Kind kind() const noexcept = 0;
 
-  /// \brief Return the complete canonical schema of this metadata table.
-  virtual const std::shared_ptr<Schema>& schema() const = 0;
+  /// \brief Return shared ownership of this metadata table's canonical schema.
+  virtual std::shared_ptr<Schema> schema() const = 0;
 
   /// \brief Return the source table whose metadata is exposed.
   const std::shared_ptr<const Table>& source_table() const;
@@ -93,9 +93,14 @@ class ICEBERG_EXPORT MetadataTable {
  protected:
   explicit MetadataTable(std::shared_ptr<const Table> source_table);
 
+  /// \brief Derive a scan schema from the captured source metadata.
+  virtual Result<std::shared_ptr<Schema>> SchemaForScan(
+      const TableMetadata& metadata) const;
+
   /// \brief Plan a scan using the captured metadata, projection, and snapshot selection.
+  /// \param io FileIO captured when the scan builder was created
   virtual Result<std::unique_ptr<MetadataScan>> MakeScan(
-      internal::MetadataScanContext context) const = 0;
+      internal::MetadataScanContext context, std::shared_ptr<FileIO> io) const = 0;
 
  private:
   friend class MetadataScanBuilder;

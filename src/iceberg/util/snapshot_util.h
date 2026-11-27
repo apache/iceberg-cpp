@@ -26,6 +26,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "iceberg/iceberg_export.h"
@@ -39,6 +40,10 @@ namespace iceberg {
 /// \note All the returned std::shared_ptr<Snapshot> are guaranteed to be not null.
 class ICEBERG_EXPORT SnapshotUtil {
  public:
+  /// \brief Return whether a reference selects the main branch.
+  /// \param ref Reference name (empty string means main branch)
+  static bool IsMainBranch(std::string_view ref);
+
   /// \brief Returns a vector of ancestors of the given snapshot.
   ///
   /// \param table The table

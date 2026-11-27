@@ -23,6 +23,7 @@
 #include <utility>
 
 #include "iceberg/inspect/history_table.h"
+#include "iceberg/inspect/manifests_table.h"
 #include "iceberg/inspect/metadata_scan.h"
 #include "iceberg/inspect/refs_table.h"
 #include "iceberg/inspect/snapshots_table.h"
@@ -43,6 +44,8 @@ Result<std::unique_ptr<MetadataTable>> MetadataTable::Make(
       return RefsTable::Make(std::move(table));
     case MetadataTableKind::kHistory:
       return HistoryTable::Make(std::move(table));
+    case MetadataTableKind::kManifests:
+      return ManifestsTable::Make(std::move(table));
     default:
       break;
   }
@@ -51,6 +54,11 @@ Result<std::unique_ptr<MetadataTable>> MetadataTable::Make(
 
 const std::shared_ptr<const Table>& MetadataTable::source_table() const {
   return source_table_;
+}
+
+Result<std::shared_ptr<Schema>> MetadataTable::SchemaForScan(
+    const TableMetadata& metadata) const {
+  return schema();
 }
 
 Result<std::unique_ptr<MetadataScanBuilder>> MetadataTable::NewScan() const {

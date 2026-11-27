@@ -17,11 +17,13 @@
  * under the License.
  */
 
+#include <barrier>
 #include <chrono>
 #include <future>
 #include <memory>
 #include <optional>
 #include <string>
+#include <thread>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
@@ -342,6 +344,7 @@ TEST_F(RestCatalogLoadTableTest, OAuthRefreshRunsOnAuthExecutorWhenEnabled) {
         {{"uri", "http://test-server"},
          {"io-impl", "rest-catalog-unit-test-noop"},
          {"credential", "client:secret"},
+         {"oauth2-server-uri", "http://test-server/v1/oauth/tokens"},
          {"token-refresh-enabled", refresh ? "true" : "false"}});
     auto& tokens =
         EXPECT_CALL(*mock_client_, PostForm(_, _, _, _, _)).Times(refresh ? 2 : 1);
@@ -498,6 +501,36 @@ TEST_F(RestCatalogLoadTableTest,
   ASSERT_NE(credentialed, nullptr);
   ASSERT_EQ(credentialed->credentials().size(), 1);
   EXPECT_EQ(credentialed->credentials()[0].config.at("k"), "v");
+}
+
+// Threads that hold the default catalog at the same time get the same instance.
+TEST_F(RestCatalogLoadTableTest, ConcurrentAsCatalogCallsShareDefaultCatalog) {
+  constexpr int kThreads = 16;
+  constexpr int kRounds = 200;
+  ICEBERG_UNWRAP_OR_FAIL(auto root, MakeCatalog({}));
+
+  std::barrier sync(kThreads);
+  std::vector<std::shared_ptr<Catalog>> held(kThreads);
+  std::vector<std::thread> threads;
+  threads.reserve(kThreads);
+  for (int i = 0; i < kThreads; ++i) {
+    threads.emplace_back([&, i] {
+      for (int round = 0; round < kRounds; ++round) {
+        // No thread holds a default catalog here, so each round creates a new one.
+        sync.arrive_and_wait();
+        held[i] = root->AsCatalog().value_or(nullptr);
+        sync.arrive_and_wait();
+        // ASSERT would return early and leave the other threads at the barrier.
+        EXPECT_NE(held[i], nullptr);
+        EXPECT_EQ(held[i], held[0]);
+        sync.arrive_and_wait();
+        held[i].reset();
+      }
+    });
+  }
+  for (auto& thread : threads) {
+    thread.join();
+  }
 }
 
 struct PlanningModeCase {
@@ -822,7 +855,8 @@ TEST_F(RestCatalogOAuth2UriTest, FinalExchangeUpdatesBusinessRequests) {
   EXPECT_EQ(factory_calls_, 2);
 }
 
-TEST_F(RestCatalogOAuth2UriTest, TrustsServerOverridesByDefault) {
+TEST_F(RestCatalogOAuth2UriTest, TrustsServerOverridesWhenExplicitlyEnabled) {
+  properties_["rest.auth.oauth2.trust-server-uri"] = "true";
   ExpectInit({.overrides = {{"uri", "HTTPS://other-catalog.example/base/"},
                             {"oauth2-server-uri", "oauth/token///"},
                             {"rest.auth.oauth2.trust-server-uri", "false"}}});
@@ -831,8 +865,7 @@ TEST_F(RestCatalogOAuth2UriTest, TrustsServerOverridesByDefault) {
                          auth::AuthProperties::kIdTokenType);
 }
 
-TEST_F(RestCatalogOAuth2UriTest, RequiresAbsoluteClientEndpointBeforeAnyIoWhenUntrusted) {
-  properties_["rest.auth.oauth2.trust-server-uri"] = "false";
+TEST_F(RestCatalogOAuth2UriTest, RequiresAbsoluteClientEndpointByDefault) {
   properties_.erase("oauth2-server-uri");
   EXPECT_THAT(MakeOAuth2Catalog(), IsError(ErrorKind::kInvalidArgument));
   for (const auto* endpoint :
@@ -845,7 +878,7 @@ TEST_F(RestCatalogOAuth2UriTest, RequiresAbsoluteClientEndpointBeforeAnyIoWhenUn
   EXPECT_EQ(factory_calls_, 0);
 }
 
-TEST_F(RestCatalogOAuth2UriTest, RefreshUsesTheClientEndpointWhenUntrusted) {
+TEST_F(RestCatalogOAuth2UriTest, RefreshUsesTheClientEndpointByDefault) {
   test::MockExecutor executor;
   std::promise<ExecutorTask> queued;
   auto ready = queued.get_future();
@@ -853,13 +886,15 @@ TEST_F(RestCatalogOAuth2UriTest, RefreshUsesTheClientEndpointWhenUntrusted) {
     queued.set_value(std::move(task));
     return {};
   });
-  properties_["rest.auth.oauth2.trust-server-uri"] = "false";
   properties_["token-refresh-enabled"] = "true";
   ExpectInit({.overrides = {{"uri", "https://other-catalog.example"},
                             {"oauth2-server-uri", "https://server-auth.example/token"},
                             {"rest.auth.oauth2.trust-server-uri", "true"}}},
              R"({"access_token":"expired","token_type":"bearer","expires_in":0})");
-  EXPECT_CALL(*mock_client_, PostForm("https://auth.example/token/", _, _, _, _))
+  EXPECT_CALL(
+      *mock_client_,
+      PostForm("https://auth.example/token/",
+               ::testing::Contains(::testing::Pair("client_secret", "secret")), _, _, _))
       .WillOnce(Return(
           HttpResponse(200, R"({"access_token":"refreshed","token_type":"bearer"})")));
   ICEBERG_UNWRAP_OR_FAIL(auto root, MakeOAuth2Catalog(&executor));
