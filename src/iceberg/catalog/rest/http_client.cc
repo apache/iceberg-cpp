@@ -29,6 +29,7 @@
 #include "iceberg/catalog/rest/rest_util.h"
 #include "iceberg/result.h"
 #include "iceberg/util/macros.h"
+#include "iceberg/util/string_util.h"
 
 namespace iceberg::rest {
 
@@ -206,6 +207,15 @@ HttpClient::HttpClient(std::unordered_map<std::string, std::string> default_head
 }
 
 HttpClient::~HttpClient() = default;
+
+bool HttpClient::HasDefaultAuthorization() const {
+  for (const auto& [name, value] : default_headers_) {
+    if (StringUtils::EqualsIgnoreCase(name, "Authorization")) {
+      return value.find_first_not_of(" \t") != std::string::npos;
+    }
+  }
+  return false;
+}
 
 Result<std::string> HttpClient::RequestUri(const std::string& path) const {
   // Match Java HTTPRequest.check, then requestUri. URI syntax validation remains

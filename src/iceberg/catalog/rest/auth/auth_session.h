@@ -89,7 +89,8 @@ class ICEBERG_REST_EXPORT AuthSession {
   ///
   /// Refreshes expiring tokens in the background when keep_refreshed is true.
   /// This factory uses the client-credentials grant for refresh.
-  /// Refresh requests preserve the client's default Authorization header.
+  /// Refresh requests preserve the client's default Authorization header, even when
+  /// both client_id and client_secret are empty.
   /// Authenticate() uses the cached token without refreshing it.
   ///
   /// \param initial_token The initial token response from FetchToken().

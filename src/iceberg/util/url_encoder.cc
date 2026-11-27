@@ -20,15 +20,17 @@
 #include "iceberg/util/url_encoder.h"
 
 #include <cstdint>
-#include <locale>
 
 namespace iceberg {
 
 namespace {
 
-bool IsUnreserved(unsigned char c) {
+enum class Encoding { kUrl, kForm };
+
+bool IsUnreserved(unsigned char c, Encoding encoding) {
   return (c >= '0' && c <= '9') || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') ||
-         c == '-' || c == '.' || c == '_' || c == '~';
+         c == '-' || c == '.' || c == '_' ||
+         c == (encoding == Encoding::kForm ? '*' : '~');
 }
 
 // Helper: convert hex char to int (0–15), returns -1 if invalid
@@ -39,17 +41,17 @@ constexpr int8_t FromHex(char c) {
   return -1;
 }
 
-}  // namespace
-
-std::string UrlEncoder::Encode(std::string_view str_to_encode) {
-  static const char* kHexChars = "0123456789ABCDEF";
+std::string EncodeComponent(std::string_view str_to_encode, Encoding encoding) {
+  static constexpr char kHexChars[] = "0123456789ABCDEF";
   std::string result;
   result.reserve(str_to_encode.size() * 3 / 2 /* Heuristic reservation */);
 
   for (char c : str_to_encode) {
     auto b = static_cast<unsigned char>(c);
-    if (IsUnreserved(b)) {
+    if (IsUnreserved(b, encoding)) {
       result += c;
+    } else if (encoding == Encoding::kForm && c == ' ') {
+      result += '+';
     } else {
       result += '%';
       result += kHexChars[b >> 4];
@@ -58,6 +60,16 @@ std::string UrlEncoder::Encode(std::string_view str_to_encode) {
   }
 
   return result;
+}
+
+}  // namespace
+
+std::string UrlEncoder::Encode(std::string_view str_to_encode) {
+  return EncodeComponent(str_to_encode, Encoding::kUrl);
+}
+
+std::string UrlEncoder::EncodeFormComponent(std::string_view value) {
+  return EncodeComponent(value, Encoding::kForm);
 }
 
 std::string UrlEncoder::Decode(std::string_view str_to_decode) {

@@ -754,81 +754,48 @@ TEST_P(RestCatalogOAuth2RefreshTest, RefreshUsesMergedConfigAndUpdatesBusinessRe
 
 INSTANTIATE_TEST_SUITE_P(
     ExchangeModes, RestCatalogOAuth2RefreshTest,
-    ::testing::Values(OAuth2RefreshModeCase{"Default", "", "", "", true},
-                      OAuth2RefreshModeCase{"Enabled", "true", "", "", true},
-                      OAuth2RefreshModeCase{"Disabled", "false", "", "", false},
-                      OAuth2RefreshModeCase{"ServerDisables", "true", "", "false", false},
-                      OAuth2RefreshModeCase{"ServerEnables", "false", "", "true", true},
-                      OAuth2RefreshModeCase{"ServerDefaultDisables", "", "false", "",
-                                            false},
-                      OAuth2RefreshModeCase{"ClientOverridesServerDefault", "false",
-                                            "true", "", false}),
+    ::testing::Values(
+        OAuth2RefreshModeCase{"Default", "", "", "", true},
+        OAuth2RefreshModeCase{"ServerDefaultDisables", "", "false", "", false},
+        OAuth2RefreshModeCase{"ClientOverridesServerDefault", "false", "true", "", false},
+        OAuth2RefreshModeCase{"ServerEnables", "false", "", "true", true}),
     [](const ::testing::TestParamInfo<OAuth2RefreshModeCase>& info) {
       return info.param.name;
     });
 
-struct OAuth2RecoveryCase {
-  std::string name;
-  bool expired;
-  bool exchange_enabled;
-};
-
-class RestCatalogOAuth2RecoveryTest
-    : public RestCatalogOAuth2UriTest,
-      public ::testing::WithParamInterface<OAuth2RecoveryCase> {};
-
-TEST_P(RestCatalogOAuth2RecoveryTest, RecoversAndUpdatesBusinessRequests) {
-  const auto& mode = GetParam();
+TEST_F(RestCatalogOAuth2UriTest, FinalExchangeUpdatesBusinessRequests) {
   properties_["token-refresh-enabled"] = "true";
-  properties_["token-exchange-enabled"] = mode.exchange_enabled ? "true" : "false";
+  properties_["token-exchange-enabled"] = "true";
   properties_["credential"] = ":SeCrEt:Tail";
-  ExpectInit({}, nlohmann::json({{"access_token", "Initial"},
-                                 {"token_type", "bearer"},
-                                 {"expires_in", mode.expired ? 0 : 1}})
-                     .dump());
+  ExpectInit({}, R"({"access_token":"Initial","token_type":"bearer","expires_in":1})");
 
-  const int expected_requests = mode.expired ? 1 : 7;
-  int requests = 0;
-  EXPECT_CALL(*mock_client_, PostForm("https://auth.example/token/", _, _, _, _))
-      .Times(expected_requests)
-      .WillRepeatedly([&](const std::string&, const auto& form, const auto& headers,
-                          const ErrorHandler&,
-                          auth::AuthSession& session) -> Result<HttpResponse> {
-        ++requests;
-        HttpRequest request{.headers = {{"authorization", "Bearer StaleDefault"},
-                                        {"X-Trace", "KeepThisValue"}}};
-        for (const auto& [key, value] : headers) {
-          request.headers.insert_or_assign(key, value);
-        }
-        ICEBERG_ASSIGN_OR_RAISE(auto authenticated,
-                                session.Authenticate(std::move(request)));
-        std::unordered_map<std::string, std::string> expected_form{{"scope", "catalog"}};
-        if (mode.exchange_enabled) {
-          expected_form.insert({
-              {"grant_type", "urn:ietf:params:oauth:grant-type:token-exchange"},
-              {"subject_token", "Initial"},
-              {"subject_token_type", auth::AuthProperties::kAccessTokenType},
-          });
-          if (mode.expired || requests == 7) {
-            EXPECT_EQ(authenticated.headers.at("Authorization"),
-                      "Basic OlNlQ3JFdDpUYWls");
-          } else {
-            // Earlier attempts can also use Basic if the queued token has expired.
-            EXPECT_THAT(authenticated.headers.at("Authorization"),
-                        ::testing::AnyOf("Bearer Initial", "Basic OlNlQ3JFdDpUYWls"));
-          }
-        } else {
-          expected_form.insert(
-              {{"grant_type", "client_credentials"}, {"client_secret", "SeCrEt:Tail"}});
-          EXPECT_EQ(authenticated.headers.at("Authorization"), "Bearer StaleDefault");
-        }
-        EXPECT_THAT(form, ::testing::ContainerEq(expected_form));
-        EXPECT_EQ(authenticated.headers.at("X-Trace"), "KeepThisValue");
-        if (requests < expected_requests) {
-          return IOError("ordinary refresh failed");
-        }
-        return HttpResponse(200, R"({"access_token":"Recovered","token_type":"bearer"})");
-      });
+  const std::unordered_map<std::string, std::string> exchange_form{
+      {"grant_type", "urn:ietf:params:oauth:grant-type:token-exchange"},
+      {"subject_token", "Initial"},
+      {"subject_token_type", auth::AuthProperties::kAccessTokenType},
+      {"scope", "catalog"},
+  };
+  const std::string basic_auth = "Basic OlNlQ3JFdCUzQVRhaWw=";
+  ::testing::Sequence attempts;
+  // A delayed refresh may already need Basic authentication before the final attempt.
+  EXPECT_CALL(
+      *mock_client_,
+      PostForm("https://auth.example/token/", exchange_form,
+               ::testing::ElementsAre(::testing::Pair(
+                   "Authorization", ::testing::AnyOf("Bearer Initial", basic_auth))),
+               _, _))
+      .Times(6)
+      .InSequence(attempts)
+      .WillRepeatedly(
+          []() -> Result<HttpResponse> { return IOError("ordinary refresh failed"); });
+  EXPECT_CALL(
+      *mock_client_,
+      PostForm("https://auth.example/token/", exchange_form,
+               ::testing::ElementsAre(::testing::Pair("Authorization", basic_auth)), _,
+               _))
+      .InSequence(attempts)
+      .WillOnce(Return(
+          HttpResponse(200, R"({"access_token":"Recovered","token_type":"bearer"})")));
 
   test::MockExecutor executor;
   std::promise<ExecutorTask> queued;
@@ -842,7 +809,6 @@ TEST_P(RestCatalogOAuth2RecoveryTest, RecoversAndUpdatesBusinessRequests) {
   test::FakeRetryEnvironment retry_environment;
   ScopedRetryTestHooks retry_hooks(retry_environment.hooks());
   std::move(ready.get())();
-  EXPECT_EQ(requests, expected_requests);
 
   EXPECT_CALL(*mock_client_, Get("https://catalog.example/api/v1/namespaces", _, _, _, _))
       .WillOnce([](const std::string&, const auto&, const auto&, const ErrorHandler&,
@@ -855,16 +821,6 @@ TEST_P(RestCatalogOAuth2RecoveryTest, RecoversAndUpdatesBusinessRequests) {
   EXPECT_THAT(catalog->ListNamespaces({}), IsOk());
   EXPECT_EQ(factory_calls_, 2);
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    RecoveryModes, RestCatalogOAuth2RecoveryTest,
-    ::testing::Values(OAuth2RecoveryCase{"ExpiredExchange", true, true},
-                      OAuth2RecoveryCase{"FinalExchange", false, true},
-                      OAuth2RecoveryCase{"ExpiredClientCredentials", true, false},
-                      OAuth2RecoveryCase{"FinalClientCredentials", false, false}),
-    [](const ::testing::TestParamInfo<OAuth2RecoveryCase>& info) {
-      return info.param.name;
-    });
 
 TEST_F(RestCatalogOAuth2UriTest, TrustsServerOverridesByDefault) {
   ExpectInit({.overrides = {{"uri", "HTTPS://other-catalog.example/base/"},

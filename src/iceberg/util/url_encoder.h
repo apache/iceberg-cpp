@@ -42,6 +42,10 @@ class ICEBERG_EXPORT UrlEncoder {
   /// \return The URL-encoded string.
   static std::string Encode(std::string_view str_to_encode);
 
+  /// \brief Encode a field name or value for application/x-www-form-urlencoded.
+  /// Spaces become '+', and literal '+' characters become "%2B".
+  static std::string EncodeFormComponent(std::string_view value);
+
   /// \brief URL-decode a string.
   ///
   /// \details Decodes percent-encoded characters (e.g., "%20" -> space).

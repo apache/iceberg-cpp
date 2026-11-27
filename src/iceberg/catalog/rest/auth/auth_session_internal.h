@@ -41,6 +41,7 @@
 #include "iceberg/util/macros.h"
 #include "iceberg/util/retry_util.h"
 #include "iceberg/util/scheduled_executor_internal.h"
+#include "iceberg/util/url_encoder.h"
 
 namespace iceberg::rest::auth::internal {
 
@@ -275,6 +276,14 @@ class OAuth2Session final : public AuthSession,
     refresh_stopped_ = true;
   }
 
+  std::unordered_map<std::string, std::string> BasicAuthHeaders() const {
+    // RFC 6749 section 2.3.1 encodes each field before adding the Basic separator.
+    auto credential =
+        UrlEncoder::EncodeFormComponent(refresh_properties_.client_id()) + ":" +
+        UrlEncoder::EncodeFormComponent(refresh_properties_.client_secret());
+    return {{"Authorization", "Basic " + Base64::Encode(credential)}};
+  }
+
   Result<OAuthTokenResponse> FetchRefreshToken(const std::string& token,
                                                const std::string& issued_token_type,
                                                bool recover) {
@@ -282,13 +291,7 @@ class OAuth2Session final : public AuthSession,
     if (!config_.exchange_enabled) {
       return OAuth2Util::FetchToken(*client_, *empty_session, refresh_properties_);
     }
-    auto headers =
-        recover
-            ? std::unordered_map<std::string, std::string>{{"Authorization",
-                                                            "Basic " +
-                                                                Base64::Encode(
-                                                                    config_.credential)}}
-            : OAuth2Util::AuthHeaders(token);
+    auto headers = recover ? BasicAuthHeaders() : OAuth2Util::AuthHeaders(token);
     // Explicit request headers override any default Authorization on the client.
     // Keep the current token as subject, without a parent actor.
     return OAuth2Util::ExchangeToken(*client_, *empty_session, headers, token,
@@ -314,7 +317,8 @@ class OAuth2Session final : public AuthSession,
         recover = recover || (expires_at_ != std::chrono::steady_clock::time_point{} &&
                               expires_at_ <= config_.now());
       }
-      if ((!config_.exchange_enabled || recover) && config_.credential.empty()) {
+      if (config_.credential.empty() &&
+          (config_.exchange_enabled ? recover : !client_->HasDefaultAuthorization())) {
         ICEBERG_LOG_WARN("Stopping OAuth2 token refresh: no credential available");
         return std::nullopt;
       }

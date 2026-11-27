@@ -411,8 +411,7 @@ TEST(HttpClientTest, PublicOAuth2FactoryPreservesAuthorizationOnRefresh) {
     EXPECT_EQ(headers["Authorization"], kAuthorization);
     const std::unordered_map<std::string, std::string> expected_form{
         {"grant_type", "client_credentials"},
-        {"client_id", "client"},
-        {"client_secret", "secret"},
+        {"client_secret", ""},
         {"scope", "catalog"},
     };
     EXPECT_EQ(RequestForm(request), expected_form);
@@ -435,7 +434,7 @@ TEST(HttpClientTest, PublicOAuth2FactoryPreservesAuthorizationOnRefresh) {
       auto session,
       auth::AuthSession::MakeOAuth2(
           {.access_token = "initial", .token_type = "bearer", .expires_in_secs = 0},
-          server.url("/v1/oauth/tokens"), "client", "secret", "catalog",
+          server.url("/v1/oauth/tokens"), "", "", "catalog",
           /*keep_refreshed=*/true, {}, client, &executor));
   ASSERT_EQ(ready.wait_for(std::chrono::seconds(5)), std::future_status::ready);
   std::move(ready.get())();
@@ -473,7 +472,7 @@ TEST_P(OAuth2HttpRecoveryTest, RecoversExpiredTokenAndAuthenticatesResourceOverH
           {"subject_token_type", AuthProperties::kAccessTokenType},
       });
       valid_auth = headers.contains("Authorization") &&
-                   headers.at("Authorization") == "Basic OlNlQ3JFdDpUYWls";
+                   headers.at("Authorization") == "Basic OlNlQ3JFdCUzQVRhaWw=";
     } else {
       expected_form.insert(
           {{"grant_type", "client_credentials"}, {"client_secret", "SeCrEt:Tail"}});
