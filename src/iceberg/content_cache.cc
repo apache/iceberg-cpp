@@ -19,6 +19,7 @@
 
 #include <algorithm>
 #include <cstring>
+#include <format>
 #include <limits>
 #include <list>
 #include <stdexcept>
@@ -85,7 +86,8 @@ class ContentCacheRegistry {
 
   int32_t SetCapacity(int32_t capacity) {
     if (capacity <= 0) {
-      throw std::invalid_argument("Global manifest cache limit must be positive");
+      throw std::invalid_argument(
+          std::format("Global manifest cache limit must be positive, got {}", capacity));
     }
     std::vector<std::shared_ptr<CachedFiles>> evicted;
     std::lock_guard lock(mutex_);

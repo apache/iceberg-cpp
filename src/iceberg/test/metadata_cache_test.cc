@@ -366,6 +366,9 @@ TEST(MetadataCacheTest, LoweringGlobalCapacityEvictsLeastRecentlyUsedTables) {
   third->Insert("third", bytes, 0);
   ASSERT_TRUE(first->Find("first"));
   EXPECT_THROW(internal::ContentCache::SetGlobalCapacity(0), std::invalid_argument);
+  EXPECT_THAT([] { internal::ContentCache::SetGlobalCapacity(-3); },
+              ::testing::ThrowsMessage<std::invalid_argument>(
+                  "Global manifest cache limit must be positive, got -3"));
   EXPECT_EQ(internal::ContentCache::SetGlobalCapacity(1), 3);
   EXPECT_TRUE(first->Find("first"));
   EXPECT_FALSE(second->Find("second"));
