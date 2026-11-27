@@ -277,13 +277,13 @@ class CachedInputFile : public InputFile {
 }  // namespace
 
 // Clear once after each cleanup, including partially successful batch deletes.
-class ContentCache::ManifestFileIO : public FileIO, public StorageNamespace {
+class ContentCache::ManifestFileIO : public FileIO {
  public:
   explicit ManifestFileIO(std::shared_ptr<ContentCache> cache)
       : cache_(std::move(cache)) {}
-  std::optional<uint64_t> namespace_generation() const override {
+  std::optional<uint64_t> ReadGeneration() const {
     std::lock_guard lock(cache_->mutex_);
-    if (!cache_->RefreshNamespace() || cache_->active_writes_ != 0) return std::nullopt;
+    if (!cache_->SyncInnerCache() || cache_->active_writes_ != 0) return std::nullopt;
     return cache_->generation_;
   }
   Result<std::unique_ptr<InputFile>> NewInputFile(std::string location) override {
@@ -432,16 +432,12 @@ Result<ContentCacheOptions> ContentCacheOptions::FromProperties(
 
 ContentCache::ContentCache(std::shared_ptr<FileIO> io, ContentCacheOptions options)
     : io_(std::move(io)),
-      routes_(dynamic_cast<const StorageNamespace*>(io_.get())),
+      inner_adapter_(dynamic_cast<const ManifestFileIO*>(io_.get())),
       options_(options),
       registry_(GlobalContentCacheRegistry()),
       registration_(std::make_shared<ContentCacheRegistration>()) {
   if (!io_) throw std::invalid_argument("Content cache requires a storage FileIO");
-  if (routes_) {
-    namespace_generation_ = routes_->namespace_generation();
-  } else if (io_->AsSupportsStorageCredentials()) {
-    namespace_generation_.reset();
-  }
+  if (inner_adapter_) inner_generation_ = inner_adapter_->ReadGeneration();
 }
 
 ContentCache::~ContentCache() { registry_->Erase(*registration_); }
@@ -454,11 +450,12 @@ std::shared_ptr<FileIO> ContentCache::Wrap() {
   return std::make_shared<ManifestFileIO>(shared_from_this());
 }
 
-bool ContentCache::RefreshNamespace() {
-  auto current = routes_ ? routes_->namespace_generation() : namespace_generation_;
-  if (current != namespace_generation_) {
+bool ContentCache::SyncInnerCache() {
+  if (!inner_adapter_) return true;
+  auto current = inner_adapter_->ReadGeneration();
+  if (current != inner_generation_) {
     registry_->Erase(*registration_);
-    namespace_generation_ = current;
+    inner_generation_ = current;
     ++generation_;
   }
   return current.has_value();
@@ -466,7 +463,7 @@ bool ContentCache::RefreshNamespace() {
 
 MetadataContent ContentCache::Find(std::string_view location, uint64_t* generation) {
   std::lock_guard lock(mutex_);
-  const bool cacheable = RefreshNamespace();
+  const bool cacheable = SyncInnerCache();
   if (generation) *generation = generation_;
   return cacheable ? FindLocked(location, std::nullopt) : nullptr;
 }
@@ -475,7 +472,7 @@ MetadataContent ContentCache::FindForHandle(std::string_view location,
                                             uint64_t generation,
                                             std::optional<int64_t> size, bool* can_load) {
   std::lock_guard lock(mutex_);
-  const bool current = RefreshNamespace() && generation == generation_;
+  const bool current = SyncInnerCache() && generation == generation_;
   if (can_load) *can_load = current && active_writes_ == 0;
   if (!current) return nullptr;
   return FindLocked(location, size);
@@ -501,7 +498,7 @@ MetadataContent ContentCache::Insert(std::string_view location, MetadataContent 
     return content;
   }
   std::lock_guard lock(mutex_);
-  if (!RefreshNamespace() || generation != generation_ || active_writes_ != 0)
+  if (!SyncInnerCache() || generation != generation_ || active_writes_ != 0)
     return content;
   if (auto retained = registration_->last_files.lock()) {
     auto fits = [&](const MetadataContent& value) {
@@ -541,12 +538,7 @@ Result<std::unique_ptr<InputFile>> ContentCache::NewInputFile(
   } else {
     ICEBERG_ASSIGN_OR_RAISE(input, io_->NewInputFile(location));
   }
-  // A resolver may first discover an untrackable backend while resolving this
-  // handle. Bypass read-ahead as well as admission in that case.
-  if (routes_ ? !routes_->namespace_generation()
-              : io_->AsSupportsStorageCredentials() != nullptr) {
-    return input;
-  }
+  if (inner_adapter_ && !inner_adapter_->ReadGeneration()) return input;
   if (input->location() != location) {
     if (auto content = FindForHandle(input->location(), generation)) {
       return std::make_unique<CachedInputFile>(std::string(input->location()),

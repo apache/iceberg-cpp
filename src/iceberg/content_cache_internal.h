@@ -30,7 +30,6 @@
 #include <vector>
 
 #include "iceberg/file_io.h"
-#include "iceberg/storage_namespace.h"
 #include "iceberg/util/config.h"
 
 namespace iceberg::internal {
@@ -67,8 +66,9 @@ class ContentCacheRegistry;
 class ICEBERG_EXPORT ContentCache : public std::enable_shared_from_this<ContentCache> {
  public:
   // A cache and all its adapters use this FileIO for their entire lifetime.
-  // Construct a new cache when replacing the storage FileIO. FileIOs with mutable
-  // routing must report their storage namespace generation for location-only hits.
+  // The caller must keep its storage namespace stable: every cached location must
+  // continue to identify the same immutable file. Bind a fresh cache when replacing
+  // the FileIO or changing where it resolves those locations.
   ContentCache(std::shared_ptr<FileIO> io, ContentCacheOptions options);
   ~ContentCache();
   // Return the previous process-wide capacity. The new capacity must be positive.
@@ -92,16 +92,16 @@ class ICEBERG_EXPORT ContentCache : public std::enable_shared_from_this<ContentC
  private:
   class ManifestFileIO;
 
-  bool RefreshNamespace();
+  bool SyncInnerCache();
   MetadataContent FindLocked(std::string_view location, std::optional<int64_t> size);
   const std::shared_ptr<FileIO> io_;
-  const StorageNamespace* const routes_;
+  const ManifestFileIO* const inner_adapter_;
   const ContentCacheOptions options_;
   const std::shared_ptr<ContentCacheRegistry> registry_;
   std::mutex mutex_;
   const std::shared_ptr<ContentCacheRegistration> registration_;
   size_t active_writes_ = 0;
-  std::optional<uint64_t> namespace_generation_ = 0;
+  std::optional<uint64_t> inner_generation_;
   uint64_t generation_ = 0;
 };
 

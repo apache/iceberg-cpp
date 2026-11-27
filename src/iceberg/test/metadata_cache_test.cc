@@ -361,23 +361,30 @@ TEST(MetadataCacheTest, BypassedHandlesReuseTheirStorageSize) {
   }
 }
 
-TEST(MetadataCacheTest, UnknownNamespaceSkipsReadAheadAndHintVerification) {
-  class UntrackedFileIO : public FailingOpenFileIO, public SupportsStorageCredentials {
+TEST(MetadataCacheTest, CredentialedFileIOCanCacheInAStableNamespace) {
+  class CredentialedFileIO : public MockFileIO, public SupportsStorageCredentials {
    public:
-    using FailingOpenFileIO::FailingOpenFileIO;
     SupportsStorageCredentials* AsSupportsStorageCredentials() override { return this; }
-    Status SetStorageCredentials(const std::vector<StorageCredential>&) override {
+    Status SetStorageCredentials(
+        const std::vector<StorageCredential>& credentials) override {
+      credentials_ = credentials;
       return {};
     }
-    std::vector<StorageCredential> credentials() const override { return {}; }
+    std::vector<StorageCredential> credentials() const override { return credentials_; }
+
+   private:
+    std::vector<StorageCredential> credentials_;
   };
-  auto state = std::make_shared<FailingOpenState>();
-  state->first_error = {.kind = ErrorKind::kIOError, .message = "storage unavailable"};
-  auto cache = MakeCache(std::make_shared<UntrackedFileIO>(state));
-  ICEBERG_UNWRAP_OR_FAIL(auto input, cache->Wrap()->NewInputFile("manifest.avro", 8));
-  EXPECT_EQ(state->size_count, 0);
-  EXPECT_THAT(input->Open(), IsError(ErrorKind::kIOError));
-  EXPECT_EQ(state->open_count, 1);
+  auto storage = std::make_shared<CredentialedFileIO>();
+  storage->AddFile("manifest.avro", "manifest");
+  auto adapter = MakeCache(storage)->Wrap();
+  ASSERT_THAT(adapter->ReadFile("manifest.avro", std::nullopt),
+              HasValue(::testing::Eq("manifest")));
+  ASSERT_THAT(storage->SetStorageCredentials({{"manifest.avro", {{"token", "rotated"}}}}),
+              IsOk());
+  storage->RemoveFile("manifest.avro");
+  EXPECT_THAT(adapter->ReadFile("manifest.avro", std::nullopt),
+              HasValue(::testing::Eq("manifest")));
 }
 
 TEST(MetadataCacheTest, NestedCacheFollowsInnerOverwrites) {

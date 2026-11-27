@@ -45,12 +45,11 @@ Result<std::shared_ptr<FileIO>> ResolvingFileIO::FileIOForPath(
   // without static keys may wait on the EC2 metadata service), which would
   // stall every other operation. Forwards all credentials; each implementation
   // applies the prefixes it understands.
-  auto load = [&](const FileIORegistry::Properties& properties,
-                  const std::vector<StorageCredential>& credentials,
+  auto load = [&](const std::vector<StorageCredential>& credentials,
                   const std::shared_ptr<StorageCredentialProvider>& provider)
       -> Result<std::shared_ptr<FileIO>> {
     ICEBERG_ASSIGN_OR_RAISE(std::shared_ptr<FileIO> io,
-                            FileIORegistry::Load(name, properties));
+                            FileIORegistry::Load(name, properties_));
     if (auto* credentialed = io->AsSupportsStorageCredentials()) {
       auto status = credentialed->InitializeStorageCredentials(credentials, provider);
       if (!status && provider && status.error().kind == ErrorKind::kNotSupported) {
@@ -66,7 +65,6 @@ Result<std::shared_ptr<FileIO>> ResolvingFileIO::FileIOForPath(
 
   while (true) {
     uint64_t generation = 0;
-    FileIORegistry::Properties properties;
     std::vector<StorageCredential> credentials;
     std::shared_ptr<StorageCredentialProvider> provider;
     {
@@ -74,16 +72,13 @@ Result<std::shared_ptr<FileIO>> ResolvingFileIO::FileIOForPath(
       if (const auto cached = io_by_name_.find(name); cached != io_by_name_.end()) {
         return cached->second;
       }
-      const auto routes = routes_by_name_.find(name);
-      properties =
-          routes == routes_by_name_.end() ? properties_ : routes->second.properties;
       generation = credential_generation_;
       credentials = storage_credentials_;
       provider = provider_;
     }
     // Declared before the lock, so a delegate that is not cached is torn down
     // only after the lock is released.
-    auto loaded = load(properties, credentials, provider);
+    auto loaded = load(credentials, provider);
     std::unique_lock lock(mutex_);
     if (generation != credential_generation_) {
       continue;  // Replaced mid-load; load again with what is installed now.
@@ -92,16 +87,6 @@ Result<std::shared_ptr<FileIO>> ResolvingFileIO::FileIOForPath(
       return cached->second;
     }
     ICEBERG_RETURN_UNEXPECTED(loaded);
-    const auto* routes = dynamic_cast<const StorageNamespace*>(loaded->get());
-    if (routes || (*loaded)->AsSupportsStorageCredentials()) {
-      if (auto compare = routes && routes->namespace_generation() ? routes->same_routes()
-                                                                  : nullptr) {
-        routes_by_name_.try_emplace(name, compare, (*loaded)->properties());
-      } else {
-        // A delegate can change its own routes during a provider refresh.
-        cacheable_ = false;
-      }
-    }
     return io_by_name_.try_emplace(name, *loaded).first->second;
   }
 }
@@ -141,20 +126,6 @@ Status ResolvingFileIO::DeleteFiles(const std::vector<std::string>& file_locatio
   return {};
 }
 
-std::optional<uint64_t> ResolvingFileIO::namespace_generation() const {
-  if (!cacheable_) return std::nullopt;
-  return namespace_generation_.load();
-}
-
-void ResolvingFileIO::UpdateNamespace(const std::vector<StorageCredential>& credentials) {
-  for (const auto& [name, routes] : routes_by_name_) {
-    if (!routes.compare(routes.properties, storage_credentials_, credentials)) {
-      ++namespace_generation_;
-      break;
-    }
-  }
-}
-
 Status ResolvingFileIO::SetStorageCredentials(
     const std::vector<StorageCredential>& storage_credentials) {
   // Rebuild delegates lazily with the new credentials. Updating live delegates
@@ -163,18 +134,9 @@ Status ResolvingFileIO::SetStorageCredentials(
   decltype(io_by_name_) retired;
   {
     std::unique_lock lock(mutex_);
-    UpdateNamespace(storage_credentials);
     storage_credentials_ = storage_credentials;
     ++credential_generation_;
-    // A factory may return a new, instance-owned store. Keep delegates that do
-    // not consume credentials bound to the same storage for the resolver's lifetime.
-    for (auto it = io_by_name_.begin(); it != io_by_name_.end();) {
-      if (it->second->AsSupportsStorageCredentials()) {
-        retired.insert(io_by_name_.extract(it++));
-      } else {
-        ++it;
-      }
-    }
+    retired.swap(io_by_name_);
   }
   return {};
 }
@@ -191,7 +153,6 @@ Status ResolvingFileIO::InitializeStorageCredentials(
   if (!io_by_name_.empty()) {
     return InvalidArgument("Storage credentials must be initialized before first use");
   }
-  UpdateNamespace(storage_credentials);
   storage_credentials_ = storage_credentials;
   provider_ = std::move(provider);
   ++credential_generation_;
