@@ -113,9 +113,12 @@ class ContentCacheRegistry {
 
 namespace {
 
+// Match Iceberg Java's default for iceberg.io.manifest.cache.fileio-max.
+constexpr int32_t kDefaultMaxTableCaches = 8;
+
 std::shared_ptr<ContentCacheRegistry> GlobalContentCacheRegistry() {
   // Handles keep the registry alive even when destroyed during static teardown.
-  static auto registry = std::make_shared<ContentCacheRegistry>(8);
+  static auto registry = std::make_shared<ContentCacheRegistry>(kDefaultMaxTableCaches);
   return registry;
 }
 
