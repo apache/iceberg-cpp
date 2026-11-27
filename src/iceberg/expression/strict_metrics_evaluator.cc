@@ -477,9 +477,51 @@ class StrictMetricsVisitor : public BoundVisitor<bool> {
 
   Result<bool> NotStartsWith(const std::shared_ptr<Bound>& expr,
                              const Literal& lit) override {
-    // TODO(xiao.dong) Handle cases that definitely cannot match,
-    // such as notStartsWith("x") when
-    // the bounds are ["a", "b"].
+    RETURN_IF_NOT_REFERENCE(expr);
+
+    int32_t id = expr->reference()->field().field_id();
+
+    ICEBERG_ASSIGN_OR_RAISE(auto is_nested, IsNestedColumn(id));
+    if (is_nested) {
+      return kRowsMightNotMatch;
+    }
+
+    if (expr->reference()->type()->type_id() != TypeId::kString ||
+        lit.type()->type_id() != TypeId::kString ||
+        !std::holds_alternative<std::string>(lit.value())) {
+      return InvalidExpression(
+          "NotStartsWith requires a string column and string literal");
+    }
+
+    if (ContainsNullsOnly(id)) {
+      return kRowsMustMatch;
+    }
+
+    std::string_view prefix = std::get<std::string>(lit.value());
+
+    // All non-null values lie in [lower, upper] in UTF-8 byte order, so every row
+    // satisfies NotStartsWith(prefix) if the range falls completely outside the
+    // prefix range:
+    //   1. lower > prefix and does not start with prefix (all values are past it), or
+    //   2. upper < prefix (all values are strictly before it).
+    if (auto lower_it = data_file_.lower_bounds.find(id);
+        lower_it != data_file_.lower_bounds.cend()) {
+      ICEBERG_ASSIGN_OR_RAISE(auto lower, ParseBound(expr, lower_it->second));
+      std::string_view lower_str = std::get<std::string>(lower.value());
+      if (lower_str.compare(0, prefix.size(), prefix) > 0) {
+        return kRowsMustMatch;
+      }
+    }
+
+    if (auto upper_it = data_file_.upper_bounds.find(id);
+        upper_it != data_file_.upper_bounds.cend()) {
+      ICEBERG_ASSIGN_OR_RAISE(auto upper, ParseBound(expr, upper_it->second));
+      std::string_view upper_str = std::get<std::string>(upper.value());
+      if (upper_str < prefix) {
+        return kRowsMustMatch;
+      }
+    }
+
     return kRowsMightNotMatch;
   }
 
