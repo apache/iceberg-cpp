@@ -126,11 +126,9 @@ std::shared_ptr<ContentCacheRegistry> GlobalContentCacheRegistry() {
 
 Result<std::vector<std::byte>> ReadInputFile(InputFile& input_file, int64_t read_size,
                                              std::string_view file_location) {
-  if (read_size < 0) {
-    return Invalid("Invalid negative file size {} for {}", read_size, file_location);
-  }
-  if (std::cmp_greater(read_size, std::numeric_limits<size_t>::max())) {
-    return Invalid("File size {} exceeds size_t max for {}", read_size, file_location);
+  if (!std::in_range<size_t>(read_size)) {
+    return Invalid("File size {} for {} does not fit in size_t", read_size,
+                   file_location);
   }
 
   auto size = static_cast<size_t>(read_size);
