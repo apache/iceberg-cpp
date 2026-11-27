@@ -131,13 +131,9 @@ Result<std::vector<std::byte>> ReadInputFile(InputFile& input_file, int64_t read
                    file_location);
   }
 
-  auto size = static_cast<size_t>(read_size);
-  std::vector<std::byte> content(size);
+  std::vector<std::byte> content(static_cast<size_t>(read_size));
   ICEBERG_ASSIGN_OR_RAISE(auto stream, input_file.Open());
-  Status read_status = {};
-  if (size > 0) {
-    read_status = stream->ReadFully(/*position=*/0, content);
-  }
+  auto read_status = stream->ReadFully(/*position=*/0, content);
   ICEBERG_RETURN_UNEXPECTED(
       FinishWithCloseStatus(std::move(read_status), stream->Close()));
   return content;
