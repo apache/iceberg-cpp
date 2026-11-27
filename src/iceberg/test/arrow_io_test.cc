@@ -31,7 +31,9 @@
 
 #include "iceberg/arrow/arrow_io_internal.h"
 #include "iceberg/arrow/arrow_register.h"
+#include "iceberg/deletes/dv_util_internal.h"
 #include "iceberg/file_io_registry.h"
+#include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/resolving_file_io.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/test/std_io.h"
@@ -554,6 +556,22 @@ TEST(FileIOTest, ReadFileReturnsReadErrorWithCloseContext) {
   EXPECT_THAT(result, IsError(ErrorKind::kIOError));
   EXPECT_THAT(result, HasErrorMessage("read failed"));
   EXPECT_THAT(result, HasErrorMessage("close failed"));
+}
+
+TEST(FileIOTest, DeletionVectorRangeReadClosesStreamOnFailure) {
+  auto state = std::make_shared<CloseState>();
+  auto io = std::make_shared<ReadFailureFileIO>(state);
+  auto dv = std::make_shared<DataFile>(DataFile{
+      .content = DataFile::Content::kPositionDeletes,
+      .file_path = "read-failure",
+      .file_format = FileFormatType::kPuffin,
+      .content_offset = 12,
+      .content_size_in_bytes = 4,
+  });
+  auto result = DVUtil::ReadDV(dv, io);
+  EXPECT_TRUE(state->closed);
+  EXPECT_THAT(result, IsError(ErrorKind::kIOError));
+  EXPECT_THAT(result, HasErrorMessage("read failed"));
 }
 
 TEST(FileIOTest, WriteFileReturnsWriteErrorWithCloseContext) {

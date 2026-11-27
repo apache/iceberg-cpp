@@ -60,7 +60,10 @@ class ICEBERG_EXPORT MergeAppend : public MergingSnapshotUpdate {
   ///
   /// The manifest must contain only appended files. All files in the manifest
   /// are appended to the table in the snapshot created by this update.
-  /// Snapshot ID and sequence number assignment happen during commit.
+  /// If the snapshot ID cannot be inherited, this call creates an owned copy.
+  /// Copy errors are available through CheckErrors(). Abandoning a standalone
+  /// update releases its unsubmitted copies. Explicit transactions own their
+  /// staged files until commit or Abort().
   ///
   /// \param manifest A manifest file of files to append.
   /// \return This MergeAppend for method chaining.

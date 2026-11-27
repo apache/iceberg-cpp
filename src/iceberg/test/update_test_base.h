@@ -42,6 +42,7 @@
 #include "iceberg/test/matchers.h"
 #include "iceberg/test/mock_catalog.h"
 #include "iceberg/test/test_resource.h"
+#include "iceberg/update/snapshot_update.h"
 #include "iceberg/util/uuid.h"
 
 namespace iceberg {
@@ -164,6 +165,12 @@ class UpdateTestBase : public ::testing::Test {
     auto snap_result = result.value()->current_snapshot();
     ASSERT_TRUE(snap_result.has_value());
     EXPECT_EQ(snap_result.value()->snapshot_id, snapshot_id);
+  }
+
+  Result<std::shared_ptr<Snapshot>> CommitSnapshotUpdate(SnapshotUpdate& update) {
+    ICEBERG_RETURN_UNEXPECTED(update.Commit());
+    ICEBERG_RETURN_UNEXPECTED(table_->Refresh());
+    return table_->current_snapshot();
   }
 
   /// \brief Assert that a commit succeeded.

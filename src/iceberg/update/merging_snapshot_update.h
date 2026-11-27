@@ -62,7 +62,8 @@ namespace iceberg {
 ///   7. Merge delete manifests (via delete_merge_manager_)
 class ICEBERG_EXPORT MergingSnapshotUpdate : public SnapshotUpdate {
  public:
-  ~MergingSnapshotUpdate() override = default;
+  ~MergingSnapshotUpdate() override;
+  Status Commit() override;
 
  protected:
   // SnapshotUpdate overrides
@@ -159,7 +160,7 @@ class ICEBERG_EXPORT MergingSnapshotUpdate : public SnapshotUpdate {
   /// \brief Returns true if any delete files have been registered for removal.
   bool DeletesDeleteFiles() const;
 
-  /// \brief Returns the row-filter expression set via DeleteByRowFilter, or nullptr.
+  /// \brief Returns the row-filter expression set via DeleteByRowFilter, or AlwaysFalse.
   const std::shared_ptr<Expression>& RowFilter() const { return delete_expression_; }
 
   /// \brief Returns the single partition spec for all staged data files.
@@ -276,7 +277,9 @@ class ICEBERG_EXPORT MergingSnapshotUpdate : public SnapshotUpdate {
                                          const std::shared_ptr<Snapshot>& parent,
                                          std::shared_ptr<FileIO> io);
 
-  /// \brief Build a DeleteFileIndex of delete files added since starting_snapshot_id.
+  /// \brief Build a single index of delete files added since starting_snapshot_id.
+  /// A single index accepts one DV per referenced file. The validation methods
+  /// above check separate indexes when the window spans multiple snapshots.
   static Result<std::unique_ptr<DeleteFileIndex>> AddedDeleteFiles(
       const TableMetadata& metadata, std::optional<int64_t> starting_snapshot_id,
       std::shared_ptr<Expression> data_filter,
@@ -303,11 +306,6 @@ class ICEBERG_EXPORT MergingSnapshotUpdate : public SnapshotUpdate {
                           std::shared_ptr<FileIO> io) const;
 
  private:
-  struct PendingDeleteFile {
-    std::shared_ptr<DataFile> file;
-    std::optional<int64_t> data_sequence_number;
-  };
-
   /// \brief Ordered map from referenced data file path to pending DVs.
   ///
   /// Mirrors Java's LinkedHashMap-backed dvsByReferencedFile: lookup is by
@@ -315,10 +313,10 @@ class ICEBERG_EXPORT MergingSnapshotUpdate : public SnapshotUpdate {
   struct PendingDeleteFilesByReferencedFile {
     struct Entry {
       std::string referenced_file;
-      std::vector<PendingDeleteFile> files;
+      std::vector<std::shared_ptr<DataFile>> files;
     };
 
-    void Add(std::string referenced_file, PendingDeleteFile file);
+    void Add(std::string referenced_file, std::shared_ptr<DataFile> file);
     bool empty() const { return entries_.empty(); }
     size_t size() const { return entries_.size(); }
     const std::vector<Entry>& entries() const { return entries_; }
@@ -334,20 +332,24 @@ class ICEBERG_EXPORT MergingSnapshotUpdate : public SnapshotUpdate {
   /// ID inheritance is not possible.
   Result<ManifestFile> CopyManifest(const ManifestFile& manifest);
 
-  Status AddDeleteFile(std::shared_ptr<DataFile> file,
-                       std::optional<int64_t> data_sequence_number);
+  Status AddInternal(std::shared_ptr<DataFile> file,
+                     std::optional<int64_t> data_sequence_number);
 
   Status ManagersReady() const;
+  Status RebaseIfTableChanged();
 
   void SetSummaryProperty(const std::string& property, const std::string& value) override;
 
-  Result<std::vector<PendingDeleteFile>> MergeDVs();
+  Status ValidateDeleteFilesForVersion(const TableMetadata& current) const;
+  Result<std::vector<ManifestFile>> PrepareNewDataManifests();
+  Result<std::vector<ManifestFile>> PrepareDeleteManifests();
+  Result<std::vector<std::shared_ptr<DataFile>>> MergeDVs();
 
   /// \brief Write new data manifests for staged data files; caches the result.
-  Result<std::vector<ManifestFile>> WriteNewDataManifests();
+  Result<std::vector<ManifestFile>> NewDataFilesAsManifests();
 
   /// \brief Write new delete manifests for staged delete files; caches the result.
-  Result<std::vector<ManifestFile>> WriteNewDeleteManifests();
+  Result<std::vector<ManifestFile>> NewDeleteFilesAsManifests();
 
   Status CleanUncommittedManagers(const std::unordered_set<std::string>& committed);
   void CleanUncommittedAppends(const std::unordered_set<std::string>& committed);
@@ -362,9 +364,6 @@ class ICEBERG_EXPORT MergingSnapshotUpdate : public SnapshotUpdate {
   SnapshotSummaryBuilder added_data_files_summary_;
   SnapshotSummaryBuilder added_delete_files_summary_;
   SnapshotSummaryBuilder appended_manifests_summary_;
-  // Copies may be reused across attempts, so their summary must survive too.
-  SnapshotSummaryBuilder copied_manifests_summary_;
-  std::unordered_map<std::string, std::string> custom_summary_properties_;
 
   std::unique_ptr<ManifestFilterManager> data_filter_manager_;
   std::unique_ptr<ManifestFilterManager> delete_filter_manager_;
@@ -372,15 +371,13 @@ class ICEBERG_EXPORT MergingSnapshotUpdate : public SnapshotUpdate {
   std::unique_ptr<ManifestMergeManager> delete_merge_manager_;
 
   std::unordered_map<int32_t, DataFileSet> new_data_files_by_spec_;
-  std::vector<PendingDeleteFile> v2_deletes_;
+  std::vector<std::shared_ptr<DataFile>> v2_deletes_;
   PendingDeleteFilesByReferencedFile dvs_by_referenced_file_;
   std::optional<int64_t> new_data_files_data_seq_number_;
 
   // Manifests passed via AddManifest(): inherit path (no copy needed) and
   // rewrite path (must be copied with the current snapshot ID).
   std::vector<ManifestFile> append_manifests_;
-  // Original inputs for manifests that must be copied.
-  std::vector<ManifestFile> append_manifests_to_copy_;
   std::vector<ManifestFile> rewritten_append_manifests_;
 
   // Set to true when new files are staged after the cache was populated, so the

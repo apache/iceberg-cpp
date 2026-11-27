@@ -63,6 +63,32 @@ TEST_F(DataFileSetTest, EmptySet) {
   EXPECT_TRUE(set.as_span().empty());
 }
 
+TEST_F(DataFileSetTest, CopyWithoutStatsPreservesDeletionVectorIdentityAndMetadata) {
+  auto dv = CreateDV("/deletes.puffin", 4, 88);
+  dv->manifest_location = "/original.avro";
+  dv->partition_spec_id = 3;
+  dv->data_sequence_number = 5;
+  dv->referenced_data_file = "/data.parquet";
+  dv->key_metadata = {4, 5};
+  dv->split_offsets = {4};
+  auto expected = *dv;
+  dv->column_sizes = {{1, 12}};
+  dv->value_counts = {{1, 2}};
+  dv->null_value_counts = {{1, 1}};
+  dv->nan_value_counts = {{1, 0}};
+  dv->lower_bounds = {{1, {4}}};
+  dv->upper_bounds = {{1, {8}}};
+  auto copy = dv->CopyWithoutStats();
+  EXPECT_EQ(*copy, expected);
+  EXPECT_NE(*copy, *dv);
+  EXPECT_EQ(copy->manifest_location, dv->manifest_location);
+  copy->manifest_location = "/compacted.avro";
+  EXPECT_EQ(*copy, expected);
+  DeleteFileSet deletes;
+  deletes.insert(dv);
+  EXPECT_TRUE(deletes.contains(copy));
+}
+
 TEST_F(DataFileSetTest, InsertSingleFile) {
   DataFileSet set;
   auto file = CreateDataFile("/path/to/file.parquet");

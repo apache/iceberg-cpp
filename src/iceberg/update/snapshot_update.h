@@ -297,6 +297,8 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
       std::span<const ManifestFile> manifests, int32_t replaced_manifests_count);
 
  private:
+  friend class MergingSnapshotUpdate;
+
   /// \brief Returns the snapshot summary from the implementation and updates totals.
   Result<std::unordered_map<std::string, std::string>> ComputeSummary(
       const TableMetadata& previous);

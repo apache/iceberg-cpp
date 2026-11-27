@@ -20,12 +20,49 @@
 #include "iceberg/manifest/manifest_entry.h"
 
 #include <memory>
+#include <tuple>
 #include <vector>
 
 #include "iceberg/schema_field.h"
 #include "iceberg/type.h"
 
 namespace iceberg {
+
+bool DataFile::operator==(const DataFile& other) const {
+  auto fields = [](const DataFile& file) {
+    return std::tie(file.content, file.file_path, file.file_format, file.partition,
+                    file.record_count, file.file_size_in_bytes, file.column_sizes,
+                    file.value_counts, file.null_value_counts, file.nan_value_counts,
+                    file.lower_bounds, file.upper_bounds, file.key_metadata,
+                    file.split_offsets, file.equality_ids, file.sort_order_id,
+                    file.first_row_id, file.referenced_data_file, file.content_offset,
+                    file.content_size_in_bytes, file.partition_spec_id,
+                    file.data_sequence_number);
+  };
+  return fields(*this) == fields(other);
+}
+
+std::shared_ptr<DataFile> DataFile::CopyWithoutStats() const {
+  return std::make_shared<DataFile>(DataFile{
+      .content = content,
+      .file_path = file_path,
+      .file_format = file_format,
+      .partition = partition,
+      .record_count = record_count,
+      .file_size_in_bytes = file_size_in_bytes,
+      .key_metadata = key_metadata,
+      .split_offsets = split_offsets,
+      .equality_ids = equality_ids,
+      .sort_order_id = sort_order_id,
+      .first_row_id = first_row_id,
+      .referenced_data_file = referenced_data_file,
+      .content_offset = content_offset,
+      .content_size_in_bytes = content_size_in_bytes,
+      .partition_spec_id = partition_spec_id,
+      .data_sequence_number = data_sequence_number,
+      .manifest_location = manifest_location,
+  });
+}
 
 bool ManifestEntry::operator==(const ManifestEntry& other) const {
   return status == other.status && snapshot_id == other.snapshot_id &&

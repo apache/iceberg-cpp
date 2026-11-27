@@ -38,18 +38,75 @@
 #include "iceberg/puffin/file_metadata.h"
 #include "iceberg/result.h"
 #include "iceberg/util/content_file_util.h"
+#include "iceberg/util/error_util_internal.h"
 #include "iceberg/util/macros.h"
+#include "iceberg/util/struct_like_set.h"
+#include "iceberg/util/task_group_internal.h"
 #include "iceberg/version.h"
 
 namespace iceberg {
+namespace {
+
+Status ValidateCanMerge(const DeletionVectorMergeGroup& group) {
+  ICEBERG_PRECHECK(group.spec && !group.delete_files.empty(), "Invalid DV merge group");
+  const auto& first = group.delete_files.front();
+  for (const auto& dv : group.delete_files) {
+    ICEBERG_PRECHECK(dv != nullptr, "Delete file must not be null");
+    ICEBERG_PRECHECK(first->data_sequence_number == dv->data_sequence_number,
+                     "Cannot merge DVs, mismatched sequence numbers for {}",
+                     group.referenced_data_file);
+    ICEBERG_PRECHECK(group.spec->spec_id() == dv->partition_spec_id,
+                     "Cannot merge DVs, mismatched partition specs for {}",
+                     group.referenced_data_file);
+    // The manifest reader exposes the physical representation of partition
+    // fields (e.g. a timestamp as a long). Both tuples belong to this spec.
+    ICEBERG_ASSIGN_OR_RAISE(auto same_partition,
+                            StructLikeEqual(group.partition, dv->partition));
+    ICEBERG_PRECHECK(same_partition,
+                     "Cannot merge DVs, mismatched partition tuples for {}",
+                     group.referenced_data_file);
+  }
+  return {};
+}
+
+Result<std::vector<PositionDeleteIndex>> ReadAndMergeDVs(
+    std::span<const DeletionVectorMergeGroup> groups, const std::shared_ptr<FileIO>& io,
+    OptionalExecutor executor) {
+  std::vector<std::shared_ptr<DataFile>> duplicates;
+  for (const auto& group : groups) duplicates.append_range(group.delete_files);
+  std::vector<PositionDeleteIndex> indices(duplicates.size());
+  ICEBERG_RETURN_UNEXPECTED(internal::RunTasksWithStopOnFailure(
+      duplicates.size(), executor, [&](size_t i) -> Status {
+        ICEBERG_ASSIGN_OR_RAISE(indices[i], DVUtil::ReadDV(duplicates[i], io));
+        return {};
+      }));
+
+  size_t i = 0;
+  std::vector<PositionDeleteIndex> merged(groups.size());
+  for (size_t group = 0; group < groups.size(); ++group) {
+    const size_t end = i + groups[group].delete_files.size();
+    for (; i < end; ++i) merged[group].Merge(indices[i]);
+  }
+  return merged;
+}
+
+}  // namespace
 
 Result<std::vector<std::shared_ptr<DataFile>>> DVUtil::MergeAndWriteDVs(
     std::span<const DeletionVectorMergeGroup> groups, std::string_view output_path,
     const std::shared_ptr<FileIO>& io) {
+  return MergeAndWriteDVs(groups, output_path, io, std::nullopt);
+}
+
+Result<std::vector<std::shared_ptr<DataFile>>> DVUtil::MergeAndWriteDVs(
+    std::span<const DeletionVectorMergeGroup> groups, std::string_view output_path,
+    const std::shared_ptr<FileIO>& io, OptionalExecutor executor) {
   if (groups.empty()) {
     return std::vector<std::shared_ptr<DataFile>>{};
   }
 
+  for (const auto& group : groups) ICEBERG_RETURN_UNEXPECTED(ValidateCanMerge(group));
+  ICEBERG_ASSIGN_OR_RAISE(auto merged, ReadAndMergeDVs(groups, io, executor));
   ICEBERG_ASSIGN_OR_RAISE(
       auto writer,
       DVWriter::Make(DVWriterOptions{
@@ -58,14 +115,10 @@ Result<std::vector<std::shared_ptr<DataFile>>> DVUtil::MergeAndWriteDVs(
           .load_previous_deletes = [](std::string_view)
               -> Result<std::optional<PositionDeleteIndex>> { return std::nullopt; }}));
 
-  for (const auto& group : groups) {
-    PositionDeleteIndex merged;
-    for (const auto& delete_file : group.delete_files) {
-      ICEBERG_ASSIGN_OR_RAISE(auto index, DVUtil::ReadDV(delete_file, io));
-      merged.Merge(index);
-    }
-    ICEBERG_RETURN_UNEXPECTED(
-        writer->Delete(group.referenced_data_file, merged, group.spec, group.partition));
+  for (size_t i = 0; i < groups.size(); ++i) {
+    const auto& group = groups[i];
+    ICEBERG_RETURN_UNEXPECTED(writer->Delete(group.referenced_data_file, merged[i],
+                                             group.spec, group.partition));
   }
 
   ICEBERG_RETURN_UNEXPECTED(writer->Close());
@@ -94,11 +147,14 @@ Result<PositionDeleteIndex> DVUtil::ReadDV(const std::shared_ptr<DataFile>& dele
                    "Cannot read deletion vector larger than 2GB: {}", length);
 
   ICEBERG_ASSIGN_OR_RAISE(auto input_file, io->NewInputFile(delete_file->file_path));
-  ICEBERG_ASSIGN_OR_RAISE(auto stream, input_file->Open());
-
   std::vector<std::byte> bytes(static_cast<size_t>(length));
-  ICEBERG_RETURN_UNEXPECTED(stream->ReadFully(offset, bytes));
-  ICEBERG_RETURN_UNEXPECTED(stream->Close());
+  ICEBERG_ASSIGN_OR_RAISE(auto stream, input_file->Open());
+  auto read = internal::CatchExceptions("Read deletion vector",
+                                        [&] { return stream->ReadFully(offset, bytes); });
+  auto closed =
+      internal::CatchExceptions("Close deletion vector", [&] { return stream->Close(); });
+  ICEBERG_RETURN_UNEXPECTED(read);
+  ICEBERG_RETURN_UNEXPECTED(closed);
 
   std::span<const uint8_t> blob(reinterpret_cast<const uint8_t*>(bytes.data()),
                                 bytes.size());
