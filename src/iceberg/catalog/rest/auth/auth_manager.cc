@@ -309,6 +309,7 @@ class OAuth2Manager : public AuthManager {
 
     // Initialize catalog-level configuration
     keep_refreshed_ = config.keep_refreshed();
+    exchange_enabled_ = config.exchange_enabled();
     ICEBERG_ASSIGN_OR_RAISE(session_timeout_, ParseSessionTimeout(config));
 
     // Create session cache
@@ -420,11 +421,10 @@ class OAuth2Manager : public AuthManager {
           std::nullopt) const {
     ICEBERG_PRECHECK(refresh_client_ != nullptr,
                      "OAuth2 catalog session must be initialized before child sessions");
-    return internal::MakeOAuth2Session(token_response, config.oauth2_server_uri(),
-                                       config.client_id(), config.client_secret(),
-                                       config.scope(), keep_refreshed,
-                                       config.optional_oauth_params(), refresh_client_,
-                                       token_request_started_at, refresh_executor_);
+    return internal::MakeOAuth2Session(
+        token_response, config.oauth2_server_uri(), config.credential(), config.scope(),
+        keep_refreshed, config.optional_oauth_params(), refresh_client_,
+        token_request_started_at, refresh_executor_, exchange_enabled_);
   }
 
   Result<OAuth2SessionInfo> ParentInfo(const AuthSession& parent) const {
@@ -530,6 +530,7 @@ class OAuth2Manager : public AuthManager {
 
   // Catalog-level configuration initialized in CatalogSession
   bool keep_refreshed_ = true;
+  bool exchange_enabled_ = true;
   std::chrono::milliseconds session_timeout_{3'600'000};
   std::shared_ptr<internal::AuthSessionCache> session_cache_;
   std::once_flag no_refresh_executor_warning_;

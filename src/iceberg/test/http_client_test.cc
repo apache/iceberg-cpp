@@ -19,6 +19,7 @@
 
 #include "iceberg/catalog/rest/http_client.h"
 
+#include <algorithm>
 #include <array>
 #include <atomic>
 #include <cctype>
@@ -26,14 +27,18 @@
 #include <cstddef>
 #include <cstdint>
 #include <format>
+#include <functional>
+#include <future>
 #include <memory>
 #include <string>
 #include <string_view>
 #include <thread>
+#include <unordered_map>
 #include <utility>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
+#include <nlohmann/json.hpp>
 
 #ifndef _WIN32
 #  include <poll.h>
@@ -46,8 +51,11 @@
 #endif
 
 #include "iceberg/catalog/rest/auth/auth_session.h"
+#include "iceberg/catalog/rest/auth/auth_session_internal.h"
 #include "iceberg/catalog/rest/error_handlers.h"
+#include "iceberg/test/executor.h"
 #include "iceberg/test/matchers.h"
+#include "iceberg/util/url_encoder.h"
 
 namespace iceberg::rest {
 
@@ -56,10 +64,16 @@ namespace iceberg::rest {
 namespace {
 
 /// \brief Minimal HTTP/1.1 server on 127.0.0.1 that answers every request with
-/// a fixed response and closes the connection.
+/// a response from the handler and closes the connection.
 class LoopbackHttpServer {
  public:
-  explicit LoopbackHttpServer(std::string response) : response_(std::move(response)) {}
+  using Handler = std::function<std::string(const std::string&)>;
+
+  explicit LoopbackHttpServer(Handler handler) : handler_(std::move(handler)) {}
+
+  explicit LoopbackHttpServer(std::string response)
+      : LoopbackHttpServer(
+            [response = std::move(response)](const std::string&) { return response; }) {}
 
   ~LoopbackHttpServer() {
     stop_ = true;
@@ -117,16 +131,16 @@ class LoopbackHttpServer {
       if (conn < 0) {
         continue;
       }
-      ReadRequest(conn);
+      auto request = ReadRequest(conn);
       ++request_count_;
-      SendAll(conn, response_);
+      SendAll(conn, handler_(request));
       close(conn);
     }
   }
 
   /// \brief Consume the request headers and any Content-Length body so the
   /// client does not see a connection reset before it reads the response.
-  static void ReadRequest(int conn) {
+  static std::string ReadRequest(int conn) {
     timeval timeout{.tv_sec = 10, .tv_usec = 0};
     setsockopt(conn, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout));
     setsockopt(conn, SOL_SOCKET, SO_SNDTIMEO, &timeout, sizeof(timeout));
@@ -138,7 +152,7 @@ class LoopbackHttpServer {
     while (true) {
       ssize_t n = recv(conn, buf.data(), buf.size(), 0);
       if (n <= 0) {
-        return;
+        return request;
       }
       request.append(buf.data(), static_cast<size_t>(n));
       if (header_end == std::string::npos) {
@@ -149,7 +163,7 @@ class LoopbackHttpServer {
         content_length = ParseContentLength(request.substr(0, header_end));
       }
       if (request.size() >= header_end + 4 + content_length) {
-        return;
+        return request;
       }
     }
   }
@@ -184,7 +198,7 @@ class LoopbackHttpServer {
     }
   }
 
-  std::string response_;
+  Handler handler_;
   int listen_fd_ = -1;
   int port_ = 0;
   std::atomic<bool> stop_{false};
@@ -250,7 +264,299 @@ void ServeOnce(int listener, std::string_view response, bool end) {
   ::close(connection);
 }
 
+HttpHeaders RequestHeaders(const std::string& request) {
+  HttpHeaders headers;
+  const auto header_end = request.find("\r\n\r\n");
+  if (header_end == std::string::npos) return headers;
+  auto start = request.find("\r\n") + 2;
+  while (start < header_end) {
+    auto end = request.find("\r\n", start);
+    auto separator = request.find(':', start);
+    if (separator < end) {
+      auto value_start = request.find_first_not_of(" \t", separator + 1);
+      headers.emplace(request.substr(start, separator - start),
+                      request.substr(value_start, end - value_start));
+    }
+    start = end + 2;
+  }
+  return headers;
+}
+
+std::unordered_map<std::string, std::string> RequestForm(const std::string& request) {
+  std::unordered_map<std::string, std::string> form;
+  auto header_end = request.find("\r\n\r\n");
+  if (header_end == std::string::npos) return form;
+  auto body = request.substr(header_end + 4);
+  std::ranges::replace(body, '+', ' ');
+  size_t start = 0;
+  while (start < body.size()) {
+    auto end = body.find('&', start);
+    auto field = body.substr(start, end == std::string::npos ? end : end - start);
+    auto separator = field.find('=');
+    if (separator != std::string::npos) {
+      form.emplace(UrlEncoder::Decode(field.substr(0, separator)),
+                   UrlEncoder::Decode(field.substr(separator + 1)));
+    }
+    if (end == std::string::npos) break;
+    start = end + 1;
+  }
+  return form;
+}
+
+std::string JsonResponse(int status, const nlohmann::json& json) {
+  auto body = json.dump();
+  return std::format(
+      "HTTP/1.1 {} Response\r\nContent-Type: application/json\r\n"
+      "Content-Length: {}\r\nConnection: close\r\n\r\n{}",
+      status, body.size(), body);
+}
+
 }  // namespace
+
+TEST(HttpClientTest, OAuth2SessionRefreshesTokensOverHttp) {
+  using auth::AuthProperties;
+  using auth::internal::OAuth2Session;
+  const std::array<std::string, 3> tokens = {"Initial+/=", "First+/=", "Second+/="};
+  const std::array<std::string, 3> types = {AuthProperties::kAccessTokenType,
+                                            AuthProperties::kJwtTokenType,
+                                            AuthProperties::kAccessTokenType};
+  // The server alone owns generation; the client must follow the returned token/type.
+  size_t generation = 0;
+  LoopbackHttpServer server([&](const std::string& request) {
+    const auto headers = RequestHeaders(request);
+    const bool authenticated =
+        headers.contains("Authorization") &&
+        headers.at("Authorization") == "Bearer " + tokens.at(generation);
+    if (request.starts_with("GET /protected ")) {
+      return authenticated ? JsonResponse(200, {{"ok", true}})
+                           : JsonResponse(401, {{"error",
+                                                 {{"code", 401},
+                                                  {"type", "NotAuthorizedException"},
+                                                  {"message", "stale token"}}}});
+    }
+
+    const auto form = RequestForm(request);
+    const std::unordered_map<std::string, std::string> expected_form{
+        {"grant_type", "urn:ietf:params:oauth:grant-type:token-exchange"},
+        {"subject_token", tokens.at(generation)},
+        {"subject_token_type", types.at(generation)},
+        {"scope", "catalog reports+read"},
+    };
+    if (!request.starts_with("POST /v1/oauth/tokens ") || !authenticated ||
+        (headers.find("Content-Type") == headers.end() ||
+         headers.at("Content-Type") != "application/x-www-form-urlencoded") ||
+        form != expected_form || generation >= 2) {
+      return JsonResponse(400, {{"error", "invalid_request"}});
+    }
+    ++generation;
+    nlohmann::json response{{"access_token", tokens[generation]},
+                            {"token_type", "bearer"},
+                            {"issued_token_type", types[generation]}};
+    if (generation == 1) response["expires_in"] = 1;
+    return JsonResponse(200, response);
+  });
+  ASSERT_TRUE(server.Start());
+
+  std::array<std::promise<void>, 2> completed;
+  test::ThreadExecutor workers;
+  test::MockExecutor executor;
+  size_t submitted = 0;
+  EXPECT_CALL(executor, Submit).Times(2).WillRepeatedly([&](ExecutorTask task) -> Status {
+    auto& done = completed.at(submitted++);
+    return workers.Submit(ExecutorTask([task = std::move(task), &done]() mutable {
+      std::move(task)();
+      done.set_value();
+    }));
+  });
+  auto client = std::make_shared<HttpClient>(
+      std::unordered_map<std::string, std::string>{
+          {"authorization", "Bearer stale-default"}},
+      std::chrono::seconds(2), std::chrono::seconds(2));
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto session, OAuth2Session::Make(
+                        {.access_token = tokens[0],
+                         .token_type = "bearer",
+                         .expires_in_secs = 1,
+                         .issued_token_type = types[0]},
+                        {.token_endpoint = server.url("/v1/oauth/tokens"),
+                         .scope = "catalog reports+read",
+                         .exchange_enabled = true,
+                         .refresh_executor = &executor,
+                         // Worker latency must not expire the subject.
+                         .now = [now = std::chrono::steady_clock::now()] { return now; }},
+                        client, std::nullopt));
+  for (auto& done : completed) {
+    ASSERT_EQ(done.get_future().wait_for(std::chrono::seconds(10)),
+              std::future_status::ready);
+  }
+  EXPECT_FALSE(session->IsRefreshable());
+
+  // A real resource request accepts the refreshed session and rejects the old token.
+  HttpClient resource_client({}, std::chrono::seconds(2), std::chrono::seconds(2));
+  const auto& handler = *DefaultErrorHandler::Instance();
+  EXPECT_THAT(resource_client.Get(server.url("/protected"), {}, {}, handler, *session),
+              IsOk());
+  auto old_session =
+      auth::AuthSession::MakeDefault({{"Authorization", "Bearer " + tokens[0]}});
+  EXPECT_THAT(
+      resource_client.Get(server.url("/protected"), {}, {}, handler, *old_session),
+      IsError(ErrorKind::kNotAuthorized));
+  EXPECT_THAT(session->Close(), IsOk());
+  EXPECT_EQ(server.request_count(), 4);
+}
+
+namespace {
+
+constexpr std::string_view kGatewayAuthorization = "Basic Z2F0ZXdheTpzZWNyZXQ=";
+
+class GatewayHttpClient : public HttpClient {
+ public:
+  GatewayHttpClient()
+      : HttpClient({}, std::chrono::seconds(2), std::chrono::seconds(2)) {}
+
+  Result<HttpResponse> PostForm(
+      const std::string& path, const std::unordered_map<std::string, std::string>& form,
+      const std::unordered_map<std::string, std::string>& headers,
+      const ErrorHandler& error_handler, auth::AuthSession& session) override {
+    auto gateway_headers = headers;
+    gateway_headers["Authorization"] = kGatewayAuthorization;
+    return HttpClient::PostForm(path, form, gateway_headers, error_handler, session);
+  }
+};
+
+void CheckPublicOAuth2FactoryRefresh(const std::shared_ptr<HttpClient>& client) {
+  LoopbackHttpServer server([](const std::string& request) {
+    EXPECT_TRUE(request.starts_with("POST /v1/oauth/tokens "));
+    auto headers = RequestHeaders(request);
+    EXPECT_EQ(headers["Authorization"], kGatewayAuthorization);
+    const std::unordered_map<std::string, std::string> expected_form{
+        {"grant_type", "client_credentials"},
+        {"client_secret", ""},
+        {"scope", "catalog"},
+    };
+    EXPECT_EQ(RequestForm(request), expected_form);
+    return JsonResponse(200, {{"access_token", "refreshed"}, {"token_type", "bearer"}});
+  });
+  ASSERT_TRUE(server.Start());
+
+  test::MockExecutor executor;
+  std::promise<ExecutorTask> queued;
+  auto ready = queued.get_future();
+  EXPECT_CALL(executor, Submit).WillOnce([&](ExecutorTask task) -> Status {
+    queued.set_value(std::move(task));
+    return {};
+  });
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto session,
+      auth::AuthSession::MakeOAuth2(
+          {.access_token = "initial", .token_type = "bearer", .expires_in_secs = 0},
+          server.url("/v1/oauth/tokens"), "", "", "catalog",
+          /*keep_refreshed=*/true, {}, client, &executor));
+  ASSERT_EQ(ready.wait_for(std::chrono::seconds(5)), std::future_status::ready);
+  std::move(ready.get())();
+
+  EXPECT_EQ(session->OAuth2Info()->token, "refreshed");
+  EXPECT_EQ(server.request_count(), 1);
+}
+
+}  // namespace
+
+TEST(HttpClientTest, PublicOAuth2FactoryPreservesAuthorizationOnRefresh) {
+  CheckPublicOAuth2FactoryRefresh(std::make_shared<HttpClient>(
+      std::unordered_map<std::string, std::string>{
+          {"authorization", std::string(kGatewayAuthorization)}},
+      std::chrono::seconds(2), std::chrono::seconds(2)));
+}
+
+TEST(HttpClientTest, PublicOAuth2FactoryRefreshesWithAuthorizationAddedByPostForm) {
+  CheckPublicOAuth2FactoryRefresh(std::make_shared<GatewayHttpClient>());
+}
+
+class OAuth2HttpRecoveryTest : public ::testing::TestWithParam<bool> {};
+
+TEST_P(OAuth2HttpRecoveryTest, RecoversExpiredTokenAndAuthenticatesResourceOverHttp) {
+  using auth::AuthProperties;
+  using auth::internal::OAuth2Session;
+  const bool exchange_enabled = GetParam();
+  const std::string initial_token = "Expired+/=";
+  const std::string refreshed_token = "Recovered+/=";
+  LoopbackHttpServer server([&](const std::string& request) {
+    const auto headers = RequestHeaders(request);
+    if (request.starts_with("GET /protected ")) {
+      if (headers.contains("Authorization") &&
+          headers.at("Authorization") == "Bearer " + refreshed_token) {
+        return JsonResponse(200, {{"ok", true}});
+      }
+      return JsonResponse(401, {{"error",
+                                 {{"code", 401},
+                                  {"type", "NotAuthorizedException"},
+                                  {"message", "wrong token"}}}});
+    }
+    std::unordered_map<std::string, std::string> expected_form{{"scope", "catalog"}};
+    bool valid_auth;
+    if (exchange_enabled) {
+      expected_form.insert({
+          {"grant_type", "urn:ietf:params:oauth:grant-type:token-exchange"},
+          {"subject_token", initial_token},
+          {"subject_token_type", AuthProperties::kAccessTokenType},
+      });
+      valid_auth = headers.contains("Authorization") &&
+                   headers.at("Authorization") == "Basic OlNlQ3JFdCUzQVRhaWw=";
+    } else {
+      expected_form.insert(
+          {{"grant_type", "client_credentials"}, {"client_secret", "SeCrEt:Tail"}});
+      valid_auth = headers.contains("Authorization") &&
+                   headers.at("Authorization") == "Bearer StaleDefault";
+    }
+    if (!request.starts_with("POST /v1/oauth/tokens ") || !valid_auth ||
+        RequestForm(request) != expected_form || !headers.contains("X-Trace") ||
+        headers.at("X-Trace") != "KeepThisValue" || !headers.contains("Content-Type") ||
+        headers.at("Content-Type") != "application/x-www-form-urlencoded") {
+      return JsonResponse(400, {{"error", "invalid_request"}});
+    }
+    return JsonResponse(200,
+                        {{"access_token", refreshed_token}, {"token_type", "bearer"}});
+  });
+  ASSERT_TRUE(server.Start());
+
+  test::MockExecutor executor;
+  std::promise<ExecutorTask> queued;
+  auto ready = queued.get_future();
+  EXPECT_CALL(executor, Submit).WillOnce([&](ExecutorTask task) -> Status {
+    queued.set_value(std::move(task));
+    return {};
+  });
+  auto client = std::make_shared<HttpClient>(
+      std::unordered_map<std::string, std::string>{
+          {"authorization", "Bearer StaleDefault"}, {"X-Trace", "KeepThisValue"}},
+      std::chrono::seconds(2), std::chrono::seconds(2));
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto session,
+      OAuth2Session::Make(
+          {.access_token = initial_token, .token_type = "bearer", .expires_in_secs = 0},
+          {.token_endpoint = server.url("/v1/oauth/tokens"),
+           .credential = ":SeCrEt:Tail",
+           .scope = "catalog",
+           .exchange_enabled = exchange_enabled,
+           .refresh_executor = &executor},
+          client, std::nullopt));
+  ASSERT_EQ(ready.wait_for(std::chrono::seconds(5)), std::future_status::ready);
+  std::move(ready.get())();
+  EXPECT_EQ(session->OAuth2Info()->token, refreshed_token);
+  EXPECT_FALSE(session->IsRefreshable());
+
+  HttpClient resource_client({}, std::chrono::seconds(2), std::chrono::seconds(2));
+  EXPECT_THAT(resource_client.Get(server.url("/protected"), {}, {},
+                                  *DefaultErrorHandler::Instance(), *session),
+              IsOk());
+  EXPECT_THAT(session->Close(), IsOk());
+  EXPECT_EQ(server.request_count(), 2);
+}
+
+INSTANTIATE_TEST_SUITE_P(ExchangeModes, OAuth2HttpRecoveryTest, ::testing::Bool(),
+                         [](const ::testing::TestParamInfo<bool>& info) {
+                           return info.param ? "Exchange" : "ClientCredentials";
+                         });
 
 TEST(HttpClientTest, GetFailsWhenItsTransferFails) {
   // A 200 arriving first does not make a truncated response a success.
@@ -360,6 +666,15 @@ class CapturingAuthSession final : public auth::AuthSession {
  private:
   HttpRequest request_;
 };
+
+TEST(HttpClientTest, PostFormEncodesFieldNamesAndValuesBeforeAuthentication) {
+  HttpClient client;
+  CapturingAuthSession session;
+  auto result = client.PostForm("https://auth.example/token", {{"a b+c", "x y+z&="}}, {},
+                                *DefaultErrorHandler::Instance(), session);
+  EXPECT_THAT(result, IsError(ErrorKind::kInvalidArgument));
+  EXPECT_EQ(session.request().body, "a+b%2Bc=x+y%2Bz%26%3D");
+}
 
 TEST(HttpClientTest, BuildsRequestUriLikeJavaHttpRequest) {
   HttpClient client({}, {}, {}, std::string("https://catalog.example/api/"));

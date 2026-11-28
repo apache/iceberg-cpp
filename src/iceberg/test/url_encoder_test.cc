@@ -44,6 +44,11 @@ TEST(UrlEncoderTest, Encode) {
   EXPECT_THAT(UrlEncoder::Encode(""), ::testing::Eq(""));
 }
 
+TEST(UrlEncoderTest, EncodeFormComponent) {
+  EXPECT_EQ(UrlEncoder::Encode("a b+*~"), "a%20b%2B%2A~");
+  EXPECT_EQ(UrlEncoder::EncodeFormComponent("a b+*~"), "a+b%2B*%7E");
+}
+
 TEST(UrlEncoderTest, Decode) {
   // Decode percent-encoded strings
   EXPECT_THAT(UrlEncoder::Decode("hello%20world"), ::testing::Eq("hello world"));
