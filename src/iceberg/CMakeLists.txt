@@ -177,7 +177,9 @@ set(ICEBERG_SOURCES
     util/truncate_util.cc
     util/type_util.cc
     util/url_encoder.cc
-    util/uuid.cc)
+    util/uuid.cc
+    view/view_metadata.cc
+    view/view_version.cc)
 
 set(ICEBERG_STATIC_BUILD_INTERFACE_LIBS)
 set(ICEBERG_SHARED_BUILD_INTERFACE_LIBS)
@@ -311,6 +313,7 @@ add_subdirectory(util)
 add_subdirectory(inspect)
 add_subdirectory(metrics)
 add_subdirectory(logging)
+add_subdirectory(view)
 
 if(ICEBERG_BUILD_BUNDLE)
   set(ICEBERG_BUNDLE_SOURCES

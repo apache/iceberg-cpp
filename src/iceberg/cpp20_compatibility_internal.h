@@ -208,6 +208,9 @@
 #include "iceberg/util/uuid.h"
 #include "iceberg/util/visit_type.h"
 #include "iceberg/util/visitor_generate.h"
+#include "iceberg/view/type_fwd.h"
+#include "iceberg/view/view_metadata.h"
+#include "iceberg/view/view_version.h"
 
 #ifdef ICEBERG_PUBLIC_HEADERS_BUNDLE
 #  include "iceberg/arrow/arrow_io_util.h"
