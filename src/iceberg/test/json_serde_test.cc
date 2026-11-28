@@ -484,6 +484,32 @@ TEST(JsonInternalTest, PartitionIdsRejectInvalidJsonIntegers) {
   EXPECT_THAT(null_result, HasErrorMessage("field-id"));
 }
 
+TEST(JsonInternalTest, SnapshotIntegersRejectInvalidJsonValues) {
+  const auto valid = nlohmann::json::parse(R"({
+    "snapshot-id": 1, "sequence-number": 1, "timestamp-ms": 1000,
+    "manifest-list": "metadata/manifest-list.avro",
+    "summary": {"operation": "append"}, "schema-id": 0,
+    "first-row-id": 0, "added-rows": 10
+  })");
+  for (const auto* field : {"snapshot-id", "parent-snapshot-id", "sequence-number",
+                            "timestamp-ms", "schema-id", "first-row-id", "added-rows"}) {
+    SCOPED_TRACE(field);
+    for (const auto& invalid : std::vector<nlohmann::json>{
+             true, "1", 0.0, -0.5, 1.5, std::numeric_limits<uint64_t>::max(),
+             nlohmann::json::parse("-9223372036854775809")}) {
+      SCOPED_TRACE(invalid.dump());
+      auto json = valid;
+      json[field] = invalid;
+      auto result = SnapshotFromJson(json);
+      EXPECT_THAT(result, IsError(ErrorKind::kJsonParseError));
+      EXPECT_THAT(result, HasErrorMessage(field));
+    }
+  }
+  auto json = valid;
+  json["schema-id"] = 2147483648LL;
+  EXPECT_THAT(SnapshotFromJson(json), IsError(ErrorKind::kJsonParseError));
+}
+
 TEST(JsonInternalTest, SnapshotRefBranch) {
   SnapshotRef ref(1234567890, SnapshotRef::Branch{.min_snapshots_to_keep = 10,
                                                   .max_snapshot_age_ms = 123456789,

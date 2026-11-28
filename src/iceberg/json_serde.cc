@@ -1128,16 +1128,16 @@ Result<std::unique_ptr<SnapshotRef>> SnapshotRefFromJson(const nlohmann::json& j
 }
 
 Result<std::unique_ptr<Snapshot>> SnapshotFromJson(const nlohmann::json& json) {
-  ICEBERG_ASSIGN_OR_RAISE(auto snapshot_id, GetJsonValue<int64_t>(json, kSnapshotId));
+  ICEBERG_ASSIGN_OR_RAISE(auto snapshot_id, GetJsonInteger<int64_t>(json, kSnapshotId));
   ICEBERG_ASSIGN_OR_RAISE(auto sequence_number,
-                          GetJsonValueOptional<int64_t>(json, kSequenceNumber));
-  ICEBERG_ASSIGN_OR_RAISE(auto unix_ms, GetJsonValue<int64_t>(json, kTimestampMs));
+                          GetJsonIntegerOptional<int64_t>(json, kSequenceNumber));
+  ICEBERG_ASSIGN_OR_RAISE(auto unix_ms, GetJsonInteger<int64_t>(json, kTimestampMs));
   auto timestamp_ms = TimePointMsFromUnixMs(unix_ms);
   ICEBERG_ASSIGN_OR_RAISE(auto manifest_list,
                           GetJsonValue<std::string>(json, kManifestList));
 
   ICEBERG_ASSIGN_OR_RAISE(auto parent_snapshot_id,
-                          GetJsonValueOptional<int64_t>(json, kParentSnapshotId));
+                          GetJsonIntegerOptional<int64_t>(json, kParentSnapshotId));
 
   ICEBERG_ASSIGN_OR_RAISE(auto summary_json,
                           GetJsonValueOptional<nlohmann::json>(json, kSummary));
@@ -1165,9 +1165,9 @@ Result<std::unique_ptr<Snapshot>> SnapshotFromJson(const nlohmann::json& json) {
   }
 
   ICEBERG_ASSIGN_OR_RAISE(auto first_row_id,
-                          GetJsonValueOptional<int64_t>(json, kFirstRowId));
+                          GetJsonIntegerOptional<int64_t>(json, kFirstRowId));
   ICEBERG_ASSIGN_OR_RAISE(auto added_rows,
-                          GetJsonValueOptional<int64_t>(json, kAddedRows));
+                          GetJsonIntegerOptional<int64_t>(json, kAddedRows));
 
   if (first_row_id.has_value() && first_row_id.value() < 0) {
     return JsonParseError("Invalid first-row-id (cannot be negative): {}",
@@ -1184,7 +1184,8 @@ Result<std::unique_ptr<Snapshot>> SnapshotFromJson(const nlohmann::json& json) {
     added_rows = std::nullopt;
   }
 
-  ICEBERG_ASSIGN_OR_RAISE(auto schema_id, GetJsonValueOptional<int32_t>(json, kSchemaId));
+  ICEBERG_ASSIGN_OR_RAISE(auto schema_id,
+                          GetJsonIntegerOptional<int32_t>(json, kSchemaId));
   ICEBERG_ASSIGN_OR_RAISE(auto key_id, GetJsonValueOptional<std::string>(json, kKeyId));
 
   return std::make_unique<Snapshot>(
@@ -1349,6 +1350,9 @@ Result<EncryptedKey> EncryptedKeyFromJson(const nlohmann::json& json) {
 }
 
 Result<nlohmann::json> ToJson(const TableMetadata& table_metadata) {
+  if (auto status = table_metadata.Validate(); !status) {
+    return InvalidArgument("Invalid table metadata: {}", status.error().message);
+  }
   nlohmann::json json;
 
   json[kFormatVersion] = table_metadata.format_version;
@@ -1612,7 +1616,7 @@ Result<std::unique_ptr<TableMetadata>> TableMetadataFromJson(const nlohmann::jso
 
   if (table_metadata->format_version > 1) {
     ICEBERG_ASSIGN_OR_RAISE(table_metadata->last_sequence_number,
-                            GetJsonValue<int64_t>(json, kLastSequenceNumber));
+                            GetJsonInteger<int64_t>(json, kLastSequenceNumber));
   } else {
     table_metadata->last_sequence_number = TableMetadata::kInitialSequenceNumber;
   }
@@ -1664,7 +1668,7 @@ Result<std::unique_ptr<TableMetadata>> TableMetadataFromJson(const nlohmann::jso
 
   if (table_metadata->format_version >= 3) {
     ICEBERG_ASSIGN_OR_RAISE(table_metadata->next_row_id,
-                            GetJsonValue<int64_t>(json, kNextRowId));
+                            GetJsonInteger<int64_t>(json, kNextRowId));
   } else {
     table_metadata->next_row_id = TableMetadata::kInitialRowId;
   }
@@ -1704,6 +1708,9 @@ Result<std::unique_ptr<TableMetadata>> TableMetadataFromJson(const nlohmann::jso
       table_metadata->metadata_log,
       FromJsonList<MetadataLogEntry>(json, kMetadataLog, MetadataLogEntryFromJson));
 
+  if (auto status = table_metadata->Validate(); !status) {
+    return JsonParseError("Invalid table metadata: {}", status.error().message);
+  }
   return table_metadata;
 }
 

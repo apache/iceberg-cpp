@@ -321,6 +321,45 @@ Result<std::shared_ptr<Snapshot>> TableMetadata::SnapshotById(int64_t snapshot_i
   return *iter;
 }
 
+Status TableMetadata::Validate() const {
+  if (format_version > 1) {
+    ICEBERG_CHECK(last_sequence_number >= kInitialSequenceNumber,
+                  "last-sequence-number cannot be negative: {}", last_sequence_number);
+  }
+  if (format_version >= kMinFormatVersionRowLineage) {
+    ICEBERG_CHECK(next_row_id >= kInitialRowId, "next-row-id cannot be negative: {}",
+                  next_row_id);
+  }
+  for (const auto& snapshot : snapshots) {
+    ICEBERG_CHECK(snapshot != nullptr, "Cannot validate a null snapshot");
+    if (format_version > 1) {
+      ICEBERG_CHECK(snapshot->sequence_number >= kInitialSequenceNumber,
+                    "Snapshot {} sequence-number cannot be negative: {}",
+                    snapshot->snapshot_id, snapshot->sequence_number);
+      ICEBERG_CHECK(
+          last_sequence_number >= snapshot->sequence_number,
+          "last-sequence-number {} is below retained snapshot {} sequence-number {}",
+          last_sequence_number, snapshot->snapshot_id, snapshot->sequence_number);
+    }
+    if (format_version >= kMinFormatVersionRowLineage &&
+        snapshot->first_row_id.has_value()) {
+      ICEBERG_CHECK(snapshot->added_rows.has_value(),
+                    "Snapshot {} has first-row-id but no added-rows",
+                    snapshot->snapshot_id);
+      const auto first_row_id = snapshot->first_row_id.value();
+      ICEBERG_CHECK(first_row_id >= 0 && snapshot->added_rows.value() >= 0,
+                    "Snapshot {} row lineage fields must be non-negative",
+                    snapshot->snapshot_id);
+      // added-rows is an upper bound. Writers may advance next-row-id using the
+      // number of IDs actually assigned.
+      ICEBERG_CHECK(first_row_id <= next_row_id,
+                    "next-row-id {} is below retained snapshot {} first-row-id {}",
+                    next_row_id, snapshot->snapshot_id, first_row_id);
+    }
+  }
+  return {};
+}
+
 int64_t TableMetadata::NextSequenceNumber() const {
   return format_version > 1 ? last_sequence_number + 1 : kInitialSequenceNumber;
 }
@@ -1398,9 +1437,10 @@ Result<std::vector<SnapshotLogEntry>> TableMetadataBuilder::Impl::UpdateSnapshot
 }
 
 Result<std::unique_ptr<TableMetadata>> TableMetadataBuilder::Impl::Build() {
-  // 1. Validate the format version.
+  // 1. Validate the format version and metadata consistency.
   ICEBERG_PRECHECK(TableMetadata::IsSupportedFormatVersion(metadata_.format_version),
                    "Unsupported table format version: {}", metadata_.format_version);
+  ICEBERG_RETURN_UNEXPECTED(metadata_.Validate());
 
   // 2. Update last_updated_ms if there are changes
   if (metadata_.last_updated_ms == kInvalidLastUpdatedMs) {

@@ -174,6 +174,9 @@ struct ICEBERG_EXPORT TableMetadata {
   /// \brief Get the next sequence number
   int64_t NextSequenceNumber() const;
 
+  /// \brief Validate the consistency of the table metadata.
+  Status Validate() const;
+
   ICEBERG_EXPORT friend bool operator==(const TableMetadata& lhs,
                                         const TableMetadata& rhs);
 
