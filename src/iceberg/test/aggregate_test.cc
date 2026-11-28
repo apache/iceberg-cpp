@@ -27,7 +27,9 @@
 #include "iceberg/row/struct_like.h"
 #include "iceberg/schema.h"
 #include "iceberg/test/matchers.h"
+#include "iceberg/transform.h"
 #include "iceberg/type.h"
+#include "iceberg/util/temporal_util.h"
 
 namespace iceberg {
 
@@ -325,6 +327,103 @@ TEST(AggregateTest, AggregatesFromDataFileWithTransform) {
   EXPECT_EQ(std::get<int32_t>(results[0].value()), 20);
   EXPECT_EQ(std::get<int32_t>(results[1].value()), 0);
   EXPECT_TRUE(evaluator->AllAggregatorsValid());
+}
+
+TEST(AggregateTest, BucketDoesNotUseFileBounds) {
+  auto check = [](const Literal& lower, const Literal& upper, int32_t num_buckets) {
+    Schema schema({SchemaField::MakeOptional(1, "value", lower.type())});
+    auto bucket = Expressions::Bucket("value", num_buckets);
+    ICEBERG_UNWRAP_OR_FAIL(auto lower_bytes, lower.Serialize());
+    ICEBERG_UNWRAP_OR_FAIL(auto upper_bytes, upper.Serialize());
+    DataFile file{.record_count = 2,
+                  .value_counts = {{1, 2}},
+                  .null_value_counts = {{1, 0}},
+                  .lower_bounds = {{1, lower_bytes}},
+                  .upper_bounds = {{1, upper_bytes}}};
+    DataFile all_nulls{
+        .record_count = 2, .value_counts = {{1, 2}}, .null_value_counts = {{1, 2}}};
+    for (const auto& expr : {Expressions::Min(bucket), Expressions::Max(bucket)}) {
+      auto agg = BindAggregate(schema, expr);
+      SCOPED_TRACE(agg->ToString());
+      EXPECT_FALSE(agg->HasValue(file));
+      ICEBERG_UNWRAP_OR_FAIL(auto from_bounds, agg->Evaluate(file));
+      EXPECT_TRUE(from_bounds.IsNull()) << from_bounds.ToString();
+      auto accumulator = agg->NewAggregator();
+      ASSERT_THAT(accumulator->Update(file), IsOk());
+      EXPECT_FALSE(accumulator->IsValid());
+
+      EXPECT_TRUE(agg->HasValue(all_nulls));
+      ICEBERG_UNWRAP_OR_FAIL(auto value, agg->Evaluate(all_nulls));
+      EXPECT_TRUE(value.IsNull());
+      EXPECT_EQ(value.type()->type_id(), TypeId::kInt);
+    }
+  };
+
+  // The Appendix B timestamps fall in buckets 1 and 0, respectively.
+  ICEBERG_UNWRAP_OR_FAIL(auto micros,
+                         TemporalUtils::ParseTimestamp("2017-11-16T22:31:08"));
+  check(Literal::Timestamp(micros), Literal::Timestamp(micros + 1), 2);
+  check(Literal::Int(3), Literal::Int(4), 4);  // buckets 3 and 2
+}
+
+TEST(AggregateTest, VoidExtremaAreKnownNullWithOrWithoutBounds) {
+  Schema schema({SchemaField::MakeRequired(1, "id", int32())});
+  auto term = Expressions::Transform("id", Transform::Void());
+  ICEBERG_UNWRAP_OR_FAIL(auto bound, Literal::Int(42).Serialize());
+  DataFile with_bounds{
+      .record_count = 1, .lower_bounds = {{1, bound}}, .upper_bounds = {{1, bound}}};
+  DataFile without_bounds{.record_count = 1};
+  for (const auto& expr : {Expressions::Min(term), Expressions::Max(term)}) {
+    auto agg = BindAggregate(schema, expr);
+    SCOPED_TRACE(agg->ToString());
+    auto accumulator = agg->NewAggregator();
+    for (const auto* file : {&with_bounds, &without_bounds}) {
+      EXPECT_TRUE(agg->HasValue(*file));
+      ASSERT_THAT(accumulator->Update(*file), IsOk());
+      EXPECT_TRUE(accumulator->IsValid());
+    }
+    auto value = accumulator->GetResult();
+    EXPECT_TRUE(value.IsNull());
+    EXPECT_EQ(value.type()->type_id(), TypeId::kInt);
+  }
+}
+
+TEST(AggregateTest, MaxDayUsesTimestampUpperBound) {
+  Schema schema({SchemaField::MakeRequired(1, "ts", timestamp())});
+  auto max_day = BindAggregate(schema, Expressions::Max(Expressions::Day("ts")));
+  ICEBERG_UNWRAP_OR_FAIL(auto upper,
+                         Literal::Timestamp(2 * internal::kMicrosPerDay + 1).Serialize());
+  DataFile file{.record_count = 1, .upper_bounds = {{1, upper}}};
+  EXPECT_TRUE(max_day->HasValue(file));
+  ICEBERG_UNWRAP_OR_FAIL(auto result, max_day->Evaluate(file));
+  EXPECT_EQ(std::get<int32_t>(result.value()), 2);
+}
+
+TEST(AggregateTest, PromotedDateBoundsDistinguishUnknownAndInvalid) {
+  ICEBERG_UNWRAP_OR_FAIL(auto lower, Literal::Date(-106752).Serialize());
+  ICEBERG_UNWRAP_OR_FAIL(auto upper, Literal::Date(106752).Serialize());
+  for (const auto& field : {SchemaField::MakeRequired(1, "ts", timestamp_ns()),
+                            SchemaField::MakeOptional(1, "ts", timestamp_ns())}) {
+    Schema schema({field});
+    for (const auto& agg : {BindAggregate(schema, Expressions::Min("ts")),
+                            BindAggregate(schema, Expressions::Max("ts"))}) {
+      DataFile file{
+          .record_count = 1, .lower_bounds = {{1, lower}}, .upper_bounds = {{1, upper}}};
+      EXPECT_FALSE(agg->HasValue(file));
+      ICEBERG_UNWRAP_OR_FAIL(auto value, agg->Evaluate(file));
+      EXPECT_TRUE(value.IsNull());
+      EXPECT_EQ(value.type()->type_id(), TypeId::kTimestampNs);
+      auto accumulator = agg->NewAggregator();
+      ASSERT_TRUE(accumulator->Update(file).has_value());
+      EXPECT_FALSE(accumulator->IsValid());
+
+      file.lower_bounds[1] = file.upper_bounds[1] = {0, 1, 2};
+      EXPECT_FALSE(agg->HasValue(file));
+      EXPECT_THAT(agg->Evaluate(file), IsError(ErrorKind::kInvalidArgument));
+      EXPECT_THAT(agg->NewAggregator()->Update(file),
+                  IsError(ErrorKind::kInvalidArgument));
+    }
+  }
 }
 
 TEST(AggregateTest, DataFileAggregatorParity) {

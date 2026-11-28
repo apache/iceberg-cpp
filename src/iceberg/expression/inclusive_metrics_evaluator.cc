@@ -28,6 +28,7 @@
 #include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/schema.h"
 #include "iceberg/transform.h"
+#include "iceberg/util/conversions_internal.h"
 #include "iceberg/util/macros.h"
 #include "iceberg/util/math_util_internal.h"
 #include "iceberg/util/temporal_util.h"
@@ -481,7 +482,7 @@ class InclusiveMetricsVisitor : public BoundVisitor<bool> {
     }
     auto primitive_type = internal::checked_pointer_cast<PrimitiveType>(type);
     if (data_file_.lower_bounds.contains(id)) {
-      return Literal::Deserialize(data_file_.lower_bounds.at(id), primitive_type);
+      return internal::DeserializeBound(data_file_.lower_bounds.at(id), primitive_type);
     }
 
     return std::nullopt;
@@ -495,7 +496,7 @@ class InclusiveMetricsVisitor : public BoundVisitor<bool> {
     }
     auto primitive_type = internal::checked_pointer_cast<PrimitiveType>(type);
     if (data_file_.upper_bounds.contains(id)) {
-      return Literal::Deserialize(data_file_.upper_bounds.at(id), primitive_type);
+      return internal::DeserializeBound(data_file_.upper_bounds.at(id), primitive_type);
     }
 
     return std::nullopt;

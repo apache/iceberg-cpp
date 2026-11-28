@@ -45,8 +45,42 @@
 #include "iceberg/transform.h"
 #include "iceberg/type.h"
 #include "iceberg/util/partition_value_util.h"
+#include "iceberg/util/temporal_util.h"
 
 namespace iceberg {
+
+TEST(DeleteFileDatePromotionTest, DataAndDeleteBoundsUseTimestampUnits) {
+  Schema schema({SchemaField::MakeRequired(1, "ts", timestamp_ns())});
+  ICEBERG_UNWRAP_OR_FAIL(auto date, Literal::Date(1).Serialize());
+  ICEBERG_UNWRAP_OR_FAIL(auto midnight,
+                         Literal::TimestampNs(internal::kNanosPerDay).Serialize());
+  ICEBERG_UNWRAP_OR_FAIL(auto epoch, Literal::TimestampNs(0).Serialize());
+  ICEBERG_UNWRAP_OR_FAIL(auto overflow, Literal::Date(106752).Serialize());
+  auto check = [&](const auto& data_lower, const auto& data_upper,
+                   const auto& delete_lower, const auto& delete_upper, bool expected) {
+    DataFile data{.record_count = 1,
+                  .lower_bounds = {{1, data_lower}},
+                  .upper_bounds = {{1, data_upper}}};
+    auto deletes = std::make_shared<DataFile>(
+        DataFile{.content = DataFile::Content::kEqualityDeletes,
+                 .lower_bounds = {{1, delete_lower}},
+                 .upper_bounds = {{1, delete_upper}},
+                 .equality_ids = {1}});
+    internal::EqualityDeleteFile eq(
+        &schema, ManifestEntry{.sequence_number = 2, .data_file = std::move(deletes)});
+    ICEBERG_UNWRAP_OR_FAIL(auto may_match,
+                           internal::CanContainEqDeletesForFile(data, eq));
+    EXPECT_EQ(may_match, expected);
+  };
+  check(date, date, midnight, midnight, true);
+  check(midnight, midnight, date, date, true);
+  check(epoch, overflow, midnight, midnight, true);
+  check(midnight, midnight, date, overflow, true);
+  check(date, date, epoch, epoch, false);
+  check(epoch, epoch, date, date, false);
+  check(date, overflow, epoch, epoch, true);
+  check(epoch, epoch, date, overflow, true);
+}
 
 class DeleteFileIndexTest : public testing::TestWithParam<int8_t> {
  protected:

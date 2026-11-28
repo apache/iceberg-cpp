@@ -20,12 +20,15 @@
 #include "iceberg/util/conversions.h"
 
 #include <cstring>
+#include <limits>
 #include <span>
 #include <string>
 
+#include "iceberg/util/conversions_internal.h"
 #include "iceberg/util/decimal.h"
 #include "iceberg/util/endian.h"
 #include "iceberg/util/macros.h"
+#include "iceberg/util/temporal_util.h"
 #include "iceberg/util/uuid.h"
 
 namespace iceberg {
@@ -141,6 +144,35 @@ Result<std::vector<uint8_t>> Conversions::ToBytes(const Literal& literal) {
   return ToBytes(*literal.type(), literal.value());
 }
 
+namespace {
+
+std::optional<int64_t> PromoteDate(int32_t days, TypeId type_id) {
+  const auto units_per_day =
+      type_id == TypeId::kTimestamp ? internal::kMicrosPerDay : internal::kNanosPerDay;
+  if (days < std::numeric_limits<int64_t>::min() / units_per_day ||
+      days > std::numeric_limits<int64_t>::max() / units_per_day) {
+    return std::nullopt;
+  }
+  return days * units_per_day;
+}
+
+}  // namespace
+
+Result<std::optional<Literal>> internal::DeserializeBound(
+    std::span<const uint8_t> data, const std::shared_ptr<PrimitiveType>& type) {
+  if (type && data.size() == sizeof(int32_t) &&
+      (type->type_id() == TypeId::kTimestamp ||
+       type->type_id() == TypeId::kTimestampNs)) {
+    auto value = PromoteDate(ReadLittleEndian<int32_t>(data.data()), type->type_id());
+    if (!value) {
+      return std::nullopt;
+    }
+    return type->type_id() == TypeId::kTimestamp ? Literal::Timestamp(*value)
+                                                 : Literal::TimestampNs(*value);
+  }
+  return Literal::Deserialize(data, type);
+}
+
 Result<Literal::Value> Conversions::FromBytes(const PrimitiveType& type,
                                               std::span<const uint8_t> data) {
   const auto type_id = type.type_id();
@@ -158,20 +190,27 @@ Result<Literal::Value> Conversions::FromBytes(const PrimitiveType& type,
       return Literal::Value{value};
     }
     case TypeId::kLong:
-    case TypeId::kTime:
     case TypeId::kTimestamp:
-    case TypeId::kTimestampTz:
     case TypeId::kTimestampNs:
-    case TypeId::kTimestampTzNs: {
-      int64_t value;
-      if (data.size() < 8) {
-        // Type was promoted from int to long
-        ICEBERG_ASSIGN_OR_RAISE(auto int_value, ReadLittleEndian<int32_t>(data));
-        value = static_cast<int64_t>(int_value);
-      } else {
-        ICEBERG_ASSIGN_OR_RAISE(auto long_value, ReadLittleEndian<int64_t>(data));
-        value = long_value;
+      if (data.size() == sizeof(int32_t)) {
+        ICEBERG_ASSIGN_OR_RAISE(auto value, ReadLittleEndian<int32_t>(data));
+        if (type_id == TypeId::kLong) {
+          return Literal::Value{static_cast<int64_t>(value)};
+        }
+        // Only timestamps without a zone can be promoted from a four-byte date.
+        // https://iceberg.apache.org/spec/#schema-evolution
+        auto timestamp = PromoteDate(value, type_id);
+        if (!timestamp) {
+          return InvalidArgument("Date {} is outside the range of {}", value,
+                                 type.ToString());
+        }
+        return Literal::Value{*timestamp};
       }
+      [[fallthrough]];
+    case TypeId::kTime:
+    case TypeId::kTimestampTz:
+    case TypeId::kTimestampTzNs: {
+      ICEBERG_ASSIGN_OR_RAISE(auto value, ReadLittleEndian<int64_t>(data));
       return Literal::Value{value};
     }
     case TypeId::kFloat: {
