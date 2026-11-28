@@ -153,6 +153,7 @@ add_iceberg_test(json_serde_test
 if(ICEBERG_BUILD_VERIFICATION_TESTS)
   add_iceberg_test(verification_test
                    SOURCES
+                   verification/partition_transforms_verification_test.cc
                    verification/schema_verification_test.cc
                    verification/types_verification_test.cc
                    verification/verification_util.cc)
