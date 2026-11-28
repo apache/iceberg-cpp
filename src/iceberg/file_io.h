@@ -164,6 +164,9 @@ class ICEBERG_EXPORT FileIO {
 
   /// \brief Delete a file at the given location.
   ///
+  /// Deletion is idempotent: implementations must return success when the file does
+  /// not exist.
+  ///
   /// \param file_location The location of the file to delete.
   /// \return Status indicating success, or an error if the delete failed.
   virtual Status DeleteFile(const std::string& /*file_location*/) {

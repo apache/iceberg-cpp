@@ -18,6 +18,7 @@
  */
 
 #include <algorithm>
+#include <cerrno>
 #include <chrono>
 #include <limits>
 #include <mutex>
@@ -30,6 +31,7 @@
 #include <arrow/io/interfaces.h>
 #include <arrow/result.h>
 #include <arrow/status.h>
+#include <arrow/util/io_util.h>
 #include <arrow/util/uri.h>
 
 #include "iceberg/arrow/arrow_io_internal.h"
@@ -591,7 +593,11 @@ Result<std::unique_ptr<OutputFile>> ArrowFileSystemFileIO::NewOutputFile(
 /// \brief Delete a file at the given location.
 Status ArrowFileSystemFileIO::DeleteFile(const std::string& file_location) {
   ICEBERG_ASSIGN_OR_RAISE(auto path, ResolvePath(file_location));
-  ICEBERG_ARROW_RETURN_NOT_OK(arrow_fs_->DeleteFile(path));
+  auto status = arrow_fs_->DeleteFile(path);
+  if (::arrow::internal::ErrnoFromStatus(status) == ENOENT) {
+    return {};
+  }
+  ICEBERG_ARROW_RETURN_NOT_OK(status);
   return {};
 }
 
