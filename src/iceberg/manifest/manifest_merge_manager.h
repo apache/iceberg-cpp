@@ -94,6 +94,8 @@ class ICEBERG_EXPORT ManifestMergeManager {
   Status CleanUncommitted(const std::unordered_set<std::string>& committed);
 
  private:
+  friend class MergingSnapshotUpdate;
+
   ManifestMergeManager(ManifestContent content, int64_t target_size_bytes,
                        int32_t min_count_to_merge, bool merge_enabled,
                        std::shared_ptr<FileIO> file_io,

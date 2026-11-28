@@ -63,6 +63,7 @@ namespace iceberg {
 class ICEBERG_EXPORT MergingSnapshotUpdate : public SnapshotUpdate {
  public:
   ~MergingSnapshotUpdate() override = default;
+  Status Commit() override;
 
  protected:
   // SnapshotUpdate overrides
