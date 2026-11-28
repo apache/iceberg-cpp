@@ -311,6 +311,22 @@ TEST(SchemaTest, ValidateRejectsInvalidUnknownFields) {
   EXPECT_THAT(status, iceberg::HasErrorMessage("Map 'key' cannot be unknown type"));
 }
 
+TEST(SchemaTest, MakeRejectsRequiredUnknownField) {
+  auto by_ids = iceberg::Schema::Make(
+      {iceberg::SchemaField::MakeRequired(1, "mystery", iceberg::unknown())},
+      iceberg::Schema::kInitialSchemaId, std::vector<int32_t>{});
+  ASSERT_THAT(by_ids, iceberg::IsError(iceberg::ErrorKind::kInvalidArgument));
+  EXPECT_THAT(by_ids,
+              iceberg::HasErrorMessage("Unknown type field 'mystery' must be optional"));
+
+  auto by_names = iceberg::Schema::Make(
+      {iceberg::SchemaField::MakeRequired(1, "mystery", iceberg::unknown())},
+      iceberg::Schema::kInitialSchemaId, std::vector<std::string>{});
+  ASSERT_THAT(by_names, iceberg::IsError(iceberg::ErrorKind::kInvalidArgument));
+  EXPECT_THAT(by_names,
+              iceberg::HasErrorMessage("Unknown type field 'mystery' must be optional"));
+}
+
 TEST(SchemaTest, IdentifierFields) {
   using iceberg::ErrorKind;
   using iceberg::Schema;

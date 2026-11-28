@@ -191,6 +191,7 @@ Result<std::unique_ptr<Schema>> Schema::Make(std::vector<SchemaField> fields,
                                              std::vector<int32_t> identifier_field_ids,
                                              GetId get_id) {
   auto schema = std::make_unique<Schema>(std::move(fields), schema_id, std::move(get_id));
+  ICEBERG_RETURN_UNEXPECTED(ValidateFieldNullability(*schema));
 
   if (!identifier_field_ids.empty()) {
     auto id_to_parent = IndexParents(*schema);
@@ -208,6 +209,7 @@ Result<std::unique_ptr<Schema>> Schema::Make(
     std::vector<SchemaField> fields, int32_t schema_id,
     const std::vector<std::string>& identifier_field_names, GetId get_id) {
   auto schema = std::make_unique<Schema>(std::move(fields), schema_id, std::move(get_id));
+  ICEBERG_RETURN_UNEXPECTED(ValidateFieldNullability(*schema));
 
   std::vector<int32_t> fresh_identifier_ids;
   for (const auto& name : identifier_field_names) {
