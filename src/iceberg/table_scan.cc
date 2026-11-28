@@ -420,12 +420,18 @@ TableScanBuilder<ScanType>& TableScanBuilder<ScanType>::PlanWith(Executor& execu
 
 template <typename ScanType>
 TableScanBuilder<ScanType>& TableScanBuilder<ScanType>::UseSnapshot(int64_t snapshot_id) {
+  return UseSnapshot(snapshot_id, /*use_snapshot_schema=*/true);
+}
+
+template <typename ScanType>
+TableScanBuilder<ScanType>& TableScanBuilder<ScanType>::UseSnapshot(
+    int64_t snapshot_id, bool use_snapshot_schema) {
   ICEBERG_BUILDER_CHECK(!context_.snapshot_id.has_value(),
                         "Cannot override snapshot, already set snapshot id={}",
                         context_.snapshot_id.value());
   ICEBERG_BUILDER_ASSIGN_OR_RETURN(std::ignore, metadata_->SnapshotById(snapshot_id));
   context_.snapshot_id = snapshot_id;
-  context_.use_snapshot_schema = true;
+  context_.use_snapshot_schema = use_snapshot_schema;
   return *this;
 }
 

@@ -38,6 +38,7 @@
 #include "iceberg/data/data_writer.h"
 #include "iceberg/data/delete_filter.h"
 #include "iceberg/data/delete_loader.h"
+#include "iceberg/data/delete_rows.h"
 #include "iceberg/data/equality_delete_writer.h"
 #include "iceberg/data/file_scan_task_reader.h"
 #include "iceberg/data/position_delete_writer.h"
