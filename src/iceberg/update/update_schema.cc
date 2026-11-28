@@ -19,6 +19,7 @@
 
 #include "iceberg/update/update_schema.h"
 
+#include <algorithm>
 #include <format>
 #include <memory>
 #include <optional>
@@ -110,7 +111,8 @@ class ApplyChangesVisitor {
     auto moves_it = moves_.find(parent_id);
     if (moves_it != moves_.end() && !moves_it->second.empty()) {
       has_changes = true;
-      new_fields = MoveFields(std::move(new_fields), moves_it->second);
+      ICEBERG_ASSIGN_OR_RAISE(new_fields,
+                              MoveFields(std::move(new_fields), moves_it->second));
     }
 
     if (!has_changes) {
@@ -225,8 +227,8 @@ class ApplyChangesVisitor {
   }
 
   /// \brief Helper function to apply move operations to a list of fields
-  static std::vector<SchemaField> MoveFields(
-      std::vector<SchemaField>&& fields, const std::vector<UpdateSchema::Move>& moves);
+  static Result<std::vector<SchemaField>> MoveFields(
+      std::vector<SchemaField> fields, const std::vector<UpdateSchema::Move>& moves);
 
   const std::unordered_set<int32_t>& deletes_;
   const std::unordered_map<int32_t, std::shared_ptr<SchemaField>>& updates_;
@@ -234,52 +236,32 @@ class ApplyChangesVisitor {
   const std::unordered_map<int32_t, std::vector<UpdateSchema::Move>>& moves_;
 };
 
-std::vector<SchemaField> ApplyChangesVisitor::MoveFields(
-    std::vector<SchemaField>&& fields, const std::vector<UpdateSchema::Move>& moves) {
-  std::vector<SchemaField> reordered = std::move(fields);
-
+Result<std::vector<SchemaField>> ApplyChangesVisitor::MoveFields(
+    std::vector<SchemaField> fields, const std::vector<UpdateSchema::Move>& moves) {
   for (const auto& move : moves) {
-    auto it = std::ranges::find_if(reordered, [&move](const SchemaField& field) {
-      return field.field_id() == move.field_id;
-    });
+    auto it = std::ranges::find(fields, move.field_id, &SchemaField::field_id);
+    ICEBERG_CHECK(it != fields.end(), "Cannot move missing column with id: {}",
+                  move.field_id);
 
-    if (it == reordered.end()) {
-      continue;
-    }
+    SchemaField to_move = std::move(*it);
+    fields.erase(it);
 
-    SchemaField to_move = *it;
-    reordered.erase(it);
-
-    switch (move.type) {
-      case UpdateSchema::Move::MoveType::kFirst:
-        reordered.insert(reordered.begin(), std::move(to_move));
-        break;
-
-      case UpdateSchema::Move::MoveType::kBefore: {
-        auto before_it =
-            std::ranges::find_if(reordered, [&move](const SchemaField& field) {
-              return field.field_id() == move.reference_field_id;
-            });
-        if (before_it != reordered.end()) {
-          reordered.insert(before_it, std::move(to_move));
-        }
-        break;
-      }
-
-      case UpdateSchema::Move::MoveType::kAfter: {
-        auto after_it =
-            std::ranges::find_if(reordered, [&move](const SchemaField& field) {
-              return field.field_id() == move.reference_field_id;
-            });
-        if (after_it != reordered.end()) {
-          reordered.insert(after_it + 1, std::move(to_move));
-        }
-        break;
+    auto insert_it = fields.begin();
+    if (move.type != UpdateSchema::Move::MoveType::kFirst) {
+      insert_it =
+          std::ranges::find(fields, move.reference_field_id, &SchemaField::field_id);
+      ICEBERG_CHECK(insert_it != fields.end(),
+                    "Cannot move column with id {}: missing reference column with id {}",
+                    move.field_id, move.reference_field_id);
+      // Before inserts at the reference iterator; After advances it by one.
+      if (move.type == UpdateSchema::Move::MoveType::kAfter) {
+        ++insert_it;
       }
     }
+    fields.insert(insert_it, std::move(to_move));
   }
 
-  return reordered;
+  return fields;
 }
 
 bool ValidateDefaultLiteral(const Literal& value) {
