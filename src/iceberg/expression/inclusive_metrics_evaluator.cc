@@ -19,7 +19,8 @@
 
 #include "iceberg/expression/inclusive_metrics_evaluator.h"
 
-#include <ranges>
+#include <algorithm>
+#include <span>
 #include <utility>
 
 #include "iceberg/expression/binder.h"
@@ -206,28 +207,8 @@ class InclusiveMetricsVisitor : public BoundVisitor<bool> {
   }
 
   Result<bool> Eq(const std::shared_ptr<Bound>& expr, const Literal& lit) override {
-    // all terms are null preserving. see #isNullPreserving(Bound)
-    int32_t id = expr->reference()->field().field_id();
-    if (ContainsNullsOnly(id) || ContainsNaNsOnly(id)) {
-      return kRowCannotMatch;
-    }
-
-    ICEBERG_ASSIGN_OR_RAISE(auto lower, LowerBound(expr));
-    if (lower.has_value() && !lower->IsNull() && !lower->IsNaN()) {
-      if (lower.value() > lit) {
-        return kRowCannotMatch;
-      }
-    }
-
-    ICEBERG_ASSIGN_OR_RAISE(auto upper, UpperBound(expr));
-    if (!upper.has_value() || upper->IsNull()) {
-      return kRowsMightMatch;
-    }
-    if (upper.value() < lit) {
-      return kRowCannotMatch;
-    }
-
-    return kRowsMightMatch;
+    // Binding a singleton IN produces an equality predicate.
+    return MayMatchAny(expr, std::span{&lit, 1});
   }
 
   Result<bool> NotEq(const std::shared_ptr<Bound>& expr, const Literal& lit) override {
@@ -245,43 +226,7 @@ class InclusiveMetricsVisitor : public BoundVisitor<bool> {
 
   Result<bool> In(const std::shared_ptr<Bound>& expr,
                   const BoundSetPredicate::LiteralSet& literal_set) override {
-    // all terms are null preserving. see #isNullPreserving(Bound)
-    int32_t id = expr->reference()->field().field_id();
-    if (ContainsNullsOnly(id) || ContainsNaNsOnly(id)) {
-      return kRowCannotMatch;
-    }
-
-    if (literal_set.size() > kInPredicateLimit) {
-      // skip evaluating the predicate if the number of values is too big
-      return kRowsMightMatch;
-    }
-
-    ICEBERG_ASSIGN_OR_RAISE(auto lower, LowerBound(expr));
-    if (!lower.has_value() || lower->IsNull() || lower->IsNaN()) {
-      // NaN indicates unreliable bounds. See the InclusiveMetricsEvaluator docs for more.
-      return kRowsMightMatch;
-    }
-    auto literals_view = literal_set | std::views::filter([&](const Literal& lit) {
-                           return lower.value() <= lit;
-                         });
-    // if all values are less than lower bound, rows cannot match
-    if (literals_view.empty()) {
-      return kRowCannotMatch;
-    }
-
-    ICEBERG_ASSIGN_OR_RAISE(auto upper, UpperBound(expr));
-    if (!upper.has_value() || upper->IsNull()) {
-      return kRowsMightMatch;
-    }
-    auto filtered_view = literals_view | std::views::filter([&](const Literal& lit) {
-                           return upper.value() >= lit;
-                         });
-    // if remaining values are greater than upper bound, rows cannot match
-    if (filtered_view.empty()) {
-      return kRowCannotMatch;
-    }
-
-    return kRowsMightMatch;
+    return MayMatchAny(expr, literal_set);
   }
 
   Result<bool> NotIn(const std::shared_ptr<Bound>& expr,
@@ -391,6 +336,38 @@ class InclusiveMetricsVisitor : public BoundVisitor<bool> {
   }
 
  private:
+  template <typename Literals>
+  Result<bool> MayMatchAny(const std::shared_ptr<Bound>& expr, const Literals& literals) {
+    const int32_t id = expr->reference()->field().field_id();
+    if (ContainsNullsOnly(id)) {
+      return kRowCannotMatch;
+    }
+    if (literals.size() > kInPredicateLimit) {
+      return kRowsMightMatch;
+    }
+    if (ContainsNaNsOnly(id)) {
+      return std::ranges::any_of(literals, &Literal::IsNaN);
+    }
+
+    ICEBERG_ASSIGN_OR_RAISE(auto lower, LowerBound(expr));
+    ICEBERG_ASSIGN_OR_RAISE(auto upper, UpperBound(expr));
+    if ((lower && lower->IsNaN()) || (upper && upper->IsNaN())) {
+      // A NaN at either end makes the file's bounds unreliable.
+      return kRowsMightMatch;
+    }
+
+    auto outside_bounds = [&](const Literal& lit) {
+      if (lit.IsNaN()) {
+        // Min and max exclude NaNs. Only the NaN count can rule one out.
+        return !MayContainNaN(id);
+      }
+      // Each available bound can rule out a value. An unordered comparison cannot.
+      return (lower && lit < *lower) || (upper && lit > *upper);
+    };
+    return std::ranges::all_of(literals, outside_bounds) ? kRowCannotMatch
+                                                         : kRowsMightMatch;
+  }
+
   bool MayContainNull(int32_t id) {
     return data_file_.null_value_counts.empty() ||
            !data_file_.null_value_counts.contains(id) ||
