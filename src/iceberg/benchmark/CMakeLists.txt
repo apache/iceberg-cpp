@@ -27,3 +27,4 @@ endfunction()
 
 add_iceberg_benchmark(benchmark_smoke)
 add_iceberg_benchmark(metrics_evaluator_benchmark)
+add_iceberg_benchmark(mumbling_bitmap_benchmark)

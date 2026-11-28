@@ -161,6 +161,7 @@ set(ICEBERG_SOURCES
     util/decimal.cc
     util/gzip_internal.cc
     util/location_util.cc
+    util/mumbling_bitmap.cc
     util/murmurhash3_internal.cc
     util/property_util.cc
     util/retry_util.cc
