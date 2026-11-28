@@ -31,6 +31,8 @@
 #include <unordered_map>
 #include <vector>
 
+#include <arrow/result.h>
+#include <arrow/util/uri.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 #include <nlohmann/json.hpp>
@@ -39,14 +41,18 @@
 #include "iceberg/catalog/sql/catalog_store.h"
 #include "iceberg/catalog/sql/config.h"
 #include "iceberg/catalog/sql/connection_uri_internal.h"
+#include "iceberg/partition_field.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/schema.h"
 #include "iceberg/sort_order.h"
 #include "iceberg/table.h"
 #include "iceberg/table_identifier.h"
 #include "iceberg/table_metadata.h"
+#include "iceberg/table_requirement.h"
+#include "iceberg/table_update.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/transaction.h"
+#include "iceberg/transform.h"
 #include "iceberg/type.h"
 #include "iceberg/update/update_properties.h"
 
@@ -295,6 +301,51 @@ TEST_F(SqlCatalogTest, TableLifecycle) {
   EXPECT_THAT(catalog_->DropTable(renamed, /*purge=*/false), IsOk());
   EXPECT_THAT(catalog_->TableExists(renamed), HasValue(::testing::Eq(false)));
   EXPECT_THAT(catalog_->DropTable(renamed, false), IsError(ErrorKind::kNoSuchTable));
+}
+
+TEST_F(SqlCatalogTest, PropertyUpdatePreservesStatsDefinitionsByRejectingWrites) {
+  Namespace ns{{"db"}};
+  ASSERT_THAT(catalog_->CreateNamespace(ns, {}), IsOk());
+  for (int version = TableMetadata::kMinFormatVersionStatsFields;
+       version <= TableMetadata::kSupportedTableFormatVersion; ++version) {
+    SCOPED_TRACE(version);
+    TableIdentifier ident{.ns = ns, .name = "stats_" + std::to_string(version)};
+    auto location = ::arrow::util::UriFromAbsolutePath(MakeTableLocation(ident.name));
+    ASSERT_TRUE(location.ok()) << location.status().ToString();
+    ICEBERG_UNWRAP_OR_FAIL(
+        std::shared_ptr<PartitionSpec> spec,
+        PartitionSpec::Make(
+            0, {PartitionField(1, 1000, "x_bucket", Transform::Bucket(16))}));
+    ICEBERG_UNWRAP_OR_FAIL(
+        auto created,
+        catalog_->CreateTable(
+            ident, MakeSchema(), spec, SortOrder::Unsorted(), *location,
+            {{"format-version", std::to_string(version)}, {"owner", "alice"}}));
+    const auto metadata_location = std::string(created->metadata_file_location());
+    ICEBERG_UNWRAP_OR_FAIL(auto content,
+                           file_io_->ReadFile(metadata_location, std::nullopt));
+    auto json = nlohmann::json::parse(content);
+    json["last-column-id"] = 2;
+    json["stats-fields"] = nlohmann::json::array(
+        {{{"field-id", 2}, {"type", "partition-value"}, {"partition-field-id", 1000}}});
+    const auto original = json.dump();
+    ASSERT_THAT(file_io_->WriteFile(metadata_location, original), IsOk());
+    // Read succeeds, but SQL must not rewrite definitions it cannot preserve.
+    EXPECT_THAT(catalog_->LoadTable(ident), IsOk());
+    std::vector<std::unique_ptr<TableUpdate>> updates;
+    updates.push_back(std::make_unique<table::SetProperties>(
+        std::unordered_map<std::string, std::string>{{"owner", "bob"}}));
+    auto result = catalog_->UpdateTable(ident, {}, updates);
+    EXPECT_THAT(result, IsError(ErrorKind::kNotSupported));
+    EXPECT_THAT(result, HasErrorMessage("stats-fields"));
+    ICEBERG_UNWRAP_OR_FAIL(auto loaded, catalog_->LoadTable(ident));
+    EXPECT_EQ(loaded->metadata_file_location(), metadata_location);
+    EXPECT_THAT(loaded->properties().configs(),
+                ::testing::Contains(::testing::Pair("owner", "alice")));
+    ICEBERG_UNWRAP_OR_FAIL(auto retained,
+                           file_io_->ReadFile(metadata_location, std::nullopt));
+    EXPECT_EQ(retained, original);
+  }
 }
 
 class SqlCatalogFormatVersionTest

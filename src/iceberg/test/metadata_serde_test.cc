@@ -504,6 +504,48 @@ TEST(MetadataSerdeTest, DeserializeUnsupportedVersion) {
                                "Cannot read unsupported version");
 }
 
+TEST(MetadataSerdeTest, StatsFieldsPreventMetadataWrites) {
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto metadata, ReadTableMetadataFromResource("TableMetadataV3ValidMinimal.json"));
+  ICEBERG_UNWRAP_OR_FAIL(auto json, ToJson(*metadata));
+  json["last-column-id"] = 4;
+  for (const auto* type : {"partition-value", "future-value"}) {
+    SCOPED_TRACE(type);
+    json["stats-fields"] = nlohmann::json::array(
+        {{{"field-id", 4}, {"type", type}, {"partition-field-id", 1000}}});
+    ICEBERG_UNWRAP_OR_FAIL(auto parsed, TableMetadataFromJson(json));
+    EXPECT_THAT(ToJson(*parsed), IsError(ErrorKind::kNotSupported));
+    EXPECT_THAT(ToJson(*parsed), HasErrorMessage("stats-fields"));
+    auto builder = TableMetadataBuilder::BuildFrom(parsed.get());
+    EXPECT_THAT(builder->Build(), IsError(ErrorKind::kNotSupported));
+  }
+}
+
+TEST(MetadataSerdeTest, EmptyStatsFieldsAllowMetadataWrites) {
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto metadata, ReadTableMetadataFromResource("TableMetadataV3ValidMinimal.json"));
+  ICEBERG_UNWRAP_OR_FAIL(auto json, ToJson(*metadata));
+  for (const auto& value : {nlohmann::json(nullptr), nlohmann::json::array()}) {
+    SCOPED_TRACE(value.dump());
+    json["stats-fields"] = value;
+    ICEBERG_UNWRAP_OR_FAIL(auto parsed, TableMetadataFromJson(json));
+    EXPECT_THAT(ToJson(*parsed), IsOk());
+    EXPECT_THAT(TableMetadataBuilder::BuildFrom(parsed.get())->Build(), IsOk());
+  }
+}
+
+TEST(MetadataSerdeTest, StatsFieldsRequireAnArray) {
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto metadata, ReadTableMetadataFromResource("TableMetadataV3ValidMinimal.json"));
+  ICEBERG_UNWRAP_OR_FAIL(auto json, ToJson(*metadata));
+  for (const auto& value : {nlohmann::json::object(), nlohmann::json("fields"),
+                            nlohmann::json(true), nlohmann::json(1)}) {
+    SCOPED_TRACE(value.dump());
+    json["stats-fields"] = value;
+    EXPECT_THAT(TableMetadataFromJson(json), IsError(ErrorKind::kJsonParseError));
+  }
+}
+
 TEST(MetadataSerdeTest, RejectsNarrowedFormatVersions) {
   for (const auto* resource : {"TableMetadataV1Valid.json", "TableMetadataV2Valid.json",
                                "TableMetadataV3ValidMinimal.json"}) {
