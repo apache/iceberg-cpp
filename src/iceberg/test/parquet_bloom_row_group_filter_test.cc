@@ -23,7 +23,7 @@
 #include <iterator>
 #include <limits>
 #include <map>
-#include <numeric>
+#include <ranges>
 
 #include <arrow/array.h>
 #include <arrow/builder.h>
@@ -465,9 +465,7 @@ TEST_F(ParquetBloomFilterTest, ParquetGoThreeBlockBloomFilter) {
   auto io = std::static_pointer_cast<MockFileIO>(io_);
   io->AddFile(path_, std::string(std::istreambuf_iterator<char>(file), {}));
   auto options = Options(Expressions::Equal("key", Literal::Int(42)));
-  std::vector<int64_t> expected(60);
-  std::iota(expected.begin(), expected.end(), 0);
-  Check(options, expected);
+  Check(options, std::views::iota(0, 60) | std::ranges::to<std::vector<int64_t>>());
 
   // A 95-byte bitset ends in a partial block and must still report an error.
   ICEBERG_UNWRAP_OR_FAIL(auto input, arrow::OpenArrowInputStream(io_, path_));
