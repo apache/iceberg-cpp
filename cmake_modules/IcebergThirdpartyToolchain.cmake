@@ -968,8 +968,7 @@ resolve_croaring_dependency()
 resolve_utf8proc_dependency()
 resolve_nlohmann_json_dependency()
 
-# iceberg_data starts worker threads for parallel scans, so Threads is required
-# even when spdlog is disabled.
+# Scan scheduling needs threading primitives even when spdlog is disabled.
 find_package(Threads REQUIRED)
 list(APPEND ICEBERG_SYSTEM_DEPENDENCIES Threads)
 

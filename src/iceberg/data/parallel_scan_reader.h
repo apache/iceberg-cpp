@@ -29,6 +29,7 @@
 #include "iceberg/iceberg_data_export.h"
 #include "iceberg/result.h"
 #include "iceberg/table_scan.h"
+#include "iceberg/util/executor.h"
 
 namespace iceberg {
 
@@ -44,7 +45,10 @@ namespace iceberg {
 /// their order relative to each other. Every batch matches the projected schema.
 ///
 /// Residual filters are always enforced: `apply_residuals` in the reader options is
-/// forced on. `reader_options.case_sensitive` must match the planning scan's
+/// forced on. Predicates are first simplified using `table_schema`, then their
+/// remaining references are bound against `projected_schema`. This allows planning
+/// to omit columns used only by predicates that fold to constants.
+/// `reader_options.case_sensitive` must match the planning scan's
 /// `TableScan::is_case_sensitive()`, because task residuals are unbound and groups do
 /// not carry that setting.
 ///
@@ -70,8 +74,8 @@ namespace iceberg {
 /// Stream callbacks follow the Arrow C stream contract: they must not be called
 /// concurrently, and `release` must not race with `get_next`, `get_schema`, or
 /// `get_last_error`. Releasing the stream between callbacks stops assigning work,
-/// wakes waiting workers, releases batches that were not returned, and joins the
-/// workers. A planning call or read that is already in progress finishes first.
+/// cancels parked workers, releases batches that were not returned, and waits for
+/// running callbacks. A planning call or read already in progress finishes first.
 /// Cancelling a `get_next` that is blocked on another thread is not supported.
 ///
 /// When planning, reading, schema checking, or batch sizing fails, the reader stops
@@ -85,7 +89,12 @@ class ICEBERG_DATA_EXPORT ParallelScanReader {
   struct Options {
     /// Options for the per-worker task readers. `apply_residuals` is forced on.
     FileScanTaskReader::Options reader_options;
-    /// Number of worker threads. Must be positive.
+    /// Executor shared by scans. Must not be null and must outlive the stream and
+    /// any accepted callbacks. Queue backpressure parks workers without blocking
+    /// executor threads. As with PlanWith(), lazy planning must be able to make
+    /// progress while a group-stream Next() is running on this executor.
+    Executor* executor = nullptr;
+    /// Maximum number of concurrent workers for this scan. Must be positive.
     int32_t worker_count = 0;
     /// Maximum number of batches waiting in the output queue. Must be positive.
     int64_t max_queued_batches = 0;
@@ -96,7 +105,8 @@ class ICEBERG_DATA_EXPORT ParallelScanReader {
 
   /// \brief Start reading `groups` and return a stream of their projected live rows.
   ///
-  /// The returned stream owns `groups`. Workers start before Open() returns.
+  /// The returned stream owns `groups`. Workers are submitted before Open() returns.
+  /// The reader creates no threads; the caller controls the shared executor budget.
   static Result<ArrowArrayStream> Open(FileScanTaskGroupStreamPtr groups,
                                        Options options);
 };

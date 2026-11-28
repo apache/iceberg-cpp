@@ -31,7 +31,6 @@
 #include <optional>
 #include <string>
 #include <string_view>
-#include <thread>
 #include <utility>
 #include <vector>
 
@@ -41,11 +40,13 @@
 #include "iceberg/arrow_c_data_util_internal.h"
 #include "iceberg/data/arrow_batch_sizer_internal.h"
 #include "iceberg/data/parallel_scan_reader_internal.h"
+#include "iceberg/expression/binder.h"
 #include "iceberg/file_reader.h"
 #include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/nanoarrow_status_internal.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_internal.h"
+#include "iceberg/util/executor.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg {
@@ -122,22 +123,6 @@ Status CheckSameLayout(const ArrowSchema& expected, const ArrowSchema& actual,
   return {};
 }
 
-// Releases an ArrowArrayStream on scope exit.
-class StreamGuard {
- public:
-  explicit StreamGuard(ArrowArrayStream* stream) : stream_(stream) {}
-  ~StreamGuard() {
-    if (stream_->release != nullptr) {
-      stream_->release(stream_);
-    }
-  }
-  StreamGuard(const StreamGuard&) = delete;
-  StreamGuard& operator=(const StreamGuard&) = delete;
-
- private:
-  ArrowArrayStream* stream_;
-};
-
 void ReleaseArray(ArrowArray* array) {
   if (array->release != nullptr) {
     array->release(array);
@@ -156,18 +141,46 @@ void ReleaseAll(std::deque<QueuedBatch>& batches) {
   batches.clear();
 }
 
-// Shared state of one parallel read. All fields below `mutex_` are guarded by it.
-// No planning or reader callback, Arrow release callback, thread join, or group
-// stream destructor runs while `mutex_` is held.
-class ParallelScan {
+// Retain unbound predicates unless table-schema binding folds them to constants.
+class ResidualSimplifier : public Binder {
+ public:
+  ResidualSimplifier(const iceberg::Schema& schema, bool case_sensitive)
+      : Binder(schema, case_sensitive),
+        schema_(schema),
+        case_sensitive_(case_sensitive) {}
+
+  using Binder::Predicate;
+  Result<std::shared_ptr<Expression>> Predicate(
+      const std::shared_ptr<UnboundPredicate>& pred) override {
+    ICEBERG_ASSIGN_OR_RAISE(auto bound, pred->Bind(schema_, case_sensitive_));
+    if (bound->op() == Expression::Operation::kTrue ||
+        bound->op() == Expression::Operation::kFalse) {
+      return bound;
+    }
+    return pred;
+  }
+
+ private:
+  const iceberg::Schema& schema_;
+  bool case_sensitive_;
+};
+
+// A worker keeps its task stream and at most one completed batch between executor
+// submissions. Queue backpressure and the planning token park workers without
+// occupying executor threads. All scheduling state is guarded by mutex_. Reader,
+// planning, release, and Executor::Submit callbacks run outside that lock.
+class ParallelScan : public std::enable_shared_from_this<ParallelScan> {
  public:
   ParallelScan(FileScanTaskGroupStreamPtr groups, ArrowSchema output_schema,
-               int64_t max_queued_batches, int64_t max_queued_bytes,
+               const ParallelScanReader::Options& options,
                std::shared_ptr<ParallelScanMetrics> metrics)
       : groups_(std::move(groups)),
         output_schema_(output_schema),
-        max_queued_batches_(max_queued_batches),
-        max_queued_bytes_(max_queued_bytes),
+        executor_(*options.executor),
+        table_schema_(options.reader_options.table_schema),
+        case_sensitive_(options.reader_options.case_sensitive),
+        max_queued_batches_(options.max_queued_batches),
+        max_queued_bytes_(options.max_queued_bytes),
         metrics_(std::move(metrics)) {}
 
   ~ParallelScan() {
@@ -180,43 +193,18 @@ class ParallelScan {
   ParallelScan(const ParallelScan&) = delete;
   ParallelScan& operator=(const ParallelScan&) = delete;
 
-  Status Start(const FileScanTaskReader::Options& reader_options, int32_t worker_count) {
-    std::vector<std::unique_ptr<FileScanTaskReader>> readers;
-    std::vector<std::unique_ptr<ArrowBatchSizer>> sizers;
-    readers.reserve(static_cast<size_t>(worker_count));
-    sizers.reserve(static_cast<size_t>(worker_count));
-    for (int32_t index = 0; index < worker_count; ++index) {
-      ICEBERG_ASSIGN_OR_RAISE(auto reader, FileScanTaskReader::Make(reader_options));
-      ICEBERG_ASSIGN_OR_RAISE(auto sizer, ArrowBatchSizer::Make(output_schema_));
-      readers.push_back(std::move(reader));
-      sizers.push_back(std::move(sizer));
-    }
-
-    {
-      std::lock_guard lock(mutex_);
-      active_workers_ = worker_count;
-    }
+  Status Start(const FileScanTaskReader::Options& options, int32_t worker_count) {
     workers_.reserve(static_cast<size_t>(worker_count));
     for (int32_t index = 0; index < worker_count; ++index) {
-      try {
-        workers_.emplace_back([this, reader = std::move(readers[index]),
-                               sizer = std::move(sizers[index])]() mutable {
-          WorkerMain(*reader, *sizer);
-        });
-      } catch (const std::exception& e) {
-        // Threads that never started will not decrement the active count.
-        {
-          std::lock_guard lock(mutex_);
-          active_workers_ -= worker_count - index;
-        }
-        Shutdown();
-        return UnknownError("Failed to start parallel scan worker: {}", e.what());
-      }
+      auto worker = std::make_unique<Worker>();
+      ICEBERG_ASSIGN_OR_RAISE(worker->reader, FileScanTaskReader::Make(options));
+      ICEBERG_ASSIGN_OR_RAISE(worker->sizer, ArrowBatchSizer::Make(output_schema_));
+      workers_.push_back(std::move(worker));
     }
-    return {};
+    active_workers_ = worker_count;
+    return ScheduleReady();
   }
 
-  // Consumer side of get_next. Not called concurrently with itself or Shutdown().
   Result<std::optional<ArrowArray>> Next() {
     std::unique_lock lock(mutex_);
     consumer_cv_.wait(lock, [this] {
@@ -231,11 +219,12 @@ class ParallelScan {
     QueuedBatch batch = queue_.front();
     queue_.pop_front();
     queued_bytes_ -= batch.charge;
+    WakeWorkers(WorkerState::kWaitingAdmission);
     lock.unlock();
-    // Producers are admitted in ticket order, and a condition variable cannot wake
-    // one specific waiter, so wake them all and let the head ticket re-check. At
-    // most worker_count threads wait here.
-    producer_cv_.notify_all();
+    // Keep the popped batch owned if submitting a continuation throws.
+    ArrowArrayGuard guard(&batch.array);
+    (void)ScheduleReady();
+    guard.Release();
     return batch.array;
   }
 
@@ -245,83 +234,238 @@ class ParallelScan {
     return schema;
   }
 
-  // Stops new work, joins workers, and releases every batch that was not returned.
-  // Idempotent.
   void Shutdown() {
     std::deque<QueuedBatch> drained;
+    std::vector<std::unique_ptr<Worker>> workers;
     {
       std::lock_guard lock(mutex_);
       stopped_ = true;
       drained.swap(queue_);
       queued_bytes_ = 0;
     }
-    planning_cv_.notify_all();
-    producer_cv_.notify_all();
-    consumer_cv_.notify_all();
     ReleaseAll(drained);
-
-    for (auto& worker : workers_) {
-      if (worker.joinable()) {
-        worker.join();
-      }
-    }
-    workers_.clear();
-
-    // Workers have exited, so nothing else can enqueue or plan.
     {
-      std::lock_guard lock(mutex_);
-      drained.swap(queue_);
+      std::unique_lock lock(mutex_);
+      idle_cv_.wait(lock, [this] { return running_workers_ == 0 && !dispatching_; });
+      workers.swap(workers_);
     }
-    ReleaseAll(drained);
+    // Queued executor callbacks retain the scan, but only check stopped_ and return.
+    // Release all actual resources now, including parked workers' pending batches.
+    workers.clear();
     groups_.reset();
   }
 
  private:
-  void WorkerMain(FileScanTaskReader& reader, ArrowBatchSizer& sizer) {
+  enum class WorkerState {
+    kReady,
+    kScheduled,
+    kRunning,
+    kWaitingPlanning,
+    kWaitingAdmission,
+    kDone,
+  };
+
+  struct Worker {
+    ~Worker() { Reset(); }
+
+    void CloseStream() {
+      auto old = std::exchange(stream, ArrowArrayStream{});
+      if (old.release != nullptr) {
+        old.release(&old);
+      }
+    }
+
+    void Reset() {
+      CloseStream();
+      ReleaseArray(&pending);
+      group.reset();
+    }
+
+    WorkerState state = WorkerState::kReady;
+    bool running = false;
+    std::unique_ptr<FileScanTaskReader> reader;
+    std::unique_ptr<ArrowBatchSizer> sizer;
+    std::shared_ptr<FileScanTaskGroup> group;
+    size_t task_index = 0;
+    ArrowArrayStream stream{};
+    ArrowArray pending{};
+    int64_t charge = 0;
+    uint64_t ticket = 0;
+    std::chrono::steady_clock::time_point wait_start;
+    std::string context;
+  };
+
+  // Serializes Submit calls, and acts as a trampoline for inline executors.
+  Status ScheduleReady() {
+    {
+      std::lock_guard lock(mutex_);
+      if (stopped_ || dispatching_) {
+        return {};
+      }
+      dispatching_ = true;
+    }
+    Status status;
+    while (true) {
+      size_t index = 0;
+      {
+        std::lock_guard lock(mutex_);
+        if (stopped_) {
+          dispatching_ = false;
+          idle_cv_.notify_all();
+          return status;
+        }
+        for (; index < workers_.size(); ++index) {
+          if (workers_[index]->state == WorkerState::kReady &&
+              !workers_[index]->running) {
+            break;
+          }
+        }
+        if (index == workers_.size()) {
+          dispatching_ = false;
+          idle_cv_.notify_all();
+          return status;
+        }
+        workers_[index]->state = WorkerState::kScheduled;
+      }
+      try {
+        status = executor_.Submit(ExecutorTask(
+            [self = shared_from_this(), index] { self->WorkerMain(index); }));
+      } catch (const std::exception& e) {
+        status = UnknownError("Failed to submit parallel scan worker: {}", e.what());
+      } catch (...) {
+        status = UnknownError("Failed to submit parallel scan worker");
+      }
+      if (!status.has_value()) {
+        Fail(WithContext(status.error(), "Failed to submit parallel scan worker"));
+        break;
+      }
+    }
+    {
+      std::lock_guard lock(mutex_);
+      dispatching_ = false;
+    }
+    idle_cv_.notify_all();
+    return status;
+  }
+
+  void WorkerMain(size_t index) {
+    Worker* worker;
+    {
+      std::lock_guard lock(mutex_);
+      if (stopped_) {
+        return;
+      }
+      worker = workers_[index].get();
+      worker->state = WorkerState::kRunning;
+      worker->running = true;
+      ++running_workers_;
+    }
     Status status;
     try {
-      status = RunWorker(reader, sizer);
+      status = RunWorker(*worker);
     } catch (const std::exception& e) {
-      status = UnknownError("Parallel scan worker failed: {}", e.what());
+      status = UnknownError("Parallel scan worker failed for {}: {}", worker->context,
+                            e.what());
     } catch (...) {
-      status = UnknownError("Parallel scan worker failed with an unknown exception");
+      status = UnknownError("Parallel scan worker failed for {}", worker->context);
     }
     if (!status.has_value()) {
       Fail(status.error());
     }
+    bool finished;
     {
       std::lock_guard lock(mutex_);
-      --active_workers_;
+      finished = stopped_ || worker->state == WorkerState::kRunning;
+      if (finished) {
+        if (worker->pending.release != nullptr) {
+          held_bytes_ -= worker->charge;
+          RecordWait(*worker);
+        }
+        worker->state = WorkerState::kDone;
+        --active_workers_;
+      }
     }
+    if (finished) {
+      worker->Reset();
+    }
+    {
+      std::lock_guard lock(mutex_);
+      worker->running = false;
+    }
+    (void)ScheduleReady();
+    {
+      std::lock_guard lock(mutex_);
+      --running_workers_;
+    }
+    idle_cv_.notify_all();
     consumer_cv_.notify_all();
   }
 
-  Status RunWorker(FileScanTaskReader& reader, ArrowBatchSizer& sizer) {
-    while (true) {
-      ICEBERG_ASSIGN_OR_RAISE(auto group, ClaimGroup());
-      if (group == nullptr) {
-        return {};
-      }
-      for (const auto& task : group->tasks()) {
-        if (IsStopped()) {
+  Status RunWorker(Worker& worker) {
+    while (!IsStopped()) {
+      if (worker.pending.release != nullptr) {
+        if (!TryEnqueue(worker)) {
           return {};
         }
+      } else if (worker.stream.release != nullptr) {
+        // Check cancellation before every callback, including after get_schema.
+        ArrowArray batch{};
+        ArrowArrayGuard guard(&batch);
+        if (int code = worker.stream.get_next(&worker.stream, &batch); code != 0) {
+          return IOError("Failed to read {} (code {}): {}", worker.context, code,
+                         LastError(worker.stream));
+        }
+        if (batch.release == nullptr) {
+          worker.CloseStream();
+          ++worker.task_index;
+          continue;
+        }
+        auto charge = worker.sizer->Measure(batch);
+        if (!charge.has_value()) {
+          return unexpected(
+              WithContext(charge.error(), "Failed to size a batch of " + worker.context));
+        }
+        worker.pending = batch;
+        guard.Release();
+        worker.charge = *charge;
+        worker.wait_start = std::chrono::steady_clock::now();
+        std::lock_guard lock(mutex_);
+        worker.ticket = next_ticket_++;
+        held_bytes_ += *charge;
+        RecordMetrics([this](auto& snapshot) {
+          snapshot.peak_held_bytes = std::max(snapshot.peak_held_bytes, held_bytes_);
+        });
+      } else if (worker.group != nullptr &&
+                 worker.task_index < worker.group->tasks().size()) {
+        const auto& task = worker.group->tasks()[worker.task_index];
         if (task == nullptr) {
           return InvalidArgument("Task group contains a null task");
         }
-        ICEBERG_RETURN_UNEXPECTED(ReadTask(reader, sizer, *task));
+        ICEBERG_RETURN_UNEXPECTED(OpenTask(worker, *task));
+      } else {
+        ICEBERG_ASSIGN_OR_RAISE(auto claimed, ClaimGroup(worker));
+        if (!claimed) {
+          return {};  // Parked until the planning token is released.
+        }
+        worker.group = std::move(*claimed);
+        worker.task_index = 0;
+        if (worker.group == nullptr) {
+          return {};
+        }
       }
     }
+    return {};
   }
 
-  // Returns the next group, or nullptr when planning is exhausted or the read stopped.
-  // Only one worker calls the group stream at a time, outside all locks.
-  Result<std::shared_ptr<FileScanTaskGroup>> ClaimGroup() {
+  Result<std::optional<std::shared_ptr<FileScanTaskGroup>>> ClaimGroup(Worker& worker) {
     {
-      std::unique_lock lock(mutex_);
-      planning_cv_.wait(lock, [this] { return stopped_ || !planning_in_progress_; });
+      std::lock_guard lock(mutex_);
       if (stopped_ || planning_done_) {
-        return nullptr;
+        return std::shared_ptr<FileScanTaskGroup>{};
+      }
+      if (planning_in_progress_) {
+        worker.state = WorkerState::kWaitingPlanning;
+        return std::nullopt;
       }
       planning_in_progress_ = true;
     }
@@ -334,148 +478,128 @@ class ParallelScan {
     } catch (...) {
       next = UnknownError("Planning task groups failed with an unknown exception");
     }
-
-    const bool finished = !next.has_value() || !next.value().has_value();
+    const bool finished = !next.has_value() || !next->has_value();
     if (finished) {
-      // This worker still holds the planning token, so no other worker uses the
-      // stream. Destroy it now, outside locks, so metrics reporting runs at EOF.
       groups_.reset();
     }
-
     {
       std::lock_guard lock(mutex_);
       planning_in_progress_ = false;
-      if (finished) {
-        planning_done_ = true;
-      }
+      planning_done_ = finished;
+      WakeWorkers(WorkerState::kWaitingPlanning);
     }
-    planning_cv_.notify_all();
-
     if (!next.has_value()) {
       return unexpected(WithContext(next.error(), "Failed to plan task groups"));
     }
-    if (!next.value().has_value()) {
-      return nullptr;
+    if (!next->has_value()) {
+      return std::shared_ptr<FileScanTaskGroup>{};
     }
-    auto group = std::move(next.value().value());
-    if (group == nullptr) {
+    if (**next == nullptr) {
       return InvalidArgument("Task group stream returned a null group");
     }
-    if (metrics_ != nullptr) {
-      metrics_->Update([](auto& snapshot) { ++snapshot.groups_claimed; });
-    }
-    return group;
+    RecordMetrics([](auto& snapshot) { ++snapshot.groups_claimed; });
+    return next;
   }
 
-  Status ReadTask(FileScanTaskReader& reader, ArrowBatchSizer& sizer,
-                  const FileScanTask& task) {
-    const std::string context = DescribeTask(task);
-    auto opened = reader.Open(task);
+  static std::string LastError(ArrowArrayStream& stream) {
+    const char* message = stream.get_last_error(&stream);
+    return message == nullptr ? "unknown error" : message;
+  }
+
+  Status OpenTask(Worker& worker, const FileScanTask& task) {
+    worker.context = DescribeTask(task);
+    ICEBERG_ASSIGN_OR_RAISE(auto simplified, SimplifyTask(task));
+    auto opened = worker.reader->Open(*simplified);
     if (!opened.has_value()) {
-      return unexpected(WithContext(opened.error(), "Failed to open " + context));
+      return unexpected(WithContext(opened.error(), "Failed to open " + worker.context));
     }
-    ArrowArrayStream stream = std::move(opened.value());
-    StreamGuard stream_guard(&stream);
-    if (metrics_ != nullptr) {
-      metrics_->Update([](auto& snapshot) { ++snapshot.tasks_opened; });
+    worker.stream = *opened;
+    RecordMetrics([](auto& snapshot) { ++snapshot.tasks_opened; });
+    ArrowSchema schema{};
+    ArrowSchemaGuard guard(&schema);
+    if (int code = worker.stream.get_schema(&worker.stream, &schema); code != 0) {
+      return IOError("Failed to read the schema of {} (code {}): {}", worker.context,
+                     code, LastError(worker.stream));
     }
-
-    auto last_error = [&stream]() {
-      const char* message = stream.get_last_error(&stream);
-      return message == nullptr ? std::string("unknown error") : std::string(message);
-    };
-
-    ArrowSchema task_schema{};
-    if (int code = stream.get_schema(&stream, &task_schema); code != 0) {
-      return IOError("Failed to read the schema of {} (code {}): {}", context, code,
-                     last_error());
-    }
-    internal::ArrowSchemaGuard task_schema_guard(&task_schema);
-    if (auto status = CheckSameLayout(output_schema_, task_schema, "root", false);
+    if (auto status = CheckSameLayout(output_schema_, schema, "root", false);
         !status.has_value()) {
       return unexpected(WithContext(
-          status.error(),
-          "Task stream schema does not match the projected schema for " + context));
+          status.error(), "Task stream schema does not match the projected schema for " +
+                              worker.context));
     }
-
-    // Enqueue() reports a stop, so no separate check is needed per batch.
-    while (true) {
-      ArrowArray batch{};
-      if (int code = stream.get_next(&stream, &batch); code != 0) {
-        return IOError("Failed to read {} (code {}): {}", context, code, last_error());
-      }
-      if (batch.release == nullptr) {
-        return {};
-      }
-      auto charge = sizer.Measure(batch);
-      if (!charge.has_value()) {
-        ReleaseArray(&batch);
-        return unexpected(
-            WithContext(charge.error(), "Failed to size a batch of " + context));
-      }
-      if (!Enqueue(batch, charge.value())) {
-        // Stopped while waiting; the array was not admitted.
-        ReleaseArray(&batch);
-        return {};
-      }
-    }
+    return {};
   }
 
-  // Blocks until the batch is admitted in FIFO order or the read stops. Returns
-  // false when stopped, in which case the caller still owns `batch`.
-  bool Enqueue(const ArrowArray& batch, int64_t charge) {
-    const auto wait_start = std::chrono::steady_clock::now();
-    std::unique_lock lock(mutex_);
-    const uint64_t ticket = next_ticket_++;
-    held_bytes_ += charge;
-    RecordMetrics([this](auto& snapshot) {
-      snapshot.peak_held_bytes = std::max(snapshot.peak_held_bytes, held_bytes_);
-    });
+  // Fold each predicate using the table schema, retaining unbound predicates that
+  // still need evaluation. Their references are then bound to the read projection
+  // by FileScanTaskReader, with the correct projected field positions.
+  Result<std::shared_ptr<FileScanTask>> SimplifyTask(const FileScanTask& task) {
+    auto filter = task.residual_filter();
+    if (filter != nullptr) {
+      ResidualSimplifier simplifier(*table_schema_, case_sensitive_);
+      ICEBERG_ASSIGN_OR_RAISE(filter,
+                              Visit<std::shared_ptr<Expression>>(filter, simplifier));
+    }
+    return FileScanTask::MakeSplit(task.data_file(), task.start(), task.length(),
+                                   task.delete_files(), std::move(filter));
+  }
 
-    producer_cv_.wait(lock, [&] {
-      return stopped_ || (ticket == serving_ticket_ && CanAdmit(charge));
-    });
-    held_bytes_ -= charge;
-    const auto waited = std::chrono::steady_clock::now() - wait_start;
+  bool TryEnqueue(Worker& worker) {
+    std::unique_lock lock(mutex_);
     if (stopped_) {
-      RecordMetrics([&](auto& snapshot) { snapshot.producer_wait += waited; });
       return false;
     }
-
-    const bool oversized = charge > max_queued_bytes_;
-    queue_.push_back(QueuedBatch{.array = batch, .charge = charge});
-    queued_bytes_ += charge;
+    if (worker.ticket != serving_ticket_ || !CanAdmit(worker.charge)) {
+      worker.state = WorkerState::kWaitingAdmission;
+      return false;
+    }
+    queue_.push_back(QueuedBatch{.array = worker.pending, .charge = worker.charge});
+    worker.pending.release = nullptr;
+    held_bytes_ -= worker.charge;
+    queued_bytes_ += worker.charge;
     ++serving_ticket_;
+    RecordWait(worker);
     RecordMetrics([&](auto& snapshot) {
-      snapshot.producer_wait += waited;
       ++snapshot.batches_admitted;
-      snapshot.bytes_admitted += charge;
-      if (oversized) {
+      snapshot.bytes_admitted += worker.charge;
+      if (worker.charge > max_queued_bytes_) {
         ++snapshot.oversized_admissions;
       }
       snapshot.peak_queued_batches =
           std::max(snapshot.peak_queued_batches, static_cast<int64_t>(queue_.size()));
       snapshot.peak_queued_bytes = std::max(snapshot.peak_queued_bytes, queued_bytes_);
     });
+    WakeWorkers(WorkerState::kWaitingAdmission);
     lock.unlock();
-    producer_cv_.notify_all();
     consumer_cv_.notify_one();
     return true;
   }
 
-  // Requires `mutex_`.
   bool CanAdmit(int64_t charge) const {
     if (std::cmp_greater_equal(queue_.size(), max_queued_batches_)) {
       return false;
     }
     if (charge > max_queued_bytes_) {
-      // An oversized batch enters only as the sole queued batch.
       return queue_.empty();
     }
     return queued_bytes_ <= max_queued_bytes_ - charge;
   }
 
-  // Requires `mutex_`; the metrics lock is always taken after it.
+  void WakeWorkers(WorkerState state) {
+    for (auto& worker : workers_) {
+      if (worker->state == state &&
+          (state != WorkerState::kWaitingAdmission ||
+           (worker->ticket == serving_ticket_ && CanAdmit(worker->charge)))) {
+        worker->state = WorkerState::kReady;
+      }
+    }
+  }
+
+  void RecordWait(const Worker& worker) {
+    const auto waited = std::chrono::steady_clock::now() - worker.wait_start;
+    RecordMetrics([&](auto& snapshot) { snapshot.producer_wait += waited; });
+  }
+
   template <typename Update>
   void RecordMetrics(Update&& update) {
     if (metrics_ != nullptr) {
@@ -488,7 +612,6 @@ class ParallelScan {
     return stopped_;
   }
 
-  // Records the first error, stops new work, and releases queued batches.
   void Fail(const Error& error) {
     std::deque<QueuedBatch> drained;
     {
@@ -500,29 +623,29 @@ class ParallelScan {
       drained.swap(queue_);
       queued_bytes_ = 0;
     }
-    planning_cv_.notify_all();
-    producer_cv_.notify_all();
     consumer_cv_.notify_all();
     ReleaseAll(drained);
   }
 
-  // Only touched by the worker holding the planning token, or after all workers
-  // have joined.
   FileScanTaskGroupStreamPtr groups_;
   ArrowSchema output_schema_;
+  Executor& executor_;
+  std::shared_ptr<iceberg::Schema> table_schema_;
+  bool case_sensitive_;
   const int64_t max_queued_batches_;
   const int64_t max_queued_bytes_;
   std::shared_ptr<ParallelScanMetrics> metrics_;
-  std::vector<std::thread> workers_;
+  std::vector<std::unique_ptr<Worker>> workers_;
 
   std::mutex mutex_;
-  std::condition_variable planning_cv_;
-  std::condition_variable producer_cv_;
   std::condition_variable consumer_cv_;
+  std::condition_variable idle_cv_;
   bool stopped_ = false;
+  bool dispatching_ = false;
   bool planning_in_progress_ = false;
   bool planning_done_ = false;
   int32_t active_workers_ = 0;
+  int32_t running_workers_ = 0;
   std::optional<Error> error_;
   std::deque<QueuedBatch> queue_;
   int64_t queued_bytes_ = 0;
@@ -534,7 +657,7 @@ class ParallelScan {
 // Adapts ParallelScan to the ArrowArrayStream provider interface.
 class ParallelScanSource {
  public:
-  explicit ParallelScanSource(std::unique_ptr<ParallelScan> scan)
+  explicit ParallelScanSource(std::shared_ptr<ParallelScan> scan)
       : scan_(std::move(scan)) {}
 
   Status Close() {
@@ -547,7 +670,7 @@ class ParallelScanSource {
   Result<ArrowSchema> Schema() { return scan_->Schema(); }
 
  private:
-  std::unique_ptr<ParallelScan> scan_;
+  std::shared_ptr<ParallelScan> scan_;
 };
 
 }  // namespace
@@ -566,18 +689,25 @@ Result<ArrowArrayStream> OpenParallelScan(FileScanTaskGroupStreamPtr groups,
   ICEBERG_PRECHECK(options.reader_options.projected_schema != nullptr,
                    "Projected schema must not be null");
 
+  ICEBERG_PRECHECK(options.executor != nullptr, "Executor must not be null");
+
   options.reader_options.apply_residuals = true;
   const auto properties = ReaderProperties::FromMap(options.reader_options.properties);
 
   ArrowSchema output_schema{};
+  ArrowSchemaGuard schema_guard(&output_schema);
   ICEBERG_RETURN_UNEXPECTED(
       ToArrowSchema(*options.reader_options.projected_schema, &output_schema,
                     properties.Get(ReaderProperties::kArrowUseLargeList)));
 
-  auto scan = std::make_unique<ParallelScan>(
-      std::move(groups), output_schema, options.max_queued_batches,
-      options.max_queued_bytes, std::move(metrics));
-  ICEBERG_RETURN_UNEXPECTED(scan->Start(options.reader_options, options.worker_count));
+  auto scan = std::make_shared<ParallelScan>(std::move(groups), output_schema, options,
+                                             std::move(metrics));
+  schema_guard.Release();
+  if (auto status = scan->Start(options.reader_options, options.worker_count);
+      !status.has_value()) {
+    scan->Shutdown();
+    return unexpected(status.error());
+  }
   return MakeArrowArrayStream(std::make_unique<ParallelScanSource>(std::move(scan)));
 }
 

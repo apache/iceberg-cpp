@@ -266,7 +266,7 @@ set(ICEBERG_DATA_SHARED_BUILD_INTERFACE_LIBS)
 set(ICEBERG_DATA_STATIC_INSTALL_INTERFACE_LIBS)
 set(ICEBERG_DATA_SHARED_INSTALL_INTERFACE_LIBS)
 
-# The parallel scan reader starts worker threads.
+# Parallel scans synchronize callbacks dispatched by the caller's executor.
 list(APPEND ICEBERG_DATA_STATIC_BUILD_INTERFACE_LIBS
      "$<IF:$<TARGET_EXISTS:iceberg_static>,iceberg_static,iceberg_shared>"
      Threads::Threads)

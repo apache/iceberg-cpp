@@ -24,6 +24,7 @@
 #include <cerrno>
 #include <chrono>
 #include <functional>
+#include <future>
 #include <map>
 #include <memory>
 #include <mutex>
@@ -50,6 +51,7 @@
 #include "iceberg/schema_field.h"
 #include "iceberg/schema_internal.h"
 #include "iceberg/table_scan.h"
+#include "iceberg/test/executor.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/test/mock_io.h"
 #include "iceberg/type.h"
@@ -105,6 +107,9 @@ struct FakeFile {
   int throw_at = -1;
   // Report `id` as int64 to provoke a schema mismatch.
   bool wrong_schema = false;
+  bool invalid_batch = false;
+  std::function<void()> on_schema;
+  std::function<void()> on_next;
 };
 
 class FakeFiles {
@@ -153,6 +158,9 @@ class FakeReader : public Reader {
   Status Close() override { return {}; }
 
   Result<std::optional<ArrowArray>> Next() override {
+    if (file_.on_next) {
+      file_.on_next();
+    }
     const int index = next_batch_++;
     if (index == file_.fail_at) {
       return IOError("injected read failure");
@@ -164,10 +172,16 @@ class FakeReader : public Reader {
       return std::nullopt;
     }
     ICEBERG_ASSIGN_OR_RAISE(auto array, BuildBatch(file_.batches[index]));
+    if (file_.invalid_batch) {
+      array.children[0]->length = -1;
+    }
     return Track(array);
   }
 
   Result<ArrowSchema> Schema() override {
+    if (file_.on_schema) {
+      file_.on_schema();
+    }
     ArrowSchema schema{};
     if (!file_.wrong_schema) {
       ICEBERG_RETURN_UNEXPECTED(ToArrowSchema(*projection_, &schema));
@@ -279,10 +293,14 @@ class FakeGroupStream : public FileScanTaskGroupStream {
   // Index of the Next() call that throws, or -1.
   int throw_at = -1;
   std::function<void()> on_destroy;
+  std::function<void(int)> on_next;
 
  protected:
   Result<std::optional<std::shared_ptr<FileScanTaskGroup>>> NextImpl() override {
     const int index = calls_++;
+    if (on_next) {
+      on_next(index);
+    }
     if (index == fail_at) {
       return IOError("injected planning failure");
     }
@@ -445,6 +463,7 @@ class ParallelScanReaderTest : public ::testing::Test {
     options.reader_options.io = std::make_shared<MockFileIO>();
     options.reader_options.table_schema = table_schema_;
     options.reader_options.projected_schema = table_schema_;
+    options.executor = &executor_;
     options.worker_count = workers;
     options.max_queued_batches = max_batches;
     options.max_queued_bytes = max_bytes;
@@ -478,6 +497,7 @@ class ParallelScanReaderTest : public ::testing::Test {
     return groups;
   }
 
+  mutable test::ThreadPoolExecutor executor_{4};
   ScopedFakeReaders fake_readers_;
   std::shared_ptr<Schema> table_schema_;
 };
@@ -500,6 +520,175 @@ TEST_F(ParallelScanReaderTest, RejectsInvalidOptions) {
   options.reader_options.io = nullptr;
   EXPECT_THAT(ParallelScanReader::Open(make_groups(), options),
               IsError(ErrorKind::kInvalidArgument));
+}
+
+TEST_F(ParallelScanReaderTest, RejectsMissingExecutor) {
+  auto options = MakeOptions(1, 1, 1024);
+  options.executor = nullptr;
+  EXPECT_THAT(Open({}, options), IsError(ErrorKind::kInvalidArgument));
+}
+
+TEST_F(ParallelScanReaderTest, ExecutorSubmissionFailure) {
+  test::MockExecutor executor;
+  EXPECT_CALL(executor, Submit).WillOnce([](ExecutorTask) {
+    return IOError("injected submission failure");
+  });
+  auto options = MakeOptions(1, 1, 1024);
+  options.executor = &executor;
+  EXPECT_THAT(Open({}, options), IsError(ErrorKind::kIOError));
+}
+
+TEST_F(ParallelScanReaderTest, ExecutorSubmissionException) {
+  test::MockExecutor executor;
+  EXPECT_CALL(executor, Submit).WillOnce([](ExecutorTask) -> Status {
+    throw std::runtime_error("injected submission exception");
+  });
+  auto options = MakeOptions(1, 1, 1024);
+  options.executor = &executor;
+  EXPECT_THAT(Open({}, options), IsError(ErrorKind::kUnknownError));
+}
+
+TEST_F(ParallelScanReaderTest, ContinuationSubmissionFailureIsSticky) {
+  test::MockExecutor executor;
+  EXPECT_CALL(executor, Submit)
+      .WillOnce([](ExecutorTask task) -> Status {
+        std::move(task)();
+        return {};
+      })
+      .WillOnce([](ExecutorTask) { return IOError("continuation rejected"); });
+  auto options = MakeOptions(1, 1, 1 << 20);
+  options.executor = &executor;
+  ICEBERG_UNWRAP_OR_FAIL(auto owned, Open(ManyFiles(1, 5), options));
+  auto result = ReadAll(owned.stream);
+  EXPECT_EQ(result.error_code, EIO);
+  EXPECT_THAT(result.error_message, HasSubstr("continuation rejected"));
+  owned.Release();
+  EXPECT_EQ(g_live_arrays.load(), 0);
+}
+
+TEST_F(ParallelScanReaderTest, BackpressureYieldsSharedExecutorThreads) {
+  test::ThreadPoolExecutor executor(1);
+  auto options = MakeOptions(8, 1, 1 << 20);
+  options.executor = &executor;
+  auto metrics = std::make_shared<ParallelScanMetrics>();
+  ICEBERG_UNWRAP_OR_FAIL(auto owned, Open(ManyFiles(20, 3), options, metrics));
+  ASSERT_TRUE(WaitFor([&] {
+    return metrics->Snapshot().batches_admitted == 1 &&
+           metrics->Snapshot().peak_held_bytes > 0;
+  }));
+  std::promise<void> ran;
+  auto done = ran.get_future();
+  ASSERT_THAT(executor.Submit(ExecutorTask([&] { ran.set_value(); })), IsOk());
+  EXPECT_EQ(done.wait_for(std::chrono::seconds(5)), std::future_status::ready);
+  auto result = ReadAll(owned.stream);
+  EXPECT_EQ(result.error_code, 0) << result.error_message;
+  EXPECT_THAT(result.AllIds(), UnorderedElementsAreArray(Range(0, 240)));
+}
+
+TEST_F(ParallelScanReaderTest, BackpressureAllowsPlanningOnSharedExecutor) {
+  test::ThreadPoolExecutor executor(2);
+  auto options = MakeOptions(8, 1, 1 << 20);
+  options.executor = &executor;
+  auto metrics = std::make_shared<ParallelScanMetrics>();
+  auto groups = std::make_unique<FakeGroupStream>(ManyFiles(4, 3));
+  std::promise<void> planned;
+  auto done = planned.get_future().share();
+  groups->on_next = [&](int index) {
+    if (index != 1) {
+      return;
+    }
+    if (!WaitFor([&] {
+          return metrics->Snapshot().batches_admitted == 1 &&
+                 metrics->Snapshot().peak_held_bytes > 0;
+        })) {
+      throw std::runtime_error("queue did not fill");
+    }
+    auto submitted = executor.Submit(ExecutorTask([&] { planned.set_value(); }));
+    if (!submitted.has_value()) {
+      throw std::runtime_error(submitted.error().message);
+    }
+    if (done.wait_for(std::chrono::seconds(5)) != std::future_status::ready) {
+      throw std::runtime_error("planning task was starved by backpressure");
+    }
+  };
+  ICEBERG_UNWRAP_OR_FAIL(auto stream,
+                         OpenParallelScan(std::move(groups), options, metrics));
+  OwnedStream owned(stream);
+  EXPECT_EQ(done.wait_for(std::chrono::seconds(10)), std::future_status::ready);
+  auto result = ReadAll(owned.stream);
+  EXPECT_EQ(result.error_code, 0) << result.error_message;
+  EXPECT_THAT(result.AllIds(), UnorderedElementsAreArray(Range(0, 48)));
+}
+
+TEST_F(ParallelScanReaderTest, ReleaseCancelsQueuedExecutorCallbacks) {
+  test::MockExecutor executor;
+  std::vector<ExecutorTask> tasks;
+  EXPECT_CALL(executor, Submit).WillRepeatedly([&](ExecutorTask task) -> Status {
+    tasks.push_back(std::move(task));
+    return {};
+  });
+  auto options = MakeOptions(4, 1, 1 << 20);
+  options.executor = &executor;
+  ICEBERG_UNWRAP_OR_FAIL(auto owned, Open(ManyFiles(4, 3), options));
+  ASSERT_EQ(tasks.size(), 4);
+  owned.Release();
+  for (auto& task : tasks) {
+    std::move(task)();
+  }
+  EXPECT_EQ(g_live_arrays.load(), 0);
+}
+
+TEST_F(ParallelScanReaderTest, InlineExecutorDoesNotRecurseAcrossBatches) {
+  test::InlineExecutor executor;
+  auto options = MakeOptions(8, 1, 1 << 20);
+  options.executor = &executor;
+  ICEBERG_UNWRAP_OR_FAIL(auto owned, Open(ManyFiles(100, 10), options));
+  auto result = ReadAll(owned.stream);
+  EXPECT_EQ(result.error_code, 0) << result.error_message;
+  EXPECT_EQ(result.batches.size(), 1000U);
+}
+
+TEST_F(ParallelScanReaderTest, StopAfterSchemaSkipsGetNext) {
+  std::promise<void> schema_entered;
+  auto entered = schema_entered.get_future();
+  std::promise<void> schema_allowed;
+  auto allowed = schema_allowed.get_future().share();
+  std::atomic<int> next_calls{0};
+  FakeFile first;
+  first.batches = {{1}};
+  FakeFile blocked;
+  blocked.batches = {{2}};
+  blocked.on_schema = [&] {
+    schema_entered.set_value();
+    allowed.wait();
+  };
+  blocked.on_next = [&] { ++next_calls; };
+  auto group = Group({AddFile("first", first), AddFile("blocked-schema", blocked)});
+  ICEBERG_UNWRAP_OR_FAIL(auto owned, Open({group}, MakeOptions(1, 1, 1 << 20)));
+  const auto entered_status = entered.wait_for(std::chrono::seconds(5));
+  if (entered_status != std::future_status::ready) {
+    schema_allowed.set_value();
+  }
+  ASSERT_EQ(entered_status, std::future_status::ready);
+  auto release = std::async(std::launch::async, [&] { owned.Release(); });
+  const bool drained = WaitFor([] { return g_live_arrays.load() == 0; });
+  schema_allowed.set_value();
+  release.get();
+  EXPECT_TRUE(drained);
+  EXPECT_EQ(next_calls.load(), 0);
+}
+
+TEST_F(ParallelScanReaderTest, SizingErrorReleasesBatch) {
+  FakeFile file;
+  file.batches = {{1}};
+  file.invalid_batch = true;
+  ICEBERG_UNWRAP_OR_FAIL(auto owned, Open({Group({AddFile("invalid-batch", file)})},
+                                          MakeOptions(1, 1, 1 << 20)));
+  auto result = ReadAll(owned.stream);
+  EXPECT_EQ(result.error_code, EIO);
+  EXPECT_THAT(result.error_message, HasSubstr("Failed to size a batch"));
+  owned.Release();
+  EXPECT_EQ(g_live_arrays.load(), 0);
 }
 
 TEST_F(ParallelScanReaderTest, ZeroGroupsEndsImmediately) {
@@ -616,6 +805,43 @@ TEST_F(ParallelScanReaderTest, EnforcesResiduals) {
   auto result = ReadAll(owned.stream);
   EXPECT_EQ(result.error_code, 0) << result.error_message;
   EXPECT_THAT(result.AllIds(), ElementsAreArray(Range(5, 10)));
+}
+
+TEST_F(ParallelScanReaderTest, SimplifiesResidualBeforeProjectedBinding) {
+  for (bool combined : {false, true}) {
+    SCOPED_TRACE(combined);
+    FakeFile file;
+    file.batches = {{1, 2, 3}};
+    std::shared_ptr<Expression> filter = Expressions::NotNull("id");
+    if (combined) {
+      filter = Expressions::And(filter, Expressions::Equal("name", Literal::String("x")));
+    }
+    auto options = MakeOptions(2, 1, 1 << 20);
+    options.reader_options.projected_schema =
+        std::make_shared<Schema>(std::vector<SchemaField>{table_schema_->fields()[1]});
+    ICEBERG_UNWRAP_OR_FAIL(
+        auto owned,
+        Open({Group({AddFile("projected", file, FileFormatType::kParquet, filter)})},
+             options));
+    ArrowSchema schema{};
+    ASSERT_EQ(owned.stream.get_schema(&owned.stream, &schema), 0);
+    EXPECT_EQ(schema.n_children, 1);
+    EXPECT_STREQ(schema.children[0]->name, "name");
+    schema.release(&schema);
+    int64_t rows = 0;
+    while (true) {
+      ArrowArray batch{};
+      const int code = owned.stream.get_next(&owned.stream, &batch);
+      ASSERT_EQ(code, 0) << owned.stream.get_last_error(&owned.stream);
+      if (batch.release == nullptr) {
+        break;
+      }
+      EXPECT_EQ(batch.n_children, 1);
+      rows += batch.length;
+      batch.release(&batch);
+    }
+    EXPECT_EQ(rows, 3);
+  }
 }
 
 TEST_F(ParallelScanReaderTest, SchemaMismatchFailsWithContext) {

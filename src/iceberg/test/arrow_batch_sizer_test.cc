@@ -315,6 +315,19 @@ TEST(ArrowBatchSizerTest, RejectsBinaryViewWithoutSizeBuffer) {
   batch.array.n_buffers = buffers;
 }
 
+TEST(ArrowBatchSizerTest, RejectsVariadicBufferCountOverflow) {
+  OwnedBatch batch;
+  ASSERT_EQ(ArrowSchemaInitFromType(&batch.schema, NANOARROW_TYPE_STRING_VIEW),
+            NANOARROW_OK);
+  const void* buffers[] = {nullptr};
+  batch.array.release = ReleaseNothing;
+  batch.array.n_buffers = static_cast<int64_t>(std::numeric_limits<int32_t>::max()) + 1;
+  batch.array.buffers = buffers;
+  auto result = Measure(batch);
+  EXPECT_THAT(result, IsError(ErrorKind::kInvalidArrowData));
+  EXPECT_THAT(result, HasErrorMessage("too many variadic buffers"));
+}
+
 TEST(ArrowBatchSizerTest, ChildrenNeedNoReleaseCallback) {
   OwnedBatch batch;
   ASSERT_EQ(ArrowSchemaInitFromType(&batch.schema, NANOARROW_TYPE_STRUCT), NANOARROW_OK);

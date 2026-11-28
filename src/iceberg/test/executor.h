@@ -21,7 +21,10 @@
 
 #include <atomic>
 #include <chrono>
+#include <condition_variable>
+#include <deque>
 #include <future>
+#include <mutex>
 #include <thread>
 #include <utility>
 #include <vector>
@@ -82,6 +85,60 @@ class ThreadExecutor final : public Executor {
   Status submit_status_;
   std::atomic<int> submit_count_{0};
   std::vector<std::thread> threads_;
+};
+
+/// A fixed thread pool that permits concurrent submissions from several scans.
+class ThreadPoolExecutor final : public Executor {
+ public:
+  explicit ThreadPoolExecutor(int worker_count) {
+    for (int index = 0; index < worker_count; ++index) {
+      workers_.emplace_back([this] {
+        while (true) {
+          std::optional<ExecutorTask> task;
+          {
+            std::unique_lock lock(mutex_);
+            ready_.wait(lock, [this] { return stopped_ || !tasks_.empty(); });
+            if (tasks_.empty()) {
+              return;
+            }
+            task.emplace(std::move(tasks_.front()));
+            tasks_.pop_front();
+          }
+          std::move (*task)();
+        }
+      });
+    }
+  }
+
+  ~ThreadPoolExecutor() override {
+    {
+      std::lock_guard lock(mutex_);
+      stopped_ = true;
+    }
+    ready_.notify_all();
+    for (auto& worker : workers_) {
+      worker.join();
+    }
+  }
+
+  Status Submit(ExecutorTask task) override {
+    {
+      std::lock_guard lock(mutex_);
+      if (stopped_) {
+        return InvalidArgument("Executor is stopped");
+      }
+      tasks_.push_back(std::move(task));
+    }
+    ready_.notify_one();
+    return {};
+  }
+
+ private:
+  std::mutex mutex_;
+  std::condition_variable ready_;
+  std::deque<ExecutorTask> tasks_;
+  bool stopped_ = false;
+  std::vector<std::thread> workers_;
 };
 
 /// Waits until the process-wide ScheduledExecutor timer has dispatched every task due

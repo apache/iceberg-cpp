@@ -192,7 +192,10 @@ Status Preflight(const ArrowArrayView& view, const ArrowArray& array, ArrayPath&
                               array.n_buffers, kBinaryViewFixedBuffers + 1);
     }
     const int64_t variadic_buffers = array.n_buffers - kBinaryViewFixedBuffers - 1;
-    if (variadic_buffers > std::numeric_limits<int32_t>::max()) {
+    // Nanoarrow's buffer accessors add the fixed buffers and size buffer using
+    // int32_t arithmetic before returning the total buffer count as int64_t.
+    if (variadic_buffers >
+        std::numeric_limits<int32_t>::max() - kBinaryViewFixedBuffers - 1) {
       return InvalidArrowData("Arrow array at {} has too many variadic buffers: {}",
                               path.ToString(), variadic_buffers);
     }
@@ -264,7 +267,7 @@ Status Preflight(const ArrowArrayView& view, const ArrowArray& array, ArrayPath&
 }
 
 // Sums the spans of the buffers that nanoarrow sized for `view`.
-Result<int64_t> SumBufferSpans(const ArrowArrayView& view, ArrayPath& path) {
+Result<int64_t> SumBufferSpans(ArrowArrayView& view, ArrayPath& path) {
   int64_t total = 0;
   auto add = [&](int64_t bytes, std::string_view what) -> Status {
     if (bytes < 0) {
@@ -279,19 +282,10 @@ Result<int64_t> SumBufferSpans(const ArrowArrayView& view, ArrayPath& path) {
     return {};
   };
 
-  const int fixed_buffers = FixedBufferCount(view);
-  for (int index = 0; index < fixed_buffers; ++index) {
-    ICEBERG_RETURN_UNEXPECTED(add(view.buffer_views[index].size_bytes, "buffer"));
-  }
-
-  if (IsBinaryView(view.storage_type)) {
-    for (int32_t index = 0; index < view.n_variadic_buffers; ++index) {
-      ICEBERG_RETURN_UNEXPECTED(
-          add(view.variadic_buffer_sizes[index], "variadic buffer"));
-    }
+  const int64_t buffer_count = ArrowArrayViewGetNumBuffers(&view);
+  for (int64_t index = 0; index < buffer_count; ++index) {
     ICEBERG_RETURN_UNEXPECTED(
-        add(static_cast<int64_t>(view.n_variadic_buffers) * kVariadicSizeBytes,
-            "variadic size buffer"));
+        add(ArrowArrayViewGetBufferView(&view, index).size_bytes, "buffer"));
   }
 
   for (int64_t index = 0; index < view.n_children; ++index) {

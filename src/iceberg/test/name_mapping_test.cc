@@ -19,8 +19,10 @@
 
 #include "iceberg/name_mapping.h"
 
+#include <barrier>
 #include <memory>
 #include <string>
+#include <thread>
 #include <unordered_set>
 #include <vector>
 
@@ -46,6 +48,62 @@ class NameMappingTest : public ::testing::Test {
     return NameMapping::Make(std::move(fields));
   }
 };
+
+TEST_F(NameMappingTest, ConcurrentFirstLookups) {
+  auto mapping = MakeNameMapping();
+  auto empty = NameMapping::MakeEmpty();
+  std::barrier start(8);
+  std::vector<std::thread> readers;
+  for (int index = 0; index < 8; ++index) {
+    readers.emplace_back([&] {
+      start.arrive_and_wait();
+      for (int repeat = 0; repeat < 100; ++repeat) {
+        EXPECT_TRUE(mapping->Find(4).has_value());
+        EXPECT_TRUE(mapping->Find("qux.hello").has_value());
+        EXPECT_EQ(mapping->AsMappedFields().Id("foo"), 1);
+        EXPECT_TRUE(mapping->AsMappedFields().Field(3).has_value());
+        const auto& nested = *mapping->AsMappedFields().Field(3)->get().nested_mapping;
+        EXPECT_EQ(nested.Id("hello"), 4);
+        EXPECT_TRUE(nested.Field(4).has_value());
+        EXPECT_FALSE(empty->Find(4).has_value());
+        EXPECT_FALSE(empty->Find("missing").has_value());
+        EXPECT_FALSE(empty->AsMappedFields().Id("missing").has_value());
+        EXPECT_FALSE(empty->AsMappedFields().Field(4).has_value());
+      }
+    });
+  }
+  for (auto& reader : readers) {
+    reader.join();
+  }
+}
+
+TEST_F(NameMappingTest, MappedFieldsCopyOwnsItsIndexes) {
+  auto mapping = MakeNameMapping();
+  auto copy = mapping->AsMappedFields();
+  auto assigned = MappedFields::Make({});
+  *assigned = mapping->AsMappedFields();
+  mapping.reset();
+  EXPECT_EQ(copy.Id("foo"), 1);
+  ASSERT_TRUE(copy.Field(1).has_value());
+  EXPECT_EQ(&copy.Field(1)->get(), &copy.fields()[0]);
+  EXPECT_EQ(assigned->Id("foo"), 1);
+  ASSERT_TRUE(assigned->Field(1).has_value());
+  EXPECT_EQ(&assigned->Field(1)->get(), &assigned->fields()[0]);
+}
+
+TEST_F(NameMappingTest, MappedFieldsMovePreservesIndexes) {
+  auto source = MappedFields::Make({MappedField{.names = {"foo"}, .field_id = 1}});
+  auto moved = std::move(*source);
+  source.reset();
+  EXPECT_EQ(moved.Id("foo"), 1);
+  ASSERT_TRUE(moved.Field(1).has_value());
+  EXPECT_EQ(&moved.Field(1)->get(), &moved.fields()[0]);
+  auto assigned = MappedFields::Make({});
+  *assigned = std::move(moved);
+  EXPECT_EQ(assigned->Id("foo"), 1);
+  ASSERT_TRUE(assigned->Field(1).has_value());
+  EXPECT_EQ(&assigned->Field(1)->get(), &assigned->fields()[0]);
+}
 
 TEST_F(NameMappingTest, FindById) {
   auto mapping = MakeNameMapping();
