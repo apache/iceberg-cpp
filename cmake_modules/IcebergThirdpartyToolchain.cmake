@@ -714,8 +714,6 @@ function(resolve_spdlog_dependency)
     list(APPEND ICEBERG_SYSTEM_DEPENDENCIES spdlog)
   endif()
 
-  list(APPEND ICEBERG_SYSTEM_DEPENDENCIES Threads)
-
   set(ICEBERG_SYSTEM_DEPENDENCIES
       ${ICEBERG_SYSTEM_DEPENDENCIES}
       PARENT_SCOPE)
@@ -970,6 +968,11 @@ resolve_nanoarrow_dependency()
 resolve_croaring_dependency()
 resolve_utf8proc_dependency()
 resolve_nlohmann_json_dependency()
+
+# Scan scheduling needs threading primitives even when spdlog is disabled.
+find_package(Threads REQUIRED)
+list(APPEND ICEBERG_SYSTEM_DEPENDENCIES Threads)
+
 if(ICEBERG_SPDLOG)
   resolve_spdlog_dependency()
 endif()
