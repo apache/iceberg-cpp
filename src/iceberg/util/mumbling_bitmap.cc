@@ -61,6 +61,7 @@ bool ContainsByte(const uint8_t* container, uint8_t length, uint8_t value) {
   return false;
 }
 
+#if !ICEBERG_MUMBLING_SSE2
 // Portable SWAR (SIMD within a register) version of ContainsByte: compares 8
 // bytes per 64-bit word. Reads 32 bytes at `container`, so the caller must
 // make sure they are inside the buffer.
@@ -82,7 +83,7 @@ bool ContainsByte32(const uint8_t* container, uint8_t length, uint8_t value) {
   return found != 0;
 }
 
-#if ICEBERG_MUMBLING_SSE2
+#else
 // SSE2 version of ContainsByte32. Reads 32 bytes at `container`, so the caller
 // must make sure they are inside the buffer.
 bool ContainsByte32Sse2(const uint8_t* container, uint8_t length, uint8_t value) {
