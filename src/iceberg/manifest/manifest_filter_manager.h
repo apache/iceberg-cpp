@@ -26,6 +26,7 @@
 #include <cstdint>
 #include <functional>
 #include <memory>
+#include <optional>
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
@@ -207,15 +208,12 @@ class ICEBERG_EXPORT ManifestFilterManager {
                                            const std::shared_ptr<Schema>& schema,
                                            const PartitionSpecsById& specs_by_id);
 
-  /// \brief Returns true if the manifest might contain files in a dropped partition.
-  ///
-  /// Checks whether the manifest's partition_spec_id matches any spec_id registered
-  /// via DropPartition().  Manifests from a different spec cannot contain the dropped
-  /// partition values.
-  Result<bool> CanContainDroppedPartitions(const ManifestFile& manifest) const;
-
-  /// \brief Returns true if the manifest might contain path-deleted files.
-  Result<bool> CanContainDroppedFiles(const ManifestFile& manifest) const;
+  /// \brief Prune dropped partitions and registered file objects using spec-typed bounds.
+  Result<bool> CanContainDroppedPartitions(const ManifestFile& manifest,
+                                           const Schema& schema,
+                                           const PartitionSpecsById& specs_by_id) const;
+  Result<bool> CanContainDroppedFiles(const ManifestFile& manifest, const Schema& schema,
+                                      const PartitionSpecsById& specs_by_id) const;
 
   /// \brief Returns true if the manifest possibly contains any deleted file.
   Result<bool> CanContainDeletedFiles(const ManifestFile& manifest,
@@ -290,7 +288,12 @@ class ICEBERG_EXPORT ManifestFilterManager {
   DataFileSet deleted_data_file_set_;
   // Delete-file identity set for latest-pass dedup and required-delete validation.
   DeleteFileSet deleted_delete_file_set_;
+  // A registered file without a spec ID can belong to any manifest.
+  std::optional<PartitionSet> delete_file_partitions_{std::in_place};
   PartitionSet drop_partitions_;
+  std::unordered_set<std::string> manifests_with_deletes_;
+  bool all_deletes_reference_manifests_ = true;
+  bool trusted_manifest_references_ = false;
   bool fail_missing_delete_paths_{false};
   bool fail_any_delete_{false};
   bool case_sensitive_{true};

@@ -240,6 +240,7 @@ TEST_P(TestManifestReader, TestManifestReaderWithEmptyInheritableMetadata) {
   const auto& read_entry = read_entries[0];
   EXPECT_EQ(read_entry.status, ManifestStatus::kExisting);
   EXPECT_EQ(read_entry.data_file->file_path, "/path/to/data-a.parquet");
+  EXPECT_EQ(read_entry.data_file->manifest_location, manifest.manifest_path);
   EXPECT_EQ(read_entry.snapshot_id, 1000L);
 }
 
@@ -560,6 +561,7 @@ TEST_P(TestManifestReader, TestDeleteFilesWithReferences) {
   ASSERT_EQ(read_entries.size(), 2);
 
   for (const auto& entry : read_entries) {
+    EXPECT_EQ(entry.data_file->manifest_location, manifest.manifest_path);
     if (entry.data_file->file_path == "/path/to/data-a-deletes.parquet") {
       EXPECT_EQ(entry.data_file->referenced_data_file, "/path/to/data-a.parquet");
     } else {

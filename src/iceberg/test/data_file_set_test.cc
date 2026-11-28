@@ -63,6 +63,16 @@ TEST_F(DataFileSetTest, EmptySet) {
   EXPECT_TRUE(set.as_span().empty());
 }
 
+TEST_F(DataFileSetTest, ManifestLocationIsNotPartOfFileEquality) {
+  auto file = CreateDataFile("/data.parquet");
+  auto copy = std::make_shared<DataFile>(*file);
+  file->manifest_location = "/original.avro";
+  copy->manifest_location = "/compacted.avro";
+  EXPECT_EQ(*file, *copy);
+  copy->record_count += 1;
+  EXPECT_NE(*file, *copy);
+}
+
 TEST_F(DataFileSetTest, InsertSingleFile) {
   DataFileSet set;
   auto file = CreateDataFile("/path/to/file.parquet");
