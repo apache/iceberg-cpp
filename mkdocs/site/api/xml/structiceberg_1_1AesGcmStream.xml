@@ -1,0 +1,168 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1AesGcmStream" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::AesGcmStream</compoundname>
+    <includes refid="aes__gcm__stream_8h" local="no">aes_gcm_stream.h</includes>
+    <sectiondef kind="public-static-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1AesGcmStream_1ace8224a0a843da177ac2003f6bad1ea3" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr int32_t</type>
+        <definition>constexpr int32_t iceberg::AesGcmStream::kPlainBlockSize</definition>
+        <argsstring></argsstring>
+        <name>kPlainBlockSize</name>
+        <qualifiedname>iceberg::AesGcmStream::kPlainBlockSize</qualifiedname>
+        <initializer>= 1024 * 1024</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/encryption/aes_gcm_stream.h" line="46" column="28" bodyfile="iceberg/encryption/aes_gcm_stream.h" bodystart="46" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1AesGcmStream_1acd80ab69588a40c293e55c3955ce3af2" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr int32_t</type>
+        <definition>constexpr int32_t iceberg::AesGcmStream::kNonceLength</definition>
+        <argsstring></argsstring>
+        <name>kNonceLength</name>
+        <qualifiedname>iceberg::AesGcmStream::kNonceLength</qualifiedname>
+        <initializer>= 12</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/encryption/aes_gcm_stream.h" line="47" column="28" bodyfile="iceberg/encryption/aes_gcm_stream.h" bodystart="47" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1AesGcmStream_1a23bc13b082fcff3ba3eff6d2d71241d9" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr int32_t</type>
+        <definition>constexpr int32_t iceberg::AesGcmStream::kGcmTagLength</definition>
+        <argsstring></argsstring>
+        <name>kGcmTagLength</name>
+        <qualifiedname>iceberg::AesGcmStream::kGcmTagLength</qualifiedname>
+        <initializer>= 16</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/encryption/aes_gcm_stream.h" line="48" column="28" bodyfile="iceberg/encryption/aes_gcm_stream.h" bodystart="48" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1AesGcmStream_1a3975df320d3f72651101e3f9e057d765" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr int32_t</type>
+        <definition>constexpr int32_t iceberg::AesGcmStream::kCipherBlockSize</definition>
+        <argsstring></argsstring>
+        <name>kCipherBlockSize</name>
+        <qualifiedname>iceberg::AesGcmStream::kCipherBlockSize</qualifiedname>
+        <initializer>=
+      kPlainBlockSize + kNonceLength + kGcmTagLength</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/encryption/aes_gcm_stream.h" line="49" column="28" bodyfile="iceberg/encryption/aes_gcm_stream.h" bodystart="49" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1AesGcmStream_1a3a21d22f588d05025e98f91d213087ce" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr std::array&lt; char, 4 &gt;</type>
+        <definition>constexpr std::array&lt;char, 4&gt; iceberg::AesGcmStream::kMagic</definition>
+        <argsstring></argsstring>
+        <name>kMagic</name>
+        <qualifiedname>iceberg::AesGcmStream::kMagic</qualifiedname>
+        <initializer>= {&apos;A&apos;, &apos;G&apos;, &apos;S&apos;, &apos;1&apos;}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/encryption/aes_gcm_stream.h" line="51" column="31" bodyfile="iceberg/encryption/aes_gcm_stream.h" bodystart="51" bodyend="51"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1AesGcmStream_1a163dc154c6b566d4cf545b62e04e19af" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr int32_t</type>
+        <definition>constexpr int32_t iceberg::AesGcmStream::kHeaderLength</definition>
+        <argsstring></argsstring>
+        <name>kHeaderLength</name>
+        <qualifiedname>iceberg::AesGcmStream::kHeaderLength</qualifiedname>
+        <initializer>= 8</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/encryption/aes_gcm_stream.h" line="52" column="28" bodyfile="iceberg/encryption/aes_gcm_stream.h" bodystart="52" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1AesGcmStream_1ae4f9a7158e5df43f0d19e4cf079b4a19" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr int64_t</type>
+        <definition>constexpr int64_t iceberg::AesGcmStream::kMinStreamLength</definition>
+        <argsstring></argsstring>
+        <name>kMinStreamLength</name>
+        <qualifiedname>iceberg::AesGcmStream::kMinStreamLength</qualifiedname>
+        <initializer>=
+      kHeaderLength + kNonceLength + kGcmTagLength</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/encryption/aes_gcm_stream.h" line="53" column="28" bodyfile="iceberg/encryption/aes_gcm_stream.h" bodystart="53" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="structiceberg_1_1AesGcmStream_1a40e3446dc72da76c1b5a9951c7248fe9" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>ICEBERG_BUNDLE_EXPORT <ref refid="namespaceiceberg_1aac79523734e35ca4d34cced52e56ec9b" kindref="member">Result</ref>&lt; int64_t &gt;</type>
+        <definition>static ICEBERG_BUNDLE_EXPORT Result&lt; int64_t &gt; iceberg::AesGcmStream::PlaintextLength</definition>
+        <argsstring>(int64_t encrypted_length)</argsstring>
+        <name>PlaintextLength</name>
+        <qualifiedname>iceberg::AesGcmStream::PlaintextLength</qualifiedname>
+        <param>
+          <type>int64_t</type>
+          <declname>encrypted_length</declname>
+        </param>
+        <briefdescription>
+<para>Plaintext length of a stream with the given encrypted length. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Returns an error if the length is shorter than an empty stream, implies more than int32 max blocks, or ends in a block too short to hold a nonce and tag. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/encryption/aes_gcm_stream.h" line="60" column="39"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>AES GCM <ref refid="classiceberg_1_1Stream" kindref="compound">Stream</ref> format constants. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>AGS1 stores the block length in its header. This implementation only reads and writes 1 MiB blocks, matching Java, rather than supporting other block lengths.</para>
+<para>For Java compatibility, an empty file contains one zero-length plaintext block with a nonce and tag. The AGS1 spec describes a non-empty last block and does not explicitly define this empty-file representation. </para>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="2">
+        <label>std::array&lt; char, 4 &gt;</label>
+      </node>
+      <node id="1">
+        <label>iceberg::AesGcmStream</label>
+        <link refid="structiceberg_1_1AesGcmStream"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>kMagic</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/encryption/aes_gcm_stream.h" line="45" column="1" bodyfile="iceberg/encryption/aes_gcm_stream.h" bodystart="45" bodyend="61"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1AesGcmStream_1a3975df320d3f72651101e3f9e057d765" prot="public" virt="non-virtual"><scope>iceberg::AesGcmStream</scope><name>kCipherBlockSize</name></member>
+      <member refid="structiceberg_1_1AesGcmStream_1a23bc13b082fcff3ba3eff6d2d71241d9" prot="public" virt="non-virtual"><scope>iceberg::AesGcmStream</scope><name>kGcmTagLength</name></member>
+      <member refid="structiceberg_1_1AesGcmStream_1a163dc154c6b566d4cf545b62e04e19af" prot="public" virt="non-virtual"><scope>iceberg::AesGcmStream</scope><name>kHeaderLength</name></member>
+      <member refid="structiceberg_1_1AesGcmStream_1a3a21d22f588d05025e98f91d213087ce" prot="public" virt="non-virtual"><scope>iceberg::AesGcmStream</scope><name>kMagic</name></member>
+      <member refid="structiceberg_1_1AesGcmStream_1ae4f9a7158e5df43f0d19e4cf079b4a19" prot="public" virt="non-virtual"><scope>iceberg::AesGcmStream</scope><name>kMinStreamLength</name></member>
+      <member refid="structiceberg_1_1AesGcmStream_1acd80ab69588a40c293e55c3955ce3af2" prot="public" virt="non-virtual"><scope>iceberg::AesGcmStream</scope><name>kNonceLength</name></member>
+      <member refid="structiceberg_1_1AesGcmStream_1ace8224a0a843da177ac2003f6bad1ea3" prot="public" virt="non-virtual"><scope>iceberg::AesGcmStream</scope><name>kPlainBlockSize</name></member>
+      <member refid="structiceberg_1_1AesGcmStream_1a40e3446dc72da76c1b5a9951c7248fe9" prot="public" virt="non-virtual"><scope>iceberg::AesGcmStream</scope><name>PlaintextLength</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

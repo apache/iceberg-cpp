@@ -1,0 +1,70 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1DeleteCounter" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::DeleteCounter</compoundname>
+    <includes refid="delete__filter_8h" local="no">delete_filter.h</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1DeleteCounter_1a4c6fecc6c840e0669839c79198f1de1e" prot="private" static="no" mutable="no">
+        <type>std::atomic&lt; int64_t &gt;</type>
+        <definition>std::atomic&lt;int64_t&gt; iceberg::DeleteCounter::count_</definition>
+        <argsstring></argsstring>
+        <name>count_</name>
+        <qualifiedname>iceberg::DeleteCounter::count_</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/delete_filter.h" line="65" column="15" bodyfile="iceberg/data/delete_filter.h" bodystart="65" bodyend="65"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1DeleteCounter_1aae37d7c7a4221cb564657f50b3ad550a" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::DeleteCounter::Increment</definition>
+        <argsstring>(int64_t count=1)</argsstring>
+        <name>Increment</name>
+        <qualifiedname>iceberg::DeleteCounter::Increment</qualifiedname>
+        <param>
+          <type>int64_t</type>
+          <declname>count</declname>
+          <defval>1</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/delete_filter.h" line="59" column="8" bodyfile="iceberg/data/delete_filter.h" bodystart="59" bodyend="61"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1DeleteCounter_1adda0f7b2a43925634bab852b97eb674a" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>int64_t</type>
+        <definition>int64_t iceberg::DeleteCounter::Get</definition>
+        <argsstring>() const</argsstring>
+        <name>Get</name>
+        <qualifiedname>iceberg::DeleteCounter::Get</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/delete_filter.h" line="62" column="11" bodyfile="iceberg/data/delete_filter.h" bodystart="62" bodyend="62"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Counts rows removed by delete filters. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/data/delete_filter.h" line="57" column="1" bodyfile="iceberg/data/delete_filter.h" bodystart="57" bodyend="66"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1DeleteCounter_1a4c6fecc6c840e0669839c79198f1de1e" prot="private" virt="non-virtual"><scope>iceberg::DeleteCounter</scope><name>count_</name></member>
+      <member refid="classiceberg_1_1DeleteCounter_1adda0f7b2a43925634bab852b97eb674a" prot="public" virt="non-virtual"><scope>iceberg::DeleteCounter</scope><name>Get</name></member>
+      <member refid="classiceberg_1_1DeleteCounter_1aae37d7c7a4221cb564657f50b3ad550a" prot="public" virt="non-virtual"><scope>iceberg::DeleteCounter</scope><name>Increment</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

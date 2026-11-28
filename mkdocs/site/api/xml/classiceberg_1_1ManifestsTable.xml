@@ -1,0 +1,206 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1ManifestsTable" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::ManifestsTable</compoundname>
+    <basecompoundref refid="classiceberg_1_1MetadataTable" prot="public" virt="non-virtual">iceberg::MetadataTable</basecompoundref>
+    <includes refid="manifests__table_8h" local="no">manifests_table.h</includes>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1ManifestsTable_1a0ef0bb5b40cace814ec7cb063fba59ab" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceiceberg_1aac79523734e35ca4d34cced52e56ec9b" kindref="member">Result</ref>&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1ManifestsTable" kindref="compound">ManifestsTable</ref> &gt; &gt;</type>
+        <definition>static Result&lt; std::unique_ptr&lt; ManifestsTable &gt; &gt; iceberg::ManifestsTable::Make</definition>
+        <argsstring>(std::shared_ptr&lt; const Table &gt; table)</argsstring>
+        <name>Make</name>
+        <qualifiedname>iceberg::ManifestsTable::Make</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; const <ref refid="classiceberg_1_1Table" kindref="compound">Table</ref> &gt;</type>
+          <declname>table</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/inspect/manifests_table.h" line="38" column="17"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1ManifestsTable_1aef2f6726abdfba822ab58a80438e378d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::ManifestsTable::~ManifestsTable</definition>
+        <argsstring>() override</argsstring>
+        <name>~ManifestsTable</name>
+        <qualifiedname>iceberg::ManifestsTable::~ManifestsTable</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/inspect/manifests_table.h" line="40" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestsTable_1adfd4b106186ee0a3951fd8daa04f7aa3" prot="public" static="no" const="yes" explicit="no" inline="yes" noexcept="yes" virt="virtual">
+        <type><ref refid="namespaceiceberg_1afd874214b2b513aad12d482976163b85" kindref="member">Kind</ref></type>
+        <definition>Kind iceberg::ManifestsTable::kind</definition>
+        <argsstring>() const noexcept override</argsstring>
+        <name>kind</name>
+        <qualifiedname>iceberg::ManifestsTable::kind</qualifiedname>
+        <reimplements refid="classiceberg_1_1MetadataTable_1a5aa9af92783c3dc041349d6391742146">kind</reimplements>
+        <briefdescription>
+<para>Return this metadata table&apos;s kind. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/inspect/manifests_table.h" line="42" column="8" bodyfile="iceberg/inspect/manifests_table.h" bodystart="42" bodyend="42"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestsTable_1aa25463d42cb254d40c94adf3f54d463b" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+        <definition>std::shared_ptr&lt; Schema &gt; iceberg::ManifestsTable::schema</definition>
+        <argsstring>() const override</argsstring>
+        <name>schema</name>
+        <qualifiedname>iceberg::ManifestsTable::schema</qualifiedname>
+        <reimplements refid="classiceberg_1_1MetadataTable_1a366d9be32b31e7ce9d9f8fd9c8bc3a26">schema</reimplements>
+        <briefdescription>
+<para>Return shared ownership of this metadata table&apos;s canonical schema. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/inspect/manifests_table.h" line="44" column="19"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-func">
+      <memberdef kind="function" id="classiceberg_1_1ManifestsTable_1a083e1df5edf2c637ea24a6f2c3772374" prot="protected" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type><ref refid="namespaceiceberg_1aac79523734e35ca4d34cced52e56ec9b" kindref="member">Result</ref>&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1MetadataScan" kindref="compound">MetadataScan</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::unique_ptr&lt; MetadataScan &gt; &gt; iceberg::ManifestsTable::MakeScan</definition>
+        <argsstring>(internal::MetadataScanContext context, std::shared_ptr&lt; FileIO &gt; io) const override</argsstring>
+        <name>MakeScan</name>
+        <qualifiedname>iceberg::ManifestsTable::MakeScan</qualifiedname>
+        <reimplements refid="classiceberg_1_1MetadataTable_1a1f9f1ca440884cd31ff6f5b5f93189a3">MakeScan</reimplements>
+        <param>
+          <type><ref refid="structiceberg_1_1internal_1_1MetadataScanContext" kindref="compound">internal::MetadataScanContext</ref></type>
+          <declname>context</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> &gt;</type>
+          <declname>io</declname>
+        </param>
+        <briefdescription>
+<para>Plan a scan using the captured metadata, projection, and snapshot selection. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>io</parametername>
+</parameternamelist>
+<parameterdescription>
+<para><ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> captured when the scan builder was created </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/inspect/manifests_table.h" line="47" column="10"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-static-func">
+      <memberdef kind="function" id="classiceberg_1_1ManifestsTable_1a3d03fbe3706af250d23c860edd8580e6" prot="private" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="namespaceiceberg_1aac79523734e35ca4d34cced52e56ec9b" kindref="member">Result</ref>&lt; <ref refid="structArrowArrayStream" kindref="compound">ArrowArrayStream</ref> &gt;</type>
+        <definition>static Result&lt; ArrowArrayStream &gt; iceberg::ManifestsTable::ReadRows</definition>
+        <argsstring>(const internal::MetadataScanContext &amp;context, const std::shared_ptr&lt; FileIO &gt; &amp;io, int64_t batch_size)</argsstring>
+        <name>ReadRows</name>
+        <qualifiedname>iceberg::ManifestsTable::ReadRows</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1internal_1_1MetadataScanContext" kindref="compound">internal::MetadataScanContext</ref> &amp;</type>
+          <declname>context</declname>
+        </param>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> &gt; &amp;</type>
+          <declname>io</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>batch_size</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/inspect/manifests_table.h" line="51" column="17"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classiceberg_1_1ManifestsTable_1ab7bdc63765a859b0e4fd5ce7fe1733dd" prot="private" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::ManifestsTable::ManifestsTable</definition>
+        <argsstring>(std::shared_ptr&lt; const Table &gt; table)</argsstring>
+        <name>ManifestsTable</name>
+        <qualifiedname>iceberg::ManifestsTable::ManifestsTable</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; const <ref refid="classiceberg_1_1Table" kindref="compound">Table</ref> &gt;</type>
+          <declname>table</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/inspect/manifests_table.h" line="55" column="12"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Metadata table containing manifest-list entries for a snapshot. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::ManifestsTable</label>
+        <link refid="classiceberg_1_1ManifestsTable"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::MetadataTable</label>
+        <link refid="classiceberg_1_1MetadataTable"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::ManifestsTable</label>
+        <link refid="classiceberg_1_1ManifestsTable"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::MetadataTable</label>
+        <link refid="classiceberg_1_1MetadataTable"/>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/inspect/manifests_table.h" line="36" column="1" bodyfile="iceberg/inspect/manifests_table.h" bodystart="36" bodyend="56"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1ManifestsTable_1adfd4b106186ee0a3951fd8daa04f7aa3" prot="public" virt="virtual"><scope>iceberg::ManifestsTable</scope><name>kind</name></member>
+      <member refid="classiceberg_1_1MetadataTable_1ac24b1593d5a6b05d0deafd05d12c0760" prot="public" virt="non-virtual"><scope>iceberg::ManifestsTable</scope><name>Kind</name></member>
+      <member refid="classiceberg_1_1ManifestsTable_1a0ef0bb5b40cace814ec7cb063fba59ab" prot="public" virt="non-virtual"><scope>iceberg::ManifestsTable</scope><name>Make</name></member>
+      <member refid="classiceberg_1_1MetadataTable_1a1a4d392e10b0197d6aa681165948e366" prot="public" virt="non-virtual" ambiguityscope="iceberg::MetadataTable::"><scope>iceberg::ManifestsTable</scope><name>Make</name></member>
+      <member refid="classiceberg_1_1ManifestsTable_1a083e1df5edf2c637ea24a6f2c3772374" prot="protected" virt="virtual"><scope>iceberg::ManifestsTable</scope><name>MakeScan</name></member>
+      <member refid="classiceberg_1_1ManifestsTable_1ab7bdc63765a859b0e4fd5ce7fe1733dd" prot="private" virt="non-virtual"><scope>iceberg::ManifestsTable</scope><name>ManifestsTable</name></member>
+      <member refid="classiceberg_1_1MetadataTable_1a26dd68f897ad6c3cff8b4315a80370f5" prot="protected" virt="non-virtual"><scope>iceberg::ManifestsTable</scope><name>MetadataTable</name></member>
+      <member refid="classiceberg_1_1MetadataTable_1a806c9b04c0bdf720ba30dc37ed4cfabc" prot="public" virt="virtual"><scope>iceberg::ManifestsTable</scope><name>NewScan</name></member>
+      <member refid="classiceberg_1_1ManifestsTable_1a3d03fbe3706af250d23c860edd8580e6" prot="private" virt="non-virtual"><scope>iceberg::ManifestsTable</scope><name>ReadRows</name></member>
+      <member refid="classiceberg_1_1ManifestsTable_1aa25463d42cb254d40c94adf3f54d463b" prot="public" virt="virtual"><scope>iceberg::ManifestsTable</scope><name>schema</name></member>
+      <member refid="classiceberg_1_1MetadataTable_1ac21915fd483f5ed331b94efd155d91b7" prot="protected" virt="virtual"><scope>iceberg::ManifestsTable</scope><name>SchemaForScan</name></member>
+      <member refid="classiceberg_1_1MetadataTable_1a083e6ab86c54c78b80f9b96642b00dec" prot="public" virt="non-virtual"><scope>iceberg::ManifestsTable</scope><name>source_table</name></member>
+      <member refid="classiceberg_1_1ManifestsTable_1aef2f6726abdfba822ab58a80438e378d" prot="public" virt="non-virtual"><scope>iceberg::ManifestsTable</scope><name>~ManifestsTable</name></member>
+      <member refid="classiceberg_1_1MetadataTable_1a25fa687655a43fd964860a941b572499" prot="public" virt="virtual"><scope>iceberg::ManifestsTable</scope><name>~MetadataTable</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

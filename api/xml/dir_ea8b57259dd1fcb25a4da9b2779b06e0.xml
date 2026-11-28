@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="dir_ea8b57259dd1fcb25a4da9b2779b06e0" kind="dir">
+    <compoundname>iceberg/compat</compoundname>
+    <innerfile refid="byte__swap_8h">byte_swap.h</innerfile>
+    <innerfile refid="compiler_8h">compiler.h</innerfile>
+    <innerfile refid="expected_8h">expected.h</innerfile>
+    <innerfile refid="unreachable_8h">unreachable.h</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/compat/"/>
+  </compounddef>
+</doxygen>

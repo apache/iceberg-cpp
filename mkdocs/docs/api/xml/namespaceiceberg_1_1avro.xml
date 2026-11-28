@@ -1,0 +1,229 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="namespaceiceberg_1_1avro" kind="namespace" language="C++">
+    <compoundname>iceberg::avro</compoundname>
+    <innerclass refid="classiceberg_1_1avro_1_1AvroMetrics" prot="public">iceberg::avro::AvroMetrics</innerclass>
+    <innerclass refid="classiceberg_1_1avro_1_1AvroReader" prot="public">iceberg::avro::AvroReader</innerclass>
+    <innerclass refid="classiceberg_1_1avro_1_1AvroWriter" prot="public">iceberg::avro::AvroWriter</innerclass>
+    <sectiondef kind="var">
+      <memberdef kind="variable" id="namespaceiceberg_1_1avro_1adb861c4d4f22cff7751335aef2bdbbc2" prot="public" static="no" constexpr="yes" mutable="no">
+        <type>constexpr std::string_view</type>
+        <definition>constexpr std::string_view iceberg::avro::kMapLogicalType</definition>
+        <argsstring></argsstring>
+        <name>kMapLogicalType</name>
+        <qualifiedname>iceberg::avro::kMapLogicalType</qualifiedname>
+        <initializer>= &quot;map&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_constants.h" line="30" column="28" bodyfile="iceberg/avro/avro_constants.h" bodystart="30" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespaceiceberg_1_1avro_1a88e0258c0b1576d56df02be7d50b3bf3" prot="public" static="no" constexpr="yes" mutable="no">
+        <type>constexpr std::string_view</type>
+        <definition>constexpr std::string_view iceberg::avro::kElement</definition>
+        <argsstring></argsstring>
+        <name>kElement</name>
+        <qualifiedname>iceberg::avro::kElement</qualifiedname>
+        <initializer>= &quot;element&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_constants.h" line="33" column="28" bodyfile="iceberg/avro/avro_constants.h" bodystart="33" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespaceiceberg_1_1avro_1a277efc68736f9a57472292f26e0bfc07" prot="public" static="no" constexpr="yes" mutable="no">
+        <type>constexpr std::string_view</type>
+        <definition>constexpr std::string_view iceberg::avro::kKey</definition>
+        <argsstring></argsstring>
+        <name>kKey</name>
+        <qualifiedname>iceberg::avro::kKey</qualifiedname>
+        <initializer>= &quot;key&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_constants.h" line="34" column="28" bodyfile="iceberg/avro/avro_constants.h" bodystart="34" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespaceiceberg_1_1avro_1a77cd29e25706fa6f135b925d1cebb821" prot="public" static="no" constexpr="yes" mutable="no">
+        <type>constexpr std::string_view</type>
+        <definition>constexpr std::string_view iceberg::avro::kValue</definition>
+        <argsstring></argsstring>
+        <name>kValue</name>
+        <qualifiedname>iceberg::avro::kValue</qualifiedname>
+        <initializer>= &quot;value&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_constants.h" line="35" column="28" bodyfile="iceberg/avro/avro_constants.h" bodystart="35" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespaceiceberg_1_1avro_1a598fbf0d50b7e724e64c353bbe7deee3" prot="public" static="no" constexpr="yes" mutable="no">
+        <type>constexpr std::string_view</type>
+        <definition>constexpr std::string_view iceberg::avro::kIcebergFieldNameProp</definition>
+        <argsstring></argsstring>
+        <name>kIcebergFieldNameProp</name>
+        <qualifiedname>iceberg::avro::kIcebergFieldNameProp</qualifiedname>
+        <initializer>= &quot;iceberg-field-name&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_constants.h" line="38" column="28" bodyfile="iceberg/avro/avro_constants.h" bodystart="38" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespaceiceberg_1_1avro_1aae38077ac99bdf39faca7e58af1caf6a" prot="public" static="no" constexpr="yes" mutable="no">
+        <type>constexpr std::string_view</type>
+        <definition>constexpr std::string_view iceberg::avro::kFieldIdProp</definition>
+        <argsstring></argsstring>
+        <name>kFieldIdProp</name>
+        <qualifiedname>iceberg::avro::kFieldIdProp</qualifiedname>
+        <initializer>= &quot;field-id&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_constants.h" line="39" column="28" bodyfile="iceberg/avro/avro_constants.h" bodystart="39" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespaceiceberg_1_1avro_1acd799486f5acf79a4cfb401fa76c0a67" prot="public" static="no" constexpr="yes" mutable="no">
+        <type>constexpr std::string_view</type>
+        <definition>constexpr std::string_view iceberg::avro::kKeyIdProp</definition>
+        <argsstring></argsstring>
+        <name>kKeyIdProp</name>
+        <qualifiedname>iceberg::avro::kKeyIdProp</qualifiedname>
+        <initializer>= &quot;key-id&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_constants.h" line="40" column="28" bodyfile="iceberg/avro/avro_constants.h" bodystart="40" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespaceiceberg_1_1avro_1a5b89aac5162438b638263f31d1783e94" prot="public" static="no" constexpr="yes" mutable="no">
+        <type>constexpr std::string_view</type>
+        <definition>constexpr std::string_view iceberg::avro::kValueIdProp</definition>
+        <argsstring></argsstring>
+        <name>kValueIdProp</name>
+        <qualifiedname>iceberg::avro::kValueIdProp</qualifiedname>
+        <initializer>= &quot;value-id&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_constants.h" line="41" column="28" bodyfile="iceberg/avro/avro_constants.h" bodystart="41" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespaceiceberg_1_1avro_1a90c1dbf3ea6a5cf3549466b9debec909" prot="public" static="no" constexpr="yes" mutable="no">
+        <type>constexpr std::string_view</type>
+        <definition>constexpr std::string_view iceberg::avro::kElementIdProp</definition>
+        <argsstring></argsstring>
+        <name>kElementIdProp</name>
+        <qualifiedname>iceberg::avro::kElementIdProp</qualifiedname>
+        <initializer>= &quot;element-id&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_constants.h" line="42" column="28" bodyfile="iceberg/avro/avro_constants.h" bodystart="42" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="namespaceiceberg_1_1avro_1a12bd4744046215a5e1730b027f11ba60" prot="public" static="no" constexpr="yes" mutable="no">
+        <type>constexpr std::string_view</type>
+        <definition>constexpr std::string_view iceberg::avro::kAdjustToUtcProp</definition>
+        <argsstring></argsstring>
+        <name>kAdjustToUtcProp</name>
+        <qualifiedname>iceberg::avro::kAdjustToUtcProp</qualifiedname>
+        <initializer>= &quot;adjust-to-utc&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_constants.h" line="43" column="28" bodyfile="iceberg/avro/avro_constants.h" bodystart="43" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="namespaceiceberg_1_1avro_1a671519698754240d57c812a100ad2948" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>ICEBERG_BUNDLE_EXPORT void</type>
+        <definition>ICEBERG_BUNDLE_EXPORT void iceberg::avro::RegisterLogicalTypes</definition>
+        <argsstring>()</argsstring>
+        <name>RegisterLogicalTypes</name>
+        <qualifiedname>iceberg::avro::RegisterLogicalTypes</qualifiedname>
+        <briefdescription>
+<para>Register all the logical types. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_register.h" line="30" column="28" declfile="iceberg/avro/avro_register.h" declline="30" declcolumn="28"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceiceberg_1_1avro_1a29650a99c58e4d9e14eb85cea3003471" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>ICEBERG_BUNDLE_EXPORT void</type>
+        <definition>ICEBERG_BUNDLE_EXPORT void iceberg::avro::RegisterReader</definition>
+        <argsstring>()</argsstring>
+        <name>RegisterReader</name>
+        <qualifiedname>iceberg::avro::RegisterReader</qualifiedname>
+        <briefdescription>
+<para>Register Avro reader implementation. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_register.h" line="33" column="28" declfile="iceberg/avro/avro_register.h" declline="33" declcolumn="28"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceiceberg_1_1avro_1a0a0c78a6761d0a0f5d6f0838b3f3aaaf" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>ICEBERG_BUNDLE_EXPORT void</type>
+        <definition>ICEBERG_BUNDLE_EXPORT void iceberg::avro::RegisterWriter</definition>
+        <argsstring>()</argsstring>
+        <name>RegisterWriter</name>
+        <qualifiedname>iceberg::avro::RegisterWriter</qualifiedname>
+        <briefdescription>
+<para>Register Avro writer implementation. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_register.h" line="36" column="28" declfile="iceberg/avro/avro_register.h" declline="36" declcolumn="28"/>
+      </memberdef>
+      <memberdef kind="function" id="namespaceiceberg_1_1avro_1a0ec7e27c0910d3f34abf5bce8e7cdc69" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>ICEBERG_BUNDLE_EXPORT void</type>
+        <definition>ICEBERG_BUNDLE_EXPORT void iceberg::avro::RegisterAll</definition>
+        <argsstring>()</argsstring>
+        <name>RegisterAll</name>
+        <qualifiedname>iceberg::avro::RegisterAll</qualifiedname>
+        <briefdescription>
+<para>Register all the logical types, Avro reader, and Avro writer. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_register.h" line="39" column="28" declfile="iceberg/avro/avro_register.h" declline="39" declcolumn="28"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Avro reader, writer, and metadata APIs. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/avro/avro_constants.h" line="27" column="1"/>
+  </compounddef>
+</doxygen>

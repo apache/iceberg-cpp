@@ -1,0 +1,148 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1ScopedLogger" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::ScopedLogger</compoundname>
+    <includes refid="logger_8h" local="no">logger.h</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1ScopedLogger_1aff052d75ae901311e9ae291121426384" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Logger" kindref="compound">Logger</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Logger&gt; iceberg::ScopedLogger::previous_</definition>
+        <argsstring></argsstring>
+        <name>previous_</name>
+        <qualifiedname>iceberg::ScopedLogger::previous_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/logging/logger.h" line="267" column="19" bodyfile="iceberg/logging/logger.h" bodystart="267" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1ScopedLogger_1a518624afc432f6ea7c59093379dcff50" prot="public" static="no" const="no" explicit="yes" inline="no" noexcept="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::ScopedLogger::ScopedLogger</definition>
+        <argsstring>(std::shared_ptr&lt; Logger &gt; logger) noexcept</argsstring>
+        <name>ScopedLogger</name>
+        <qualifiedname>iceberg::ScopedLogger::ScopedLogger</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Logger" kindref="compound">Logger</ref> &gt;</type>
+          <declname>logger</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/logging/logger.h" line="258" column="12"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ScopedLogger_1aaf3c4bb5251a39fab3939377686462f6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::ScopedLogger::~ScopedLogger</definition>
+        <argsstring>()</argsstring>
+        <name>~ScopedLogger</name>
+        <qualifiedname>iceberg::ScopedLogger::~ScopedLogger</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/logging/logger.h" line="259" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ScopedLogger_1a66e9e19ffd22c2a724b544a76106d5f9" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::ScopedLogger::ScopedLogger</definition>
+        <argsstring>(const ScopedLogger &amp;)=delete</argsstring>
+        <name>ScopedLogger</name>
+        <qualifiedname>iceberg::ScopedLogger::ScopedLogger</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1ScopedLogger" kindref="compound">ScopedLogger</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/logging/logger.h" line="261" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ScopedLogger_1aecde6e03263f326b77a6f14e07978a55" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1ScopedLogger" kindref="compound">ScopedLogger</ref> &amp;</type>
+        <definition>ScopedLogger &amp; iceberg::ScopedLogger::operator=</definition>
+        <argsstring>(const ScopedLogger &amp;)=delete</argsstring>
+        <name>operator=</name>
+        <qualifiedname>iceberg::ScopedLogger::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1ScopedLogger" kindref="compound">ScopedLogger</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/logging/logger.h" line="262" column="16"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ScopedLogger_1adce16366a67a46c66454225f7b320aaa" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::ScopedLogger::ScopedLogger</definition>
+        <argsstring>(ScopedLogger &amp;&amp;)=delete</argsstring>
+        <name>ScopedLogger</name>
+        <qualifiedname>iceberg::ScopedLogger::ScopedLogger</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1ScopedLogger" kindref="compound">ScopedLogger</ref> &amp;&amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/logging/logger.h" line="263" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ScopedLogger_1a54ff582ff280002cedc15926c647e47a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1ScopedLogger" kindref="compound">ScopedLogger</ref> &amp;</type>
+        <definition>ScopedLogger &amp; iceberg::ScopedLogger::operator=</definition>
+        <argsstring>(ScopedLogger &amp;&amp;)=delete</argsstring>
+        <name>operator=</name>
+        <qualifiedname>iceberg::ScopedLogger::operator=</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1ScopedLogger" kindref="compound">ScopedLogger</ref> &amp;&amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/logging/logger.h" line="264" column="16"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Bind a logger for the current thread until this object leaves scope. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>The default logging path on this thread <ndash/> CurrentLogger(), Log(level, ...), and the ICEBERG_LOG_* macros <ndash/> routes to <computeroutput>logger</computeroutput> instead of the global default; explicit Log(logger, ...) is unaffected. Bindings nest and restore on exit, and nullptr masks any enclosing binding back to the global default. Lets an engine route Iceberg&apos;s own logs into a per catalog/session/query/task context with no call-site changes.</para>
+<para><programlisting><codeline><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>query_log<sp/>=<sp/>std::make_shared&lt;MySink&gt;();</highlight></codeline>
+<codeline><highlight class="normal"><ref refid="classiceberg_1_1ScopedLogger" kindref="compound">iceberg::ScopedLogger</ref><sp/>bind(query_log);<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>this<sp/>thread,<sp/>this<sp/>scope</highlight><highlight class="normal"></highlight></codeline>
+<codeline><highlight class="normal"><ref refid="namespaceiceberg_1a1aaf619fc9dbd574aa84dea9e41d3288" kindref="member">iceberg::Log</ref>(LogLevel::kInfo,<sp/></highlight><highlight class="stringliteral">&quot;scan<sp/>{}&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="keywordtype">id</highlight><highlight class="normal">);<sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>-&gt;<sp/>query_log</highlight></codeline>
+</programlisting></para>
+<para>Stack-only and same-thread (non-copyable, non-movable). For thread pools, capture on the submitting thread and re-bind on the worker: <programlisting><codeline><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>captured<sp/>=<sp/><ref refid="namespaceiceberg_1a71a0404fee81a92cc327ce2cec8c4290" kindref="member">iceberg::GetCurrentLogger</ref>();</highlight></codeline>
+<codeline><highlight class="normal">pool.submit([captured,<sp/>work]<sp/>{<sp/><ref refid="classiceberg_1_1ScopedLogger" kindref="compound">iceberg::ScopedLogger</ref><sp/>bind(captured);<sp/>work();<sp/>});</highlight></codeline>
+</programlisting> </para>
+    </detaileddescription>
+    <location file="iceberg/logging/logger.h" line="256" column="1" bodyfile="iceberg/logging/logger.h" bodystart="256" bodyend="268"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1ScopedLogger_1aecde6e03263f326b77a6f14e07978a55" prot="public" virt="non-virtual"><scope>iceberg::ScopedLogger</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1ScopedLogger_1a54ff582ff280002cedc15926c647e47a" prot="public" virt="non-virtual"><scope>iceberg::ScopedLogger</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1ScopedLogger_1aff052d75ae901311e9ae291121426384" prot="private" virt="non-virtual"><scope>iceberg::ScopedLogger</scope><name>previous_</name></member>
+      <member refid="classiceberg_1_1ScopedLogger_1a518624afc432f6ea7c59093379dcff50" prot="public" virt="non-virtual"><scope>iceberg::ScopedLogger</scope><name>ScopedLogger</name></member>
+      <member refid="classiceberg_1_1ScopedLogger_1a66e9e19ffd22c2a724b544a76106d5f9" prot="public" virt="non-virtual"><scope>iceberg::ScopedLogger</scope><name>ScopedLogger</name></member>
+      <member refid="classiceberg_1_1ScopedLogger_1adce16366a67a46c66454225f7b320aaa" prot="public" virt="non-virtual"><scope>iceberg::ScopedLogger</scope><name>ScopedLogger</name></member>
+      <member refid="classiceberg_1_1ScopedLogger_1aaf3c4bb5251a39fab3939377686462f6" prot="public" virt="non-virtual"><scope>iceberg::ScopedLogger</scope><name>~ScopedLogger</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

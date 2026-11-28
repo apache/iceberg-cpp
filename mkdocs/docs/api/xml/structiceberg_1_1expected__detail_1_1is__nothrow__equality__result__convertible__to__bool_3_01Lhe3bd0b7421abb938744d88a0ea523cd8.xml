@@ -1,0 +1,44 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1expected__detail_1_1is__nothrow__equality__result__convertible__to__bool_3_01Lhe3bd0b7421abb938744d88a0ea523cd8" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::expected_detail::is_nothrow_equality_result_convertible_to_bool&lt; Lhs, Rhs, std::void_t&lt; decltype(implicitly_convert_to_bool(std::declval&lt; const Lhs &amp; &gt;()==std::declval&lt; const Rhs &amp; &gt;()))&gt; &gt;</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">std::bool_constant&lt; noexcept(implicitly_convert_to_bool(std::declval&lt; const Lhs &amp; &gt;()==std::declval&lt; const Rhs &amp; &gt;()))&gt;</basecompoundref>
+    <templateparamlist>
+      <param>
+        <type>class Lhs</type>
+      </param>
+      <param>
+        <type>class Rhs</type>
+      </param>
+    </templateparamlist>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::expected_detail::is_nothrow_equality_result_convertible_to_bool&lt; Lhs, Rhs, std::void_t&lt; decltype(implicitly_convert_to_bool(std::declval&lt; const Lhs &amp; &gt;()==std::declval&lt; const Rhs &amp; &gt;()))&gt; &gt;</label>
+        <link refid="structiceberg_1_1expected__detail_1_1is__nothrow__equality__result__convertible__to__bool_3_01Lhe3bd0b7421abb938744d88a0ea523cd8"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>std::bool_constant&lt; noexcept(implicitly_convert_to_bool(std::declval&lt; const Lhs &amp; &gt;()==std::declval&lt; const Rhs &amp; &gt;()))&gt;</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::expected_detail::is_nothrow_equality_result_convertible_to_bool&lt; Lhs, Rhs, std::void_t&lt; decltype(implicitly_convert_to_bool(std::declval&lt; const Lhs &amp; &gt;()==std::declval&lt; const Rhs &amp; &gt;()))&gt; &gt;</label>
+        <link refid="structiceberg_1_1expected__detail_1_1is__nothrow__equality__result__convertible__to__bool_3_01Lhe3bd0b7421abb938744d88a0ea523cd8"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>std::bool_constant&lt; noexcept(implicitly_convert_to_bool(std::declval&lt; const Lhs &amp; &gt;()==std::declval&lt; const Rhs &amp; &gt;()))&gt;</label>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/compat/expected.h" line="213" column="1" bodyfile="iceberg/compat/expected.h" bodystart="218" bodyend="218"/>
+    <listofallmembers>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

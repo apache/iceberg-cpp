@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1expected__detail_1_1is__equality__result__convertible__to__bool" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::expected_detail::is_equality_result_convertible_to_bool</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">std::false_type</basecompoundref>
+    <templateparamlist>
+      <param>
+        <type>class Lhs</type>
+      </param>
+      <param>
+        <type>class Rhs</type>
+      </param>
+      <param>
+        <type>class</type>
+        <defval>void</defval>
+      </param>
+    </templateparamlist>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::expected_detail::is_equality_result_convertible_to_bool&lt; Lhs, Rhs, class &gt;</label>
+        <link refid="structiceberg_1_1expected__detail_1_1is__equality__result__convertible__to__bool"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>std::false_type</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::expected_detail::is_equality_result_convertible_to_bool&lt; Lhs, Rhs, class &gt;</label>
+        <link refid="structiceberg_1_1expected__detail_1_1is__equality__result__convertible__to__bool"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>std::false_type</label>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/compat/expected.h" line="194" column="1" bodyfile="iceberg/compat/expected.h" bodystart="194" bodyend="194"/>
+    <listofallmembers>
+    </listofallmembers>
+  </compounddef>
+</doxygen>
