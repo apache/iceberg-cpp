@@ -18,18 +18,23 @@
  */
 
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <limits>
+#include <string_view>
 #include <utility>
 #include <vector>
 
+#include <arrow/io/interfaces.h>
 #include <parquet/bloom_filter.h>
 
+#include "iceberg/arrow/arrow_status_internal.h"
 #include "iceberg/expression/expression_visitor.h"
 #include "iceberg/expression/rewrite_not.h"
 #include "iceberg/metadata_columns.h"
 #include "iceberg/parquet/parquet_bloom_row_group_filter_internal.h"
 #include "iceberg/parquet/parquet_schema_util_internal.h"
+#include "iceberg/util/checked_cast.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg::parquet {
@@ -38,6 +43,18 @@ namespace {
 // True means a matching row may exist; false means the group can be skipped.
 constexpr bool kRowsMightMatch = true;
 constexpr bool kRowsCannotMatch = false;
+
+// Arrow 25 rejects non-power-of-two bitsets even if they contain whole 32-byte
+// blocks. It reports the same exception for malformed sizes. Inspect the compact
+// header only on that error, after Arrow has validated the header and read the bitset.
+Result<bool> HasWholeBloomBlocks(::arrow::io::RandomAccessFile& input, int64_t offset) {
+  std::array<uint8_t, 2> prefix{};
+  ICEBERG_ARROW_ASSIGN_OR_RETURN(auto count,
+                                 input.ReadAt(offset, prefix.size(), prefix.data()));
+  // parquet-go writes numBytes first: field 1, compact I32 (0x15). A positive
+  // zigzag varint encodes size << 1, so its low six bits identify 32-byte alignment.
+  return count == 2 && prefix[0] == 0x15 && (prefix[1] & 0x3f) == 0;
+}
 
 bool FindBytes(const ::parquet::BloomFilter& bloom, std::span<const uint8_t> bytes) {
   ::parquet::ByteArray value{static_cast<uint32_t>(bytes.size()), bytes.data()};
@@ -54,6 +71,14 @@ bool MightContain(const ::parquet::ColumnDescriptor& column, const Literal& valu
     return kRowsMightMatch;
   }
   auto type = value.type()->type_id();
+  if (type == TypeId::kDecimal &&
+      (!column.logical_type()->is_decimal() ||
+       internal::checked_cast<const DecimalType&>(*value.type()).scale() !=
+           column.type_scale())) {
+    // A pre-bound literal can compare equal at a different scale, but its
+    // unscaled integer would hash to a different physical value.
+    return kRowsMightMatch;
+  }
   switch (column.physical_type()) {
     case ::parquet::Type::INT32: {
       int128_t number;
@@ -168,36 +193,37 @@ bool MightContain(const ::parquet::ColumnDescriptor& column, const Literal& valu
   }
 }
 
+// After NOT has been pushed down, an IN containing NaN cannot exclude rows.
+// Fold it once in the Bloom expression before visiting individual row groups.
+class FoldNaNPredicates : public RewriteNot {
+ public:
+  using RewriteNot::Predicate;
+  Result<std::shared_ptr<Expression>> Predicate(
+      const std::shared_ptr<BoundPredicate>& pred) override {
+    if (pred->op() == Expression::Operation::kIn &&
+        pred->kind() == BoundPredicate::Kind::kSet) {
+      const auto& values =
+          internal::checked_cast<const BoundSetPredicate&>(*pred).literal_set();
+      if (std::ranges::any_of(values, &Literal::IsNaN)) {
+        return True::Instance();
+      }
+    }
+    return pred;
+  }
+};
+
 class BloomVisitor : public BoundVisitor<bool> {
  public:
   BloomVisitor(const ::parquet::arrow::SchemaManifest& manifest,
                const ::parquet::RowGroupMetaData& row_group,
                ::parquet::RowGroupBloomFilterReader* bloom_reader,
+               ::arrow::io::RandomAccessFile* input,
                const std::unordered_map<int32_t, int>& columns)
       : manifest_(manifest),
         row_group_(row_group),
         bloom_reader_(bloom_reader),
+        input_(input),
         columns_(columns) {}
-
-  Result<bool> Eval(const std::shared_ptr<Expression>& expr) {
-    // Avoid loading Bloom payloads once a branch determines the inclusive result.
-    // Make rewrites NOT, so only AND and OR need recursive traversal here.
-    if (auto and_expr = std::dynamic_pointer_cast<iceberg::And>(expr)) {
-      ICEBERG_ASSIGN_OR_RAISE(auto left, Eval(and_expr->left()));
-      if (!left) {
-        return kRowsCannotMatch;
-      }
-      return Eval(and_expr->right());
-    }
-    if (auto or_expr = std::dynamic_pointer_cast<iceberg::Or>(expr)) {
-      ICEBERG_ASSIGN_OR_RAISE(auto left, Eval(or_expr->left()));
-      if (left) {
-        return kRowsMightMatch;
-      }
-      return Eval(or_expr->right());
-    }
-    return Visit<bool>(expr, *this);
-  }
 
   Result<bool> AlwaysTrue() override { return kRowsMightMatch; }
   Result<bool> AlwaysFalse() override { return kRowsCannotMatch; }
@@ -218,9 +244,6 @@ class BloomVisitor : public BoundVisitor<bool> {
 
   Result<bool> In(const std::shared_ptr<Bound>& expr,
                   const BoundSetPredicate::LiteralSet& values) override {
-    if (std::ranges::any_of(values, [](const auto& value) { return value.IsNaN(); })) {
-      return kRowsMightMatch;
-    }
     auto ref = std::dynamic_pointer_cast<BoundReference>(expr);
     ICEBERG_ASSIGN_OR_RAISE(auto bloom, GetBloomFilter(ref));
     if (!bloom) {
@@ -289,13 +312,26 @@ class BloomVisitor : public BoundVisitor<bool> {
       return nullptr;
     }
     auto [entry, inserted] = cache_.try_emplace(ref->field_id());
-    if (inserted) {
-      if (bloom_reader_) {
+    if (!inserted) {
+      return entry->second.get();
+    }
+    if (bloom_reader_) {
+      try {
         entry->second = bloom_reader_->GetColumnBloomFilter(index->second);
+      } catch (const ::parquet::ParquetException& e) {
+        if (input_ && std::string_view(e.what()) == "Given length of bitset is illegal" &&
+            !column->crypto_metadata()) {
+          ICEBERG_ASSIGN_OR_RAISE(auto whole_blocks,
+                                  HasWholeBloomBlocks(*input_, *offset));
+          if (whole_blocks) {
+            return nullptr;
+          }
+        }
+        throw;
       }
-      if (!entry->second) {
-        return Invalid("Missing Parquet Bloom filter for field {}", ref->field_id());
-      }
+    }
+    if (!entry->second) {
+      return Invalid("Missing Parquet Bloom filter for field {}", ref->field_id());
     }
     return entry->second.get();
   }
@@ -303,6 +339,7 @@ class BloomVisitor : public BoundVisitor<bool> {
   const ::parquet::arrow::SchemaManifest& manifest_;
   const ::parquet::RowGroupMetaData& row_group_;
   ::parquet::RowGroupBloomFilterReader* bloom_reader_;
+  ::arrow::io::RandomAccessFile* input_;
   const std::unordered_map<int32_t, int>& columns_;
   std::unordered_map<int32_t, std::unique_ptr<::parquet::BloomFilter>> cache_;
 };
@@ -322,7 +359,10 @@ Result<std::unique_ptr<ParquetBloomRowGroupFilter>> ParquetBloomRowGroupFilter::
   }
   result->bound_ = True::Instance();
   if (filter) {
-    ICEBERG_ASSIGN_OR_RAISE(result->bound_, RewriteNot::Visit(filter));
+    ICEBERG_ASSIGN_OR_RAISE(auto rewritten, RewriteNot::Visit(filter));
+    FoldNaNPredicates folder;
+    ICEBERG_ASSIGN_OR_RAISE(result->bound_,
+                            Visit<std::shared_ptr<Expression>>(rewritten, folder));
   }
   return result;
 }
@@ -330,13 +370,15 @@ Result<std::unique_ptr<ParquetBloomRowGroupFilter>> ParquetBloomRowGroupFilter::
 Result<bool> ParquetBloomRowGroupFilter::ShouldRead(
     const ::parquet::arrow::SchemaManifest& manifest,
     const ::parquet::RowGroupMetaData& row_group,
-    ::parquet::RowGroupBloomFilterReader* bloom_reader) const {
+    ::parquet::RowGroupBloomFilterReader* bloom_reader,
+    ::arrow::io::RandomAccessFile* input) const {
   if (row_group.num_rows() <= 0) {
     return kRowsCannotMatch;
   }
   try {
-    BloomVisitor visitor(manifest, row_group, bloom_reader, field_id_to_column_idx_);
-    return visitor.Eval(bound_);
+    BloomVisitor visitor(manifest, row_group, bloom_reader, input,
+                         field_id_to_column_idx_);
+    return VisitEvaluator(bound_, visitor);
   } catch (const ::parquet::ParquetException& e) {
     return Invalid("Cannot read Parquet Bloom filter: {}", e.what());
   }

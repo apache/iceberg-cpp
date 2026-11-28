@@ -23,6 +23,7 @@
 #include <memory>
 #include <unordered_map>
 
+#include <arrow/io/type_fwd.h>
 #include <parquet/arrow/schema.h>
 #include <parquet/bloom_filter_reader.h>
 #include <parquet/metadata.h>
@@ -43,7 +44,8 @@ class ICEBERG_BUNDLE_EXPORT ParquetBloomRowGroupFilter {
 
   Result<bool> ShouldRead(const ::parquet::arrow::SchemaManifest& manifest,
                           const ::parquet::RowGroupMetaData& row_group,
-                          ::parquet::RowGroupBloomFilterReader* bloom_reader) const;
+                          ::parquet::RowGroupBloomFilterReader* bloom_reader,
+                          ::arrow::io::RandomAccessFile* input = nullptr) const;
 
  private:
   ParquetBloomRowGroupFilter() = default;

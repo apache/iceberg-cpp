@@ -312,8 +312,9 @@ class ParquetReader::Impl {
                 reader_->parquet_reader()->GetBloomFilterReader().RowGroup(
                     row_group_index);
             ICEBERG_ASSIGN_OR_RAISE(
-                should_read, bloom_filter_->ShouldRead(reader_->manifest(), *row_group,
-                                                       bloom_reader.get()));
+                should_read,
+                bloom_filter_->ShouldRead(reader_->manifest(), *row_group,
+                                          bloom_reader.get(), input_stream_.get()));
           } catch (const ::parquet::ParquetException& e) {
             return Invalid("Cannot read Parquet Bloom filter: {}", e.what());
           }

@@ -18,8 +18,12 @@
  */
 
 #include <algorithm>
+#include <array>
+#include <fstream>
+#include <iterator>
 #include <limits>
 #include <map>
+#include <numeric>
 
 #include <arrow/array.h>
 #include <arrow/builder.h>
@@ -53,6 +57,7 @@
 #include "iceberg/schema_internal.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/test/mock_io.h"
+#include "iceberg/test/test_config.h"
 #include "iceberg/type.h"
 #include "iceberg/util/uuid.h"
 
@@ -232,6 +237,16 @@ class ParquetBloomFilterTest : public ::testing::Test {
     EXPECT_EQ(actual, expected);
   }
 
+  void CheckPreBoundEquality(const Literal& literal,
+                             const std::vector<int64_t>& expected) {
+    ICEBERG_UNWRAP_OR_FAIL(auto ref, Expressions::Ref("key")->Bind(*schema_, true));
+    ICEBERG_UNWRAP_OR_FAIL(
+        auto eq, BoundLiteralPredicate::Make(Expression::Operation::kEq, ref, literal));
+    auto options = Options(nullptr);
+    options.filter = std::move(eq);
+    Check(options, expected);
+  }
+
   Result<std::vector<BloomReadRange>> RecordOpenReads(const ReaderOptions& options) {
     auto io = std::static_pointer_cast<BloomRecordingFileIO>(io_);
     io->reads.clear();
@@ -268,9 +283,9 @@ class ParquetBloomFilterTest : public ::testing::Test {
     for (int i = 0; i < metadata_->num_row_groups(); ++i) {
       SCOPED_TRACE(expression->ToString() + " group " + std::to_string(i));
       auto bloom_reader = reader->GetBloomFilterReader().RowGroup(i);
-      ICEBERG_UNWRAP_OR_FAIL(
-          auto actual,
-          filter->ShouldRead(manifest, *metadata_->RowGroup(i), bloom_reader.get()));
+      ICEBERG_UNWRAP_OR_FAIL(auto actual,
+                             filter->ShouldRead(manifest, *metadata_->RowGroup(i),
+                                                bloom_reader.get(), input.get()));
       EXPECT_EQ(actual, expected[i]);
     }
   }
@@ -438,6 +453,31 @@ TEST_F(ParquetBloomFilterTest, PhysicalTypesAndSchemaPromotions) {
     CheckBloom(Expressions::In("key", {test.present, test.absent}), {false, true, false});
     Check(Options(Expressions::Equal("key", test.present)), {2, 3});
   }
+}
+
+TEST_F(ParquetBloomFilterTest, ParquetGoThreeBlockBloomFilter) {
+  // parquet-go v0.25.1 wrote keys 0..59 with SplitBlockFilter(10, "key").
+  // The resulting 96-byte bitset has three 256-bit blocks.
+  std::ifstream file(
+      std::string(ICEBERG_TEST_RESOURCES) + "/parquet-go-bloom-3-blocks.parquet",
+      std::ios::binary);
+  ASSERT_TRUE(file.is_open());
+  auto io = std::static_pointer_cast<MockFileIO>(io_);
+  io->AddFile(path_, std::string(std::istreambuf_iterator<char>(file), {}));
+  auto options = Options(Expressions::Equal("key", Literal::Int(42)));
+  std::vector<int64_t> expected(60);
+  std::iota(expected.begin(), expected.end(), 0);
+  Check(options, expected);
+
+  // A 95-byte bitset ends in a partial block and must still report an error.
+  ICEBERG_UNWRAP_OR_FAIL(auto input, arrow::OpenArrowInputStream(io_, path_));
+  auto reader = ::parquet::ParquetFileReader::Open(input);
+  auto offset = reader->metadata()->RowGroup(0)->ColumnChunk(0)->bloom_filter_offset();
+  ASSERT_TRUE(offset.has_value());
+  auto& size_byte = io->FileData(path_).at(*offset + 1);
+  ASSERT_EQ(size_byte, std::byte{0xc0});  // Compact I32 96: c0 01.
+  size_byte = std::byte{0xbe};            // Compact I32 95: be 01.
+  EXPECT_THAT(Read(options), HasErrorMessage("Cannot read Parquet Bloom filter"));
 }
 
 TEST_F(ParquetBloomFilterTest, MissingBloomFiltersAndFields) {
@@ -649,6 +689,35 @@ class CountingBloomReader : public ::parquet::RowGroupBloomFilterReader {
   std::shared_ptr<::parquet::RowGroupBloomFilterReader> delegate_;
   Mode mode_;
 };
+
+TEST_F(ParquetBloomFilterTest, InWithNaNDoesNotLoadBloomFilters) {
+  SetKeyType(float64());
+  ASSERT_THAT(Write(), IsOk());
+  const std::array values{Literal::Double(7),
+                          Literal::Double(std::numeric_limits<double>::quiet_NaN())};
+  ICEBERG_UNWRAP_OR_FAIL(auto ref, Expressions::Ref("key")->Bind(*schema_, true));
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto in, BoundSetPredicate::Make(Expression::Operation::kIn, ref, values));
+  ICEBERG_UNWRAP_OR_FAIL(auto not_in, in->Negate());
+  ::parquet::arrow::SchemaManifest manifest;
+  ASSERT_TRUE(::parquet::arrow::SchemaManifest::Make(
+                  metadata_->schema(), nullptr,
+                  ::parquet::default_arrow_reader_properties(), &manifest)
+                  .ok());
+  CountingBloomReader tracked(nullptr, CountingBloomReader::Mode::kThrow);
+  for (const auto& expression : {std::shared_ptr<Expression>(std::move(in)),
+                                 Expressions::Not(std::move(not_in))}) {
+    ICEBERG_UNWRAP_OR_FAIL(auto filter,
+                           ParquetBloomRowGroupFilter::Make(Options(expression).filter,
+                                                            *metadata_->schema()));
+    for (int i = 0; i < metadata_->num_row_groups(); ++i) {
+      ICEBERG_UNWRAP_OR_FAIL(
+          auto read, filter->ShouldRead(manifest, *metadata_->RowGroup(i), &tracked));
+      EXPECT_TRUE(read);
+    }
+  }
+  EXPECT_EQ(tracked.calls, 0);
+}
 
 TEST_F(ParquetBloomFilterTest, CacheReadErrorsAndFalsePositives) {
   ASSERT_THAT(Write(), IsOk());
@@ -904,6 +973,16 @@ TEST_F(ParquetBloomFilterTest, ReaderReuseResetsBloomFilter) {
   ASSERT_THAT(reader->Close(), IsOk());
 }
 
+TEST_F(ParquetBloomFilterTest, PreBoundDecimalWithDifferentScaleRetainsMatchingRows) {
+  // With footer statistics disabled, only the Bloom filter can discard these rows.
+  for (int precision : {9, 18, 30}) {
+    SCOPED_TRACE(precision);
+    SetKeyType(decimal(precision, 2));
+    ASSERT_THAT(Write(false, R"([["5.00",0],["6.00",1]])"), IsOk());
+    CheckPreBoundEquality(Literal::Decimal(50, precision, 1), {0, 1});
+  }
+}
+
 TEST_F(ParquetBloomFilterTest, NegativeAndPromotedDecimalsUseFileWidth) {
   for (int precision : {9, 18, 30}) {
     SetKeyType(decimal(precision, 2));
@@ -968,6 +1047,7 @@ TEST_F(ParquetBloomFilterTest, BinaryDecimalsWithDifferentSignExtensionWidths) {
     CheckBloom(Expressions::Equal("key", Literal::Decimal(-500, 18, 2)), {true});
     CheckBloom(Expressions::Equal("key", Literal::Decimal(700, 18, 2)), {false});
     Check(Options(Expressions::Equal("key", Literal::Decimal(-500, 18, 2))), {0, 1});
+    CheckPreBoundEquality(Literal::Decimal(-50, 18, 1), {0, 1});
   }
 }
 
