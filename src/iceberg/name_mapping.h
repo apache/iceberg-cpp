@@ -56,12 +56,19 @@ struct ICEBERG_EXPORT MappedField {
 using MappedFieldConstRef = std::reference_wrapper<const MappedField>;
 
 /// \brief A list of field mappings for child field of structs, maps, and lists.
+///
+/// The lookup indexes are built on construction, so a const instance is safe to share
+/// across threads.
 class ICEBERG_EXPORT MappedFields {
  public:
   /// \brief Create a new MappedFields instance.
   /// \param[in] fields The list of field mappings.
   /// \return A new MappedFields instance.
   static std::unique_ptr<MappedFields> Make(std::vector<MappedField> fields);
+
+  // The indexes refer into `fields_`, so a copy would point at the source's fields.
+  MappedFields(const MappedFields&) = delete;
+  MappedFields& operator=(const MappedFields&) = delete;
 
   /// \brief Get the field for a given field ID.
   /// \param[in] id The ID of the field.
@@ -84,18 +91,17 @@ class ICEBERG_EXPORT MappedFields {
  private:
   explicit MappedFields(std::vector<MappedField> fields);
 
-  const std::unordered_map<std::string_view, int32_t>& LazyNameToId() const;
-  const std::unordered_map<int32_t, MappedFieldConstRef>& LazyIdToField() const;
-
  private:
   std::vector<MappedField> fields_;
 
-  // Lazy-initialized mappings
-  mutable std::unordered_map<std::string_view, int32_t> name_to_id_;
-  mutable std::unordered_map<int32_t, MappedFieldConstRef> id_to_field_;
+  std::unordered_map<std::string_view, int32_t> name_to_id_;
+  std::unordered_map<int32_t, MappedFieldConstRef> id_to_field_;
 };
 
 /// \brief Represents a mapping from external schema names to Iceberg type IDs.
+///
+/// The lookup indexes are built on construction, so a const instance is safe to share
+/// across threads, for example by the readers of a scan.
 class ICEBERG_EXPORT NameMapping {
  public:
   /// \brief Create a new NameMapping instance.
@@ -124,15 +130,11 @@ class ICEBERG_EXPORT NameMapping {
  private:
   explicit NameMapping(std::unique_ptr<MappedFields> mapping);
 
-  const std::unordered_map<int32_t, MappedFieldConstRef>& LazyFieldsById() const;
-  const std::unordered_map<std::string, MappedFieldConstRef>& LazyFieldsByName() const;
-
  private:
   std::unique_ptr<MappedFields> mapping_;
 
-  // Lazy-initialized mappings
-  mutable std::unordered_map<int32_t, MappedFieldConstRef> fields_by_id_;
-  mutable std::unordered_map<std::string, MappedFieldConstRef> fields_by_name_;
+  std::unordered_map<int32_t, MappedFieldConstRef> fields_by_id_;
+  std::unordered_map<std::string, MappedFieldConstRef> fields_by_name_;
 };
 
 ICEBERG_EXPORT std::string ToString(const MappedField& field);
