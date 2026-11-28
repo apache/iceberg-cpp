@@ -52,6 +52,7 @@
 #include "iceberg/metadata_columns.h"
 #include "iceberg/parquet/parquet_register.h"
 #include "iceberg/schema_internal.h"
+#include "iceberg/test/executor.h"
 #include "iceberg/test/scan_test_base.h"
 #include "iceberg/util/macros.h"
 
@@ -133,6 +134,8 @@ Result<std::vector<Row>> CollectRows(ArrowArrayStream* stream) {
 
 class ParallelTableScanTest : public ScanTestBase {
  protected:
+  test::ThreadPoolExecutor executor_{4};
+
   static constexpr int64_t kSnapshotId = 1000L;
   static constexpr int64_t kSequenceNumber = 1L;
 
@@ -337,6 +340,7 @@ class ParallelTableScanTest : public ScanTestBase {
     ICEBERG_ASSIGN_OR_RAISE(
         auto stream, ParallelScanReader::Open(std::move(groups),
                                               {.reader_options = ReaderOptions(settings),
+                                               .executor = &executor_,
                                                .worker_count = workers,
                                                .max_queued_batches = max_queued_batches,
                                                .max_queued_bytes = max_queued_bytes}));
@@ -517,6 +521,55 @@ TEST_P(ParallelTableScanTest, CaseInsensitiveResidualFilter) {
   ExpectParallelMatches(metadata, settings, expected);
 }
 
+TEST_P(ParallelTableScanTest, PlannedProjectionOmitsFoldedResidualFields) {
+  ICEBERG_UNWRAP_OR_FAIL(auto file, WriteDataFile("folded.parquet", 0, 25));
+  auto metadata = MakeMetadata({file});
+  for (bool case_sensitive : {true, false}) {
+    for (bool combined : {false, true}) {
+      SCOPED_TRACE(case_sensitive);
+      SCOPED_TRACE(combined);
+      ICEBERG_UNWRAP_OR_FAIL(auto builder, MakeScanBuilder<DataTableScan>(metadata));
+      auto filter = Expressions::NotNull(case_sensitive ? "id" : "ID");
+      std::shared_ptr<Expression> residual = filter;
+      if (combined) {
+        residual = Expressions::And(
+            filter, Expressions::Equal("data", Literal::String("value-3")));
+      }
+      builder->Select({"data"}).CaseSensitive(case_sensitive).Filter(residual);
+      ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
+      ICEBERG_UNWRAP_OR_FAIL(auto projection, scan->schema());
+      ASSERT_EQ(projection->fields().size(), 1);
+      ASSERT_EQ(projection->fields()[0].name(), "data");
+      ICEBERG_UNWRAP_OR_FAIL(auto groups, scan->PlanTasksStream());
+      FileScanTaskReader::Options reader_options{.io = file_io_,
+                                                 .table_schema = schema_,
+                                                 .projected_schema = projection,
+                                                 .case_sensitive = case_sensitive};
+      ICEBERG_UNWRAP_OR_FAIL(
+          auto stream,
+          ParallelScanReader::Open(std::move(groups), {.reader_options = reader_options,
+                                                       .executor = &executor_,
+                                                       .worker_count = 4,
+                                                       .max_queued_batches = 1,
+                                                       .max_queued_bytes = 1 << 20}));
+      int64_t rows = 0;
+      while (true) {
+        ArrowArray batch{};
+        const int code = stream.get_next(&stream, &batch);
+        EXPECT_EQ(code, 0) << stream.get_last_error(&stream);
+        if (code != 0 || batch.release == nullptr) {
+          break;
+        }
+        EXPECT_EQ(batch.n_children, 1);
+        rows += batch.length;
+        batch.release(&batch);
+      }
+      stream.release(&stream);
+      EXPECT_EQ(rows, combined ? 3 : 25);
+    }
+  }
+}
+
 TEST_P(ParallelTableScanTest, PositionDeletesApplyToEverySplit) {
   if (GetParam() < 2) {
     GTEST_SKIP() << "Delete files require format version 2";
@@ -598,6 +651,7 @@ TEST_P(ParallelTableScanTest, EarlyReleaseBetweenCallbacks) {
   ICEBERG_UNWRAP_OR_FAIL(
       auto stream, ParallelScanReader::Open(std::move(groups),
                                             {.reader_options = ReaderOptions(settings),
+                                             .executor = &executor_,
                                              .worker_count = 4,
                                              .max_queued_batches = 1,
                                              .max_queued_bytes = 1 << 20}));

@@ -56,6 +56,7 @@
 #include <arrow/builder.h>
 #include <arrow/c/bridge.h>
 #include <arrow/memory_pool.h>
+#include <arrow/util/thread_pool.h>
 #include <sys/resource.h>
 
 #include "iceberg/arrow/arrow_io_internal.h"
@@ -75,6 +76,7 @@
 #include "iceberg/table_identifier.h"
 #include "iceberg/type.h"
 #include "iceberg/update/fast_append.h"
+#include "iceberg/util/executor.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg {
@@ -322,9 +324,23 @@ Result<Run> RunSerial(const Table& table, const std::shared_ptr<FileIO>& io,
   return run;
 }
 
+// Reuse Arrow's process-wide bounded CPU pool across benchmark scans.
+class ScanExecutor : public Executor {
+ public:
+  Status Submit(ExecutorTask task) override {
+    auto status = ::arrow::internal::GetCpuThreadPool()->Spawn(
+        [task = std::move(task)]() mutable { std::move(task)(); });
+    if (!status.ok()) {
+      return UnknownError("Arrow executor rejected a scan task: {}", status.ToString());
+    }
+    return {};
+  }
+};
+
 Result<Run> RunParallel(const Table& table, const std::shared_ptr<FileIO>& io,
                         const std::shared_ptr<Schema>& schema, int workers, bool filter) {
   Run run;
+  static ScanExecutor executor;
   auto metrics = std::make_shared<internal::ParallelScanMetrics>();
   const auto before = ReadCounters();
   const auto start = Clock::now();
@@ -333,6 +349,7 @@ Result<Run> RunParallel(const Table& table, const std::shared_ptr<FileIO>& io,
   ICEBERG_ASSIGN_OR_RAISE(auto stream, internal::OpenParallelScan(
                                            std::move(groups),
                                            {.reader_options = ReaderOptions(io, schema),
+                                            .executor = &executor,
                                             .worker_count = workers,
                                             .max_queued_batches = 2 * workers,
                                             .max_queued_bytes = int64_t{64} << 20},
