@@ -632,7 +632,7 @@ Result<bool> StrictMetricsEvaluator::Evaluate(const DataFile& data_file) const {
   // For -1, fall through to normal strict metrics evaluation rather than
   // assuming all rows must match.
   StrictMetricsVisitor visitor(data_file, *schema_);
-  return Visit<bool, StrictMetricsVisitor>(expr_, visitor);
+  return VisitEvaluator(expr_, visitor);
 }
 
 }  // namespace iceberg

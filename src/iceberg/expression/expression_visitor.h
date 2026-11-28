@@ -329,4 +329,60 @@ Result<R> Visit(const std::shared_ptr<Expression>& expr, V& visitor) {
   }
 }
 
+/// \brief Traverse an expression tree with a boolean visitor, short-circuiting And/Or.
+///
+/// Like Visit, but skips the right child of an And when the left child is false and of
+/// an Or when the left child is true, so errors from a skipped child are not reported.
+/// Mirrors Java's ExpressionVisitors.visitEvaluator.
+///
+/// \tparam V The visitor type (must derive from ExpressionVisitor<bool>)
+/// \param expr The expression to traverse
+/// \param visitor The visitor to use for traversal
+/// \return The result produced by the visitor for the root expression node
+template <typename V>
+  requires std::derived_from<V, ExpressionVisitor<bool>>
+Result<bool> VisitEvaluator(const std::shared_ptr<Expression>& expr, V& visitor) {
+  ICEBERG_DCHECK(expr != nullptr, "Expression cannot be null");
+
+  if (expr->is_bound_predicate()) {
+    return visitor.Predicate(std::dynamic_pointer_cast<BoundPredicate>(expr));
+  }
+
+  if (expr->is_unbound_predicate()) {
+    return visitor.Predicate(std::dynamic_pointer_cast<UnboundPredicate>(expr));
+  }
+
+  switch (expr->op()) {
+    case Expression::Operation::kNot: {
+      const auto& not_expr = internal::checked_pointer_cast<Not>(expr);
+      ICEBERG_ASSIGN_OR_RAISE(auto child_result,
+                              VisitEvaluator(not_expr->child(), visitor));
+      return visitor.Not(child_result);
+    }
+    case Expression::Operation::kAnd: {
+      const auto& and_expr = internal::checked_pointer_cast<And>(expr);
+      ICEBERG_ASSIGN_OR_RAISE(auto left_result,
+                              VisitEvaluator(and_expr->left(), visitor));
+      if (!left_result) {
+        return visitor.AlwaysFalse();
+      }
+      ICEBERG_ASSIGN_OR_RAISE(auto right_result,
+                              VisitEvaluator(and_expr->right(), visitor));
+      return visitor.And(left_result, right_result);
+    }
+    case Expression::Operation::kOr: {
+      const auto& or_expr = internal::checked_pointer_cast<Or>(expr);
+      ICEBERG_ASSIGN_OR_RAISE(auto left_result, VisitEvaluator(or_expr->left(), visitor));
+      if (left_result) {
+        return visitor.AlwaysTrue();
+      }
+      ICEBERG_ASSIGN_OR_RAISE(auto right_result,
+                              VisitEvaluator(or_expr->right(), visitor));
+      return visitor.Or(left_result, right_result);
+    }
+    default:
+      return Visit<bool, V>(expr, visitor);
+  }
+}
+
 }  // namespace iceberg

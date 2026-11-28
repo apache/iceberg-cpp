@@ -1229,18 +1229,27 @@ TEST(EvaluatorRawComparisonTest, NanPredicatesRejectMismatchedFloatTypes) {
   }
 }
 
-TEST(EvaluatorRawComparisonTest, CompoundExpressionsKeepErrorsFromBothSides) {
+TEST(EvaluatorRawComparisonTest, CompoundExpressionsSkipDecidedRightSide) {
   Schema schema({SchemaField::MakeRequired(1, "id", int32()),
                  SchemaField::MakeOptional(2, "name", string())});
-  // A required field that is null is an error. The left side is false, but the
-  // right side is still evaluated, as before.
-  auto expr = Expressions::And(Expressions::Equal("name", Literal::String("x")),
-                               Expressions::GreaterThan("id", Literal::Int(0)));
-  ICEBERG_UNWRAP_OR_FAIL(auto evaluator, Evaluator::Make(schema, expr));
-  ScalarRow bad_row({std::monostate{}, std::string_view("y")});
-  EXPECT_FALSE(evaluator->Evaluate(bad_row).has_value());
-  ScalarRow good_row({int32_t{1}, std::string_view("x")});
-  EXPECT_THAT(evaluator->Evaluate(good_row), HasValue(::testing::Eq(true)));
+  // A required field that is null is an error, so the right side reports an error
+  // only if it is evaluated.
+  auto name_is_x = Expressions::Equal("name", Literal::String("x"));
+  auto id_positive = Expressions::GreaterThan("id", Literal::Int(0));
+  ScalarRow null_id_x({std::monostate{}, std::string_view("x")});
+  ScalarRow null_id_y({std::monostate{}, std::string_view("y")});
+
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto and_evaluator,
+      Evaluator::Make(schema, Expressions::And(name_is_x, id_positive)));
+  EXPECT_THAT(and_evaluator->Evaluate(null_id_y), HasValue(::testing::Eq(false)));
+  EXPECT_FALSE(and_evaluator->Evaluate(null_id_x).has_value());
+
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto or_evaluator,
+      Evaluator::Make(schema, Expressions::Or(name_is_x, id_positive)));
+  EXPECT_THAT(or_evaluator->Evaluate(null_id_x), HasValue(::testing::Eq(true)));
+  EXPECT_FALSE(or_evaluator->Evaluate(null_id_y).has_value());
 }
 
 TEST(EvaluatorRawComparisonTest, TransformsAndSetsUseLiteralEvaluation) {
