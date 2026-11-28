@@ -889,6 +889,9 @@ TEST_F(InclusiveMetricsEvaluatorMigratedTest, IntegerInTest) {
                           {Literal::Long(kIntMaxValue), Literal::Long(kIntMaxValue + 1)}),
           kRowsMightMatch, file1_);
   RunTest(Expressions::In(
+              "id", {Literal::Long(kIntMinValue - 1), Literal::Long(kIntMaxValue + 1)}),
+          kRowCannotMatch, file1_);
+  RunTest(Expressions::In(
               "id", {Literal::Long(kIntMaxValue + 1), Literal::Long(kIntMaxValue + 2)}),
           kRowCannotMatch, file1_);
   RunTest(Expressions::In(
@@ -924,6 +927,35 @@ TEST_F(InclusiveMetricsEvaluatorMigratedTest, InWithNaNAndMissingLowerBound) {
   RunTest(
       Expressions::In("some_nans", {Literal::Float(51.0F), Literal::Float(kFloatNan)}),
       kRowsMightMatch, file1_);
+}
+
+TEST_F(InclusiveMetricsEvaluatorMigratedTest, InWithNaNValueCounts) {
+  RunTest(Expressions::In("all_nans", {Literal::Double(kDoubleNan)}), kRowsMightMatch,
+          file1_);
+  RunTest(Expressions::In("all_nans", {Literal::Double(kDoubleNan), Literal::Double(1)}),
+          kRowsMightMatch, file1_);
+  RunTest(Expressions::In("all_nans", {Literal::Double(1), Literal::Double(2)}),
+          kRowCannotMatch, file1_);
+
+  file1_->upper_bounds[9] = Literal::Float(0).Serialize().value();
+  auto expr = Expressions::In("no_nans", {Literal::Float(kFloatNan), Literal::Float(1)});
+  RunTest(expr, kRowCannotMatch, file1_);
+  file1_->nan_value_counts.erase(9);
+  RunTest(expr, kRowsMightMatch, file1_);
+}
+
+TEST_F(InclusiveMetricsEvaluatorMigratedTest, InWithNaNBound) {
+  auto expr = Expressions::In("some_nans", {Literal::Float(1), Literal::Float(2)});
+  auto singleton = Expressions::In("some_nans", {Literal::Float(1)});
+  file1_->lower_bounds[8] = Literal::Float(kFloatNan).Serialize().value();
+  file1_->upper_bounds[8] = Literal::Float(0).Serialize().value();
+  RunTest(expr, kRowsMightMatch, file1_);
+  RunTest(singleton, kRowsMightMatch, file1_);
+
+  file1_->lower_bounds[8] = Literal::Float(3).Serialize().value();
+  file1_->upper_bounds[8] = Literal::Float(kFloatNan).Serialize().value();
+  RunTest(expr, kRowsMightMatch, file1_);
+  RunTest(singleton, kRowsMightMatch, file1_);
 }
 
 TEST_F(InclusiveMetricsEvaluatorMigratedTest, IntegerNotInTest) {
