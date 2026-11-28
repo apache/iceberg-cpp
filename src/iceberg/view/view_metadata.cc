@@ -17,14 +17,19 @@
  * under the License.
  */
 
-#include "iceberg/view_metadata.h"
+#include "iceberg/view/view_metadata.h"
 
 #include <algorithm>
+#include <functional>
+#include <unordered_map>
 #include <unordered_set>
 
 #include "iceberg/schema.h"
 #include "iceberg/util/macros.h"
 #include "iceberg/util/string_util.h"
+#include "iceberg/util/type_util.h"
+#include "iceberg/util/uuid.h"
+#include "iceberg/util/visit_type.h"
 
 namespace iceberg {
 
@@ -33,8 +38,8 @@ Status ViewMetadata::Validate() const {
     return Invalid("Unsupported view format version: {}",
                    static_cast<int>(format_version));
   }
-  if (view_uuid.empty()) {
-    return Invalid("View UUID must not be empty");
+  if (auto uuid = Uuid::FromString(view_uuid); !uuid.has_value()) {
+    return Invalid("Invalid view UUID '{}': {}", view_uuid, uuid.error().message);
   }
   if (location.empty()) {
     return Invalid("View location must not be empty");
@@ -50,6 +55,12 @@ Status ViewMetadata::Validate() const {
     }
     if (!schema_ids.insert(schema->schema_id()).second) {
       return Invalid("Duplicate view schema ID: {}", schema->schema_id());
+    }
+    std::unordered_map<int32_t, std::reference_wrapper<const SchemaField>> fields;
+    IdToFieldVisitor visitor(fields);
+    if (auto status = VisitTypeInline(*schema, &visitor); !status.has_value()) {
+      return Invalid("Invalid view schema {}: {}", schema->schema_id(),
+                     status.error().message);
     }
   }
 
@@ -80,12 +91,7 @@ Status ViewMetadata::Validate() const {
       return Invalid("View version {} references unlisted schema ID {}",
                      version->version_id, version->schema_id);
     }
-    if (version->default_namespace.levels.empty()) {
-      return Invalid("View version {} must have a non-empty default namespace",
-                     version->version_id);
-    }
-
-    std::vector<std::string_view> dialects;
+    std::unordered_set<std::string> dialects;
     for (const auto& repr : version->representations) {
       if (const auto* sql = GetSql(repr)) {
         if (sql->sql.empty()) {
@@ -96,19 +102,22 @@ Status ViewMetadata::Validate() const {
           return Invalid("View version {} has an SQL representation without a dialect",
                          version->version_id);
         }
-        for (const auto& dialect : dialects) {
-          if (StringUtils::EqualsIgnoreCaseAscii(dialect, sql->dialect)) {
-            return Invalid(
-                "View version {} has multiple SQL representations for dialect '{}'",
-                version->version_id, sql->dialect);
-          }
+        if (!dialects.insert(StringUtils::ToLower(sql->dialect)).second) {
+          return Invalid(
+              "View version {} has multiple SQL representations for dialect '{}'",
+              version->version_id, sql->dialect);
         }
-        dialects.push_back(sql->dialect);
       } else {
         const auto& unknown = std::get<UnknownViewRepresentation>(repr);
         if (unknown.type.empty()) {
           return Invalid("View version {} has an unknown representation without a type",
                          version->version_id);
+        }
+        // Java's equalsIgnoreCase also recognizes the long s (U+017F) as 's'.
+        if (StringUtils::EqualsIgnoreCase(unknown.type, kSqlRepresentationType) ||
+            StringUtils::EqualsIgnoreCase(unknown.type, "ſql")) {
+          return Invalid("View version {} must use an SQL representation for type '{}'",
+                         version->version_id, unknown.type);
         }
       }
     }

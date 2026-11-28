@@ -19,7 +19,7 @@
 
 #pragma once
 
-/// \file iceberg/view_version.h
+/// \file iceberg/view/view_version.h
 /// A version of an Iceberg view.
 
 #include <cstdint>
@@ -39,8 +39,8 @@ namespace iceberg {
 /// \brief The SQL representation of a view version's definition.
 ///
 /// Each SQL representation pairs a query with its engine dialect, such as
-/// "spark". Dialect strings are preserved verbatim and compared with ASCII
-/// case folding.
+/// "spark". Dialect strings are preserved verbatim and compared after Unicode
+/// lower-casing with StringUtils::ToLower.
 struct ICEBERG_EXPORT SqlViewRepresentation {
   /// The SQL SELECT statement that defines the view.
   std::string sql;
@@ -79,11 +79,17 @@ inline constexpr std::string_view kSqlRepresentationType = "sql";
 /// is modified or destroyed.
 ICEBERG_EXPORT const SqlViewRepresentation* GetSql(const ViewRepresentation& repr);
 
+/// \brief Reject temporary variants whose borrowed SQL representation would dangle.
+const SqlViewRepresentation* GetSql(const ViewRepresentation&& repr) = delete;
+
 /// \brief Get the representation's type identifier.
 ///
 /// Returns kSqlRepresentationType for SQL representations and the opaque
 /// type identifier otherwise.
 ICEBERG_EXPORT std::string_view RepresentationType(const ViewRepresentation& repr);
+
+/// \brief Reject temporary variants whose borrowed type identifier would dangle.
+std::string_view RepresentationType(const ViewRepresentation&& repr) = delete;
 
 /// \brief A view version, the state of a view's definition at a point in time.
 ///
@@ -92,11 +98,11 @@ ICEBERG_EXPORT std::string_view RepresentationType(const ViewRepresentation& rep
 /// representation per dialect.
 struct ICEBERG_EXPORT ViewVersion {
   /// ID of the view version.
-  int32_t version_id;
+  int32_t version_id = 0;
   /// ID of the schema for this view version.
-  int32_t schema_id;
+  int32_t schema_id = 0;
   /// Timestamp in milliseconds from the unix epoch when the version was created.
-  TimePointMs timestamp_ms;
+  TimePointMs timestamp_ms{};
   /// Summary metadata about the version, such as "engine-name" and
   /// "engine-version".
   std::unordered_map<std::string, std::string> summary;

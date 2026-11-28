@@ -17,7 +17,7 @@
  * under the License.
  */
 
-#include "iceberg/view_version.h"
+#include "iceberg/view/view_version.h"
 
 namespace iceberg {
 

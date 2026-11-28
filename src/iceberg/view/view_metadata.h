@@ -19,7 +19,7 @@
 
 #pragma once
 
-/// \file iceberg/view_metadata.h
+/// \file iceberg/view/view_metadata.h
 /// View metadata for Iceberg views.
 
 #include <cstdint>
@@ -32,7 +32,8 @@
 #include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
 #include "iceberg/util/timepoint.h"
-#include "iceberg/view_version.h"
+#include "iceberg/view/type_fwd.h"
+#include "iceberg/view/view_version.h"
 
 namespace iceberg {
 
@@ -40,9 +41,9 @@ namespace iceberg {
 /// current version of a view.
 struct ICEBERG_EXPORT ViewHistoryEntry {
   /// The timestamp in milliseconds of the change to the current version.
-  TimePointMs timestamp_ms;
+  TimePointMs timestamp_ms{};
   /// ID of the view version that was made current.
-  int32_t version_id;
+  int32_t version_id = 0;
 
   /// \brief Compare two view history entries for equality.
   friend bool operator==(const ViewHistoryEntry& lhs, const ViewHistoryEntry& rhs) {
@@ -61,7 +62,7 @@ struct ICEBERG_EXPORT ViewMetadata {
   static constexpr int8_t kSupportedViewFormatVersion = 1;
 
   /// An integer version number for the view format; must be 1.
-  int8_t format_version;
+  int8_t format_version = kDefaultViewFormatVersion;
   /// A UUID that identifies the view, generated when the view is created.
   std::string view_uuid;
   /// The view's base location; used to create metadata file locations.
@@ -69,7 +70,7 @@ struct ICEBERG_EXPORT ViewMetadata {
   /// A list of known schemas.
   std::vector<std::shared_ptr<iceberg::Schema>> schemas;
   /// ID of the current version of the view.
-  int32_t current_version_id;
+  int32_t current_version_id = -1;
   /// A list of known versions of the view.
   std::vector<std::shared_ptr<ViewVersion>> versions;
   /// A list of timestamp and version ID pairs that encodes changes to the

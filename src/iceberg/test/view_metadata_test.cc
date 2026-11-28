@@ -17,10 +17,11 @@
  * under the License.
  */
 
-#include "iceberg/view_metadata.h"
+#include "iceberg/view/view_metadata.h"
 
 #include <chrono>
 #include <memory>
+#include <utility>
 #include <vector>
 
 #include <gtest/gtest.h>
@@ -32,6 +33,27 @@
 
 namespace iceberg {
 namespace {
+
+template <typename T>
+concept CanGetSql = requires(T&& repr) { GetSql(std::forward<T>(repr)); };
+
+template <typename T>
+concept CanGetRepresentationType =
+    requires(T&& repr) { RepresentationType(std::forward<T>(repr)); };
+
+static_assert(CanGetSql<ViewRepresentation&>);
+static_assert(CanGetSql<const ViewRepresentation&>);
+static_assert(!CanGetSql<ViewRepresentation>);
+static_assert(!CanGetSql<const ViewRepresentation>);
+static_assert(!CanGetSql<SqlViewRepresentation&>);
+static_assert(!CanGetSql<const SqlViewRepresentation&>);
+static_assert(!CanGetSql<UnknownViewRepresentation&>);
+static_assert(CanGetRepresentationType<ViewRepresentation&>);
+static_assert(CanGetRepresentationType<const ViewRepresentation&>);
+static_assert(!CanGetRepresentationType<ViewRepresentation>);
+static_assert(!CanGetRepresentationType<const ViewRepresentation>);
+static_assert(!CanGetRepresentationType<SqlViewRepresentation&>);
+static_assert(!CanGetRepresentationType<UnknownViewRepresentation&>);
 
 ViewRepresentation SqlRepr(std::string sql, std::string dialect) {
   return SqlViewRepresentation{.sql = std::move(sql), .dialect = std::move(dialect)};
@@ -121,10 +143,40 @@ TEST(ViewMetadataTest, ValidateRejectsUnsupportedFormatVersion) {
   EXPECT_THAT(metadata.Validate(), IsError(ErrorKind::kInvalid));
 }
 
+TEST(ViewMetadataTest, DefaultConstructionInitializesScalars) {
+  ViewMetadata metadata;
+  EXPECT_EQ(metadata.format_version, ViewMetadata::kDefaultViewFormatVersion);
+  EXPECT_EQ(metadata.current_version_id, -1);
+  EXPECT_THAT(metadata.Validate(), IsError(ErrorKind::kInvalid));
+  ViewVersion version;
+  EXPECT_EQ(version.version_id, 0);
+  EXPECT_EQ(version.schema_id, 0);
+  EXPECT_EQ(version.timestamp_ms, TimePointMs{});
+  ViewHistoryEntry entry;
+  EXPECT_EQ(entry.version_id, 0);
+  EXPECT_EQ(entry.timestamp_ms, TimePointMs{});
+}
+
 TEST(ViewMetadataTest, ValidateRejectsEmptyUuid) {
   ViewMetadata metadata = MakeValidMetadata();
   metadata.view_uuid.clear();
   EXPECT_THAT(metadata.Validate(), IsError(ErrorKind::kInvalid));
+}
+
+TEST(ViewMetadataTest, ValidateRejectsMalformedUuid) {
+  for (const auto* uuid : {"x", "fa6506c3-7681-40c8-86dc-e36561f8338g",
+                           "fa6506c3-7681-40c8-86dc-e36561f8338"}) {
+    SCOPED_TRACE(uuid);
+    auto metadata = MakeValidMetadata();
+    metadata.view_uuid = uuid;
+    EXPECT_THAT(metadata.Validate(), IsError(ErrorKind::kInvalid));
+  }
+}
+
+TEST(ViewMetadataTest, ValidateAcceptsUppercaseUuid) {
+  auto metadata = MakeValidMetadata();
+  metadata.view_uuid = "FA6506C3-7681-40C8-86DC-E36561F83385";
+  EXPECT_THAT(metadata.Validate(), IsOk());
 }
 
 TEST(ViewMetadataTest, ValidateRejectsEmptyLocation) {
@@ -149,6 +201,32 @@ TEST(ViewMetadataTest, ValidateRejectsDuplicateSchemaIds) {
   ViewMetadata metadata = MakeValidMetadata();
   metadata.schemas.push_back(MakeSchema(0));
   EXPECT_THAT(metadata.Validate(), IsError(ErrorKind::kInvalid));
+}
+
+TEST(ViewMetadataTest, ValidateRejectsDuplicateFieldIds) {
+  auto metadata = MakeValidMetadata();
+  metadata.schemas = {std::make_shared<Schema>(
+      std::vector<SchemaField>{SchemaField::MakeOptional(1, "first", int32()),
+                               SchemaField::MakeOptional(1, "second", string())})};
+  EXPECT_THAT(metadata.Validate(), IsError(ErrorKind::kInvalid));
+}
+
+TEST(ViewMetadataTest, ValidateRejectsNestedDuplicateFieldIds) {
+  auto metadata = MakeValidMetadata();
+  auto nested = std::make_shared<StructType>(
+      std::vector<SchemaField>{SchemaField::MakeOptional(1, "inner", string())});
+  metadata.schemas = {std::make_shared<Schema>(
+      std::vector<SchemaField>{SchemaField::MakeOptional(1, "outer", int32()),
+                               SchemaField::MakeOptional(2, "nested", nested)})};
+  EXPECT_THAT(metadata.Validate(), IsError(ErrorKind::kInvalid));
+}
+
+TEST(ViewMetadataTest, ValidateDoesNotApplyTableSchemaRestrictions) {
+  auto metadata = MakeValidMetadata();
+  metadata.schemas = {std::make_shared<Schema>(std::vector<SchemaField>{
+      SchemaField::MakeRequired(1, "unknown", unknown()),
+      SchemaField::MakeOptional(2, "timestamp", timestamp_ns())})};
+  EXPECT_THAT(metadata.Validate(), IsOk());
 }
 
 TEST(ViewMetadataTest, ValidateRejectsMissingVersions) {
@@ -206,10 +284,10 @@ TEST(ViewMetadataTest, ValidateAcceptsHistoryWithRollback) {
   EXPECT_EQ(metadata, before);
 }
 
-TEST(ViewMetadataTest, ValidateRejectsEmptyDefaultNamespace) {
+TEST(ViewMetadataTest, ValidateAcceptsEmptyDefaultNamespace) {
   ViewMetadata metadata = MakeValidMetadata();
   metadata.versions[0]->default_namespace = Namespace{};
-  EXPECT_THAT(metadata.Validate(), IsError(ErrorKind::kInvalid));
+  EXPECT_THAT(metadata.Validate(), IsOk());
 }
 
 TEST(ViewMetadataTest, ValidateRejectsDuplicateDialects) {
@@ -223,6 +301,13 @@ TEST(ViewMetadataTest, ValidateRejectsDuplicateDialectsWithCaseFolding) {
   ViewMetadata metadata = MakeValidMetadata();
   metadata.versions[0]->representations.push_back(
       SqlRepr("SELECT customer_id FROM customers", "SPARK"));
+  EXPECT_THAT(metadata.Validate(), IsError(ErrorKind::kInvalid));
+}
+
+TEST(ViewMetadataTest, ValidateRejectsUnicodeDuplicateDialects) {
+  auto metadata = MakeValidMetadata();
+  metadata.versions[0]->representations = {SqlRepr("SELECT 1", "Éngine"),
+                                           SqlRepr("SELECT 2", "éngine")};
   EXPECT_THAT(metadata.Validate(), IsError(ErrorKind::kInvalid));
 }
 
@@ -242,6 +327,15 @@ TEST(ViewMetadataTest, ValidateRejectsUnknownRepresentationWithoutType) {
   ViewMetadata metadata = MakeValidMetadata();
   metadata.versions[0]->representations = {UnknownViewRepresentation{.type = ""}};
   EXPECT_THAT(metadata.Validate(), IsError(ErrorKind::kInvalid));
+}
+
+TEST(ViewMetadataTest, ValidateRejectsUnknownSqlRepresentation) {
+  for (const auto* type : {"sql", "SQL", "SqL", "ſql"}) {
+    SCOPED_TRACE(type);
+    auto metadata = MakeValidMetadata();
+    metadata.versions[0]->representations = {UnknownViewRepresentation{.type = type}};
+    EXPECT_THAT(metadata.Validate(), IsError(ErrorKind::kInvalid));
+  }
 }
 
 TEST(ViewMetadataTest, AccessorsReturnNotFoundForMissingEntries) {
