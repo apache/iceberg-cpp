@@ -23,6 +23,7 @@
 /// Internal utility functions for manifest operations.
 
 #include <cstdint>
+#include <functional>
 #include <memory>
 #include <string>
 
@@ -57,6 +58,13 @@ ICEBERG_EXPORT Result<ManifestFile> CopyAppendManifest(
     const std::shared_ptr<Schema>& schema, const std::shared_ptr<PartitionSpec>& spec,
     int64_t snapshot_id, const std::string& output_path, int8_t format_version,
     SnapshotSummaryBuilder* summary_builder = nullptr);
+
+/// Allocate the destination only after the source manifest has been opened.
+ICEBERG_EXPORT Result<ManifestFile> CopyAppendManifest(
+    const ManifestFile& manifest, const std::shared_ptr<FileIO>& file_io,
+    const std::shared_ptr<Schema>& schema, const std::shared_ptr<PartitionSpec>& spec,
+    int64_t snapshot_id, const std::function<std::string()>& new_output_path,
+    int8_t format_version, SnapshotSummaryBuilder* summary_builder);
 
 /// \brief Copy a manifest containing only EXISTING entries, preserving their
 /// snapshot IDs, sequence numbers, and row IDs. Missing v1 sequence numbers are

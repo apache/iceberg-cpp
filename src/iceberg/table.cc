@@ -56,6 +56,7 @@
 #include "iceberg/update/update_sort_order.h"
 #include "iceberg/update/update_statistics.h"
 #include "iceberg/util/macros.h"
+#include "iceberg/util/string_util.h"
 
 namespace iceberg {
 
@@ -102,10 +103,15 @@ const std::string& Table::uuid() const { return metadata_->table_uuid; }
 
 Status Table::Refresh() {
   ICEBERG_ASSIGN_OR_RAISE(auto refreshed_table, catalog_->LoadTable(identifier_));
+  // A catalog name may have been reused. A v1 table can lack a UUID.
+  ICEBERG_CHECK(uuid().empty() || refreshed_table->uuid().empty() ||
+                    StringUtils::EqualsIgnoreCase(uuid(), refreshed_table->uuid()),
+                "Table UUID does not match: current={} != refreshed={}", uuid(),
+                refreshed_table->uuid());
   if (metadata_location_ != refreshed_table->metadata_file_location()) {
-    metadata_ = std::move(refreshed_table->metadata_);
+    metadata_ = refreshed_table->metadata();
     metadata_location_ = std::string(refreshed_table->metadata_file_location());
-    io_ = std::move(refreshed_table->io_);
+    io_ = refreshed_table->io();
     metadata_cache_ = std::make_unique<TableMetadataCache>(metadata_.get());
   }
   return {};

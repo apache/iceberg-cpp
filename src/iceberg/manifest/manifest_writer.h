@@ -141,6 +141,14 @@ class ICEBERG_EXPORT ManifestWriter {
       std::optional<int64_t> first_row_id = std::nullopt);
 
  private:
+  friend class ManifestFilterManager;
+  friend class ManifestMergeManager;
+
+  // Complete a manifest rewrite, discarding the partial output on failure.
+  Result<ManifestFile> WriteAndClose(
+      const std::function<Status()>& write_entries,
+      const std::function<Status(const std::string&)>& discard);
+
   // Private constructor for internal use only, use the static Make*Writer methods
   // instead.
   ManifestWriter(std::unique_ptr<Writer> writer,

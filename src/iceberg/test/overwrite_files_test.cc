@@ -40,6 +40,8 @@
 #include "iceberg/test/update_test_base.h"
 #include "iceberg/transaction.h"
 #include "iceberg/transform.h"
+#include "iceberg/update/delete_files.h"
+#include "iceberg/update/expire_snapshots.h"
 #include "iceberg/update/fast_append.h"
 #include "iceberg/update/row_delta.h"
 #include "iceberg/util/data_file_set.h"
@@ -144,6 +146,12 @@ class OverwriteFilesTest : public UpdateTestBase {
   std::shared_ptr<Schema> schema_;
   std::shared_ptr<DataFile> file_a_;
   std::shared_ptr<DataFile> file_b_;
+};
+
+class OverwriteFilesValidationTest : public OverwriteFilesTest,
+                                     public ::testing::WithParamInterface<std::string> {
+ protected:
+  std::string MetadataResource() const override { return GetParam(); }
 };
 
 TEST_F(OverwriteFilesTest, TxnNewOverwrite) {
@@ -695,5 +703,147 @@ TEST_F(OverwriteFilesTest, ExplicitReplaceConflicts) {
   op->ValidateNoConflictingData();
   EXPECT_THAT(op->Commit(), IsError(ErrorKind::kValidationFailed));
 }
+
+TEST_P(OverwriteFilesValidationTest, ConcurrentDataFileDeleteByFilter) {
+  ICEBERG_UNWRAP_OR_FAIL(auto append, table_->NewFastAppend());
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto base, CommitSnapshotUpdate(append->AppendFile(file_a_).AppendFile(file_b_)));
+  ICEBERG_UNWRAP_OR_FAIL(auto remove, table_->NewDeleteFiles());
+  ASSERT_THAT(CommitSnapshotUpdate(remove->DeleteFile(file_a_)), IsOk());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto overlapping, NewOverwrite());
+  overlapping->OverwriteByRowFilter(Expressions::Equal("x", Literal::Long(1)))
+      .AddFile(MakeDataFile("/data/replacement_a.parquet", 1))
+      .ValidateFromSnapshot(base->snapshot_id)
+      .ValidateNoConflictingDeletes();
+  ExpectCommitError(overlapping->Commit(), ErrorKind::kValidationFailed,
+                    "Found conflicting deleted files");
+
+  ICEBERG_UNWRAP_OR_FAIL(auto disjoint, NewOverwrite());
+  disjoint->OverwriteByRowFilter(Expressions::Equal("x", Literal::Long(2)))
+      .AddFile(MakeDataFile("/data/replacement_b.parquet", 2))
+      .ValidateFromSnapshot(base->snapshot_id)
+      .ValidateNoConflictingDeletes();
+  ICEBERG_UNWRAP_OR_FAIL(auto result, CommitSnapshotUpdate(*disjoint));
+  EXPECT_EQ(result->summary.at(SnapshotSummaryFields::kDeletedDataFiles), "1");
+}
+
+TEST_P(OverwriteFilesValidationTest,
+       ExpiredStartingSnapshotAndMissingIntermediateSnapshot) {
+  ICEBERG_UNWRAP_OR_FAIL(auto first, table_->NewFastAppend());
+  ICEBERG_UNWRAP_OR_FAIL(auto base, CommitSnapshotUpdate(first->AppendFile(file_b_)));
+  // Keep the writer's table handle at the old head while a second handle expires it.
+  ICEBERG_UNWRAP_OR_FAIL(auto writer_table, catalog_->LoadTable(table_ident_));
+  ICEBERG_UNWRAP_OR_FAIL(auto pending, writer_table->NewOverwrite());
+  pending->DeleteFile(file_b_)
+      .AddFile(MakeDataFile("/data/new_b.parquet", 2))
+      .ValidateFromSnapshot(base->snapshot_id)
+      .ConflictDetectionFilter(Expressions::Equal("x", Literal::Long(2)))
+      .ValidateNoConflictingData();
+  ICEBERG_UNWRAP_OR_FAIL(auto append, table_->NewFastAppend());
+  ASSERT_THAT(CommitSnapshotUpdate(append->AppendFile(file_a_)), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto expire_base, table_->NewExpireSnapshots());
+  ASSERT_THAT(expire_base->ExpireSnapshotId(base->snapshot_id).Commit(), IsOk());
+  ASSERT_THAT(table_->Refresh(), IsOk());
+
+  // The oldest snapshot in the validation window still names the expired base as its
+  // parent.
+  ICEBERG_UNWRAP_OR_FAIL(auto known, CommitSnapshotUpdate(*pending));
+  ICEBERG_UNWRAP_OR_FAIL(auto middle_append, table_->NewFastAppend());
+  ICEBERG_UNWRAP_OR_FAIL(auto middle, CommitSnapshotUpdate(middle_append->AppendFile(
+                                          MakeDataFile("/data/middle.parquet", 2))));
+  ICEBERG_UNWRAP_OR_FAIL(auto remove, table_->NewDeleteFiles());
+  ICEBERG_UNWRAP_OR_FAIL(auto last, CommitSnapshotUpdate(remove->DeleteFile(file_a_)));
+  ICEBERG_UNWRAP_OR_FAIL(auto expire_middle, table_->NewExpireSnapshots());
+  ASSERT_THAT(expire_middle->ExpireSnapshotId(middle->snapshot_id).Commit(), IsOk());
+  ASSERT_THAT(table_->Refresh(), IsOk());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto bounded, NewOverwrite());
+  bounded->AddFile(MakeDataFile("/data/bounded.parquet", 2))
+      .ValidateFromSnapshot(known->snapshot_id)
+      .ValidateNoConflictingData();
+  ExpectCommitError(bounded->Commit(), ErrorKind::kValidationFailed,
+                    "Cannot determine history between starting snapshot " +
+                        std::to_string(known->snapshot_id));
+  ICEBERG_UNWRAP_OR_FAIL(auto unbounded, NewOverwrite());
+  unbounded->AddFile(MakeDataFile("/data/unbounded.parquet", 2))
+      .ValidateNoConflictingData();
+  ExpectCommitError(unbounded->Commit(), ErrorKind::kValidationFailed,
+                    "Cannot determine history between starting snapshot null");
+  ExpectCurrentSnapshot(last->snapshot_id);
+}
+
+TEST_P(OverwriteFilesValidationTest, ConcurrentAppendWithinPartitionUsesMetricsRanges) {
+  auto filter = Expressions::And(
+      Expressions::Equal("x", Literal::Long(2)),
+      Expressions::And(Expressions::GreaterThanOrEqual("y", Literal::Long(5)),
+                       Expressions::LessThan("y", Literal::Long(10))));
+  ICEBERG_UNWRAP_OR_FAIL(auto pending, NewOverwrite());
+  auto low = MakeDataFileWithYBounds("/data/low.parquet", 2, 5, 9);
+  pending->AddFile(low).ConflictDetectionFilter(filter).ValidateNoConflictingData();
+  auto high = MakeDataFileWithYBounds("/data/high.parquet", 2, 20, 30);
+  auto other = MakeDataFileWithYBounds("/data/other.parquet", 1, 5, 9);
+  ICEBERG_UNWRAP_OR_FAIL(auto append, table_->NewFastAppend());
+  ASSERT_THAT(CommitSnapshotUpdate(append->AppendFile(high).AppendFile(other)), IsOk());
+  ASSERT_THAT(CommitSnapshotUpdate(*pending), IsOk());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto overlapping, NewOverwrite());
+  overlapping->AddFile(MakeDataFileWithYBounds("/data/overlap.parquet", 2, 8, 9))
+      .ConflictDetectionFilter(filter)
+      .ValidateNoConflictingData();
+  auto result = overlapping->Commit();
+  EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
+  EXPECT_THAT(result, HasErrorMessage("[" + low->file_path + "]"));
+}
+
+TEST_P(OverwriteFilesValidationTest, ConcurrentSuccessiveDVsForUnrelatedDataFile) {
+  if (table_->metadata()->format_version < 3) {
+    GTEST_SKIP() << "Deletion vectors require format version 3";
+  }
+  ICEBERG_UNWRAP_OR_FAIL(auto append, table_->NewFastAppend());
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto base, CommitSnapshotUpdate(append->AppendFile(file_a_).AppendFile(file_b_)));
+  auto replacement = MakeDataFile("/data/replacement_b.parquet", 2);
+  ICEBERG_UNWRAP_OR_FAIL(auto overwrite, NewOverwrite());
+  overwrite->DeleteFile(file_b_)
+      .AddFile(replacement)
+      .ValidateFromSnapshot(base->snapshot_id)
+      .ConflictDetectionFilter(Expressions::AlwaysTrue())
+      .ValidateNoConflictingDeletes();
+
+  auto dv1 = MakeDeleteFile("/data/dv1.puffin", 1);
+  dv1->file_format = FileFormatType::kPuffin;
+  dv1->referenced_data_file = file_a_->file_path;
+  dv1->content_offset = 0;
+  dv1->content_size_in_bytes = 10;
+  ICEBERG_UNWRAP_OR_FAIL(auto first, table_->NewRowDelta());
+  ICEBERG_UNWRAP_OR_FAIL(auto first_snapshot,
+                         CommitSnapshotUpdate(first->AddDeletes(dv1)));
+  auto dv2 = std::make_shared<DataFile>(*dv1);
+  dv2->file_path = table_location_ + "/data/dv2.puffin";
+  ICEBERG_UNWRAP_OR_FAIL(auto second, table_->NewRowDelta());
+  ASSERT_THAT(CommitSnapshotUpdate(
+                  second->RemoveDeletes(dv1).AddDeletes(dv2).ValidateFromSnapshot(
+                      first_snapshot->snapshot_id)),
+              IsOk());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto final_snapshot, CommitSnapshotUpdate(*overwrite));
+  SnapshotReader reader(final_snapshot.get());
+  ICEBERG_UNWRAP_OR_FAIL(auto manifests, reader.DataManifests(file_io_));
+  ICEBERG_UNWRAP_OR_FAIL(auto entries, ReadManifestEntries(manifests));
+  std::vector<std::string> live_paths;
+  for (const auto& entry : entries) {
+    if (entry.IsAlive()) {
+      live_paths.push_back(entry.data_file->file_path);
+    }
+  }
+  EXPECT_THAT(live_paths, ::testing::UnorderedElementsAre(file_a_->file_path,
+                                                          replacement->file_path));
+}
+
+INSTANTIATE_TEST_SUITE_P(FormatVersions, OverwriteFilesValidationTest,
+                         ::testing::Values("TableMetadataV1Valid.json",
+                                           "TableMetadataV2ValidMinimal.json",
+                                           "TableMetadataV3ValidMinimal.json"));
 
 }  // namespace iceberg

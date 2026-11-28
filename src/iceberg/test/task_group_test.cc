@@ -22,7 +22,10 @@
 #include <atomic>
 #include <concepts>
 #include <functional>
+#include <future>
 #include <memory>
+#include <stdexcept>
+#include <thread>
 #include <utility>
 #include <vector>
 
@@ -33,6 +36,7 @@
 #include "iceberg/test/matchers.h"
 #include "iceberg/test/retry.h"
 #include "iceberg/util/functional.h"
+#include "iceberg/util/task_group_internal.h"
 
 namespace iceberg {
 
@@ -118,6 +122,48 @@ TEST(TaskGroupTest, ReturnsSubmitError) {
 
   EXPECT_THAT(std::move(group).Run(), IsError(ErrorKind::kServiceUnavailable));
   EXPECT_EQ(executor.submit_count(), 1);
+}
+
+TEST(TaskGroupTest, StopsAfterFailedManifestTask) {
+  test::InlineExecutor executor;
+  for (auto pool : {OptionalExecutor{}, OptionalExecutor{std::ref(executor)}}) {
+    std::vector<size_t> visited;
+    auto result = internal::RunTasksWithStopOnFailure(5, pool, [&](size_t i) -> Status {
+      visited.push_back(i);
+      if (i == 1) throw std::runtime_error("read failed");
+      return {};
+    });
+    EXPECT_THAT(result, HasErrorMessage("read failed"));
+    EXPECT_THAT(visited, ::testing::ElementsAre(0, 1));
+  }
+}
+
+TEST(TaskGroupTest, WaitsForAcceptedManifestTaskWhenSubmissionThrows) {
+  test::MockExecutor executor;
+  std::promise<void> started;
+  std::promise<void> release;
+  auto released = release.get_future();
+  std::jthread worker;
+  std::atomic<bool> finished{false};
+  EXPECT_CALL(executor, Submit)
+      .WillOnce([&](ExecutorTask task) -> Status {
+        worker = std::jthread(std::move(task));
+        started.get_future().wait();
+        return {};
+      })
+      .WillOnce([&](ExecutorTask) -> Status {
+        release.set_value();
+        throw std::runtime_error("executor rejected manifest");
+      });
+  auto status =
+      internal::RunTasksWithStopOnFailure(3, std::ref(executor), [&](size_t) -> Status {
+        started.set_value();
+        released.wait();
+        finished = true;
+        return {};
+      });
+  EXPECT_THAT(status, HasErrorMessage("executor rejected manifest"));
+  EXPECT_TRUE(finished.load());
 }
 
 TEST(TaskGroupTest, DirectMoveOnlyTask) {

@@ -25,7 +25,9 @@
 #include <optional>
 #include <span>
 #include <string>
+#include <string_view>
 #include <tuple>
+#include <utility>
 #include <vector>
 
 #include <gmock/gmock.h>
@@ -43,11 +45,17 @@
 #include "iceberg/table.h"
 #include "iceberg/table_metadata.h"
 #include "iceberg/table_properties.h"
+#include "iceberg/table_requirement.h"
+#include "iceberg/table_update.h"
+#include "iceberg/test/executor.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/test/mock_catalog.h"
 #include "iceberg/test/update_test_base.h"
 #include "iceberg/transaction.h"
+#include "iceberg/transform.h"
+#include "iceberg/update/delete_files.h"
 #include "iceberg/update/fast_append.h"
+#include "iceberg/update/rewrite_files.h"
 #include "iceberg/update/update_partition_spec.h"
 #include "iceberg/update/update_properties.h"
 
@@ -176,6 +184,28 @@ class MergeAppendTestBase : public MinimalUpdateTestBase {
     EXPECT_THAT(table_->Refresh(), IsOk());
   }
 
+  // Commit a spec with the caller-assigned v1 partition field IDs.
+  void ReplacePartitionSpec(std::vector<PartitionField> fields) {
+    ICEBERG_UNWRAP_OR_FAIL(auto spec,
+                           PartitionSpec::Make(*schema_, 1, std::move(fields),
+                                               /*allow_missing_fields=*/false));
+    std::vector<std::unique_ptr<TableUpdate>> updates;
+    updates.push_back(std::make_unique<table::AddPartitionSpec>(std::move(spec)));
+    updates.push_back(std::make_unique<table::SetDefaultPartitionSpec>(1));
+    ICEBERG_UNWRAP_OR_FAIL(table_, catalog_->UpdateTable(table_ident_, {}, updates));
+  }
+
+  void CheckPartitionFields(
+      const PartitionSpec& spec,
+      const std::vector<std::pair<int32_t, std::string_view>>& expected) {
+    ICEBERG_UNWRAP_OR_FAIL(auto type, spec.PartitionType(*schema_));
+    ASSERT_EQ(type->fields().size(), expected.size());
+    for (size_t i = 0; i < expected.size(); ++i) {
+      EXPECT_EQ(type->fields()[i].field_id(), expected[i].first);
+      EXPECT_EQ(type->fields()[i].name(), expected[i].second);
+    }
+  }
+
   void SetSnapshotIdInheritanceEnabled() {
     ICEBERG_UNWRAP_OR_FAIL(auto props, table_->NewUpdateProperties());
     props->Set(std::string(TableProperties::kSnapshotIdInheritanceEnabled.key()), "true");
@@ -251,6 +281,28 @@ class MergeAppendTestBase : public MinimalUpdateTestBase {
     ICEBERG_ASSIGN_OR_RAISE(auto append, table_->NewFastAppend());
     append->ToBranch(branch());
     return append;
+  }
+
+  void CommitAppend(const std::vector<std::shared_ptr<DataFile>>& files) {
+    ICEBERG_UNWRAP_OR_FAIL(auto append, NewBranchMergeAppend());
+    for (const auto& file : files) {
+      append->AppendFile(file);
+    }
+    ASSERT_THAT(append->Commit(), IsOk());
+    ASSERT_THAT(table_->Refresh(), IsOk());
+  }
+
+  void CheckExecutorAppend(MergeAppend& append) {
+    ASSERT_THAT(append.AppendFile(file_a_).AppendFile(file_b_).Commit(), IsOk());
+    ASSERT_THAT(table_->Refresh(), IsOk());
+    ICEBERG_UNWRAP_OR_FAIL(auto snapshot, CurrentSnapshot());
+    ICEBERG_UNWRAP_OR_FAIL(auto manifests, CurrentDataManifests());
+    ASSERT_EQ(manifests.size(), 1U);
+    ExpectManifestEntries(manifests[0], {file_a_, file_b_},
+                          {ManifestStatus::kAdded, ManifestStatus::kAdded},
+                          {snapshot->snapshot_id, snapshot->snapshot_id},
+                          {snapshot->sequence_number, snapshot->sequence_number},
+                          {snapshot->sequence_number, snapshot->sequence_number});
   }
 
   // Returns the snapshot referenced by branch(), so tests work uniformly whether
@@ -397,11 +449,15 @@ class MergeAppendTestBase : public MinimalUpdateTestBase {
 
   void ExpectManifestEntriesMatchFiles(
       const ManifestFile& manifest,
-      std::span<const std::shared_ptr<DataFile>> expected_files) {
+      std::span<const std::shared_ptr<DataFile>> expected_files,
+      const Snapshot& snapshot) {
     ICEBERG_UNWRAP_OR_FAIL(auto entries, ReadEntries(manifest));
     ASSERT_EQ(entries.size(), expected_files.size());
     for (size_t i = 0; i < entries.size(); ++i) {
       EXPECT_EQ(entries[i].status, ManifestStatus::kAdded);
+      EXPECT_EQ(entries[i].snapshot_id, snapshot.snapshot_id);
+      EXPECT_EQ(entries[i].sequence_number, snapshot.sequence_number);
+      EXPECT_EQ(entries[i].file_sequence_number, snapshot.sequence_number);
       ASSERT_NE(entries[i].data_file, nullptr);
       EXPECT_EQ(entries[i].data_file->file_path, expected_files[i]->file_path);
     }
@@ -459,6 +515,35 @@ class MergeAppendTest
   std::string branch() const override { return std::get<1>(GetParam()); }
 };
 
+class MergeAppendRowLineageTest : public MergeAppendTestBase {
+ protected:
+  void SetUp() override {
+    MergeAppendTestBase::SetUp();
+    file_a_->record_count = 125;
+    file_c_->record_count = 90;
+  }
+
+  void UpgradeToV3() {
+    ICEBERG_UNWRAP_OR_FAIL(auto props, table_->NewUpdateProperties());
+    ASSERT_THAT(props->Set("format-version", "3").Commit(), IsOk());
+    ASSERT_THAT(table_->Refresh(), IsOk());
+  }
+
+  void CheckDataFileAssignment(
+      const ManifestFile& manifest,
+      const std::vector<std::optional<int64_t>>& expected_first_row_ids) {
+    ICEBERG_UNWRAP_OR_FAIL(auto reader,
+                           ManifestReader::Make(manifest, file_io_, schema_, spec_));
+    // Readers assign first_row_id even when the projection only requests the path.
+    ICEBERG_UNWRAP_OR_FAIL(auto entries, reader->Select({"file_path"}).LiveEntries());
+    ASSERT_EQ(entries.size(), expected_first_row_ids.size());
+    for (size_t i = 0; i < entries.size(); ++i) {
+      ASSERT_NE(entries[i].data_file, nullptr);
+      EXPECT_EQ(entries[i].data_file->first_row_id, expected_first_row_ids[i]);
+    }
+  }
+};
+
 TEST_F(MergeAppendTestBase, AppendNullFile) {
   ICEBERG_UNWRAP_OR_FAIL(auto append, NewBranchMergeAppend());
   append->AppendFile(nullptr);
@@ -494,25 +579,25 @@ TEST_P(MergeAppendTest, AddManyFiles) {
 
 TEST_P(MergeAppendTest, AddManyFilesWithConsistentOrdering) {
   constexpr size_t kManifestCount = 3;
-  constexpr size_t kFileCount = kManifestFileGroupSizeForTest * kManifestCount;
-  SetManifestTargetSizeBytes(10);
+  constexpr size_t kWriterGroupSize = 10'000;
+  constexpr size_t kFileCount = kWriterGroupSize * kManifestCount;
 
   auto files = MakeDataFiles("/data/ordered", kFileCount);
+  test::ThreadExecutor write;
   ICEBERG_UNWRAP_OR_FAIL(auto append, NewBranchMergeAppend());
   for (const auto& file : files) {
     append->AppendFile(file);
   }
-  EXPECT_THAT(append->Commit(), IsOk());
+  ASSERT_THAT(append->WriteManifestsWith(write, kManifestCount).Commit(), IsOk());
+  EXPECT_EQ(write.submit_count(), kManifestCount);
 
-  EXPECT_THAT(table_->Refresh(), IsOk());
+  ASSERT_THAT(table_->Refresh(), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto snapshot, CurrentSnapshot());
   ICEBERG_UNWRAP_OR_FAIL(auto data_manifests, CurrentDataManifests());
   ASSERT_EQ(data_manifests.size(), kManifestCount);
   for (size_t i = 0; i < kManifestCount; ++i) {
-    auto first =
-        files.begin() + static_cast<std::ptrdiff_t>(i * kManifestFileGroupSizeForTest);
-    auto last = first + static_cast<std::ptrdiff_t>(kManifestFileGroupSizeForTest);
-    std::vector<std::shared_ptr<DataFile>> expected(first, last);
-    ExpectManifestEntriesMatchFiles(data_manifests[i], expected);
+    auto expected = std::span(files).subspan(i * kWriterGroupSize, kWriterGroupSize);
+    ExpectManifestEntriesMatchFiles(data_manifests[i], expected, *snapshot);
   }
 }
 
@@ -578,7 +663,11 @@ TEST_P(MergeAppendTest, EmptyTableAppendManifest) {
 
   ICEBERG_UNWRAP_OR_FAIL(auto append, NewBranchMergeAppend());
   append->AppendManifest(manifest);
-  EXPECT_THAT(append->Commit(), IsOk());
+  if (format_version() == 1) {
+    ASSERT_THAT(append->CheckErrors(), IsOk());
+    ASSERT_THAT(file_io_->DeleteFile(path), IsOk());
+  }
+  ASSERT_THAT(append->Commit(), IsOk());
 
   EXPECT_THAT(table_->Refresh(), IsOk());
   ICEBERG_UNWRAP_OR_FAIL(auto snapshot, CurrentSnapshot());
@@ -636,6 +725,90 @@ TEST_P(MergeAppendTest, EmptyTableAppendFilesAndManifest) {
                         {ManifestStatus::kAdded, ManifestStatus::kAdded});
   EXPECT_EQ(snapshot->summary.at(SnapshotSummaryFields::kAddedDataFiles), "4");
   EXPECT_EQ(snapshot->summary.at(SnapshotSummaryFields::kTotalDataFiles), "4");
+}
+
+TEST_P(MergeAppendTest, AppendWithManifestScanExecutor) {
+  test::ThreadExecutor scan;
+  ICEBERG_UNWRAP_OR_FAIL(auto append, NewBranchMergeAppend());
+  append->ScanManifestsWith(scan);
+  CheckExecutorAppend(*append);
+  EXPECT_GT(scan.submit_count(), 0);
+}
+
+TEST_P(MergeAppendTest, AppendWithWriteManifestsExecutor) {
+  test::ThreadExecutor write;
+  ICEBERG_UNWRAP_OR_FAIL(auto append, NewBranchMergeAppend());
+  append->WriteManifestsWith(write, 1);
+  CheckExecutorAppend(*append);
+  EXPECT_GT(write.submit_count(), 0);
+}
+
+TEST_P(MergeAppendTest, AppendWithSeparateScanAndWriteExecutors) {
+  test::ThreadExecutor scan;
+  test::ThreadExecutor write;
+  ICEBERG_UNWRAP_OR_FAIL(auto append, NewBranchMergeAppend());
+  append->ScanManifestsWith(scan).WriteManifestsWith(write, 1);
+  CheckExecutorAppend(*append);
+  EXPECT_GT(scan.submit_count(), 0);
+  EXPECT_GT(write.submit_count(), 0);
+}
+
+TEST_P(MergeAppendTest, ParallelMergePreservesBinAndEntryOrder) {
+  SetSnapshotIdInheritanceEnabled();
+  SetManifestMinMergeCount(2);
+  std::vector<ManifestFile> inputs;
+  for (const auto& file : {file_a_, file_b_, file_c_, file_d_}) {
+    ICEBERG_UNWRAP_OR_FAIL(auto manifest,
+                           WriteManifest(table_location_ + "/metadata/input-" +
+                                             std::to_string(inputs.size()) + ".avro",
+                                         {file}));
+    inputs.push_back(std::move(manifest));
+  }
+  SetManifestTargetSizeBytes(
+      std::max(inputs[0].manifest_length + inputs[1].manifest_length,
+               inputs[2].manifest_length + inputs[3].manifest_length));
+
+  test::ThreadExecutor scan;
+  ICEBERG_UNWRAP_OR_FAIL(auto append, NewBranchMergeAppend());
+  for (const auto& manifest : inputs) {
+    append->AppendManifest(manifest);
+  }
+  ASSERT_THAT(append->ScanManifestsWith(scan).Commit(), IsOk());
+  EXPECT_GE(scan.submit_count(), 2);
+  ASSERT_THAT(table_->Refresh(), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto manifests, CurrentDataManifests());
+  ASSERT_EQ(manifests.size(), 2U);
+  ExpectManifestEntries(manifests[0], {file_a_, file_b_},
+                        {ManifestStatus::kAdded, ManifestStatus::kAdded});
+  ExpectManifestEntries(manifests[1], {file_c_, file_d_},
+                        {ManifestStatus::kAdded, ManifestStatus::kAdded});
+}
+
+TEST_P(MergeAppendTest, FailedMergeOnScanExecutorCleansPartialOutput) {
+  SetSnapshotIdInheritanceEnabled();
+  SetManifestMinMergeCount(1);
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto input, WriteManifest(table_location_ + "/metadata/input.avro", {file_b_}));
+  auto missing = input;
+  missing.manifest_path = table_location_ + "/metadata/missing.avro";
+
+  test::ThreadExecutor scan;
+  std::vector<std::string> deleted;
+  ICEBERG_UNWRAP_OR_FAIL(auto append, NewBranchMergeAppend());
+  append->AppendManifest(input).AppendManifest(missing).ScanManifestsWith(scan);
+  append->DeleteWith([&](const std::string& path) {
+    deleted.push_back(path);
+    return file_io_->DeleteFile(path);
+  });
+  EXPECT_THAT(append->Commit(), HasErrorMessage("missing.avro"));
+  EXPECT_GT(scan.submit_count(), 0);
+  ASSERT_EQ(deleted.size(), 1U);
+  EXPECT_NE(deleted[0], input.manifest_path);
+  EXPECT_NE(deleted[0], missing.manifest_path);
+  EXPECT_FALSE(FileExists(deleted[0]));
+  EXPECT_TRUE(FileExists(input.manifest_path));
+  ASSERT_THAT(table_->Refresh(), IsOk());
+  EXPECT_THAT(CurrentSnapshot(), IsError(ErrorKind::kNotFound));
 }
 
 TEST_P(MergeAppendTest, MergeWithAppendFilesAndManifest) {
@@ -901,6 +1074,119 @@ TEST_P(MergeAppendTest, ManifestDoNotMergeMinCount) {
   EXPECT_EQ(snapshot->summary.at(SnapshotSummaryFields::kAddedDataFiles), "4");
   EXPECT_EQ(snapshot->summary.at(SnapshotSummaryFields::kManifestsCreated), "3");
   EXPECT_EQ(snapshot->summary.at(SnapshotSummaryFields::kManifestsKept), "0");
+}
+
+TEST_P(MergeAppendTest, MergeWithExistingManifestAfterDelete) {
+  SetManifestMinMergeCount(1);
+  CommitAppend({file_a_, file_b_});
+  ICEBERG_UNWRAP_OR_FAIL(auto base, CurrentSnapshot());
+  ICEBERG_UNWRAP_OR_FAIL(auto initial_manifests, CurrentDataManifests());
+  ASSERT_EQ(initial_manifests.size(), 1U);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto remove, table_->NewDeleteFiles());
+  remove->DeleteFile(file_a_).ToBranch(branch());
+  ASSERT_THAT(remove->Commit(), IsOk());
+  ASSERT_THAT(table_->Refresh(), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto deleted, CurrentSnapshot());
+  ICEBERG_UNWRAP_OR_FAIL(auto delete_manifests, CurrentDataManifests());
+  ASSERT_EQ(delete_manifests.size(), 1U);
+  EXPECT_EQ(deleted->summary.at(SnapshotSummaryFields::kManifestsReplaced), "1");
+  EXPECT_EQ(deleted->summary.at(SnapshotSummaryFields::kManifestsCreated), "1");
+  EXPECT_EQ(deleted->summary.at(SnapshotSummaryFields::kManifestsKept), "0");
+  ExpectManifestEntries(delete_manifests[0], {file_a_, file_b_},
+                        {ManifestStatus::kDeleted, ManifestStatus::kExisting},
+                        {deleted->snapshot_id, base->snapshot_id},
+                        {base->sequence_number, base->sequence_number},
+                        {base->sequence_number, base->sequence_number});
+
+  CommitAppend({file_c_, file_d_});
+  ICEBERG_UNWRAP_OR_FAIL(auto committed, CurrentSnapshot());
+  ICEBERG_UNWRAP_OR_FAIL(auto manifests, CurrentDataManifests());
+  ASSERT_EQ(manifests.size(), 1U);
+  EXPECT_NE(manifests[0].manifest_path, initial_manifests[0].manifest_path);
+  ExpectManifestEntries(
+      manifests[0], {file_c_, file_d_, file_b_},
+      {ManifestStatus::kAdded, ManifestStatus::kAdded, ManifestStatus::kExisting},
+      {committed->snapshot_id, committed->snapshot_id, base->snapshot_id},
+      {committed->sequence_number, committed->sequence_number, base->sequence_number},
+      {committed->sequence_number, committed->sequence_number, base->sequence_number});
+}
+
+TEST_F(MergeAppendRowLineageTest, AssignmentWithManifestCompaction) {
+  UpgradeToV3();
+  CommitAppend({file_a_});
+  const int64_t starting_first_row_id = table_->metadata()->next_row_id;
+  EXPECT_EQ(starting_first_row_id, file_a_->record_count);
+  CommitAppend({file_b_});
+  SetManifestMinMergeCount(1);
+
+  const int64_t pre_merge_next_row_id = starting_first_row_id + file_b_->record_count;
+  EXPECT_EQ(table_->metadata()->next_row_id, pre_merge_next_row_id);
+  ICEBERG_UNWRAP_OR_FAIL(auto before, CurrentDataManifests());
+  ASSERT_EQ(before.size(), 2U);
+  EXPECT_EQ(before[0].first_row_id, starting_first_row_id);
+  EXPECT_EQ(before[1].first_row_id, 0);
+  CheckDataFileAssignment(before[0], {starting_first_row_id});
+  CheckDataFileAssignment(before[1], {0});
+
+  CommitAppend({file_c_});
+  EXPECT_EQ(table_->metadata()->next_row_id,
+            pre_merge_next_row_id + file_c_->record_count + file_b_->record_count +
+                file_a_->record_count);
+  ICEBERG_UNWRAP_OR_FAIL(auto merged, CurrentDataManifests());
+  ASSERT_EQ(merged.size(), 1U);
+  EXPECT_EQ(merged[0].first_row_id, pre_merge_next_row_id);
+  CheckDataFileAssignment(merged[0], {pre_merge_next_row_id, starting_first_row_id, 0});
+}
+
+TEST_F(MergeAppendRowLineageTest, UpgradeAssignmentWithManifestCompaction) {
+  CommitAppend({file_a_});
+  CommitAppend({file_b_});
+  SetManifestMinMergeCount(1);
+  EXPECT_EQ(table_->metadata()->next_row_id, 0);
+  UpgradeToV3();
+  EXPECT_EQ(table_->metadata()->next_row_id, 0);
+  for (const auto& snapshot : table_->metadata()->snapshots) {
+    EXPECT_EQ(snapshot->first_row_id, std::nullopt);
+  }
+  ICEBERG_UNWRAP_OR_FAIL(auto before, CurrentDataManifests());
+  ASSERT_EQ(before.size(), 2U);
+  for (const auto& manifest : before) {
+    EXPECT_EQ(manifest.first_row_id, std::nullopt);
+    CheckDataFileAssignment(manifest, {std::nullopt});
+  }
+
+  CommitAppend({file_c_});
+  EXPECT_EQ(table_->metadata()->next_row_id,
+            file_c_->record_count + file_b_->record_count + file_a_->record_count);
+  ICEBERG_UNWRAP_OR_FAIL(auto merged, CurrentDataManifests());
+  ASSERT_EQ(merged.size(), 1U);
+  EXPECT_EQ(merged[0].first_row_id, 0);
+  CheckDataFileAssignment(merged[0], {0, file_c_->record_count,
+                                      file_c_->record_count + file_b_->record_count});
+}
+
+TEST_F(MergeAppendRowLineageTest, RewritePreservesExistingFileFirstRowIds) {
+  UpgradeToV3();
+  CommitAppend({file_a_, file_b_});
+  ICEBERG_UNWRAP_OR_FAIL(auto before, CurrentDataManifests());
+  ASSERT_EQ(before.size(), 1U);
+  CheckDataFileAssignment(before[0], {0, file_a_->record_count});
+
+  SetManifestMinMergeCount(1);
+  ICEBERG_UNWRAP_OR_FAIL(auto rewrite, table_->NewRewriteFiles());
+  ASSERT_THAT(rewrite->DeleteDataFile(file_a_).AddDataFile(file_c_).Commit(), IsOk());
+  ASSERT_THAT(table_->Refresh(), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto after, CurrentDataManifests());
+  ICEBERG_UNWRAP_OR_FAIL(auto committed, CurrentSnapshot());
+  ASSERT_EQ(after.size(), 1U);
+  ICEBERG_UNWRAP_OR_FAIL(auto entries, ReadEntries(after[0]));
+  ASSERT_EQ(entries.size(), 3U);
+  EXPECT_EQ(entries[1].status, ManifestStatus::kDeleted);
+  EXPECT_EQ(entries[1].snapshot_id, committed->snapshot_id);
+  EXPECT_EQ(entries[1].data_file->file_path, file_a_->file_path);
+  CheckDataFileAssignment(
+      after[0], {file_a_->record_count + file_b_->record_count, file_a_->record_count});
 }
 
 TEST_P(MergeAppendTest, MinMergeCount) {
@@ -1172,6 +1458,38 @@ TEST_P(MergeAppendTest, AppendManifestCleanup) {
   }
 }
 
+TEST_F(MergeAppendTestBase, CopiedManifestSurvivesLostCommitResponse) {
+  const auto path = table_location_ + "/metadata/input.avro";
+  ICEBERG_UNWRAP_OR_FAIL(auto input, WriteManifest(path, {file_a_}));
+  input.added_snapshot_id = kInvalidSnapshotId;
+  BindTableWithFailingCommits(0);
+  EXPECT_CALL(*mock_catalogs_.back(),
+              UpdateTable(::testing::_, ::testing::_, ::testing::_))
+      .WillOnce([&](const auto& name, const auto& requirements,
+                    const auto& updates) -> Result<std::shared_ptr<Table>> {
+        ICEBERG_RETURN_UNEXPECTED(catalog_->UpdateTable(name, requirements, updates));
+        return CommitStateUnknown("Lost response after publishing snapshot");
+      });
+  {
+    ICEBERG_UNWRAP_OR_FAIL(auto append, table_->NewMergeAppend());
+    append->AppendManifest(input);
+    ASSERT_THAT(append->Commit(), IsError(ErrorKind::kCommitStateUnknown));
+  }
+
+  ICEBERG_UNWRAP_OR_FAIL(auto published, catalog_->LoadTable(table_ident_));
+  ICEBERG_UNWRAP_OR_FAIL(auto snapshot, published->current_snapshot());
+  ICEBERG_UNWRAP_OR_FAIL(auto manifests, DataManifests(snapshot));
+  ASSERT_THAT(manifests, ::testing::SizeIs(1));
+  EXPECT_NE(manifests[0].manifest_path, path);
+  EXPECT_TRUE(FileExists(path));
+  ICEBERG_UNWRAP_OR_FAIL(auto reader,
+                         ManifestReader::Make(manifests[0], file_io_, schema_, spec_));
+  ICEBERG_UNWRAP_OR_FAIL(auto entries, reader->LiveEntries());
+  ASSERT_THAT(entries, ::testing::SizeIs(1));
+  EXPECT_EQ(entries[0].data_file->file_path, file_a_->file_path);
+  EXPECT_EQ(entries[0].snapshot_id, snapshot->snapshot_id);
+}
+
 TEST_P(MergeAppendTest, Recovery) {
   SetManifestMinMergeCount(1);
   SetCommitRetryProperties(3);
@@ -1262,7 +1580,9 @@ TEST_P(MergeAppendTest, AppendManifestWithExplicitInvalidSnapshotIdIsCopied) {
 
   ICEBERG_UNWRAP_OR_FAIL(auto append, NewBranchMergeAppend());
   append->AppendManifest(manifest);
-  EXPECT_THAT(append->Commit(), IsOk());
+  ASSERT_THAT(append->CheckErrors(), IsOk());
+  ASSERT_THAT(file_io_->DeleteFile(path), IsOk());
+  ASSERT_THAT(append->Commit(), IsOk());
 
   EXPECT_THAT(table_->Refresh(), IsOk());
   ICEBERG_UNWRAP_OR_FAIL(auto snapshot, CurrentSnapshot());
@@ -1275,6 +1595,157 @@ TEST_P(MergeAppendTest, AppendManifestWithExplicitInvalidSnapshotIdIsCopied) {
                         {snapshot->snapshot_id, snapshot->snapshot_id},
                         {snapshot->sequence_number, snapshot->sequence_number},
                         {snapshot->sequence_number, snapshot->sequence_number});
+}
+
+TEST_F(MergeAppendTestBase, AppendManifestReportsCopyFailureBeforeCommit) {
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto input, WriteManifest(table_location_ + "/metadata/missing.avro", {file_a_},
+                                kInvalidSnapshotId));
+  ICEBERG_UNWRAP_OR_FAIL(auto contents,
+                         file_io_->ReadFile(input.manifest_path, std::nullopt));
+  ASSERT_THAT(file_io_->DeleteFile(input.manifest_path), IsOk());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto append, table_->NewMergeAppend());
+  // Opening the source fails before a destination is allocated.
+  append->DeleteWith([](const std::string& path) -> Status {
+    ADD_FAILURE() << "Unexpected cleanup of " << path;
+    return {};
+  });
+  append->AppendManifest(input);
+  EXPECT_THAT(append->CheckErrors(),
+              ::testing::AllOf(IsError(ErrorKind::kValidationFailed),
+                               HasErrorMessage("missing.avro")));
+  EXPECT_THAT(CurrentSnapshot(), IsError(ErrorKind::kNotFound));
+  ASSERT_THAT(file_io_->WriteFile(input.manifest_path, contents), IsOk());
+  append->ClearErrors();
+  ASSERT_THAT(append->AppendManifest(input).CheckErrors(), IsOk());
+  ASSERT_THAT(append->Commit(), IsOk());
+  ASSERT_THAT(table_->Refresh(), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto snapshot, CurrentSnapshot());
+  EXPECT_EQ(snapshot->summary.at(SnapshotSummaryFields::kAddedDataFiles), "1");
+}
+
+TEST_F(MergeAppendTestBase, CopiedManifestCannotBeCommittedToRecreatedTable) {
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto input, WriteManifest(table_location_ + "/metadata/input.avro", {file_a_},
+                                kInvalidSnapshotId));
+  ICEBERG_UNWRAP_OR_FAIL(auto order, table_->sort_order());
+  const std::string original_uuid = table_->uuid();
+  std::vector<std::string> discarded;
+  {
+    ICEBERG_UNWRAP_OR_FAIL(auto append, table_->NewMergeAppend());
+    append->DeleteWith([&](const std::string& path) {
+      discarded.push_back(path);
+      return file_io_->DeleteFile(path);
+    });
+    ASSERT_THAT(append->AppendManifest(input).CheckErrors(), IsOk());
+    ASSERT_THAT(catalog_->DropTable(table_ident_, /*purge=*/false), IsOk());
+    ICEBERG_UNWRAP_OR_FAIL(
+        auto recreated,
+        catalog_->CreateTable(table_ident_, schema_, spec_, order, table_location_, {}));
+    ASSERT_NE(recreated->uuid(), original_uuid);
+    EXPECT_THAT(append->Commit(),
+                ::testing::AllOf(IsError(ErrorKind::kValidationFailed),
+                                 HasErrorMessage("Table UUID does not match")));
+    EXPECT_EQ(table_->uuid(), original_uuid);
+  }
+  ASSERT_THAT(discarded, ::testing::SizeIs(1));
+  EXPECT_NE(discarded.front(), input.manifest_path);
+  EXPECT_FALSE(FileExists(discarded.front()));
+  EXPECT_TRUE(FileExists(input.manifest_path));
+  ICEBERG_UNWRAP_OR_FAIL(auto actual, catalog_->LoadTable(table_ident_));
+  EXPECT_THAT(actual->metadata()->snapshots, ::testing::IsEmpty());
+}
+
+TEST_F(MergeAppendTestBase, DiscardUncommittedManifestCopies) {
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto input, WriteManifest(table_location_ + "/metadata/input.avro", {file_a_},
+                                kInvalidSnapshotId));
+
+  for (bool explicit_abort : {false, true}) {
+    SCOPED_TRACE(explicit_abort);
+    std::vector<std::string> deleted;
+    std::shared_ptr<Transaction> txn;
+    std::shared_ptr<MergeAppend> append;
+    if (explicit_abort) {
+      ICEBERG_UNWRAP_OR_FAIL(txn, table_->NewTransaction());
+      ICEBERG_UNWRAP_OR_FAIL(append, txn->NewMergeAppend());
+    } else {
+      ICEBERG_UNWRAP_OR_FAIL(append, table_->NewMergeAppend());
+    }
+    append->DeleteWith([&](const std::string& path) {
+      EXPECT_TRUE(FileExists(path));
+      deleted.push_back(path);
+      return file_io_->DeleteFile(path);
+    });
+    ASSERT_THAT(append->AppendManifest(input).CheckErrors(), IsOk());
+    EXPECT_TRUE(deleted.empty());
+    append.reset();
+
+    if (txn) {
+      EXPECT_TRUE(deleted.empty());
+      ASSERT_THAT(txn->Abort(), IsOk());
+      ASSERT_EQ(deleted.size(), 1U);
+      ASSERT_THAT(txn->Abort(), IsOk());
+      txn.reset();
+    }
+    ASSERT_EQ(deleted.size(), 1U);
+    EXPECT_NE(deleted.front(), input.manifest_path);
+    EXPECT_FALSE(FileExists(deleted.front()));
+    EXPECT_TRUE(FileExists(input.manifest_path));
+    EXPECT_THAT(CurrentSnapshot(), IsError(ErrorKind::kNotFound));
+  }
+}
+
+TEST_F(MergeAppendTestBase, AbortedTransactionRejectsNewManifestCopies) {
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto input, WriteManifest(table_location_ + "/metadata/input.avro", {file_a_},
+                                kInvalidSnapshotId));
+  ICEBERG_UNWRAP_OR_FAIL(auto txn, table_->NewTransaction());
+  ICEBERG_UNWRAP_OR_FAIL(auto append, txn->NewMergeAppend());
+  ASSERT_THAT(txn->Abort(), IsOk());
+  EXPECT_THAT(append->AppendManifest(input).CheckErrors(),
+              HasErrorMessage("inactive transaction update"));
+  EXPECT_TRUE(FileExists(input.manifest_path));
+}
+
+TEST_F(MergeAppendTestBase, CopyUsesStagedAndRefreshedPartitionSpecs) {
+  ICEBERG_UNWRAP_OR_FAIL(auto standalone, table_->NewMergeAppend());
+  ICEBERG_UNWRAP_OR_FAIL(auto txn, table_->NewTransaction());
+  ICEBERG_UNWRAP_OR_FAIL(auto evolve, txn->NewUpdatePartitionSpec());
+  ASSERT_THAT(evolve->AddField("y").Commit(), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(spec_, txn->current().PartitionSpec());
+  ASSERT_NE(table_->metadata()->default_spec_id, spec_->spec_id());
+
+  auto file_for = [&](const std::string& path) {
+    return MakeDataFile(path, spec_, {Literal::Long(2), Literal::Long(3)});
+  };
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto first, WriteManifest(table_location_ + "/metadata/first.avro",
+                                {file_for("/data/first.parquet")}, kInvalidSnapshotId));
+  ICEBERG_UNWRAP_OR_FAIL(auto staged, txn->NewMergeAppend());
+  ASSERT_THAT(staged->AppendManifest(first).CheckErrors(), IsOk());
+  ASSERT_THAT(file_io_->DeleteFile(first.manifest_path), IsOk());
+  ASSERT_THAT(staged->Commit(), IsOk());
+  ASSERT_THAT(txn->Commit(), IsOk());
+
+  ASSERT_THAT(table_->Refresh(), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto second, WriteManifest(table_location_ + "/metadata/second.avro",
+                                 {file_for("/data/second.parquet")}, kInvalidSnapshotId));
+  ASSERT_THAT(standalone->AppendManifest(second).CheckErrors(), IsOk());
+  ASSERT_THAT(file_io_->DeleteFile(second.manifest_path), IsOk());
+  ASSERT_THAT(standalone->Commit(), IsOk());
+  ASSERT_THAT(table_->Refresh(), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto manifests, CurrentDataManifests());
+  ASSERT_THAT(manifests, ::testing::SizeIs(2));
+  for (const auto& manifest : manifests) {
+    EXPECT_EQ(manifest.partition_spec_id, spec_->spec_id());
+    ICEBERG_UNWRAP_OR_FAIL(auto entries, ReadEntries(manifest));
+    ASSERT_THAT(entries, ::testing::SizeIs(1));
+    EXPECT_THAT(entries[0].data_file->partition.values(),
+                ::testing::ElementsAre(Literal::Long(2), Literal::Long(3)));
+  }
 }
 
 TEST_P(MergeAppendTest, MergedAppendManifestCleanupWithSnapshotIdInheritance) {
@@ -1406,6 +1877,64 @@ TEST_F(MergeAppendTestBase, InvalidAppendManifestWithAssignedSequenceNumber) {
   manifest.sequence_number = 7;
 
   ExpectAppendManifestError(manifest, "Sequence number must be assigned during commit");
+}
+
+TEST_P(MergeAppendTest, UpdatePartitionSpecFieldIdsForV1Table) {
+  const auto initial_sequence_number = table_->metadata()->last_sequence_number;
+  ReplacePartitionSpec({PartitionField(2, 1000, "y_bucket", Transform::Bucket(16)),
+                        PartitionField(1, 1001, "x", Transform::Identity()),
+                        PartitionField(1, 1002, "x_bucket", Transform::Bucket(4)),
+                        PartitionField(1, 1003, "x_partition", Transform::Bucket(16))});
+  EXPECT_EQ(table_->metadata()->last_sequence_number, initial_sequence_number);
+  const auto& specs = table_->metadata()->partition_specs;
+  ASSERT_EQ(specs.size(), 2U);
+  EXPECT_EQ(specs[0]->last_assigned_field_id(), 1000);
+  CheckPartitionFields(*specs[0], {{1000, "x"}});
+  EXPECT_EQ(specs[1]->last_assigned_field_id(), 1003);
+  CheckPartitionFields(
+      *specs[1],
+      {{1000, "y_bucket"}, {1001, "x"}, {1002, "x_bucket"}, {1003, "x_partition"}});
+}
+
+TEST_P(MergeAppendTest, ManifestEntryFieldIdsForChangedPartitionSpecForV1Table) {
+  CommitAppend({file_a_});
+  ICEBERG_UNWRAP_OR_FAIL(auto base, CurrentSnapshot());
+  ICEBERG_UNWRAP_OR_FAIL(auto initial, CurrentDataManifests());
+  ASSERT_EQ(initial.size(), 1U);
+  ReplacePartitionSpec({PartitionField(2, 1000, "y_bucket", Transform::Bucket(8)),
+                        PartitionField(1, 1001, "x_bucket", Transform::Bucket(8))});
+  ICEBERG_UNWRAP_OR_FAIL(auto spec, table_->spec());
+  auto new_file =
+      MakeDataFile("/data/new-spec.parquet", spec, {Literal::Int(1), Literal::Int(2)});
+  CommitAppend({new_file});
+  ICEBERG_UNWRAP_OR_FAIL(auto committed, CurrentSnapshot());
+  ICEBERG_UNWRAP_OR_FAIL(auto manifests, CurrentDataManifests());
+  ASSERT_EQ(manifests.size(), 2U);
+  EXPECT_EQ(manifests[1].manifest_path, initial[0].manifest_path);
+  ExpectManifestEntries(manifests[0], {new_file}, {ManifestStatus::kAdded},
+                        {committed->snapshot_id}, {committed->sequence_number},
+                        {committed->sequence_number});
+  ExpectManifestEntries(manifests[1], {file_a_}, {ManifestStatus::kAdded},
+                        {base->snapshot_id}, {base->sequence_number},
+                        {base->sequence_number});
+
+  // PartitionValues holds positional literals. Resolve each entry's partition type by
+  // the spec ID inherited from its manifest.
+  auto check_entry =
+      [&](const ManifestFile& manifest, const DataFile& file,
+          const std::vector<std::pair<int32_t, std::string_view>>& fields) {
+        ICEBERG_UNWRAP_OR_FAIL(auto entries, ReadEntries(manifest));
+        ASSERT_EQ(entries.size(), 1U);
+        const auto& data = entries[0].data_file;
+        ASSERT_NE(data, nullptr);
+        EXPECT_EQ(data->partition, file.partition);
+        ASSERT_TRUE(data->partition_spec_id.has_value());
+        ICEBERG_UNWRAP_OR_FAIL(auto entry_spec, table_->metadata()->PartitionSpecById(
+                                                    *data->partition_spec_id));
+        CheckPartitionFields(*entry_spec, fields);
+      };
+  check_entry(manifests[0], *new_file, {{1000, "y_bucket"}, {1001, "x_bucket"}});
+  check_entry(manifests[1], *file_a_, {{1000, "x"}});
 }
 
 TEST_P(MergeAppendTest, DefaultPartitionSummaries) {

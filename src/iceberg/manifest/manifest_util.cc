@@ -66,6 +66,16 @@ Result<ManifestFile> CopyAppendManifest(
     const std::shared_ptr<Schema>& schema, const std::shared_ptr<PartitionSpec>& spec,
     int64_t snapshot_id, const std::string& output_path, int8_t format_version,
     SnapshotSummaryBuilder* summary_builder) {
+  return CopyAppendManifest(
+      manifest, file_io, schema, spec, snapshot_id, [&] { return output_path; },
+      format_version, summary_builder);
+}
+
+Result<ManifestFile> CopyAppendManifest(
+    const ManifestFile& manifest, const std::shared_ptr<FileIO>& file_io,
+    const std::shared_ptr<Schema>& schema, const std::shared_ptr<PartitionSpec>& spec,
+    int64_t snapshot_id, const std::function<std::string()>& new_output_path,
+    int8_t format_version, SnapshotSummaryBuilder* summary_builder) {
   // use metadata that will add the current snapshot's ID for the rewrite
   // read first_row_id as null because this copies the incoming manifest before commit
   ICEBERG_ASSIGN_OR_RAISE(auto inheritable_metadata,
@@ -75,22 +85,23 @@ Result<ManifestFile> CopyAppendManifest(
       ManifestReader::Make(manifest.manifest_path, manifest.manifest_length, file_io,
                            schema, spec, std::move(inheritable_metadata),
                            /*first_row_id=*/std::nullopt));
-  ICEBERG_ASSIGN_OR_RAISE(auto entries, reader->Entries());
+  ICEBERG_ASSIGN_OR_RAISE(auto entries, reader->EntriesStream());
 
   // do not produce row IDs for the copy
   ICEBERG_ASSIGN_OR_RAISE(
       auto writer, ManifestWriter::MakeWriter(
-                       format_version, snapshot_id, output_path, file_io, spec, schema,
-                       ManifestContent::kData, /*first_row_id=*/std::nullopt));
+                       format_version, snapshot_id, new_output_path(), file_io, spec,
+                       schema, ManifestContent::kData, /*first_row_id=*/std::nullopt));
 
-  for (auto& entry : entries) {
-    ICEBERG_CHECK(entry.status == ManifestStatus::kAdded,
+  while (true) {
+    ICEBERG_ASSIGN_OR_RAISE(auto entry, entries->Next());
+    if (!entry) break;
+    ICEBERG_CHECK(entry->status == ManifestStatus::kAdded,
                   "Manifest to copy must only contain added entries");
-    if (summary_builder != nullptr && entry.data_file != nullptr) {
-      ICEBERG_RETURN_UNEXPECTED(summary_builder->AddedFile(*spec, *entry.data_file));
+    if (summary_builder != nullptr) {
+      ICEBERG_RETURN_UNEXPECTED(summary_builder->AddedFile(*spec, *entry->data_file));
     }
-
-    ICEBERG_RETURN_UNEXPECTED(writer->WriteAddedEntry(entry));
+    ICEBERG_RETURN_UNEXPECTED(writer->WriteAddedEntry(*entry));
   }
 
   ICEBERG_RETURN_UNEXPECTED(writer->Close());

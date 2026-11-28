@@ -222,6 +222,32 @@ Status ManifestWriter::Close() {
   return {};
 }
 
+Result<ManifestFile> ManifestWriter::WriteAndClose(
+    const std::function<Status()>& write_entries,
+    const std::function<Status(const std::string&)>& discard) {
+  auto written = internal::CatchExceptions("Manifest rewrite", write_entries);
+  auto closed = internal::CatchExceptions("Manifest close", [this] { return Close(); });
+  auto result = [&]() -> Result<ManifestFile> {
+    ICEBERG_RETURN_UNEXPECTED(written);
+    ICEBERG_RETURN_UNEXPECTED(closed);
+    return internal::CatchExceptions("Manifest metadata",
+                                     [this] { return ToManifestFile(); });
+  }();
+  if (!result) {
+    if (!closed_) {
+      // A failed flush can leave the underlying output open. Release it before
+      // handing the path to the cleanup callback.
+      internal::LogAndIgnoreFailure("Manifest writer cleanup",
+                                    [this] { return writer_->Close(); });
+      writer_.reset();
+      closed_ = true;
+    }
+    internal::LogAndIgnoreFailure("Discard partial manifest",
+                                  [&] { return discard(manifest_location_); });
+  }
+  return result;
+}
+
 ManifestContent ManifestWriter::content() const { return adapter_->content(); }
 
 Result<Metrics> ManifestWriter::metrics() const { return writer_->metrics(); }

@@ -686,17 +686,19 @@ Result<std::vector<ManifestEntry>> DeleteFileIndex::Builder::LoadDeleteFiles() {
         }
         reader->FilterRows(data_filter).CaseSensitive(case_sensitive_).TryDropStats();
 
-        ICEBERG_ASSIGN_OR_RAISE(auto entries, reader->LiveEntries());
-        manifest_result.reserve(entries.size());
-
-        for (auto& entry : entries) {
-          ICEBERG_CHECK(entry.data_file != nullptr,
+        ICEBERG_ASSIGN_OR_RAISE(auto entries, reader->LiveEntriesStream());
+        while (true) {
+          ICEBERG_ASSIGN_OR_RAISE(auto entry, entries->Next());
+          if (!entry) {
+            break;
+          }
+          ICEBERG_CHECK(entry->data_file != nullptr,
                         "ManifestEntry must have a data file");
-          ICEBERG_CHECK(entry.sequence_number.has_value(),
+          ICEBERG_CHECK(entry->sequence_number.has_value(),
                         "Missing sequence number from delete file: {}",
-                        entry.data_file->file_path);
-          if (entry.sequence_number.value() > min_sequence_number_) {
-            auto& file = *entry.data_file;
+                        entry->data_file->file_path);
+          if (*entry->sequence_number > min_sequence_number_) {
+            auto& file = *entry->data_file;
             // keep minimum stats to avoid memory pressure
             std::unordered_set<int32_t> columns =
                 file.content == DataFile::Content::kPositionDeletes
@@ -704,8 +706,8 @@ Result<std::vector<ManifestEntry>> DeleteFileIndex::Builder::LoadDeleteFiles() {
                           int32_t>{MetadataColumns::kDeleteFilePathColumnId}
                     : std::unordered_set<int32_t>(file.equality_ids.begin(),
                                                   file.equality_ids.end());
-            ContentFileUtil::DropUnselectedStats(*entry.data_file, columns);
-            manifest_result.emplace_back(std::move(entry));
+            ContentFileUtil::DropUnselectedStats(file, columns);
+            manifest_result.emplace_back(std::move(*entry));
           }
         }
         return manifest_result;

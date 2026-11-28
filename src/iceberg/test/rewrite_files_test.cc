@@ -43,6 +43,7 @@
 #include "iceberg/test/matchers.h"
 #include "iceberg/test/mock_catalog.h"
 #include "iceberg/test/update_test_base.h"
+#include "iceberg/update/delete_files.h"
 #include "iceberg/update/fast_append.h"
 #include "iceberg/update/row_delta.h"
 #include "iceberg/update/update_properties.h"
@@ -261,6 +262,11 @@ class RewriteFilesFormatVersionTest : public RewriteFilesTest,
                                       public ::testing::WithParamInterface<int8_t> {
  protected:
   int8_t format_version() const override { return GetParam(); }
+};
+
+class RewriteFilesV3Test : public RewriteFilesTest {
+ protected:
+  int8_t format_version() const override { return 3; }
 };
 
 // ============================================================================
@@ -1096,6 +1102,182 @@ TEST_F(RewriteFilesTest, RemovingDataFileAlsoRemovesDV) {
     return entry.status == ManifestStatus::kExisting && entry.data_file != nullptr &&
            entry.data_file->file_path == dv_b->file_path;
   }));
+}
+
+TEST_F(RewriteFilesV3Test, ValidateSuccessiveDVReplacements) {
+  ICEBERG_UNWRAP_OR_FAIL(auto append, table_->NewFastAppend());
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto base, CommitSnapshotUpdate(append->AppendFile(file_a_).AppendFile(file_b_)));
+  ICEBERG_UNWRAP_OR_FAIL(auto first, table_->NewRowDelta());
+  ICEBERG_UNWRAP_OR_FAIL(auto first_snapshot,
+                         CommitSnapshotUpdate(first->AddDeletes(delete_file_a_)));
+  ICEBERG_UNWRAP_OR_FAIL(auto second, table_->NewRowDelta());
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto dv_snapshot,
+      CommitSnapshotUpdate(second->RemoveDeletes(delete_file_a_)
+                               .AddDeletes(rewritten_delete_file_a_)
+                               .ValidateFromSnapshot(first_snapshot->snapshot_id)));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto conflict, NewRewriteFiles());
+  conflict->ValidateFromSnapshot(base->snapshot_id)
+      .Rewrite({file_a_}, {}, {rewritten_file_a_}, {});
+  ExpectCommitError(
+      conflict->Commit(), ErrorKind::kValidationFailed,
+      "Cannot commit, found new delete for replaced data file: " + file_a_->file_path);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto same_sequence, NewRewriteFiles());
+  same_sequence->ValidateFromSnapshot(base->snapshot_id)
+      .RewriteDataFiles({file_a_}, {rewritten_file_a_}, base->sequence_number);
+  ExpectCommitError(same_sequence->Commit(), ErrorKind::kValidationFailed,
+                    "Cannot commit, found new position delete for replaced data file: " +
+                        file_a_->file_path);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto unrelated, NewRewriteFiles());
+  unrelated->ValidateFromSnapshot(base->snapshot_id)
+      .Rewrite({file_b_}, {}, {rewritten_file_b_}, {});
+  ICEBERG_UNWRAP_OR_FAIL(auto snapshot, CommitSnapshotUpdate(*unrelated));
+  EXPECT_EQ(snapshot->Operation(), DataOperation::kReplace);
+  ICEBERG_UNWRAP_OR_FAIL(auto data, DataManifests(snapshot));
+  ASSERT_EQ(data.size(), 2);
+  ExpectManifestEntriesWithSnapshotIds(data[0], {rewritten_file_b_->file_path},
+                                       {ManifestStatus::kAdded}, {snapshot->snapshot_id});
+  ExpectManifestEntriesWithSnapshotIds(
+      data[1], {file_a_->file_path, file_b_->file_path},
+      {ManifestStatus::kExisting, ManifestStatus::kDeleted},
+      {base->snapshot_id, snapshot->snapshot_id});
+  ICEBERG_UNWRAP_OR_FAIL(auto deletes, DeleteManifests(snapshot));
+  ASSERT_EQ(deletes.size(), 1);
+  ExpectManifestEntriesWithSequenceNumbers(
+      deletes[0], {rewritten_delete_file_a_->file_path}, {ManifestStatus::kAdded},
+      {dv_snapshot->snapshot_id}, {dv_snapshot->sequence_number},
+      {dv_snapshot->sequence_number});
+}
+
+TEST_P(RewriteFilesFormatVersionTest,
+       OldSequenceNumberPreservesConcurrentEqualityDeletes) {
+  if (format_version() < 2) {
+    GTEST_SKIP() << "Delete files require format version 2";
+  }
+  ICEBERG_UNWRAP_OR_FAIL(auto props, table_->NewUpdateProperties());
+  ASSERT_THAT(props->Set(TableProperties::kManifestMinMergeCount.key(), "1").Commit(),
+              IsOk());
+  ASSERT_THAT(table_->Refresh(), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto append, table_->NewFastAppend());
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto base, CommitSnapshotUpdate(append->AppendFile(file_a_).AppendFile(file_b_)));
+  ICEBERG_UNWRAP_OR_FAIL(auto rewrite, NewRewriteFiles());
+  rewrite->ValidateFromSnapshot(base->snapshot_id)
+      .RewriteDataFiles({file_a_}, {rewritten_file_a_}, base->sequence_number);
+
+  auto pos_b = MakePositionDeleteFile("/data/pos_b.parquet", 2, file_b_->file_path);
+  ICEBERG_UNWRAP_OR_FAIL(auto delta, table_->NewRowDelta());
+  delta->AddDeletes(eq_delete_file_)
+      .AddDeletes(pos_b)
+      .ValidateNoConflictingDataFiles()
+      .ValidateNoConflictingDeleteFiles()
+      .ValidateFromSnapshot(base->snapshot_id);
+  ASSERT_THAT(CommitSnapshotUpdate(*delta), IsOk());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto new_sequence, NewRewriteFiles());
+  new_sequence->ValidateFromSnapshot(base->snapshot_id)
+      .Rewrite({file_a_}, {}, {rewritten_file_a_}, {});
+  ExpectCommitError(
+      new_sequence->Commit(), ErrorKind::kValidationFailed,
+      "Cannot commit, found new delete for replaced data file: " + file_a_->file_path);
+  ICEBERG_UNWRAP_OR_FAIL(auto position_conflict, NewRewriteFiles());
+  position_conflict->ValidateFromSnapshot(base->snapshot_id)
+      .RewriteDataFiles({file_b_}, {rewritten_file_b_}, base->sequence_number);
+  ExpectCommitError(position_conflict->Commit(), ErrorKind::kValidationFailed,
+                    "Cannot commit, found new position delete for replaced data file: " +
+                        file_b_->file_path);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto final_snapshot, CommitSnapshotUpdate(*rewrite));
+  ICEBERG_UNWRAP_OR_FAIL(auto manifests, DataManifests(final_snapshot));
+  ASSERT_EQ(manifests.size(), 1);
+  ExpectManifestEntriesWithSequenceNumbers(
+      manifests[0],
+      {rewritten_file_a_->file_path, file_a_->file_path, file_b_->file_path},
+      {ManifestStatus::kAdded, ManifestStatus::kDeleted, ManifestStatus::kExisting},
+      {final_snapshot->snapshot_id, final_snapshot->snapshot_id, base->snapshot_id},
+      {base->sequence_number, base->sequence_number, base->sequence_number},
+      {final_snapshot->sequence_number, base->sequence_number, base->sequence_number});
+}
+
+TEST_F(RewriteFilesV3Test, UnrelatedRewriteWhenDVIsLiveInTwoHistoricalManifests) {
+  auto file_c = MakeDataFile("/data/file_c.parquet", 3);
+  ICEBERG_UNWRAP_OR_FAIL(auto append, table_->NewFastAppend());
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto base, CommitSnapshotUpdate(
+                     append->AppendFile(file_a_).AppendFile(file_b_).AppendFile(file_c)));
+  auto dv_b = MakePositionDeleteFile("/data/dv-b.puffin", 2, file_b_->file_path);
+  ICEBERG_UNWRAP_OR_FAIL(auto delta, table_->NewRowDelta());
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto dv_snapshot,
+      CommitSnapshotUpdate(delta->AddDeletes(delete_file_a_).AddDeletes(dv_b)));
+  ICEBERG_UNWRAP_OR_FAIL(auto remove, table_->NewDeleteFiles());
+  ICEBERG_UNWRAP_OR_FAIL(auto deleted, CommitSnapshotUpdate(remove->DeleteFile(file_b_)));
+
+  // The rewritten manifest still carries A's DV. Count its location once across history.
+  ICEBERG_UNWRAP_OR_FAIL(auto check_deletes, table_->NewRowDelta());
+  check_deletes->AddRows(rewritten_file_a_)
+      .ValidateFromSnapshot(base->snapshot_id)
+      .ValidateNoConflictingDeleteFiles();
+  ExpectCommitError(
+      check_deletes->Commit(), ErrorKind::kValidationFailed,
+      "Found new conflicting delete files that can apply to records matching true: [" +
+          delete_file_a_->file_path + ", " + dv_b->file_path + "]");
+
+  ICEBERG_UNWRAP_OR_FAIL(auto unrelated, NewRewriteFiles());
+  unrelated->ValidateFromSnapshot(base->snapshot_id)
+      .Rewrite({file_c}, {}, {MakeDataFile("/data/new_c.parquet", 3)}, {});
+  ICEBERG_UNWRAP_OR_FAIL(auto snapshot, CommitSnapshotUpdate(*unrelated));
+  EXPECT_EQ(snapshot->Operation(), DataOperation::kReplace);
+  ICEBERG_UNWRAP_OR_FAIL(auto deletes, DeleteManifests(snapshot));
+  ASSERT_EQ(deletes.size(), 1);
+  EXPECT_EQ(deletes[0].added_snapshot_id, deleted->snapshot_id);
+  ExpectManifestEntriesWithSequenceNumbers(
+      deletes[0], {delete_file_a_->file_path, dv_b->file_path},
+      {ManifestStatus::kExisting, ManifestStatus::kDeleted},
+      {dv_snapshot->snapshot_id, deleted->snapshot_id},
+      {dv_snapshot->sequence_number, dv_snapshot->sequence_number},
+      {dv_snapshot->sequence_number, dv_snapshot->sequence_number});
+}
+
+TEST_F(RewriteFilesV3Test, UnrelatedRewriteWhenReplaceSnapshotRemovesDV) {
+  ICEBERG_UNWRAP_OR_FAIL(auto append, table_->NewFastAppend());
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto base, CommitSnapshotUpdate(append->AppendFile(file_a_).AppendFile(file_b_)));
+  ICEBERG_UNWRAP_OR_FAIL(auto first, table_->NewRowDelta());
+  ICEBERG_UNWRAP_OR_FAIL(auto first_snapshot,
+                         CommitSnapshotUpdate(first->AddDeletes(delete_file_a_)));
+  ICEBERG_UNWRAP_OR_FAIL(auto replace, NewRewriteFiles());
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto replaced, CommitSnapshotUpdate(replace->Rewrite({}, {delete_file_a_}, {},
+                                                           {rewritten_delete_file_a_})));
+  EXPECT_EQ(replaced->Operation(), DataOperation::kReplace);
+
+  auto dv2 = MakePositionDeleteFile("/data/dv2.puffin", 1, file_a_->file_path);
+  ICEBERG_UNWRAP_OR_FAIL(auto conflicting_dv, table_->NewRowDelta());
+  conflicting_dv->AddDeletes(dv2).ValidateFromSnapshot(first_snapshot->snapshot_id);
+  ExpectCommitError(conflicting_dv->Commit(), ErrorKind::kValidationFailed,
+                    "Found concurrently added DV for " + file_a_->file_path);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto delta, table_->NewRowDelta());
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto dv_snapshot,
+      CommitSnapshotUpdate(delta->RemoveDeletes(rewritten_delete_file_a_)
+                               .AddDeletes(dv2)
+                               .ValidateFromSnapshot(replaced->snapshot_id)));
+  ICEBERG_UNWRAP_OR_FAIL(auto unrelated, NewRewriteFiles());
+  unrelated->ValidateFromSnapshot(base->snapshot_id)
+      .Rewrite({file_b_}, {}, {rewritten_file_b_}, {});
+  ICEBERG_UNWRAP_OR_FAIL(auto snapshot, CommitSnapshotUpdate(*unrelated));
+  EXPECT_EQ(snapshot->Operation(), DataOperation::kReplace);
+  ICEBERG_UNWRAP_OR_FAIL(auto deletes, DeleteManifests(snapshot));
+  ASSERT_EQ(deletes.size(), 1);
+  ExpectManifestEntriesWithSequenceNumbers(
+      deletes[0], {dv2->file_path}, {ManifestStatus::kAdded}, {dv_snapshot->snapshot_id},
+      {dv_snapshot->sequence_number}, {dv_snapshot->sequence_number});
 }
 
 // ============================================================================

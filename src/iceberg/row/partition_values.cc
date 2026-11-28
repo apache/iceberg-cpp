@@ -19,6 +19,7 @@
 
 #include "iceberg/row/partition_values.h"
 
+#include <algorithm>
 #include <string_view>
 
 #include "iceberg/util/uuid.h"
@@ -33,7 +34,14 @@ PartitionValues& PartitionValues::operator=(const PartitionValues& other) {
 }
 
 bool PartitionValues::operator==(const PartitionValues& other) const {
-  return values_ == other.values_;
+  return std::ranges::equal(
+      values_, other.values_, [](const Literal& lhs, const Literal& rhs) {
+        // Partition keys group nulls and NaNs together. Literal comparisons are
+        // meant for predicates and distinguish IEEE NaN payloads.
+        if (lhs.IsNull()) return rhs.IsNull();
+        if (lhs.IsNaN()) return rhs.IsNaN() && lhs.value().index() == rhs.value().index();
+        return lhs == rhs;
+      });
 }
 
 Result<Scalar> PartitionValues::GetField(size_t pos) const {

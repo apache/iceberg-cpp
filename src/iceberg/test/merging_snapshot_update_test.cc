@@ -330,6 +330,8 @@ class MergingSnapshotUpdateTest : public MinimalUpdateTestBase {
       const std::string& path, const std::shared_ptr<DataFile>& data_file,
       std::initializer_list<int64_t> positions) {
     ICEBERG_ASSIGN_OR_RAISE(
+        auto spec, table_->metadata()->PartitionSpecById(*data_file->partition_spec_id));
+    ICEBERG_ASSIGN_OR_RAISE(
         auto writer,
         DVWriter::Make(DVWriterOptions{
             .path = path,
@@ -338,7 +340,7 @@ class MergingSnapshotUpdateTest : public MinimalUpdateTestBase {
                 -> Result<std::optional<PositionDeleteIndex>> { return std::nullopt; }}));
     for (const auto position : positions) {
       ICEBERG_RETURN_UNEXPECTED(
-          writer->Delete(data_file->file_path, position, spec_, data_file->partition));
+          writer->Delete(data_file->file_path, position, spec, data_file->partition));
     }
     ICEBERG_RETURN_UNEXPECTED(writer->Close());
     ICEBERG_ASSIGN_OR_RAISE(auto result, writer->Metadata());
@@ -1225,7 +1227,12 @@ TEST_F(MergingSnapshotUpdateTest, ValidateNewDeleteFileV3AllowsDeletionVector) {
 }
 
 TEST_F(MergingSnapshotUpdateTest, ApplyMergesDuplicateDeletionVectors) {
-  SetTableFormatVersion(3);
+  UpgradeTableToV3();
+  ICEBERG_UNWRAP_OR_FAIL(auto append, table_->NewFastAppend());
+  append->AppendFile(file_a_).AppendFile(file_b_);
+  ASSERT_THAT(append->Commit(), IsOk());
+  ASSERT_THAT(table_->Refresh(), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto parent, table_->current_snapshot());
 
   ICEBERG_UNWRAP_OR_FAIL(auto op, NewMergeAppend());
 
@@ -1239,19 +1246,18 @@ TEST_F(MergingSnapshotUpdateTest, ApplyMergesDuplicateDeletionVectors) {
       auto dv_b,
       WriteDeletionVector(table_location_ + "/data/dv_b.puffin", file_b_, {4, 5, 6}));
 
-  EXPECT_THAT(op->AddDelete(dv_a1, 7), IsOk());
-  EXPECT_THAT(op->AddDelete(dv_a2, 7), IsOk());
-  EXPECT_THAT(op->AddDelete(dv_b, 8), IsOk());
+  EXPECT_THAT(op->AddDelete(dv_a1, parent->sequence_number), IsOk());
+  EXPECT_THAT(op->AddDelete(dv_a2, parent->sequence_number), IsOk());
+  EXPECT_THAT(op->AddDelete(dv_b, parent->sequence_number), IsOk());
 
-  ICEBERG_UNWRAP_OR_FAIL(auto manifests, op->ApplyForTest(*table_->metadata(), nullptr));
-  auto delete_manifest_it =
-      std::ranges::find_if(manifests, [](const ManifestFile& manifest) {
-        return manifest.content == ManifestContent::kDeletes;
-      });
-  ASSERT_NE(delete_manifest_it, manifests.end());
+  ASSERT_THAT(op->Commit(), IsOk());
+  ASSERT_THAT(table_->Refresh(), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto snapshot, table_->current_snapshot());
+  SnapshotReader reader(snapshot.get());
+  ICEBERG_UNWRAP_OR_FAIL(auto manifests, reader.DeleteManifests(file_io_));
+  ASSERT_THAT(manifests, ::testing::SizeIs(1));
   ICEBERG_UNWRAP_OR_FAIL(auto entries,
-                         ReadAllEntries(std::vector<ManifestFile>{*delete_manifest_it},
-                                        *table_->metadata()));
+                         ReadAllEntries({manifests.front()}, *table_->metadata()));
 
   ASSERT_EQ(entries.size(), 2U);
   auto merged_it = std::ranges::find_if(entries, [&](const ManifestEntry& entry) {
@@ -1266,16 +1272,14 @@ TEST_F(MergingSnapshotUpdateTest, ApplyMergesDuplicateDeletionVectors) {
   EXPECT_TRUE(merged_positions.IsDeleted(2));
   EXPECT_TRUE(merged_positions.IsDeleted(3));
   EXPECT_FALSE(merged_positions.IsDeleted(0));
-  ASSERT_TRUE(merged_it->sequence_number.has_value());
-  EXPECT_EQ(*merged_it->sequence_number, 7);
+  EXPECT_EQ(merged_it->sequence_number, snapshot->sequence_number);
 
   auto single_it = std::ranges::find_if(entries, [&](const ManifestEntry& entry) {
     return entry.data_file->referenced_data_file == file_b_->file_path;
   });
   ASSERT_NE(single_it, entries.end());
   EXPECT_EQ(single_it->data_file->file_path, dv_b->file_path);
-  ASSERT_TRUE(single_it->sequence_number.has_value());
-  EXPECT_EQ(*single_it->sequence_number, 8);
+  EXPECT_EQ(single_it->sequence_number, parent->sequence_number);
 }
 
 TEST_F(MergingSnapshotUpdateTest, ApplyMergesDuplicateDeletionVectorsWithNullPartition) {
@@ -1297,6 +1301,97 @@ TEST_F(MergingSnapshotUpdateTest, ApplyMergesDuplicateDeletionVectorsWithNullPar
   EXPECT_THAT(op->ApplyForTest(*table_->metadata(), nullptr), IsOk());
 }
 
+TEST_F(MergingSnapshotUpdateTest, DuplicateDVsMergedAcrossSpecsWithEqualityDeletes) {
+  UpgradeTableToV3();
+  ICEBERG_UNWRAP_OR_FAIL(auto evolve, table_->NewUpdatePartitionSpec());
+  evolve->AddField("y");
+  ASSERT_THAT(evolve->Commit(), IsOk());
+  ASSERT_THAT(table_->Refresh(), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto new_spec, table_->spec());
+  file_b_->partition_spec_id = new_spec->spec_id();
+  file_b_->partition.AddValue(Literal::Long(3));
+  ICEBERG_UNWRAP_OR_FAIL(auto insert, table_->NewRowDelta());
+  insert->AddRows(file_a_).AddRows(file_b_);
+  ASSERT_THAT(insert->Commit(), IsOk());
+  ASSERT_THAT(table_->Refresh(), IsOk());
+
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto a1, WriteDeletionVector(table_location_ + "/data/a1.puffin", file_a_, {1, 3}));
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto b1, WriteDeletionVector(table_location_ + "/data/b1.puffin", file_b_, {2}));
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto a2, WriteDeletionVector(table_location_ + "/data/a2.puffin", file_a_, {3, 5}));
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto b2, WriteDeletionVector(table_location_ + "/data/b2.puffin", file_b_, {4}));
+  auto eq = MakeEqualityDeleteFile("/delete/eq.parquet", 1);
+  test::ThreadExecutor executor;
+  ICEBERG_UNWRAP_OR_FAIL(auto delta, table_->NewRowDelta());
+  delta->AddDeletes(a1).AddDeletes(b1).AddDeletes(eq).AddDeletes(a2).AddDeletes(b2);
+  delta->ScanManifestsWith(executor);
+  ASSERT_THAT(delta->Commit(), IsOk());
+  ASSERT_THAT(table_->Refresh(), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto snapshot, table_->current_snapshot());
+  EXPECT_EQ(snapshot->summary.at(SnapshotSummaryFields::kAddedDVs), "2");
+  EXPECT_EQ(snapshot->summary.at(SnapshotSummaryFields::kAddedEqDeleteFiles), "1");
+  EXPECT_EQ(snapshot->summary.at(SnapshotSummaryFields::kAddedEqDeletes),
+            std::to_string(eq->record_count));
+  SnapshotReader reader(snapshot.get());
+  ICEBERG_UNWRAP_OR_FAIL(auto manifests, reader.DeleteManifests(file_io_));
+  ASSERT_THAT(manifests, ::testing::SizeIs(2));
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto entries,
+      ReadAllEntries({manifests.begin(), manifests.end()}, *table_->metadata()));
+  ASSERT_THAT(entries, ::testing::SizeIs(3));
+  std::unordered_map<std::string, std::shared_ptr<DataFile>> by_reference;
+  for (const auto& entry : entries) {
+    const auto& file = entry.data_file;
+    ASSERT_EQ(entry.sequence_number, snapshot->sequence_number);
+    if (file->IsDeletionVector()) {
+      by_reference.emplace(*file->referenced_data_file, file);
+    } else {
+      EXPECT_EQ(file->file_path, eq->file_path);
+    }
+  }
+  ASSERT_TRUE(by_reference.contains(file_a_->file_path));
+  ASSERT_TRUE(by_reference.contains(file_b_->file_path));
+  const auto& a = by_reference.at(file_a_->file_path);
+  const auto& b = by_reference.at(file_b_->file_path);
+  EXPECT_EQ(a->partition_spec_id, file_a_->partition_spec_id);
+  EXPECT_EQ(b->partition_spec_id, file_b_->partition_spec_id);
+  EXPECT_EQ(a->file_path, b->file_path);
+  EXPECT_NE(a->content_offset, b->content_offset);
+  ICEBERG_UNWRAP_OR_FAIL(auto first, DVUtil::ReadDV(a, file_io_));
+  ICEBERG_UNWRAP_OR_FAIL(auto second, DVUtil::ReadDV(b, file_io_));
+  EXPECT_EQ(first.Cardinality(), 3);
+  EXPECT_TRUE(first.IsDeleted(1) && first.IsDeleted(3) && first.IsDeleted(5));
+  EXPECT_EQ(second.Cardinality(), 2);
+  EXPECT_TRUE(second.IsDeleted(2) && second.IsDeleted(4));
+}
+
+TEST_F(MergingSnapshotUpdateTest, CannotMergeDVsWithMismatchedMetadata) {
+  UpgradeTableToV3();
+  ICEBERG_UNWRAP_OR_FAIL(auto evolve, table_->NewUpdatePartitionSpec());
+  evolve->AddField("y");
+  ASSERT_THAT(evolve->Commit(), IsOk());
+  ASSERT_THAT(table_->Refresh(), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto new_spec, table_->spec());
+  auto first = MakeDeletionVector("/data/first.puffin", file_a_, 1);
+  auto second = MakeDeletionVector("/data/second.puffin", file_a_, 1);
+  auto check = [&](int64_t sequence_number, std::string_view reason) {
+    ICEBERG_UNWRAP_OR_FAIL(auto op, NewMergeAppend());
+    ASSERT_THAT(op->AddDelete(first, 1), IsOk());
+    ASSERT_THAT(op->AddDelete(second, sequence_number), IsOk());
+    EXPECT_THAT(op->Commit(), ::testing::AllOf(IsError(ErrorKind::kInvalidArgument),
+                                               HasErrorMessage(std::string(reason))));
+  };
+  check(2, "mismatched sequence numbers");
+  second->partition = file_b_->partition;
+  check(1, "mismatched partition tuples");
+  second->partition_spec_id = new_spec->spec_id();
+  second->partition.AddValue(Literal::Long(3));
+  check(1, "mismatched partition specs");
+}
+
 TEST_F(MergingSnapshotUpdateTest, ValidateNewDeleteFileRejectsUnsupportedVersion) {
   SetTableFormatVersion(TableMetadata::kSupportedTableFormatVersion + 1);
 
@@ -1314,6 +1409,9 @@ TEST_F(MergingSnapshotUpdateTest,
        CommitRejectsV2StagedPositionDeleteAfterV3UpgradeOnReplay) {
   auto del_file = MakeDeleteFile("/delete/del_a.parquet", 1L);
 
+  ICEBERG_UNWRAP_OR_FAIL(auto txn, table_->NewTransaction());
+  ICEBERG_UNWRAP_OR_FAIL(auto staged, txn->NewRowDelta());
+  ASSERT_THAT(staged->AddDeletes(del_file).Commit(), IsOk());
   ICEBERG_UNWRAP_OR_FAIL(auto op, NewMergeAppend());
   EXPECT_THAT(op->AddDelete(del_file), IsOk());
 
@@ -1321,7 +1419,11 @@ TEST_F(MergingSnapshotUpdateTest,
   properties->Set("format-version", "3");
   ASSERT_THAT(properties->Commit(), IsOk());
   ASSERT_THAT(table_->Refresh(), IsOk());
-  EXPECT_THAT(op->Commit(),
+  EXPECT_THAT(
+      op->Commit(),
+      ::testing::AllOf(IsError(ErrorKind::kInvalidArgument),
+                       HasErrorMessage("Must use DVs for position deletes in V3")));
+  EXPECT_THAT(txn->Commit(),
               ::testing::AllOf(
                   IsError(ErrorKind::kValidationFailed),
                   HasErrorMessage("Transaction replay failed: Must use DVs for position "
@@ -1344,9 +1446,9 @@ TEST_F(MergingSnapshotUpdateTest, AddManifestRejectsDeleteManifest) {
 }
 
 TEST_F(MergingSnapshotUpdateTest, AddManifestPrimitiveAllowsExistingFilesCount) {
-  ManifestFile manifest;
-  manifest.manifest_path = table_location_ + "/metadata/existing.avro";
-  manifest.content = ManifestContent::kData;
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto manifest,
+      WriteManifest(table_location_ + "/metadata/existing.avro", {file_a_}));
   manifest.added_snapshot_id = kInvalidSnapshotId;
   manifest.existing_files_count = 1;
 
@@ -1355,9 +1457,9 @@ TEST_F(MergingSnapshotUpdateTest, AddManifestPrimitiveAllowsExistingFilesCount) 
 }
 
 TEST_F(MergingSnapshotUpdateTest, AddManifestPrimitiveAllowsDeletedFilesCount) {
-  ManifestFile manifest;
-  manifest.manifest_path = table_location_ + "/metadata/deleted.avro";
-  manifest.content = ManifestContent::kData;
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto manifest,
+      WriteManifest(table_location_ + "/metadata/deleted.avro", {file_a_}));
   manifest.added_snapshot_id = kInvalidSnapshotId;
   manifest.deleted_files_count = 1;
 
@@ -1563,20 +1665,39 @@ TEST_F(MergingSnapshotUpdateTest, AddManifestRetryReusesCopiedManifest) {
   EXPECT_EQ(entries[0].data_file->file_path, file_a_->file_path);
 }
 
-TEST_F(MergingSnapshotUpdateTest, ResumesManifestCopiesAfterApplyFailure) {
+TEST_F(MergingSnapshotUpdateTest, FailedManifestCopyPreservesEarlierCopyAndSummary) {
+  std::vector<std::string> discarded;
   ICEBERG_UNWRAP_OR_FAIL(auto op, NewMergeAppend());
+  op->DeleteWith([&](const std::string& path) {
+    discarded.push_back(path);
+    return file_io_->DeleteFile(path);
+  });
   auto first_path = table_location_ + "/metadata/copy-first.avro";
   auto second_path = table_location_ + "/metadata/copy-second.avro";
   ICEBERG_UNWRAP_OR_FAIL(auto first, WriteManifest(first_path, {file_a_}));
   ICEBERG_UNWRAP_OR_FAIL(auto second, WriteManifest(second_path, {file_b_}));
   first.added_snapshot_id = second.added_snapshot_id = 12345;
   ASSERT_THAT(op->AppendManifest(first), IsOk());
-  ASSERT_THAT(op->AppendManifest(second), IsOk());
 
-  ICEBERG_UNWRAP_OR_FAIL(auto contents, file_io_->ReadFile(second_path, std::nullopt));
+  // The first entry contributes metrics before the second entry invalidates the copy.
+  auto bad_path = table_location_ + "/metadata/bad-append.avro";
+  ICEBERG_UNWRAP_OR_FAIL(auto writer,
+                         ManifestWriter::MakeWriter(2, 12345, bad_path, file_io_, spec_,
+                                                    schema_, ManifestContent::kData));
+  ASSERT_THAT(writer->WriteAddedEntry(file_b_), IsOk());
+  ASSERT_THAT(writer->WriteExistingEntry(file_c_, 12345, 0), IsOk());
+  ASSERT_THAT(writer->Close(), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto bad, writer->ToManifestFile());
+  EXPECT_THAT(op->AppendManifest(bad),
+              HasErrorMessage("Manifest to copy must only contain added entries"));
+  ASSERT_THAT(discarded, ::testing::SizeIs(1));
+  EXPECT_NE(discarded.front(), bad_path);
+  EXPECT_FALSE(file_io_->ReadFile(discarded.front(), std::nullopt).has_value());
+  EXPECT_THAT(file_io_->ReadFile(bad_path, std::nullopt), IsOk());
+
+  ASSERT_THAT(op->AppendManifest(second), IsOk());
+  ASSERT_THAT(file_io_->DeleteFile(first_path), IsOk());
   ASSERT_THAT(file_io_->DeleteFile(second_path), IsOk());
-  EXPECT_FALSE(op->ApplyForTest(*table_->metadata(), nullptr).has_value());
-  ASSERT_THAT(file_io_->WriteFile(second_path, contents), IsOk());
 
   ICEBERG_UNWRAP_OR_FAIL(auto manifests, op->CommitManifests());
   ASSERT_THAT(manifests, ::testing::SizeIs(2));
@@ -1901,6 +2022,15 @@ TEST_F(MergingSnapshotUpdateTest,
   EXPECT_THAT(TestMergeAppend::ValidateAddedDataFilesForTest(*metadata, std::nullopt,
                                                              snapshot, file_io_),
               IsError(ErrorKind::kValidationFailed));
+  // Even an empty input set must surface a missing intermediate ancestor.
+  EXPECT_THAT(TestMergeAppend::ValidateDataFilesExistForTest(
+                  *metadata, /*starting_snapshot_id=*/0, {}, /*skip_deletes=*/false,
+                  nullptr, snapshot, file_io_),
+              HasErrorMessage("Cannot determine history"));
+  EXPECT_THAT(
+      TestMergeAppend::ValidateNoNewDeletesForDataFilesForTest(
+          *metadata, /*starting_snapshot_id=*/0, DataFileSet{}, snapshot, file_io_),
+      HasErrorMessage("Cannot determine history"));
 }
 
 TEST_F(MergingSnapshotUpdateTest, ValidateAddedDataFilesWithNoStartingSnapshotChecksAll) {
@@ -2448,10 +2578,19 @@ TEST_F(MergingSnapshotUpdateTest,
 // -------------------------------------------------------------------------
 
 TEST_F(MergingSnapshotUpdateTest, DataSpecThrowsWithMultipleSpecs) {
+  ICEBERG_UNWRAP_OR_FAIL(auto update_spec, table_->NewUpdatePartitionSpec());
+  update_spec->AddField("y");
+  ASSERT_THAT(update_spec->Commit(), IsOk());
+  ASSERT_THAT(table_->Refresh(), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto new_spec, table_->spec());
+  file_b_->partition_spec_id = new_spec->spec_id();
+  file_b_->partition.AddValue(Literal::Long(3));
   ICEBERG_UNWRAP_OR_FAIL(auto op, NewMergeAppend());
-  EXPECT_THAT(op->AddFile(file_a_), IsOk());
-  EXPECT_THAT(op->AddFile(file_b_), IsOk());
-  EXPECT_THAT(op->DataSpec(), IsOk());
+  ASSERT_THAT(op->AddFile(file_a_), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto single_spec, op->DataSpec());
+  EXPECT_EQ(single_spec->spec_id(), spec_->spec_id());
+  ASSERT_THAT(op->AddFile(file_b_), IsOk());
+  EXPECT_THAT(op->DataSpec(), IsError(ErrorKind::kInvalidArgument));
 }
 
 TEST_F(MergingSnapshotUpdateTest, DataSpecThrowsWhenEmpty) {

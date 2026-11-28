@@ -474,6 +474,17 @@ Status ParsePartitionValues(ArrowArrayView* view, int64_t row_idx,
       partition.AddValue(Literal::Binary(std::vector<uint8_t>(
           buf_value.data.as_char, buf_value.data.as_char + buf_value.size_bytes)));
     } break;
+    case ArrowType::NANOARROW_TYPE_FIXED_SIZE_BINARY: {
+      // Avro fixed and UUID share Arrow storage. The partition spec determines
+      // the logical value needed when filtering or rewriting this manifest.
+      auto bytes = ArrowArrayViewGetBytesUnsafe(view, row_idx);
+      ICEBERG_ASSIGN_OR_RAISE(
+          auto value,
+          Literal::Deserialize(
+              {bytes.data.as_uint8, static_cast<size_t>(bytes.size_bytes)}, field_type));
+      partition.AddValue(std::move(value));
+      break;
+    }
     default:
       return InvalidManifest("Unsupported type {} for partition values",
                              ArrowTypeString(view->storage_type));

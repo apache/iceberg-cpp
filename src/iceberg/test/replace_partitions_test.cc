@@ -35,6 +35,7 @@
 #include "iceberg/row/partition_values.h"
 #include "iceberg/schema.h"
 #include "iceberg/snapshot.h"
+#include "iceberg/sort_order.h"
 #include "iceberg/table.h"
 #include "iceberg/table_metadata.h"
 #include "iceberg/table_properties.h"
@@ -44,6 +45,7 @@
 #include "iceberg/transform.h"
 #include "iceberg/update/delete_files.h"
 #include "iceberg/update/fast_append.h"
+#include "iceberg/update/overwrite_files.h"
 #include "iceberg/update/row_delta.h"
 #include "iceberg/update/update_properties.h"
 #include "iceberg/util/macros.h"
@@ -80,6 +82,22 @@ class ReplacePartitionsTest : public UpdateTestBase {
     f->record_count = 100;
     f->partition_spec_id = spec_->spec_id();
     return f;
+  }
+
+  void CreateWithSpec(std::vector<PartitionField> fields) {
+    ICEBERG_UNWRAP_OR_FAIL(spec_,
+                           PartitionSpec::Make(*schema_, 0, std::move(fields), false));
+    auto version = std::to_string(table_->metadata()->format_version);
+    ASSERT_THAT(catalog_->DropTable(table_ident_, /*purge=*/false), IsOk());
+    ICEBERG_UNWRAP_OR_FAIL(
+        table_, catalog_->CreateTable(table_ident_, schema_, spec_, SortOrder::Unsorted(),
+                                      table_location_, {{"format-version", version}}));
+  }
+
+  void CreateUnpartitioned() {
+    CreateWithSpec({});
+    file_a_->partition = PartitionValues{};
+    file_b_->partition = PartitionValues{};
   }
 
   // A data file that belongs to an unpartitioned spec (empty partition tuple).
@@ -598,6 +616,263 @@ TEST_F(ReplacePartitionsV3Test, ReplaceCleansUpDeletionVectors) {
   EXPECT_THAT(live_data,
               ::testing::UnorderedElementsAre(
                   file_b_->file_path, table_location_ + "/data/file_a_new.parquet"));
+}
+
+TEST_F(ReplacePartitionsTest, ValidateWithNullPartition) {
+  file_a_->partition = PartitionValues(Literal::Null(int64()));
+  ICEBERG_UNWRAP_OR_FAIL(auto create, NewReplace());
+  create->AddFile(file_a_);
+  ASSERT_THAT(create->Commit(), IsOk());
+  ASSERT_THAT(table_->Refresh(), IsOk());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto concurrent, NewReplace());
+  concurrent->AddFile(file_a_)
+      .AddFile(file_b_)
+      .ValidateNoConflictingData()
+      .ValidateNoConflictingDeletes();
+  auto conflict = concurrent->Commit();
+  EXPECT_THAT(conflict, IsError(ErrorKind::kValidationFailed));
+  EXPECT_THAT(conflict, HasErrorMessage(file_a_->file_path));
+
+  auto replacement = MakeDataFile("/data/new_null.parquet", 0);
+  replacement->partition = PartitionValues(Literal::Null(int64()));
+  ICEBERG_UNWRAP_OR_FAIL(auto op, NewReplace());
+  op->AddFile(replacement);
+  ASSERT_THAT(op->Commit(), IsOk());
+  ASSERT_THAT(table_->Refresh(), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto live, LiveDataFilePaths());
+  EXPECT_THAT(live, ::testing::ElementsAre(replacement->file_path));
+}
+
+TEST_F(ReplacePartitionsTest, ValidateWithVoidTransform) {
+  CreateWithSpec({PartitionField(2, 1000, "y_void", Transform::Void()),
+                  PartitionField(1, 1001, "x", Transform::Identity())});
+  file_a_->partition =
+      PartitionValues(std::vector<Literal>{Literal::Null(int64()), Literal::Long(1)});
+  file_b_->partition =
+      PartitionValues(std::vector<Literal>{Literal::Null(int64()), Literal::Long(2)});
+  ICEBERG_UNWRAP_OR_FAIL(auto initial, NewReplace());
+  ASSERT_THAT(initial->AddFile(file_a_).Commit(), IsOk());
+  ASSERT_THAT(table_->Refresh(), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto conflicting, NewReplace());
+  auto result = conflicting->AddFile(file_a_)
+                    .AddFile(file_b_)
+                    .ValidateNoConflictingData()
+                    .ValidateNoConflictingDeletes()
+                    .Commit();
+  EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
+  EXPECT_THAT(result, HasErrorMessage(file_a_->file_path));
+}
+
+TEST_F(ReplacePartitionsTest, ValidateOnlyDeletesAllowsConcurrentAppend) {
+  const auto base_id = CommitFastAppend(file_a_);
+  CommitFastAppend(file_b_);
+  ICEBERG_UNWRAP_OR_FAIL(auto replace, NewReplace());
+  ASSERT_THAT(replace->ValidateFromSnapshot(base_id)
+                  .ValidateNoConflictingDeletes()
+                  .AddFile(file_b_)
+                  .Commit(),
+              IsOk());
+  ASSERT_THAT(table_->Refresh(), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto snapshot, table_->current_snapshot());
+  SnapshotReader reader(snapshot.get());
+  ICEBERG_UNWRAP_OR_FAIL(auto manifests, reader.DataManifests(file_io_));
+  ASSERT_EQ(manifests.size(), 3U);
+  ExpectManifestEntriesWithSnapshotIds(manifests[0], {file_b_->file_path},
+                                       {ManifestStatus::kAdded}, {snapshot->snapshot_id});
+  ExpectManifestEntriesWithSnapshotIds(manifests[1], {file_b_->file_path},
+                                       {ManifestStatus::kDeleted},
+                                       {snapshot->snapshot_id});
+  ExpectManifestEntriesWithSnapshotIds(manifests[2], {file_a_->file_path},
+                                       {ManifestStatus::kAdded}, {base_id});
+}
+
+class ReplacePartitionsLayoutTest
+    : public ReplacePartitionsTest,
+      public ::testing::WithParamInterface<std::tuple<bool, bool, int8_t, std::string>> {
+ protected:
+  std::string MetadataResource() const override {
+    switch (std::get<2>(GetParam())) {
+      case 1:
+        return "TableMetadataV1Valid.json";
+      case 2:
+        return "TableMetadataV2ValidMinimal.json";
+      default:
+        return "TableMetadataV3ValidMinimal.json";
+    }
+  }
+};
+
+TEST_P(ReplacePartitionsLayoutTest, PreservesEntrySnapshotIds) {
+  const auto& [unpartitioned, merge, version, branch] = GetParam();
+  auto head = [&] {
+    return table_->metadata()->SnapshotById(
+        table_->metadata()->refs.at(branch)->snapshot_id);
+  };
+  if (unpartitioned) CreateUnpartitioned();
+  ASSERT_EQ(table_->metadata()->format_version, version);
+  if (merge) {
+    ICEBERG_UNWRAP_OR_FAIL(auto props, table_->NewUpdateProperties());
+    ASSERT_THAT(
+        props->Set(std::string(TableProperties::kManifestMinMergeCount.key()), "1")
+            .Commit(),
+        IsOk());
+    ASSERT_THAT(table_->Refresh(), IsOk());
+  }
+  ICEBERG_UNWRAP_OR_FAIL(auto append, table_->NewFastAppend());
+  append->AppendFile(file_a_).ToBranch(branch);
+  if (!unpartitioned) append->AppendFile(file_b_);
+  ASSERT_THAT(append->Commit(), IsOk());
+  ASSERT_THAT(table_->Refresh(), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto base, head());
+
+  auto new_file = std::make_shared<DataFile>(*file_a_);
+  new_file->file_path += ".new";
+  ICEBERG_UNWRAP_OR_FAIL(auto op, NewReplace());
+  ASSERT_THAT(op->AddFile(new_file).ToBranch(branch).Commit(), IsOk());
+  ASSERT_THAT(table_->Refresh(), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto snapshot, head());
+  SnapshotReader reader(snapshot.get());
+  ICEBERG_UNWRAP_OR_FAIL(auto manifests, reader.DataManifests(file_io_));
+  ASSERT_EQ(manifests.size(), merge ? 1U : 2U);
+
+  std::vector<std::string> paths{file_a_->file_path};
+  std::vector<ManifestStatus> statuses{ManifestStatus::kDeleted};
+  std::vector<int64_t> snapshot_ids{snapshot->snapshot_id};
+  if (!unpartitioned) {
+    paths.push_back(file_b_->file_path);
+    statuses.push_back(ManifestStatus::kExisting);
+    snapshot_ids.push_back(base->snapshot_id);
+  }
+  if (merge) {
+    paths.insert(paths.begin(), new_file->file_path);
+    statuses.insert(statuses.begin(), ManifestStatus::kAdded);
+    snapshot_ids.insert(snapshot_ids.begin(), snapshot->snapshot_id);
+  } else {
+    ExpectManifestEntriesWithSnapshotIds(manifests.front(), {new_file->file_path},
+                                         {ManifestStatus::kAdded},
+                                         {snapshot->snapshot_id});
+  }
+  ExpectManifestEntriesWithSnapshotIds(manifests.back(), std::move(paths),
+                                       std::move(statuses), std::move(snapshot_ids));
+}
+
+INSTANTIATE_TEST_SUITE_P(PartitionAndMergeModes, ReplacePartitionsLayoutTest,
+                         ::testing::Combine(::testing::Bool(), ::testing::Bool(),
+                                            ::testing::Values<int8_t>(1, 2, 3),
+                                            ::testing::Values(std::string("main"),
+                                                              std::string("audit"))));
+
+enum class ConcurrentChange { kReplace, kAppend, kRowDelta, kOverwrite };
+enum class TargetPartition { kSame, kOther, kUnpartitioned };
+
+class ReplacePartitionsHistoryTest : public ReplacePartitionsTest,
+                                     public ::testing::WithParamInterface<
+                                         std::tuple<ConcurrentChange, TargetPartition>> {
+};
+
+TEST_P(ReplacePartitionsHistoryTest, ValidatesTheTargetPartition) {
+  const auto [change, target] = GetParam();
+  if (target == TargetPartition::kUnpartitioned) CreateUnpartitioned();
+  const auto base_id = CommitFastAppend(file_a_);
+  auto concurrent = std::make_shared<DataFile>(*file_a_);
+  concurrent->file_path += ".concurrent";
+  switch (change) {
+    case ConcurrentChange::kReplace: {
+      ICEBERG_UNWRAP_OR_FAIL(auto op, NewReplace());
+      ASSERT_THAT(op->AddFile(concurrent).Commit(), IsOk());
+      break;
+    }
+    case ConcurrentChange::kAppend:
+      CommitFastAppend(concurrent);
+      break;
+    case ConcurrentChange::kRowDelta: {
+      concurrent->content = DataFile::Content::kEqualityDeletes;
+      concurrent->equality_ids = {1};
+      ICEBERG_UNWRAP_OR_FAIL(auto op, table_->NewRowDelta());
+      ASSERT_THAT(op->AddDeletes(concurrent).Commit(), IsOk());
+      break;
+    }
+    case ConcurrentChange::kOverwrite: {
+      ICEBERG_UNWRAP_OR_FAIL(auto op, table_->NewOverwrite());
+      ASSERT_THAT(op->DeleteFile(file_a_).Commit(), IsOk());
+      break;
+    }
+  }
+  ASSERT_THAT(table_->Refresh(), IsOk());
+  auto replacement = target == TargetPartition::kOther ? file_b_ : file_a_;
+  ICEBERG_UNWRAP_OR_FAIL(auto op, NewReplace());
+  auto result = op->ValidateFromSnapshot(base_id)
+                    .ValidateNoConflictingData()
+                    .ValidateNoConflictingDeletes()
+                    .AddFile(replacement)
+                    .Commit();
+  if (target == TargetPartition::kOther) {
+    ASSERT_THAT(result, IsOk());
+    ASSERT_THAT(table_->Refresh(), IsOk());
+    ICEBERG_UNWRAP_OR_FAIL(auto paths, LiveDataFilePaths());
+    EXPECT_THAT(paths, ::testing::Contains(file_b_->file_path));
+  } else {
+    EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
+    const bool partitioned = target != TargetPartition::kUnpartitioned;
+    std::string predicate = partitioned ? "[{x=1}]" : "true";
+    std::string prefix;
+    switch (change) {
+      case ConcurrentChange::kAppend:
+      case ConcurrentChange::kReplace:
+        prefix = "Found conflicting files that can contain records matching ";
+        if (partitioned) prefix += "partitions ";
+        break;
+      case ConcurrentChange::kRowDelta:
+        prefix = "Found new conflicting delete files that can apply to records matching ";
+        break;
+      case ConcurrentChange::kOverwrite:
+        prefix =
+            partitioned
+                ? "Found conflicting deleted files that can apply to records matching "
+                : "Found conflicting deleted files that can contain records matching ";
+        break;
+    }
+    const auto& path = change == ConcurrentChange::kOverwrite ? file_a_->file_path
+                                                              : concurrent->file_path;
+    EXPECT_THAT(result,
+                HasErrorMessage(std::format("{}{}: [{}]", prefix, predicate, path)));
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ConcurrentUpdates, ReplacePartitionsHistoryTest,
+    ::testing::Combine(::testing::Values(ConcurrentChange::kReplace,
+                                         ConcurrentChange::kAppend,
+                                         ConcurrentChange::kRowDelta,
+                                         ConcurrentChange::kOverwrite),
+                       ::testing::Values(TargetPartition::kSame, TargetPartition::kOther,
+                                         TargetPartition::kUnpartitioned)));
+
+TEST_F(ReplacePartitionsV3Test, ConcurrentSuccessiveDVsReplaceConflict) {
+  const auto base_id = CommitFastAppend(file_a_);
+  auto first_dv = MakeDeletionVector("/delete/first.puffin", file_a_->file_path, 1);
+  ICEBERG_UNWRAP_OR_FAIL(auto first, table_->NewRowDelta());
+  first->AddDeletes(first_dv).ValidateFromSnapshot(base_id);
+  ASSERT_THAT(first->Commit(), IsOk());
+  ASSERT_THAT(table_->Refresh(), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto first_snapshot, table_->current_snapshot());
+
+  auto second_dv = MakeDeletionVector("/delete/second.puffin", file_a_->file_path, 1);
+  ICEBERG_UNWRAP_OR_FAIL(auto second, table_->NewRowDelta());
+  second->RemoveDeletes(first_dv).AddDeletes(second_dv).ValidateFromSnapshot(
+      first_snapshot->snapshot_id);
+  ASSERT_THAT(second->Commit(), IsOk());
+  ASSERT_THAT(table_->Refresh(), IsOk());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto replace, NewReplace());
+  replace->ValidateFromSnapshot(base_id).ValidateNoConflictingDeletes().AddFile(file_a_);
+  auto result = replace->Commit();
+  EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
+  EXPECT_THAT(result,
+              HasErrorMessage(std::format("Found new conflicting delete files that can "
+                                          "apply to records matching [{{x=1}}]: [{}, {}]",
+                                          second_dv->file_path, first_dv->file_path)));
 }
 
 }  // namespace iceberg

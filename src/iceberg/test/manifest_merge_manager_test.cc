@@ -30,6 +30,7 @@
 
 #include "iceberg/arrow/arrow_io_util.h"
 #include "iceberg/avro/avro_register.h"
+#include "iceberg/avro/avro_writer.h"
 #include "iceberg/file_format.h"
 #include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/manifest/manifest_list.h"
@@ -56,6 +57,30 @@ constexpr int8_t kRowIdFormatVersion = 3;
 constexpr int64_t kSnapshotId = 12345L;
 constexpr int32_t kSpecId0 = 0;
 constexpr int32_t kSpecId1 = 1;
+
+// Leave the Avro output open on the first Close so cleanup must release it
+// before discarding the file.
+class FailOnceOnCloseWriter final : public Writer {
+ public:
+  FailOnceOnCloseWriter(int& close_calls, bool& released)
+      : close_calls_(close_calls), released_(released) {}
+  ~FailOnceOnCloseWriter() override { released_ = true; }
+
+  Status Open(const WriterOptions& options) override { return writer_.Open(options); }
+  Status Write(ArrowArray* data) override { return writer_.Write(data); }
+  Status Close() override {
+    if (++close_calls_ == 1) return IOError("Injected merge writer close failure");
+    return writer_.Close();
+  }
+  Result<Metrics> metrics() override { return writer_.metrics(); }
+  Result<int64_t> length() override { return writer_.length(); }
+  std::vector<int64_t> split_offsets() override { return writer_.split_offsets(); }
+
+ private:
+  avro::AvroWriter writer_;
+  int& close_calls_;
+  bool& released_;
+};
 
 }  // namespace
 
@@ -294,11 +319,120 @@ TEST_F(ManifestMergeManagerTest, MergeManifestsCachesMergedBinAcrossRetries) {
   EXPECT_EQ(factory_call_count_, 1);
   EXPECT_EQ(mgr->ReplacedManifestsCount(), 2);
 
+  // A fresh descriptor for the same path still identifies the cached bin.
+  m0.manifest_length += 1;
   ICEBERG_UNWRAP_OR_FAIL(
       auto second, mgr->MergeManifests({m0, m1}, {}, *metadata_, MakeWriterFactory()));
   ASSERT_EQ(second.size(), 1U);
   EXPECT_EQ(second[0].manifest_path, first[0].manifest_path);
   EXPECT_EQ(factory_call_count_, 1);
+  EXPECT_EQ(mgr->ReplacedManifestsCount(), 2);
+
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto reversed, mgr->MergeManifests({m1, m0}, {}, *metadata_, MakeWriterFactory()));
+  ASSERT_EQ(reversed.size(), 1U);
+  EXPECT_NE(reversed[0].manifest_path, first[0].manifest_path);
+  EXPECT_EQ(factory_call_count_, 2);
+  EXPECT_EQ(mgr->ReplacedManifestsCount(), 4);
+  ASSERT_THAT(mgr->CleanUncommitted({reversed[0].manifest_path}), IsOk());
+  EXPECT_EQ(mgr->ReplacedManifestsCount(), 2);
+}
+
+TEST_F(ManifestMergeManagerTest, ReadFailureDiscardsPartialMergeAndRetainsCompletedBins) {
+  ICEBERG_UNWRAP_OR_FAIL(auto a, WriteManifest(kSpecId0, 1, /*size=*/100));
+  ICEBERG_UNWRAP_OR_FAIL(auto b, WriteManifest(kSpecId0, 1, /*size=*/100));
+  ICEBERG_UNWRAP_OR_FAIL(auto c, WriteManifest(kSpecId0, 1, /*size=*/100));
+  ICEBERG_UNWRAP_OR_FAIL(auto d, WriteManifest(kSpecId0, 1, /*size=*/100));
+  a.added_snapshot_id = b.added_snapshot_id = c.added_snapshot_id = kSnapshotId - 1;
+  // The second bin fails after writing its first entry.
+  auto invalid = d;
+  invalid.added_snapshot_id.reset();
+  std::vector<std::string> discarded;
+  ICEBERG_UNWRAP_OR_FAIL(auto mgr,
+                         ManifestMergeManager::Make(
+                             ManifestContent::kData, /*target=*/200, /*min_count=*/2,
+                             /*enabled=*/true, file_io_, [] { return kSnapshotId; },
+                             [&](const std::string& path) {
+                               discarded.push_back(path);
+                               return file_io_->DeleteFile(path);
+                             }));
+  EXPECT_THAT(
+      mgr->MergeManifests({a, b, c, invalid}, {}, *metadata_, MakeWriterFactory()),
+      ::testing::AllOf(IsError(ErrorKind::kInvalidManifest),
+                       HasErrorMessage("has no snapshot ID")));
+  ASSERT_EQ(discarded.size(), 1U);
+  ICEBERG_UNWRAP_OR_FAIL(auto partial, file_io_->NewInputFile(discarded.front()));
+  EXPECT_FALSE(partial->Size().has_value());
+  EXPECT_EQ(factory_call_count_, 2);
+  EXPECT_EQ(mgr->ReplacedManifestsCount(), 2);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto merged, mgr->MergeManifests({a, b, c, d}, {}, *metadata_,
+                                                          MakeWriterFactory()));
+  ASSERT_EQ(merged.size(), 2U);
+  EXPECT_EQ(factory_call_count_, 3);
+  EXPECT_EQ(mgr->ReplacedManifestsCount(), 3);
+  ASSERT_THAT(mgr->CleanUncommitted({merged[0].manifest_path}), IsOk());
+  EXPECT_EQ(mgr->ReplacedManifestsCount(), 2);
+  EXPECT_EQ(discarded.back(), merged[1].manifest_path);
+}
+
+TEST_F(ManifestMergeManagerTest, CloseFailureReleasesOutputAndPreservesFirstError) {
+  ICEBERG_UNWRAP_OR_FAIL(auto first, WriteManifest(kSpecId0, 1));
+  ICEBERG_UNWRAP_OR_FAIL(auto second, WriteManifest(kSpecId0, 1));
+  first.added_snapshot_id = kSnapshotId - 1;
+  second.added_snapshot_id = kSnapshotId - 2;
+  int close_calls = 0;
+  bool released = false;
+  std::vector<std::string> discarded;
+  ICEBERG_UNWRAP_OR_FAIL(auto mgr,
+                         ManifestMergeManager::Make(
+                             ManifestContent::kData, /*target=*/1024, /*min_count=*/2,
+                             /*enabled=*/true, file_io_, [] { return kSnapshotId; },
+                             [&](const std::string& path) {
+                               EXPECT_EQ(close_calls, 2);
+                               EXPECT_TRUE(released);
+                               discarded.push_back(path);
+                               return file_io_->DeleteFile(path);
+                             }));
+
+  {
+    auto& factory = WriterFactoryRegistry::GetFactory(FileFormatType::kAvro);
+    struct RestoreFactory {
+      WriterFactory& factory;
+      WriterFactory saved;
+      ~RestoreFactory() { factory = std::move(saved); }
+    } restore{factory, factory};
+    factory = [&]() -> Result<std::unique_ptr<Writer>> {
+      return std::make_unique<FailOnceOnCloseWriter>(close_calls, released);
+    };
+
+    for (bool fail_read : {false, true}) {
+      SCOPED_TRACE(fail_read);
+      auto input = second;
+      if (fail_read) input.added_snapshot_id.reset();
+      close_calls = 0;
+      released = false;
+      auto result =
+          mgr->MergeManifests({first, input}, {}, *metadata_, MakeWriterFactory());
+      EXPECT_THAT(result,
+                  IsError(fail_read ? ErrorKind::kInvalidManifest : ErrorKind::kIOError));
+      EXPECT_THAT(result,
+                  HasErrorMessage(fail_read ? "has no snapshot ID"
+                                            : "Injected merge writer close failure"));
+      ASSERT_EQ(discarded.size(), fail_read ? 2U : 1U);
+      ICEBERG_UNWRAP_OR_FAIL(auto partial, file_io_->NewInputFile(discarded.back()));
+      EXPECT_FALSE(partial->Size().has_value());
+      EXPECT_EQ(mgr->ReplacedManifestsCount(), 0);
+    }
+  }
+
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto retried,
+      mgr->MergeManifests({first, second}, {}, *metadata_, MakeWriterFactory()));
+  ASSERT_EQ(retried.size(), 1U);
+  ICEBERG_UNWRAP_OR_FAIL(auto count, CountEntries(retried));
+  EXPECT_EQ(count, 2);
+  EXPECT_EQ(factory_call_count_, 3);
   EXPECT_EQ(mgr->ReplacedManifestsCount(), 2);
 }
 
@@ -458,10 +592,9 @@ TEST_F(ManifestMergeManagerTest, CrossSpecManifestsNotMerged) {
   ICEBERG_UNWRAP_OR_FAIL(auto result,
                          mgr->MergeManifests({m_spec0a, m_spec1a}, {m_spec0b, m_spec1b},
                                              *metadata_, MakeWriterFactory()));
-  EXPECT_EQ(result.size(), 2U);
-  for (const auto& m : result) {
-    EXPECT_THAT(m.partition_spec_id, ::testing::AnyOf(kSpecId0, kSpecId1));
-  }
+  ASSERT_EQ(result.size(), 2U);
+  EXPECT_EQ(result[0].partition_spec_id, kSpecId1);
+  EXPECT_EQ(result[1].partition_spec_id, kSpecId0);
 }
 
 TEST_F(ManifestMergeManagerTest, WriterFactoryCalledOncePerMergedManifest) {
@@ -482,11 +615,15 @@ TEST_F(ManifestMergeManagerTest, UnexpectedContentRejected) {
   ICEBERG_UNWRAP_OR_FAIL(
       auto d0, WriteManifest(kSpecId0, 1, /*size=*/100, ManifestContent::kData));
 
-  ICEBERG_UNWRAP_OR_FAIL(auto mgr,
-                         MakeMergeManager(/*target=*/1024, /*min_count=*/2,
-                                          /*enabled=*/true, ManifestContent::kDeletes));
-  EXPECT_THAT(mgr->MergeManifests({}, {d0}, *metadata_, MakeWriterFactory()),
-              IsError(ErrorKind::kInvalidArgument));
+  for (bool enabled : {true, false}) {
+    ICEBERG_UNWRAP_OR_FAIL(auto mgr,
+                           MakeMergeManager(/*target=*/1024, /*min_count=*/2, enabled,
+                                            ManifestContent::kDeletes));
+    EXPECT_THAT(mgr->MergeManifests({}, {d0}, *metadata_, MakeWriterFactory()),
+                IsError(ErrorKind::kInvalidArgument));
+    EXPECT_THAT(mgr->MergeManifests({d0}, {}, *metadata_, MakeWriterFactory()),
+                IsError(ErrorKind::kInvalidArgument));
+  }
 }
 
 TEST_F(ManifestMergeManagerTest, DeleteManifestsMerged) {

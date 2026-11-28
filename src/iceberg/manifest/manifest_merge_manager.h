@@ -22,9 +22,12 @@
 /// \file iceberg/manifest/manifest_merge_manager.h
 /// Merges small manifests into fewer larger ones according to table properties.
 
+#include <atomic>
 #include <cstdint>
 #include <functional>
+#include <map>
 #include <memory>
+#include <mutex>
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
@@ -35,16 +38,15 @@
 #include "iceberg/manifest/manifest_writer.h"
 #include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
+#include "iceberg/util/executor.h"
 
 namespace iceberg {
 
 /// \brief Merges small manifests into larger ones using greedy bin-packing.
 ///
-/// Manifests are grouped by partition_spec_id before merging; manifests with
-/// different spec IDs are never merged together.  Within a group, manifests are
-/// accumulated into bins until a bin would exceed target_size_bytes, at which
-/// point the bin is flushed (written) and a new one started.  Manifests already
-/// larger than target_size_bytes pass through unchanged.
+/// Groups are processed in descending partition spec ID order. Within each group,
+/// packing starts with the oldest manifests and preserves their input order in
+/// the result. A bin with a single manifest passes through unchanged.
 ///
 /// \note This class is non-copyable and non-movable.
 class ICEBERG_EXPORT ManifestMergeManager {
@@ -55,7 +57,7 @@ class ICEBERG_EXPORT ManifestMergeManager {
   ///
   /// \param content Manifest content this manager accepts
   /// \param target_size_bytes Target output manifest size in bytes
-  /// \param min_count_to_merge Minimum number of manifests before any merging occurs
+  /// \param min_count_to_merge Minimum size of the bin containing the newest manifest
   /// \param merge_enabled Whether merging is enabled at all
   /// \param file_io File IO used to open manifests for reading
   /// \param snapshot_id_supplier Supplies the snapshot id being committed
@@ -86,61 +88,48 @@ class ICEBERG_EXPORT ManifestMergeManager {
       const std::vector<ManifestFile>& new_manifests, const TableMetadata& metadata,
       const ManifestWriterFactory& writer_factory);
 
-  /// \brief Returns the number of manifests replaced by cached merged outputs.
-  int32_t ReplacedManifestsCount() const { return replaced_manifests_count_; }
+  /// \brief Returns the number of older manifests replaced by cached merged outputs.
+  int32_t ReplacedManifestsCount() const { return replaced_manifests_count_.load(); }
 
   /// \brief Delete cached merged manifests whose paths were not committed and roll
   /// back replaced-manifest accounting.
   Status CleanUncommitted(const std::unordered_set<std::string>& committed);
 
  private:
+  friend class MergingSnapshotUpdate;
+
   ManifestMergeManager(ManifestContent content, int64_t target_size_bytes,
                        int32_t min_count_to_merge, bool merge_enabled,
                        std::shared_ptr<FileIO> file_io,
                        SnapshotIdSupplier snapshot_id_supplier,
                        std::function<Status(const std::string&)> delete_file);
 
-  struct MergedManifestCache {
-    struct Key {
-      std::vector<ManifestFile> bin;
-      bool operator==(const Key& other) const = default;
-    };
+  using ManifestGroup = std::vector<const ManifestFile*>;
+  using GroupsBySpec = std::map<int32_t, ManifestGroup, std::greater<>>;
 
-    struct KeyHash {
-      size_t operator()(const Key& key) const;
-    };
-
-    const ManifestFile* Find(const std::vector<const ManifestFile*>& bin) const;
-    void Add(const std::vector<const ManifestFile*>& bin, const ManifestFile& manifest);
-    bool empty() const { return entries_.empty(); }
-    Result<int32_t> CleanUncommitted(
-        const std::unordered_set<std::string>& committed, int64_t snapshot_id,
-        const std::function<Status(const std::string&)>& delete_file);
-
-   private:
-    static Key MakeKey(const std::vector<const ManifestFile*>& bin);
-
-    std::unordered_map<Key, ManifestFile, KeyHash> entries_;
+  struct ManifestPathsHash {
+    size_t operator()(const std::vector<std::string>& paths) const;
   };
 
-  /// \brief Merge a group of manifests sharing the same spec_id.
-  ///
-  /// \param first The overall first (newest) manifest across all groups, used to
-  ///   apply the min_count_to_merge threshold on the bin that contains it.
-  Result<std::vector<ManifestFile>> MergeGroup(
-      const std::vector<const ManifestFile*>& group, const ManifestFile* first,
-      const TableMetadata& metadata, const ManifestWriterFactory& writer_factory);
+  struct CachedManifest {
+    ManifestFile manifest;
+    int32_t replaced_count;
+  };
 
-  /// \brief Write a merged manifest from all manifests in a bin.
-  ///
-  /// Entries are written snapshot-aware:
-  /// - ADDED from snapshot_id  → WriteAddedEntry (preserve status)
-  /// - DELETED from snapshot_id → WriteDeletedEntry (preserve tombstone)
-  /// - DELETED from older snapshots → dropped (stale tombstones are not carried forward)
-  /// - All other entries          → WriteExistingEntry
-  Result<ManifestFile> FlushBin(const std::vector<const ManifestFile*>& bin,
-                                const TableMetadata& metadata,
-                                const ManifestWriterFactory& writer_factory);
+  Result<std::vector<ManifestFile>> MergeManifests(
+      std::vector<ManifestFile> ordered_manifests, const TableMetadata& metadata,
+      const ManifestWriterFactory& writer_factory, OptionalExecutor executor);
+
+  static GroupsBySpec GroupBySpec(const std::vector<ManifestFile>& manifests);
+
+  Result<std::vector<ManifestFile>> MergeGroup(
+      const ManifestFile& first, int32_t spec_id, const ManifestGroup& group,
+      const TableMetadata& metadata, const ManifestWriterFactory& writer_factory,
+      OptionalExecutor executor);
+
+  Result<ManifestFile> CreateManifest(int32_t spec_id, const ManifestGroup& bin,
+                                      const TableMetadata& metadata,
+                                      const ManifestWriterFactory& writer_factory);
 
   const ManifestContent manifest_content_;
   const int64_t target_size_bytes_;
@@ -149,8 +138,10 @@ class ICEBERG_EXPORT ManifestMergeManager {
   std::shared_ptr<FileIO> file_io_;
   SnapshotIdSupplier snapshot_id_supplier_;
   std::function<Status(const std::string&)> delete_file_;
-  int32_t replaced_manifests_count_{0};
-  MergedManifestCache merged_manifests_;
+  std::atomic<int32_t> replaced_manifests_count_{0};
+  std::mutex cache_mutex_;
+  std::unordered_map<std::vector<std::string>, CachedManifest, ManifestPathsHash>
+      merged_manifests_;
 };
 
 }  // namespace iceberg

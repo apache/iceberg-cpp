@@ -17,6 +17,7 @@
  * under the License.
  */
 
+#include <cmath>
 #include <string>
 #include <vector>
 
@@ -212,6 +213,19 @@ TEST(PartitionValuesTest, EqualityDifferentSize) {
   PartitionValues partition2(std::move(values2));
 
   EXPECT_NE(partition1, partition2);
+}
+
+TEST(PartitionValuesTest, NullAndNaNPartitionKeys) {
+  PartitionValues first({Literal::Null(int32()), Literal::Double(std::nan("1"))});
+  PartitionValues second({Literal::Null(int32()), Literal::Double(-std::nan("2"))});
+  EXPECT_EQ(first, second);
+  EXPECT_EQ(PartitionValuesHash{}(first), PartitionValuesHash{}(second));
+  PartitionSet partitions;
+  partitions.add(7, first);
+  EXPECT_TRUE(partitions.contains(7, second));
+  EXPECT_FALSE(partitions.contains(8, second));
+  EXPECT_NE(PartitionValues(Literal::Float(-0.0F)),
+            PartitionValues(Literal::Float(0.0F)));
 }
 
 // Hash and Equality Functors Tests
